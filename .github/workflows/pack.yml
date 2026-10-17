@@ -2,7 +2,8 @@
 # compiles every shader the game draws with into one cache (build/shaders.sh), and publishes the
 # game as native code for Linux, Windows and macOS on Apple silicon, each zipped with the cache, its
 # resources, the README and the license (build/publish.sh), the Linux zip's program run on lavapipe
-# with no slangc. With publish set it then makes a GitHub release of the three zips. Nothing is
+# with no slangc, saving a world and opening it again. With publish set it then makes a GitHub
+# release of the three zips. Nothing is
 # published unless the build passes, and the zips are kept as the run's artifacts either way, so a
 # build can be played before one is released.
 #
@@ -93,9 +94,10 @@ jobs:
           - os: macos-15
             rid: osx-arm64
     runs-on: ${{ matrix.os }}
-    # The Linux publish took 2 minutes on a desktop, and its zip's 60 frames 3 on four cores of
-    # lavapipe, and the engine's own native publish of a game is held to 15 on each runner, so 40
-    # minutes is reached only where the compiler, the linker or the run hangs.
+    # The Linux publish took 2 minutes on a desktop, and its zip's first run of 60 frames 3 on four
+    # cores of lavapipe, its second 10 frames, and the engine's own native publish of a game is held
+    # to 15 on each runner, so 40 minutes is reached only where the compiler, the linker or a run
+    # hangs.
     timeout-minutes: 40
     # Git's bash on Windows, as on the other two, for build/publish.sh.
     defaults:

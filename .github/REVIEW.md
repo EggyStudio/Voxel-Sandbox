@@ -154,3 +154,24 @@ tests' temporary folders are named `VoxelSandbox.Tests`.
 `dotnet build VoxelSandbox.slnx -warnaserror --no-incremental` built with no warning,
 `dotnet test VoxelSandbox.Tests` passed 102, `./e3d status` named the game "Voxel Sandbox" while it
 answered `voxel.state`, and `build/drive.sh` passed on the desktop's GPU.
+
+Item 2 is `e0f4e66`.
+
+Item 3, the save in native code. `WorldSave.cs` reads and writes `WorldInfo` and `FurnaceRecord[]`
+through `SaveJson`, a `JsonSerializerContext` that System.Text.Json's generator fills, indented as
+before, so a save written before reads the same, which `ItemTests` holds with a `world.json` older
+than the mode and the inventory. `build/publish.sh`'s run on Linux saves a world and opens it again,
+its data folder (`XDG_DATA_HOME`) a temporary one. The first run makes a flat world named `check`
+and saves it on quitting, `world.json` and `furnaces.json` asserted, and the second asks for `check`
+alone and must find it flat, which it is only where the save was read back. The publish also fails
+on a trim or AOT warning at a line of the game's code, as the four of `WorldSave.cs` were, 16 lines
+of the publish's output. Without the mend the first run opened no world. With the data folder not
+yet made, `GetFolderPath(LocalApplicationData)` is empty, so the save root was `VoxelSandbox/saves`
+under the working folder, where the program's own file `VoxelSandbox` stands, and
+`Directory.CreateDirectory` threw. `WorldSave.Root` asks for the folder with
+`SpecialFolderOption.Create`, which a player on a new account needs as well. With that alone the
+first run ended at "Reflection-based serialization has been disabled", and with both it passed, the
+publish warning only of AssimpNetter, the engine's dependency (IL2104 and IL3053). The strict build
+and the 102 tests pass. It ran here as
+`build/publish.sh 0.1.0 linux-x64 -p:CppCompilerAndLinker=gcc` on lavapipe, and the Windows and
+macOS zips and the first pack run stay item 3's proof.

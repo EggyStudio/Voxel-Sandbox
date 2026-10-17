@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.IO.Compression;
 using System.Numerics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Engine;
 using static Engine.E3D;
 
@@ -16,6 +17,16 @@ namespace VoxelSandbox;
 /// </summary>
 public sealed record WorldInfo(string Kind, int Seed, float X, float Y, float Z, float Heading, float Pitch, bool Flying, float Hour, string[] Blocks,
     string Mode = "creative", string[]? Inventory = null, int Selected = 0, int Health = Vitals.Most, int Food = Vitals.Most, float Saturation = 5);
+
+/// <summary>The types a save writes as JSON, read and written by code System.Text.Json's generator makes.</summary>
+/// <remarks>
+/// A native build turns serializing by reflection off, and there a save serialized by reflection
+/// throws, which ends the program the first time it saves or opens a world.
+/// </remarks>
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(WorldInfo))]
+[JsonSerializable(typeof(WorldSave.FurnaceRecord[]))]
+internal sealed partial class SaveJson : JsonSerializerContext;
 
 /// <summary>
 /// A world's folder on disk: the columns changed from what the generator makes, in region files of
@@ -42,7 +53,6 @@ public sealed class WorldSave
     private const int Version = 1;
     private static readonly byte[] Magic = "E3DR"u8.ToArray();
     private static readonly byte[] MobsMagic = "E3DM"u8.ToArray();
-    private static readonly JsonSerializerOptions Json = new() { WriteIndented = true };
 
     private readonly ConcurrentDictionary<(int X, int Z), byte[]> _kept = new();
     private readonly HashSet<(int X, int Z)> _readRegions = [];
@@ -56,7 +66,13 @@ public sealed class WorldSave
     }
 
     /// <summary>The folder every world is saved under, one folder a world.</summary>
-    public static string Root => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "VoxelSandbox", "saves");
+    /// <remarks>
+    /// The local application data folder is made where it does not exist yet, as on a new account,
+    /// since the path of a missing one is empty, which puts saves under the working folder, where
+    /// the program's own file, named VoxelSandbox on Linux and macOS, stands in their way.
+    /// </remarks>
+    public static string Root => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.Create), "VoxelSandbox", "saves");
 
     public string Folder { get; }
 
@@ -158,7 +174,7 @@ public sealed class WorldSave
         if (!File.Exists(path)) return null;
         try
         {
-            var info = JsonSerializer.Deserialize<WorldInfo>(File.ReadAllText(path), Json);
+            var info = JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.WorldInfo);
             if (info?.Blocks is { } keys) ReadBlockKeys(keys);
             return info;
         }
@@ -172,7 +188,7 @@ public sealed class WorldSave
     public void WriteInfo(WorldInfo info)
     {
         var path = Path.Combine(Folder, "world.json");
-        File.WriteAllText(path + ".new", JsonSerializer.Serialize(info, Json));
+        File.WriteAllText(path + ".new", JsonSerializer.Serialize(info, SaveJson.Default.WorldInfo));
         File.Move(path + ".new", path, overwrite: true);
     }
 
@@ -278,7 +294,7 @@ public sealed class WorldSave
         if (!File.Exists(path)) return furnaces;
         try
         {
-            foreach (var r in JsonSerializer.Deserialize<FurnaceRecord[]>(File.ReadAllText(path), Json) ?? [])
+            foreach (var r in JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.FurnaceRecordArray) ?? [])
             {
                 var furnace = new Furnace { Burning = r.Burning, BurnTotal = r.BurnTotal, Cooked = r.Cooked };
                 for (int i = 0; i < Math.Min(3, r.Slots.Length); i++) furnace.Slots[i] = Inventory.Decode(r.Slots[i]);
@@ -296,7 +312,7 @@ public sealed class WorldSave
     {
         var path = Path.Combine(Folder, "furnaces.json");
         var records = furnaces.All.Select(f => new FurnaceRecord(f.Key.X, f.Key.Y, f.Key.Z, [.. f.Value.Slots.Select(Inventory.Encode)], f.Value.Burning, f.Value.BurnTotal, f.Value.Cooked));
-        File.WriteAllText(path + ".new", JsonSerializer.Serialize(records.ToArray(), Json));
+        File.WriteAllText(path + ".new", JsonSerializer.Serialize(records.ToArray(), SaveJson.Default.FurnaceRecordArray));
         File.Move(path + ".new", path, overwrite: true);
     }
 
