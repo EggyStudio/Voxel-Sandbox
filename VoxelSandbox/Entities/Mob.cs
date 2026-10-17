@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// A mob as a save keeps it and a generator places it: its kind, variant, place, turn and health, and

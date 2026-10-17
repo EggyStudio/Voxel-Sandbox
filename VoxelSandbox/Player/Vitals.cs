@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The player's health, food and breath in survival, as Minecraft's are: 20 points of health and of

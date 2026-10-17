@@ -1,6 +1,7 @@
+using Engine;
 using Xunit;
 
-namespace Engine.Game.Tests;
+namespace VoxelSandbox.Tests;
 
 public class GenerationTests
 {
@@ -86,10 +87,10 @@ public class GenerationTests
                     var block = At(x, y, z);
                     if (block == BlockId.DirtPath) paths++;
                     Assert.False(block is BlockId.OakLeaves or BlockId.SpruceLeaves or BlockId.BirchLeaves, $"leaves stand at {x}, {y}, {z} in the village");
-                    if (Game.Blocks.Get(block).Shape is not { Falls: true } shape || Game.Blocks.Get(block).Light == 0) continue;
+                    if (VoxelSandbox.Blocks.Get(block).Shape is not { Falls: true } shape || VoxelSandbox.Blocks.Get(block).Light == 0) continue;
                     lights++;
                     var (sx, sy, sz) = shape.Support;
-                    Assert.True(Game.Blocks.Holds(At(x + sx, y + sy, z + sz), shape.Facing), $"{Game.Blocks.Get(block).Key} at {x}, {y}, {z} holds to {Game.Blocks.Get(At(x + sx, y + sy, z + sz)).Key}");
+                    Assert.True(VoxelSandbox.Blocks.Holds(At(x + sx, y + sy, z + sz), shape.Facing), $"{VoxelSandbox.Blocks.Get(block).Key} at {x}, {y}, {z} holds to {VoxelSandbox.Blocks.Get(At(x + sx, y + sy, z + sz)).Key}");
                 }
         Assert.True(paths > 100, $"the village has {paths} blocks of road");
         Assert.True(lights >= 9, $"the village has {lights} torches and lanterns");

@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// A ravine, a long narrow cut in the ground open to the sky as Minecraft's are, up to seven blocks

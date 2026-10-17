@@ -4,7 +4,7 @@
 // the save it is kept in, its kind and seed by default, and `--transient` keeps nothing on disk,
 // as a test run does.
 using Engine;
-using Engine.Game;
+using VoxelSandbox;
 using static Engine.E3D;
 
 var seed = 1;
@@ -20,7 +20,7 @@ for (int i = 0; i < args.Length; i++)
 }
 
 SetConfigFlags(ConfigFlags.WindowResizable);
-InitWindow(1280, 720, "3DEngine.Game");
+InitWindow(1280, 720, "Voxel Sandbox");
 // Escape frees the cursor, as it opens Minecraft's menu, rather than closing the window.
 SetExitKey(Key.Null);
 

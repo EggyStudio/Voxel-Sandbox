@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The sections the eye can see through open cells, after Minecraft's visibility graph, in which

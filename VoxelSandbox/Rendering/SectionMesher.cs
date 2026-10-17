@@ -1,6 +1,7 @@
 using System.Numerics;
+using Engine;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// Turns a section into the faces of its blocks that touch air, each corner colored by its surface

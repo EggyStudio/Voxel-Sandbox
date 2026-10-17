@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// What a furnace makes of what it is given and how long each fuel burns, as Minecraft's furnace

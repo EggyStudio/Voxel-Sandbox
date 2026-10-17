@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// Which way a block smaller than its cell faces: up where it stands on the block below, down where

@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// Veins of ore in the stone, as Minecraft's are: of coal 18 a column at heights from 5 to 100, each

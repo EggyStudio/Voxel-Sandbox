@@ -1,7 +1,8 @@
 using System.Numerics;
+using Engine;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>Builds a mesh of boxes with a color on each face, as a mob's pieces and a stack on the ground are.</summary>
 public sealed class BoxMesh

@@ -1,12 +1,12 @@
 using System.Numerics;
 using Xunit;
 
-namespace Engine.Game.Tests;
+namespace VoxelSandbox.Tests;
 
 public sealed class ItemTests : IDisposable
 {
     // A folder of this test's own, removed with it, so no run reads another's save.
-    private readonly string _folder = Path.Combine(Path.GetTempPath(), "3DEngine.Game.Tests", Guid.NewGuid().ToString("N"));
+    private readonly string _folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
 
     public void Dispose()
     {

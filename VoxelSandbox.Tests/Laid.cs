@@ -1,4 +1,4 @@
-namespace Engine.Game.Tests;
+namespace VoxelSandbox.Tests;
 
 /// <summary>A generator of columns a test lays out, every column made by the same rule, and a world of them around the origin.</summary>
 public sealed class Laid(Action<ChunkColumn> lay) : IWorldGenerator

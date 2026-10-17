@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// Water that flows, as Minecraft's does: down into the air under it as falling water, and where it

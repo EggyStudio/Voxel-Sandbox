@@ -1,4 +1,6 @@
-namespace Engine.Game;
+using Engine;
+
+namespace VoxelSandbox;
 
 /// <summary>A column of sections from the bottom of the world to its top, the unit the world is generated and loaded in.</summary>
 /// <remarks>

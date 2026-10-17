@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>What an explosion breaks and the harm it does, as Minecraft's explosions are worked out.</summary>
 /// <remarks>

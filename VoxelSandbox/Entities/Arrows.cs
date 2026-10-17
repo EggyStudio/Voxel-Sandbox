@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>An arrow in flight or stuck in a block.</summary>
 public sealed class Arrow(Vector3 at, Vector3 velocity)

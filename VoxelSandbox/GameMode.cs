@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>How the player plays, as Minecraft's modes are.</summary>
 public enum GameMode

@@ -1,6 +1,7 @@
+using Engine;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>The inventory's first nine slots, one of them chosen, picked by 1 to 9 and the wheel.</summary>
 public sealed class Hotbar(Inventory inventory)

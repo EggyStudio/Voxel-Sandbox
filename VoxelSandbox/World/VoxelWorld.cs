@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>The loaded columns of an endless world, read and changed by world position, with their light.</summary>
 /// <remarks>

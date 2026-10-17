@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>The block a ray met, the face it entered through as that face's outward normal, and how far along the ray.</summary>
 public readonly record struct BlockHit(int X, int Y, int Z, int NormalX, int NormalY, int NormalZ, float Distance)

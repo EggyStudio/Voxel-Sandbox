@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The light levels of Minecraft: the sky's, 15 under the open sky, falling straight down without

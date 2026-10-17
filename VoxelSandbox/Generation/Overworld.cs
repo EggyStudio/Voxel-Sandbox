@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// Land of the biomes a climate chooses: rolling plains and forests of oak and birch, taiga and

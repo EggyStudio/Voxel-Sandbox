@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>A cell a mob's feet stand in on its way.</summary>
 public readonly record struct Step(int X, int Y, int Z);

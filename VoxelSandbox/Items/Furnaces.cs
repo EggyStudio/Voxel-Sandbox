@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The furnaces of a world by the place of their block, each burning and smelting while its column

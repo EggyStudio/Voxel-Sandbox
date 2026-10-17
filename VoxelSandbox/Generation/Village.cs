@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// A village in the plains, the taiga, the snowy plains or the desert: a well at its middle with a

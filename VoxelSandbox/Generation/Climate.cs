@@ -1,4 +1,6 @@
-namespace Engine.Game;
+using Engine;
+
+namespace VoxelSandbox;
 
 /// <summary>A kind of land, which the climate chooses: the blocks on its ground and what grows on it.</summary>
 /// <param name="Name">The name the settings window and <c>voxel.state</c> show.</param>

@@ -1,6 +1,7 @@
 using System.Numerics;
+using Engine;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>A box of a mob's model between two corners in sixteenths of a block, its color, or null for the color its mob varies by.</summary>
 public readonly record struct ModelBox(Vector3 Min, Vector3 Max, Color? Color);

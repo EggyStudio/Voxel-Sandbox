@@ -1,7 +1,8 @@
 using System.Numerics;
+using Engine;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>What is drawn over the world: the crosshair, the hotbar and the outline of the block looked at.</summary>
 public static class Hud

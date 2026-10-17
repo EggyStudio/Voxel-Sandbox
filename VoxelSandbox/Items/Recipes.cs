@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// A shaped recipe, as Minecraft's are: rows of letters, each letter the items any one of which

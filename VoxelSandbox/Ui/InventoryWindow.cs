@@ -1,7 +1,8 @@
 using System.Numerics;
+using Engine;
 using ImGuiNET;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The window E opens: in survival the inventory's 36 slots under a crafting grid of two by two, in

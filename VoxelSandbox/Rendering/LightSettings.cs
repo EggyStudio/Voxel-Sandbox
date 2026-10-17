@@ -1,6 +1,7 @@
+using Engine;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>The settings of the light that bounces and of the frame's post-processing, which the settings window changes.</summary>
 public sealed class LightSettings

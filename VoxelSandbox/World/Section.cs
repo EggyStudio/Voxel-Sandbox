@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>A cube of 16 blocks a side, the unit the world is meshed and drawn in, with each block's light levels.</summary>
 public sealed class Section

@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>Makes the columns of a world from its seed.</summary>
 /// <remarks>

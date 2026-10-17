@@ -1,9 +1,10 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Engine;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// Keeps a mesh for each section, meshes sections again as the world changes, and draws those

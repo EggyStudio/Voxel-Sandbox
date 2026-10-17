@@ -1,4 +1,6 @@
-namespace Engine.Game;
+using Engine;
+
+namespace VoxelSandbox;
 
 /// <summary>
 /// The look of a block's face: its color, which a section's mesh carries in the face's vertices,

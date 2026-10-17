@@ -1,7 +1,8 @@
 using System.Numerics;
+using Engine;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// Walks, sprints, sneaks, jumps and flies the player's body from the keys, turns the view with

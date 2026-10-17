@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>A stack of an item lying in the world, which falls, slides to a stop and is picked up.</summary>
 public sealed class ItemDrop(Item item, int count, Vector3 at, Vector3 velocity, float delay, int wear = 0)

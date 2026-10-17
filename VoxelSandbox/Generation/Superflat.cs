@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>A flat world of bedrock, two layers of dirt and grass, a plain floor to build a test on, with the plains' animals.</summary>
 public sealed class Superflat(int seed) : IWorldGenerator

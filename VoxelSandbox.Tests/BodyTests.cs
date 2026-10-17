@@ -1,7 +1,7 @@
 using System.Numerics;
 using Xunit;
 
-namespace Engine.Game.Tests;
+namespace VoxelSandbox.Tests;
 
 public class BodyTests
 {

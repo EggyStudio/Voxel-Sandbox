@@ -1,7 +1,8 @@
 using System.Numerics;
+using Engine;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The time of day, the sun or the moon as the light that casts the shadows, and a painted sky

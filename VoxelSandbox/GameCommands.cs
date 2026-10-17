@@ -1,7 +1,8 @@
 using System.Numerics;
+using Engine;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The game's console commands, which <c>./e3d command</c> runs, so a test of the light can be built,
@@ -238,17 +239,17 @@ public static class GameCommands
     internal static string Furnace(int x, int y, int z, string item = "", int count = 1, string fuel = "", int fuelCount = 1)
     {
         if (Game is not { } game) return "no world is loaded";
-        if (!Engine.Game.Furnaces.IsFurnace(game.World.GetBlock(x, y, z))) return $"no furnace stands at {x}, {y}, {z}";
+        if (!VoxelSandbox.Furnaces.IsFurnace(game.World.GetBlock(x, y, z))) return $"no furnace stands at {x}, {y}, {z}";
         var furnace = game.Furnaces.At(x, y, z);
         if (item.Length > 0)
         {
             if (Items.Find(item) is not { } input) return $"no item is called {item}";
-            furnace.Slots[Engine.Game.Furnace.Input] = new ItemStack(input, Math.Clamp(count, 1, input.MostInStack));
+            furnace.Slots[VoxelSandbox.Furnace.Input] = new ItemStack(input, Math.Clamp(count, 1, input.MostInStack));
         }
         if (fuel.Length > 0)
         {
             if (Items.Find(fuel) is not { } burns) return $"no item is called {fuel}";
-            furnace.Slots[Engine.Game.Furnace.Fuel] = new ItemStack(burns, Math.Clamp(fuelCount, 1, burns.MostInStack));
+            furnace.Slots[VoxelSandbox.Furnace.Fuel] = new ItemStack(burns, Math.Clamp(fuelCount, 1, burns.MostInStack));
         }
         string Slot(ItemStack? s) => s is { } stack ? $"{stack.Count} {stack.Item.Key}" : "nothing";
         return $"smelting {Slot(furnace.Slots[0])}, fuel {Slot(furnace.Slots[1])}, made {Slot(furnace.Slots[2])}; "

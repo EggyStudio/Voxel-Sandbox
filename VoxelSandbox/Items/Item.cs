@@ -1,4 +1,6 @@
-namespace Engine.Game;
+using Engine;
+
+namespace VoxelSandbox;
 
 /// <summary>The kinds of tool, each breaking its own blocks faster, as Minecraft's are.</summary>
 public enum ToolKind

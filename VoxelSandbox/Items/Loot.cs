@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// What breaking a block in survival and killing a mob give, and how long a block takes to break,

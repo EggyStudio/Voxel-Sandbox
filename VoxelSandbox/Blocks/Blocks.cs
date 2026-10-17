@@ -1,6 +1,7 @@
 using System.Numerics;
+using Engine;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>A kind of block, stored as two bytes in a section, with air as zero so a new section is empty.</summary>
 public enum BlockId : ushort

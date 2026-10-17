@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// A column seen through world positions, which takes the blocks written inside it and lets go of

@@ -1,6 +1,7 @@
+using Engine;
 using Xunit;
 
-namespace Engine.Game.Tests;
+namespace VoxelSandbox.Tests;
 
 public class MesherTests
 {

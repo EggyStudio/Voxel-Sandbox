@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>The player as a hostile mob hunts it: the box and the eye.</summary>
 public readonly record struct MobTarget(Body Body, Vector3 Eye);

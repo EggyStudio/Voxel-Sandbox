@@ -26,12 +26,13 @@ dotnet run --project VoxelSandbox -- --world house     # a save of its own name
 dotnet test VoxelSandbox.Tests                         # its light, meshes, mobs, saves and land
 ```
 
-A world is saved under `~/.local/share/3DEngine.Game/saves` on Linux, and the matching local
+A world is saved under `~/.local/share/VoxelSandbox/saves` on Linux, and the matching local
 application data folder elsewhere, in a folder named by its kind and seed, `overworld-1` or
 `flat-7`, unless `--world` names it. Its mode, inventory, health and food are saved with it. It is
 saved every 30 seconds, on opening another world and on quitting, and opened where it was left.
 `--transient` keeps nothing on disk, as a test run driven by `./e3d` should, so it leaves the saves
-as they were.
+as they were. The builds made in the engine's repository saved under `3DEngine.Game/saves` in the
+same folder, and a world moved from there into `VoxelSandbox/saves` opens where it was left.
 
 `./e3d` drives the running game from a terminal through the engine's command line, out of the
 engine's checkout that `ENGINE_CHECKOUT` names, or the folder above this repository

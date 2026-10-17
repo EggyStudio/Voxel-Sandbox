@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The animals a column is generated with: in a tenth of the columns a herd of two to four of one

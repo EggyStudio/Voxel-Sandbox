@@ -1,8 +1,9 @@
 using System.Numerics;
+using Engine;
 using ImGuiNET;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// An ImGui window of what the frame holds and costs, and of the light, the sky and the world to

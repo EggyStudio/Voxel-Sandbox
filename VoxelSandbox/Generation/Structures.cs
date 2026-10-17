@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>Where a structure stands: its corner at the lowest x and z, the height it is built from, and a hash that varies it.</summary>
 public readonly record struct StructureStart(int X, int Y, int Z, uint Hash);

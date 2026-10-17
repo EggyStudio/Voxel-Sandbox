@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>Ken Perlin's improved gradient noise in two and three dimensions, from a seed.</summary>
 /// <remarks>Read only once made, so the workers that generate columns share one.</remarks>

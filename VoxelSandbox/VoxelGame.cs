@@ -1,8 +1,9 @@
 using System.Numerics;
+using Engine;
 using ImGuiNET;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>The game's state and its frame: the world, its mobs, the player, the sky, and what is drawn over them.</summary>
 public sealed class VoxelGame : IDisposable

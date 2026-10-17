@@ -2,9 +2,10 @@ using System.Collections.Concurrent;
 using System.IO.Compression;
 using System.Numerics;
 using System.Text.Json;
+using Engine;
 using static Engine.E3D;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// Where the player stood and looked, the heading and pitch in degrees, the hour, the world's kind
@@ -55,7 +56,7 @@ public sealed class WorldSave
     }
 
     /// <summary>The folder every world is saved under, one folder a world.</summary>
-    public static string Root => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "3DEngine.Game", "saves");
+    public static string Root => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "VoxelSandbox", "saves");
 
     public string Folder { get; }
 

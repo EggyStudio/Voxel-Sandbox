@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// A box that stands for the player or a mob, the player's 0.6 blocks wide and 1.8 tall as

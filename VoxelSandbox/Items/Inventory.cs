@@ -1,4 +1,4 @@
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The player's 36 slots of items, the first nine of them the hotbar, as Minecraft's inventory is,

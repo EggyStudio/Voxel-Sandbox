@@ -1,6 +1,7 @@
 using System.Numerics;
+using Engine;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The lines a tool or a stick is drawn with over its slot, in a square from 0 to 1 with y down, so

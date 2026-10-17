@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Engine.Game;
+namespace VoxelSandbox;
 
 /// <summary>
 /// The mobs of the loaded columns, those of the columns unloaded kept by their column, and which
