@@ -1,0 +1,4 @@
+# Every text file has LF line ends in every checkout, as the index has them, so a script reads the
+# same lines on Windows as on Linux and macOS, and a shader's source, which keys its compiled entry
+# in the cache a shipped build carries, is the same text on every system.
+* text=auto eol=lf

@@ -1,0 +1,154 @@
+# Driving the running game with e3d
+
+`./e3d` runs the engine's command line out of an engine checkout, the one `ENGINE_CHECKOUT` names
+or else the folder above this repository, since the command line comes in no package. It talks to
+a running program over a local socket, and every program built on the engine answers it.
+
+## Check for a live session first
+
+**Before asking anything about the running game, run `./e3d status`.** If a session answers, drive
+it. A round trip against a running program is a frame. Starting one per question is a second of
+startup and a guess about which frame to look at.
+
+```bash
+./e3d status                                  # what is serving, and whether it answers
+./e3d list                                    # the commands the game answers, with parameters
+./e3d command voxel.state                     # ask it something
+```
+
+If nothing is serving, start one and wait for it to be ready:
+
+```bash
+game=VoxelSandbox/bin/Debug/net10.0/VoxelSandbox
+./e3d open $game --hidden --transient         # renders into a window that is never shown
+./e3d open $game --offscreen --transient      # renders with no window and no display at all
+./e3d open $game --transient --flat           # a visible window, on a flat world
+./e3d open $game --frames 300 --transient     # closes itself after 300 frames
+```
+
+`open` returns once the game has written that it is ready, so the next command is answered.
+`--hidden` or `--offscreen` is the default choice for an agent, since everything renders and
+`shot` works, and nothing appears on the desktop. `--offscreen` needs no display server, so it also works
+over SSH, in a container or on a locked session, and a software Vulkan device (lavapipe) is
+enough. A run with no window has no window events, so input arrives only through `input.*`.
+`--transient` is the game's own flag, which keeps nothing on disk, so a run driven from here leaves
+the saves as they were. The game's other flags, `--flat`, `--seed <n>` and `--world <name>`, pass
+through `open` the same way.
+
+Any program built on the engine takes the same flags (`--serve`, `--headless`, `--offscreen`,
+`--hidden`, `--frames N`) or the variables `E3D_SERVE`, `E3D_HEADLESS`, `E3D_OFFSCREEN`,
+`E3D_HIDDEN`, `E3D_FRAMES`, so the game started by other means is driven by running it with
+`--serve`.
+
+## The catalog is the API
+
+`./e3d list` is authoritative. The ones every app has:
+
+| command | does |
+|---|---|
+| `app.quit` | closes the app, as its close button does (`./e3d stop` does this and waits) |
+| `frames.wait <n>` | answers once n more frames have run |
+| `shot <path>` | writes the frame being drawn to a PNG and answers once it is written, with the frame's number (`./e3d shot <path>`) |
+| `log.tail <n>` | the last n lines logged (`./e3d logs -n <n>`) |
+| `entity.count`, `entity.list <limit>`, `entity.get <id>` | entities with their names, parents and component types, and one entity's fields |
+| `entity.find <name>` | the id of the first entity with that name |
+| `entity.set <id> <Component.Field> <value>` | writes one field (vectors, quaternions and colors as `1,2,3`, enums by name, an array's items split by `;`), marking it changed |
+| `entity.spawn <name>`, `entity.despawn <id>` | makes a named entity and answers its id, or removes one with its children |
+| `scene.save <path>`, `scene.load <path>` | writes the level (every entity not spawned from a model) to a JSON scene file, or spawns one's entities |
+| `entity.add <id> <Component>` | adds a component at sensible defaults (a unit `Transform`, a white `Material`), which `entity.set` then changes |
+| `component.list`, `resource.list`, `schedule.list` | what the world holds and what runs each stage |
+| `state.list`, `state.set <State> <Value>` | every state machine and its value, and a move that answers once it has applied (`state.set Screen Playing`) |
+| `input.key <name> <frames>` | holds a key (`W`, `Space`, `Escape`, `F2`, `LeftShift`) for that many frames |
+| `input.move <x> <y>`, `input.click <x> <y>` | moves the pointer, and clicks, in window coordinates |
+| `input.drag <button> <dx> <dy> <frames> [rest]` | holds a button while moving the pointer, as a camera drag, and holds it `rest` frames more at the end, as a window held over a docking target |
+| `input.touch <id> <x> <y> <frames>` | holds a finger at a window position, which `GetTouchPosition` and `input.state` see |
+| `input.wheel <amount>` | turns the wheel |
+| `input.text <text>` | types text into the game's text input and the focused ImGui field |
+| `input.drop <path>` | drops a file on the window, as dragging it from the desktop does, which `LoadDroppedFiles` returns |
+| `input.state` | the keys and buttons down, the pointer and the gamepads, as the engine sees them |
+| `input.button <pad> <button> <frames>` | holds a gamepad button (`RightFaceDown`, `RightFaceRight`, `LeftFaceUp`, `MiddleRight`), on a console pad when none is connected |
+| `input.axis <pad> <axis> <value>` | sets a stick or trigger (`LeftX`, `RightTrigger`) until it is set again |
+
+The game adds its own, the `voxel.*` commands in `VoxelSandbox/GameCommands.cs`, each a static
+method:
+
+```csharp
+[Command("voxel.time", "Sets the hour of the day from 0 to 24, the sun up from 6 to 18: voxel.time <hour>")]
+internal static string Time(float hour) { /* sets the sky */ return $"the hour is {hour:0.00}"; }
+```
+
+Commands run between frames on the main thread, so they may read and change the world.
+
+For what no command covers, `./e3d eval` compiles C# against the running app and runs it there,
+with `world`, `ecs` and `app` in scope and the flat API imported. A last expression with no
+semicolon is the answer, and `-f <file.cs>` sends a file of top-level statements:
+
+```bash
+./e3d eval 'ecs.Query<Transform>().Select(row => row.Item2.Position)'
+./e3d eval 'var e = ecs.Spawn(); ecs.Add(e, new Transform(new Vector3(0, 5, 0))); e'
+```
+
+A fragment that does not compile fails with `EVAL_COMPILE_FAILED` and the compiler's errors by
+line, one that throws with `EVAL_THREW`, and the first holds its frame while the compiler starts.
+
+## Input goes through the engine, not the desktop
+
+`input.*` writes into the engine's `Input` and hands keys, text and mouse events to ImGui, so it
+works in a hidden or headless run and on a locked session, where xdotool's events do not arrive. Use it
+rather than xdotool.
+
+Injected input is made when the loop next processes events, as a real key would be, so a program
+that reads `IsKeyPressed` before `BeginDrawing` sees it. `input.key` and `input.click` answer after
+the input is released, so the next `shot` sees the result. Each `./e3d` call is a process of its
+own and takes a few frames to start, so a result shorter than that (a quarter-second sound) may be
+over before a separate `shot` arrives. `input.state` says whether input arrived.
+
+```bash
+./e3d command input.key W 40 && ./e3d shot /tmp/after.png
+./e3d command input.click 77 143 && ./e3d command frames.wait 2 && ./e3d shot /tmp/after.png
+```
+
+## Reading the answer
+
+Every verb prints a readable answer, or with `--json` one envelope:
+
+```json
+{"success": true, "command": "command", "data": {"command": "entity.count", "result": "100", "frame": 94}, "errors": [], "warnings": []}
+```
+
+Exit codes: `0` ok, `2` bad arguments or an unknown command, `4` nothing to talk to (no session,
+or no renderer for a capture), `6` the command failed. A failure carries a code in `errors[0].code`
+(`NO_SESSION`, `AMBIGUOUS_SESSION`, `UNKNOWN_COMMAND`, `NO_RENDERER`, `TIMEOUT`). Without `--json`
+an error is a line `error [CODE] message` on standard error, so `status=$(./e3d command ...)` takes
+no error into the variable and the error still shows.
+
+## More than one app
+
+When several are serving, a verb refuses with `AMBIGUOUS_SESSION` and lists them. Choose with
+`--name <part of the title or entry>` or `--session <pid>`.
+
+## When it says nothing is running
+
+- `./e3d doctor` removes the session files of programs that are gone.
+- `e3d open` failing with `NOT_READY` prints the tail of the game's log, which lives in the engine
+  checkout's `build/sessions/VoxelSandbox.log`. A shader error, a missing asset or a crash is there.
+- `./e3d` itself failing with "not found" means there is no engine checkout above this repository,
+  and `ENGINE_CHECKOUT` names one.
+
+## Building and testing
+
+```bash
+build/fetch-slang.sh            # slangc, once per checkout
+dotnet build VoxelSandbox.slnx
+dotnet test VoxelSandbox.Tests
+```
+
+A change to the game needs `dotnet build VoxelSandbox.slnx` before `e3d open` shows it, since
+`open` runs the program as it was last built.
+
+## Security notes
+
+The socket listens on 127.0.0.1 only, on a port the system picks, and every request carries a
+token from the session file, which only its owner can read. Session files live in
+`~/.local/share/3DEngine/sessions` (or `E3D_SESSIONS`). `eval` runs any code with the app's
+rights, which are those of the user who owns that file.

@@ -1,0 +1,168 @@
+# Run by hand from the Actions tab ("Run workflow"). It runs the build workflow whole (build.yml),
+# compiles every shader the game draws with into one cache (build/shaders.sh), and publishes the
+# game as native code for Linux, Windows and macOS on Apple silicon, each zipped with the cache, its
+# resources, the README and the license (build/publish.sh), the Linux zip's program run on lavapipe
+# with no slangc. With publish set it then makes a GitHub release of the three zips. Nothing is
+# published unless the build passes, and the zips are kept as the run's artifacts either way, so a
+# build can be played before one is released.
+#
+# The version is build/version.sh's: the major and minor in build/version.txt, and as the patch the
+# commits since that file last changed.
+name: pack
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Make a GitHub release of the three zips'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# A second pack run on a branch waits for the first rather than cancelling it, since a pack run cut
+# short leaves no zips and may be making a release.
+concurrency:
+  group: pack-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  # The cache is compiled once, on Linux, and serves the three systems, since an entry is keyed by a
+  # shader's source, its defines and the files it imports, the same text on every system
+  # (.gitattributes). A run of the game would fill only the builds its device and its frames load,
+  # so every build of every shader is compiled instead, the device with ray queries and the frame
+  # with the light that bounces turned off among them.
+  shaders:
+    runs-on: ubuntu-24.04
+    # build/shaders.sh took 75 seconds on a desktop and the engine's command line builds in a
+    # minute, so 20 minutes is reached only where slangc or e3d hangs.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      # After the game's checkout, which would clear the folder. fc5fdc97 is the commit the package
+      # VoxelSandbox.csproj names, 5.2.43, was packed from, so e3d compiles as the game's engine does.
+      - uses: actions/checkout@v7
+        with:
+          repository: EggyStudio/3DEngine
+          ref: fc5fdc97da880bba12e4d0ecb1850c176b060735
+          path: .engine
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - uses: actions/cache@v6
+        with:
+          path: build/tools/slang
+          key: slang-${{ runner.os }}-${{ hashFiles('build/fetch-slang.sh') }}
+
+      - run: build/fetch-slang.sh
+
+      # The Debug build stages the engine's shaders from the package beside the program, where
+      # build/shaders.sh takes them.
+      - run: dotnet build VoxelSandbox.slnx
+
+      - run: build/shaders.sh
+        env:
+          ENGINE_CHECKOUT: ${{ github.workspace }}/.engine
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: shader-cache
+          path: build/shader-cache
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: publish (${{ matrix.rid }})
+    needs: [build, shaders]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            rid: linux-x64
+          - os: windows-latest
+            rid: win-x64
+          - os: macos-15
+            rid: osx-arm64
+    runs-on: ${{ matrix.os }}
+    # The Linux publish took 2 minutes on a desktop, and its zip's 60 frames 3 on four cores of
+    # lavapipe, and the engine's own native publish of a game is held to 15 on each runner, so 40
+    # minutes is reached only where the compiler, the linker or the run hangs.
+    timeout-minutes: 40
+    # Git's bash on Windows, as on the other two, for build/publish.sh.
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # The whole history, since the patch counts commits.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: shader-cache
+          path: build/shader-cache
+
+      # clang and zlib's headers, which the native compiler links with, and lavapipe for the run of
+      # the zip's program.
+      - name: Install the native compiler's tools and lavapipe
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev mesa-vulkan-drivers libvulkan1
+
+      - name: Work out the version
+        id: version
+        run: echo "version=$(build/version.sh)" >> "$GITHUB_OUTPUT"
+
+      - run: build/publish.sh "${{ steps.version.outputs.version }}" "${{ matrix.rid }}"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: VoxelSandbox-${{ steps.version.outputs.version }}-${{ matrix.rid }}
+          path: build/publish/VoxelSandbox-${{ steps.version.outputs.version }}-${{ matrix.rid }}.zip
+          if-no-files-found: error
+
+  release:
+    needs: publish
+    if: ${{ inputs.publish }}
+    runs-on: ubuntu-24.04
+    # A release of three zips takes a minute, so 10 ends one whose upload stalls.
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Work out the version
+        id: version
+        run: echo "version=$(build/version.sh)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: VoxelSandbox-*
+          path: build/publish
+          merge-multiple: true
+
+      - name: Make the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          gh release create "v$version" build/publish/*.zip --target "$GITHUB_SHA" --title "Voxel Sandbox $version" \
+            --notes "Voxel Sandbox $version as native code for Linux, Windows and macOS on Apple silicon, from $GITHUB_SHA."
+          echo "### Voxel Sandbox $version" >> "$GITHUB_STEP_SUMMARY"
+          echo "Released as v$version with the three zips." >> "$GITHUB_STEP_SUMMARY"

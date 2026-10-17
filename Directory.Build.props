@@ -1,0 +1,24 @@
+<Project>
+
+    <!-- What every project of the game builds with. -->
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <!-- The engine's dependencies bring their resources in every language, of which a player's
+             copy keeps the English. -->
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <!-- A checkout of the game inside the engine's, where the e3d wrapper looks for the engine
+             first, would otherwise take the engine's Directory.Build.targets from the folder above,
+             since MSBuild searches upward for one apart from this file. -->
+        <ImportDirectoryBuildTargets>false</ImportDirectoryBuildTargets>
+    </PropertyGroup>
+
+    <!-- The XML documentation is compiled, so a cref that names nothing is a warning, which the
+         strict build fails on, while a member without a summary is allowed. -->
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+</Project>

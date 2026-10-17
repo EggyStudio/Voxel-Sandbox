@@ -1,0 +1,118 @@
+# Every push and pull request, and the pack run (pack.yml), which calls this before it publishes.
+#
+# The game is built from the engine's package on nuget.org with warnings failing the build (NORM.md,
+# N 6.1), and its tests run on Linux, Windows and macOS, the systems it ships for (N 6.2). On Linux
+# the game is then played through ./e3d (build/drive.sh) on Mesa's lavapipe, a Vulkan device that
+# runs on the CPU, under the Khronos validation layer, with the engine's command line from a
+# checkout of the engine at the commit its package was packed from, since the command line comes in
+# no package.
+name: build
+
+# Documents and captures are left out, the README apart, whose commands a reader follows.
+on:
+  push:
+    paths: ['**', '!.github/**.md', '!AGENTS.md', '!.github/assets/**']
+  pull_request:
+    paths: ['**', '!.github/**.md', '!AGENTS.md', '!.github/assets/**']
+  workflow_call:
+
+permissions:
+  contents: read
+
+# A newer push to a branch cancels the run of the one before it, whose result nobody reads. A called
+# run takes its caller's github context, so the pack run's jobs, started by workflow_dispatch, have a
+# group of their own, and a push during a pack run cannot cancel it.
+concurrency:
+  group: build-${{ github.event_name == 'workflow_dispatch' && 'pack-' || '' }}${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        # The images the engine's own jobs run on, Linux and macOS named rather than the latest
+        # labels, so a new release under a label changes nothing with no commit to show for it.
+        os: [ubuntu-24.04, windows-latest, macos-15]
+    runs-on: ${{ matrix.os }}
+    # The build took 16 seconds and the tests 2 on a desktop from an empty package folder
+    # (dotnet build VoxelSandbox.slnx -warnaserror, dotnet test VoxelSandbox.Tests), so 30 minutes is
+    # reached only where a restore or a test hangs.
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - run: dotnet build VoxelSandbox.slnx -warnaserror
+
+      - run: dotnet test VoxelSandbox.Tests --no-build --logger trx --results-directory VoxelSandbox.Tests/TestResults
+
+      - uses: actions/upload-artifact@v7
+        # Kept for a job canceled as well as one that failed, since a cut-short run is the one to read.
+        if: failure() || cancelled()
+        with:
+          name: test-results-${{ matrix.os }}
+          path: VoxelSandbox.Tests/TestResults/
+          if-no-files-found: ignore
+
+  play:
+    runs-on: ubuntu-24.04
+    # build/drive.sh took 10 minutes on four cores of a desktop's lavapipe, most of it the frames
+    # drawn before the walk, and the engine's command line builds in a minute, so 40 minutes is
+    # reached only where the game or e3d hangs.
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      # After the game's checkout, which would clear the folder. fc5fdc97 is the commit the package
+      # VoxelSandbox.csproj names, 5.2.43, was packed from, so e3d speaks as the game's engine does.
+      - uses: actions/checkout@v7
+        with:
+          repository: EggyStudio/3DEngine
+          ref: fc5fdc97da880bba12e4d0ecb1850c176b060735
+          path: .engine
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      # The pinned Slang release, cached by its version so it downloads once.
+      - uses: actions/cache@v6
+        with:
+          path: build/tools/slang
+          key: slang-${{ runner.os }}-${{ hashFiles('build/fetch-slang.sh') }}
+
+      - run: build/fetch-slang.sh
+
+      # The validation layer at the version the engine's checkout pins, since the image's own
+      # predates VK_KHR_line_rasterization, which lavapipe offers and the engine draws its lines
+      # with. It is named alone in VK_LAYER_PATH, so no other copy is found.
+      - uses: actions/cache@v6
+        with:
+          path: .engine/build/tools/vulkan-layer
+          key: vulkan-layer-${{ runner.os }}-${{ hashFiles('.engine/build/fetch-validation-layer.sh') }}
+
+      - name: Install lavapipe and the validation layer, and name the engine's checkout
+        run: |
+          sudo apt-get update && sudo apt-get install -y mesa-vulkan-drivers libvulkan1
+          .engine/build/fetch-validation-layer.sh
+          echo "VK_LAYER_PATH=$PWD/.engine/build/tools/vulkan-layer/share/vulkan/explicit_layer.d" >> "$GITHUB_ENV"
+          echo "ENGINE_CHECKOUT=$PWD/.engine" >> "$GITHUB_ENV"
+
+      - run: dotnet build VoxelSandbox.slnx
+
+      - run: build/drive.sh
+
+      # The room's capture and the game's log, from every run.
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: play
+          path: |
+            captures/
+            .engine/build/sessions/
+          if-no-files-found: ignore

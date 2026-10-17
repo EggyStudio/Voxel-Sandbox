@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+# Runs the engine's e3d command line out of an engine checkout, the one ENGINE_CHECKOUT names or
+# else the folder above this one, since the command line is a script of the engine's checkout and
+# comes in no package.
+set -eu
+
+root=$(cd "$(dirname "$0")" && pwd)
+exec "${ENGINE_CHECKOUT:-$root/..}/e3d" "$@"

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- A voxel game in the manner of Minecraft, built on the engine's package as any game is. -->
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <IsPackable>false</IsPackable>
+        <RootNamespace>VoxelSandbox</RootNamespace>
+    </PropertyGroup>
+
+    <!-- The package carries the generator that registers the game's [Command]s, and the fixes an
+         editor offers for its diagnostics, as analyzers. -->
+    <ItemGroup>
+        <PackageReference Include="3DEngine" Version="5.2.43" />
+    </ItemGroup>
+
+    <!-- The game's own shaders, found beside the program as resources/shaders. -->
+    <ItemGroup>
+        <Content Include="resources\**\*" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+</Project>
