@@ -1,14 +1,15 @@
 # Voxel Sandbox
 
-A voxel game in the manner of Minecraft, and the ground floor of a larger one, written in C# on
-[3DEngine](https://github.com/EggyStudio/3DEngine) through its package on nuget.org. Its first use
-is to test the engine's global illumination, radiance cascades traced through the scene's distance
-field, with emissive blocks. It holds an endless world of colored blocks in columns of 16 by 16 by
-128, animals that graze it, villagers in its villages and hostile mobs in its dark, a first-person
-player with Minecraft's sizes and speeds, building and breaking with an outline on the block looked
-at, in creative mode or in survival with health and hunger, an inventory, tools, crafting and the
-items blocks and mobs drop, Minecraft's light levels with smooth lighting and shaded corners, a sky
-whose sun crosses it under drifting clouds, and an ImGui window of the light's settings.
+A voxel game written in C# on [3DEngine](https://github.com/EggyStudio/3DEngine) through its
+package on nuget.org, set in an endless generated world whose blocks are placed and broken, with its
+light, its water, its mobs and the items they drop. Its first use is to test the engine's global
+illumination, radiance cascades traced through the scene's distance field, with emissive blocks.
+The world is held in columns of colored blocks 16 by 16 by 128, with animals that graze it,
+villagers in its villages and hostile mobs where it is dark. The game has a first-person player
+with Minecraft's sizes and speeds, building and breaking with an outline on the block looked at, in
+creative mode or in survival with health and hunger, an inventory, tools and crafting, Minecraft's
+light levels with smooth lighting and shaded corners, a sky whose sun crosses it under drifting
+clouds, and an ImGui window of the light's settings.
 
 ![The hills of seed 1 from above, a forest of oak and birch under blocky clouds](.github/assets/hills.webp)
 

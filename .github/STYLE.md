@@ -157,12 +157,23 @@ Prose uses the technical and generic term for a thing, the engine's own where it
 figure of speech or casual paraphrase in its place. A paraphrase reads as an explanation the first
 time and as a mannerism after, and a reader who knows the term translates it back each time.
 
+A likeness is not a description and a figure of speech is not a term, so a thing is said by what it
+is and does. Another product is named only where a rule or a number is taken from it, as the
+player's sizes and speeds and the light levels are taken from Minecraft. A description holds no
+plan, so no line says what a thing is the start of or grows toward.
+
 | instead of | write |
 |---|---|
 | `the light that bounces`, `the bounce` | `global illumination`, or `radiance cascades` where the technique is meant and `indirect light` where its effect is |
 | `a block that gives off light`, `a glowing block` | `an emissive block` |
 | `drives the running game`, `driving a session` | `controls the running game through the command line`, `scripting a session` |
 | `a drive of the game` | `a scripted run of the game` |
+| `A voxel game in the manner of Minecraft, and the ground floor of a larger one` | `A voxel game set in an endless generated world whose blocks are placed and broken, with its light, its water, its mobs and the items they drop` |
+
+The idioms in the manner of, the ground floor of, out of the box, under the hood, at a glance, a
+handful of, a great deal of, in the wild, the plumbing and a long way are replaced in the same way,
+each by the term or the number it stands for. A word in its literal sense stays, as by hand does for
+work done without a tool or a program.
 
 A name of the engine's API keeps its spelling, such as `DrawBounceWindow` and
 `ModelMaterial.BouncesLight`, and so does a name from Minecraft, such as glowstone. An identifier of
@@ -244,6 +255,10 @@ awk 'FNR == 1 { code = 0 } /^ *```/ { code = !code; next } !code && /[a-z)`]: /'
 # The casual paraphrases the register replaces. Names of the engine's API and Minecraft's glowstone
 # are left, so each hit is read.
 git grep -n -i -E "light that bounces|the bounce|bounc(e|es|ing) (no )?light|give[sn]? off|gave off|light-giving|glowing|\bdriv(e|en|es|ing)\b" -- ':!.github/REVIEW.md'
+
+# The likenesses and idioms the register replaces. A word in its literal sense is left, so each hit
+# is read.
+git grep -n -i -E "in the manner of|ground floor|out of the box|under the hood|at a glance|a handful of|a great deal of|in the wild|plumbing|a long way" -- ':!.github/REVIEW.md'
 
 # Padded section banners.
 grep -rn "// -- .*--" --include=*.cs --include=*.slang .

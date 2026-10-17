@@ -5,7 +5,29 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `105bdd1`, item 3's mend over `e0f4e66`, item 2, and nothing else. At `e0f4e66` the
+Reviewed up to `b87e386`, item 4 done and nothing else, 58 files. STYLE.md has a Register section
+with the rule and the owner's pairs, the engine's API names and Minecraft's glowstone keeping their
+spelling and a game identifier its name unless the thing is new and the rename cheap, and its colon
+rule reads that a running sentence holds no colon, one standing at the end of a sentence before a
+bulleted list, a code block or a command and after a label in a table, its own text recast to it and
+its table given the README-opener and exit-code cases; its colon check reads comments in C#, Slang,
+shell and YAML and, with awk outside the code fences, the prose of the five Markdown files, and a
+`git grep` for the pairs stands beside it. The sweep took the README, AGENTS.md, E3D.md and
+COMMITS.md, every C# and Slang comment, the scripts and the workflows, and the printed strings, the
+`voxel.gi` and `voxel.light` descriptions and answers, the settings window's labels and the save
+warnings among them; `build/drive.sh` is `build/play.sh` with `build.yml`, `.gitignore`, AGENTS.md
+and the README following, and the identifiers `Glows`, `Glow`, `GlowScale` and `BounceWindow` stay
+as the rule allows. Read: the rewrites say the same thing in the rule's register, none loses a fact.
+Checked on the working machine: the strict build, the 102 tests, `build/play.sh` on the GPU in 17
+seconds with the player walked 2.8 blocks and no validation error, and the pairs found by `git grep`
+only where the rule and its checks name them. Right. Two things of the engine's found here go to its
+item 29, the title of its global-illumination window and a colon in its API logger's warnings. The
+owner pushed it at 15:17 and its build run was whole green; the repository stands whole, every item
+done and proven. At 20:34 on 2026-10-17 the owner read the README's opening and asked that no
+likeness or figure of speech stand, item 5 under Decision 5, the one thing pending; the build and
+the pack run are green.
+
+Before it, `105bdd1` came, item 3's mend over `e0f4e66`, item 2, and nothing else. At `e0f4e66` the
 namespace is `VoxelSandbox` and the tests' `VoxelSandbox.Tests`, 27 files taking `using Engine;` as
 the compiler named them, `GameCommands.cs` qualifying `Furnaces` and `Furnace`, `GenerationTests.cs`
 naming `VoxelSandbox.Blocks` beside its method of that name, the window "Voxel Sandbox", saves under
@@ -130,23 +152,35 @@ mend. Next item 2, the names, then item 3's mend, then the owner's push and the 
    read back, as the check that fails without it. What else the publish refuses or the program lacks
    is written here as a verdict.
 
-4. **The register: STYLE.md's rule and the sweep (Decision 5).** STYLE.md gains a section, Register:
-   prose uses the technical and generic term, the engine's own where it has one, and no figure of
-   speech or casual paraphrase, with the pairs the owner named and their replacements: the light
-   that bounces becomes global illumination, radiance cascades where the technique is meant and
-   indirect light where the effect is; gives off light and glowing become emissive; driving the game
-   becomes controlling or scripting it through the command line, and a drive a scripted run. The
-   colon joins it: STYLE.md's rule, which allows a colon before a list, tightens so that a running
-   sentence holds none, the sentence recast or split where one appended an elaboration or a list, as
-   in "makes the program the README opens with: a window with a turning cube"; a colon stands before
-   a bulleted list, a code block or a command, and as a label in a table, and STYLE.md's check of
-   colons joining clauses reads prose lines of Markdown as well as comments. The sweep covers
-   README.md, AGENTS.md, every Markdown under `.github`, the comments of the code and the scripts,
-   and the sentences the game prints, its commands' answers among them; 19 files hold the first pair
-   52 times, and a rough count finds a colon inside a sentence on some 30 prose lines of the
-   documents. `build/drive.sh` becomes `build/play.sh`, new and cheap to rename, with `build.yml`,
-   AGENTS.md and the README following. Checked by the strict build, the tests, `build/play.sh` and
-   `git grep -i` for the pairs finding this file's history alone. One commit.
+4. **The register: STYLE.md's rule and the sweep (Decision 5), done at `b87e386`.** STYLE.md gains a
+   section, Register: prose uses the technical and generic term, the engine's own where it has one,
+   and no figure of speech or casual paraphrase, with the pairs the owner named and their
+   replacements: the light that bounces becomes global illumination, radiance cascades where the
+   technique is meant and indirect light where the effect is; gives off light and glowing become
+   emissive; driving the game becomes controlling or scripting it through the command line, and a
+   drive a scripted run. The colon joins it: STYLE.md's rule, which allows a colon before a list,
+   tightens so that a running sentence holds none, the sentence recast or split where one appended
+   an elaboration or a list, as in "makes the program the README opens with: a window with a turning
+   cube"; a colon stands before a bulleted list, a code block or a command, and as a label in a
+   table, and STYLE.md's check of colons joining clauses reads prose lines of Markdown as well as
+   comments. The sweep covers README.md, AGENTS.md, every Markdown under `.github`, the comments of
+   the code and the scripts, and the sentences the game prints, its commands' answers among them; 19
+   files hold the first pair 52 times, and a rough count finds a colon inside a sentence on some 30
+   prose lines of the documents. `build/drive.sh` becomes `build/play.sh`, new and cheap to rename,
+   with `build.yml`, AGENTS.md and the README following. Checked by the strict build, the tests,
+   `build/play.sh` and `git grep -i` for the pairs finding this file's history alone. One commit.
+
+5. **The register widens to likenesses and figures of speech (Decision 5), README.md:3 and
+   AGENTS.md:3 and 5.** The README opens with "A voxel game in the manner of Minecraft, and the
+   ground floor of a larger one", and AGENTS.md's paragraph with the same likeness and with what the
+   game grows toward; the owner read the opening on 2026-10-17 at 20:34 and asked that no phrasing
+   of the kind stand. The game is said by what it is, an endless generated voxel world whose blocks
+   are placed and broken, with its light, its water, its mobs and the items they drop, the other
+   game named only where a number or a rule is taken from it, as the README's later lines do with
+   its sizes, speeds and light levels, and no line says what the game is the start of; AGENTS.md
+   changes on this word of the owner's (N 7.4); STYLE.md's Register section takes the rule with this
+   pair; and `git grep -i` for the idioms Decision 5 names finds nothing, by hand in its technical
+   sense apart. Checked by review. One commit.
 
 ## Verdicts
 
@@ -189,8 +223,14 @@ No verdict is open.
    rule tightens so that a running sentence holds no colon. STYLE.md carries both rules with these
    pairs, as the engines' do (3DEngine's Decision 43), every document, comment and message a reader
    sees is swept (item 4), and a new name follows the rule, `build/play.sh` where `build/drive.sh`
-   was.
+   was. On 2026-10-17 at 20:34 the owner read the README's opening, "A voxel game in the manner of
+   Minecraft, and the ground floor of a larger one", and asked that no phrasing of the kind stand
+   either. A likeness is not a description and a figure of speech is not a term, so a thing is said
+   by what it is and does, another product is named only where a rule or a number is taken from it,
+   as the sizes, speeds and light levels are, and a plan is not written into a description; item 5,
+   and the engines' items 29 and 25 under their Decisions 43 and 37.
 
 ## Replies
+
 
 

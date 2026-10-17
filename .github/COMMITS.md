@@ -22,7 +22,7 @@ whole tree, so a hit is in the work being committed and is fixed before it goes 
 
 ```bash
 # The added lines alone, read rather than counted, since arithmetic matches the spaced hyphen.
-git diff --cached | grep '^+' | grep -niE '[—–]| - |\b(is|are|was|were) what\b|which is what|\bwants?\b|\bjust\b|\bsimply\b|!$|light that bounces|give[sn]? off|glowing|\bdriv(e|en|es|ing)\b'
+git diff --cached | grep '^+' | grep -niE '[—–]| - |\b(is|are|was|were) what\b|which is what|\bwants?\b|\bjust\b|\bsimply\b|!$|light that bounces|give[sn]? off|glowing|\bdriv(e|en|es|ing)\b|in the manner of|ground floor|out of the box|under the hood|at a glance|a handful of|a great deal of|in the wild|plumbing|a long way'
 ```
 
 The grep finds the mechanical faults. The rest of STYLE.md (colons inside a sentence, the register,

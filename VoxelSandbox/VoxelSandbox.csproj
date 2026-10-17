@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <!-- A voxel game in the manner of Minecraft, built on the engine's package as any game is. -->
+    <!-- A voxel game, built on the engine's package as any game is. -->
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <IsPackable>false</IsPackable>

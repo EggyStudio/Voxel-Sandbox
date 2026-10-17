@@ -55,7 +55,7 @@ rm -rf "$out"/*.pdb "$out"/*.dbg "$out"/*.xml "$out"/*.dSYM
 cp README.md LICENSE "$out/"
 
 # Zipped by Python's own module, which each system the script runs on has, where zip is missing on
-# Windows. There it is python, since python3 may be the store's stand-in for one.
+# Windows. There it is python, since python3 may be the alias that opens the Microsoft Store.
 case "$(uname -s)" in
   MINGW* | MSYS* | CYGWIN*) python=python ;;
   *) python=python3 ;;

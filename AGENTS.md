@@ -1,11 +1,11 @@
 # Voxel Sandbox
 
-A voxel game in the manner of Minecraft, in C# on .NET 10, built on the 3DEngine package from
-nuget.org at the version `VoxelSandbox/VoxelSandbox.csproj` names. Its first use is to test the
-engine's global illumination with emissive blocks, and it grows toward Minecraft's structures, mobs
-and survival from there. The engine is used through its package alone, its flat API of static calls
-drawing each frame, and what the game finds the engine lacks is asked of the engine, never mended in
-a copy of its code here.
+A voxel game in C# on .NET 10, set in an endless generated world whose blocks are placed and
+broken, with its light, its water, its mobs and the items they drop. It is built on the 3DEngine
+package from nuget.org at the version `VoxelSandbox/VoxelSandbox.csproj` names, and its first use is
+to test the engine's global illumination with emissive blocks. The engine is used through its
+package alone, its flat API of static calls drawing each frame, and what the game finds the engine
+lacks is asked of the engine, never mended in a copy of its code here.
 
 ## Controlling the game with `./e3d`
 
