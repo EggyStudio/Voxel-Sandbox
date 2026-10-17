@@ -7,7 +7,7 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// An ImGui window of what the frame holds and costs, and of the light, the sky and the world to
-/// change while playing, with the engine's own window of the light that bounces beside it.
+/// change while playing, with the engine's own window of global illumination beside it.
 /// </summary>
 public sealed class SettingsWindow
 {
@@ -82,7 +82,7 @@ public sealed class SettingsWindow
     {
         var light = game.Light;
         var quality = (int)light.Quality;
-        if (ImGui.Combo("Light that bounces", ref quality, Qualities, Qualities.Length))
+        if (ImGui.Combo("Global illumination", ref quality, Qualities, Qualities.Length))
         {
             light.Quality = (GlobalIllumination)quality;
             SetGlobalIllumination(light.Quality);
@@ -110,7 +110,7 @@ public sealed class SettingsWindow
         }
 
         var glow = game.Renderer.GlowScale;
-        if (ImGui.SliderFloat("Glow", ref glow, 0, 4)) game.Renderer.GlowScale = glow;
+        if (ImGui.SliderFloat("Emission", ref glow, 0, 4)) game.Renderer.GlowScale = glow;
         // Read back from the engine, so these show what the window of the effects over the frame set.
         (light.Bloom, light.AutoExposure) = (GetBloom().Intensity, GetAutoExposure().Enabled);
         if (!light.AutoExposure) light.Exposure = GetExposure();
@@ -121,7 +121,7 @@ public sealed class SettingsWindow
         if (exposure) light.ApplyExposure();
 
         var bounce = BounceWindow;
-        if (ImGui.Checkbox("The bounce's window", ref bounce)) BounceWindow = bounce;
+        if (ImGui.Checkbox("Global illumination window", ref bounce)) BounceWindow = bounce;
         ImGui.SameLine();
         var profile = ProfileWindow;
         if (ImGui.Checkbox("The frame profile", ref profile)) ProfileWindow = profile;

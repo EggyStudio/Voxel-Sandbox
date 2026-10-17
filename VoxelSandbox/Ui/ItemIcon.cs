@@ -9,7 +9,7 @@ namespace VoxelSandbox;
 /// </summary>
 public static class ItemIcon
 {
-    /// <summary>A stroke of an icon: from one point to another, its width as a share of the slot, and its color.</summary>
+    /// <summary>A stroke of an icon, from one point to another, with its width as a share of the slot and its color.</summary>
     public readonly record struct Stroke(Vector2 From, Vector2 To, float Width, Color Color);
 
     private static readonly Color Handle = new(104, 76, 44);

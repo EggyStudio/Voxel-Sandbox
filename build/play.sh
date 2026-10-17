@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Plays the game through ./e3d, offscreen and under the validation layer, as the build workflow's
-# play job does on lavapipe. On a flat world with nothing kept on disk it builds a closed room of
-# stone with a glowstone block in it, puts the player in the room facing the lamp at night, walks
-# toward it and captures the frame. It fails where the game does not open or answer, the player did
-# not move, or the layer reported an error, and says why in an error annotation, so the run's page
-# names it.
+# A scripted run of the game through ./e3d, offscreen and under the validation layer, as the build
+# workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it builds a
+# closed room of stone with a glowstone block in it, puts the player in the room facing the lamp at
+# night, walks toward it and captures the frame. It fails where the game does not open or answer,
+# the player did not move, or the layer reported an error, and says why in an error annotation, so
+# the run's page names it.
 #
-#   build/drive.sh
+#   build/play.sh
 #
 # The game is the Debug build that `dotnet build VoxelSandbox.slnx` makes. ./e3d runs out of the
 # engine checkout ENGINE_CHECKOUT names, or the folder above this one, and keeps the session's log
@@ -45,10 +45,10 @@ feet() { printf '%s\n' "$1" | sed -nE 's/^feet at (-?[0-9.]+), (-?[0-9.]+), (-?[
 
 [ -f "$program" ] || [ -f "$program.exe" ] || fail "$program is not built, which dotnet build VoxelSandbox.slnx does"
 
-# The answer goes to a file and is read from there, as the engine's build/drive-game.sh reads it,
-# since on Windows the game is started holding every handle e3d holds, and $(...) would wait on
-# that pipe until the game ends. The log it names is read with perl, which every system the script
-# may run on has.
+# The answer goes to a file and is read from there, as the engine's scripts of its games read
+# theirs, since on Windows the game is started holding every handle e3d holds, and $(...) would wait
+# on that pipe until the game ends. The log it names is read with perl, which every system the
+# script may run on has.
 if ! ENGINE_VULKAN_VALIDATION=1 ./e3d open "$program" --offscreen --transient --flat --json > "$opened"; then
   answer=$(perl -MJSON::PP -0777 -ne '
     my $answer = eval { decode_json($_) } or do { s/\s+/ /g; print length ? "an answer that is not JSON, $_" : "nothing"; exit };

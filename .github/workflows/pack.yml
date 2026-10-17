@@ -3,11 +3,10 @@
 # game as native code for Linux, Windows and macOS on Apple silicon, each zipped with the cache, its
 # resources, the README and the license (build/publish.sh), the Linux zip's program run on lavapipe
 # with no slangc, saving a world and opening it again. With publish set it then makes a GitHub
-# release of the three zips. Nothing is
-# published unless the build passes, and the zips are kept as the run's artifacts either way, so a
-# build can be played before one is released.
+# release of the three zips. Nothing is published unless the build passes, and the zips are kept as
+# the run's artifacts either way, so a build can be played before one is released.
 #
-# The version is build/version.sh's: the major and minor in build/version.txt, and as the patch the
+# The version is build/version.sh's, the major and minor in build/version.txt and as the patch the
 # commits since that file last changed.
 name: pack
 
@@ -36,7 +35,7 @@ jobs:
   # shader's source, its defines and the files it imports, the same text on every system
   # (.gitattributes). A run of the game would fill only the builds its device and its frames load,
   # so every build of every shader is compiled instead, the device with ray queries and the frame
-  # with the light that bounces turned off among them.
+  # with global illumination turned off among them.
   shaders:
     runs-on: ubuntu-24.04
     # build/shaders.sh took 75 seconds on a desktop and the engine's command line builds in a

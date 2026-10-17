@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <!-- The voxel game's logic held without a window or a GPU: its light, its meshes, the player's
+    <!-- The voxel game's logic held without a window or a GPU, its light, its meshes, the player's
          body, its saves and its generation, each laid out in a small world of its own. The engine's
          package comes through the game's project. -->
     <PropertyGroup>

@@ -8,29 +8,29 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// Keeps a mesh for each section, meshes sections again as the world changes, and draws those
-/// within the render distance with the blocks that give off light.
+/// within the render distance with the emissive blocks.
 /// </summary>
 /// <remarks>
 /// <para>
-/// A section is one mesh in one white material, each vertex its position and eight packed bytes
-/// the terrain shader unpacks into its normal, texture coordinate and color (SectionMesher.Pack),
+/// A section is one mesh in one white material, each vertex its position and eight packed bytes the
+/// terrain shader unpacks into its normal, texture coordinate and color (SectionMesher.Pack),
 /// twenty bytes a vertex on the GPU. The colors also go with the upload for the scene's distance
-/// field, which reads them as the model pass reads the packed bytes, so the light that bounces takes
-/// each block's color from the mesh it shares with its neighbors. A section meshed again with the
-/// same faces keeps its mesh and takes new packed bytes and new colors in place, which keep its
+/// field, which reads them as the model pass reads the packed bytes, so indirect light takes each
+/// block's color from the mesh it shares with its neighbors. A section meshed again with the same
+/// faces keeps its mesh and takes new packed bytes and new colors in place, which keep its
 /// positions, the field knowing a mesh by those, so a change of light leaves the section settled in
 /// the field, which paints the section's cells in their new colors in the frame after, as the
 /// ray-traced scene does its corners.
 /// </para>
 /// <para>
-/// A material's light is one for its whole draw, so a block that gives off light is a cube drawn
-/// on its own, and the flame of a torch or the glass of a lantern a cube scaled to it, copies of one
-/// mesh in one instanced draw for each surface. Sections are drawn by distance and by what the eye
-/// can see through open cells, and not culled to the view's frustum, since a mesh left out of a
-/// frame leaves the field and the light it gave or blocked goes with it until it settles again.
-/// Every section within the render distance that the eye can see is drawn each frame, through the
-/// field's gather and each pass's culling, so the render distance sets much of the frame's cost,
-/// which <see cref="Draws"/> counts.
+/// A material's emission is one for its whole draw, so an emissive block is a cube drawn on its
+/// own, and the flame of a torch or the glass of a lantern a cube scaled to it, copies of one mesh
+/// in one instanced draw for each surface. Sections are drawn by distance and by what the eye can
+/// see through open cells, and not culled to the view's frustum, since a mesh left out of a frame
+/// leaves the field and the light it gave or blocked goes with it until it settles again. Every
+/// section within the render distance that the eye can see is drawn each frame, through the field's
+/// gather and each pass's culling, so the render distance sets much of the frame's cost, which
+/// <see cref="Draws"/> counts.
 /// </para>
 /// </remarks>
 public sealed class ChunkRenderer : IDisposable
@@ -51,8 +51,8 @@ public sealed class ChunkRenderer : IDisposable
             var packed = CollectionsMarshal.AsSpan(faces.Packed);
             if (positions.SequenceEqual(Positions) && indices.SequenceEqual(Indices))
             {
-                // A relight writes the packed bytes, eight a vertex, and the colors the light that
-                // bounces reads, the positions kept.
+                // A relight writes the packed bytes, eight a vertex, and the colors global
+                // illumination reads, the positions kept.
                 if (packed.SequenceEqual(Packed)) return;
                 UpdateMeshBuffer<uint>(Mesh, MeshStreamBuffer, packed, 0);
                 UpdateMeshBuffer<Color>(Mesh, 3, CollectionsMarshal.AsSpan(faces.Colors), 0);
@@ -82,11 +82,11 @@ public sealed class ChunkRenderer : IDisposable
         public readonly List<(int Surface, Matrix4x4 At)> Emitters = [];
     }
 
-    // Every section's opaque faces are drawn with the first, their colors in their vertices, and its
-    // see-through faces with the second, each vertex's alpha its surface's. An alpha under 255 makes
-    // the draw blend, which the vertices' alpha alone does not. The see-through faces cast no
+    // Every section's opaque faces are drawn with the first, their colors in their vertices, and
+    // its see-through faces with the second, each vertex's alpha its surface's. An alpha under 255
+    // makes the draw blend, which the vertices' alpha alone does not. The see-through faces cast no
     // shadow, which keeps them out of the scene's distance field too, since the field holds a
-    // see-through mesh as solid and a window of glass would then shut out the light that bounces in
+    // see-through mesh as solid and a window of glass would then shut out the indirect light
     // through it. Both are drawn through the game's terrain shader, the engine's light with a haze.
     private readonly ModelMaterial _terrain, _clear;
     private readonly Shader _shader;

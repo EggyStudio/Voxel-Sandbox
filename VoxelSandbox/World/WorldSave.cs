@@ -29,9 +29,9 @@ public sealed record WorldInfo(string Kind, int Seed, float X, float Y, float Z,
 internal sealed partial class SaveJson : JsonSerializerContext;
 
 /// <summary>
-/// A world's folder on disk: the columns changed from what the generator makes, in region files of
-/// 32 by 32 columns, the mobs of every column that has had its mobs placed, the furnaces, and the
-/// world's <see cref="WorldInfo"/>.
+/// A world's folder on disk, which holds the columns changed from what the generator makes, in
+/// region files of 32 by 32 columns, the mobs of every column that has had its mobs placed, the
+/// furnaces, and the world's <see cref="WorldInfo"/>.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -105,7 +105,7 @@ public sealed class WorldSave
         catch (Exception ex) when (ex is IOException or InvalidDataException or EndOfStreamException)
         {
             // The region's columns are made again by the generator rather than the world not loading.
-            TraceLog(LogLevel.Warning, $"The region {path} could not be read, so its columns are generated again: {ex.Message}");
+            TraceLog(LogLevel.Warning, $"The region {path} could not be read, so its columns are generated again. {ex.Message}");
         }
     }
 
@@ -180,7 +180,7 @@ public sealed class WorldSave
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world begins as a new one of its name: {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world begins as a new one of its name. {ex.Message}");
             return null;
         }
     }
@@ -237,7 +237,7 @@ public sealed class WorldSave
         catch (Exception ex) when (ex is IOException or InvalidDataException or EndOfStreamException)
         {
             // The columns' mobs are placed again by their generator rather than the world not loading.
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the columns' mobs are placed again: {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the columns' mobs are placed again. {ex.Message}");
             kept.Clear();
             placed.Clear();
         }
@@ -283,7 +283,7 @@ public sealed class WorldSave
         File.Move(path + ".new", path, overwrite: true);
     }
 
-    /// <summary>A furnace as a save keeps it: its place, its three slots as <see cref="Inventory.Encode"/> gives them, and its fire and smelting.</summary>
+    /// <summary>A furnace as a save keeps it, with its place, its three slots as <see cref="Inventory.Encode"/> gives them, and its fire and smelting.</summary>
     public sealed record FurnaceRecord(int X, int Y, int Z, string[] Slots, float Burning, float BurnTotal, float Cooked);
 
     /// <summary>The world's furnaces, read from its <c>furnaces.json</c>, none for a folder never saved into.</summary>
@@ -303,7 +303,7 @@ public sealed class WorldSave
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's furnaces begin empty: {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's furnaces begin empty. {ex.Message}");
         }
         return furnaces;
     }

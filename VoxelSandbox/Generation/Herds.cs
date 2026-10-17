@@ -3,7 +3,7 @@ using System.Numerics;
 namespace VoxelSandbox;
 
 /// <summary>
-/// The animals a column is generated with: in a tenth of the columns a herd of two to four of one
+/// The animals a column is generated with, in a tenth of the columns a herd of two to four of one
 /// kind its biome holds, standing on its ground, as Minecraft places a group of animals as it
 /// generates a chunk.
 /// </summary>

@@ -129,7 +129,7 @@ public static class GameCommands
         return $"{changed} of {volume} blocks changed";
     }
 
-    [Command("voxel.light", "The sky's and the light-giving blocks' light levels from 0 to 15 at a place: voxel.light <x> <y> <z>")]
+    [Command("voxel.light", "The sky's and the emissive blocks' light levels from 0 to 15 at a place: voxel.light <x> <y> <z>")]
     internal static string Light(int x, int y, int z)
     {
         if (Game is not { } game) return "no world is loaded";
@@ -357,14 +357,14 @@ public static class GameCommands
         return on ? "the sections the eye cannot see are left undrawn" : "every section within the render distance is drawn";
     }
 
-    [Command("voxel.gi", "Sets the light that bounces to a quality, off, low, medium or high: voxel.gi <quality>")]
+    [Command("voxel.gi", "Sets global illumination to a quality, off, low, medium or high: voxel.gi <quality>")]
     internal static string Gi(string quality)
     {
         if (Game is not { } game) return "no world is loaded";
         if (!Enum.TryParse<GlobalIllumination>(quality, ignoreCase: true, out var chosen)) return $"no quality is called {quality}, which is off, low, medium or high";
         game.Light.Quality = chosen;
         SetGlobalIllumination(chosen);
-        return $"the light that bounces is at {chosen}";
+        return $"global illumination is at {chosen}";
     }
 
     [Command("voxel.field", "Sets the scene's distance field's cascades from 1 to 8, the finest's cell in blocks and the cascades built again a frame: voxel.field <cascades> <cell> <budget>")]
@@ -449,5 +449,5 @@ public static class GameCommands
     }
 
     [Command("voxel.blocks", "Every block's number and name, which voxel.set, voxel.fill and voxel.select take")]
-    internal static string List() => string.Join(", ", Blocks.All.Select(b => $"{(int)b.Id} {b.Key}{(b.Emits ? " (gives off light)" : "")}"));
+    internal static string List() => string.Join(", ", Blocks.All.Select(b => $"{(int)b.Id} {b.Key}{(b.Emits ? " (emissive)" : "")}"));
 }

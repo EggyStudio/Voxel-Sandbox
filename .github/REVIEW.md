@@ -5,7 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `c08d259`, item 1 done and nothing else: the old game's files gone and the game's 61
+Reviewed up to `105bdd1`, item 3's mend over `e0f4e66`, item 2, and nothing else. At `e0f4e66` the
+namespace is `VoxelSandbox` and the tests' `VoxelSandbox.Tests`, 27 files taking `using Engine;` as
+the compiler named them, `GameCommands.cs` qualifying `Furnaces` and `Furnace`, `GenerationTests.cs`
+naming `VoxelSandbox.Blocks` beside its method of that name, the window "Voxel Sandbox", saves under
+`VoxelSandbox/saves` with the README naming the folder the engine's builds saved in, and the tests'
+temporary folders renamed; nothing else moved. At `105bdd1` `WorldSave.cs` reads and writes
+`WorldInfo` and `FurnaceRecord[]` through `SaveJson`, a `JsonSerializerContext` the generator fills,
+indented as before so an older save reads the same, which `ItemTests` holds; `WorldSave.Root` asks
+for the local application data folder with `SpecialFolderOption.Create`, since on an account where
+it does not exist the path is empty and the saves fell under the working folder, where the program's
+own file stood in their way; and `build/publish.sh` fails the publish on a trim or AOT warning at a
+line of the game's own code and runs the Linux zip's program twice with its data folder in a
+temporary one, a flat world saved on quitting and asked for again by its name, which opens flat only
+where the save was read back. Each fix was proven needed on the working machine: the first run dying
+at `CreateDirectory`, then at reflection-based serialization disabled, then passing with the publish
+warning of AssimpNetter alone. Checked besides: the strict build, the 102 tests, `./e3d status`
+naming the game, `build/drive.sh`. Right. The owner pushed `c08d259` and `e0f4e66` at 13:37, before
+`105bdd1` was committed, and the first build run was whole green at 13:42: the tests on Linux in
+half a minute, on macOS in one and on Windows in one and a half, and the play job in three and a
+half, the game played on lavapipe through the engine's command line built from its checkout.
+`105bdd1` was pushed at 13:53 and its build run was whole green as well; the pack run on it, started
+at 14:29, was whole green in nine minutes, the shaders compiled in two, the tests and the play as
+before, and the three publishes in one to two minutes each, the zips `VoxelSandbox-0.1.2` for
+linux-x64, win-x64 and osx-arm64 at 13 to 17 MB kept as its artifacts, the Linux one's program
+having saved a world and opened it again with no `slangc`; item 3 is done. The repository stands
+whole; item 4, the register, is the work left.
+
+Before it, `c08d259` came, item 1 done and nothing else: the old game's files gone and the game's 61
 files and its tests' 16 in as the engine's `fc5fdc97` held them, byte for byte, with the two project
 files and the README the only files written anew, the game on `PackageReference 3DEngine 5.2.43`
 with its generator from the package, the tests referencing the game, `Directory.Build.props` with
@@ -19,7 +46,7 @@ with the engine checked out at `fc5fdc97`, `pack.yml` calling it, compiling the 
 three zips and releasing when asked. Three things differ from item 1 and are better: the shaders job
 runs `build/shaders.sh`, which compiles every build of every shader from one folder with `./e3d
 shaders`, where a run of the game on lavapipe compiled one of the terrain's five in two minutes and
-26 of CPU, so a device with ray queries or the light that bounces off would have found its build
+26 of CPU, so a device with ray queries or global illumination off would have found its build
 missing from a zip; the build workflow's concurrency group takes `pack-` on a `workflow_dispatch`
 event, as the engine's takes it from its input; and the paths filter leaves out BUILDING.md, which
 the game has not. Checked on the working machine: the strict build from an empty package folder, the
@@ -32,15 +59,6 @@ frames with no `slangc`. Right. Found ahead of item 3: the native publish warns 
 the native program saving a world ended at 32 seconds with reflection-based serialization disabled,
 so a player's build ends at its first save where a `--transient` run saves nothing; item 3 says the
 mend. Next item 2, the names, then item 3's mend, then the owner's push and the first two runs.
-
-Before it, `187c67c` came, the last commit of the old game, a Direct3D 12 voxel sandbox on the 3.1.0
-package with its assets in HLSL, kept on the `legacy` branch and in this history. On 2026-10-17 the
-owner ordered the voxel game written in the engine's repository since 2026-10-10, `3DEngine.Game`
-with its 97 tests, moved here in place of the old game, on the engine's published package 5.2.43,
-committed the same way as the engines with the same `AGENTS.md`, `.github` files and two workflows
-(the engine's Decision 41). Nothing of the move is committed yet; items 1 to 3 are the move, in
-order. The engine's inbox for what the game finds the engine lacks stays the engine's
-`.github/ASKS.md`, which this repository's session writes as before (Decision 4).
 
 ## Now
 
@@ -55,11 +73,11 @@ order. The engine's inbox for what the game finds the engine lacks stays the eng
    VoxelSandbox`, `./e3d open VoxelSandbox/bin/Debug/net10.0/VoxelSandbox --hidden --transient`,
    `dotnet test VoxelSandbox.Tests`, building with `build/fetch-slang.sh`, shipped builds, the
    `legacy` branch), `LICENSE` (MIT, the year updated, Decision 2), `AGENTS.md` adapted from the
-   engine's (one paragraph; driving with `./e3d`; the documents table with STYLE, COMMITS, E3D,
-   REVIEW, NORM and the engine's ASKS.md by path; building and testing; "Where things are" with a
-   row a folder; the conventions less SHARED.md and CHEATSHEET.md; the engine used through its
-   package alone, what it lacks written in ASKS.md), `.github/STYLE.md`, `COMMITS.md` (less the
-   `PublicApi.txt` paragraph), `E3D.md` (the game's binary in the first block),
+   engine's (one paragraph; controlling the game with `./e3d`; the documents table with STYLE,
+   COMMITS, E3D, REVIEW, NORM and the engine's ASKS.md by path; building and testing; "Where things
+   are" with a row a folder; the conventions less SHARED.md and CHEATSHEET.md; the engine used
+   through its package alone, what it lacks written in ASKS.md), `.github/STYLE.md`, `COMMITS.md`
+   (less the `PublicApi.txt` paragraph), `E3D.md` (the game's binary in the first block),
    `CODE_OF_CONDUCT.md`, one capture under `.github/assets/`, `build/` with `fetch-slang.sh`,
    `fetch-slang.ps1`, `version.sh`, `version.txt` (`0.1`), `drive.sh` and `publish.sh`, the `e3d`
    wrapper (`exec "${ENGINE_CHECKOUT:-$root/..}/e3d" "$@"`, Decision 3) and the two workflows.
@@ -91,25 +109,44 @@ order. The engine's inbox for what the game finds the engine lacks stays the eng
    test VoxelSandbox.Tests` saying 97 passed, `./e3d open ... --offscreen --transient` answering
    `voxel.state`, and `build/drive.sh` passing here.
 
-2. **The names, one commit after item 1.** The namespace `Engine.Game` becomes `VoxelSandbox` and
-   `Engine.Game.Tests` becomes `VoxelSandbox.Tests` (57 files relied on the parent namespace for
-   `Engine` and get `using Engine;`; `GameCommands.cs` lines 241, 246 and 251 qualify `Furnaces` and
-   `Furnace`); the window title "3DEngine.Game" becomes "Voxel Sandbox"; the save root under the
-   local application data becomes `VoxelSandbox`, the README saying where saves were. The 43
-   `voxel.*` commands, `Measurements.cs` and the flags `--flat`, `--seed`, `--world` and
-   `--transient` stay. Checked by the strict build and the 97 tests.
+2. **The names, one commit after item 1, done at `e0f4e66`.** The namespace `Engine.Game` becomes
+   `VoxelSandbox` and `Engine.Game.Tests` becomes `VoxelSandbox.Tests` (57 files relied on the
+   parent namespace for `Engine` and get `using Engine;`; `GameCommands.cs` lines 241, 246 and 251
+   qualify `Furnaces` and `Furnace`); the window title "3DEngine.Game" becomes "Voxel Sandbox"; the
+   save root under the local application data becomes `VoxelSandbox`, the README saying where saves
+   were. The 43 `voxel.*` commands, `Measurements.cs` and the flags `--flat`, `--seed`, `--world`
+   and `--transient` stay. Checked by the strict build and the 97 tests.
 
-3. **The first pack run's proof.** A native publish of this game has not been tried where Slide's
-   and Courtyard's have; no reflection was found in it and its commands register through the
-   generator, so none is expected, and the first pack run is the proof: three zips, the Linux one
-   unzipped on a machine without `slangc` and run, its log naming no compiler and its terrain not
-   the magenta fallback. One thing is known before it: the native program cannot save a world, since
-   `WorldSave.cs` serializes through `System.Text.Json`'s reflection, which native code disables,
-   and the publish warns IL2026 and IL3050 at its lines 160, 174, 280 and 298. Mended in a commit
-   after item 2 with a source-generated `JsonSerializerContext` for the save's types, or a
-   serializer the native build keeps, and `build/publish.sh`'s run of the zip's program saving a
-   world into a folder of its own, read back, as the check that fails without it. What else the
-   publish refuses or the program lacks is written here as a verdict.
+3. **The first pack run's proof, its known failure mended at `105bdd1`; done on the pack run of
+   2026-10-17.** A native publish of this game has not been tried where Slide's and Courtyard's
+   have; no reflection was found in it and its commands register through the generator, so none is
+   expected, and the first pack run is the proof: three zips, the Linux one unzipped on a machine
+   without `slangc` and run, its log naming no compiler and its terrain not the magenta fallback.
+   One thing is known before it: the native program cannot save a world, since `WorldSave.cs`
+   serializes through `System.Text.Json`'s reflection, which native code disables, and the publish
+   warns IL2026 and IL3050 at its lines 160, 174, 280 and 298. Mended in a commit after item 2 with
+   a source-generated `JsonSerializerContext` for the save's types, or a serializer the native build
+   keeps, and `build/publish.sh`'s run of the zip's program saving a world into a folder of its own,
+   read back, as the check that fails without it. What else the publish refuses or the program lacks
+   is written here as a verdict.
+
+4. **The register: STYLE.md's rule and the sweep (Decision 5).** STYLE.md gains a section, Register:
+   prose uses the technical and generic term, the engine's own where it has one, and no figure of
+   speech or casual paraphrase, with the pairs the owner named and their replacements: the light
+   that bounces becomes global illumination, radiance cascades where the technique is meant and
+   indirect light where the effect is; gives off light and glowing become emissive; driving the game
+   becomes controlling or scripting it through the command line, and a drive a scripted run. The
+   colon joins it: STYLE.md's rule, which allows a colon before a list, tightens so that a running
+   sentence holds none, the sentence recast or split where one appended an elaboration or a list, as
+   in "makes the program the README opens with: a window with a turning cube"; a colon stands before
+   a bulleted list, a code block or a command, and as a label in a table, and STYLE.md's check of
+   colons joining clauses reads prose lines of Markdown as well as comments. The sweep covers
+   README.md, AGENTS.md, every Markdown under `.github`, the comments of the code and the scripts,
+   and the sentences the game prints, its commands' answers among them; 19 files hold the first pair
+   52 times, and a rough count finds a colon inside a sentence on some 30 prose lines of the
+   documents. `build/drive.sh` becomes `build/play.sh`, new and cheap to rename, with `build.yml`,
+   AGENTS.md and the README following. Checked by the strict build, the tests, `build/play.sh` and
+   `git grep -i` for the pairs finding this file's history alone. One commit.
 
 ## Verdicts
 
@@ -141,37 +178,19 @@ No verdict is open.
    there, and this repository holds no ASKS.md of its own. The game's tests run here on every push,
    which closes the entry of 2026-10-10 that said they ran nowhere.
 
+5. **Prose is technical and generic.** The owner said on 2026-10-17 that phrasings such as "the
+   light that bounces" and "how to drive the game" read as casual and do not fit. A feature is named
+   by its technical term, the engine's own where it has one, and never by a figure of speech or a
+   paraphrase: global illumination, and radiance cascades for the technique, where the light
+   bounced; emissive where a block gave off light; a running program controlled or scripted through
+   the command line where it was driven, and a scripted run where a drive. The owner added at 14:37
+   that the colon is overused, an elaboration or a list appended to a sentence after one where a
+   sentence would do, in documents, comments and logs alike, which STYLE.md should have covered; its
+   rule tightens so that a running sentence holds no colon. STYLE.md carries both rules with these
+   pairs, as the engines' do (3DEngine's Decision 43), every document, comment and message a reader
+   sees is swept (item 4), and a new name follows the rule, `build/play.sh` where `build/drive.sh`
+   was.
+
 ## Replies
 
-Item 2, the names. The namespace `Engine.Game` is `VoxelSandbox` and `Engine.Game.Tests` is
-`VoxelSandbox.Tests`, `Program.cs` uses `VoxelSandbox`, and `GameCommands.cs` qualifies `Furnaces`
-and `Furnace` with it. 27 files take `using Engine;`, the ones the compiler named as the solution
-was built again until it named none, where the item counted 57. `GenerationTests.cs` named the
-game's `Blocks` as `Game.Blocks` beside a method of the same name, and names it
-`VoxelSandbox.Blocks`. The window is titled "Voxel Sandbox", a world is saved under
-`VoxelSandbox/saves`, which the README says beside the folder the engine's builds saved in, and the
-tests' temporary folders are named `VoxelSandbox.Tests`.
-`dotnet build VoxelSandbox.slnx -warnaserror --no-incremental` built with no warning,
-`dotnet test VoxelSandbox.Tests` passed 102, `./e3d status` named the game "Voxel Sandbox" while it
-answered `voxel.state`, and `build/drive.sh` passed on the desktop's GPU.
 
-Item 2 is `e0f4e66`.
-
-Item 3, the save in native code. `WorldSave.cs` reads and writes `WorldInfo` and `FurnaceRecord[]`
-through `SaveJson`, a `JsonSerializerContext` that System.Text.Json's generator fills, indented as
-before, so a save written before reads the same, which `ItemTests` holds with a `world.json` older
-than the mode and the inventory. `build/publish.sh`'s run on Linux saves a world and opens it again,
-its data folder (`XDG_DATA_HOME`) a temporary one. The first run makes a flat world named `check`
-and saves it on quitting, `world.json` and `furnaces.json` asserted, and the second asks for `check`
-alone and must find it flat, which it is only where the save was read back. The publish also fails
-on a trim or AOT warning at a line of the game's code, as the four of `WorldSave.cs` were, 16 lines
-of the publish's output. Without the mend the first run opened no world. With the data folder not
-yet made, `GetFolderPath(LocalApplicationData)` is empty, so the save root was `VoxelSandbox/saves`
-under the working folder, where the program's own file `VoxelSandbox` stands, and
-`Directory.CreateDirectory` threw. `WorldSave.Root` asks for the folder with
-`SpecialFolderOption.Create`, which a player on a new account needs as well. With that alone the
-first run ended at "Reflection-based serialization has been disabled", and with both it passed, the
-publish warning only of AssimpNetter, the engine's dependency (IL2104 and IL3053). The strict build
-and the 102 tests pass. It ran here as
-`build/publish.sh 0.1.0 linux-x64 -p:CppCompilerAndLinker=gcc` on lavapipe, and the Windows and
-macOS zips and the first pack run stay item 3's proof.

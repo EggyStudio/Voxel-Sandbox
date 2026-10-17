@@ -23,7 +23,7 @@ public sealed class ItemDrop(Item item, int count, Vector3 at, Vector3 velocity,
 }
 
 /// <summary>
-/// The stacks of items lying in the loaded columns: dropped by a block broken in survival, by a mob
+/// The stacks of items lying in the loaded columns, dropped by a block broken in survival, by a mob
 /// as it dies and by the player, picked up when the player comes near, and gone after five minutes,
 /// as Minecraft's are.
 /// </summary>

@@ -4,7 +4,7 @@ namespace VoxelSandbox;
 public readonly record struct Step(int X, int Y, int Z);
 
 /// <summary>
-/// Finds a mob's way between two cells through the blocks, as Minecraft's walking mobs find theirs:
+/// Finds a mob's way between two cells through the blocks, as Minecraft's walking mobs find theirs,
 /// along the ground, through the eight cells around, up a block, down as far as three, and through
 /// water.
 /// </summary>
@@ -70,8 +70,8 @@ public static class Pathfinder
     /// <summary>Whether a block is the lower or upper half of a shut door.</summary>
     public static bool IsShutDoor(BlockId block) => block is >= BlockId.OakDoor and <= BlockId.OakDoorWestTop;
 
-    // The cell a step along x and z lands in from a cell: level, a block up where the mob has the
-    // room to jump, or down as far as three where it drops.
+    // The cell a step along x and z lands in from a cell, on the level, a block up where the mob
+    // has the room to jump, or down as far as three where it drops.
     private static Step? Next(VoxelWorld world, MobKind kind, Step at, int dx, int dz, int tall)
     {
         int x = at.X + dx, z = at.Z + dz;

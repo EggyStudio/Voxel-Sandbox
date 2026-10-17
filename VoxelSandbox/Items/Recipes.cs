@@ -1,8 +1,8 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// A shaped recipe, as Minecraft's are: rows of letters, each letter the items any one of which
-/// fills its cell, a space an empty cell, and what the grid makes.
+/// A shaped recipe, as Minecraft's are, with rows of letters, each letter the items any one of
+/// which fills its cell and a space an empty cell, and what the grid makes.
 /// </summary>
 /// <remarks>
 /// A recipe matches wherever its shape lies in the grid with every other cell empty, and its mirror

@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace VoxelSandbox;
 
-/// <summary>The player as a hostile mob hunts it: the box and the eye.</summary>
+/// <summary>The player as a hostile mob hunts it, by its box and its eye.</summary>
 public readonly record struct MobTarget(Body Body, Vector3 Eye);
 
 /// <summary>Something a mob does to the player, which the game carries out.</summary>
@@ -32,7 +32,7 @@ public sealed partial class Mob
     /// <summary>Whether it blew itself up, which leaves nothing to drop.</summary>
     public bool Exploded { get; private set; }
 
-    // The target where it is the hunter's to hunt: within its range and seen, or anywhere within
+    // The target where it is the hunter's to hunt, within its range and seen, or anywhere within
     // twice that once the hunt has begun or a hit has angered it.
     private MobTarget? Hunts(VoxelWorld world, MobTarget? target)
     {

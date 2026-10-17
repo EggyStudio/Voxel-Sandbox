@@ -8,8 +8,8 @@ public sealed class Hotbar(Inventory inventory)
 {
     public const int Size = 9;
 
-    // Stone, planks and glass to build with, a torch, a lantern and two blocks that give off light,
-    // and the concrete walls whose colors show bouncing, which a world in creative mode begins with.
+    // Stone, planks and glass to build with, a torch, a lantern and two emissive blocks, and the
+    // concrete walls that show color bleeding, which a world in creative mode begins with.
     private static readonly BlockId[] Creative =
     [
         BlockId.Stone, BlockId.OakPlanks, BlockId.Glass, BlockId.Torch, BlockId.Lantern, BlockId.Glowstone, BlockId.SeaLantern,

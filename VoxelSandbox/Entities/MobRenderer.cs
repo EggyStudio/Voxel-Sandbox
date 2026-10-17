@@ -17,9 +17,10 @@ namespace VoxelSandbox;
 /// <para>
 /// Mobs are drawn within 64 blocks of the eye, as Minecraft draws its entities, through the
 /// engine's own shader, so the haze the sections fade into is not on them. They cast shadows and
-/// bounce no light, their materials' <see cref="ModelMaterial.BouncesLight"/> off, which leaves them
-/// out of the scene's distance field, where each piece that moves would be stamped as a box every
-/// frame, milliseconds a frame for a herd walking in sight. A pig's pink so does not reach the grass.
+/// take no part in global illumination, their materials' <see cref="ModelMaterial.BouncesLight"/>
+/// off, which leaves them out of the scene's distance field, where each piece that moves would be
+/// stamped as a box every frame, milliseconds a frame for a herd walking in sight. A pig's pink so
+/// does not reach the grass.
 /// </para>
 /// </remarks>
 public sealed class MobRenderer : IDisposable
@@ -34,7 +35,7 @@ public sealed class MobRenderer : IDisposable
 
     private readonly ModelMaterial _skin = new(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false };
     private readonly ModelMaterial _hurt = new(new Color(255, 96, 96)) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false };
-    // A creeper's flash as its fuse burns, white and glowing a little.
+    // A creeper's flash as its fuse burns, white and a little emissive.
     private readonly ModelMaterial _flash = new(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false, Emissive = Color.White, EmissiveIntensity = 0.6f };
     private readonly List<Slot> _slots = [];
     // Each kind's pieces' slots, by kind, piece and variant, a piece of one color holding one.

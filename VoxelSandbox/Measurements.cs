@@ -7,17 +7,17 @@ using static Engine.E3D;
 namespace VoxelSandbox;
 
 /// <summary>
-/// A recording of how much the picture changes from each frame to the next, before, during and after
-/// the player turns or steps over some frames, to measure how long the light that bounces takes to
-/// settle after the camera moves and how much it flickers meanwhile.
+/// A recording of how much the picture changes from each frame to the next, before, during and
+/// after the player turns or steps over some frames, to measure how long global illumination takes
+/// to settle after the camera moves and how much it flickers meanwhile.
 /// </summary>
 /// <remarks>
-/// Each frame's change is the mean over the window of each pixel's difference in red, green and blue
-/// from the frame before, in sRGB levels from 0 to 255, and the share of pixels whose difference in
-/// any of them passes 8 levels, read through <c>LoadImageFromScreen</c>, which waits for the GPU each
-/// frame, so the frames come slower while it runs. Nothing else moves, so before the motion the
-/// change is the bounce's own noise, during it the motion, and after it what is left is the bounce
-/// settling.
+/// Each frame's change is the mean over the window of each pixel's difference in red, green and
+/// blue from the frame before, in sRGB levels from 0 to 255, and the share of pixels whose
+/// difference in any of them passes 8 levels, read through <c>LoadImageFromScreen</c>, which waits
+/// for the GPU each frame, so the frames come slower while it runs. Nothing else moves, so before
+/// the motion the change is global illumination's own noise, during it the motion, and after it
+/// what is left is global illumination settling.
 /// </remarks>
 public sealed class FlickerRun(int frames, int motionAt, int over, float turn, float step, string path)
 {
@@ -131,8 +131,8 @@ public static class Measurements
 
     /// <summary>
     /// The picture's luminance at points around a circle on a horizontal plane, by angle from +x
-    /// toward +z, and how far it swings: its mean, its lowest and highest, the swing over the mean,
-    /// and how many peaks stand above their neighbors.
+    /// toward +z, and how far it swings, given as its mean, its lowest and highest, the swing over
+    /// the mean, and how many peaks stand above their neighbors.
     /// </summary>
     public static string Ring(Image image, Camera3D camera, Vector3 middle, float radius, int samples)
     {

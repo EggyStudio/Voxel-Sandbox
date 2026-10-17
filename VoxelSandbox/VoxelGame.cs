@@ -5,7 +5,7 @@ using static Engine.E3D;
 
 namespace VoxelSandbox;
 
-/// <summary>The game's state and its frame: the world, its mobs, the player, the sky, and what is drawn over them.</summary>
+/// <summary>The game's state and its frame, which hold the world, its mobs, the player, the sky, and what is drawn over them.</summary>
 public sealed class VoxelGame : IDisposable
 {
     private const float Reach = 5;
@@ -336,9 +336,9 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>
-    /// Sets off an explosion of a power at a place, as a creeper's of 3: the blocks its rays reach
-    /// broken, a third of them dropped in survival, and the player and the mobs near it harmed and
-    /// thrown by its impact, as Minecraft's explosions are.
+    /// Sets off an explosion of a power at a place, as a creeper's of 3, which breaks the blocks
+    /// its rays reach, drops a third of them in survival, and harms and throws the player and the
+    /// mobs near it by its impact, as Minecraft's explosions do.
     /// </summary>
     public void Explode(Vector3 at, float power, string cause)
     {
@@ -571,9 +571,10 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>
     /// Places a block against the face the crosshair rests on, unless it would take up some of the
-    /// player or of a mob: a torch or a lantern the way of it that has a block to hold to, stairs climbing the
-    /// way the player looks, a door two blocks high, and a slab on the open half of a slab of its
-    /// kind joined to it as the whole block. A door met is opened or shut instead.
+    /// player or of a mob. A torch or a lantern is placed the way of it that has a block to hold
+    /// to, stairs climbing the way the player looks, a door two blocks high, and a slab on the open
+    /// half of a slab of its kind joined to it as the whole block. A door met is opened or shut
+    /// instead.
     /// </summary>
     /// <returns>The block placed, which for a torch on a wall is the wall torch, or air where none was.</returns>
     public BlockId Place(BlockId block)

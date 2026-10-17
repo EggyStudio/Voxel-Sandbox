@@ -14,7 +14,7 @@ msbuild.log
 /build/tools/
 /build/shader-cache/
 /build/publish/
-# What build/drive.sh captures and logs, kept as a run's artifact.
+# What build/play.sh captures and logs, kept as a run's artifact.
 /captures/
 # The engine as the build workflow checks it out, for its e3d.
 /.engine/

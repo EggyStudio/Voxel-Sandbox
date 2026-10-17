@@ -1,8 +1,8 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// Land of the biomes a climate chooses: rolling plains and forests of oak and birch, taiga and
-/// snowy plains of spruce where it is cold, flat desert of sand and cactus where it is hot and
+/// Land of the biomes a climate chooses, with rolling plains and forests of oak and birch, taiga
+/// and snowy plains of spruce where it is cold, flat desert of sand and cactus where it is hot and
 /// dry, mountains of stone with snowy tops, lakes and seas up to sea level over sand and gravel,
 /// frozen where it is cold, sandy shores, veins of coal in the stone, and caves under the ground
 /// that open to the sky in places, and ravines.
@@ -76,9 +76,10 @@ public sealed class Overworld : IWorldGenerator
     }
 
     /// <summary>
-    /// The ground at a world column: its height, biome and climate, and its top block and the three
-    /// under it. Low ground in a temperate biome lies in patches of sand, and mountains in patches of
-    /// gravel. A feature or a structure starting in a column not generated reads its ground here.
+    /// The ground at a world column, with its height, biome and climate, and its top block and the
+    /// three under it. Low ground in a temperate biome lies in patches of sand, and mountains in
+    /// patches of gravel. A feature or a structure starting in a column not generated reads its
+    /// ground here.
     /// </summary>
     public (int Height, Biome Biome, BlockId Top, BlockId Under, float Temperature, float Humidity) Ground(int x, int z)
     {

@@ -5,8 +5,9 @@ using static Engine.E3D;
 namespace VoxelSandbox;
 
 /// <summary>
-/// A layer of blocky clouds drifting east over the world, as Minecraft's are: cells of 12 by 12
-/// blocks, 4 high, at 120 blocks up, each a box whose faces against a cloud beside it are left out.
+/// A layer of blocky clouds drifting east over the world, as Minecraft's are, in cells of 12 by 12
+/// blocks and 4 high at 120 blocks up, each a box whose faces against a cloud beside it are left
+/// out.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -17,11 +18,11 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// They are see-through and cast no shadow, which keeps them out of the scene's distance field, so
-/// they neither shade the sun's light nor stand in the light that bounces, as Minecraft's cast no
-/// shadow. Their faces are shaded by the way they face, the top brightest, and lit by the model
-/// pass, so they darken at night, and they fade into the sky at twice the render distance through a
-/// copy of the terrain shader of their own, each vertex its position and the packed bytes of a
-/// section's vertices, the shade full.
+/// they neither shade the sun's light nor block indirect light, as Minecraft's cast no shadow.
+/// Their faces are shaded by the way they face, the top brightest, and lit by the model pass, so
+/// they darken at night, and they fade into the sky at twice the render distance through a copy of
+/// the terrain shader of their own, each vertex its position and the packed bytes of a section's
+/// vertices, the shade full.
 /// </para>
 /// </remarks>
 public sealed class Clouds : IDisposable

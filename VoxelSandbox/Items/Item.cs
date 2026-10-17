@@ -13,8 +13,8 @@ public enum ToolKind
 }
 
 /// <summary>
-/// A kind of thing the player holds and keeps in the inventory: a block it places, or a thing of
-/// its own that a mob or a block drops, as raw meat, leather, feathers and wheat are.
+/// A kind of thing the player holds and keeps in the inventory, a block it places or a thing of its
+/// own that a mob or a block drops, as raw meat, leather, feathers and wheat are.
 /// </summary>
 /// <param name="Key">The name commands take and a save keeps, a block's own key for the item placing it.</param>
 /// <param name="Name">The name shown.</param>
@@ -53,7 +53,7 @@ public sealed record Item(string Key, string Name, Color Color, BlockId? Block)
 /// <summary>So many of an item in one slot, and for a tool how many of its uses are worn away.</summary>
 public readonly record struct ItemStack(Item Item, int Count, int Wear = 0);
 
-/// <summary>Every kind of item: one for each block held to place it, then the things of their own, then the tools.</summary>
+/// <summary>Every kind of item, one for each block held to place it, then the things of their own, then the tools.</summary>
 public static class Items
 {
     private static readonly Item?[] _byBlock = new Item?[Blocks.All.Count];

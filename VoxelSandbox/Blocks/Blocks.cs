@@ -154,7 +154,7 @@ public enum BlockId : ushort
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
 public enum BlockKind
 {
-    /// <summary>Nothing: no faces, no collision, light passes.</summary>
+    /// <summary>Air, with no faces and no collision, which light passes through.</summary>
     Air,
 
     /// <summary>A solid block that hides the faces beside it and stops light.</summary>
@@ -171,29 +171,29 @@ public enum BlockKind
 }
 
 /// <summary>
-/// What a kind of block is: its key, the name commands take in lower case with underscores, the
-/// name shown, the surface of each face, whether it can be broken, the light level from 0 to 15
-/// it fills the blocks around it with, as Minecraft's light-giving blocks do, its kind, the boxes
-/// of a block smaller than its cell, the block a player holds to place it where that is another,
-/// as a torch is held to place a torch on a wall, the whole block two of a slab make, and the block
-/// a door becomes when it is opened or shut.
+/// A kind of block, with its key, the name commands take in lower case with underscores, the name
+/// shown, the surface of each face, whether it can be broken, the light level from 0 to 15 it fills
+/// the blocks around it with, as Minecraft's emissive blocks do, its kind, the boxes of a block
+/// smaller than its cell, the block a player holds to place it where that is another, as a torch is
+/// held to place a torch on a wall, the whole block two of a slab make, and the block a door becomes
+/// when it is opened or shut.
 /// </summary>
 public sealed record BlockInfo(BlockId Id, string Key, string Name, int Top, int Side, int Bottom, bool Breakable = true, int Light = 0,
     BlockKind Kind = BlockKind.Opaque, BlockShape? Shape = null, BlockId? HeldAs = null, BlockId? Doubled = null, BlockId? Toggled = null)
 {
-    /// <summary>The boxes that stop the player: the whole cell for a solid block, a solid shape's own, and none for air, water and the rest.</summary>
+    /// <summary>The boxes that stop the player, the whole cell for a solid block, a solid shape's own, and none for air, water and the rest.</summary>
     public IReadOnlyList<Box> Boxes { get; } = Kind is BlockKind.Opaque or BlockKind.Glass ? [Box.Cell] : Shape?.Collision ?? [];
 
-    /// <summary>Whether it gives off light, its top's surface glowing, which a block smaller than its cell takes from its glowing piece.</summary>
+    /// <summary>Whether it is emissive, as its top's surface is, which a block smaller than its cell takes from its emissive piece.</summary>
     public bool Emits => Surfaces.All[Top].Emits;
 
     /// <summary>The block a player holds to place it, and picks from it, which is itself but for a block placed in more than one way.</summary>
     public BlockId Item => HeldAs ?? Id;
 
     /// <summary>
-    /// The boxes of it that give off light, each the place and size within its cell of a lamp's cube
-    /// centered on the origin a side long, and its surface: the whole cell for a glowing block, the
-    /// glowing pieces of a smaller one, and none for the rest.
+    /// Its emissive boxes, each the place and size within its cell of a lamp's cube centered on the
+    /// origin a side long, and its surface. An emissive block has the whole cell, a smaller one its
+    /// emissive pieces, and the rest none.
     /// </summary>
     public (Matrix4x4 Local, int Surface)[] Glows { get; } = Shape is { } shape
         ? [.. shape.Pieces.Where(p => p.Glows).Select(p => (Matrix4x4.CreateScale(p.To - p.From) * Matrix4x4.CreateTranslation((p.From + p.To) / 2), p.Surface))]
@@ -217,7 +217,7 @@ public static class Blocks
         BlockInfo Door(BlockId id, string key, BlockShape shape, BlockId toggled, BlockId? heldAs = null) =>
             new(id, key, "Oak Door", Surfaces.DoorWood, Surfaces.DoorWood, Surfaces.DoorWood, Kind: BlockKind.Shaped, Shape: shape, HeldAs: heldAs, Toggled: toggled);
 
-        // A block smaller than its cell shows the surface of the piece that glows on its hotbar slot.
+        // A block smaller than its cell shows the surface of its emissive piece on its hotbar slot.
         BlockInfo Shaped(BlockId id, string key, string name, BlockShape shape, int light, BlockId? heldAs = null, BlockId? doubled = null)
         {
             var look = shape.Pieces.FirstOrDefault(p => p.Glows, shape.Pieces[0]).Surface;
@@ -367,7 +367,7 @@ public static class Blocks
             Same(BlockId.CoalOre, "coal_ore", "Coal Ore", Surfaces.CoalOre),
             Same(BlockId.IronOre, "iron_ore", "Iron Ore", Surfaces.IronOre),
             new(BlockId.Furnace, "furnace", "Furnace", Surfaces.FurnaceTop, Surfaces.FurnaceSide, Surfaces.FurnaceTop),
-            // A furnace alight glows as a whole block, as magma does, and lights the blocks around it to 13.
+            // A furnace alight is emissive as a whole block, as magma is, and lights the blocks around it to 13.
             Same(BlockId.FurnaceLit, "lit_furnace", "Furnace", Surfaces.FurnaceLit, light: 13) with { HeldAs = BlockId.Furnace },
         ];
         for (int i = 0; i < all.Length; i++)
@@ -432,9 +432,9 @@ public static class Blocks
     public static bool IsWater(BlockId id) => id == BlockId.Water || id >= BlockId.Water1 && id <= BlockId.FallingWater;
 
     /// <summary>
-    /// How far water has flowed from its source, as Minecraft's level: 0 for a source, 1 to 7 for
-    /// flowing water a block further each, and 0 for falling water, which spreads as from a source
-    /// where it lands.
+    /// How far water has flowed from its source, as Minecraft's level counts it. A source is 0,
+    /// flowing water 1 to 7 a block further each, and falling water 0, since it spreads as from a
+    /// source where it lands.
     /// </summary>
     public static int WaterLevel(BlockId id) => id is >= BlockId.Water1 and <= BlockId.Water7 ? id - BlockId.Water1 + 1 : 0;
 
@@ -442,7 +442,7 @@ public static class Blocks
     public static BlockId FlowingWater(int level) => (BlockId)((int)BlockId.Water1 + level - 1);
 
     /// <summary>
-    /// The height of water's top in its cell: a source's an eighth low, flowing water's lower for each
+    /// The height of water's top in its cell, a source's an eighth low, flowing water's lower for each
     /// block it has flowed, and the whole cell under more water or falling.
     /// </summary>
     public static float WaterHeight(BlockId id, bool waterAbove) =>

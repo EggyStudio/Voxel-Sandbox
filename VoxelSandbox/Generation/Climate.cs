@@ -2,7 +2,7 @@ using Engine;
 
 namespace VoxelSandbox;
 
-/// <summary>A kind of land, which the climate chooses: the blocks on its ground and what grows on it.</summary>
+/// <summary>A kind of land, which the climate chooses, with the blocks on its ground and what grows on it.</summary>
 /// <param name="Name">The name the settings window and <c>voxel.state</c> show.</param>
 /// <param name="Top">The block on the ground.</param>
 /// <param name="Under">The three blocks under it.</param>
@@ -70,8 +70,8 @@ public sealed class Climate(int seed)
         return Biomes.Plains;
     }
 
-    // The colors at the corners of Minecraft's grass and foliage colormaps: cold and dry, cold and
-    // wet, hot and dry, hot and wet, between which a place's color is blended.
+    // The colors at the corners of Minecraft's grass and foliage colormaps, cold and dry, cold and
+    // wet, hot and dry, and hot and wet, between which a place's color is blended.
     private static readonly Color[] GrassCorners = [new(128, 180, 151), new(134, 183, 131), new(191, 183, 85), new(89, 201, 60)];
     private static readonly Color[] FoliageCorners = [new(96, 161, 123), new(104, 164, 100), new(174, 164, 42), new(48, 187, 43)];
 

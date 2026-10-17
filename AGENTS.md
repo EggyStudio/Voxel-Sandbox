@@ -2,17 +2,17 @@
 
 A voxel game in the manner of Minecraft, in C# on .NET 10, built on the 3DEngine package from
 nuget.org at the version `VoxelSandbox/VoxelSandbox.csproj` names. Its first use is to test the
-engine's light that bounces with blocks that give off light, and it grows toward Minecraft's
-structures, mobs and survival from there. The engine is used through its package alone, its flat
-API of static calls drawing each frame, and what the game finds the engine lacks is asked of the
-engine, never mended in a copy of its code here.
+engine's global illumination with emissive blocks, and it grows toward Minecraft's structures, mobs
+and survival from there. The engine is used through its package alone, its flat API of static calls
+drawing each frame, and what the game finds the engine lacks is asked of the engine, never mended in
+a copy of its code here.
 
-## Driving the game with `./e3d`
+## Controlling the game with `./e3d`
 
 `./e3d` talks to a running program over a local socket, through the engine's command line, out of
 the engine checkout `ENGINE_CHECKOUT` names or the folder above this one. **Before asking anything
 about the running game (what is in its world, what a key does, what it looks like), check
-`./e3d status` and drive the live session instead of launching a process per question.**
+`./e3d status` and send the live session its commands instead of launching a process per question.**
 
 ```bash
 ./e3d status                          # is anything serving?
@@ -26,14 +26,14 @@ about the running game (what is in its world, what a key does, what it looks lik
 ```
 
 The workflow, the commands and the failure modes are in [.github/E3D.md](.github/E3D.md). Read it
-before driving a session.
+before scripting a session.
 
 ## Documents
 
 | File | Holds |
 |---|---|
 | [README.md](README.md) | What the game does, its controls and commands, how it is drawn and what it costs |
-| [.github/E3D.md](.github/E3D.md) | Driving the running game through `./e3d`: the workflow, every command and the failure modes |
+| [.github/E3D.md](.github/E3D.md) | Controlling the running game through `./e3d`, with the workflow, every command and the failure modes |
 | [.github/REVIEW.md](.github/REVIEW.md) | Direction from the reviewing session, which comes before any other order of work |
 | [.github/NORM.md](.github/NORM.md) | The numbered rules the game keeps, each with what checks it |
 | [.github/STYLE.md](.github/STYLE.md) | Rules for every comment, message and Markdown file |
@@ -47,21 +47,21 @@ build/fetch-slang.sh          # slangc, once per checkout
 dotnet build VoxelSandbox.slnx
 dotnet test VoxelSandbox.Tests
 dotnet run --project VoxelSandbox
-build/drive.sh                # the game played through ./e3d, as the build workflow plays it
+build/play.sh                 # a scripted run of the game through ./e3d, as the build workflow's
 ```
 
 The tests hold the game's logic, its light, meshes, bodies, mobs, items, saves and generation, each
 in a small world of its own, and need no window and no GPU. The build workflow runs them on Linux,
-Windows and macOS on every push and plays the game on lavapipe through `build/drive.sh`. The pack
-workflow, run by hand, compiles every shader (`build/shaders.sh`), publishes the game as native
-code for each system (`build/publish.sh`) and, with its `publish` input set, makes a GitHub release
-of the zips.
+Windows and macOS on every push and, on lavapipe, the scripted run of the game in `build/play.sh`.
+The pack workflow, run by hand, compiles every shader (`build/shaders.sh`), publishes the game as
+native code for each system (`build/publish.sh`) and, with its `publish` input set, makes a GitHub
+release of the zips.
 
 ## Where things are
 
 | Path | Holds |
 |---|---|
-| `VoxelSandbox` | The game's program: `Program.cs` opens the window and runs the frame, `VoxelGame.cs` holds the game's state and its frame, `GameCommands.cs` the `voxel.*` commands, and `Measurements.cs` the recording of how the light that bounces settles after the camera moves |
+| `VoxelSandbox` | The game's program, where `Program.cs` opens the window and runs the frame, `VoxelGame.cs` holds the game's state and its frame, `GameCommands.cs` the `voxel.*` commands, and `Measurements.cs` the recording of how global illumination settles after the camera moves |
 | `VoxelSandbox/Blocks` | The blocks, their shapes and the surfaces they are drawn with |
 | `VoxelSandbox/Entities` | Mobs, passive and hostile, their bodies, paths, models, arrows and explosions |
 | `VoxelSandbox/Generation` | The overworld and the flat world, climate and biomes, noise, ores, caves, ravines, trees, structures, villages and herds |

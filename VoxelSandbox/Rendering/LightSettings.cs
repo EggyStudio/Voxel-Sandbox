@@ -3,10 +3,10 @@ using static Engine.E3D;
 
 namespace VoxelSandbox;
 
-/// <summary>The settings of the light that bounces and of the frame's post-processing, which the settings window changes.</summary>
+/// <summary>The settings of global illumination and of the frame's post-processing, which the settings window changes.</summary>
 public sealed class LightSettings
 {
-    /// <summary>The light that bounces, at the highest quality, which this game is here to show.</summary>
+    /// <summary>The quality of global illumination, the highest by default, since the game is made to show it.</summary>
     public GlobalIllumination Quality = GlobalIllumination.High;
 
     // Four cascades of 0.25 cover 128 blocks across around the eye, half of the 256 drawn at the

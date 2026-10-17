@@ -73,7 +73,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
                 {
                     // The worker's place is given back and the column is asked for again once the
                     // player moves, rather than the exception ending a task nobody waits on.
-                    Console.Error.WriteLine($"Column {x}, {z} could not be generated: {ex}");
+                    Console.Error.WriteLine($"Column {x}, {z} could not be generated. {ex}");
                 }
                 _done.Enqueue((x, z, column));
             });

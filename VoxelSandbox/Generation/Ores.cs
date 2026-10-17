@@ -1,9 +1,9 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// Veins of ore in the stone, as Minecraft's are: of coal 18 a column at heights from 5 to 100, each
-/// eight blocks along a short wandering line, and of iron 10 a column from 5 to 64, each six, taking
-/// the place of stone alone, so a cave's walls and a ravine's show them.
+/// Veins of ore in the stone, as Minecraft's are, of coal 18 a column at heights from 5 to 100,
+/// each eight blocks along a short wandering line, and of iron 10 a column from 5 to 64, each six,
+/// taking the place of stone alone, so a cave's walls and a ravine's show them.
 /// </summary>
 /// <remarks>Each vein stays within its column and depends on the seed and the column alone, so a column is generated the same every time.</remarks>
 public static class Ores

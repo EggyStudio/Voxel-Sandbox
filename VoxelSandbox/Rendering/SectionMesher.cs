@@ -5,8 +5,8 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// Turns a section into the faces of its blocks that touch air, each corner colored by its surface
-/// and shaded by the light and the blocks around it, and the places of the blocks that give off
-/// light, which are drawn apart.
+/// and shaded by the light and the blocks around it, and the places of the emissive blocks, which
+/// are drawn apart.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -19,11 +19,11 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// A corner is shaded as Minecraft's smooth lighting shades it, from the four cells in front of the
-/// face that meet at the corner: the one the face looks into, the two beside it and the one across
-/// the corner. Its light is the average of those that are open, and its occlusion counts those that
-/// are solid, so a corner where two blocks meet is darker, and both come out of the same four reads.
-/// The shade multiplies the surface's color into the vertex's, so a face where neither the sky nor
-/// a lamp reaches is drawn nearly black and sends nearly none of the light that bounces on, as an
+/// face that meet at the corner, which are the one the face looks into, the two beside it and the
+/// one across the corner. Its light is the average of those that are open, and its occlusion counts
+/// those that are solid, so a corner where two blocks meet is darker, and both come out of the same
+/// four reads. The shade multiplies the surface's color into the vertex's, so a face where neither
+/// the sky nor a lamp reaches is drawn nearly black and reflects nearly no indirect light, as an
 /// unlit cave in Minecraft shows nothing.
 /// </para>
 /// <para>
@@ -49,10 +49,10 @@ public sealed class SectionMesher
     public bool CornerShade { get; set; } = true;
 
     /// <summary>
-    /// Faces as a mesh: the position of each corner, eight packed bytes a corner (<see cref="Pack"/>)
-    /// that the terrain shader unpacks into its normal, its texture coordinate and its color, the
-    /// color of each corner as the scene's light field reads it, its surface's darkened by its
-    /// shade, and their triangles.
+    /// Faces as a mesh, with the position of each corner, eight packed bytes a corner
+    /// (<see cref="Pack"/>) that the terrain shader unpacks into its normal, its texture coordinate
+    /// and its color, the color of each corner as the scene's light field reads it, its surface's
+    /// darkened by its shade, and their triangles.
     /// </summary>
     public sealed class Faces
     {
@@ -87,11 +87,11 @@ public sealed class SectionMesher
     }
 
     /// <summary>
-    /// A corner's eight bytes as two uints: in the first the face it lies on, 0 to 5 in the order of
-    /// <c>Normals</c>, at its low 3 bits, which of the face's four corners it is at the next 2, and
-    /// its shade from 0 to 255 at the 8 above; in the second the surface's color under its tint, red,
-    /// green and blue a byte each from the lowest, and its alpha in the highest byte. The color is
-    /// sRGB, as a vertex color is, and the shade multiplies it in that space.
+    /// A corner's eight bytes as two uints. The first holds the face it lies on, 0 to 5 in the
+    /// order of <c>Normals</c>, at its low 3 bits, which of the face's four corners it is at the
+    /// next 2, and its shade from 0 to 255 at the 8 above, and the second the surface's color under
+    /// its tint, red, green and blue a byte each from the lowest, and its alpha in the highest
+    /// byte. The color is sRGB, as a vertex color is, and the shade multiplies it in that space.
     /// </summary>
     public static (uint First, uint Second) Pack(int face, int corner, float shade, Color tint)
     {
@@ -113,7 +113,7 @@ public sealed class SectionMesher
     /// <summary>The last section's faces of see-through blocks, glass, ice and water, each vertex's alpha its surface's.</summary>
     public Faces SeeThrough { get; } = new();
 
-    /// <summary>The blocks of the last section that give off light, by their index in it.</summary>
+    /// <summary>The emissive blocks of the last section, by their index in it.</summary>
     public List<(int Index, BlockId Block)> Emitters { get; } = [];
 
     // The six directions in the order +x, -x, +y, -y, +z, -z, each face's corners counterclockwise
@@ -164,7 +164,7 @@ public sealed class SectionMesher
     /// light, nearly all of it down to a few levels from dark and next to none at 0.
     /// </summary>
     /// <remarks>
-    /// The light that bounces brings a lamp's falloff itself, so the level marks where no light
+    /// Global illumination brings a lamp's falloff itself, so the level marks where no light
     /// reaches rather than dimming the light by distance a second time, as Minecraft's own curve
     /// would, which keeps a quarter at level 9 on the screen and a twentieth of the light.
     /// </remarks>
@@ -300,10 +300,10 @@ public sealed class SectionMesher
         }
     }
 
-    // The pieces of a block smaller than its cell that give off no light, each a box of six faces,
-    // its top's corners moved by its lean. A face on the cell's side against an opaque block is left
-    // out, as a torch's foot on the ground is. Every corner takes the light of the block's own cell,
-    // since the pieces stand inside it, and none is shaded by the blocks around.
+    // The pieces of a block smaller than its cell that are not emissive, each a box of six faces,
+    // its top's corners moved by its lean. A face on the cell's side against an opaque block is
+    // left out, as a torch's foot on the ground is. Every corner takes the light of the block's own
+    // cell, since the pieces stand inside it, and none is shaded by the blocks around.
     private void AddShape(BlockShape shape, int at, Vector3 block)
     {
         int sky = _light[at] >> 4, lit = _light[at] & 15;

@@ -3,17 +3,17 @@ using System.Numerics;
 namespace VoxelSandbox;
 
 /// <summary>
-/// A mob as a save keeps it and a generator places it: its kind, variant, place, turn and health, and
-/// its home, where a villager goes at night, inside its house, and wanders near by day, or null for
-/// a mob that wanders anywhere.
+/// A mob as a save keeps it and a generator places it, with its kind, variant, place, turn and
+/// health, and its home, where a villager goes at night, inside its house, and wanders near by day,
+/// or null for a mob that wanders anywhere.
 /// </summary>
 public readonly record struct MobRecord(MobKind Kind, byte Variant, Vector3 Position, float Yaw, int Health, Vector3? Home);
 
 /// <summary>
-/// A mob in the world: its body, which falls, swims and is stopped by the blocks as the player's is,
-/// and its mind, which wanders along the ways <see cref="Pathfinder"/> finds, runs when hit, looks at
-/// the player nearby, for a villager goes home at night through its door, and for a hostile mob
-/// hunts the player it sees, striking, shooting or exploding beside it.
+/// A mob in the world, with its body, which falls, swims and is stopped by the blocks as the
+/// player's is, and its mind, which wanders along the ways <see cref="Pathfinder"/> finds, runs
+/// when hit, looks at the player nearby, for a villager goes home at night through its door, and
+/// for a hostile mob hunts the player it sees, striking, shooting or exploding beside it.
 /// </summary>
 /// <remarks>
 /// <para>

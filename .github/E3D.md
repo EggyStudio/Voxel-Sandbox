@@ -1,4 +1,4 @@
-# Driving the running game with e3d
+# Controlling the running game with e3d
 
 `./e3d` runs the engine's command line out of an engine checkout, the one `ENGINE_CHECKOUT` names
 or else the folder above this repository, since the command line comes in no package. It talks to
@@ -6,9 +6,9 @@ a running program over a local socket, and every program built on the engine ans
 
 ## Check for a live session first
 
-**Before asking anything about the running game, run `./e3d status`.** If a session answers, drive
-it. A round trip against a running program is a frame. Starting one per question is a second of
-startup and a guess about which frame to look at.
+**Before asking anything about the running game, run `./e3d status`.** If a session answers, send it
+the commands. A round trip against a running program is a frame. Starting one per question is a
+second of startup and a guess about which frame to look at.
 
 ```bash
 ./e3d status                                  # what is serving, and whether it answers
@@ -27,22 +27,22 @@ game=VoxelSandbox/bin/Debug/net10.0/VoxelSandbox
 ```
 
 `open` returns once the game has written that it is ready, so the next command is answered.
-`--hidden` or `--offscreen` is the default choice for an agent, since everything renders and
-`shot` works, and nothing appears on the desktop. `--offscreen` needs no display server, so it also works
-over SSH, in a container or on a locked session, and a software Vulkan device (lavapipe) is
-enough. A run with no window has no window events, so input arrives only through `input.*`.
-`--transient` is the game's own flag, which keeps nothing on disk, so a run driven from here leaves
-the saves as they were. The game's other flags, `--flat`, `--seed <n>` and `--world <name>`, pass
-through `open` the same way.
+`--hidden` or `--offscreen` is the default choice for an agent, since everything renders and `shot`
+works, and nothing appears on the desktop. `--offscreen` needs no display server, so it also works
+over SSH, in a container or on a locked session, and a software Vulkan device (lavapipe) is enough.
+A run with no window has no window events, so input arrives only through `input.*`. `--transient` is
+the game's own flag, which keeps nothing on disk, so a run scripted from here leaves the saves as
+they were. The game's other flags, `--flat`, `--seed <n>` and `--world <name>`, pass through `open`
+the same way.
 
 Any program built on the engine takes the same flags (`--serve`, `--headless`, `--offscreen`,
 `--hidden`, `--frames N`) or the variables `E3D_SERVE`, `E3D_HEADLESS`, `E3D_OFFSCREEN`,
-`E3D_HIDDEN`, `E3D_FRAMES`, so the game started by other means is driven by running it with
+`E3D_HIDDEN`, `E3D_FRAMES`, so the game started by other means is controlled by running it with
 `--serve`.
 
 ## The catalog is the API
 
-`./e3d list` is authoritative. The ones every app has:
+`./e3d list` is authoritative. Every app answers the commands in the table below.
 
 | command | does |
 |---|---|
@@ -94,8 +94,8 @@ line, one that throws with `EVAL_THREW`, and the first holds its frame while the
 ## Input goes through the engine, not the desktop
 
 `input.*` writes into the engine's `Input` and hands keys, text and mouse events to ImGui, so it
-works in a hidden or headless run and on a locked session, where xdotool's events do not arrive. Use it
-rather than xdotool.
+works in a hidden or headless run and on a locked session, where xdotool's events do not arrive. Use
+it rather than xdotool.
 
 Injected input is made when the loop next processes events, as a real key would be, so a program
 that reads `IsKeyPressed` before `BeginDrawing` sees it. `input.key` and `input.click` answer after
@@ -116,11 +116,11 @@ Every verb prints a readable answer, or with `--json` one envelope:
 {"success": true, "command": "command", "data": {"command": "entity.count", "result": "100", "frame": 94}, "errors": [], "warnings": []}
 ```
 
-Exit codes: `0` ok, `2` bad arguments or an unknown command, `4` nothing to talk to (no session,
-or no renderer for a capture), `6` the command failed. A failure carries a code in `errors[0].code`
-(`NO_SESSION`, `AMBIGUOUS_SESSION`, `UNKNOWN_COMMAND`, `NO_RENDERER`, `TIMEOUT`). Without `--json`
-an error is a line `error [CODE] message` on standard error, so `status=$(./e3d command ...)` takes
-no error into the variable and the error still shows.
+The exit code is `0` for success, `2` for bad arguments or an unknown command, `4` where there is
+nothing to talk to (no session, or no renderer for a capture), and `6` where the command failed. A
+failure carries a code in `errors[0].code` (`NO_SESSION`, `AMBIGUOUS_SESSION`, `UNKNOWN_COMMAND`,
+`NO_RENDERER`, `TIMEOUT`). Without `--json` an error is a line `error [CODE] message` on standard
+error, so `status=$(./e3d command ...)` takes no error into the variable and the error still shows.
 
 ## More than one app
 

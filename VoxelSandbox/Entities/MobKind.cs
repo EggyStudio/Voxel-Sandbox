@@ -7,9 +7,9 @@ namespace VoxelSandbox;
 public readonly record struct ModelBox(Vector3 Min, Vector3 Max, Color? Color);
 
 /// <summary>
-/// How a piece of a model moves: not at all, with the head's look, as one of the two pairs of legs,
-/// as a wing, as one of two arms swinging against the legs, or as one of a spider's two sets of
-/// legs, which swing about the vertical.
+/// How a piece of a model moves, whether not at all, with the head's look, as one of the two pairs
+/// of legs, as a wing, as one of two arms swinging against the legs, or as one of a spider's two
+/// sets of legs, which swing about the vertical.
 /// </summary>
 public enum Swing
 {
@@ -36,8 +36,8 @@ public sealed record ModelPart(Swing Swing, Vector3 Pivot, ModelBox[] Boxes)
 }
 
 /// <summary>
-/// A kind of mob: its box, how fast it walks, its health, the colors it varies by, and its model,
-/// facing north (toward -z) with its feet's middle at the origin.
+/// A kind of mob, with its box, how fast it walks, its health, the colors it varies by, and its
+/// model, facing north (toward -z) with its feet's middle at the origin.
 /// </summary>
 /// <param name="Name">The name <c>voxel.spawn</c> takes and a save keeps.</param>
 /// <param name="HalfWidth">Half its box's width, as Minecraft's sizes give it.</param>

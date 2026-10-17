@@ -3,8 +3,8 @@ using System.Numerics;
 namespace VoxelSandbox;
 
 /// <summary>
-/// The player's health, food and breath in survival, as Minecraft's are: 20 points of health and of
-/// food, the saturation spent before the food, and the exhaustion that spends them.
+/// The player's health, food and breath in survival, as Minecraft's are, with 20 points of health
+/// and of food, the saturation spent before the food, and the exhaustion that spends them.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -71,8 +71,9 @@ public sealed class Vitals
     public void Arrived() => (_started, Fallen) = (false, 0);
 
     /// <summary>
-    /// Advances the vitals by a frame of so many seconds for a body that has moved: the damage of a
-    /// fall as it lands, breath under water, the exhaustion of moving, and healing or starving.
+    /// Advances the vitals by a frame of so many seconds for a body that has moved, with the damage
+    /// of a fall as it lands, breath under water, the exhaustion of moving, and healing or
+    /// starving.
     /// </summary>
     public void Update(VoxelWorld world, Body body, Vector3 eye, bool swimming, bool flying, bool sprinting, float seconds)
     {

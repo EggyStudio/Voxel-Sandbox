@@ -9,11 +9,11 @@ namespace VoxelSandbox;
 /// that lights the world from all around and is drawn behind it.
 /// </summary>
 /// <remarks>
-/// The sky is an equirectangular image painted here, a gradient from the horizon to the zenith
-/// with the sun's disc and its glow, given to <c>SetEnvironmentMap</c>, which filters it on the GPU.
-/// The light that bounces brings the sky's light back where a ray of its last cascade meets nothing,
-/// and weighs the sky's reflection by how much of the sky a surface's probes found, so a cave lit by
-/// no lamp is dark. The image is painted again only when the time has moved by
+/// The sky is an equirectangular image painted here, a gradient from the horizon to the zenith with
+/// the sun's disc and the halo around it, given to <c>SetEnvironmentMap</c>, which filters it on
+/// the GPU. Global illumination brings the sky's light back where a ray of its last cascade meets
+/// nothing, and weighs the sky's reflection by how much of the sky a surface's probes found, so a
+/// cave lit by no lamp is dark. The image is painted again only when the time has moved by
 /// <see cref="RepaintHours"/>, since each painting is a new map to filter.
 /// </remarks>
 public sealed class Sky

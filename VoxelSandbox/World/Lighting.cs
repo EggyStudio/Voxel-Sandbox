@@ -1,16 +1,18 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// The light levels of Minecraft: the sky's, 15 under the open sky, falling straight down without
-/// losing any and one level for each block it goes sideways or up, and the light-giving blocks', one
-/// level less for each block from the block that gives it. Opaque blocks stop both, glass lets them
-/// through, and water takes a level more for each block of it, so the sky's light fades with depth.
+/// Minecraft's two light levels, the sky's and the emissive blocks'. The sky's is 15 under the open
+/// sky, falls straight down without losing any and loses one level for each block it goes sideways
+/// or up, and an emissive block's loses one level for each block from it. Opaque blocks stop both,
+/// glass lets them through, and water takes a level more for each block of it, so the sky's light
+/// fades with depth.
 /// </summary>
 /// <remarks>
 /// Each block's levels darken the faces beside it where neither the sky nor a lamp reaches, so a
-/// cave dug into is dark until it is lit, whatever light the bounce lets in. They are worked out by
-/// spreading from the light outward one block at a time, and taken back the same way when a block is
-/// placed, the levels that depended on the light taken away and the edge of what remains spread again.
+/// cave dug into is dark until it is lit, whatever indirect light comes in. They are worked out by
+/// spreading from the light outward one block at a time, and taken back the same way when a block
+/// is placed, the levels that depended on the light taken away and the edge of what remains spread
+/// again.
 /// </remarks>
 public static class Lighting
 {
@@ -224,7 +226,7 @@ public sealed class LightEngine(VoxelWorld world)
                 if (!TryCell(x, y, z, out var section, out var index)) continue;
                 var level = section.Level(index, sky);
                 if (level == 0) continue;
-                // A light-giving block keeps its own level. One that lets light through, as a torch
+                // An emissive block keeps its own level. One that lets light through, as a torch
                 // does, may hold more from a brighter light beside it, which is taken back to its own.
                 var own = sky ? 0 : Blocks.Get((BlockId)section.Blocks[index]).Light;
                 var came = level < cell.Level || sky && d == Lighting.Down && cell.Level == Lighting.Max && level == Lighting.Max;

@@ -10,7 +10,7 @@ public sealed class Section
 
     public readonly ushort[] Blocks = new ushort[Volume];
 
-    /// <summary>Each block's light, the sky's level from 0 to 15 in the high four bits and the light-giving blocks' in the low four, as Minecraft keeps them.</summary>
+    /// <summary>Each block's light, the sky's level from 0 to 15 in the high four bits and the emissive blocks' in the low four, as Minecraft keeps them.</summary>
     public readonly byte[] Light = new byte[Volume];
 
     /// <summary>How many of its blocks are not air, so an empty section is skipped by the mesher.</summary>

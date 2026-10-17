@@ -3,11 +3,11 @@ using System.Numerics;
 namespace VoxelSandbox;
 
 /// <summary>
-/// A village in the plains, the taiga, the snowy plains or the desert: a well at its middle with a
-/// lantern under its roof, four roads of dirt path from it, houses, a forge, farms of wheat and
-/// piles of hay beside the roads, and lamp posts along them, each village of its biome's wood and
-/// stone, with a villager in its robe in each house, two in a long one, at each forge and at each
-/// farm.
+/// A village in the plains, the taiga, the snowy plains or the desert, with a well at its middle
+/// and a lantern under the well's roof, four roads of dirt path from it, houses, a forge, farms of
+/// wheat and piles of hay beside the roads, and lamp posts along them, each village of its biome's
+/// wood and stone, with a villager in its robe in each house, two in a long one, at each forge and
+/// at each farm.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -160,8 +160,8 @@ public sealed class Village : Structure
     };
 
     /// <summary>
-    /// A plot's own frame: x along its front, z from its front wall back, y from its floor, turned a
-    /// number of quarters clockwise so its front, north in its frame, faces its road.
+    /// A plot's own frame, x along its front, z from its front wall back and y from its floor, turned
+    /// a number of quarters clockwise so its front, north in its frame, faces its road.
     /// </summary>
     private readonly record struct Frame(ColumnClip Clip, int X, int Y, int Z, int Turn)
     {
@@ -261,7 +261,7 @@ public sealed class Village : Structure
         f.Villager(2, 3, p.Robe, 2, 3);
     }
 
-    // The roof over walls seven deep and a half width across: of stairs climbing from the front and
+    // The roof over walls seven deep and a half width across, of stairs climbing from the front and
     // the back to a ridge along the width, the gable ends filled with the wall's block, or flat of
     // the roof's block in two layers where the village has no stairs. Gives the height a lantern
     // hangs at under its middle.

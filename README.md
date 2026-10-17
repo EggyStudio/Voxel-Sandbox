@@ -2,8 +2,8 @@
 
 A voxel game in the manner of Minecraft, and the ground floor of a larger one, written in C# on
 [3DEngine](https://github.com/EggyStudio/3DEngine) through its package on nuget.org. Its first use
-is to test the engine's light that bounces (Radiance Cascades over the scene's distance field) with
-blocks that give off light. It holds an endless world of colored blocks in columns of 16 by 16 by
+is to test the engine's global illumination, radiance cascades traced through the scene's distance
+field, with emissive blocks. It holds an endless world of colored blocks in columns of 16 by 16 by
 128, animals that graze it, villagers in its villages and hostile mobs in its dark, a first-person
 player with Minecraft's sizes and speeds, building and breaking with an outline on the block looked
 at, in creative mode or in survival with health and hunger, an inventory, tools, crafting and the
@@ -30,12 +30,12 @@ A world is saved under `~/.local/share/VoxelSandbox/saves` on Linux, and the mat
 application data folder elsewhere, in a folder named by its kind and seed, `overworld-1` or
 `flat-7`, unless `--world` names it. Its mode, inventory, health and food are saved with it. It is
 saved every 30 seconds, on opening another world and on quitting, and opened where it was left.
-`--transient` keeps nothing on disk, as a test run driven by `./e3d` should, so it leaves the saves
-as they were. The builds made in the engine's repository saved under `3DEngine.Game/saves` in the
-same folder, and a world moved from there into `VoxelSandbox/saves` opens where it was left.
+`--transient` keeps nothing on disk, as a test run scripted through `./e3d` should, so it leaves the
+saves as they were. The builds made in the engine's repository saved under `3DEngine.Game/saves` in
+the same folder, and a world moved from there into `VoxelSandbox/saves` opens where it was left.
 
-`./e3d` drives the running game from a terminal through the engine's command line, out of the
-engine's checkout that `ENGINE_CHECKOUT` names, or the folder above this repository
+`./e3d` controls the running game from a terminal through the engine's command line, run out of
+the engine's checkout that `ENGINE_CHECKOUT` names, or the folder above this repository
 ([.github/E3D.md](.github/E3D.md)):
 
 ```bash
@@ -73,8 +73,8 @@ with its history.
 | 1 to 9, wheel | Choose a slot of the hotbar |
 | E | In creative every item, to put any of them in the chosen slot, and in survival the inventory |
 | Q | Throw one of the chosen slot's items, or with Left Control its stack |
-| F3 | The settings window: what the frame holds and costs, the light, the sky and the world |
-| G | The next quality of the light that bounces, Off after High |
+| F3 | The settings window, with what the frame holds and costs, the light, the sky and the world |
+| G | The next quality of global illumination, Off after High |
 | F1 | Hide the crosshair, the hotbar and the outline |
 | Escape | Free the cursor, or hold it again |
 
@@ -108,25 +108,25 @@ where the crosshair rests, `voxel.attack` hits the one it rests on as the left b
 `voxel.furnace` fills and reads a furnace, `voxel.inventory` lists what it holds, `voxel.items`
 lists every item, and `voxel.throw` throws as Q does. `voxel.vitals` says or sets the health and
 food, `voxel.hurt` harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field`
-and `voxel.shadows` set the light that bounces, the scene's distance field and the sun's shadows,
-and `voxel.hud` hides what is drawn over the world for a capture. Three measure the light:
+and `voxel.shadows` set global illumination, the scene's distance field and the sun's shadows,
+and `voxel.hud` hides what is drawn over the world for a capture. Three measure the light.
 `voxel.flicker` records each frame's change in the picture around a turn or a step into a file, with
 the first frame after it, the settled one and their difference beside it, `voxel.ring` reads the
 last frame's light around a circle on the ground by angle, and `voxel.depth` says how far the block
-under a pixel is. The engine's own `gi.*` and `field.*` commands show and measure the light that
-bounces.
+under a pixel is. The engine's own `gi.*` and `field.*` commands show and measure global
+illumination.
 
 ## Biomes
 
-Two slow noises give each place a temperature and a humidity, as Minecraft's climate does, and
-they choose its biome: plains with a few oaks, forests of oak and birch, birch forests, taiga of
-spruce, snowy taiga and snowy plains where it is cold, flat desert of sand over sandstone with
-cacti where it is hot and dry, and bare stone mountains wherever the ground rises past 82 blocks,
-snow above 92. Grass and oak leaves are gray surfaces tinted by a color looked up from the two
-values at the corners of Minecraft's colormaps, so their green changes smoothly across a biome's
-edge, yellowing near a desert and cooling toward the snow, while the biome itself changes at once.
-Birch and spruce leaves keep a color of their own. A hot, dry climate also flattens the land, so a
-desert lies flat and the hills sink as they near it.
+Two slow noises give each place a temperature and a humidity, as Minecraft's climate does, and they
+choose its biome among plains with a few oaks, forests of oak and birch, birch forests, taiga of
+spruce, snowy taiga and snowy plains where it is cold, flat desert of sand over sandstone with cacti
+where it is hot and dry, and bare stone mountains wherever the ground rises past 82 blocks, snow
+above 92. Grass and oak leaves are gray surfaces tinted by a color looked up from the two values at
+the corners of Minecraft's colormaps, so their green changes smoothly across a biome's edge,
+yellowing near a desert and cooling toward the snow, while the biome itself changes at once. Birch
+and spruce leaves keep a color of their own. A hot, dry climate also flattens the land, so a desert
+lies flat and the hills sink as they near it.
 
 ## Water, glass and ice
 
@@ -136,10 +136,10 @@ of the land is on seed 1. The player swims in it, sinking slowly, rising while S
 moving at a little over half speed, and sees through a blue tint while the eye is under it. Glass,
 ice and water are drawn see-through, a second mesh of each section drawn after the opaque ones and
 farthest first, each vertex's alpha its surface's. They cast no shadow, which keeps them out of the
-scene's distance field as well, since the field holds a see-through mesh as solid, so the sun and
-the light that bounces come through a window of glass as through an opening, and a room lit through
-a skylight reads the same with glass in it as without. Glass lets the light levels through, and
-water takes a level more for each block of it, so the sky fades with depth and a lake's floor
+scene's distance field as well, since the field holds a see-through mesh as solid, so the sun's
+light and indirect light come through a window of glass as through an opening, and a room lit
+through a skylight reads the same with glass in it as without. Glass lets the light levels through,
+and water takes a level more for each block of it, so the sky fades with depth and a lake's floor
 darkens as it deepens.
 
 Water flows as Minecraft's does, a block every quarter second. It falls into the air under it, and
@@ -155,16 +155,16 @@ A torch, a lantern, an end rod, and the soul torch and soul lantern of blue fire
 block, each a few boxes as Minecraft's models are. A torch placed on a wall's side leans out from
 it, a lantern placed under a block hangs from it, and an end rod points away from the face it is
 placed on, and each falls when the block it holds to is broken. Light passes through them, the
-player through a torch, and the crosshair meets the box around their pieces. The piece that gives
-off light, a torch's flame, a lantern's glass or the rod, is a lamp's cube scaled to it, so the
-light that bounces carries it as a small light by its box, and the other pieces are faces of the
-section's mesh.
+player through a torch, and the crosshair meets the box around their pieces. The emissive piece,
+a torch's flame, a lantern's glass or the rod, is a lamp's cube scaled to it, so global
+illumination carries it as a small light by its box, and the other pieces are faces of the section's
+mesh.
 
-A small light's glow is its light over its surface, so a torch's flame, a 48th of a block's surface,
-glows far brighter than glowstone. Each is set so a closed room's floor takes about three quarters
-of glowstone's light from a torch or an end rod, nine tenths from a lantern and two fifths from the
-soul fire. A flame a quarter of a block from a wall lights a bright round pool on it, as a light
-that near a wall does.
+A small light's emissive intensity is its light over its surface, so a torch's flame, a 48th of a
+block's surface, is far brighter than glowstone. Each is set so a closed room's floor takes about
+three quarters of glowstone's light from a torch or an end rod, nine tenths from a lantern and two
+fifths from the soul fire. A flame a quarter of a block from a wall lights a bright round pool on
+it, as a light that near a wall does.
 
 ## Slabs, stairs, fences and doors
 
@@ -188,10 +188,10 @@ Tunnels wind under the ground where two noises are both near zero, and wide cave
 where a third is high. They stay three blocks under the ground, so they are dark until dug into, but
 in patches of high ground away from the sea a tunnel that rises near the top breaks out, a mouth the
 sun shines into. A ravine cuts the ground open along a swaying line about 48 blocks long, up to
-seven wide at its middle and narrowing to its ends, its floor up to 30 blocks down with a few magma
-blocks glowing on it, so the sun's light falls down its walls and the magma's lights its depths at
-night. No ravine is cut beside the sea, so no water stands beside its air. `voxel.find ravine` gives
-the nearest.
+seven wide at its middle and narrowing to its ends, its floor up to 30 blocks down with a few
+emissive magma blocks on it, so the sun's light falls down its walls and the magma's lights its
+depths at night. No ravine is cut beside the sea, so no water stands beside its air. `voxel.find
+ravine` gives the nearest.
 
 ## Trees and structures
 
@@ -226,8 +226,9 @@ generated, as Minecraft places them. A sheep's wool is white, or now and then gr
 pink, about as often as Minecraft's are born so. A villager wears a robe of its village's biome.
 
 A mob stands a few seconds and then walks to a place up to ten blocks off, along a way found through
-the blocks: along the ground and around what stands in it, up a block with a jump, down as far as
-three, and through water where no other way goes, floating in it and climbing out onto a bank. Now
+the blocks, which runs along the ground and around what stands in it, up a block with a jump, down
+as far as three, and through water where no other way goes, the mob floating in it and climbing out
+onto a bank. Now
 and then one turns its head to watch the player within six blocks. A hit turns it red for half a
 second, knocks it back and sends it running from place to place for five seconds, and once its
 health is gone it falls onto its side and is taken away, a chicken after four hits, a sheep after
@@ -244,9 +245,9 @@ have had theirs placed, so a herd or a village's villagers are placed once.
 Each piece of a mob, its head, body, legs and a chicken's wings, is a few boxes after Minecraft's
 models, one mesh of colored vertices drawn instanced for every mob of its kind, its legs swinging as
 it walks. Mobs are drawn within 64 blocks, as Minecraft draws its entities, through the engine's own
-shader, so the haze is not on them. They cast shadows and bounce no light, their materials'
-`BouncesLight` off, which leaves them out of the scene's distance field, so a pig's pink does not
-reach the grass.
+shader, so the haze is not on them. They cast shadows and take no part in global illumination, their
+materials' `BouncesLight` off, which leaves them out of the scene's distance field, so a pig's pink
+does not reach the grass.
 
 ## Creative and survival
 
@@ -254,10 +255,10 @@ A world plays in creative mode, as a test of the light needs, or in survival, wh
 the settings window choose and the save keeps. In creative every item is to hand through E, a block
 breaks at once and drops nothing, placing a block uses nothing up, and Space pressed twice flies. In
 survival there is no flight, and a block takes its hardness times one and a half seconds to break
-with the button held, darkening as it goes, as by hand in Minecraft, and then drops what it leaves:
-grass, farmland and a path their dirt, stone its cobblestone, coal ore its coal, wheat its wheat and
-seeds, leaves, glass and ice nothing, and any other block itself. A torch or a lantern that falls
-with the block it held to drops too, and placing a block uses one up.
+with the button held, darkening as it goes, as by hand in Minecraft, and then drops what it leaves.
+Grass, farmland and a path drop their dirt, stone its cobblestone, coal ore its coal, wheat its
+wheat and seeds, leaves, glass and ice nothing, and any other block itself. A torch or a lantern
+that falls with the block it held to drops too, and placing a block uses one up.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival, where a left click takes up a stack, puts it down, joins it to a stack of its item or
@@ -266,7 +267,7 @@ chosen slot's items and Control with Q its stack. A stack on the ground falls, s
 turns slowly, and is picked up once the player comes within a block of it, half a second after it
 fell or two after it was thrown, joining stacks of its item in the inventory first. Two stacks of an
 item lying together join, and a stack is gone after five minutes. The stacks on the ground are not
-saved with the world. A mob drops its loot as it dies, in either mode: a pig porkchops, a cow
+saved with the world. A mob drops its loot as it dies, in either mode. A pig drops porkchops, a cow
 leather and beef, a sheep a block of wool of its coat's color and mutton, and a chicken feathers and
 its meat.
 
@@ -297,16 +298,16 @@ cave or a ravine show.
 
 ## Furnaces and iron
 
-A furnace smelts what it is given, ten seconds an item: raw meat cooked, porkchop and beef to eight
-points of food and mutton and chicken to six, sand to glass, cobblestone to stone, iron ore to an
-ingot and a log to charcoal. It burns coal or charcoal for 80 seconds, a log, planks or a crafting
-table for 15, a wooden tool for 10, a slab for 7.5 and a stick for 5, lights a new fuel only when it
-has something to smelt with room for what it makes, and starts an item over when its fire goes out,
-as Minecraft's does. A right click opens it, what it smelts over its fuel with the fire's bar
-between them, the smelting's bar, and what it made, which a click takes up. While it burns it glows
-as a whole block and lights the blocks around it to 13. It burns on while its column is loaded, its
-window shut or not, gives up what it holds when it is broken or blown up, and is kept by the save in
-`furnaces.json`.
+A furnace smelts what it is given, ten seconds an item. It cooks raw meat, porkchop and beef to
+eight points of food and mutton and chicken to six, and turns sand to glass, cobblestone to stone,
+iron ore to an ingot and a log to charcoal. It burns coal or charcoal for 80 seconds, a log, planks
+or a crafting table for 15, a wooden tool for 10, a slab for 7.5 and a stick for 5, lights a new
+fuel only when it has something to smelt with room for what it makes, and starts an item over when
+its fire goes out, as Minecraft's does. A right click opens it, what it smelts over its fuel with
+the fire's bar between them, the smelting's bar, and what it made, which a click takes up. While it
+burns it is emissive as a whole block and lights the blocks around it to 13. It burns on while its
+column is loaded, its window shut or not, gives up what it holds when it is broken or blown up, and
+is kept by the save in `furnaces.json`.
 
 Iron ore lies in the stone in veins of six, ten to a column from 5 to 64 blocks up, pale tan against
 the gray, and drops itself only to a pickaxe of stone or iron. Three ingots over two sticks make an
@@ -320,8 +321,8 @@ healing tire the player, and each four points of that exhaustion take a point of
 leaves, or of the food once none is left. With 18 food or more the player heals a point every four
 seconds, with none starves a point every four seconds down to one, and with six or less cannot
 sprint. Holding the right button with food eats it over a second and a half while the player is
-hungry: raw porkchop or beef three points, raw mutton or chicken two, an apple four and bread, three
-wheat in a row, five. Oak leaves drop an apple once in two hundred.
+hungry. Raw porkchop or beef feeds three points, raw mutton or chicken two, an apple four and bread,
+three wheat in a row, five. Oak leaves drop an apple once in two hundred.
 
 A fall of more than three blocks takes a point for each block past three, a fifth of that onto a hay
 bale and none into water. Under water the player holds fifteen seconds of breath, shown as bubbles
@@ -333,13 +334,13 @@ player from all of it.
 
 ## Hostile mobs
 
-In survival, zombies, skeletons, spiders and creepers spawn in the dark, as Minecraft's do: on a
-solid block where no block gives light and the sky's light, less its darkening at night, is no
-brighter than a roll from 0 to 7, so on the surface at night and in caves at any hour. Four tries a
-second look between 24 and 64 blocks from the player for a pack of one to four of a kind, zombies
-four times in ten, skeletons three, and spiders and creepers one and a half each, while fewer than
-30 are about. One more than 128 blocks off is gone at once and one more than 32 off now and then,
-and a column that unloads does not keep them, nor does the save.
+In survival, zombies, skeletons, spiders and creepers spawn in the dark, as Minecraft's do, on a
+solid block where no emissive block's light reaches and the sky's light, less its darkening at
+night, is no brighter than a roll from 0 to 7, so on the surface at night and in caves at any hour.
+Four tries a second look between 24 and 64 blocks from the player for a pack of one to four of a
+kind, zombies four times in ten, skeletons three, and spiders and creepers one and a half each,
+while fewer than 30 are about. One more than 128 blocks off is gone at once and one more than 32 off
+now and then, and a column that unloads does not keep them, nor does the save.
 
 A hostile mob that sees the player within its range, 24 blocks for a zombie and 16 for the rest,
 hunts the player along a way found through the blocks, and keeps on within twice that, as does one
@@ -353,44 +354,44 @@ and little stone, drops a third of what it breaks, and harms the player and the 
 distance and how much of them it sees, 43 points at its middle. Zombies and skeletons burn under the
 open sky by day, a point a second. In creative mode they wander and hunt no one.
 
-They drop Minecraft's loot as they die: a zombie rotten flesh, which feeds four points, a skeleton
-bones and arrows, a spider string and now and then an eye, and a creeper gunpowder, unless it blew
-itself up. Their models are boxes after Minecraft's, a zombie's and a skeleton's arms held out ahead
-and a skeleton's bow upright in its hand, and arrows are thin shafts drawn over the frame, which
-cast no shadow.
+They drop Minecraft's loot as they die. A zombie drops rotten flesh, which feeds four points, a
+skeleton bones and arrows, a spider string and now and then an eye, and a creeper gunpowder, unless
+it blew itself up. Their models are boxes after Minecraft's, a zombie's and a skeleton's arms held
+out ahead and a skeleton's bow upright in its hand, and arrows are thin shafts drawn over the frame,
+which cast no shadow.
 
 ## How the world is drawn
 
 A section of 16 blocks a side is one mesh in one white material, each corner of a face its position
-and eight packed bytes of the game's own, which `VoxelSandbox/resources/shaders/terrain.slang`
-unpacks: the face it lies on, which of the face's corners it is, its shade and its surface's color,
-from which the shader takes the normal and texture coordinate by table and the color under the
-shade, twenty bytes a corner on the GPU. The colors go with the mesh as well for the scene's
-distance field, which the light is traced through, so the light that bounces takes each block's
+and eight packed bytes of the game's own, twenty bytes a corner on the GPU. The bytes hold the face
+the corner lies on, which of the face's corners it is, its shade and its surface's color, and
+`VoxelSandbox/resources/shaders/terrain.slang` unpacks them, taking the normal and texture
+coordinate by table and the color under the shade. The colors go with the mesh as well for the
+scene's distance field, which the light is traced through, so indirect light takes each block's
 color. Faces between two blocks are left out, and each face that remains is two triangles of its
 own, since greedy meshing is not written yet. A section meshed again with the same faces keeps its
 mesh and takes only new packed bytes, written in place.
 
-A block that gives off light (glowstone, a sea lantern, shroomlight, magma) is drawn as a cube of
-its own, and the glowing piece of a torch, a lantern or an end rod as that cube scaled to it, every
-cube of one surface in one instanced draw, because a material's light is one for its whole draw and
-a section's one material gives off none.
+An emissive block (glowstone, a sea lantern, shroomlight, magma) is drawn as a cube of its own, and
+the emissive piece of a torch, a lantern or an end rod as that cube scaled to it, every cube of one
+surface in one instanced draw, because a material's emission is one for its whole draw and a
+section's one material is not emissive.
 
 Sections are drawn by their distance from the player and by what the eye can see, as Minecraft's
-visibility graph has it: each section knows which of its six faces its open cells join, and a flood
+visibility graph has it. Each section knows which of its six faces its open cells join, and a flood
 from the eye's section passes into the next only across faces so joined, never turning back, so the
 land under the ground and behind a cave's or a closed room's walls is left out. From the eye's own
 section it leaves by the faces the open cells around the eye reach. `voxel.cull` and the settings
 window turn it off. Sections are not culled to the view's frustum, because a mesh left out of a
-frame leaves the field, and the light it gave or the shadow it cast in the bounce goes with it until
-it settles again, where the land the flood leaves out lies behind walls the field holds, so a cave
+frame leaves the field, and the indirect light it reflected or blocked goes with it until the field
+settles again, where the land the flood leaves out lies behind walls the field holds, so a cave
 lit by a glowstone looks the same either way.
 
 ## Light levels and corners
 
 Each block holds Minecraft's two light levels from 0 to 15. The sky's is 15 under the open sky,
-falls straight down without losing any and loses one for each block it goes sideways or up, and a
-light-giving block's loses one for each block from it, glowstone, sea lanterns, shroomlight and
+falls straight down without losing any and loses one for each block it goes sideways or up, and an
+emissive block's loses one for each block from it, glowstone, sea lanterns, shroomlight and
 lanterns giving 15, torches and end rods 14, the soul torch and soul lantern 10 and magma 3. A new
 column's light is worked out on the worker that generates it, joined to its neighbors' as it
 arrives, and taken back and spread again around each block placed or broken.
@@ -399,18 +400,18 @@ Each corner of a face is shaded from the four cells in front of the face that me
 Minecraft's smooth lighting is. Its light is the average of the open ones, its occlusion counts the
 solid ones, and the shade darkens the block's color in the vertex, where neither the sky nor a lamp
 reaches it and where blocks meet. A level keeps nearly all of the color down to a few levels from
-dark and next to none at 0, because the light that bounces brings a lamp's falloff itself, where
+dark and next to none at 0, because global illumination brings a lamp's falloff itself, where
 Minecraft's own curve, which is its only light, dims by distance. The field reads the darkened color
-too, so an unlit cave sends on nearly none of the light that bounces. A change of light gives a mesh
+too, so an unlit cave reflects nearly no indirect light. A change of light gives a mesh
 new colors and keeps its vertices, which the field knows it by, so relighting leaves the meshes
 settled in the field, and the field and the ray-traced scene take the new colors in the frame after,
-so the light that bounces off a section a lamp has lit since takes its new light. Each quad is split
+so the indirect light off a section a lamp has lit since takes its new light. Each quad is split
 along the diagonal its occlusion favors, so a shaded corner darkens one triangle softly.
 
-The settings window turns the light levels and the shaded corners off, each on its own, to see the
-light that bounces alone, and opens the engine's windows of what the light that bounces holds, of
-the frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette,
-FXAA, depth of field, motion blur and bloom, each set at once as it is changed.
+The settings window turns the light levels and the shaded corners off, each on its own, to see
+global illumination alone, and opens the engine's windows of what global illumination holds, of the
+frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
+depth of field, motion blur and bloom, each set at once as it is changed.
 
 ## Clouds
 
@@ -419,7 +420,7 @@ blocks and 4 high, which cells hold a cloud following a slow noise of the world'
 is a box whose faces against a cloud beside it are left out, its top brightest and its bottom
 darkest, see-through, lit by the sun and the moon, and fading into the sky at twice the render
 distance. The clouds cast no shadow, which keeps them out of the scene's distance field, so they
-shade neither the sun's light nor the light that bounces. The cells around the player are one mesh,
+shade neither the sun's light nor indirect light. The cells around the player are one mesh,
 made again only when the player moves a cell's width against them, and their drift is the mesh's
 place.
 
@@ -427,7 +428,7 @@ place.
 
 The sections are drawn through a shader of the game's own,
 `VoxelSandbox/resources/shaders/terrain.slang`, which takes the model pass's light, the sun, the
-shadows, the light that bounces and the sky, over each vertex's color as the engine's shader for
+shadows, global illumination and the sky, over each vertex's color as the engine's shader for
 colored meshes does, and fades the result into the sky's color at the horizon from two thirds of the
 render distance to the render distance, as Minecraft's fog hides where the world ends. Under water
 the haze is the water's blue and covers the view within 16 blocks. The sky below the horizon keeps
@@ -448,12 +449,12 @@ bed to set where the player respawns, spiders that climb walls, and a bow and ar
 Every section within the render distance that the eye can see is drawn each frame, through the scene
 field's gather and the engine's culling of each pass, so the render distance sets much of the
 frame's cost. It is 8 by default and up to 16 in the settings window, whose first lines give the
-frame's time, draws and triangles. Leaving the unseen sections out matters most underground: in a
+frame's time, draws and triangles. Leaving the unseen sections out matters most underground. In a
 cave of seed 1's hills it leaves 905 of 1,085 sections undrawn and takes the frame from 16 ms to 4,
 the sun's shadows from 6.9 ms to 0.07, and in a closed room on a flat world it takes 0.3 ms off the
 window's passes.
 
-A mob's pieces bounce no light, so the scene's distance field leaves them out. Each piece of a
-walking mob would otherwise be a moving mesh the field stamps as a box every frame, which over seed
-1's first village with the hills at 8 columns cost the field 2.1 ms of the CPU and 1.0 ms of the GPU
-a frame for the 17 mobs drawn walking, and 4.0 and 3.9 ms for a crowd of 76.
+A mob's pieces take no part in global illumination, so the scene's distance field leaves them out.
+Each piece of a walking mob would otherwise be a moving mesh the field stamps as a box every frame,
+which over seed 1's first village with the hills at 8 columns cost the field 2.1 ms of the CPU and
+1.0 ms of the GPU a frame for the 17 mobs drawn walking, and 4.0 and 3.9 ms for a crowd of 76.

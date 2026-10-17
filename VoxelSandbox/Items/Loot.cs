@@ -13,10 +13,10 @@ namespace VoxelSandbox;
 public static class Loot
 {
     /// <summary>
-    /// The items a block broken in survival drops with an item held: grass, farmland and a path their
-    /// dirt, stone its cobblestone, coal ore its coal, oak leaves an apple now and then, other leaves,
-    /// glass and ice nothing, wheat its wheat and a few seeds, any other block the item that places it,
-    /// and a block that asks for a pickaxe broken without one nothing.
+    /// The items a block broken in survival drops with an item held. Grass, farmland and a path
+    /// drop their dirt, stone its cobblestone, coal ore its coal, oak leaves an apple now and then,
+    /// other leaves, glass and ice nothing, wheat its wheat and a few seeds, any other block the
+    /// item that places it, and a block that asks for a pickaxe broken without one nothing.
     /// </summary>
     public static IEnumerable<(Item Item, int Count)> Of(BlockId block, Random random, Item? held = null)
     {
@@ -56,11 +56,11 @@ public static class Loot
     private static readonly BlockId[] Wool = [BlockId.WhiteWool, BlockId.LightGrayWool, BlockId.GrayWool, BlockId.BlackWool, BlockId.BrownWool, BlockId.PinkWool];
 
     /// <summary>
-    /// The items a mob drops as it dies: a pig one to three porkchops, a cow up to two leather and one
-    /// to three beef, a sheep a block of its wool and one or two mutton, a chicken up to two feathers
-    /// and its meat, a zombie up to two rotten flesh, a skeleton up to two bones and two arrows, a
-    /// creeper up to two gunpowder unless it blew itself up, a spider up to two string and now and
-    /// then an eye, and a villager nothing.
+    /// The items a mob drops as it dies. A pig drops one to three porkchops, a cow up to two
+    /// leather and one to three beef, a sheep a block of its wool and one or two mutton, a chicken
+    /// up to two feathers and its meat, a zombie up to two rotten flesh, a skeleton up to two bones
+    /// and two arrows, a creeper up to two gunpowder unless it blew itself up, a spider up to two
+    /// string and now and then an eye, and a villager nothing.
     /// </summary>
     public static IEnumerable<(Item Item, int Count)> Of(Mob mob, Random random)
     {
@@ -113,9 +113,9 @@ public static class Loot
     };
 
     /// <summary>
-    /// How much a block stands against an explosion, Minecraft's blast resistance: its hardness for
-    /// most, 6 for stone and what is made of it, 3 for wood and coal ore, 100 for water, and bedrock
-    /// past any explosion.
+    /// How much a block stands against an explosion, Minecraft's blast resistance, which is its
+    /// hardness for most, 6 for stone and what is made of it, 3 for wood and coal ore, 100 for
+    /// water, and bedrock past any explosion.
     /// </summary>
     public static float Resistance(BlockId block) => Blocks.Get(block).Item switch
     {

@@ -144,7 +144,7 @@ public sealed class SpruceTree : IFeature
 
         clip.Set(x, y, z, BlockId.Dirt);
         for (int i = 1; i <= height; i++) clip.Set(x, y + i, z, BlockId.SpruceLog);
-        // Rings from the top down: a point, then alternately one and two blocks out, the leaves
+        // Rings from the top down, a point and then alternately one and two blocks out, the leaves
         // starting two blocks above the ground.
         for (int dy = 1, ring = 0; top + dy > y + 2; dy--, ring++)
         {

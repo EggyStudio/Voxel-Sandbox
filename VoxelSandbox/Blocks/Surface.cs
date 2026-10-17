@@ -3,16 +3,16 @@ using Engine;
 namespace VoxelSandbox;
 
 /// <summary>
-/// The look of a block's face: its color, which a section's mesh carries in the face's vertices,
-/// and for a block that gives off light, the light, which its cube is drawn with as a material.
+/// The look of a block's face, its color, which a section's mesh carries in the face's vertices, and
+/// for an emissive block its emission, which its cube is drawn with as a material.
 /// </summary>
 /// <remarks>
-/// A material's light is one for its whole draw, so a surface that gives off light is drawn as
-/// cubes of its own rather than as faces of a section, whose one material lights nothing.
+/// A material's emission is one for its whole draw, so an emissive surface is drawn as cubes of its
+/// own rather than as faces of a section, whose one material is not emissive.
 /// </remarks>
 public sealed record Surface(int Id, string Name, Color Color, float Roughness, Color Emissive, float Glow, SurfaceTint Tint)
 {
-    /// <summary>Whether the surface gives off light of its own.</summary>
+    /// <summary>Whether the surface is emissive.</summary>
     public bool Emits => Glow > 0;
 
     /// <summary>The surface's color under a tint, which a tinted surface multiplies its gray by and any other ignores.</summary>
@@ -28,7 +28,7 @@ public sealed record Surface(int Id, string Name, Color Color, float Roughness, 
 
     private static Color Multiply(Color a, Color b) => new((byte)(a.R * b.R / 255), (byte)(a.G * b.G / 255), (byte)(a.B * b.B / 255));
 
-    /// <summary>The material a lamp's cube of this surface is drawn with, its glow scaled by <paramref name="glowScale"/>.</summary>
+    /// <summary>The material a lamp's cube of this surface is drawn with, its emissive intensity scaled by <paramref name="glowScale"/>.</summary>
     public ModelMaterial Material(float glowScale) => new(Color)
     {
         AlphaMode = MaterialAlphaMode.Opaque,
@@ -122,11 +122,11 @@ public static class Surfaces
     public static readonly int FurnaceSide = Add("furnace side", new Color(92, 92, 92));
     public static readonly int FurnaceTop = Add("furnace top", new Color(116, 116, 116));
     public static readonly int FurnaceLit = Add("lit furnace", new Color(110, 92, 80), emissive: new Color(255, 140, 50), glow: 1.2f);
-    // A small light's glow is its light over its surface, so a torch's flame, a 48th of a block's
-    // surface, glows far brighter than glowstone to light a room nearly as well, as a torch's level of
-    // 14 nearly matches glowstone's 15. Each is set so a closed room's floor takes about three
-    // quarters of glowstone's light from a torch or an end rod, nine tenths from a lantern, and two
-    // fifths from the soul fire's blue, whose level is 10.
+    // A small light's emissive intensity is its light over its surface, so a torch's flame, a 48th
+    // of a block's surface, is far brighter than glowstone to light a room nearly as well, as a
+    // torch's level of 14 nearly matches glowstone's 15. Each is set so a closed room's floor takes
+    // about three quarters of glowstone's light from a torch or an end rod, nine tenths from a
+    // lantern, and two fifths from the soul fire's blue, whose level is 10.
     public static readonly int Flame = Add("flame", new Color(255, 214, 130), emissive: new Color(255, 180, 90), glow: 140);
     public static readonly int SoulFlame = Add("soul flame", new Color(140, 236, 245), emissive: new Color(80, 220, 255), glow: 70);
     public static readonly int LanternGlass = Add("lantern glass", new Color(250, 205, 125), emissive: new Color(255, 175, 85), glow: 25);

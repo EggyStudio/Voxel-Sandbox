@@ -157,13 +157,13 @@ public sealed class VoxelWorld
 
     /// <summary>
     /// The block an item makes placed at a world position against a face whose outward normal is
-    /// given: the item itself for a whole block; for a slab, stairs or a fence the way of it that
-    /// faces <paramref name="look"/>, the way the player looks along the ground, in the upper half
-    /// where it is placed against a ceiling or on the upper half of a side, <paramref name="height"/>
-    /// being how far up its cell the side was met; and for a block that holds to another the way of
-    /// it that faces away from that face, or else the first way of it with a block to hold to,
-    /// standing before hanging before a wall, or air where none has one, as a lantern placed on a
-    /// wall stands on the floor below or hangs from the ceiling.
+    /// given. It is the item itself for a whole block; for a slab, stairs or a fence the way of it
+    /// that faces <paramref name="look"/>, the way the player looks along the ground, in the upper
+    /// half where it is placed against a ceiling or on the upper half of a side,
+    /// <paramref name="height"/> being how far up its cell the side was met; and for a block that
+    /// holds to another the way of it that faces away from that face, or else the first way of it
+    /// with a block to hold to, standing before hanging before a wall, or air where none has one,
+    /// as a lantern placed on a wall stands on the floor below or hangs from the ceiling.
     /// </summary>
     public BlockId Fit(BlockId item, int x, int y, int z, int normalX, int normalY, int normalZ, Facing look = Facing.North, float height = 0)
     {
@@ -198,7 +198,7 @@ public sealed class VoxelWorld
         return true;
     }
 
-    /// <summary>Marks the sections whose faces a block's light or presence shades: its own, and those across each edge of it on a section's side.</summary>
+    /// <summary>Marks the sections whose faces a block's light or presence shades, its own and those across each edge of it on a section's side.</summary>
     public void Reshade(int x, int y, int z)
     {
         int cx = x >> Section.Shift, cy = y >> Section.Shift, cz = z >> Section.Shift;

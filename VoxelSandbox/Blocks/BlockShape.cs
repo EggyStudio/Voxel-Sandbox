@@ -3,7 +3,7 @@ using System.Numerics;
 namespace VoxelSandbox;
 
 /// <summary>
-/// Which way a block smaller than its cell faces: up where it stands on the block below, down where
+/// Which way a block smaller than its cell faces, up where it stands on the block below, down where
 /// it hangs from the block above, and toward a side where it is fixed to the block behind it, as
 /// Minecraft's torch on a wall faces away from the wall. North is toward -z and east toward +x, as
 /// Minecraft has them.
@@ -24,7 +24,7 @@ public enum Facing
 /// </summary>
 public readonly record struct Piece(Vector3 From, Vector3 To, int Surface, Vector3 Lean = default)
 {
-    /// <summary>Whether its surface gives off light, so it is drawn as a lamp's cube rather than as faces of its section.</summary>
+    /// <summary>Whether its surface is emissive, so it is drawn as a lamp's cube rather than as faces of its section.</summary>
     public bool Glows => Surfaces.All[Surface].Emits;
 }
 
@@ -42,9 +42,9 @@ public readonly record struct Box(Vector3 Min, Vector3 Max)
 /// </summary>
 /// <remarks>
 /// <para>
-/// A box that gives off light is drawn as a lamp's cube of its own scaled to it, square to the axes,
-/// so the light that bounces carries it as a small light by its box, and the other boxes are faces
-/// of its section's mesh. Light passes through such a block and it hides none of the faces beside
+/// An emissive box is drawn as a lamp's cube of its own scaled to it, square to the axes, so global
+/// illumination carries it as a small light by its box, and the other boxes are faces of its
+/// section's mesh. Light passes through such a block and it hides none of the faces beside
 /// it. A torch, a lantern or an end rod falls when the block it holds to is broken; a fence, a slab
 /// or stairs stand where they are put.
 /// </para>
@@ -66,7 +66,7 @@ public sealed class BlockShape
         var boxes = new List<Box>();
         foreach (var piece in pieces)
         {
-            if (piece.Glows && piece.Lean != Vector3.Zero) throw new ArgumentException("A box that gives off light is drawn as a cube square to the axes, so it cannot lean.");
+            if (piece.Glows && piece.Lean != Vector3.Zero) throw new ArgumentException("An emissive box is drawn as a cube square to the axes, so it cannot lean.");
             var (low, high) = (Vector3.One, Vector3.Zero);
             foreach (var corner in Corners(piece))
             {
@@ -101,7 +101,7 @@ public sealed class BlockShape
     /// <summary>The corner of the box around every piece farthest from the cell's origin.</summary>
     public Vector3 Max { get; }
 
-    /// <summary>Whether any of its pieces gives off light.</summary>
+    /// <summary>Whether any of its pieces is emissive.</summary>
     public bool Glows => Pieces.Any(p => p.Glows);
 
     /// <summary>The step from its cell to the block it holds to, the one behind the way it faces.</summary>
@@ -171,7 +171,7 @@ public sealed class BlockShape
         Px(7.5f, 10, 7.5f, 8.5f, 16, 8.5f, Surfaces.Iron),
     ], solid: true);
 
-    /// <summary>An end rod, a white rod that gives off light on a small base, its base on the block it is fixed to.</summary>
+    /// <summary>An end rod, an emissive white rod on a small base, its base on the block it is fixed to.</summary>
     public static BlockShape EndRod(Facing facing) => new(facing, Turned(facing,
         Px(6, 0, 6, 10, 1, 10, Surfaces.EndRodBase),
         Px(7, 1, 7, 9, 16, 9, Surfaces.EndRod)), solid: true);

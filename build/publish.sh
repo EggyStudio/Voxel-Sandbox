@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Publishes the game as native code for the system it runs on and zips it as a player gets it, into
-# build/publish as VoxelSandbox-<version>-<rid>.zip: the program, its resources, the engine's shaders
-# with the cache of every shader compiled, the README and the license.
+# build/publish as VoxelSandbox-<version>-<rid>.zip, which holds the program, its resources, the
+# engine's shaders with the cache of every shader compiled, the README and the license.
 #
 #   build/publish.sh <version> <rid> [options for dotnet publish]
 #
@@ -49,8 +49,8 @@ fi
 mkdir -p "$out/source/.slang-cache"
 cp -R build/shader-cache/. "$out/source/.slang-cache/"
 
-# What a player has no use for: the symbols the native compiler writes beside the program, a folder
-# of them on macOS, and the documentation of the game and the engine.
+# The symbols the native compiler writes beside the program, a folder of them on macOS, and the
+# documentation of the game and the engine, none of which a player has a use for.
 rm -rf "$out"/*.pdb "$out"/*.dbg "$out"/*.xml "$out"/*.dSYM
 cp README.md LICENSE "$out/"
 

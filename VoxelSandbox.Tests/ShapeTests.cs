@@ -108,8 +108,8 @@ public class ShapeTests
             foreach (var (local, _) in block.Glows)
             {
                 var half = new Vector3(local.M11, local.M22, local.M33) / 2;
-                Assert.True(Vector3.Min(local.Translation - half, Vector3.Zero) == Vector3.Zero, $"{block.Key} glows outside its cell");
-                Assert.True(Vector3.Max(local.Translation + half, Vector3.One) == Vector3.One, $"{block.Key} glows outside its cell");
+                Assert.True(Vector3.Min(local.Translation - half, Vector3.Zero) == Vector3.Zero, $"{block.Key} has an emissive box outside its cell");
+                Assert.True(Vector3.Max(local.Translation + half, Vector3.One) == Vector3.One, $"{block.Key} has an emissive box outside its cell");
             }
         }
     }

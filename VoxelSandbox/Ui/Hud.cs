@@ -4,7 +4,7 @@ using static Engine.E3D;
 
 namespace VoxelSandbox;
 
-/// <summary>What is drawn over the world: the crosshair, the hotbar and the outline of the block looked at.</summary>
+/// <summary>The crosshair, the hotbar and the outline of the block looked at, drawn over the world.</summary>
 public static class Hud
 {
     private const int Slot = 44;
@@ -66,7 +66,7 @@ public static class Hud
                     DrawRectangle(x + 5, y + Slot - 7, Slot - 10, 3, Color.Black);
                     DrawRectangle(x + 5, y + Slot - 7, (int)((Slot - 10) * left), 3, new Color((byte)(255 * (1 - left)), (byte)(255 * left), 30));
                 }
-                // A block that gives off light is ringed in its light's color.
+                // An emissive block is ringed in its emission's color.
                 if (stack.Item.Block is { } block && Blocks.Get(block).Emits) DrawRectangleLines(x + 5, y + 5, Slot - 10, Slot - 10, Surfaces.All[Blocks.Get(block).Top].Emissive);
                 if (stack.Count > 1)
                 {

@@ -1,9 +1,9 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// Water that flows, as Minecraft's does: down into the air under it as falling water, and where it
-/// cannot fall, sideways one level further from its source for each block, up to seven, drying
-/// back as its source goes. Two sources beside each other over ground make a third between them.
+/// Water that flows as Minecraft's does, down into the air under it as falling water, and where it
+/// cannot fall, sideways one level further from its source for each block, up to seven, drying back
+/// as its source goes. Two sources beside each other over ground make a third between them.
 /// </summary>
 /// <remarks>
 /// <para>

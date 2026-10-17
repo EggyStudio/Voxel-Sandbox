@@ -18,11 +18,12 @@ namespace VoxelSandbox;
 /// frame by how far their boxes overlap.
 /// </para>
 /// <para>
-/// Hostile mobs spawn as Minecraft's do, in packs of one to four on a solid block in the dark: no
-/// light from blocks, and sky light no brighter, less the sky's darkening at night, than a roll from
-/// 0 to 7. Four tries a second look for a place between 24 and 64 blocks from the player while
-/// fewer than 30 are about, and a hostile mob more than 128 blocks off is gone at once, and one more
-/// than 32 off now and then. They are not kept by a column that unloads, nor saved.
+/// Hostile mobs spawn as Minecraft's do, in packs of one to four on a solid block in the dark,
+/// where no light from blocks reaches and the sky's light, less its darkening at night, is no
+/// brighter than a roll from 0 to 7. Four tries a second look for a place between 24 and 64 blocks
+/// from the player while fewer than 30 are about, and a hostile mob more than 128 blocks off is
+/// gone at once, and one more than 32 off now and then. They are not kept by a column that unloads,
+/// nor saved.
 /// </para>
 /// </remarks>
 public sealed class Mobs
@@ -234,7 +235,7 @@ public sealed class Mobs
         : hour > 5 && hour < 6.5f ? (int)((6.5f - hour) / 1.5f * 11)
         : 11;
 
-    /// <summary>Whether a hostile mob of a kind can spawn with its feet in a cell: on a solid block, the cells it takes free, and dark enough by a roll.</summary>
+    /// <summary>Whether a hostile mob of a kind can spawn with its feet in a cell, which needs a solid block under it, the cells it takes free, and the cell dark enough by a roll.</summary>
     public static bool Spawnable(VoxelWorld world, MobKind kind, int x, int y, int z, float hour, int roll)
     {
         if (!Blocks.IsOpaque(world.GetBlock(x, y - 1, z))) return false;

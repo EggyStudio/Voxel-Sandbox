@@ -5,9 +5,10 @@ using ImGuiNET;
 namespace VoxelSandbox;
 
 /// <summary>
-/// The window E opens: in survival the inventory's 36 slots under a crafting grid of two by two, in
-/// creative every item to put in the hotbar's chosen slot, at a crafting table the inventory under
-/// a grid of three by three in either mode, and at a furnace the inventory under the furnace's slots.
+/// The window E opens, which shows in survival the inventory's 36 slots under a crafting grid of
+/// two by two, in creative every item to put in the hotbar's chosen slot, at a crafting table the
+/// inventory under a grid of three by three in either mode, and at a furnace the inventory under
+/// the furnace's slots.
 /// </summary>
 /// <remarks>
 /// The slots are laid out as Minecraft's are, three rows of nine and the hotbar's below them. A left
@@ -252,8 +253,8 @@ public sealed class InventoryWindow
         Held = held.Count > 1 ? held with { Count = held.Count - 1 } : null;
     }
 
-    // A stack drawn over its slot: a tool's or a stick's icon, a worn tool's bar of uses left, and
-    // the count where it is more than one.
+    // A stack drawn over its slot, with a tool's or a stick's icon, a worn tool's bar of uses left,
+    // and the count where it is more than one.
     private static void DrawStack(ImDrawListPtr list, Vector2 min, ItemStack stack)
     {
         if (ItemIcon.Of(stack.Item).Length == 0) list.AddRectFilled(min, min + new Vector2(Slot), ImGui.GetColorU32(Swatch(stack.Item)));

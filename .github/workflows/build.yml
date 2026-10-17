@@ -2,7 +2,7 @@
 #
 # The game is built from the engine's package on nuget.org with warnings failing the build (NORM.md,
 # N 6.1), and its tests run on Linux, Windows and macOS, the systems it ships for (N 6.2). On Linux
-# the game is then played through ./e3d (build/drive.sh) on Mesa's lavapipe, a Vulkan device that
+# the game is then scripted through ./e3d (build/play.sh) on Mesa's lavapipe, a Vulkan device that
 # runs on the CPU, under the Khronos validation layer, with the engine's command line from a
 # checkout of the engine at the commit its package was packed from, since the command line comes in
 # no package.
@@ -20,8 +20,8 @@ permissions:
   contents: read
 
 # A newer push to a branch cancels the run of the one before it, whose result nobody reads. A called
-# run takes its caller's github context, so the pack run's jobs, started by workflow_dispatch, have a
-# group of their own, and a push during a pack run cannot cancel it.
+# run takes its caller's github context, so the pack run's jobs, started by workflow_dispatch, have
+# a group of their own, and a push during a pack run cannot cancel it.
 concurrency:
   group: build-${{ github.event_name == 'workflow_dispatch' && 'pack-' || '' }}${{ github.ref }}
   cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
@@ -61,7 +61,7 @@ jobs:
 
   play:
     runs-on: ubuntu-24.04
-    # build/drive.sh took 10 minutes on four cores of a desktop's lavapipe, most of it the frames
+    # build/play.sh took 10 minutes on four cores of a desktop's lavapipe, most of it the frames
     # drawn before the walk, and the engine's command line builds in a minute, so 40 minutes is
     # reached only where the game or e3d hangs.
     timeout-minutes: 40
@@ -105,7 +105,7 @@ jobs:
 
       - run: dotnet build VoxelSandbox.slnx
 
-      - run: build/drive.sh
+      - run: build/play.sh
 
       # The room's capture and the game's log, from every run.
       - uses: actions/upload-artifact@v7

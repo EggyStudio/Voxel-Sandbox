@@ -1,4 +1,4 @@
-// The voxel game's sections and clouds: each vertex its position and eight packed bytes of the
+// The voxel game's sections and clouds, each vertex its position and eight packed bytes of the
 // game's own (MeshStream, read as CUSTOM0), which hold the face it lies on, which of the face's
 // corners it is, its shade and its surface's color; the normal and texture coordinate come from
 // the tables below by face and corner, and the color is the surface's under the shade, sRGB as a
@@ -27,9 +27,9 @@ static const float2 Coordinates[24] = {
     float2(1, 0), float2(1, 1), float2(0, 1), float2(0, 0),
 };
 
-// The packed bytes as SectionMesher.Pack writes them: in the first uint the face at its low 3 bits,
-// the corner at the next 2 and the shade from 0 to 255 at the 8 above; in the second the color's red,
-// green and blue a byte each from the lowest and its alpha in the highest.
+// The packed bytes as SectionMesher.Pack writes them. The first uint holds the face at its low 3
+// bits, the corner at the next 2 and the shade from 0 to 255 at the 8 above, and the second the
+// color's red, green and blue a byte each from the lowest and its alpha in the highest.
 [shader("vertex")]
 ModelStreamsOutput vertexMain(float3 position : POSITION, uint2 packed : CUSTOM0, ModelInstance instance)
 {

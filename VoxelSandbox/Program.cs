@@ -1,8 +1,8 @@
-// A voxel game in the manner of Minecraft, built to test the light that bounces: an endless world
-// of colored blocks to walk, fly and build in, blocks that give off light, and a sky with a sun
-// that crosses it. `--flat` and `--seed <n>` pick the kind of world and its seed, `--world <name>`
-// the save it is kept in, its kind and seed by default, and `--transient` keeps nothing on disk,
-// as a test run does.
+// A voxel game in the manner of Minecraft, built to test global illumination, with an endless world
+// of colored blocks to walk, fly and build in, emissive blocks, and a sky with a sun that crosses
+// it. `--flat` and `--seed <n>` pick the kind of world and its seed, `--world <name>` the save it
+// is kept in, its kind and seed by default, and `--transient` keeps nothing on disk, as a test run
+// does.
 using Engine;
 using VoxelSandbox;
 using static Engine.E3D;
