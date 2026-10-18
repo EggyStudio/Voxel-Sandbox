@@ -133,6 +133,8 @@ public sealed class SettingsWindow
     {
         var hour = sky.Hour;
         if (ImGui.SliderFloat("Hour", ref hour, 0, 24, "%.2f")) sky.Hour = hour % 24;
+        var day = sky.Day;
+        if (ImGui.InputInt("Day", ref day)) sky.Day = Math.Max(0, day);
         var cycle = sky.Cycle;
         if (ImGui.Checkbox("The day goes on", ref cycle)) sky.Cycle = cycle;
         var minutes = sky.DayMinutes;

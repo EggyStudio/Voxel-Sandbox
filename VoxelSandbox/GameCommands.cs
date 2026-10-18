@@ -32,7 +32,7 @@ public static class GameCommands
             + $"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count} sections to mesh; "
             + $"{renderer.Sections} sections, {renderer.Draws} draws, {renderer.Triangles} triangles, {renderer.Lamps} lamps, {renderer.Culled} culled; "
             + $"{game.Mobs.All.Count} mobs loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws; "
-            + $"hour {game.Sky.Hour:0.00}, light {game.Light.Quality}, render distance {game.RenderDistance}, world {game.World.Generator.Name} of seed {game.World.Generator.Seed}, "
+            + $"hour {game.Sky.Hour:0.00} of day {game.Sky.Day}, light {game.Light.Quality}, render distance {game.RenderDistance}, world {game.World.Generator.Name} of seed {game.World.Generator.Seed}, "
             + $"{(game.Save is { } save ? $"saved in {save.Name}" : "transient")}, {game.Mode.ToString().ToLowerInvariant()}, "
             + $"holding {(game.Hotbar.Current is { } held ? $"{held.Count} {held.Item.Key}" : "nothing")}, {game.Drops.All.Count} stacks on the ground; "
             + Vitals(game.Vitals);
@@ -153,6 +153,17 @@ public static class GameCommands
         game.Sky.Hour = (hour % 24 + 24) % 24;
         return $"the hour is {game.Sky.Hour:0.00}";
     }
+
+    [Command("voxel.day", "Sets the count of days, which the moon's phase follows, its full moon on the night day 0 ends with and every eighth after: voxel.day <day>")]
+    internal static string Day(int day)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        game.Sky.Day = Math.Max(0, day);
+        return $"the day is {game.Sky.Day}, and tonight's moon is {PhaseNames[Sky.MoonPhase(game.Sky.Day, 18)]}";
+    }
+
+    private static readonly string[] PhaseNames =
+        ["full", "waning gibbous", "at its last quarter", "a waning crescent", "new", "a waxing crescent", "at its first quarter", "waxing gibbous"];
 
     [Command("voxel.cycle", "Lets the day go on by itself or holds the hour: voxel.cycle <on>")]
     internal static string Cycle(bool on)

@@ -2,15 +2,16 @@
 # A scripted run of the game through ./e3d, offscreen and under the validation layer, as the build
 # workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it builds a
 # closed room of stone with a glowstone block in it, puts the player in the room facing the lamp at
-# night, walks toward it and captures the frame. It fails where the game does not open or answer,
-# the player did not move, or the layer reported an error, and says why in an error annotation, so
-# the run's page names it.
+# night, walks toward it and captures the frame, and then captures the night sky from the room's
+# roof, the full moon and the stars over the flat land. It fails where the game does not open or
+# answer, the player did not move, or the layer reported an error, and says why in an error
+# annotation, so the run's page names it.
 #
 #   build/play.sh
 #
 # The game is the Debug build that `dotnet build VoxelSandbox.slnx` makes. ./e3d runs out of the
 # engine checkout ENGINE_CHECKOUT names, or the folder above this one, and keeps the session's log
-# in that checkout's build/sessions. The capture and what e3d answered go to captures.
+# in that checkout's build/sessions. The captures and what e3d answered go to captures.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p captures
@@ -72,9 +73,12 @@ cmd frames.wait 120
 # The room as the lamp lights it, before the walk takes the player up to the lamp. The capture's
 # path is whole, since the game writes it from its own folder, and on Windows the form the game
 # reads.
-shot="$PWD/captures/room.png"
-if command -v cygpath > /dev/null; then shot=$(cygpath -m "$shot"); fi
-./e3d shot "$shot" --timeout 600 > /dev/null 2> "$said" || fail "./e3d shot ended with $?, $(head -n 1 "$said")"
+capture() {
+  local shot="$PWD/captures/$1"
+  if command -v cygpath > /dev/null; then shot=$(cygpath -m "$shot"); fi
+  ./e3d shot "$shot" --timeout 600 > /dev/null 2> "$said" || fail "./e3d shot ended with $?, $(head -n 1 "$said")"
+}
+capture room.png
 
 before=$(ask voxel.state)
 cmd input.key W 30
@@ -86,6 +90,14 @@ to=$(feet "$after")
 [ -n "$from" ] && [ -n "$to" ] || fail "voxel.state did not say where the player stands, $before"
 distance=$(printf '%s %s\n' "$from" "$to" | awk '{ printf "%.2f", sqrt(($4 - $1) ^ 2 + ($5 - $2) ^ 2 + ($6 - $3) ^ 2) }')
 awk -v d="$distance" 'BEGIN { exit !(d > 0.5) }' || fail "the player did not walk toward the lamp, from $from to $to"
+
+# The night sky from the roof, the full moon of the first night ahead in the east-northeast and
+# the stars around it, each drawn as a billboard.
+cmd voxel.tp 16.5 12 -16
+cmd voxel.time 20
+cmd voxel.look 71 25
+cmd frames.wait 2
+capture sky.png
 
 ./e3d stop --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"

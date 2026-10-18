@@ -190,7 +190,7 @@ public sealed class VoxelGame : IDisposable
         var at = new Vector3(info.X, info.Y, info.Z);
         Streamer.LoadNow(at, 2);
         Player.Teleport(at);
-        (Player.Heading, Player.Pitch, Player.Flying, Sky.Hour) = (info.Heading, info.Pitch * MathF.PI / 180, info.Flying, info.Hour);
+        (Player.Heading, Player.Pitch, Player.Flying, Sky.Hour, Sky.Day) = (info.Heading, info.Pitch * MathF.PI / 180, info.Flying, info.Hour, info.Day);
     }
 
     /// <summary>Keeps every loaded column the player changed and the player's place, and writes them, unless the world is transient.</summary>
@@ -205,7 +205,7 @@ public sealed class VoxelGame : IDisposable
         var at = Player.Body.Position;
         Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
             Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, [.. Blocks.All.Select(b => b.Key)],
-            Mode.ToString().ToLowerInvariant(), Inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation));
+            Mode.ToString().ToLowerInvariant(), Inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day));
         _sinceSave = 0;
     }
 
@@ -630,6 +630,7 @@ public sealed class VoxelGame : IDisposable
         ClearBackground(Sky.Horizon);
         BeginMode3D(Player.Camera);
         DrawSkybox();
+        Sky.Draw(Player.Camera);
         Renderer.Draw(World, Player.Eye, RenderDistance);
         MobRenderer.Draw(Mobs.All, Player.Eye);
         DropRenderer.Draw(Drops.All, Player.Eye, GetTime());
@@ -703,5 +704,6 @@ public sealed class VoxelGame : IDisposable
         MobRenderer.Dispose();
         DropRenderer.Dispose();
         Clouds.Dispose();
+        Sky.Dispose();
     }
 }

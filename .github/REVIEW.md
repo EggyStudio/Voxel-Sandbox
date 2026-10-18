@@ -5,7 +5,29 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `b87e386`, item 4 done and nothing else, 58 files. STYLE.md has a Register section
+Reviewed up to `4358f3b`, item 5 done and nothing else, 8 files. README.md's opening and AGENTS.md's
+paragraph say what the game is, a voxel game set in an endless generated world whose blocks are
+placed and broken, with its light, its water, its mobs and the items they drop, Minecraft named
+afterwards only where its sizes, speeds and light levels are taken, "hostile mobs in its dark"
+reading "where it is dark", and AGENTS.md's line on what the game grows toward gone; `Program.cs:1`
+and the project file's comment lose the same likeness, and `build/publish.sh` names the alias that
+opens the Microsoft Store where it had a stand-in. STYLE.md's Register section carries the rule, a
+likeness is not a description and a figure of speech is not a term, another product named only where
+a rule or a number is taken from it, a description holding no plan, with the README's pair as a row,
+the ten idioms named and by hand kept in its literal sense, and its checks and COMMITS.md's
+staged-diff pattern search for them. Each rewrite, read, says what the thing is and loses no fact.
+Checked on the working machine were the strict build with no warning, the 102 tests, and the search
+for the idioms finding STYLE.md's rule and checks and COMMITS.md's pattern alone; `build/play.sh`
+was not run, comments and documents alone having changed. Right. Nothing is pending; the build and
+the pack run are green at `b87e386`, and the owner pushed this commit at 21:31, its build run ending
+green at 21:36, the tests on the three systems and the play on lavapipe. At 22:25 on 2026-10-18 the
+owner resumed development on the game (Decision 6): the sky's sun, moon and stars as camera-facing
+billboards with textures in place of the pixelated blobs (item 6), the sun's shadows pixelated (item
+7), the sun's surround in the sky pixelated with the rest of the sky smooth (item 8), and the block
+and item icons made anew (item 9); the radiance cascades' changes come through the engine's packages
+after its commits. Next items 6 to 9 in order, one commit each.
+
+Before it, `b87e386` came, item 4 done and nothing else, 58 files. STYLE.md has a Register section
 with the rule and the owner's pairs, the engine's API names and Minecraft's glowstone keeping their
 spelling and a game identifier its name unless the thing is new and the rename cheap, and its colon
 rule reads that a running sentence holds no colon, one standing at the end of a sentence before a
@@ -53,34 +75,6 @@ before, and the three publishes in one to two minutes each, the zips `VoxelSandb
 linux-x64, win-x64 and osx-arm64 at 13 to 17 MB kept as its artifacts, the Linux one's program
 having saved a world and opened it again with no `slangc`; item 3 is done. The repository stands
 whole; item 4, the register, is the work left.
-
-Before it, `c08d259` came, item 1 done and nothing else: the old game's files gone and the game's 61
-files and its tests' 16 in as the engine's `fc5fdc97` held them, byte for byte, with the two project
-files and the README the only files written anew, the game on `PackageReference 3DEngine 5.2.43`
-with its generator from the package, the tests referencing the game, `Directory.Build.props` with
-`net10.0`, `Nullable`, `ImplicitUsings`, English resources, compiled documentation with CS1591
-allowed and `ImportDirectoryBuildTargets` off, since a checkout inside the engine's would take the
-engine's targets from the folder above; `.gitignore`, `.gitattributes`, the `e3d` wrapper,
-`AGENTS.md`, the README, `STYLE.md`, `COMMITS.md` and `E3D.md` written for the game,
-`build/fetch-slang.sh`, `fetch-slang.ps1`, `version.sh`, `version.txt`, `drive.sh`, `shaders.sh` and
-`publish.sh`, and the two workflows, `build.yml` testing on three systems and playing on lavapipe
-with the engine checked out at `fc5fdc97`, `pack.yml` calling it, compiling the shaders, publishing
-three zips and releasing when asked. Three things differ from item 1 and are better: the shaders job
-runs `build/shaders.sh`, which compiles every build of every shader from one folder with `./e3d
-shaders`, where a run of the game on lavapipe compiled one of the terrain's five in two minutes and
-26 of CPU, so a device with ray queries or global illumination off would have found its build
-missing from a zip; the build workflow's concurrency group takes `pack-` on a `workflow_dispatch`
-event, as the engine's takes it from its input; and the paths filter leaves out BUILDING.md, which
-the game has not. Checked on the working machine: the strict build from an empty package folder, the
-tests 102 cases (96 facts and a theory's six), `./e3d open` through the wrapper answering
-`voxel.state` and listing 43 commands, `build/drive.sh` passing on the GPU in 23 seconds and on
-lavapipe held to four cores in ten minutes with no validation error, the command line built from a
-fresh checkout at `fc5fdc97`, and `build/publish.sh` publishing a Linux zip whose program drew 60
-frames with no `slangc`. Right. Found ahead of item 3: the native publish warns IL2026 and IL3050 at
-`WorldSave.cs` lines 160, 174, 280 and 298, where `System.Text.Json` serializes by reflection, and
-the native program saving a world ended at 32 seconds with reflection-based serialization disabled,
-so a player's build ends at its first save where a `--transient` run saves nothing; item 3 says the
-mend. Next item 2, the names, then item 3's mend, then the owner's push and the first two runs.
 
 ## Now
 
@@ -171,16 +165,65 @@ mend. Next item 2, the names, then item 3's mend, then the owner's push and the 
    `build/play.sh` and `git grep -i` for the pairs finding this file's history alone. One commit.
 
 5. **The register widens to likenesses and figures of speech (Decision 5), README.md:3 and
-   AGENTS.md:3 and 5.** The README opens with "A voxel game in the manner of Minecraft, and the
-   ground floor of a larger one", and AGENTS.md's paragraph with the same likeness and with what the
-   game grows toward; the owner read the opening on 2026-10-17 at 20:34 and asked that no phrasing
-   of the kind stand. The game is said by what it is, an endless generated voxel world whose blocks
-   are placed and broken, with its light, its water, its mobs and the items they drop, the other
-   game named only where a number or a rule is taken from it, as the README's later lines do with
-   its sizes, speeds and light levels, and no line says what the game is the start of; AGENTS.md
-   changes on this word of the owner's (N 7.4); STYLE.md's Register section takes the rule with this
-   pair; and `git grep -i` for the idioms Decision 5 names finds nothing, by hand in its technical
-   sense apart. Checked by review. One commit.
+   AGENTS.md:3 and 5, done at `4358f3b`.** The README opens with "A voxel game in the manner of
+   Minecraft, and the ground floor of a larger one", and AGENTS.md's paragraph with the same
+   likeness and with what the game grows toward; the owner read the opening on 2026-10-17 at 20:34
+   and asked that no phrasing of the kind stand. The game is said by what it is, an endless
+   generated voxel world whose blocks are placed and broken, with its light, its water, its mobs and
+   the items they drop, the other game named only where a number or a rule is taken from it, as the
+   README's later lines do with its sizes, speeds and light levels, and no line says what the game
+   is the start of; AGENTS.md changes on this word of the owner's (N 7.4); STYLE.md's Register
+   section takes the rule with this pair; and `git grep -i` for the idioms Decision 5 names finds
+   nothing, by hand in its technical sense apart. Checked by review. One commit.
+
+6. **The sun, the moon and the stars as camera-facing billboards with textures, the moon with its
+   phases (Decision 6).** The owner said on 2026-10-18 at 22:25 that the sky's pixelated blobs
+   standing for the stars, the moon and the sun look ugly. The sun and the moon become billboards
+   facing the camera at their fixed places on the sky's turning, each with a texture drawn as pixel
+   art, the moon's texture holding its eight phases, the count the other game has, shown by the day
+   of the game's calendar; the stars become a particle effect parented to the sun's and the moon's
+   fixed positions, so they turn with the sky, each star a camera-facing billboard of a few pixels
+   fading in as the day fades, as `Sky.cs:119` has them fade; and the blobs go. `voxel.time` sets
+   the hour as it does, and the phase follows the day count, a command setting the day. Checked by
+   the tests of the sky's hour and phase, a capture at night from the drive, and `build/play.sh`.
+   What the engine lacks for a parented billboard particle goes to the engine's ASKS.md (Decision
+   4). One commit. Read against the package on 2026-10-18 at 22:50, the engine's billboards face the
+   camera through the draw list, depth tested, so the sun and the moon are drawn with the point
+   filter and the far plane as asked, the moon's eight phases from a sheet of four by two chosen by
+   the day count and a `voxel.day` command setting the day; but the engine's particles are simulated
+   on the GPU in world space, born at a random point within the emitter's radius, and the emitter's
+   rotation and parent never move a particle already born, so a star field turning with the sky
+   needs two things the engine lacks, an emitter whose particles live in its entity's space and turn
+   with it and its parent, and particles placed where the program says and living until removed,
+   which go to the engine's ASKS.md (Decision 4). The reviewer's call is one commit now, the sun and
+   the moon as billboards, the blobs gone and the stars drawn by the game as camera-facing
+   billboards of a few pixels on the sky's turning, fading in as the day fades, so they look and
+   move as asked, and a second commit moving the stars to the engine's particles once a package
+   brings the parented emitter, the item done then.
+
+7. **The sun's shadows are pixelated (Decision 6).** The owner asked on 2026-10-18 at 22:25 that the
+   shadows be pixelated too. The shadow map's texels are sized to the block grid, a texel a fraction
+   of a block, and sampled without filtering, so a shadow's edge steps along the blocks' pixels
+   rather than blurring; `voxel.shadows` keeps setting the distance. Where the engine's shadow
+   settings offer no filter or texel size, the ask goes to the engine's ASKS.md (Decision 4) and the
+   item waits on the package that brings it. Checked by a capture under a low sun in the drive and
+   `build/play.sh`. One commit.
+
+8. **The sun's surround in the sky is pixelated and the rest of the sky stays smooth (Decision 6).**
+   The owner asked on 2026-10-18 at 22:25 that the sky around the sun be pixelated as the other game
+   has it, the sky's gradient elsewhere smooth. The glow around the sun is drawn in the sky's pixel
+   grid, the sun's billboard's pixel size, as a ring of pixel-art brightness that follows the sun,
+   and the sky's gradient from horizon to zenith and its dawn and dusk colors stay smooth as
+   `Sky.cs` paints them. Checked by captures at noon and at dusk in the drive and `build/play.sh`.
+   One commit.
+
+9. **The icons of the block and item types are made anew (Decision 6).** The owner asked on
+   2026-10-18 at 22:25 that the icons for the different types of blocks and items be updated. The
+   hotbar and the inventory draw a block as a colored square and an item by strokes
+   (`Ui/Hud.cs:57-61`, `Ui/InventoryWindow.cs:256`); each block type gets an icon drawn from its own
+   textures as a small cube seen from above and two sides, and each item type a pixel-art icon of
+   its own, drawn once into an atlas the HUD and the inventory window read. Checked by a capture of
+   the inventory open in the drive and `build/play.sh`. One commit.
 
 ## Verdicts
 
@@ -229,6 +272,15 @@ No verdict is open.
    by what it is and does, another product is named only where a rule or a number is taken from it,
    as the sizes, speeds and light levels are, and a plan is not written into a description; item 5,
    and the engines' items 29 and 25 under their Decisions 43 and 37.
+
+6. **Development resumes; the sky, the shadows and the icons are the game's week.** On 2026-10-18 at
+   22:25, with every run green on the engines and here, the owner resumed development on both
+   engines and the game. For the game the owner named the sky's sun, moon and stars as camera-facing
+   billboards with textures and the moon's phases (item 6), the sun's shadows pixelated (item 7),
+   the sun's surround pixelated with the rest of the sky smooth (item 8), and the block and item
+   icons made anew (item 9). The radiance cascades the engine works on this week reach the game
+   through the engine's packages after its commits, so the game's lighting changes wait for them and
+   the items above do not.
 
 ## Replies
 

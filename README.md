@@ -8,8 +8,8 @@ The world is held in columns of colored blocks 16 by 16 by 128, with animals tha
 villagers in its villages and hostile mobs where it is dark. The game has a first-person player
 with Minecraft's sizes and speeds, building and breaking with an outline on the block looked at, in
 creative mode or in survival with health and hunger, an inventory, tools and crafting, Minecraft's
-light levels with smooth lighting and shaded corners, a sky whose sun crosses it under drifting
-clouds, and an ImGui window of the light's settings.
+light levels with smooth lighting and shaded corners, a sky whose sun, moon and stars cross it
+behind drifting clouds, and an ImGui window of the light's settings.
 
 ![The hills of seed 1 from above, a forest of oak and birch under blocky clouds](.github/assets/hills.webp)
 
@@ -94,10 +94,10 @@ looked at from the terminal. A closed room lit by one lamp, at night:
 ./e3d shot room.png
 ```
 
-`voxel.state` says where the player stands and looks, what is loaded and drawn, the hour and the
-light. `voxel.fill`, `voxel.room` and `voxel.set` change blocks, `voxel.tp`, `voxel.look` and
-`voxel.fly` move the player, `voxel.break` and `voxel.place` act as the mouse buttons do,
-`voxel.time` and `voxel.cycle` set the sky, `voxel.clouds` shows or hides the clouds,
+`voxel.state` says where the player stands and looks, what is loaded and drawn, the hour, the day
+and the light. `voxel.fill`, `voxel.room` and `voxel.set` change blocks, `voxel.tp`, `voxel.look`
+and `voxel.fly` move the player, `voxel.break` and `voxel.place` act as the mouse buttons do,
+`voxel.time`, `voxel.day` and `voxel.cycle` set the sky, `voxel.clouds` shows or hides the clouds,
 `voxel.distance` the render distance, `voxel.light` reads a block's light levels, `voxel.shade`
 turns the light levels and the shaded corners on or off, `voxel.world` saves the world and opens or
 begins another of a kind and seed, `voxel.save` saves at once, and `voxel.blocks` lists the blocks
@@ -109,8 +109,8 @@ where the crosshair rests, `voxel.attack` hits the one it rests on as the left b
 `voxel.furnace` fills and reads a furnace, `voxel.inventory` lists what it holds, `voxel.items`
 lists every item, and `voxel.throw` throws as Q does. `voxel.vitals` says or sets the health and
 food, `voxel.hurt` harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field`
-and `voxel.shadows` set global illumination, the scene's distance field and the sun's shadows,
-and `voxel.hud` hides what is drawn over the world for a capture. Three measure the light.
+and `voxel.shadows` set global illumination, the scene's distance field and the sun's shadows, and
+`voxel.hud` hides what is drawn over the world for a capture. Three measure the light.
 `voxel.flicker` records each frame's change in the picture around a turn or a step into a file, with
 the first frame after it, the settled one and their difference beside it, `voxel.ring` reads the
 last frame's light around a circle on the ground by angle, and `voxel.depth` says how far the block
@@ -413,6 +413,19 @@ The settings window turns the light levels and the shaded corners off, each on i
 global illumination alone, and opens the engine's windows of what global illumination holds, of the
 frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
 depth of field, motion blur and bloom, each set at once as it is changed.
+
+## Sky
+
+The sky is painted as a gradient from the horizon to the zenith, blue by day, orange at the horizon
+at dawn and dusk and dark blue at night, with a glow around the sun, and given to the engine as the
+map that lights the world from all around and is drawn behind it. The sun, the moon and the stars
+are pixel art drawn over it on billboards facing the camera, sampled without filtering, so their
+pixels stay square. The sky turns with the hour about the axis from north to south, the sun rising
+in the east at 6, passing over the south at noon and setting in the west at 18, and the moon stands
+opposite it. Its 500 stars keep their places on the turning sky and fade in as the day fades and
+near the horizon. The moon goes through Minecraft's eight phases, a phase a day from the full moon
+of the first night, and changes while it is down. `voxel.time` sets the hour and `voxel.day` the
+count of days, which a save keeps, and the land and the clouds hide the sun, the moon and the stars.
 
 ## Clouds
 
