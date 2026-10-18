@@ -87,5 +87,32 @@ public class SkyTests
         Assert.Equal(0, sheet[((SkyArt.Cell + 1 + 6) * across + 1 + 6) * 4 + 3]);
     }
 
+    [Fact]
+    public void The_Glow_Around_The_Sun_Falls_In_Steps_On_The_Suns_Grid_And_Clears_Before_Its_Edge()
+    {
+        var glow = SkyArt.HaloPixels(0.75f);
+        const int middle = SkyArt.HaloSize / 2;
+        int Alpha(int x, int y) => glow[(y * SkyArt.HaloSize + x) * 4 + 3];
+
+        // The sun's square and the glow's share their middle and their grid of pixels.
+        Assert.Equal(0, (SkyArt.HaloSize - SkyArt.Size) % 2);
+        Assert.Equal(255, Alpha(middle, middle));
+        var levels = new HashSet<int>();
+        for (int x = middle; x < SkyArt.HaloSize; x++)
+        {
+            levels.Add(Alpha(x, middle));
+            if (x + 1 < SkyArt.HaloSize) Assert.True(Alpha(x + 1, middle) <= Alpha(x, middle));
+        }
+        // A few rings, each a step of brightness, rather than a smooth fall.
+        Assert.InRange(levels.Count, 4, SkyArt.HaloSteps + 1);
+        for (int i = 0; i < SkyArt.HaloSize; i++)
+        {
+            Assert.Equal(0, Alpha(i, 0));
+            Assert.Equal(0, Alpha(0, i));
+            Assert.Equal(0, Alpha(i, SkyArt.HaloSize - 1));
+            Assert.Equal(0, Alpha(SkyArt.HaloSize - 1, i));
+        }
+    }
+
     private static (float, int) Rounded((float Hour, int Day) at) => (MathF.Round(at.Hour, 3), at.Day);
 }

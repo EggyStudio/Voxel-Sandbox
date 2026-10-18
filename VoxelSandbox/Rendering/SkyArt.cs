@@ -1,8 +1,9 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// The pixel art the sky's billboards are drawn with, the sun, the moon in each of its phases and a
-/// star, as RGBA bytes a row at a time from the top, a clear pixel's alpha 0.
+/// The pixel art the sky's billboards are drawn with, the sun and the glow around it, the moon in
+/// each of its phases and a star, as RGBA bytes a row at a time from the top, a clear pixel's alpha
+/// 0.
 /// </summary>
 /// <remarks>
 /// The sun and the moon are squares with their corners cut, 12 pixels across, as Minecraft's are
@@ -21,6 +22,12 @@ public static class SkyArt
 
     /// <summary>How many pixels apart the moon's phases are in their sheet, each with its clear edge.</summary>
     public const int Cell = Size + 2;
+
+    /// <summary>How many pixels the glow around the sun is across, on the sun's grid, the sun's own pixels at its middle.</summary>
+    public const int HaloSize = 96;
+
+    /// <summary>How many steps of brightness the glow takes from its edge to the sun.</summary>
+    public const int HaloSteps = 6;
 
     // The sun's edge, middle and core, the core the palest.
     private static readonly string[] Sun =
@@ -78,6 +85,29 @@ public static class SkyArt
 
     /// <summary>The sun, <see cref="Size"/> pixels square.</summary>
     public static byte[] SunPixels() => Paint(Sun, (_, _) => true);
+
+    /// <summary>
+    /// The glow around the sun, <see cref="HaloSize"/> pixels square and each pixel
+    /// <paramref name="degrees"/> across, white with its brightness as its alpha. The brightness
+    /// falls off from the sun as the twelfth power of the cosine of a pixel's angle from it and is
+    /// held to <see cref="HaloSteps"/> steps, so the glow shows as rings whose edges step along the
+    /// pixels.
+    /// </summary>
+    public static byte[] HaloPixels(float degrees)
+    {
+        var pixels = new byte[HaloSize * HaloSize * 4];
+        for (int y = 0; y < HaloSize; y++)
+            for (int x = 0; x < HaloSize; x++)
+            {
+                float across = x + 0.5f - HaloSize / 2f, down = y + 0.5f - HaloSize / 2f;
+                var angle = float.DegreesToRadians(MathF.Sqrt(across * across + down * down) * degrees);
+                var glow = MathF.Pow(MathF.Max(0, MathF.Cos(angle)), 12);
+                var at = (y * HaloSize + x) * 4;
+                (pixels[at], pixels[at + 1], pixels[at + 2]) = (255, 255, 255);
+                pixels[at + 3] = (byte)(255 * MathF.Round(glow * HaloSteps) / HaloSteps);
+            }
+        return pixels;
+    }
 
     /// <summary>A star, three pixels square, its middle the pixel at 1, 1.</summary>
     public static byte[] StarPixels() => Paint(Star, (_, _) => true);

@@ -5,7 +5,22 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `bfba72b`, item 6's first commit and nothing else, 10 files. `Rendering/SkyArt.cs`
+Reviewed up to `4fc4809`, item 7's first commit and nothing else, 4 files. The terrain shader's
+`pixelMiddle` moves the lit point to the middle of the block pixel it lies in on the two axes across
+the face's normal, and the lighting takes that copy of the vertex output, so a shadow's edge steps
+along the blocks' pixels, the lamps' and the bounced light taken at the same points, the header
+comment saying so; the README gains a Shadows section saying what steps and that the engine's
+contact shadow leaves a fringe about half a block wide since the package has no setting to turn it
+off; `build/play.sh` raises a pillar of stone west of the room under the sun of 8.30 and captures it
+from the air to the southeast, the capture holding one edge stepping along the pixels and the other
+with the soft fringe, no test since the snapping lives in the shader. Checked were the strict build
+with no warning, 107 tests, the style checks over the staged diff and the play on the GPU with no
+validation error. The engine's ASKS.md carries the contact shadows' entry with the reviewer's line,
+item 33 of the engine's REVIEW.md after its item 32, and item 7's second commit turns them off when
+a package brings the setting. Next item 8, the owner's push of the two commits and their build run,
+and items 6 and 7's second commits after the package.
+
+Before it, `bfba72b` came, item 6's first commit and nothing else, 10 files. `Rendering/SkyArt.cs`
 holds the pixel art as bytes, a sun of 12 pixels, a square with its corners cut, a moon of 12 with
 craters whose eight phases sit in a sheet of four by two with a clear gutter of a pixel between
 cells, since the point filter read the neighboring phase at a cell's edge without it, each phase lit
@@ -50,28 +65,6 @@ billboards with textures in place of the pixelated blobs (item 6), the sun's sha
 7), the sun's surround in the sky pixelated with the rest of the sky smooth (item 8), and the block
 and item icons made anew (item 9); the radiance cascades' changes come through the engine's packages
 after its commits. Next items 6 to 9 in order, one commit each.
-
-Before it, `b87e386` came, item 4 done and nothing else, 58 files. STYLE.md has a Register section
-with the rule and the owner's pairs, the engine's API names and Minecraft's glowstone keeping their
-spelling and a game identifier its name unless the thing is new and the rename cheap, and its colon
-rule reads that a running sentence holds no colon, one standing at the end of a sentence before a
-bulleted list, a code block or a command and after a label in a table, its own text recast to it and
-its table given the README-opener and exit-code cases; its colon check reads comments in C#, Slang,
-shell and YAML and, with awk outside the code fences, the prose of the five Markdown files, and a
-`git grep` for the pairs stands beside it. The sweep took the README, AGENTS.md, E3D.md and
-COMMITS.md, every C# and Slang comment, the scripts and the workflows, and the printed strings, the
-`voxel.gi` and `voxel.light` descriptions and answers, the settings window's labels and the save
-warnings among them; `build/drive.sh` is `build/play.sh` with `build.yml`, `.gitignore`, AGENTS.md
-and the README following, and the identifiers `Glows`, `Glow`, `GlowScale` and `BounceWindow` stay
-as the rule allows. Read: the rewrites say the same thing in the rule's register, none loses a fact.
-Checked on the working machine: the strict build, the 102 tests, `build/play.sh` on the GPU in 17
-seconds with the player walked 2.8 blocks and no validation error, and the pairs found by `git grep`
-only where the rule and its checks name them. Right. Two things of the engine's found here go to its
-item 29, the title of its global-illumination window and a colon in its API logger's warnings. The
-owner pushed it at 15:17 and its build run was whole green; the repository stands whole, every item
-done and proven. At 20:34 on 2026-10-17 the owner read the README's opening and asked that no
-likeness or figure of speech stand, item 5 under Decision 5, the one thing pending; the build and
-the pack run are green.
 
 ## Now
 
@@ -213,7 +206,7 @@ the pack run are green.
    the normal and averages nine nearest texels, and the cascades split the distance at 12 and 45 of
    150 on tiles of 2,048 texels, which at the game's 96 blocks puts texels of about 0.01, 0.03 and
    0.09 blocks against a block pixel's 0.0625, so the two near cascades draw an edge already crisp
-   but running diagonally across the pixels, and the far one steps by texels of 1.4 block pixels;
+   but running diagonally across the pixels, and the far one steps by texels of 1.27 block pixels;
    the sun's light is also multiplied by a contact shadow traced through the scene field at half the
    window's size and blurred with the occlusion, which nothing in the package turns off short of the
    field itself, and it lays a soft fringe of up to half a block past a hard edge. The game can step
@@ -222,9 +215,12 @@ the pack run are green.
    the lamps' and the bounced light are taken once a block pixel too, which a capture of the
    lamp-lit room reads the same. The reviewer's call is one commit at once with that snapping,
    `build/play.sh` and a capture under a low sun, and an entry in the engine's ASKS.md for a setting
-   that turns the sun's contact shadows off, noting as a lesser thing the far cascade's texel of 1.4
-   block pixels; a second commit turns the contact shadows off once a package brings the setting,
-   the item done then.
+   that turns the sun's contact shadows off, noting as a lesser thing the far cascade's texel of
+   1.27 block pixels; a second commit turns the contact shadows off once a package brings the
+   setting, the item done then. First commit done at `4fc4809` on 2026-10-18, the lit point snapped
+   to the block pixel's middle in the terrain shader, the README's Shadows section and the pillar's
+   capture in `build/play.sh`; the engine's ASKS.md entry became its item 33, and the second commit,
+   the contact shadows off, waits on the package that brings the setting.
 
 8. **The sun's surround in the sky is pixelated and the rest of the sky stays smooth (Decision 6).**
    The owner asked on 2026-10-18 at 22:25 that the sky around the sun be pixelated as the other game

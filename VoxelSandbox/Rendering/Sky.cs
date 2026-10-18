@@ -11,16 +11,18 @@ namespace VoxelSandbox;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The sky is an equirectangular image painted here, a gradient from the horizon to the zenith with
-/// the halo around the sun, given to <c>SetEnvironmentMap</c>, which filters it on the GPU. Global
-/// illumination brings the sky's light back where a ray of its last cascade meets nothing, and
-/// weighs the sky's reflection by how much of the sky a surface's probes found, so a cave lit by no
-/// lamp is dark. The image is painted again only when the time has moved by
+/// The sky is an equirectangular image painted here, a smooth gradient from the horizon to the
+/// zenith colored by the hour, given to <c>SetEnvironmentMap</c>, which filters it on the GPU.
+/// Global illumination brings the sky's light back where a ray of its last cascade meets nothing,
+/// and weighs the sky's reflection by how much of the sky a surface's probes found, so a cave lit by
+/// no lamp is dark. The image is painted again only when the time has moved by
 /// <see cref="RepaintHours"/>, since each painting is a new map to filter.
 /// </para>
 /// <para>
-/// The sun, the moon and the stars are pixel art (<see cref="SkyArt"/>) on billboards facing the
-/// camera, sampled without filtering, so their pixels stay square however large they are drawn.
+/// The sun, the glow around it, the moon and the stars are pixel art (<see cref="SkyArt"/>) on
+/// billboards facing the camera, sampled without filtering, so their pixels stay square however
+/// large they are drawn. The glow's pixels are the sun's, its billboard's middle the sun's, so its
+/// rings step along the sun's grid, and it is added to the sky behind it.
 /// The sky turns about the axis from north to south, the sun on one side of it and the moon on the
 /// other, and the stars keep their places on it, so they turn with the sun and the moon. They are
 /// drawn far out, inside the far plane and in front of the sky's backdrop, so the land and the
@@ -49,7 +51,7 @@ public sealed class Sky : IDisposable
 
     private readonly LightHandle _light;
     private readonly byte[] _pixels = new byte[Width * Height * 4];
-    private readonly Texture2D _sun, _moon, _star;
+    private readonly Texture2D _sun, _halo, _moon, _star;
     private float _litHour = float.NaN, _paintedHour = float.NaN;
 
     public Sky(float hour)
@@ -57,6 +59,7 @@ public sealed class Sky : IDisposable
         Hour = hour;
         _light = CreateDirectionalLight(-Vector3.UnitY, Color.White, 1, castsShadows: true);
         _sun = Load(SkyArt.SunPixels(), SkyArt.Size, SkyArt.Size);
+        _halo = Load(SkyArt.HaloPixels(SunPixel), SkyArt.HaloSize, SkyArt.HaloSize);
         _moon = Load(SkyArt.MoonPixels(), SkyArt.Cell * 4, SkyArt.Cell * 2);
         _star = Load(SkyArt.StarPixels(), 3, 3);
         Apply();
@@ -135,29 +138,51 @@ public sealed class Sky : IDisposable
                 var alpha = night * brightness * SmoothStep(0.0f, 0.15f, toStar.Y);
                 if (alpha < 0.01f) continue;
                 var source = bright ? new Rectangle(0, 0, 3, 3) : new Rectangle(1, 1, 1, 1);
-                Billboard(camera, _star, source, eye + toStar * StarDistance, up, StarDistance, StarPixel * source.Width, alpha);
+                Billboard(camera, _star, source, eye + toStar * StarDistance, up, Pixel(StarDistance, StarPixel), alpha);
             }
 
         var moon = MoonPhase(Day, Hour);
         Billboard(camera, _moon, new Rectangle(moon % 4 * SkyArt.Cell + 1, moon / 4 * SkyArt.Cell + 1, SkyArt.Size, SkyArt.Size),
-            eye - toSun * Distance, up, Distance, MoonPixel * SkyArt.Size, Setting(-toSun));
-        Billboard(camera, _sun, new Rectangle(0, 0, SkyArt.Size, SkyArt.Size), eye + toSun * Distance, up, Distance, SunPixel * SkyArt.Size, Setting(toSun));
+            eye - toSun * Distance, up, Pixel(Distance, MoonPixel), Setting(-toSun));
+
+        // The glow, warmer and stronger at dawn and dusk, gone a little after the sun has set. It
+        // writes no depth, since the sun is drawn over it at the same distance and would fail
+        // against it where the two quads' depths part by a rounding.
+        var dusk = DuskShare(toSun);
+        var glow = (0.25f + 0.5f * dusk) * SmoothStep(-0.2f, 0, toSun.Y);
+        if (glow > 0.01f)
+        {
+            BeginBlendMode(BlendMode.Additive);
+            rlDisableDepthMask();
+            Billboard(camera, _halo, new Rectangle(0, 0, SkyArt.HaloSize, SkyArt.HaloSize), eye + toSun * Distance, up, Pixel(Distance, SunPixel), glow,
+                ColorOf(Vector3.Lerp(Noon, DuskHorizon, dusk)));
+            rlEnableDepthMask();
+            EndBlendMode();
+        }
+        Billboard(camera, _sun, new Rectangle(0, 0, SkyArt.Size, SkyArt.Size), eye + toSun * Distance, up, Pixel(Distance, SunPixel), Setting(toSun));
     }
 
     public void Dispose()
     {
         UnloadTexture(_sun);
+        UnloadTexture(_halo);
         UnloadTexture(_moon);
         UnloadTexture(_star);
     }
 
-    // A billboard so many degrees across at a distance, white at an alpha.
-    private static void Billboard(Camera3D camera, Texture2D texture, Rectangle source, Vector3 at, Vector3 up, float distance, float degrees, float alpha)
+    // A billboard of part of a texture, each of its pixels so wide, at an alpha and in a color,
+    // white unless given.
+    private static void Billboard(Camera3D camera, Texture2D texture, Rectangle source, Vector3 at, Vector3 up, float pixel, float alpha, Color? color = null)
     {
         if (alpha <= 0) return;
-        var size = new Vector2(2 * distance * MathF.Tan(float.DegreesToRadians(degrees) / 2));
-        DrawBillboardPro(camera, texture, source, at, up, size, size / 2, 0, new Color(255, 255, 255, (byte)(255 * Math.Clamp(alpha, 0, 1))));
+        var size = new Vector2(source.Width, source.Height) * pixel;
+        var (r, g, b) = color is { } c ? (c.R, c.G, c.B) : ((byte)255, (byte)255, (byte)255);
+        DrawBillboardPro(camera, texture, source, at, up, size, size / 2, 0, new Color(r, g, b, (byte)(255 * Math.Clamp(alpha, 0, 1))));
     }
+
+    // How wide a pixel so many degrees across is at a distance, the same for every pixel of a
+    // billboard, so two billboards of one pixel's size share a grid where their middles meet.
+    private static float Pixel(float distance, float degrees) => distance * MathF.Tan(float.DegreesToRadians(degrees));
 
     // How much of the sun or the moon shows as it sets, gone once its middle is a little below the
     // horizon, where the sky's backdrop beyond the world's edge would show it.
@@ -165,6 +190,9 @@ public sealed class Sky : IDisposable
 
     // How much of the day's light the sky has, 0 at night and 1 once the sun is well up.
     private static float DayShare(Vector3 toSun) => SmoothStep(-0.15f, 0.2f, toSun.Y);
+
+    // How much of dawn's or dusk's color the sky takes, most as the sun crosses the horizon.
+    private static float DuskShare(Vector3 toSun) => SmoothStep(-0.2f, 0.0f, toSun.Y) * (1 - SmoothStep(0.0f, 0.3f, toSun.Y));
 
     private static Texture2D Load(byte[] pixels, int width, int height)
     {
@@ -219,7 +247,7 @@ public sealed class Sky : IDisposable
     private void Paint(Vector3 toSun)
     {
         var day = DayShare(toSun);
-        var dusk = SmoothStep(-0.2f, 0.0f, toSun.Y) * (1 - SmoothStep(0.0f, 0.3f, toSun.Y));
+        var dusk = DuskShare(toSun);
         var zenith = Vector3.Lerp(NightZenith, DayZenith, day);
         var horizon = Vector3.Lerp(Vector3.Lerp(NightHorizon, DayHorizon, day), DuskHorizon, dusk * 0.8f);
         var ground = horizon * 0.5f;
@@ -239,8 +267,6 @@ public sealed class Sky : IDisposable
                     // Below the horizon the sky keeps the horizon's color a while before darkening,
                     // so the haze at the world's edge meets a sky of its own color.
                     : Vector3.Lerp(horizon, ground, SmoothStep(0.1f, 0.6f, -d.Y));
-                var facing = Vector3.Dot(d, toSun);
-                if (facing > 0) color += Vector3.Lerp(Noon, DuskHorizon, dusk) * (MathF.Pow(facing, 12) * (0.25f + 0.5f * dusk) * SmoothStep(-0.2f, 0, toSun.Y));
 
                 var at = (py * Width + px) * 4;
                 _pixels[at] = (byte)Math.Clamp(color.X, 0, 255);

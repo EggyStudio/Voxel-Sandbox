@@ -416,16 +416,18 @@ depth of field, motion blur and bloom, each set at once as it is changed.
 
 ## Sky
 
-The sky is painted as a gradient from the horizon to the zenith, blue by day, orange at the horizon
-at dawn and dusk and dark blue at night, with a glow around the sun, and given to the engine as the
-map that lights the world from all around and is drawn behind it. The sun, the moon and the stars
+The sky is painted as a smooth gradient from the horizon to the zenith, blue by day, orange at the
+horizon at dawn and dusk and dark blue at night, and given to the engine as the map that lights the
+world from all around and is drawn behind it. The sun, the glow around it, the moon and the stars
 are pixel art drawn over it on billboards facing the camera, sampled without filtering, so their
-pixels stay square. The sky turns with the hour about the axis from north to south, the sun rising
-in the east at 6, passing over the south at noon and setting in the west at 18, and the moon stands
-opposite it. Its 500 stars keep their places on the turning sky and fade in as the day fades and
-near the horizon. The moon goes through Minecraft's eight phases, a phase a day from the full moon
-of the first night, and changes while it is down. `voxel.time` sets the hour and `voxel.day` the
-count of days, which a save keeps, and the land and the clouds hide the sun, the moon and the stars.
+pixels stay square. The glow is six rings of brightness on the sun's own grid of pixels, their edges
+stepping along it, warmer and stronger at dawn and dusk, and added to the sky behind it. The sky
+turns with the hour about the axis from north to south, the sun rising in the east at 6, passing
+over the south at noon and setting in the west at 18, and the moon stands opposite it. Its 500 stars
+keep their places on the turning sky and fade in as the day fades and near the horizon. The moon
+goes through Minecraft's eight phases, a phase a day from the full moon of the first night, and
+changes while it is down. `voxel.time` sets the hour and `voxel.day` the count of days, which a save
+keeps, and the land and the clouds hide the sun, the moon and the stars.
 
 ## Clouds
 

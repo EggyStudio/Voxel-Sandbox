@@ -3,9 +3,10 @@
 # workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it builds a
 # closed room of stone with a glowstone block in it, puts the player in the room facing the lamp at
 # night, walks toward it and captures the frame, then captures the night sky from the room's roof,
-# the full moon and the stars over the flat land, and a pillar's shadow under the morning sun. It
-# fails where the game does not open or answer, the player did not move, or the layer reported an
-# error, and says why in an error annotation, so the run's page names it.
+# the full moon and the stars over the flat land, the sun and its glow at noon and at dusk, and a
+# pillar's shadow under the morning sun. It fails where the game does not open or answer, the player
+# did not move, or the layer reported an error, and says why in an error annotation, so the run's
+# page names it.
 #
 #   build/play.sh
 #
@@ -98,6 +99,20 @@ cmd voxel.time 20
 cmd voxel.look 71 25
 cmd frames.wait 2
 capture sky.png
+
+# The sun high in the south at noon and low in the west at dusk, its glow's rings stepping along
+# the sun's pixels, the sky's gradient around them smooth. The clouds are left out at noon, where
+# the one drifting over the sun at that hour would hide it.
+cmd voxel.time 12
+cmd voxel.look 180 60
+cmd voxel.clouds off
+cmd frames.wait 2
+capture noon.png
+cmd voxel.clouds on
+cmd voxel.time 17.6
+cmd voxel.look 270 5
+cmd frames.wait 2
+capture dusk.png
 
 # A pillar of stone west of the room and its shadow on the grass under the sun of 8.30, the
 # shadow's edges running slantwise and stepping along the pixels of the blocks they cross, seen from
