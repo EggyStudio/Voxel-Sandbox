@@ -18,7 +18,7 @@ public enum ToolKind
 /// </summary>
 /// <param name="Key">The name commands take and a save keeps, a block's own key for the item placing it.</param>
 /// <param name="Name">The name shown.</param>
-/// <param name="Color">The color of its slot and of its cube on the ground, a block's top's as it looks in the plains.</param>
+/// <param name="Color">The color of its cube on the ground, a block's top's as it looks in the plains, and of an icon of an item that places no block.</param>
 /// <param name="Block">The block it places, or null for an item that places none.</param>
 public sealed record Item(string Key, string Name, Color Color, BlockId? Block)
 {

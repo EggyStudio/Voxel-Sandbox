@@ -3,10 +3,10 @@
 # workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it builds a
 # closed room of stone with a glowstone block in it, puts the player in the room facing the lamp at
 # night, walks toward it and captures the frame, then captures the night sky from the room's roof,
-# the full moon and the stars over the flat land, the sun and its glow at noon and at dusk, and a
-# pillar's shadow under the morning sun. It fails where the game does not open or answer, the player
-# did not move, or the layer reported an error, and says why in an error annotation, so the run's
-# page names it.
+# the full moon and the stars over the flat land, the sun and its glow at noon and at dusk, a
+# pillar's shadow under the morning sun, and the window of every item's icon. It fails where the
+# game does not open or answer, the player did not move, or the layer reported an error, and says
+# why in an error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -124,6 +124,12 @@ cmd voxel.tp 6 9 -1
 cmd voxel.look 305 -35
 cmd frames.wait 2
 capture shadow.png
+
+# The window E opens in creative mode, every item's icon in it and the hotbar's below.
+cmd input.key E 1
+cmd frames.wait 2
+capture inventory.png
+cmd input.key E 1
 
 ./e3d stop --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"

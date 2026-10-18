@@ -199,7 +199,7 @@ public sealed record BlockInfo(BlockId Id, string Key, string Name, int Top, int
         ? [.. shape.Pieces.Where(p => p.Glows).Select(p => (Matrix4x4.CreateScale(p.To - p.From) * Matrix4x4.CreateTranslation((p.From + p.To) / 2), p.Surface))]
         : Surfaces.All[Top].Emits ? [(Matrix4x4.CreateTranslation(new Vector3(0.5f)), Top)] : [];
 
-    /// <summary>The color a hotbar slot shows for it, its top's as it looks in the plains.</summary>
+    /// <summary>The color its item takes, its top's as it looks in the plains, which the item's cube on the ground shows.</summary>
     public Color Swatch => Surfaces.All[Top].Plain;
 }
 
@@ -217,7 +217,8 @@ public static class Blocks
         BlockInfo Door(BlockId id, string key, BlockShape shape, BlockId toggled, BlockId? heldAs = null) =>
             new(id, key, "Oak Door", Surfaces.DoorWood, Surfaces.DoorWood, Surfaces.DoorWood, Kind: BlockKind.Shaped, Shape: shape, HeldAs: heldAs, Toggled: toggled);
 
-        // A block smaller than its cell shows the surface of its emissive piece on its hotbar slot.
+        // A block smaller than its cell takes its emissive piece's surface for its faces, which
+        // makes it emissive and colors its item's cube on the ground.
         BlockInfo Shaped(BlockId id, string key, string name, BlockShape shape, int light, BlockId? heldAs = null, BlockId? doubled = null)
         {
             var look = shape.Pieces.FirstOrDefault(p => p.Glows, shape.Pieces[0]).Surface;

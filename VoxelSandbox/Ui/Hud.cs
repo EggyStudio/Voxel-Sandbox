@@ -10,6 +10,10 @@ public static class Hud
     private const int Slot = 44;
     private const int Gap = 4;
 
+    // The icons' atlas as a texture, made the first time the hotbar is drawn and sampled without
+    // filtering, so an icon's pixels stay square at twice their size.
+    private static Texture2D _icons;
+
     /// <summary>
     /// Outlines a block a hair larger than it, so its edges are not lost in its faces' depth, a block
     /// smaller than its cell by the box around its pieces. Called inside <c>BeginMode3D</c>.
@@ -53,21 +57,13 @@ public static class Hud
             DrawRectangle(x, y, Slot, Slot, new Color(0, 0, 0, 140));
             if (hotbar.Inventory.Slots[i] is { } stack)
             {
-                // Opaque, so glass and ice show their color rather than the slot through it, and a
-                // tool or a stick drawn by its icon over the slot.
-                var color = stack.Item.Color;
-                var icon = ItemIcon.Of(stack.Item);
-                if (icon.Length == 0) DrawRectangle(x + 7, y + 7, Slot - 14, Slot - 14, new Color(color.R, color.G, color.B, 255));
-                foreach (var stroke in icon)
-                    DrawLineEx(new Vector2(x, y) + stroke.From * Slot, new Vector2(x, y) + stroke.To * Slot, stroke.Width * Slot, stroke.Color);
+                DrawTexturePro(Atlas(), Icons.Source(stack.Item), new Rectangle(x + 6, y + 6, Icons.Size * 2, Icons.Size * 2), Vector2.Zero, 0, Color.White);
                 if (stack.Wear > 0 && stack.Item.Durability > 0)
                 {
                     var left = 1 - (float)stack.Wear / stack.Item.Durability;
                     DrawRectangle(x + 5, y + Slot - 7, Slot - 10, 3, Color.Black);
                     DrawRectangle(x + 5, y + Slot - 7, (int)((Slot - 10) * left), 3, new Color((byte)(255 * (1 - left)), (byte)(255 * left), 30));
                 }
-                // An emissive block is ringed in its emission's color.
-                if (stack.Item.Block is { } block && Blocks.Get(block).Emits) DrawRectangleLines(x + 5, y + 5, Slot - 10, Slot - 10, Surfaces.All[Blocks.Get(block).Top].Emissive);
                 if (stack.Count > 1)
                 {
                     var text = stack.Count.ToString();
@@ -84,6 +80,14 @@ public static class Hud
         var nameX = (GetScreenWidth() - MeasureText(name, 20)) / 2;
         DrawText(name, nameX + 2, y - 30 - lift, 20, new Color(0, 0, 0, 160));
         DrawText(name, nameX, y - 32 - lift, 20, Color.White);
+    }
+
+    private static Texture2D Atlas()
+    {
+        if (_icons.IsValid) return _icons;
+        _icons = LoadTextureFromImage(new Image(Icons.Atlas, Icons.Width, Icons.Height));
+        SetTextureFilter(_icons, TextureFilter.Point);
+        return _icons;
     }
 
     // A heart and a drumstick as pixels seven wide and six high, a row a string.

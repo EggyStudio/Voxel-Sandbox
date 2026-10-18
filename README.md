@@ -272,6 +272,19 @@ saved with the world. A mob drops its loot as it dies, in either mode. A pig dro
 leather and beef, a sheep a block of wool of its coat's color and mutton, and a chicken feathers and
 its meat.
 
+Each item shows by an icon 16 pixels square, drawn once into an atlas. A block's icon is the block
+as a small cube seen from above and from two sides, cast pixel by pixel against its own boxes, so a
+slab, stairs, a torch and a fence keep their shapes, and a block smaller than its cell both ways is
+drawn larger to fill the icon. Each face takes its surface's color as it looks in the plains with a
+fixed speckle, since the blocks have colors and not textures, and is shaded by the way it faces, the
+top brightest and the right side darkest, as Minecraft's inventory shades its blocks, and an
+emissive block's faces are unshaded. An item that places no block is pixel art drawn from a few
+strokes and dots, outlined in a dark shade of its color, its upper left edge lit and its lower right
+shaded, and each kind of tool keeps one shape, its head in the color of its material. The hotbar
+draws the atlas as a texture. The inventory window draws each icon's pixels as rectangles, a row's
+stretch of one color each, since the engine's ImGui pass samples no texture but its font's, which
+costs the frame about half a millisecond on the CPU while the creative window shows all 97 items.
+
 ## Tools and crafting
 
 A pickaxe, an axe, a shovel and a sword are made of wood, stone or iron. A tool breaks the blocks

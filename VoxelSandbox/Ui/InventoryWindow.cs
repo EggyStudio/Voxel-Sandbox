@@ -67,7 +67,7 @@ public sealed class InventoryWindow
         ImGui.SameLine();
         var made = grid.Recipe is { } recipe ? new ItemStack(recipe.Result, recipe.Count) : (ItemStack?)null;
         ImGui.PushID("made");
-        ImGui.ColorButton("##made", made is { } m ? Swatch(m.Item) : Empty, ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoDragDrop, new Vector2(Slot));
+        ImGui.ColorButton("##made", Empty, ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoDragDrop, new Vector2(Slot));
         var clicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
         if (made is { } shown)
         {
@@ -123,7 +123,7 @@ public sealed class InventoryWindow
     {
         ImGui.PushID(slot);
         var stack = slots[slot];
-        ImGui.ColorButton("##slot", stack is { } s ? Swatch(s.Item) : Empty, ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoDragDrop, new Vector2(Slot));
+        ImGui.ColorButton("##slot", Empty, ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoDragDrop, new Vector2(Slot));
         var clicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
         if (stack is { } shown)
         {
@@ -170,7 +170,7 @@ public sealed class InventoryWindow
             var column = 0;
             foreach (var item in Items.All)
             {
-                if (ImGui.ColorButton(item.Key, Swatch(item), ImGuiColorEditFlags.NoTooltip, new Vector2(Slot)))
+                if (ImGui.ColorButton(item.Key, Empty, ImGuiColorEditFlags.NoTooltip, new Vector2(Slot)))
                     hotbar.Inventory.Slots[hotbar.Selected] = new ItemStack(item, 1);
                 Icon(ImGui.GetWindowDrawList(), ImGui.GetItemRectMin(), item);
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip(item.Name);
@@ -206,7 +206,7 @@ public sealed class InventoryWindow
     {
         ImGui.PushID(slot);
         var stack = slots[slot];
-        ImGui.ColorButton("##slot", stack is { } s ? Swatch(s.Item) : Empty, ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoDragDrop, new Vector2(Slot));
+        ImGui.ColorButton("##slot", Empty, ImGuiColorEditFlags.NoTooltip | ImGuiColorEditFlags.NoDragDrop, new Vector2(Slot));
         var left = ImGui.IsItemClicked(ImGuiMouseButton.Left);
         var right = ImGui.IsItemClicked(ImGuiMouseButton.Right);
         var list = ImGui.GetWindowDrawList();
@@ -253,16 +253,11 @@ public sealed class InventoryWindow
         Held = held.Count > 1 ? held with { Count = held.Count - 1 } : null;
     }
 
-    // A stack drawn over its slot, with a tool's or a stick's icon, a worn tool's bar of uses left,
-    // and the count where it is more than one.
+    // A stack drawn over its slot, its icon, a worn tool's bar of uses left, and the count where it
+    // is more than one.
     private static void DrawStack(ImDrawListPtr list, Vector2 min, ItemStack stack)
     {
-        if (ItemIcon.Of(stack.Item).Length == 0) list.AddRectFilled(min, min + new Vector2(Slot), ImGui.GetColorU32(Swatch(stack.Item)));
-        else
-        {
-            list.AddRectFilled(min, min + new Vector2(Slot), ImGui.GetColorU32(Empty));
-            Icon(list, min, stack.Item);
-        }
+        Icon(list, min, stack.Item);
         if (stack.Wear > 0 && stack.Item.Durability > 0)
         {
             var left = 1 - (float)stack.Wear / stack.Item.Durability;
@@ -276,14 +271,14 @@ public sealed class InventoryWindow
         list.AddText(at, 0xFFFFFFFF, text);
     }
 
+    // An item's icon at twice its size in the middle of its slot, each stretch of a row's pixels of
+    // one color a rectangle, since the engine's ImGui pass samples no texture but its font's.
     private static void Icon(ImDrawListPtr list, Vector2 min, Item item)
     {
-        foreach (var stroke in ItemIcon.Of(item))
-            list.AddLine(min + stroke.From * Slot, min + stroke.To * Slot, ImGui.GetColorU32(ToVector(stroke.Color)), stroke.Width * Slot);
+        var corner = min + new Vector2((Slot - Icons.Size * 2) / 2);
+        foreach (var run in Icons.RunsOf(item))
+            list.AddRectFilled(corner + new Vector2(run.From, run.Y) * 2, corner + new Vector2(run.To, run.Y + 1) * 2, ToU32(run.Color));
     }
 
-    // A slot's color, the dark of an empty slot under a tool's or a stick's icon.
-    private static Vector4 Swatch(Item item) => ItemIcon.Of(item).Length > 0 ? Empty : ToVector(item.Color);
-
-    private static Vector4 ToVector(Color color) => new Vector4(color.R, color.G, color.B, 255) / 255;
+    private static uint ToU32(Color color) => (uint)color.A << 24 | (uint)color.B << 16 | (uint)color.G << 8 | color.R;
 }

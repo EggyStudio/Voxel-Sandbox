@@ -5,7 +5,25 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `4fc4809`, item 7's first commit and nothing else, 4 files. The terrain shader's
+Reviewed up to `344ef5b`, item 8 done and nothing else, 6 files, nothing asked of the engine.
+`SkyArt.HaloPixels` builds a square of 96 white pixels whose alpha is the old falloff, the cosine of
+a pixel's angle from the sun to the twelfth power, held to six steps, so the glow shows as six rings
+whose edges step along the pixels and is clear well before its edge; `Sky.Draw` puts it on a
+billboard at the sun's place behind the sun with the sun's pixel of 0.75 degrees, blended
+additively, its color and strength the old halo's from noon's white toward dusk's orange, a
+billboard's size being its texel count times a pixel's width at its distance so the 12-pixel sun and
+the 96-pixel glow, both even on one middle, share a grid exactly, the glow writing no depth since
+the sun drawn after it at the same distance failed the depth test by a rounding, and the immediate
+draws coming after the model pass so the land and the clouds still hide it; the painted map is the
+smooth gradient alone, the world's light from all around losing the halo's small share. A sixth sky
+test holds the glow's middle full, its brightness never rising outward, its 4 to 7 levels, its clear
+border and the two sizes differing by an even count, 108 passing; `build/play.sh` captures noon with
+the clouds off, one drifting over the sun at that hour, and dusk with the rings behind the clouds,
+passing on the GPU with no validation error; the README's Sky section says the gradient is smooth
+and the glow six rings on the sun's own grid. Right. Next item 9, the owner's push of the three
+commits and their build run, and items 6 and 7's second commits after the package.
+
+Before it, `4fc4809` came, item 7's first commit and nothing else, 4 files. The terrain shader's
 `pixelMiddle` moves the lit point to the middle of the block pixel it lies in on the two axes across
 the face's normal, and the lighting takes that copy of the vertex output, so a shadow's edge steps
 along the blocks' pixels, the lamps' and the bounced light taken at the same points, the header
@@ -43,28 +61,6 @@ noon without. Right. The engine's ASKS.md carries the stars' entry with the revi
 of the engine's REVIEW.md, and the second commit of item 6 moves the stars to the engine's particles
 when a package brings it. Next item 7, the owner's push of this commit and its build run, and item
 6's second commit after the package.
-
-Before it, `4358f3b` came, item 5 done and nothing else, 8 files. README.md's opening and
-AGENTS.md's paragraph say what the game is, a voxel game set in an endless generated world whose
-blocks are placed and broken, with its light, its water, its mobs and the items they drop, Minecraft
-named afterwards only where its sizes, speeds and light levels are taken, "hostile mobs in its dark"
-reading "where it is dark", and AGENTS.md's line on what the game grows toward gone; `Program.cs:1`
-and the project file's comment lose the same likeness, and `build/publish.sh` names the alias that
-opens the Microsoft Store where it had a stand-in. STYLE.md's Register section carries the rule, a
-likeness is not a description and a figure of speech is not a term, another product named only where
-a rule or a number is taken from it, a description holding no plan, with the README's pair as a row,
-the ten idioms named and by hand kept in its literal sense, and its checks and COMMITS.md's
-staged-diff pattern search for them. Each rewrite, read, says what the thing is and loses no fact.
-Checked on the working machine were the strict build with no warning, the 102 tests, and the search
-for the idioms finding STYLE.md's rule and checks and COMMITS.md's pattern alone; `build/play.sh`
-was not run, comments and documents alone having changed. Right. Nothing is pending; the build and
-the pack run are green at `b87e386`, and the owner pushed this commit at 21:31, its build run ending
-green at 21:36, the tests on the three systems and the play on lavapipe. At 22:25 on 2026-10-18 the
-owner resumed development on the game (Decision 6): the sky's sun, moon and stars as camera-facing
-billboards with textures in place of the pixelated blobs (item 6), the sun's shadows pixelated (item
-7), the sun's surround in the sky pixelated with the rest of the sky smooth (item 8), and the block
-and item icons made anew (item 9); the radiance cascades' changes come through the engine's packages
-after its commits. Next items 6 to 9 in order, one commit each.
 
 ## Now
 
@@ -222,13 +218,15 @@ after its commits. Next items 6 to 9 in order, one commit each.
    capture in `build/play.sh`; the engine's ASKS.md entry became its item 33, and the second commit,
    the contact shadows off, waits on the package that brings the setting.
 
-8. **The sun's surround in the sky is pixelated and the rest of the sky stays smooth (Decision 6).**
-   The owner asked on 2026-10-18 at 22:25 that the sky around the sun be pixelated as the other game
-   has it, the sky's gradient elsewhere smooth. The glow around the sun is drawn in the sky's pixel
-   grid, the sun's billboard's pixel size, as a ring of pixel-art brightness that follows the sun,
-   and the sky's gradient from horizon to zenith and its dawn and dusk colors stay smooth as
-   `Sky.cs` paints them. Checked by captures at noon and at dusk in the drive and `build/play.sh`.
-   One commit.
+8. **The sun's surround in the sky is pixelated and the rest of the sky stays smooth (Decision 6),
+   done at `344ef5b`.** The owner asked on 2026-10-18 at 22:25 that the sky around the sun be
+   pixelated as the other game has it, the sky's gradient elsewhere smooth. The glow around the sun
+   is drawn in the sky's pixel grid, the sun's billboard's pixel size, as a ring of pixel-art
+   brightness that follows the sun, and the sky's gradient from horizon to zenith and its dawn and
+   dusk colors stay smooth as `Sky.cs` paints them. Checked by captures at noon and at dusk in the
+   drive and `build/play.sh`. One commit. Done at `344ef5b` on 2026-10-18, six rings of brightness
+   on the sun's own pixel grid behind the sun, the painted sky the smooth gradient alone, a test and
+   the noon and dusk captures holding it.
 
 9. **The icons of the block and item types are made anew (Decision 6).** The owner asked on
    2026-10-18 at 22:25 that the icons for the different types of blocks and items be updated. The
@@ -236,7 +234,24 @@ after its commits. Next items 6 to 9 in order, one commit each.
    (`Ui/Hud.cs:57-61`, `Ui/InventoryWindow.cs:256`); each block type gets an icon drawn from its own
    textures as a small cube seen from above and two sides, and each item type a pixel-art icon of
    its own, drawn once into an atlas the HUD and the inventory window read. Checked by a capture of
-   the inventory open in the drive and `build/play.sh`. One commit.
+   the inventory open in the drive and `build/play.sh`. One commit. Read against the engine on
+   2026-10-18 at 23:21, the HUD can draw an atlas texture, and the inventory window cannot, since
+   the engine's ImGui pass binds the font atlas's set once (`ImGuiRenderNode.cs:172`) and draws
+   every command with it, ignoring the command's texture id, so an image of one of the game's
+   textures draws the font atlas. The reviewer's call is one commit at once as items 6 and 7 went:
+   `Ui/Icons.cs` draws every item's icon once into an atlas of 16-pixel cells with clear gutters,
+   each block a small cube seen from above and two sides cast per pixel against the block's own
+   boxes so slabs, stairs, torches, fences and doors keep their shapes, each face its surface's
+   color under the plains tint with a fixed speckle for the texture, shaded top, left and right as
+   the other game's inventory shades them, emissive faces unshaded, and each item that places no
+   block pixel art of its own, the tools one shape a kind with the head in the tier's color; the
+   atlas is a point-filtered texture the hotbar draws, and the inventory window draws the atlas's
+   pixels as rectangles with each row's runs of one color merged, its cost measured with the
+   creative window open; the strokes and the hotbar's emission ring go; an entry in the engine's
+   ASKS.md asks for a texture id of a `Texture2D` that the ImGui pass binds per command, and a
+   second commit moves the inventory onto the atlas texture when a package brings it. Checked by
+   tests of the atlas, every item with an icon, a cube's three shades, a slab's clear rows and the
+   clear gutters, a capture of the inventory open in `build/play.sh`, and the strict build.
 
 ## Verdicts
 
