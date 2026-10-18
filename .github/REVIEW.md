@@ -5,10 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `4358f3b`, item 5 done and nothing else, 8 files. README.md's opening and AGENTS.md's
-paragraph say what the game is, a voxel game set in an endless generated world whose blocks are
-placed and broken, with its light, its water, its mobs and the items they drop, Minecraft named
-afterwards only where its sizes, speeds and light levels are taken, "hostile mobs in its dark"
+Reviewed up to `bfba72b`, item 6's first commit and nothing else, 10 files. `Rendering/SkyArt.cs`
+holds the pixel art as bytes, a sun of 12 pixels, a square with its corners cut, a moon of 12 with
+craters whose eight phases sit in a sheet of four by two with a clear gutter of a pixel between
+cells, since the point filter read the neighboring phase at a cell's edge without it, each phase lit
+as a ball with its square pixels drawn onto the round face, and a star of three pixels; `Sky.cs`
+draws the three with camera-facing billboards under the point filter at 3,000 and 3,200 units inside
+the far plane and before the backdrop, land and clouds hiding them, turns the sky about the
+north-south axis with the moon opposite the sun and 500 fixed stars turned by one matrix a frame,
+fading in as the day fades and near the horizon, the painted disc, moon and stars gone from the map
+and the halo kept for item 8; the day counts up at midnight while the cycle runs and a save keeps
+it, the night's phase chosen by the day with the hours before noon belonging to the night before,
+day 0's night full, `voxel.day` setting the day and naming the phase, `voxel.state` saying the day
+and the settings window holding a field. `SkyTests` gains five tests, the day at midnight, the
+phases by day and hour, the moon opposite the sun with the stars keeping their places, each phase's
+lit pixels by side, and each cell's clear edge, 107 passing; `build/play.sh` captures the night sky
+from the room's roof at hour 20, the full moon among the stars, passing on the GPU with no
+validation error; the README says the sky. The other game is named where its count, its order of
+phases and its first night's full moon are taken (Decision 5). Measured on the development machine's
+GPU at 1280 by 720, drawing took 2.08 and 1.82 ms by night with the stars against 1.76 and 1.77 at
+noon without. Right. The engine's ASKS.md carries the stars' entry with the reviewer's line, item 32
+of the engine's REVIEW.md, and the second commit of item 6 moves the stars to the engine's particles
+when a package brings it. Next item 7, the owner's push of this commit and its build run, and item
+6's second commit after the package.
+
+Before it, `4358f3b` came, item 5 done and nothing else, 8 files. README.md's opening and
+AGENTS.md's paragraph say what the game is, a voxel game set in an endless generated world whose
+blocks are placed and broken, with its light, its water, its mobs and the items they drop, Minecraft
+named afterwards only where its sizes, speeds and light levels are taken, "hostile mobs in its dark"
 reading "where it is dark", and AGENTS.md's line on what the game grows toward gone; `Program.cs:1`
 and the project file's comment lose the same likeness, and `build/publish.sh` names the alias that
 opens the Microsoft Store where it had a stand-in. STYLE.md's Register section carries the rule, a
@@ -48,33 +72,6 @@ owner pushed it at 15:17 and its build run was whole green; the repository stand
 done and proven. At 20:34 on 2026-10-17 the owner read the README's opening and asked that no
 likeness or figure of speech stand, item 5 under Decision 5, the one thing pending; the build and
 the pack run are green.
-
-Before it, `105bdd1` came, item 3's mend over `e0f4e66`, item 2, and nothing else. At `e0f4e66` the
-namespace is `VoxelSandbox` and the tests' `VoxelSandbox.Tests`, 27 files taking `using Engine;` as
-the compiler named them, `GameCommands.cs` qualifying `Furnaces` and `Furnace`, `GenerationTests.cs`
-naming `VoxelSandbox.Blocks` beside its method of that name, the window "Voxel Sandbox", saves under
-`VoxelSandbox/saves` with the README naming the folder the engine's builds saved in, and the tests'
-temporary folders renamed; nothing else moved. At `105bdd1` `WorldSave.cs` reads and writes
-`WorldInfo` and `FurnaceRecord[]` through `SaveJson`, a `JsonSerializerContext` the generator fills,
-indented as before so an older save reads the same, which `ItemTests` holds; `WorldSave.Root` asks
-for the local application data folder with `SpecialFolderOption.Create`, since on an account where
-it does not exist the path is empty and the saves fell under the working folder, where the program's
-own file stood in their way; and `build/publish.sh` fails the publish on a trim or AOT warning at a
-line of the game's own code and runs the Linux zip's program twice with its data folder in a
-temporary one, a flat world saved on quitting and asked for again by its name, which opens flat only
-where the save was read back. Each fix was proven needed on the working machine: the first run dying
-at `CreateDirectory`, then at reflection-based serialization disabled, then passing with the publish
-warning of AssimpNetter alone. Checked besides: the strict build, the 102 tests, `./e3d status`
-naming the game, `build/drive.sh`. Right. The owner pushed `c08d259` and `e0f4e66` at 13:37, before
-`105bdd1` was committed, and the first build run was whole green at 13:42: the tests on Linux in
-half a minute, on macOS in one and on Windows in one and a half, and the play job in three and a
-half, the game played on lavapipe through the engine's command line built from its checkout.
-`105bdd1` was pushed at 13:53 and its build run was whole green as well; the pack run on it, started
-at 14:29, was whole green in nine minutes, the shaders compiled in two, the tests and the play as
-before, and the three publishes in one to two minutes each, the zips `VoxelSandbox-0.1.2` for
-linux-x64, win-x64 and osx-arm64 at 13 to 17 MB kept as its artifacts, the Linux one's program
-having saved a world and opened it again with no `slangc`; item 3 is done. The repository stands
-whole; item 4, the register, is the work left.
 
 ## Now
 
@@ -199,7 +196,11 @@ whole; item 4, the register, is the work left.
    the moon as billboards, the blobs gone and the stars drawn by the game as camera-facing
    billboards of a few pixels on the sky's turning, fading in as the day fades, so they look and
    move as asked, and a second commit moving the stars to the engine's particles once a package
-   brings the parented emitter, the item done then.
+   brings the parented emitter, the item done then. First commit done at `bfba72b` on 2026-10-18,
+   the sun and the moon pixel art on camera-facing billboards turning with the sky, the moon's eight
+   phases by a day count that `voxel.day` sets and a save keeps, the stars drawn by the game as
+   billboards of three pixels, the blobs gone; the engine's ASKS.md entry became its item 32, and
+   the second commit, the stars as the engine's particles, waits on the package that brings it.
 
 7. **The sun's shadows are pixelated (Decision 6).** The owner asked on 2026-10-18 at 22:25 that the
    shadows be pixelated too. The shadow map's texels are sized to the block grid, a texel a fraction
@@ -207,7 +208,23 @@ whole; item 4, the register, is the work left.
    rather than blurring; `voxel.shadows` keeps setting the distance. Where the engine's shadow
    settings offer no filter or texel size, the ask goes to the engine's ASKS.md (Decision 4) and the
    item waits on the package that brings it. Checked by a capture under a low sun in the drive and
-   `build/play.sh`. One commit.
+   `build/play.sh`. One commit. Read against the package on 2026-10-18 at 23:08, the engine's shadow
+   settings are the map's size and the distance alone; its lookup offsets the point 1.5 texels along
+   the normal and averages nine nearest texels, and the cascades split the distance at 12 and 45 of
+   150 on tiles of 2,048 texels, which at the game's 96 blocks puts texels of about 0.01, 0.03 and
+   0.09 blocks against a block pixel's 0.0625, so the two near cascades draw an edge already crisp
+   but running diagonally across the pixels, and the far one steps by texels of 1.4 block pixels;
+   the sun's light is also multiplied by a contact shadow traced through the scene field at half the
+   window's size and blurred with the occlusion, which nothing in the package turns off short of the
+   field itself, and it lays a soft fringe of up to half a block past a hard edge. The game can step
+   the edge itself: the terrain shader moves the lit point to the middle of the block pixel it lies
+   in, along the face, before the lighting, so the shadow's edge steps along the block pixels, and
+   the lamps' and the bounced light are taken once a block pixel too, which a capture of the
+   lamp-lit room reads the same. The reviewer's call is one commit at once with that snapping,
+   `build/play.sh` and a capture under a low sun, and an entry in the engine's ASKS.md for a setting
+   that turns the sun's contact shadows off, noting as a lesser thing the far cascade's texel of 1.4
+   block pixels; a second commit turns the contact shadows off once a package brings the setting,
+   the item done then.
 
 8. **The sun's surround in the sky is pixelated and the rest of the sky stays smooth (Decision 6).**
    The owner asked on 2026-10-18 at 22:25 that the sky around the sun be pixelated as the other game

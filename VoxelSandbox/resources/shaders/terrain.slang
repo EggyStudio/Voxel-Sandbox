@@ -3,8 +3,9 @@
 // corners it is, its shade and its surface's color; the normal and texture coordinate come from
 // the tables below by face and corner, and the color is the surface's under the shade, sRGB as a
 // vertex color is. The model pass's own light falls over that color, as the engine draws a mesh with
-// colors at its vertices, then a haze toward the color of the sky at the horizon as the distance
-// from the eye grows, as Minecraft's fog hides where the world ends.
+// colors at its vertices, taken at the middle of the block's pixel each point lies in, so the sun's
+// shadows step along the pixels, then a haze toward the color of the sky at the horizon as the
+// distance from the eye grows, as Minecraft's fog hides where the world ends.
 import modelpass;
 
 // The haze's color, as the frame shows it, and the distances in blocks it starts at and covers by.
@@ -40,11 +41,25 @@ ModelStreamsOutput vertexMain(float3 position : POSITION, uint2 packed : CUSTOM0
     return transformModelVertex(position, Normals[face], Coordinates[face * 4 + corner], float4(tint.rgb * shade, tint.a), float2(0, 0), instance);
 }
 
+// How many pixels a block's face is across, as Minecraft's textures have sixteen, the grid each
+// point's light is taken on.
+static const float Pixels = 16.0;
+
+// A point of a face moved to the middle of the block's pixel it lies in, along the face alone, so
+// every point of a pixel takes the same light and a shadow's edge steps along the pixels.
+float3 pixelMiddle(float3 world, float3 normal)
+{
+    float3 across = step(abs(normal), float3(0.5));
+    return lerp(world, (floor(world * Pixels) + 0.5) / Pixels, across);
+}
+
 [shader("fragment")]
 float4 fragmentMain(ModelStreamsOutput input) : SV_Target
 {
     float4 color = alphaTested(baseColor(input), input.base);
-    float3 shown = lit(color.rgb, input.base);
+    ModelVertexOutput at = input.base;
+    at.world = pixelMiddle(input.base.world, normalize(input.base.normal));
+    float3 shown = lit(color.rgb, at);
     float haze = smoothstep(fogStart, fogEnd, length(input.base.toEye));
     return float4(lerp(shown, fogColor.rgb, haze), color.a);
 }

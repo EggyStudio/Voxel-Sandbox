@@ -2,10 +2,10 @@
 # A scripted run of the game through ./e3d, offscreen and under the validation layer, as the build
 # workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it builds a
 # closed room of stone with a glowstone block in it, puts the player in the room facing the lamp at
-# night, walks toward it and captures the frame, and then captures the night sky from the room's
-# roof, the full moon and the stars over the flat land. It fails where the game does not open or
-# answer, the player did not move, or the layer reported an error, and says why in an error
-# annotation, so the run's page names it.
+# night, walks toward it and captures the frame, then captures the night sky from the room's roof,
+# the full moon and the stars over the flat land, and a pillar's shadow under the morning sun. It
+# fails where the game does not open or answer, the player did not move, or the layer reported an
+# error, and says why in an error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -98,6 +98,17 @@ cmd voxel.time 20
 cmd voxel.look 71 25
 cmd frames.wait 2
 capture sky.png
+
+# A pillar of stone west of the room and its shadow on the grass under the sun of 8.30, the
+# shadow's edges running slantwise and stepping along the pixels of the blocks they cross, seen from
+# the air to the southeast.
+cmd voxel.fill 1 4 -9 1 8 -9 stone
+cmd voxel.fly on
+cmd voxel.time 8.5
+cmd voxel.tp 6 9 -1
+cmd voxel.look 305 -35
+cmd frames.wait 2
+capture shadow.png
 
 ./e3d stop --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
