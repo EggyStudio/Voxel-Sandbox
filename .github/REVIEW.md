@@ -5,8 +5,41 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `6d71cd1`, item 6's second commit and nothing else, on `5.2.92`. The sun, the moon, a
-halo around each and the 500 stars are quads fixed on the sky, each quad's right side the cross of
+Reviewed up to `1477e82`, item 9's second commit, and `6aeda2d` before it, a mend of the play
+script, nothing else. The inventory window draws each icon from the atlas texture through the
+engine's ImGui texture id of item 34, the hotbar from the same texture, the merged rectangles and
+their record gone with the icon test's assertion on them, 113 tests passing and the strict build
+clean; the inventory capture matches item 6's pixel for pixel, the room, noon and shadow exactly,
+and the sky and dusk only where the clouds and the mobs moved; on the development machine's GPU at
+1280 by 720 the drawing reads 0.05 ms higher with the window open, within the noise of 0.2, the
+interface's CPU time 0.04 ms against 0.007 and its GPU time 0.012, where the rectangles cost about
+0.5, and the README says the two draw the atlas as a texture. The play script's run addressed its
+game by name alone and hung when another session's game was serving under the same name, so it
+addresses its own by the session and the pid the open answers, the stop before the open still going
+by name, and the run passed with the other game serving. The three reproductions are with the
+engine's coder: the blank frame after a break reproduced, a floor block broken at frame 29 in the
+lamp-lit room and 0.87 and 0.85 of the pixels changing by more than 8 levels at frames 36 and 37,
+settled from 38; the depth-fighting look reproduced as still blotches, a birch trunk at noon taking
+blue, green and dark patches with the screen probes on and none off, the frame-to-frame change the
+same either way; and the leak reproduced only with the screen probes off, a lamp against a wall a
+block thick lighting the grass at the wall's outside foot by up to 17 levels, one level with them
+on, so the leak the owner saw with the probes on is not found yet. Right. Next item 10's reading,
+items 11 and 12, and the owner's push of `6aeda2d` and `1477e82`. The run of `6d71cd1` was whole
+green, its play job in five minutes; the owner pushed `1477e82` at 21:55, its three suites green at
+22:00 and its play job running. At 22:03 the owner wrote that the game may use the other game's
+original sizes and models of the mobs, since they are numbers (Decision 8), item 13, read with item
+10, and at 22:06 that the game keeps a character of its own and uses the engine's somewhat boring
+tonemapping curve (Decisions 8 and 9, item 14). Item 10's reading, done at 22:04 on `1477e82`, found
+no cause that fits everywhere: every kind's feet stand on the block's top by origin and height, the
+stride dips a toe below the ground at its ends, the chicken's by 0.045 of a block, more than the
+toe's thickness, the others by 0.01 to 0.02; mobs in shade seemed to draw black beside lit grass,
+which was withdrawn at 22:13, the cameras having sat inside the hill, a sheep under a canopy reading
+twice the grass beside it; and one frame of a cow 19 blocks off drew its body and head and no legs,
+not made to happen again. The owner is asked which animal, in sun or shade, near or far, walking or
+standing.
+
+Before it, `6d71cd1` came, item 6's second commit and nothing else, on `5.2.92`. The sun, the moon,
+a halo around each and the 500 stars are quads fixed on the sky, each quad's right side the cross of
 its way and the sky's axis and its up the cross of that and the way, given in the sky's space as it
 stands at six under the eye's translation and the hour's turn, the stars one run of quads with their
 alpha in the vertex color and the fade near the horizon as before, the moon's halo the sun's rings
@@ -42,52 +75,6 @@ grids, the sun at the other game's width and the README's sky picture anew; item
 item 10's reading; and the owner's push of `58fa8a9` with them. At 21:23 the owner wrote that the
 README's picture shows terrain and a hill alone where the world is lively, with structures, villages
 and animals, and that the render distance is very short, items 11 and 12.
-
-Before it, `80ab301` came, item 9's first commit and nothing else, 10 files. `Ui/Icons.cs` paints
-the atlas once on first use, 97 icons of 16 pixels in cells of 18 with clear gutters, ten across:
-each block's pixel casts an orthographic ray from the south-east and 30 degrees up against the
-block's own boxes, each face its surface's plains color with a fixed speckle of five percent, since
-the blocks have colors and not textures, shaded 1, 0.8 and 0.62 for the top, the south and the east,
-emissive faces unshaded, a block smaller than its cell both ways drawn up to two and a half times
-larger and centered so torches, lanterns and fences read where the first capture showed a torch as
-one pixel; an item that places no block is rasterized from strokes and dots outlined in a dark shade
-of its color with its upper-left edge lit, the tools one shape a kind with the head in the
-material's color, the meats one shape an animal differing by color. The hotbar draws the atlas as a
-point-filtered texture at twice the size, the inventory window draws each icon's runs of one color
-as rectangles at twice the size, 11,087 for the 97 icons of the creative window, measured on the
-development machine at 1280 by 720 as about half a millisecond a frame while the window is open; the
-strokes, the swatches and the hotbar's emission ring are gone, and the color's docs say what it is
-for. `IconTests` holds four tests, every item an icon whose stretches cover its pixels, a cube's
-three shades with an emissive one unshaded, the slab's width and clear rows with the torch standing
-tall, and the clear gutters, 112 passing; the strict build has no warning; `build/play.sh` captures
-the creative window with all 97 icons over the hotbar, passing on the GPU with no validation error;
-the README gains a paragraph on the icons. The other game is named where its shading rule is taken
-(Decision 5). Right. The engine's ASKS.md carries the third entry with the reviewer's line, item 34
-of the engine's REVIEW.md after its items 32 and 33, and items 6, 7 and 9 each wait on a second
-commit when a package brings those three. The owner pushed the four commits at 04:07 on 2026-10-19,
-and the build run ended green at 04:12, the tests on the three systems and the play on lavapipe with
-its captures. Next the engine's package, and items 6, 7 and 9's second commits from it. On
-2026-10-19 at 21:03 the game stood on the engine's `5.2.92`, which carries items 32 to 34 of the
-engine's review, the captures with the bump alone matching `5.2.43`'s within two levels outside the
-HUD's text and where the mobs, the clouds and the arm moved between runs, so the engine's light of
-the day moved none of them. Item 6's second commit was tried on it and loses two things the game
-cannot mend: a particle's square is upright in the world, so on the screen it tilts with its place
-in the view, 19 degrees at the horizon's edge and 57 looking 45 degrees up at the game's 70 degrees,
-and the five-pixel crosses come out slanted with broken arms where the billboards stay square; and a
-placed point takes its emitter's color, one alpha for every star of an emitter, so the fade near the
-horizon is lost and 41 stars show below it from 90 blocks up where the billboards show none. The
-brightness the game mended, the alpha decoded from sRGB since the engine adds a particle's light in
-linear light, the matched stars' peak 186 against the billboards' 169. The reviewer's choice is that
-the stars stay the game's billboards, as Decision 6 asks of the sky, and item 6's second commit
-waits on the engine package that brings particles square on the screen and an alpha per placed
-point, asked in the engine's ASKS.md as its item 36; the bump to `5.2.92` goes with item 7's commit,
-then item 9's. At 21:05 the owner wrote that the sky's bodies are not to be billboards, since a
-thing facing the camera turns with the view and looks wrong in motion, and that they behave as the
-other game's, placed on the sky and turning with the hour alone (Decision 7), so item 6 changes: the
-sun, the moon and the stars stand as quads fixed on the sky's sphere, drawn by the game, the glow
-around the sun and the moon as the engine's particles parented to them, and no engine ask is needed,
-the second commit going on `5.2.92`. At 21:05 the owner wrote that some of the animals' feet do not
-show, item 10, read before it is mended.
 
 ## Now
 
@@ -305,7 +292,9 @@ show, item 10, read before it is mended.
    commit done at `80ab301` on 2026-10-18, the atlas of 97 icons drawn once, the hotbar drawing it
    as a texture and the inventory window as merged rectangles at half a millisecond a frame, the
    four tests and the capture; the engine's ASKS.md entry became its item 34, and the second commit,
-   the window on the atlas texture, waits on the package that brings it.
+   the window on the atlas texture, waits on the package that brings it. The second commit done at
+   `1477e82` on 2026-10-19, the window and the hotbar drawing the atlas as a texture through the
+   engine's item 34, the rectangles gone, the inventory capture pixel for pixel the same.
 
 10. **Some of the animals' feet do not show (Decision 6).** The owner wrote at 21:05 on 2026-10-19
     that some of the animals' feet do not show in the game. Read before it is mended, with a capture
@@ -314,7 +303,20 @@ show, item 10, read before it is mended.
     above its block, are culled as faces turned away, are hidden by the pixelated shadow or the
     contact shadow of item 7, or are not in the model at all; then one commit for the cause found,
     with a test that holds each animal's lowest face at or above the ground it stands on, and the
-    captures that show it. After item 9's commit.
+    captures that show it. Read at 22:04 on `1477e82` as the head says, three candidates and no one
+    cause: the toes dipping below the ground at a stride's ends, the mobs in shade almost black
+    against lit grass, and one legless frame not reproduced. The shade finding was withdrawn at
+    22:13: the cameras that showed black animals beside lit grass sat inside the hill, the grass the
+    sky through its missing faces, and measured on the flat world under a canopy of leaves at sky
+    light level 11 a white sheep's wool reads 90 against 44 for the grass beside it and 155 against
+    169 in the open, so a mob in shade is lit as the grass or brighter through the engine's indirect
+    light, and the terrain's light-level factor, 0.995 at level 11, would only darken the mobs in
+    deep shade and caves, so the mobs' lighting stays. One mend goes ahead without the owner's
+    answer: each leg is lifted by however far its lowest corner would sink, so no foot goes below
+    the ground in any stride, with item 13's models; the legless frame is hunted by the herd drive
+    captured frame by frame, and if it comes again the frame goes to the engine's coder with the
+    instance count and the view, since the engine draws instances in blocks of 64 and encloses each
+    block for culling. The owner's answer names which of the three the owner saw.
 
 11. **The README's picture shows the world's life, structures, a village and animals, and not
     terrain alone (Decision 6).** The owner wrote at 21:23 on 2026-10-19 that the README's picture
@@ -333,6 +335,28 @@ show, item 10, read before it is mended.
     with the figures per distance in the commit's message and the setting's remark (N 3.5), and said
     in the README's running section. One commit, after item 11's, the owner's word settling the
     figure where the reading leaves a choice.
+
+13. **The mobs' models take the other game's sizes and boxes (Decision 8), the textures the game's
+    own.** The owner wrote at 22:03 on 2026-10-19 that the game may use the other game's original
+    sizes and models of the mobs, since they are numbers. For each mob kind the game has, the
+    model's cuboids, their sizes, places and pivots, and the mob's height and width for its body are
+    taken from the other game's model definitions as numbers, said in the remark as taken from it,
+    the game's own pixel art mapped onto the cuboids' faces at the same pixel density; the walk, the
+    head's look and a wing's flap keep their pivots; held by a test of each kind's sizes against the
+    numbers. Read with item 10, since feet that stand below the ground may be a leg's length or a
+    model's origin, and mended in one commit a kind or one for all where the change is the same
+    shape, the captures of item 10 retaken on it. The game's body sizes are the other game's
+    already, and most cuboids within a pixel of its, the pig's hind legs and head apart, so the
+    commits are the differences kind by kind, with item 10's test folded in, no face below the
+    ground standing and the dip within its bound mid-stride. After item 10's reading and before item
+    11.
+
+14. **The game's tonemapping is the engine's somewhat boring curve (Decision 9).** The owner wrote
+    at 22:06 on 2026-10-19 that the game uses a somewhat boring tonemapping, which is the engine's
+    `Tonemap.SomewhatBoring`, where the game draws with the engine's default curve. The game sets it
+    at its light settings with the reason in the remark, every capture of the play script is taken
+    again under it, and the README's pictures of items 6 and 11 are taken under it, so item 11's
+    picture comes after this. One commit, before item 11.
 
 ## Verdicts
 
@@ -403,6 +427,22 @@ No verdict is open.
    so the particle effect Decision 6 asked for is read as the glow fixed with its body, and the
    engine's emitters stay for the game's other effects. Item 6 changes to it, and the engine ask the
    game was about to write for particles square on the screen is not written.
+
+8. **The mobs' sizes and models may be the other game's, since they are numbers.** The owner wrote
+   at 22:03 on 2026-10-19 that the voxel game can use the original sizes and models of the mobs from
+   the other game, since they are numbers. So a mob's cuboids, their sizes, places and pivots, and
+   its height and width are taken from that game's model definitions and named as taken from it in
+   the remark, as Decision 5 allows a number taken from another product; its textures and sounds are
+   not numbers and stay the game's own, drawn in its pixel art. At 22:06 the owner added that the
+   game keeps a character of its own: its pixel art, its palette, its world, its names, its sounds
+   and what it does its own way stay the game's, and the numbers taken are the mobs' sizes and
+   boxes, so a reader knows the game by itself and not as a copy. Item 13 does it, read with item
+   10.
+
+9. **The tonemapping is the engine's somewhat boring curve.** The owner wrote at 22:06 on 2026-10-19
+   that the game uses a somewhat boring tonemapping, the display transform of that name among the
+   engine's curves, which keeps colors as they are and rolls the highlights off without a filmic
+   look, so the game's pixel art reads as drawn. The game sets `Tonemap.SomewhatBoring`; item 14.
 
 ## Replies
 
