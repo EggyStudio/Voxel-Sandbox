@@ -22,7 +22,14 @@ public sealed class LightSettings
     public float Bloom = 0.5f;
     public float Occlusion;
     public bool AutoExposure;
-    public float Exposure = 1;
+    // The somewhat boring curve the frame is tonemapped by takes a light of 1 to about 0.61, so the
+    // light is raised by a quarter before it. Over the scripted run's views that gives the day the
+    // brightness the engine's own curve gives it at an exposure of 1, the pillar under the morning
+    // sun 136.6 against 136.7 in mean sRGB luminance and the noon sky 137.8 against 136.4, and a
+    // room lit by a lamp at night 31.8 against 28.2, 13 percent brighter, since the curve is close
+    // to a straight line in the dark, where an exposure of 1 would keep the night and darken the
+    // day by 8 percent.
+    public float Exposure = 1.25f;
 
     public void ApplyAll()
     {
@@ -36,6 +43,10 @@ public sealed class LightSettings
         // blur lays a soft fringe beside the map's edges, which step along the blocks' pixels, and
         // kept past the map, where the land has no other shadow of the sun.
         SetContactShadows(ContactShadows.PastShadowMap);
+        // The somewhat boring display transform keeps colors as they are and rolls the highlights
+        // off without a filmic look, so the blocks' colors and the mobs' and the sky's pixel art
+        // read as drawn.
+        SetTonemap(Tonemap.SomewhatBoring);
     }
 
     public void ApplyField() => SetSceneField(Cascades, CellSize, Budget);

@@ -429,6 +429,11 @@ global illumination alone, and opens the engine's windows of what global illumin
 frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
 depth of field, motion blur and bloom, each set at once as it is changed.
 
+The frame is tonemapped by the engine's somewhat boring curve, which keeps colors as they are and
+rolls the highlights off without a filmic look, so the blocks' colors and the pixel art read as
+drawn. It is taken at an exposure of 1.25, which gives the day the brightness the engine's own curve
+gives it at 1, and a room lit by a lamp at night 13 percent more.
+
 ## Sky
 
 The sky is painted as a smooth gradient from the horizon to the zenith, blue by day, orange at the
