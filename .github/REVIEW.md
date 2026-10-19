@@ -33,8 +33,12 @@ in the subject line where COMMITS.md's three marks belong, the reviewer's fault 
 this repository checks by review and not by a test; a pushed commit is not amended, so it stands
 with this line as its record, and the review's commits after it have the form. Item 14's exposure is
 1.25 by the owner's word at 22:36, if it gives the light values back. The run of `a31d456`'s push
-had its three suites green in a minute at 22:26 and its play job running at 22:32. Right. Next item
-14, then items 11 and 12.
+had its three suites green in a minute at 22:26 and its play job running at 22:32. Item 12's reading
+at 22:42 found the distance held at 8 columns by the engine's model pass, which culls no draw
+through a program's own shader, so the terrain's every section is drawn by every pass; the game asks
+the engine for it as its item 36 and keeps 8 with the figures. Item 14 waits on the owner's word on
+the exposure, 1.25 giving the day back and the night a fifth brighter. Right. Next item 14, then
+items 11 and 12.
 
 Before it, `1477e82` came, item 9's second commit, and `6aeda2d` before it, a mend of the play
 script, nothing else. The inventory window draws each icon from the atlas texture through the
@@ -352,8 +356,24 @@ item 9's second commit, item 10's reading, items 11 and 12, and the owner's push
     lavapipe at each distance, the scene field's and the cascades' cost among it, and the memory;
     then the distance set to what the frame affords at the game's pace on the development machine,
     with the figures per distance in the commit's message and the setting's remark (N 3.5), and said
-    in the README's running section. One commit, after item 11's, the owner's word settling the
-    figure where the reading leaves a choice.
+    in the README's running section. Read at 22:42: the distance is 8 columns of 16, 128 blocks, set
+    at the game with a slider and a command clamping it to 2 to 16 and not kept by a save, so the
+    owner's play and every capture run at 8; the shadows reach 96 blocks, the field's four cascades
+    cover 128 across, the haze runs from two thirds of the distance, and mobs draw within 64. On the
+    development machine's GPU at 1280 by 720 at noon over seed 1's spawn, the frame holds 60 a
+    second to 8 columns, 11 to 12 ms of GPU with the shadows 3 to 4, the main pass 3.7 and the
+    illumination 2.1, and misses it from 9, 17.2 ms, 21.7 at 10, 29.7 at 12 and 46.7 at 16, where
+    the shadows take 23.5 and the main pass 12.9 while the illumination stays near 2 and the field
+    under 0.01; on lavapipe the GPU's work is 584 ms at 4 columns and 923 at 8. The cause is the
+    engine's: the terrain draws through the game's own shader, whose vertex stage keeps the mesh's
+    positions, and the engine's model pass gives a batch with a program's own shader no box to cull
+    by (`ModelRenderer.Instances.cs:108`), so every pass draws every section within the distance,
+    the nearest shadow cascade, which holds the first 7.7 of the 96 blocks, drawing as many sections
+    as the camera, 563 against 627 at 8 columns and 2,021 against 2,251 at 16. So the distance stays
+    at 8 and the game asks the engine for culling of a draw through a program's own shader by its
+    mesh's box, which a program whose vertex stage keeps the positions asks for, the engine's item
+    36, with the tables; the game raises the distance once a package brings it. The commit puts the
+    figures in the setting's remark and the README's running section. One commit, after item 11's.
 
 13. **The mobs' models take the other game's sizes and boxes (Decision 8), the textures the game's
     own.** The owner wrote at 22:03 on 2026-10-19 that the game may use the other game's original
@@ -383,7 +403,14 @@ item 9's second commit, item 10's reading, items 11 and 12, and the owner's push
     the light values back, so the exposure is set to 1.25 beside the curve with the reason in the
     remark, the check being those two means within two levels of the engine curve's at exposure 1
     and the sun's core brighter than at 1, the night room's within one; the captures and the
-    README's pictures are taken under both. One commit, before item 11.
+    README's pictures are taken under both. Measured at 22:38 on the play script's captures,
+    exposure 1.25 holds the day, the pillar 136.6 where 136.7 and the noon sky 137.8 where 136.4,
+    the sun's core 219 where 207 under the curve at 1 and 251 under the engine's, and misses the
+    night, the lamp-lit room 31.8 where 28.2, 13 percent brighter, since the curve is near a
+    straight line in the dark and rolls the day's light off, so no one exposure meets both: 1.25
+    gives the day back with nights a fifth brighter, 1 keeps the nights with the day 8 percent
+    darker, and about 1.12 leaves both off by a few levels. The owner chooses; nothing is committed
+    until then. One commit, before item 11.
 
 ## Verdicts
 
