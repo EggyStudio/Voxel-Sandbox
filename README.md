@@ -11,7 +11,10 @@ creative mode or in survival with health and hunger, an inventory, tools and cra
 light levels with smooth lighting and shaded corners, a sky whose sun, moon and stars cross it
 behind drifting clouds, and an ImGui window of the light's settings.
 
-![The wooded hills of seed 1 by the sea in the morning, the sun and its rings of glow over blocky clouds](.github/assets/hills.webp)
+<table><tr>
+<td><img src=".github/assets/village.webp" width="400" height="225" alt="The houses of a village in seed 1's taiga in the afternoon, a villager by its path and sheep, a cow and a pig in its meadow"></td>
+<td><img src=".github/assets/hills.webp" width="400" height="225" alt="The wooded hills of seed 1 by the sea in the morning, the sun and its rings of glow over blocky clouds"></td>
+</tr></table>
 
 ## Running it
 
@@ -45,6 +48,10 @@ dotnet build VoxelSandbox.slnx
 ./e3d command voxel.state
 ./e3d stop
 ```
+
+The pictures at the head of this file are taken by `build/pictures.sh`, each from the seed, the
+place, the hour and the heading the script names, with the mobs and the clouds held where it puts
+them, so running it again shows a change to how the world is drawn in the same pictures.
 
 ## Builds to play
 
@@ -97,25 +104,25 @@ looked at from the terminal. A closed room lit by one lamp, at night:
 `voxel.state` says where the player stands and looks, what is loaded and drawn, the hour, the day
 and the light. `voxel.fill`, `voxel.room` and `voxel.set` change blocks, `voxel.tp`, `voxel.look`
 and `voxel.fly` move the player, `voxel.break` and `voxel.place` act as the mouse buttons do,
-`voxel.time`, `voxel.day` and `voxel.cycle` set the sky, `voxel.clouds` shows or hides the clouds,
-`voxel.distance` the render distance, `voxel.light` reads a block's light levels, `voxel.shade`
-turns the light levels and the shaded corners on or off, `voxel.world` saves the world and opens or
-begins another of a kind and seed, `voxel.save` saves at once, and `voxel.blocks` lists the blocks
-by number and name. `voxel.mobs` counts the mobs and lists the nearest, `voxel.spawn` places one
-where the crosshair rests, `voxel.attack` hits the one it rests on as the left button does,
-`voxel.still` stops them where they stand for a capture, and `voxel.kill` takes them away.
-`voxel.mode` plays in creative or survival mode, `voxel.select` puts an item in the chosen slot,
-`voxel.give` puts items in the inventory, `voxel.craft` makes an item from what the inventory holds,
-`voxel.furnace` fills and reads a furnace, `voxel.inventory` lists what it holds, `voxel.items`
-lists every item, and `voxel.throw` throws as Q does. `voxel.vitals` says or sets the health and
-food, `voxel.hurt` harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field`
-and `voxel.shadows` set global illumination, the scene's distance field and the sun's shadows, and
-`voxel.hud` hides what is drawn over the world for a capture. Three measure the light.
-`voxel.flicker` records each frame's change in the picture around a turn or a step into a file, with
-the first frame after it, the settled one and their difference beside it, `voxel.ring` reads the
-last frame's light around a circle on the ground by angle, and `voxel.depth` says how far the block
-under a pixel is. The engine's own `gi.*` and `field.*` commands show and measure global
-illumination.
+`voxel.time`, `voxel.day` and `voxel.cycle` set the sky, `voxel.clouds` shows or hides the clouds
+and places their drift, `voxel.distance` the render distance, `voxel.light` reads a block's light
+levels, `voxel.shade` turns the light levels and the shaded corners on or off, `voxel.world` saves
+the world and opens or begins another of a kind and seed, `voxel.save` saves at once, and
+`voxel.blocks` lists the blocks by number and name. `voxel.mobs` counts the mobs and lists the
+nearest, `voxel.spawn` places one where the crosshair rests, `voxel.attack` hits the one it rests on
+as the left button does, `voxel.still` stops them where they stand and holds the clouds for a
+capture, and `voxel.kill` takes them away. `voxel.mode` plays in creative or survival mode,
+`voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the inventory,
+`voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and reads a
+furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item, and `voxel.throw`
+throws as Q does. `voxel.vitals` says or sets the health and food, `voxel.hurt` harms the player,
+and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global
+illumination, the scene's distance field and the sun's shadows, and `voxel.hud` hides what is drawn
+over the world for a capture. Three measure the light. `voxel.flicker` records each frame's change
+in the picture around a turn or a step into a file, with the first frame after it, the settled one
+and their difference beside it, `voxel.ring` reads the last frame's light around a circle on the
+ground by angle, and `voxel.depth` says how far the block under a pixel is. The engine's own `gi.*`
+and `field.*` commands show and measure global illumination.
 
 ## Biomes
 

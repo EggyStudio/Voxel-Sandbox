@@ -64,7 +64,20 @@ public sealed class Clouds : IDisposable
     /// <summary>Whether a cell of cloud space holds a cloud.</summary>
     public bool IsCloud(int x, int z) => _noise.Fractal(x / 7f, z / 7f, 2) > 0.12f;
 
-    public void Update(float seconds) => _drift += seconds * Speed;
+    /// <summary>How far east the clouds have drifted, in blocks, which a capture sets to place them the same each time it is taken.</summary>
+    public double Drift
+    {
+        get => _drift;
+        set => _drift = value;
+    }
+
+    /// <summary>Whether the clouds hold where they are rather than drift, for a capture.</summary>
+    public bool Held { get; set; }
+
+    public void Update(float seconds)
+    {
+        if (!Held) _drift += seconds * Speed;
+    }
 
     /// <summary>Draws the clouds within <paramref name="renderDistance"/> columns' reach of the eye, twice the land's, fading into <paramref name="sky"/>.</summary>
     public void Draw(Vector3 eye, int renderDistance, Color sky)

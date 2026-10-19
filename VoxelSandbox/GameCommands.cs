@@ -283,12 +283,13 @@ public static class GameCommands
         return game.Throw(all) ? $"thrown, {game.Drops.All.Count} stacks on the ground" : "the chosen slot is empty";
     }
 
-    [Command("voxel.clouds", "Shows or hides the clouds: voxel.clouds <on|off>")]
-    internal static string ShowClouds(bool on)
+    [Command("voxel.clouds", "Shows or hides the clouds, and where a drift is given places them that many blocks east, as a capture taken again places them: voxel.clouds <on|off> [drift]")]
+    internal static string ShowClouds(bool on, float drift = -1)
     {
         if (Game is not { } game) return "no world is loaded";
         game.Clouds.Shown = on;
-        return on ? $"the clouds are drawn, {game.Clouds.Faces} faces" : "the clouds are hidden";
+        if (drift >= 0) game.Clouds.Drift = drift;
+        return on ? $"the clouds are drawn, {game.Clouds.Faces} faces, drifted {game.Clouds.Drift:0.0} blocks east" : "the clouds are hidden";
     }
 
     [Command("voxel.break", "Breaks the block the crosshair rests on at once, dropping what it leaves in survival, as a left click does")]
@@ -342,12 +343,12 @@ public static class GameCommands
         return mob.Dying >= 0 ? $"{mob.Kind.Name} {mob.Id} dies" : $"{mob.Kind.Name} {mob.Id} is hit, its health {mob.Health}";
     }
 
-    [Command("voxel.still", "Stops the mobs where they stand, or lets them move again, for a capture: voxel.still <on>")]
+    [Command("voxel.still", "Stops the mobs where they stand and the clouds where they have drifted, or lets them move again, for a capture: voxel.still <on>")]
     internal static string Still(bool on)
     {
         if (Game is not { } game) return "no world is loaded";
-        game.Mobs.Still = on;
-        return on ? "the mobs stand still" : "the mobs move";
+        (game.Mobs.Still, game.Clouds.Held) = (on, on);
+        return on ? "the mobs stand still and the clouds hold" : "the mobs move and the clouds drift";
     }
 
     [Command("voxel.kill", "Takes away the loaded mobs of a kind, or all of them: voxel.kill <kind|all>")]
