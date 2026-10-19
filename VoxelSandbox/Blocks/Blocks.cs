@@ -387,6 +387,7 @@ public static class Blocks
     private static readonly bool[] _opaque = [.. _all.Select(b => b.Kind == BlockKind.Opaque)];
     private static readonly bool[] _collides = [.. _all.Select(b => b.Kind is BlockKind.Opaque or BlockKind.Glass)];
     private static readonly bool[] _seeThrough = [.. _all.Select(b => b.Kind is BlockKind.Glass or BlockKind.Water)];
+    private static readonly bool[] _lamp = [.. _all.Select(b => b.Shape is null && b.Emits)];
 
     // The block each item places facing each way in each half, or air where it has no such block.
     private static readonly BlockId[,,] _variants = Variants();
@@ -416,6 +417,9 @@ public static class Blocks
 
     /// <summary>Whether a block is drawn see-through, in its section's second mesh.</summary>
     public static bool IsSeeThrough(BlockId id) => _seeThrough[(int)id];
+
+    /// <summary>Whether a block is a whole emissive block, a lamp, which is drawn apart from its section's mesh as a cube of its own.</summary>
+    public static bool IsLamp(BlockId id) => _lamp[(int)id];
 
     /// <summary>Whether a block smaller than its cell can stand on, hang from or be fixed to a block, which it can on any whole block but water.</summary>
     public static bool IsSturdy(BlockId id) => _collides[(int)id];

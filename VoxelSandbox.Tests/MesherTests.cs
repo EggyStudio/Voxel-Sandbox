@@ -74,6 +74,41 @@ public class MesherTests
     }
 
     [Fact]
+    public void Stone_Against_A_Lamp_Keeps_Its_Faces_Toward_It_So_Its_Mesh_Has_No_Open_Edge()
+    {
+        // A floor and a wall of stone with a glowstone in their corner, as a room's lamp stands. The
+        // scene's distance field reads a cell whose nearest point lies on an edge only one triangle
+        // of its mesh has as open, so stone with a hole where the lamp is would read as air.
+        var world = Floor();
+        for (int z = 6; z <= 8; z++)
+        {
+            for (int x = 6; x <= 8; x++) world.SetBlock(x, 20, z, BlockId.Stone);
+            for (int y = 21; y <= 22; y++) world.SetBlock(6, y, z, BlockId.Stone);
+        }
+        world.SetBlock(7, 21, 7, BlockId.Glowstone);
+
+        var mesher = Meshed(world);
+        var faces = mesher.Solid;
+        var edges = new Dictionary<(System.Numerics.Vector3, System.Numerics.Vector3), int>();
+        for (int i = 0; i < faces.Indices.Count; i += 3)
+            for (int k = 0; k < 3; k++)
+            {
+                var (a, b) = (faces.Positions[(int)faces.Indices[i + k]], faces.Positions[(int)faces.Indices[i + (k + 1) % 3]]);
+                var key = a.X < b.X || a.X == b.X && (a.Y < b.Y || a.Y == b.Y && a.Z < b.Z) ? (a, b) : (b, a);
+                edges[key] = edges.GetValueOrDefault(key) + 1;
+            }
+        Assert.DoesNotContain(edges, e => e.Value == 1);
+        // The floor's top under the lamp and the wall's side behind it, each a face of four corners
+        // whose lowest is the lamp's cell's.
+        var lowest = Enumerable.Range(0, faces.Count / 4)
+            .Select(q => (faces.Unpack(4 * q).Face, Enumerable.Range(4 * q, 4).Select(i => faces.Positions[i]).Aggregate(System.Numerics.Vector3.Min)))
+            .ToArray();
+        Assert.Contains((2, new System.Numerics.Vector3(7, 5, 7)), lowest);
+        Assert.Contains((0, new System.Numerics.Vector3(7, 5, 7)), lowest);
+        Assert.Equal(BlockId.Glowstone, Assert.Single(mesher.Emitters).Block);
+    }
+
+    [Fact]
     public void A_Corner_Where_Two_Blocks_Meet_Is_Darker_Than_An_Open_One()
     {
         var world = Floor();

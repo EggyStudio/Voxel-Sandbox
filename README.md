@@ -398,7 +398,10 @@ mesh and takes only new packed bytes, written in place.
 An emissive block (glowstone, a sea lantern, shroomlight, magma) is drawn as a cube of its own, and
 the emissive piece of a torch, a lantern or an end rod as that cube scaled to it, every cube of one
 surface in one instanced draw, because a material's emission is one for its whole draw and a
-section's one material is not emissive.
+section's one material is not emissive. The faces of the blocks against a lamp's cube stay in their
+section's mesh, hidden behind the cube's, so the mesh is closed around the lamp, since the field
+reads a cell whose nearest point lies on an edge only one triangle of its mesh has as open, and
+would read the stone beside a lamp as the air in front of the lamp's faces.
 
 Sections are drawn by their distance from the player and by what the eye can see, as Minecraft's
 visibility graph has it. Each section knows which of its six faces its open cells join, and a flood

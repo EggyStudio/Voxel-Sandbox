@@ -236,10 +236,14 @@ public sealed class SectionMesher
 
     // Whether a block's face shows beside a neighbor. An opaque block shows a face to anything that is
     // not opaque, and a see-through block to anything that is neither opaque nor of its own kind, so
-    // two panes of glass or two blocks of water meet with no face between them.
+    // two panes of glass or two blocks of water meet with no face between them. An opaque block keeps
+    // its face against a lamp too, hidden behind the lamp's cube, so the mesh stays closed around
+    // the lamp, since the scene's distance field reads a cell whose nearest point lies on an edge no
+    // other triangle of its mesh shares as open, and would read the stone beside a lamp as the air in
+    // front of the lamp's faces.
     private static bool Shows(BlockId block, BlockKind kind, BlockId neighbor)
     {
-        if (Blocks.IsOpaque(neighbor)) return false;
+        if (Blocks.IsOpaque(neighbor)) return kind == BlockKind.Opaque && Blocks.IsLamp(neighbor);
         return kind == BlockKind.Opaque || neighbor != block;
     }
 
