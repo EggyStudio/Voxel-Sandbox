@@ -91,6 +91,21 @@ public sealed class MobTests : IDisposable
     }
 
     [Fact]
+    public void A_Frame_That_Took_No_Time_Leaves_A_Mob_Striding_As_It_Was()
+    {
+        // The game's first frame, before the engine has timed one, takes no time, and the mobs
+        // placed with the columns around the spawn are moved in it.
+        var world = Floor();
+        var mob = new Mob(1, At(MobKinds.Cow, 4.5f, 11, 4.5f), 1);
+
+        mob.Update(world, new Vector3(100, 100, 100), 12, 0);
+        Run(mob, world, 12, 1);
+
+        Assert.True(float.IsFinite(mob.Stride));
+        Assert.True(float.IsFinite(mob.StridePhase));
+    }
+
+    [Fact]
     public void A_Hit_Takes_Health_And_Another_While_The_Mob_Is_Red_Does_Nothing()
     {
         var world = Floor();
