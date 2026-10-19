@@ -5,7 +5,24 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `9158df8`, item 12, with `569b5fb`, item 11, and `bde1fc1`, item 14, before it, and
+Reviewed up to `cc334ab`, item 15 and nothing else, with the review's commits between. An opaque
+block keeps its face toward a lamp block in its section's mesh, hidden behind the lamp's cube, so
+the mesh is closed around the lamp, a whole emissive block drawn apart as a cube being named a lamp,
+the see-through mesh left as it was since it casts no shadow and the field reads it not, the lamp
+drawn as before and the README's paragraph on how the world is drawn saying why; a mesher test lays
+a floor and a wall of stone with a glowstone in their corner and holds that no edge of the mesh
+belongs to one triangle alone and that the floor's top and the wall's side toward the lamp are kept,
+failing without the change; the strict build is clean and 125 tests pass. Read on `5.2.92`, which
+lacks the engine's walling-in, at the leak scene with a 512-path reference: the corner probe, moved
+into the stone before and holding 855 percent over the reference, is moved into the room's air and
+holds 13 under, since the stone beside the lamp reads as inside; the grass at the wall's foot by the
+lamp with the screen probes off from 14.1 times the reference to 1.67, its red over green from 1.40
+to 0.46 against 0.36, the same row away from the lamp at 1.49 and 1.46; with the probes on the view
+at 1.40 and 1.41 either way; the room inside unmoved. The package with the engine's `a7c2da8b` and
+this commit together is read when it comes. Right. Next the legless frame's hunt, item 36's package
+before the distance rises, and the pictures script's row in AGENTS.md on the owner's word.
+
+Before it, `9158df8` came, item 12, with `569b5fb`, item 11, and `bde1fc1`, item 14, before it, and
 the review's commits between. Item 14: the engine's somewhat boring curve with an exposure of 1.25
 beside it at the light settings, the remark giving the figures over the play script's views, the
 pillar 136.6 against 136.7, the noon sky 137.8 against 136.4 and the night room 31.8 against 28.2,
@@ -67,39 +84,6 @@ at 22:42 found the distance held at 8 columns by the engine's model pass, which 
 through a program's own shader, so the terrain's every section is drawn by every pass; the game asks
 the engine for it as its item 36 and keeps 8 with the figures. Item 14's exposure is 1.25 by the
 owner's word at 22:53. Right. Next item 14, then items 11 and 12.
-
-Before it, `1477e82` came, item 9's second commit, and `6aeda2d` before it, a mend of the play
-script, nothing else. The inventory window draws each icon from the atlas texture through the
-engine's ImGui texture id of item 34, the hotbar from the same texture, the merged rectangles and
-their record gone with the icon test's assertion on them, 113 tests passing and the strict build
-clean; the inventory capture matches item 6's pixel for pixel, the room, noon and shadow exactly,
-and the sky and dusk only where the clouds and the mobs moved; on the development machine's GPU at
-1280 by 720 the drawing reads 0.05 ms higher with the window open, within the noise of 0.2, the
-interface's CPU time 0.04 ms against 0.007 and its GPU time 0.012, where the rectangles cost about
-0.5, and the README says the two draw the atlas as a texture. The play script's run addressed its
-game by name alone and hung when another session's game was serving under the same name, so it
-addresses its own by the session and the pid the open answers, the stop before the open still going
-by name, and the run passed with the other game serving. The three reproductions are with the
-engine's coder: the blank frame after a break reproduced, a floor block broken at frame 29 in the
-lamp-lit room and 0.87 and 0.85 of the pixels changing by more than 8 levels at frames 36 and 37,
-settled from 38; the depth-fighting look reproduced as still blotches, a birch trunk at noon taking
-blue, green and dark patches with the screen probes on and none off, the frame-to-frame change the
-same either way; and the leak reproduced only with the screen probes off, a lamp against a wall a
-block thick lighting the grass at the wall's outside foot by up to 17 levels, one level with them
-on, so the leak the owner saw with the probes on is not found yet. Right. Next item 10's reading,
-items 11 and 12, and the owner's push of `6aeda2d` and `1477e82`. The run of `6d71cd1` was whole
-green, its play job in five minutes; the owner pushed `1477e82` at 21:55, its three suites green at
-22:00 and its play job running. At 22:03 the owner wrote that the game may use the other game's
-original sizes and models of the mobs, since they are numbers (Decision 8), item 13, read with item
-10, and at 22:06 that the game keeps a character of its own and uses the engine's somewhat boring
-tonemapping curve (Decisions 8 and 9, item 14). Item 10's reading, done at 22:04 on `1477e82`, found
-no cause that fits everywhere: every kind's feet stand on the block's top by origin and height, the
-stride dips a toe below the ground at its ends, the chicken's by 0.045 of a block, more than the
-toe's thickness, the others by 0.01 to 0.02; mobs in shade seemed to draw black beside lit grass,
-which was withdrawn at 22:13, the cameras having sat inside the hill, a sheep under a canopy reading
-twice the grass beside it; and one frame of a cow 19 blocks off drew its body and head and no legs,
-not made to happen again. The owner is asked which animal, in sun or shade, near or far, walking or
-standing.
 
 ## Now
 
@@ -433,7 +417,9 @@ standing.
     the stone, whichever keeps the lamp drawn as it is; read with the engine's field instruments at
     that corner before and after, the cells beside the lamp reading inside, the light at the wall's
     foot against the reference the engine's coder gave, 1.42 of it with the probe walled in; held by
-    a mesher test. One commit, after the legless frame's hunt or beside it.
+    a mesher test. Done at `cc334ab` on 2026-10-20, the corner probe moved into the air and the
+    grass at the wall's foot from 14.1 times the reference to 1.67 on `5.2.92` alone, held by a
+    mesher test.
 
 ## Verdicts
 
