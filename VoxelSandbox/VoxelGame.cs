@@ -114,9 +114,14 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>How many columns around the player are drawn, and two more loaded.</summary>
     /// <remarks>
-    /// Eight by default, about 1,800 draws on the hills of the first seed. Every section within it is
-    /// drawn each frame, since one left out leaves the scene field, so it sets much of the frame's
-    /// cost, most of it the CPU's for each draw.
+    /// Eight by default, 128 blocks, the most the frame holds at 60 a second on the development
+    /// machine's RTX 4070 Laptop GPU at 1280 by 720, its GPU's work 12.1 ms on the first seed's
+    /// spawn at noon, where 9 columns take 16.6 ms, 10 take 21.8, 12 take 29.7 and 16 take 46.4.
+    /// Every section the eye can see within it is drawn each frame, since one left out leaves the
+    /// scene field, and the engine culls no draw made through a program's own shader, as the
+    /// terrain's are, so it draws each into the depth pass and each of the sun's three shadow
+    /// cascades as well as the camera's. So the shadows, though they reach 96 blocks, take 4.3 ms
+    /// at 8 columns and 23.5 at 16, where global illumination stays at about 2.1 ms.
     /// </remarks>
     public int RenderDistance { get; set; } = 8;
 
