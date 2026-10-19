@@ -5,7 +5,32 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `1477e82`, item 9's second commit, and `6aeda2d` before it, a mend of the play
+Reviewed up to `a31d456`, item 13 with item 10's mend and test, one commit for every kind since the
+change has one shape. Every kind's cuboids and pivots are the other game's model definitions as
+numbers, its quadruped body for the pig and the sheep with the wool grown, its cow, chicken and
+villager with the jacket grown and the arms turned, its humanoid for the zombie, its skeleton,
+creeper and spider with the eight legs at their angles, written through two helpers that take its
+box and pose numbers and place them in the game's space, x mirrored, y up from the feet as 24 less
+its y, a lying body turned a quarter, a pose's x and y turns negated; the renderer turns a part
+about x, then y, then z, in its order; the colors, faces, eyes, patches and markings stay the game's
+on the new faces, and the sheep's shorn body and the villager's under the robe are left out since
+they never show. A placed part lifts a leg by however far its lowest corner would sink, which is
+item 10's mend, used by the renderer and the tests alike. A bug found on the way, the zombie's and
+skeleton's arms hung down since they were written because a static field was declared below the
+kinds that read it and C# sets a class's statics in the order written, so their pose was zero; it
+stands above them and the arms are held out, the skeleton's bow upright. The mob model tests hold
+each kind's width, height, head pivot height and leg length against the numbers, the two hands held
+out, every kind standing with its lowest corner on the ground or within a pixel for the spider's
+angled legs, and no leg's corner below the ground at any swing within 0.8; 124 tests pass with the
+strict build clean, each kind captured from the side, frozen mid-stride and on a stepped bank with
+the feet showing, the play script passing under the validation layer with the room, noon, shadow and
+inventory captures matching item 9's exactly; the README says the boxes and sizes are the other
+game's numbers with the colors the game's and that a swung leg is lifted. The legless frame stays on
+the hunt. The owner pushed `58fa8a9` to `1477e82` through the evening, their runs green, and at
+22:20 gave the reviewer the pushes and the commits of its own edits, so the review's edits come in
+commits of their own from here on. Right. Next item 14, the tonemapping, then items 11 and 12.
+
+Before it, `1477e82` came, item 9's second commit, and `6aeda2d` before it, a mend of the play
 script, nothing else. The inventory window draws each icon from the atlas texture through the
 engine's ImGui texture id of item 34, the hotbar from the same texture, the merged rectangles and
 their record gone with the icon test's assertion on them, 113 tests passing and the strict build
@@ -61,20 +86,6 @@ N 4.7 have it, and item 10's will too. Right. Next the three reproductions for t
 item 9's second commit, item 10's reading, items 11 and 12, and the owner's push of `58fa8a9` and
 `6d71cd1` with them. The owner pushed `58fa8a9` at 21:08, its build run green, and `6d71cd1` at
 21:23, its run running at 21:28.
-
-Before it, `58fa8a9` came, item 7's second commit and nothing else, 7 files. The game stands on the
-engine's `5.2.92`, the contact shadows set past the shadow map through the engine's item 33, so the
-land within the 96 blocks keeps its stepped shadow and the land past the map its soft one, the
-pillar's capture retaken with both edges stepped, the README's Shadows section without its fringe,
-and the workflows' engine checkout at `33fd0804`, the commit of the package. The strict build and
-the tests pass, and the captures with the bump alone matched `5.2.43`'s, so the engine's light moved
-none of them. Right. At 21:09 the owner wrote that the sun is to be a bit smaller, as the other
-game's, and that the README's picture is taken anew, both in item 6's second commit. Next item 6's
-second commit, the sun, the moon and the stars fixed on the sky with the halos as quads on their
-grids, the sun at the other game's width and the README's sky picture anew; item 9's second commit;
-item 10's reading; and the owner's push of `58fa8a9` with them. At 21:23 the owner wrote that the
-README's picture shows terrain and a hill alone where the world is lively, with structures, villages
-and animals, and that the render distance is very short, items 11 and 12.
 
 ## Now
 
@@ -316,7 +327,9 @@ and animals, and that the render distance is very short, items 11 and 12.
     the ground in any stride, with item 13's models; the legless frame is hunted by the herd drive
     captured frame by frame, and if it comes again the frame goes to the engine's coder with the
     instance count and the view, since the engine draws instances in blocks of 64 and encloses each
-    block for culling. The owner's answer names which of the three the owner saw.
+    block for culling. The owner's answer names which of the three the owner saw. The stride's mend
+    and the test are in at `a31d456`; what stays open is the owner's answer and the legless frame,
+    hunted.
 
 11. **The README's picture shows the world's life, structures, a village and animals, and not
     terrain alone (Decision 6).** The owner wrote at 21:23 on 2026-10-19 that the README's picture
@@ -349,7 +362,7 @@ and animals, and that the render distance is very short, items 11 and 12.
     already, and most cuboids within a pixel of its, the pig's hind legs and head apart, so the
     commits are the differences kind by kind, with item 10's test folded in, no face below the
     ground standing and the dip within its bound mid-stride. After item 10's reading and before item
-    11.
+    11. Done at `a31d456` on 2026-10-19, one commit for every kind, item 10's test in it.
 
 14. **The game's tonemapping is the engine's somewhat boring curve (Decision 9).** The owner wrote
     at 22:06 on 2026-10-19 that the game uses a somewhat boring tonemapping, which is the engine's
