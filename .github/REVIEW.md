@@ -32,7 +32,9 @@ commits of their own from here on. The first review commit, `ccb4fb4`, was pushe
 in the subject line where COMMITS.md's three marks belong, the reviewer's fault against N 7.2, which
 this repository checks by review and not by a test; a pushed commit is not amended, so it stands
 with this line as its record, and the review's commits after it have the form. Item 14 waits on the
-owner's word between exposure 1 and 1.25 under the curve. Right. Next item 14, then items 11 and 12.
+owner's word between exposure 1 and 1.25 under the curve. The run of `a31d456`'s push had its three
+suites green in a minute at 22:26 and its play job running at 22:32. Right. Next item 14, then items
+11 and 12.
 
 Before it, `1477e82` came, item 9's second commit, and `6aeda2d` before it, a mend of the play
 script, nothing else. The inventory window draws each icon from the atlas texture through the
