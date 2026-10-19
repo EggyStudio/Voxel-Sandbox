@@ -36,9 +36,8 @@ with this line as its record, and the review's commits after it have the form. I
 had its three suites green in a minute at 22:26 and its play job running at 22:32. Item 12's reading
 at 22:42 found the distance held at 8 columns by the engine's model pass, which culls no draw
 through a program's own shader, so the terrain's every section is drawn by every pass; the game asks
-the engine for it as its item 36 and keeps 8 with the figures. Item 14 waits on the owner's word on
-the exposure, 1.25 giving the day back and the night a fifth brighter. Right. Next item 14, then
-items 11 and 12.
+the engine for it as its item 36 and keeps 8 with the figures. Item 14's exposure is 1.25 by the
+owner's word at 22:53. Right. Next item 14, then items 11 and 12.
 
 Before it, `1477e82` came, item 9's second commit, and `6aeda2d` before it, a mend of the play
 script, nothing else. The inventory window draws each icon from the atlas texture through the
@@ -409,8 +408,8 @@ item 9's second commit, item 10's reading, items 11 and 12, and the owner's push
     night, the lamp-lit room 31.8 where 28.2, 13 percent brighter, since the curve is near a
     straight line in the dark and rolls the day's light off, so no one exposure meets both: 1.25
     gives the day back with nights a fifth brighter, 1 keeps the nights with the day 8 percent
-    darker, and about 1.12 leaves both off by a few levels. The owner chooses; nothing is committed
-    until then. One commit, before item 11.
+    darker, and about 1.12 leaves both off by a few levels. The owner chose 1.25 at 22:53. One
+    commit, before item 11.
 
 ## Verdicts
 
@@ -498,7 +497,8 @@ No verdict is open.
    engine's curves, which keeps colors as they are and rolls the highlights off without a filmic
    look, so the game's pixel art reads as drawn. The game sets `Tonemap.SomewhatBoring`; item 14. At
    22:36 the owner said to take exposure 1.25 beside the curve if it gives the light values back,
-   since the curve alone reads the frame about 8 percent darker; item 14 measures that it does.
+   since the curve alone reads the frame about 8 percent darker; item 14 measures that it does. The
+   owner chose 1.25 at 22:53, the day exact and the nights about a fifth brighter.
 
 ## Replies
 
