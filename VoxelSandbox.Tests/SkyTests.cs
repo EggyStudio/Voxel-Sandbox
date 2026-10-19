@@ -43,6 +43,36 @@ public class SkyTests
     }
 
     [Fact]
+    public void A_Quad_On_The_Sky_Keeps_Its_Sides_There_As_The_Sky_Turns_It()
+    {
+        var ways = new[] { Sky.SunToward(6), -Sky.SunToward(6), Vector3.Normalize(new Vector3(0.2f, 0.7f, -0.6f)) };
+        foreach (var way in ways)
+        {
+            var (right, up) = Sky.Across(way);
+            for (float hour = 0; hour < 24; hour += 1.5f)
+            {
+                var turned = Sky.Turned(hour, way);
+                var (turnedRight, turnedUp) = Sky.Across(turned);
+                // The sides at the turned place are the sides turned, so the sky carries a quad
+                // whole and the camera has no part in which way its sides run.
+                Near(Sky.Turned(hour, right), turnedRight);
+                Near(Sky.Turned(hour, up), turnedUp);
+                // It lies across the way to it, square, its right side along the way the sky turns
+                // there, and its front toward the middle of the sky.
+                Assert.Equal(0, Vector3.Dot(turnedRight, turned), 4);
+                Assert.Equal(0, Vector3.Dot(turnedUp, turned), 4);
+                Assert.Equal(1, turnedUp.Length(), 4);
+                Assert.Equal(0, turnedRight.Z, 4);
+                Near(Vector3.Cross(turned, turnedUp), turnedRight);
+            }
+        }
+        // The moon at midnight, high in the north, stands upright to a player facing it, east on
+        // the right.
+        var (moonRight, moonUp) = Sky.Across(-Sky.SunToward(0));
+        Assert.True(moonRight.X > 0.99f && moonUp.Y > 0.2f, $"right {moonRight}, up {moonUp}");
+    }
+
+    [Fact]
     public void The_Moon_Is_Lit_On_The_Left_As_It_Wanes_And_On_The_Right_As_It_Waxes_And_Dark_When_New()
     {
         var lit = new int[SkyArt.Phases];
@@ -90,7 +120,7 @@ public class SkyTests
     [Fact]
     public void The_Glow_Around_The_Sun_Falls_In_Steps_On_The_Suns_Grid_And_Clears_Before_Its_Edge()
     {
-        var glow = SkyArt.HaloPixels(0.75f);
+        var glow = SkyArt.HaloPixels(Sky.SunPixelDegrees);
         const int middle = SkyArt.HaloSize / 2;
         int Alpha(int x, int y) => glow[(y * SkyArt.HaloSize + x) * 4 + 3];
 
@@ -115,4 +145,7 @@ public class SkyTests
     }
 
     private static (float, int) Rounded((float Hour, int Day) at) => (MathF.Round(at.Hour, 3), at.Day);
+
+    private static void Near(Vector3 expected, Vector3 actual) =>
+        Assert.True(Vector3.Distance(expected, actual) < 1e-4f, $"expected {expected}, got {actual}");
 }

@@ -5,11 +5,23 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `80ab301`, item 9's first commit and nothing else, 10 files. `Ui/Icons.cs` paints the
-atlas once on first use, 97 icons of 16 pixels in cells of 18 with clear gutters, ten across: each
-block's pixel casts an orthographic ray from the south-east and 30 degrees up against the block's
-own boxes, each face its surface's plains color with a fixed speckle of five percent, since the
-blocks have colors and not textures, shaded 1, 0.8 and 0.62 for the top, the south and the east,
+Reviewed up to `58fa8a9`, item 7's second commit and nothing else, 7 files. The game stands on the
+engine's `5.2.92`, the contact shadows set past the shadow map through the engine's item 33, so the
+land within the 96 blocks keeps its stepped shadow and the land past the map its soft one, the
+pillar's capture retaken with both edges stepped, the README's Shadows section without its fringe,
+and the workflows' engine checkout at `33fd0804`, the commit of the package. The strict build and
+the tests pass, and the captures with the bump alone matched `5.2.43`'s, so the engine's light moved
+none of them. Right. At 21:09 the owner wrote that the sun is to be a bit smaller, as the other
+game's, and that the README's picture is taken anew, both in item 6's second commit. Next item 6's
+second commit, the sun, the moon and the stars fixed on the sky with the halos as quads on their
+grids, the sun at the other game's width and the README's sky picture anew; item 9's second commit;
+item 10's reading; and the owner's push of `58fa8a9` with them.
+
+Before it, `80ab301` came, item 9's first commit and nothing else, 10 files. `Ui/Icons.cs` paints
+the atlas once on first use, 97 icons of 16 pixels in cells of 18 with clear gutters, ten across:
+each block's pixel casts an orthographic ray from the south-east and 30 degrees up against the
+block's own boxes, each face its surface's plains color with a fixed speckle of five percent, since
+the blocks have colors and not textures, shaded 1, 0.8 and 0.62 for the top, the south and the east,
 emissive faces unshaded, a block smaller than its cell both ways drawn up to two and a half times
 larger and centered so torches, lanterns and fences read where the first capture showed a torch as
 one pixel; an item that places no block is rasterized from strokes and dots outlined in a dark shade
@@ -68,21 +80,6 @@ the clouds off, one drifting over the sun at that hour, and dusk with the rings 
 passing on the GPU with no validation error; the README's Sky section says the gradient is smooth
 and the glow six rings on the sun's own grid. Right. Next item 9, the owner's push of the three
 commits and their build run, and items 6 and 7's second commits after the package.
-
-Before it, `4fc4809` came, item 7's first commit and nothing else, 4 files. The terrain shader's
-`pixelMiddle` moves the lit point to the middle of the block pixel it lies in on the two axes across
-the face's normal, and the lighting takes that copy of the vertex output, so a shadow's edge steps
-along the blocks' pixels, the lamps' and the bounced light taken at the same points, the header
-comment saying so; the README gains a Shadows section saying what steps and that the engine's
-contact shadow leaves a fringe about half a block wide since the package has no setting to turn it
-off; `build/play.sh` raises a pillar of stone west of the room under the sun of 8.30 and captures it
-from the air to the southeast, the capture holding one edge stepping along the pixels and the other
-with the soft fringe, no test since the snapping lives in the shader. Checked were the strict build
-with no warning, 107 tests, the style checks over the staged diff and the play on the GPU with no
-validation error. The engine's ASKS.md carries the contact shadows' entry with the reviewer's line,
-item 33 of the engine's REVIEW.md after its item 32, and item 7's second commit turns them off when
-a package brings the setting. Next item 8, the owner's push of the two commits and their build run,
-and items 6 and 7's second commits after the package.
 
 ## Now
 
@@ -218,10 +215,16 @@ and items 6 and 7's second commits after the package.
    faces the camera. The second commit draws the sun, the moon and the stars as quads fixed on the
    sky's sphere, their right side and up the sphere's at their place, turned with the hour as one,
    the stars one mesh of 500 quads with their alpha in the vertex color, sampled without filtering
-   as before, and the glow around the sun and the moon as the engine's particle emitters parented to
-   them by the engine's item 32, which is what a particle is for; checked by a drive that turns and
-   moves the camera while the bodies stand still on the sky, the captures retaken, and the stars
-   below the horizon faded as before. On `5.2.92`, after item 7's commit.
+   as before, and the halo around the sun as a quad fixed with the sun on the sun's own grid, its
+   rings item 8's, the moon given a dimmer halo the same way, since a particle stands upright in the
+   world and faces the camera, so as a particle the halo's rings would part from the sun's pixels by
+   up to 45 degrees mid-morning and turn with the view, the fault Decision 7 names, which the game's
+   coder measured at 21:09; the sun a bit smaller, as the owner asked at 21:09, its width on the sky
+   the other game's, a quad 30 units wide at a distance of 100, about 17 degrees across, and the
+   moon's 20 at 100, about 11, the numbers said in the code's remark as taken from it; the README's
+   sky picture taken anew; checked by a drive that turns and moves the camera while the bodies stand
+   still on the sky, the captures retaken, and the stars below the horizon faded as before. On
+   `5.2.92`, after item 7's commit.
 
 7. **The sun's shadows are pixelated (Decision 6).** The owner asked on 2026-10-18 at 22:25 that the
    shadows be pixelated too. The shadow map's texels are sized to the block grid, a texel a fraction
@@ -365,10 +368,12 @@ No verdict is open.
    in motion, and that they behave as the other game's, placed on the sky and depending on position
    alone. So the sun, the moon and the stars are quads fixed on the sky's sphere, turned with the
    hour as one body, their orientation the sphere's at their place and never the camera's, and the
-   words of Decision 6 on camera-facing billboards are read so; a particle effect parented to the
-   sun and the moon, which Decision 6 asked for, stays, a particle facing the camera being what a
-   glow is. Item 6 changes to it, and the engine ask the game was about to write for particles
-   square on the screen is not written.
+   words of Decision 6 on camera-facing billboards are read so; the halos around the sun and the
+   moon are quads fixed with them on their grids, since a particle stands upright in the world and
+   faces the camera, which would turn the halo's rings against the sun's pixels and with the view,
+   so the particle effect Decision 6 asked for is read as the glow fixed with its body, and the
+   engine's emitters stay for the game's other effects. Item 6 changes to it, and the engine ask the
+   game was about to write for particles square on the screen is not written.
 
 ## Replies
 

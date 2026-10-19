@@ -11,7 +11,7 @@ creative mode or in survival with health and hunger, an inventory, tools and cra
 light levels with smooth lighting and shaded corners, a sky whose sun, moon and stars cross it
 behind drifting clouds, and an ImGui window of the light's settings.
 
-![The hills of seed 1 from above, a forest of oak and birch under blocky clouds](.github/assets/hills.webp)
+![The wooded hills of seed 1 by the sea in the morning, the sun and its rings of glow over blocky clouds](.github/assets/hills.webp)
 
 ## Running it
 
@@ -431,11 +431,15 @@ depth of field, motion blur and bloom, each set at once as it is changed.
 
 The sky is painted as a smooth gradient from the horizon to the zenith, blue by day, orange at the
 horizon at dawn and dusk and dark blue at night, and given to the engine as the map that lights the
-world from all around and is drawn behind it. The sun, the glow around it, the moon and the stars
-are pixel art drawn over it on billboards facing the camera, sampled without filtering, so their
-pixels stay square. The glow is six rings of brightness on the sun's own grid of pixels, their edges
-stepping along it, warmer and stronger at dawn and dusk, and added to the sky behind it. The sky
-turns with the hour about the axis from north to south, the sun rising in the east at 6, passing
+world from all around and is drawn behind it. The sun, the moon, the glow around each and the
+stars are pixel art drawn over it on quads fixed on the sky, sampled without filtering, so their
+pixels stay square. A quad's sides run along the way the sky turns at its place and across it, so
+where it stands and which way it is turned depend on the hour alone, whichever way the player
+looks. The sun is as wide against its distance as Minecraft's, 15 to 100 or about 8.6 degrees, and
+the moon 10 to 100, about 5.7 degrees. The sun's glow is six rings of brightness on the sun's own
+grid of pixels, their edges stepping along it, warmer and stronger at dawn and dusk, and the moon's
+is the same rings on the moon's grid, dimmer and in the moonlight's color, each added to the sky
+behind it. The sky turns with the hour about the axis from north to south, the sun rising in the east at 6, passing
 over the south at noon and setting in the west at 18, and the moon stands opposite it. Its 500 stars
 keep their places on the turning sky and fade in as the day fades and near the horizon. The moon
 goes through Minecraft's eight phases, a phase a day from the full moon of the first night, and

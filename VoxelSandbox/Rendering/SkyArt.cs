@@ -1,9 +1,8 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// The pixel art the sky's billboards are drawn with, the sun and the glow around it, the moon in
-/// each of its phases and a star, as RGBA bytes a row at a time from the top, a clear pixel's alpha
-/// 0.
+/// The pixel art the sky's quads are drawn with, the sun, the moon in each of its phases, the glow
+/// around each and a star, as RGBA bytes a row at a time from the top, a clear pixel's alpha 0.
 /// </summary>
 /// <remarks>
 /// The sun and the moon are squares with their corners cut, 12 pixels across, as Minecraft's are
@@ -23,8 +22,12 @@ public static class SkyArt
     /// <summary>How many pixels apart the moon's phases are in their sheet, each with its clear edge.</summary>
     public const int Cell = Size + 2;
 
-    /// <summary>How many pixels the glow around the sun is across, on the sun's grid, the sun's own pixels at its middle.</summary>
-    public const int HaloSize = 96;
+    /// <summary>
+    /// How many pixels the glow around the sun or the moon is across, on its body's grid, the
+    /// body's own pixels at its middle, enough for the glow to clear before its edge at the sun's
+    /// pixels of <see cref="Sky.SunPixelDegrees"/>.
+    /// </summary>
+    public const int HaloSize = 104;
 
     /// <summary>How many steps of brightness the glow takes from its edge to the sun.</summary>
     public const int HaloSteps = 6;
@@ -91,7 +94,7 @@ public static class SkyArt
     /// <paramref name="degrees"/> across, white with its brightness as its alpha. The brightness
     /// falls off from the sun as the twelfth power of the cosine of a pixel's angle from it and is
     /// held to <see cref="HaloSteps"/> steps, so the glow shows as rings whose edges step along the
-    /// pixels.
+    /// pixels. The moon's glow is the same pixels on the moon's smaller grid.
     /// </summary>
     public static byte[] HaloPixels(float degrees)
     {

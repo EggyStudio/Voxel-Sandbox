@@ -3,10 +3,10 @@
 # workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it builds a
 # closed room of stone with a glowstone block in it, puts the player in the room facing the lamp at
 # night, walks toward it and captures the frame, then captures the night sky from the room's roof,
-# the full moon and the stars over the flat land, the sun and its glow at noon and at dusk, a
-# pillar's shadow under the morning sun, and the window of every item's icon. It fails where the
-# game does not open or answer, the player did not move, or the layer reported an error, and says
-# why in an error annotation, so the run's page names it.
+# the full moon and the stars over the flat land from two places and headings, the sun and its glow
+# at noon and at dusk, a pillar's shadow under the morning sun, and the window of every item's
+# icon. It fails where the game does not open or answer, the player did not move, or the layer
+# reported an error, and says why in an error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -93,12 +93,19 @@ distance=$(printf '%s %s\n' "$from" "$to" | awk '{ printf "%.2f", sqrt(($4 - $1)
 awk -v d="$distance" 'BEGIN { exit !(d > 0.5) }' || fail "the player did not walk toward the lamp, from $from to $to"
 
 # The night sky from the roof, the full moon of the first night ahead in the east-northeast and
-# the stars around it, each drawn as a billboard.
+# the stars around it, then from three blocks to the northwest looking further north and higher.
+# The moon, its glow and the stars are quads fixed on the sky, so the second capture shows each at
+# the same place on the sky with its sides running the same way there, turned on the window with
+# the view.
 cmd voxel.tp 16.5 12 -16
 cmd voxel.time 20
 cmd voxel.look 71 25
 cmd frames.wait 2
 capture sky.png
+cmd voxel.tp 13.5 12 -19
+cmd voxel.look 40 35
+cmd frames.wait 2
+capture sky2.png
 
 # The sun high in the south at noon and low in the west at dusk, its glow's rings stepping along
 # the sun's pixels, the sky's gradient around them smooth. The clouds are left out at noon, where
