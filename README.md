@@ -460,9 +460,10 @@ another distance, and are pixelated. The terrain's shader takes each point of a 
 middle of the block's pixel it lies in, a sixteenth of a block on a side as Minecraft's textures
 have them, so a shadow's edge steps along the pixels of the blocks it crosses rather than running
 slantwise across them. The lamps' light and global illumination are taken at the same points, and in
-a room lit by a lamp the light shows no steps. The engine also traces a soft contact shadow toward
-the sun through the scene's distance field, which leaves a fringe about half a block wide beside a
-shadow's edge, since the engine has no setting that turns it off.
+a room lit by a lamp the light shows no steps. The engine's soft contact shadow, traced toward the
+sun through the scene's distance field, is left out where the shadow map holds a point, so no fringe
+lies beside a shadow's edge, and kept past the map's reach, where the land has no other shadow of
+the sun.
 
 ## Fog
 

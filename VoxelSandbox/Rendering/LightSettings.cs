@@ -32,6 +32,10 @@ public sealed class LightSettings
         SetAmbientOcclusion(Occlusion);
         ApplyExposure();
         SetShadowDistance(ShadowDistance);
+        // The sun's contact shadows are left out where the shadow map holds a point, since their
+        // blur lays a soft fringe beside the map's edges, which step along the blocks' pixels, and
+        // kept past the map, where the land has no other shadow of the sun.
+        SetContactShadows(ContactShadows.PastShadowMap);
     }
 
     public void ApplyField() => SetSceneField(Cascades, CellSize, Budget);

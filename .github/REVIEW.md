@@ -5,7 +5,53 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `344ef5b`, item 8 done and nothing else, 6 files, nothing asked of the engine.
+Reviewed up to `80ab301`, item 9's first commit and nothing else, 10 files. `Ui/Icons.cs` paints the
+atlas once on first use, 97 icons of 16 pixels in cells of 18 with clear gutters, ten across: each
+block's pixel casts an orthographic ray from the south-east and 30 degrees up against the block's
+own boxes, each face its surface's plains color with a fixed speckle of five percent, since the
+blocks have colors and not textures, shaded 1, 0.8 and 0.62 for the top, the south and the east,
+emissive faces unshaded, a block smaller than its cell both ways drawn up to two and a half times
+larger and centered so torches, lanterns and fences read where the first capture showed a torch as
+one pixel; an item that places no block is rasterized from strokes and dots outlined in a dark shade
+of its color with its upper-left edge lit, the tools one shape a kind with the head in the
+material's color, the meats one shape an animal differing by color. The hotbar draws the atlas as a
+point-filtered texture at twice the size, the inventory window draws each icon's runs of one color
+as rectangles at twice the size, 11,087 for the 97 icons of the creative window, measured on the
+development machine at 1280 by 720 as about half a millisecond a frame while the window is open; the
+strokes, the swatches and the hotbar's emission ring are gone, and the color's docs say what it is
+for. `IconTests` holds four tests, every item an icon whose stretches cover its pixels, a cube's
+three shades with an emissive one unshaded, the slab's width and clear rows with the torch standing
+tall, and the clear gutters, 112 passing; the strict build has no warning; `build/play.sh` captures
+the creative window with all 97 icons over the hotbar, passing on the GPU with no validation error;
+the README gains a paragraph on the icons. The other game is named where its shading rule is taken
+(Decision 5). Right. The engine's ASKS.md carries the third entry with the reviewer's line, item 34
+of the engine's REVIEW.md after its items 32 and 33, and items 6, 7 and 9 each wait on a second
+commit when a package brings those three. The owner pushed the four commits at 04:07 on 2026-10-19,
+and the build run ended green at 04:12, the tests on the three systems and the play on lavapipe with
+its captures. Next the engine's package, and items 6, 7 and 9's second commits from it. On
+2026-10-19 at 21:03 the game stood on the engine's `5.2.92`, which carries items 32 to 34 of the
+engine's review, the captures with the bump alone matching `5.2.43`'s within two levels outside the
+HUD's text and where the mobs, the clouds and the arm moved between runs, so the engine's light of
+the day moved none of them. Item 6's second commit was tried on it and loses two things the game
+cannot mend: a particle's square is upright in the world, so on the screen it tilts with its place
+in the view, 19 degrees at the horizon's edge and 57 looking 45 degrees up at the game's 70 degrees,
+and the five-pixel crosses come out slanted with broken arms where the billboards stay square; and a
+placed point takes its emitter's color, one alpha for every star of an emitter, so the fade near the
+horizon is lost and 41 stars show below it from 90 blocks up where the billboards show none. The
+brightness the game mended, the alpha decoded from sRGB since the engine adds a particle's light in
+linear light, the matched stars' peak 186 against the billboards' 169. The reviewer's choice is that
+the stars stay the game's billboards, as Decision 6 asks of the sky, and item 6's second commit
+waits on the engine package that brings particles square on the screen and an alpha per placed
+point, asked in the engine's ASKS.md as its item 36; the bump to `5.2.92` goes with item 7's commit,
+then item 9's. At 21:05 the owner wrote that the sky's bodies are not to be billboards, since a
+thing facing the camera turns with the view and looks wrong in motion, and that they behave as the
+other game's, placed on the sky and turning with the hour alone (Decision 7), so item 6 changes: the
+sun, the moon and the stars stand as quads fixed on the sky's sphere, drawn by the game, the glow
+around the sun and the moon as the engine's particles parented to them, and no engine ask is needed,
+the second commit going on `5.2.92`. At 21:05 the owner wrote that some of the animals' feet do not
+show, item 10, read before it is mended.
+
+Before it, `344ef5b` came, item 8 done and nothing else, 6 files, nothing asked of the engine.
 `SkyArt.HaloPixels` builds a square of 96 white pixels whose alpha is the old falloff, the cosine of
 a pixel's angle from the sun to the twelfth power, held to six steps, so the glow shows as six rings
 whose edges step along the pixels and is clear well before its edge; `Sky.Draw` puts it on a
@@ -37,30 +83,6 @@ validation error. The engine's ASKS.md carries the contact shadows' entry with t
 item 33 of the engine's REVIEW.md after its item 32, and item 7's second commit turns them off when
 a package brings the setting. Next item 8, the owner's push of the two commits and their build run,
 and items 6 and 7's second commits after the package.
-
-Before it, `bfba72b` came, item 6's first commit and nothing else, 10 files. `Rendering/SkyArt.cs`
-holds the pixel art as bytes, a sun of 12 pixels, a square with its corners cut, a moon of 12 with
-craters whose eight phases sit in a sheet of four by two with a clear gutter of a pixel between
-cells, since the point filter read the neighboring phase at a cell's edge without it, each phase lit
-as a ball with its square pixels drawn onto the round face, and a star of three pixels; `Sky.cs`
-draws the three with camera-facing billboards under the point filter at 3,000 and 3,200 units inside
-the far plane and before the backdrop, land and clouds hiding them, turns the sky about the
-north-south axis with the moon opposite the sun and 500 fixed stars turned by one matrix a frame,
-fading in as the day fades and near the horizon, the painted disc, moon and stars gone from the map
-and the halo kept for item 8; the day counts up at midnight while the cycle runs and a save keeps
-it, the night's phase chosen by the day with the hours before noon belonging to the night before,
-day 0's night full, `voxel.day` setting the day and naming the phase, `voxel.state` saying the day
-and the settings window holding a field. `SkyTests` gains five tests, the day at midnight, the
-phases by day and hour, the moon opposite the sun with the stars keeping their places, each phase's
-lit pixels by side, and each cell's clear edge, 107 passing; `build/play.sh` captures the night sky
-from the room's roof at hour 20, the full moon among the stars, passing on the GPU with no
-validation error; the README says the sky. The other game is named where its count, its order of
-phases and its first night's full moon are taken (Decision 5). Measured on the development machine's
-GPU at 1280 by 720, drawing took 2.08 and 1.82 ms by night with the stars against 1.76 and 1.77 at
-noon without. Right. The engine's ASKS.md carries the stars' entry with the reviewer's line, item 32
-of the engine's REVIEW.md, and the second commit of item 6 moves the stars to the engine's particles
-when a package brings it. Next item 7, the owner's push of this commit and its build run, and item
-6's second commit after the package.
 
 ## Now
 
@@ -162,34 +184,44 @@ when a package brings it. Next item 7, the owner's push of this commit and its b
    section takes the rule with this pair; and `git grep -i` for the idioms Decision 5 names finds
    nothing, by hand in its technical sense apart. Checked by review. One commit.
 
-6. **The sun, the moon and the stars as camera-facing billboards with textures, the moon with its
-   phases (Decision 6).** The owner said on 2026-10-18 at 22:25 that the sky's pixelated blobs
-   standing for the stars, the moon and the sun look ugly. The sun and the moon become billboards
-   facing the camera at their fixed places on the sky's turning, each with a texture drawn as pixel
-   art, the moon's texture holding its eight phases, the count the other game has, shown by the day
-   of the game's calendar; the stars become a particle effect parented to the sun's and the moon's
-   fixed positions, so they turn with the sky, each star a camera-facing billboard of a few pixels
-   fading in as the day fades, as `Sky.cs:119` has them fade; and the blobs go. `voxel.time` sets
-   the hour as it does, and the phase follows the day count, a command setting the day. Checked by
-   the tests of the sky's hour and phase, a capture at night from the drive, and `build/play.sh`.
-   What the engine lacks for a parented billboard particle goes to the engine's ASKS.md (Decision
-   4). One commit. Read against the package on 2026-10-18 at 22:50, the engine's billboards face the
-   camera through the draw list, depth tested, so the sun and the moon are drawn with the point
-   filter and the far plane as asked, the moon's eight phases from a sheet of four by two chosen by
-   the day count and a `voxel.day` command setting the day; but the engine's particles are simulated
-   on the GPU in world space, born at a random point within the emitter's radius, and the emitter's
-   rotation and parent never move a particle already born, so a star field turning with the sky
-   needs two things the engine lacks, an emitter whose particles live in its entity's space and turn
-   with it and its parent, and particles placed where the program says and living until removed,
-   which go to the engine's ASKS.md (Decision 4). The reviewer's call is one commit now, the sun and
-   the moon as billboards, the blobs gone and the stars drawn by the game as camera-facing
-   billboards of a few pixels on the sky's turning, fading in as the day fades, so they look and
-   move as asked, and a second commit moving the stars to the engine's particles once a package
-   brings the parented emitter, the item done then. First commit done at `bfba72b` on 2026-10-18,
-   the sun and the moon pixel art on camera-facing billboards turning with the sky, the moon's eight
-   phases by a day count that `voxel.day` sets and a save keeps, the stars drawn by the game as
-   billboards of three pixels, the blobs gone; the engine's ASKS.md entry became its item 32, and
-   the second commit, the stars as the engine's particles, waits on the package that brings it.
+6. **The sun, the moon and the stars fixed on the sky's sphere with textures, the moon with phases,
+   the glow around the sun and the moon as particles parented to them (Decisions 6 and 7).** The
+   owner said on 2026-10-18 at 22:25 that the sky's pixelated blobs standing for the stars, the moon
+   and the sun look ugly. The sun and the moon become billboards facing the camera at their fixed
+   places on the sky's turning, each with a texture drawn as pixel art, the moon's texture holding
+   its eight phases, the count the other game has, shown by the day of the game's calendar; the
+   stars become a particle effect parented to the sun's and the moon's fixed positions, so they turn
+   with the sky, each star a camera-facing billboard of a few pixels fading in as the day fades, as
+   `Sky.cs:119` has them fade; and the blobs go. `voxel.time` sets the hour as it does, and the
+   phase follows the day count, a command setting the day. Checked by the tests of the sky's hour
+   and phase, a capture at night from the drive, and `build/play.sh`. What the engine lacks for a
+   parented billboard particle goes to the engine's ASKS.md (Decision 4). One commit. Read against
+   the package on 2026-10-18 at 22:50, the engine's billboards face the camera through the draw
+   list, depth tested, so the sun and the moon are drawn with the point filter and the far plane as
+   asked, the moon's eight phases from a sheet of four by two chosen by the day count and a
+   `voxel.day` command setting the day; but the engine's particles are simulated on the GPU in world
+   space, born at a random point within the emitter's radius, and the emitter's rotation and parent
+   never move a particle already born, so a star field turning with the sky needs two things the
+   engine lacks, an emitter whose particles live in its entity's space and turn with it and its
+   parent, and particles placed where the program says and living until removed, which go to the
+   engine's ASKS.md (Decision 4). The reviewer's call is one commit now, the sun and the moon as
+   billboards, the blobs gone and the stars drawn by the game as camera-facing billboards of a few
+   pixels on the sky's turning, fading in as the day fades, so they look and move as asked, and a
+   second commit moving the stars to the engine's particles once a package brings the parented
+   emitter, the item done then. First commit done at `bfba72b` on 2026-10-18, the sun and the moon
+   pixel art on camera-facing billboards turning with the sky, the moon's eight phases by a day
+   count that `voxel.day` sets and a save keeps, the stars drawn by the game as billboards of three
+   pixels, the blobs gone; the engine's ASKS.md entry became its item 32, and the second commit,
+   tried on `5.2.92` on 2026-10-19 with the stars as placed particles, showed a particle's square
+   tilting on the screen with its place in the view and one alpha for an emitter's points, which was
+   to be asked of the engine until the owner's word of Decision 7 made it moot: nothing of the sky
+   faces the camera. The second commit draws the sun, the moon and the stars as quads fixed on the
+   sky's sphere, their right side and up the sphere's at their place, turned with the hour as one,
+   the stars one mesh of 500 quads with their alpha in the vertex color, sampled without filtering
+   as before, and the glow around the sun and the moon as the engine's particle emitters parented to
+   them by the engine's item 32, which is what a particle is for; checked by a drive that turns and
+   moves the camera while the bodies stand still on the sky, the captures retaken, and the stars
+   below the horizon faded as before. On `5.2.92`, after item 7's commit.
 
 7. **The sun's shadows are pixelated (Decision 6).** The owner asked on 2026-10-18 at 22:25 that the
    shadows be pixelated too. The shadow map's texels are sized to the block grid, a texel a fraction
@@ -216,7 +248,11 @@ when a package brings it. Next item 7, the owner's push of this commit and its b
    setting, the item done then. First commit done at `4fc4809` on 2026-10-18, the lit point snapped
    to the block pixel's middle in the terrain shader, the README's Shadows section and the pillar's
    capture in `build/play.sh`; the engine's ASKS.md entry became its item 33, and the second commit,
-   the contact shadows off, waits on the package that brings the setting.
+   the contact shadows off, waits on the package that brings the setting. The second commit sets the
+   engine's contact shadows to past the shadow map alone, so the stepped edge stands with no fringe
+   within the 96 blocks and the land past the map keeps the soft shadow where it would have none,
+   recaptures the pillar with both edges stepped and drops the fringe from the README's Shadows
+   section.
 
 8. **The sun's surround in the sky is pixelated and the rest of the sky stays smooth (Decision 6),
    done at `344ef5b`.** The owner asked on 2026-10-18 at 22:25 that the sky around the sun be
@@ -251,7 +287,20 @@ when a package brings it. Next item 7, the owner's push of this commit and its b
    ASKS.md asks for a texture id of a `Texture2D` that the ImGui pass binds per command, and a
    second commit moves the inventory onto the atlas texture when a package brings it. Checked by
    tests of the atlas, every item with an icon, a cube's three shades, a slab's clear rows and the
-   clear gutters, a capture of the inventory open in `build/play.sh`, and the strict build.
+   clear gutters, a capture of the inventory open in `build/play.sh`, and the strict build. First
+   commit done at `80ab301` on 2026-10-18, the atlas of 97 icons drawn once, the hotbar drawing it
+   as a texture and the inventory window as merged rectangles at half a millisecond a frame, the
+   four tests and the capture; the engine's ASKS.md entry became its item 34, and the second commit,
+   the window on the atlas texture, waits on the package that brings it.
+
+10. **Some of the animals' feet do not show (Decision 6).** The owner wrote at 21:05 on 2026-10-19
+    that some of the animals' feet do not show in the game. Read before it is mended, with a capture
+    of each animal kind standing and walking on flat ground and on a slope: which animals, and
+    whether the feet stand below the ground's surface by the model's origin or the mob's height
+    above its block, are culled as faces turned away, are hidden by the pixelated shadow or the
+    contact shadow of item 7, or are not in the model at all; then one commit for the cause found,
+    with a test that holds each animal's lowest face at or above the ground it stands on, and the
+    captures that show it. After item 9's commit.
 
 ## Verdicts
 
@@ -309,6 +358,17 @@ No verdict is open.
    icons made anew (item 9). The radiance cascades the engine works on this week reach the game
    through the engine's packages after its commits, so the game's lighting changes wait for them and
    the items above do not.
+
+7. **Nothing in the sky faces the camera; the sun, the moon and the stars are fixed on the sky and
+   turn with the hour.** The owner wrote at 21:05 on 2026-10-19 that the sky's bodies are not to be
+   billboards in the voxel game, since a thing facing the camera turns with the view and looks wrong
+   in motion, and that they behave as the other game's, placed on the sky and depending on position
+   alone. So the sun, the moon and the stars are quads fixed on the sky's sphere, turned with the
+   hour as one body, their orientation the sphere's at their place and never the camera's, and the
+   words of Decision 6 on camera-facing billboards are read so; a particle effect parented to the
+   sun and the moon, which Decision 6 asked for, stays, a particle facing the camera being what a
+   glow is. Item 6 changes to it, and the engine ask the game was about to write for particles
+   square on the screen is not written.
 
 ## Replies
 

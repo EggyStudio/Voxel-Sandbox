@@ -116,7 +116,8 @@ capture dusk.png
 
 # A pillar of stone west of the room and its shadow on the grass under the sun of 8.30, the
 # shadow's edges running slantwise and stepping along the pixels of the blocks they cross, seen from
-# the air to the southeast.
+# the air to the southeast. The mobs are taken away first, so none wanders into the shadow.
+cmd voxel.kill all
 cmd voxel.fill 1 4 -9 1 8 -9 stone
 cmd voxel.fly on
 cmd voxel.time 8.5
