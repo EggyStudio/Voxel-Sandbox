@@ -28,7 +28,11 @@ inventory captures matching item 9's exactly; the README says the boxes and size
 game's numbers with the colors the game's and that a swung leg is lifted. The legless frame stays on
 the hunt. The owner pushed `58fa8a9` to `1477e82` through the evening, their runs green, and at
 22:20 gave the reviewer the pushes and the commits of its own edits, so the review's edits come in
-commits of their own from here on. Right. Next item 14, the tonemapping, then items 11 and 12.
+commits of their own from here on. The first review commit, `ccb4fb4`, was pushed with its sentence
+in the subject line where COMMITS.md's three marks belong, the reviewer's fault against N 7.2, which
+this repository checks by review and not by a test; a pushed commit is not amended, so it stands
+with this line as its record, and the review's commits after it have the form. Item 14 waits on the
+owner's word between exposure 1 and 1.25 under the curve. Right. Next item 14, then items 11 and 12.
 
 Before it, `1477e82` came, item 9's second commit, and `6aeda2d` before it, a mend of the play
 script, nothing else. The inventory window draws each icon from the atlas texture through the
