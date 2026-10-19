@@ -271,14 +271,13 @@ public sealed class InventoryWindow
         list.AddText(at, 0xFFFFFFFF, text);
     }
 
-    // An item's icon at twice its size in the middle of its slot, each stretch of a row's pixels of
-    // one color a rectangle, since the engine's ImGui pass samples no texture but its font's.
+    // An item's icon at twice its size in the middle of its slot, its part of the icons' atlas.
     private static void Icon(ImDrawListPtr list, Vector2 min, Item item)
     {
         var corner = min + new Vector2((Slot - Icons.Size * 2) / 2);
-        foreach (var run in Icons.RunsOf(item))
-            list.AddRectFilled(corner + new Vector2(run.From, run.Y) * 2, corner + new Vector2(run.To, run.Y + 1) * 2, ToU32(run.Color));
+        var source = Icons.Source(item);
+        var atlas = new Vector2(Icons.Width, Icons.Height);
+        list.AddImage(E3D.GetImGuiTextureId(Icons.Texture()), corner, corner + new Vector2(Icons.Size * 2),
+            new Vector2(source.X, source.Y) / atlas, new Vector2(source.X + source.Width, source.Y + source.Height) / atlas);
     }
-
-    private static uint ToU32(Color color) => (uint)color.A << 24 | (uint)color.B << 16 | (uint)color.G << 8 | color.R;
 }

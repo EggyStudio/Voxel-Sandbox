@@ -1,11 +1,12 @@
 using System.Numerics;
 using Engine;
+using static Engine.E3D;
 
 namespace VoxelSandbox;
 
 /// <summary>
 /// The icon of every item, 16 pixels square, drawn once into an atlas of RGBA bytes that the
-/// hotbar draws as a texture and the inventory window draws pixel by pixel.
+/// hotbar and the inventory window draw as a texture.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -46,11 +47,8 @@ public static class Icons
     /// <summary>The atlas, a row of pixels at a time from the top, four bytes a pixel.</summary>
     public static byte[] Atlas => _atlas ??= Paint();
 
-    /// <summary>A stretch of one row of an icon in one color, from one pixel up to another, which the inventory window draws as a rectangle.</summary>
-    public readonly record struct Run(int Y, int From, int To, Color Color);
-
     private static byte[]? _atlas;
-    private static Run[][]? _runs;
+    private static Texture2D _texture;
 
     // The way from a block toward the eye, from the south and east and 30 degrees above, and the
     // icon's right and up across it.
@@ -80,23 +78,16 @@ public static class Icons
         return icon;
     }
 
-    /// <summary>An item's icon as stretches of its rows, each of one color, the clear pixels left out.</summary>
-    public static Run[] RunsOf(Item item) => (_runs ??= [.. Items.All.Select(Runs)])[item.Id];
-
-    private static Run[] Runs(Item item)
+    /// <summary>
+    /// The atlas as a texture, loaded the first time it is drawn and sampled without filtering, so
+    /// an icon's pixels stay square at twice their size.
+    /// </summary>
+    public static Texture2D Texture()
     {
-        var icon = Pixels(item);
-        var runs = new List<Run>();
-        for (int y = 0; y < Size; y++)
-            for (int x = 0; x < Size;)
-            {
-                var at = (y * Size + x) * 4;
-                int to = x + 1;
-                while (to < Size && icon.AsSpan(at, 4).SequenceEqual(icon.AsSpan((y * Size + to) * 4, 4))) to++;
-                if (icon[at + 3] > 0) runs.Add(new Run(y, x, to, new Color(icon[at], icon[at + 1], icon[at + 2], icon[at + 3])));
-                x = to;
-            }
-        return [.. runs];
+        if (_texture.IsValid) return _texture;
+        _texture = LoadTextureFromImage(new Image(Atlas, Width, Height));
+        SetTextureFilter(_texture, TextureFilter.Point);
+        return _texture;
     }
 
     private static byte[] Paint()

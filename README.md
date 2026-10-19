@@ -281,9 +281,8 @@ top brightest and the right side darkest, as Minecraft's inventory shades its bl
 emissive block's faces are unshaded. An item that places no block is pixel art drawn from a few
 strokes and dots, outlined in a dark shade of its color, its upper left edge lit and its lower right
 shaded, and each kind of tool keeps one shape, its head in the color of its material. The hotbar
-draws the atlas as a texture. The inventory window draws each icon's pixels as rectangles, a row's
-stretch of one color each, since the engine's ImGui pass samples no texture but its font's, which
-costs the frame about half a millisecond on the CPU while the creative window shows all 97 items.
+and the inventory window draw the atlas as a texture sampled without filtering, each icon at twice
+its size.
 
 ## Tools and crafting
 
