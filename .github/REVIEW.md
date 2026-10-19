@@ -29,8 +29,10 @@ giving the GPU's 12.1 ms at 8 and 16.6, 21.8, 29.7 and 46.4 at 9, 10, 12 and 16 
 shader in the depth pass and the three cascades, the README's section on what it costs carrying the
 table at six distances with lavapipe's 0.58 and 0.92 seconds and losing its sentence on the engine
 culling each pass. 124 tests pass and the strict build is clean at each commit. Open: the legless
-frame on the hunt, the engine's item 36 before the distance can rise. Right. Next the pictures
-script's row in AGENTS.md on the owner's word, and the engine's packages as they come.
+frame on the hunt, the engine's item 36 before the distance can rise. On 2026-10-20 at 00:48 the
+engine's coder, mending the leak through a wall, found the mesher leaving out the stone's faces
+against a lamp block, so the scene field reads that stone as open; item 15. Right. Next item 15, the
+pictures script's row in AGENTS.md on the owner's word, and the engine's packages as they come.
 
 Before it, `a31d456` came, item 13 with item 10's mend and test, one commit for every kind since the
 change has one shape. Every kind's cuboids and pivots are the other game's model definitions as
@@ -417,6 +419,21 @@ standing.
     gives the day back with nights a fifth brighter, 1 keeps the nights with the day 8 percent
     darker, and about 1.12 leaves both off by a few levels. The owner chose 1.25 at 22:53. One
     commit, before item 11. Done at `bde1fc1` on 2026-10-19 at exposure 1.25 by the owner's choice.
+
+15. **The section's mesh keeps the stone's faces against a lamp block, so the scene field reads the
+    stone as solid.** Found by the engine's coder on 2026-10-20 reading the leak of light through a
+    wall (the engine's item 30, part (h)): the mesher leaves the stone's faces against a lamp block
+    out of the section's mesh (`SectionMesher.cs:214, 242`) and the lamp is drawn apart as a cube,
+    so the engine's scene field, which takes a cell whose nearest point lies on an unshared edge as
+    outside, reads the stone cells beside the lamp, in the wall's slab and the floor under it, as
+    the open in front of the cube's faces, as far outside as they lie inside, and a world probe at
+    that corner was moved into the stone. The engine walls such a probe in since `a7c2da8b`, and the
+    field's reading of the stone stays wrong until the mesh says it: the faces against a lamp block
+    stay in the section's mesh, or the lamp is meshed with the section as a block whose faces close
+    the stone, whichever keeps the lamp drawn as it is; read with the engine's field instruments at
+    that corner before and after, the cells beside the lamp reading inside, the light at the wall's
+    foot against the reference the engine's coder gave, 1.42 of it with the probe walled in; held by
+    a mesher test. One commit, after the legless frame's hunt or beside it.
 
 ## Verdicts
 
