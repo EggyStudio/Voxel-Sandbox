@@ -31,10 +31,10 @@ the hunt. The owner pushed `58fa8a9` to `1477e82` through the evening, their run
 commits of their own from here on. The first review commit, `ccb4fb4`, was pushed with its sentence
 in the subject line where COMMITS.md's three marks belong, the reviewer's fault against N 7.2, which
 this repository checks by review and not by a test; a pushed commit is not amended, so it stands
-with this line as its record, and the review's commits after it have the form. Item 14 waits on the
-owner's word between exposure 1 and 1.25 under the curve. The run of `a31d456`'s push had its three
-suites green in a minute at 22:26 and its play job running at 22:32. Right. Next item 14, then items
-11 and 12.
+with this line as its record, and the review's commits after it have the form. Item 14's exposure is
+1.25 by the owner's word at 22:36, if it gives the light values back. The run of `a31d456`'s push
+had its three suites green in a minute at 22:26 and its play job running at 22:32. Right. Next item
+14, then items 11 and 12.
 
 Before it, `1477e82` came, item 9's second commit, and `6aeda2d` before it, a mend of the play
 script, nothing else. The inventory window draws each icon from the atlas texture through the
@@ -375,7 +375,15 @@ item 9's second commit, item 10's reading, items 11 and 12, and the owner's push
     `Tonemap.SomewhatBoring`, where the game draws with the engine's default curve. The game sets it
     at its light settings with the reason in the remark, every capture of the play script is taken
     again under it, and the README's pictures of items 6 and 11 are taken under it, so item 11's
-    picture comes after this. One commit, before item 11.
+    picture comes after this. Read at 22:17 on the development machine's GPU, the curve takes a
+    luminance of 1.0 to 0.61 where the engine's own curve is unchanged to 0.9, so at exposure 1 the
+    frame reads about 8 percent darker, the pillar under the morning sun 133.4 where 146.0 and the
+    noon sky 126.5 where 136.4 in mean luminance, the sun's core 207 where 251, and at exposure 1.25
+    the pillar 145.2 and the noon sky about 137. The owner said at 22:36 to take 1.25 if it gives
+    the light values back, so the exposure is set to 1.25 beside the curve with the reason in the
+    remark, the check being those two means within two levels of the engine curve's at exposure 1
+    and the sun's core brighter than at 1, the night room's within one; the captures and the
+    README's pictures are taken under both. One commit, before item 11.
 
 ## Verdicts
 
@@ -461,7 +469,9 @@ No verdict is open.
 9. **The tonemapping is the engine's somewhat boring curve.** The owner wrote at 22:06 on 2026-10-19
    that the game uses a somewhat boring tonemapping, the display transform of that name among the
    engine's curves, which keeps colors as they are and rolls the highlights off without a filmic
-   look, so the game's pixel art reads as drawn. The game sets `Tonemap.SomewhatBoring`; item 14.
+   look, so the game's pixel art reads as drawn. The game sets `Tonemap.SomewhatBoring`; item 14. At
+   22:36 the owner said to take exposure 1.25 beside the curve if it gives the light values back,
+   since the curve alone reads the frame about 8 percent darker; item 14 measures that it does.
 
 ## Replies
 
