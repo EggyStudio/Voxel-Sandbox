@@ -5,7 +5,31 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `58fa8a9`, item 7's second commit and nothing else, 7 files. The game stands on the
+Reviewed up to `6d71cd1`, item 6's second commit and nothing else, on `5.2.92`. The sun, the moon, a
+halo around each and the 500 stars are quads fixed on the sky, each quad's right side the cross of
+its way and the sky's axis and its up the cross of that and the way, given in the sky's space as it
+stands at six under the eye's translation and the hour's turn, the stars one run of quads with their
+alpha in the vertex color and the fade near the horizon as before, the moon's halo the sun's rings
+on the moon's grid in the moonlight's color at 0.2 by night, and nothing reading the camera but its
+eye. The sizes are the other game's measured from its sky code and textures, its quad 60 across at
+100 with the visible sun the middle 8 of 32 pixels, so the sun 15 across at 100, about 8.6 degrees,
+and the moon 10 at 100, about 5.7, where the game's were 9.0 and 6.6, the remark giving the numbers
+as taken from it, and the reviewer's figures of 17 and 11 degrees, which took the half-width for the
+whole, corrected under item 6; the halo's texture grew from 96 to 104 so its rings clear the quad's
+edge at the smaller pixel. A test holds a quad's sides at an hour as its sides at six turned, square
+across the way, the right side along the turn and the front toward the middle, and the moon upright
+with east on its right at midnight; 113 tests pass with the strict build clean; the play script adds
+a night sky from three blocks northwest where the moon and its halo stand at one place on the sky
+with their sides turned on the window, under the validation layer, and the room, shadow and
+inventory captures match item 7's exactly. The README's picture is taken again at 800 by 450, the
+wooded hills and the sea with the sun, its rings and the clouds, until item 11 moves it to a
+village; the commit's message gives the reason and not the owner's words or time, as COMMITS.md and
+N 4.7 have it, and item 10's will too. Right. Next the three reproductions for the engine's coder,
+item 9's second commit, item 10's reading, items 11 and 12, and the owner's push of `58fa8a9` and
+`6d71cd1` with them. The owner pushed `58fa8a9` at 21:08, its build run green, and `6d71cd1` at
+21:23, its run running at 21:28.
+
+Before it, `58fa8a9` came, item 7's second commit and nothing else, 7 files. The game stands on the
 engine's `5.2.92`, the contact shadows set past the shadow map through the engine's item 33, so the
 land within the 96 blocks keeps its stepped shadow and the land past the map its soft one, the
 pillar's capture retaken with both edges stepped, the README's Shadows section without its fringe,
@@ -15,7 +39,9 @@ none of them. Right. At 21:09 the owner wrote that the sun is to be a bit smalle
 game's, and that the README's picture is taken anew, both in item 6's second commit. Next item 6's
 second commit, the sun, the moon and the stars fixed on the sky with the halos as quads on their
 grids, the sun at the other game's width and the README's sky picture anew; item 9's second commit;
-item 10's reading; and the owner's push of `58fa8a9` with them.
+item 10's reading; and the owner's push of `58fa8a9` with them. At 21:23 the owner wrote that the
+README's picture shows terrain and a hill alone where the world is lively, with structures, villages
+and animals, and that the render distance is very short, items 11 and 12.
 
 Before it, `80ab301` came, item 9's first commit and nothing else, 10 files. `Ui/Icons.cs` paints
 the atlas once on first use, 97 icons of 16 pixels in cells of 18 with clear gutters, ten across:
@@ -62,24 +88,6 @@ sun, the moon and the stars stand as quads fixed on the sky's sphere, drawn by t
 around the sun and the moon as the engine's particles parented to them, and no engine ask is needed,
 the second commit going on `5.2.92`. At 21:05 the owner wrote that some of the animals' feet do not
 show, item 10, read before it is mended.
-
-Before it, `344ef5b` came, item 8 done and nothing else, 6 files, nothing asked of the engine.
-`SkyArt.HaloPixels` builds a square of 96 white pixels whose alpha is the old falloff, the cosine of
-a pixel's angle from the sun to the twelfth power, held to six steps, so the glow shows as six rings
-whose edges step along the pixels and is clear well before its edge; `Sky.Draw` puts it on a
-billboard at the sun's place behind the sun with the sun's pixel of 0.75 degrees, blended
-additively, its color and strength the old halo's from noon's white toward dusk's orange, a
-billboard's size being its texel count times a pixel's width at its distance so the 12-pixel sun and
-the 96-pixel glow, both even on one middle, share a grid exactly, the glow writing no depth since
-the sun drawn after it at the same distance failed the depth test by a rounding, and the immediate
-draws coming after the model pass so the land and the clouds still hide it; the painted map is the
-smooth gradient alone, the world's light from all around losing the halo's small share. A sixth sky
-test holds the glow's middle full, its brightness never rising outward, its 4 to 7 levels, its clear
-border and the two sizes differing by an even count, 108 passing; `build/play.sh` captures noon with
-the clouds off, one drifting over the sun at that hour, and dusk with the rings behind the clouds,
-passing on the GPU with no validation error; the README's Sky section says the gradient is smooth
-and the glow six rings on the sun's own grid. Right. Next item 9, the owner's push of the three
-commits and their build run, and items 6 and 7's second commits after the package.
 
 ## Now
 
@@ -220,11 +228,14 @@ commits and their build run, and items 6 and 7's second commits after the packag
    world and faces the camera, so as a particle the halo's rings would part from the sun's pixels by
    up to 45 degrees mid-morning and turn with the view, the fault Decision 7 names, which the game's
    coder measured at 21:09; the sun a bit smaller, as the owner asked at 21:09, its width on the sky
-   the other game's, a quad 30 units wide at a distance of 100, about 17 degrees across, and the
-   moon's 20 at 100, about 11, the numbers said in the code's remark as taken from it; the README's
-   sky picture taken anew; checked by a drive that turns and moves the camera while the bodies stand
-   still on the sky, the captures retaken, and the stars below the horizon faded as before. On
-   `5.2.92`, after item 7's commit.
+   the other game's, whose quad is 60 across at a distance of 100 with the visible sun the middle 8
+   of its texture's 32 pixels, so 15 across at 100, about 8.6 degrees, and the moon 10 at 100, about
+   5.7, where the game's were 9.0 and 6.6, the numbers said in the code's remark as taken from it,
+   the reviewer's first figures having taken the quad's half-width for the whole; the README's sky
+   picture taken anew; checked by a drive that turns and moves the camera while the bodies stand
+   still on the sky, the captures retaken, and the stars below the horizon faded as before. Done at
+   `6d71cd1` on 2026-10-19, on `5.2.92`, held by a test of the quads' sides and the night sky's
+   capture.
 
 7. **The sun's shadows are pixelated (Decision 6).** The owner asked on 2026-10-18 at 22:25 that the
    shadows be pixelated too. The shadow map's texels are sized to the block grid, a texel a fraction
@@ -304,6 +315,24 @@ commits and their build run, and items 6 and 7's second commits after the packag
     contact shadow of item 7, or are not in the model at all; then one commit for the cause found,
     with a test that holds each animal's lowest face at or above the ground it stands on, and the
     captures that show it. After item 9's commit.
+
+11. **The README's picture shows the world's life, structures, a village and animals, and not
+    terrain alone (Decision 6).** The owner wrote at 21:23 on 2026-10-19 that the README's picture
+    shows terrain and a hill alone where the world is lively when entered, with structures, villages
+    and animals. The picture at the README's head is taken where a village stands with its buildings
+    in view and animals near, at the hour and heading that show them, with the render distance of
+    item 12, taken by the capture script from a seed and a place written in it so it is taken the
+    same again, the sky's picture of item 6 beside it. One commit, with item 6's or after it.
+
+12. **The render distance is read and set by what the frame affords (Decision 6).** The owner wrote
+    at 21:23 on 2026-10-19 that the render distance is very short. Read first: what the game's
+    distance is in chunks and blocks, where it is set, whether the captures and the owner's play run
+    at the same distance, and what bounds it, the frame time on the development machine's GPU and on
+    lavapipe at each distance, the scene field's and the cascades' cost among it, and the memory;
+    then the distance set to what the frame affords at the game's pace on the development machine,
+    with the figures per distance in the commit's message and the setting's remark (N 3.5), and said
+    in the README's running section. One commit, after item 11's, the owner's word settling the
+    figure where the reading leaves a choice.
 
 ## Verdicts
 

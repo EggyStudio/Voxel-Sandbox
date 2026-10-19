@@ -21,9 +21,11 @@ program=VoxelSandbox/bin/Debug/net10.0/VoxelSandbox
 opened=captures/opened.json
 said=captures/said.txt
 log=""
-# Every command and the stop go to this game by its name, so a program an earlier run left serving
-# neither makes them ambiguous nor takes the stop meant for this one.
+# Every command and the stop go to this game by the process the open names, so a program an earlier
+# run left serving, or another session's game of the same name, neither makes them ambiguous nor
+# takes the stop meant for this one. Before the open has answered, the stop goes by the game's name.
 export E3D_NAME=VoxelSandbox
+pid=""
 # The script's own output, which an error is written to, so one said inside $(ask ...) reaches the
 # page and not the variable.
 exec 3>&1
@@ -34,12 +36,12 @@ fail() {
   echo "::error title=Voxel Sandbox through e3d::$1.${ending:+ Its log ends with $ending.}" >&3
   exit 1
 }
-trap './e3d stop --quiet > /dev/null 2>&1 || true' EXIT
+trap 'if [ -n "$pid" ]; then ./e3d stop --session "$pid" --quiet; else ./e3d stop --quiet; fi > /dev/null 2>&1 || true' EXIT
 # A command e3d refuses fails with its code and sentence, which it writes to standard error.
-cmd() { ./e3d command "$@" --quiet --timeout 600 2> "$said" || fail "./e3d command $* ended with $?, $(head -n 1 "$said")"; }
+cmd() { ./e3d command "$@" --quiet --timeout 600 --session "$pid" 2> "$said" || fail "./e3d command $* ended with $?, $(head -n 1 "$said")"; }
 ask() {
   local answer
-  answer=$(./e3d command "$1" --timeout 600 2> "$said") || fail "./e3d command $1 ended with $?, $(head -n 1 "$said")"
+  answer=$(./e3d command "$1" --timeout 600 --session "$pid" 2> "$said") || fail "./e3d command $1 ended with $?, $(head -n 1 "$said")"
   printf '%s\n' "$answer"
 }
 # The player's feet from voxel.state, which begins "feet at x, y, z".
@@ -61,6 +63,8 @@ if ! ENGINE_VULKAN_VALIDATION=1 ./e3d open "$program" --offscreen --transient --
   fail "did not open, e3d said $answer"
 fi
 log=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{log} // ""' "$opened")
+pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' "$opened")
+[ -n "$pid" ] || fail "e3d opened the game and did not say its process"
 
 # The room is closed, so at night the lamp is its only light, and the player stands at its south
 # wall facing the lamp.
@@ -77,7 +81,7 @@ cmd frames.wait 120
 capture() {
   local shot="$PWD/captures/$1"
   if command -v cygpath > /dev/null; then shot=$(cygpath -m "$shot"); fi
-  ./e3d shot "$shot" --timeout 600 > /dev/null 2> "$said" || fail "./e3d shot ended with $?, $(head -n 1 "$said")"
+  ./e3d shot "$shot" --timeout 600 --session "$pid" > /dev/null 2> "$said" || fail "./e3d shot ended with $?, $(head -n 1 "$said")"
 }
 capture room.png
 
@@ -139,7 +143,7 @@ cmd frames.wait 2
 capture inventory.png
 cmd input.key E 1
 
-./e3d stop --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
+./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
 if grep -F 'Validation Error' "$log"; then fail "the validation layer reported an error"; fi
