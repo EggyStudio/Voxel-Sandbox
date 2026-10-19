@@ -5,7 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `a31d456`, item 13 with item 10's mend and test, one commit for every kind since the
+Reviewed up to `9158df8`, item 12, with `569b5fb`, item 11, and `bde1fc1`, item 14, before it, and
+the review's commits between. Item 14: the engine's somewhat boring curve with an exposure of 1.25
+beside it at the light settings, the remark giving the figures over the play script's views, the
+pillar 136.6 against 136.7, the noon sky 137.8 against 136.4 and the night room 31.8 against 28.2,
+13 percent brighter, why the curve does that in the dark and what an exposure of 1 would do, naming
+no one; the captures taken under it, the README with a paragraph on the curve and the exposure and
+its picture retaken. Item 11: a pictures script takes both README pictures from the seed, the place,
+the hour, the heading and the cloud drift it writes in, at the game's render distance, encoded at
+800 by 450 through the engine checkout's script, the overworld of seed 1 opened transient with the
+mobs held where the land put them; the village picture shows the village south of the spawn from its
+meadow at hour 16, five houses with torches, a villager by the path facing the camera, the village's
+chickens and two sheep, a cow and a pig, the four placed by the script from above since the land's
+herds and the villagers at their homes stood out of view, said in its comment, so each run shows
+them where the last did; the hills picture is item 6's view with the clouds drifted 80 blocks so the
+sun stands clear of one; the still command holds the clouds as it holds the mobs and the clouds
+command takes a drift; the README opens with the two pictures side by side in a table as the
+engine's does, says which script takes them, and its commands paragraph names the new parts;
+AGENTS.md's row for the build folder names the workflows' scripts alone and waits on the owner's
+word to name the pictures script (N 7.4). Item 12: the distance stays at 8, the setting's remark
+giving the GPU's 12.1 ms at 8 and 16.6, 21.8, 29.7 and 46.4 at 9, 10, 12 and 16 with the shadows at
+4.3 against 23.5 and the reason, the engine culling none of the terrain's draws through the game's
+shader in the depth pass and the three cascades, the README's section on what it costs carrying the
+table at six distances with lavapipe's 0.58 and 0.92 seconds and losing its sentence on the engine
+culling each pass. 124 tests pass and the strict build is clean at each commit. Open: the legless
+frame on the hunt, the engine's item 36 before the distance can rise. Right. Next the pictures
+script's row in AGENTS.md on the owner's word, and the engine's packages as they come.
+
+Before it, `a31d456` came, item 13 with item 10's mend and test, one commit for every kind since the
 change has one shape. Every kind's cuboids and pivots are the other game's model definitions as
 numbers, its quadruped body for the pig and the sheep with the wool grown, its cow, chicken and
 villager with the jacket grown and the arms turned, its humanoid for the zombie, its skeleton,
@@ -71,30 +98,6 @@ which was withdrawn at 22:13, the cameras having sat inside the hill, a sheep un
 twice the grass beside it; and one frame of a cow 19 blocks off drew its body and head and no legs,
 not made to happen again. The owner is asked which animal, in sun or shade, near or far, walking or
 standing.
-
-Before it, `6d71cd1` came, item 6's second commit and nothing else, on `5.2.92`. The sun, the moon,
-a halo around each and the 500 stars are quads fixed on the sky, each quad's right side the cross of
-its way and the sky's axis and its up the cross of that and the way, given in the sky's space as it
-stands at six under the eye's translation and the hour's turn, the stars one run of quads with their
-alpha in the vertex color and the fade near the horizon as before, the moon's halo the sun's rings
-on the moon's grid in the moonlight's color at 0.2 by night, and nothing reading the camera but its
-eye. The sizes are the other game's measured from its sky code and textures, its quad 60 across at
-100 with the visible sun the middle 8 of 32 pixels, so the sun 15 across at 100, about 8.6 degrees,
-and the moon 10 at 100, about 5.7, where the game's were 9.0 and 6.6, the remark giving the numbers
-as taken from it, and the reviewer's figures of 17 and 11 degrees, which took the half-width for the
-whole, corrected under item 6; the halo's texture grew from 96 to 104 so its rings clear the quad's
-edge at the smaller pixel. A test holds a quad's sides at an hour as its sides at six turned, square
-across the way, the right side along the turn and the front toward the middle, and the moon upright
-with east on its right at midnight; 113 tests pass with the strict build clean; the play script adds
-a night sky from three blocks northwest where the moon and its halo stand at one place on the sky
-with their sides turned on the window, under the validation layer, and the room, shadow and
-inventory captures match item 7's exactly. The README's picture is taken again at 800 by 450, the
-wooded hills and the sea with the sun, its rings and the clouds, until item 11 moves it to a
-village; the commit's message gives the reason and not the owner's words or time, as COMMITS.md and
-N 4.7 have it, and item 10's will too. Right. Next the three reproductions for the engine's coder,
-item 9's second commit, item 10's reading, items 11 and 12, and the owner's push of `58fa8a9` and
-`6d71cd1` with them. The owner pushed `58fa8a9` at 21:08, its build run green, and `6d71cd1` at
-21:23, its run running at 21:28.
 
 ## Now
 
@@ -346,7 +349,9 @@ item 9's second commit, item 10's reading, items 11 and 12, and the owner's push
     and animals. The picture at the README's head is taken where a village stands with its buildings
     in view and animals near, at the hour and heading that show them, with the render distance of
     item 12, taken by the capture script from a seed and a place written in it so it is taken the
-    same again, the sky's picture of item 6 beside it. One commit, with item 6's or after it.
+    same again, the sky's picture of item 6 beside it. One commit, with item 6's or after it. Done
+    at `569b5fb` on 2026-10-19, the village and the hills side by side from a script with the seed,
+    the place, the hour and the cloud drift written in.
 
 12. **The render distance is read and set by what the frame affords (Decision 6).** The owner wrote
     at 21:23 on 2026-10-19 that the render distance is very short. Read first: what the game's
@@ -373,6 +378,8 @@ item 9's second commit, item 10's reading, items 11 and 12, and the owner's push
     mesh's box, which a program whose vertex stage keeps the positions asks for, the engine's item
     36, with the tables; the game raises the distance once a package brings it. The commit puts the
     figures in the setting's remark and the README's running section. One commit, after item 11's.
+    Done at `9158df8` on 2026-10-19, the distance at 8 with the figures in the remark and the
+    README's costs section.
 
 13. **The mobs' models take the other game's sizes and boxes (Decision 8), the textures the game's
     own.** The owner wrote at 22:03 on 2026-10-19 that the game may use the other game's original
@@ -409,7 +416,7 @@ item 9's second commit, item 10's reading, items 11 and 12, and the owner's push
     straight line in the dark and rolls the day's light off, so no one exposure meets both: 1.25
     gives the day back with nights a fifth brighter, 1 keeps the nights with the day 8 percent
     darker, and about 1.12 leaves both off by a few levels. The owner chose 1.25 at 22:53. One
-    commit, before item 11.
+    commit, before item 11. Done at `bde1fc1` on 2026-10-19 at exposure 1.25 by the owner's choice.
 
 ## Verdicts
 
