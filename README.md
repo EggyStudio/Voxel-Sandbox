@@ -243,9 +243,12 @@ air a column not loaded reads as. The mobs standing in a column go with it when 
 back where they stood when it loads, and the save keeps them in `mobs.bin` with the columns that
 have had theirs placed, so a herd or a village's villagers are placed once.
 
-Each piece of a mob, its head, body, legs and a chicken's wings, is a few boxes after Minecraft's
-models, one mesh of colored vertices drawn instanced for every mob of its kind, its legs swinging as
-it walks. Mobs are drawn within 64 blocks, as Minecraft draws its entities, through the engine's own
+Each piece of a mob, its head, body, legs and a chicken's wings, is a few boxes, one mesh of colored
+vertices drawn instanced for every mob of its kind, its legs swinging about their hips as it walks.
+The boxes, their pivots and each kind's width and height are Minecraft's, taken as numbers from its
+model definitions and its mobs' sizes, and their colors, faces and markings are the game's own. A
+leg swung ahead or behind is lifted by however far its foot's corner would sink, so no foot goes
+below the ground. Mobs are drawn within 64 blocks, as Minecraft draws its entities, through the engine's own
 shader, so the haze is not on them. They cast shadows and take no part in global illumination, their
 materials' `BouncesLight` off, which leaves them out of the scene's distance field, so a pig's pink
 does not reach the grass.
@@ -369,7 +372,7 @@ open sky by day, a point a second. In creative mode they wander and hunt no one.
 
 They drop Minecraft's loot as they die. A zombie drops rotten flesh, which feeds four points, a
 skeleton bones and arrows, a spider string and now and then an eye, and a creeper gunpowder, unless
-it blew itself up. Their models are boxes after Minecraft's, a zombie's and a skeleton's arms held
+it blew itself up. Their models are boxes of Minecraft's too, a zombie's and a skeleton's arms held
 out ahead and a skeleton's bow upright in its hand, and arrows are thin shafts drawn over the frame,
 which cast no shadow.
 

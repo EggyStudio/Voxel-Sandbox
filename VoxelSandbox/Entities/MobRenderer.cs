@@ -115,10 +115,7 @@ public sealed class MobRenderer : IDisposable
                     Swing.SpiderB => Matrix4x4.CreateRotationY(-swing * 0.5f),
                     _ => Matrix4x4.Identity,
                 };
-                if (part.Pose != Vector3.Zero)
-                    turn = Matrix4x4.CreateRotationX(part.Pose.X) * Matrix4x4.CreateRotationZ(part.Pose.Z) * Matrix4x4.CreateRotationY(part.Pose.Y) * turn;
-                var pivot = part.Pivot / 16;
-                var local = turn.IsIdentity ? Matrix4x4.Identity : Matrix4x4.CreateTranslation(-pivot) * turn * Matrix4x4.CreateTranslation(pivot);
+                var local = part.Placed(turn);
                 var variants = _byKind[mob.Kind.Id][p];
                 var slot = variants[variants.Length == 1 ? 0 : mob.Variant % variants.Length];
                 (red ? slot.Hurt : white ? slot.Flash : slot.Plain).Add(local * body);
