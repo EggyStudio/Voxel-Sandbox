@@ -5,7 +5,26 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `cc334ab`, item 15 and nothing else, with the review's commits between. An opaque
+Reviewed up to `35696e2`, item 10's legless frame found and mended, one commit with its test, with
+the review's commit between. The game's loop updates before its first drawing begins, and the engine
+times a frame when it begins, so the frame's time reads nothing there; a mob's stride is the
+distance moved over the frame's seconds, so a mob standing still in that frame got nothing over
+nothing, which is not a number, the smaller of one and that is not a number, and not a number times
+anything stays so, so the mob's stride and every leg's swing matrix were not numbers from then on
+and its legs were drawn in no pass, their shadows with them; the mobs moved in that first frame are
+those placed with the columns around the spawn before it, so the cows and pigs near the spawn
+floated legless while the herds loaded later stood on their legs, which fits the owner's words and
+the frame of 2026-10-19. The stride is left as it was in a frame that took no time, the one division
+by the frame's seconds in the game; a mob test updates a cow for no seconds and then for a second
+and holds its stride and phase finite, failing without the mend; read live on the flat world 120
+frames after opening, 9 of 124 mobs had a stride that was not a number before, four pigs and four
+cows among them near the spawn, and none after, the herd south-east of the spawn legless and
+floating before and standing after; the engine's culling of instances in blocks of 64 was read on
+the way and is not at fault. The strict build is clean and 126 tests pass. Right. Next item 36's
+package before the distance rises, the package with the engine's `a7c2da8b` and `cc334ab` read
+together, and the pictures script's row in AGENTS.md on the owner's word.
+
+Before it, `cc334ab` came, item 15 and nothing else, with the review's commits between. An opaque
 block keeps its face toward a lamp block in its section's mesh, hidden behind the lamp's cube, so
 the mesh is closed around the lamp, a whole emissive block drawn apart as a cube being named a lamp,
 the see-through mesh left as it was since it casts no shadow and the field reads it not, the lamp
@@ -50,40 +69,6 @@ frame on the hunt, the engine's item 36 before the distance can rise. On 2026-10
 engine's coder, mending the leak through a wall, found the mesher leaving out the stone's faces
 against a lamp block, so the scene field reads that stone as open; item 15. Right. Next item 15, the
 pictures script's row in AGENTS.md on the owner's word, and the engine's packages as they come.
-
-Before it, `a31d456` came, item 13 with item 10's mend and test, one commit for every kind since the
-change has one shape. Every kind's cuboids and pivots are the other game's model definitions as
-numbers, its quadruped body for the pig and the sheep with the wool grown, its cow, chicken and
-villager with the jacket grown and the arms turned, its humanoid for the zombie, its skeleton,
-creeper and spider with the eight legs at their angles, written through two helpers that take its
-box and pose numbers and place them in the game's space, x mirrored, y up from the feet as 24 less
-its y, a lying body turned a quarter, a pose's x and y turns negated; the renderer turns a part
-about x, then y, then z, in its order; the colors, faces, eyes, patches and markings stay the game's
-on the new faces, and the sheep's shorn body and the villager's under the robe are left out since
-they never show. A placed part lifts a leg by however far its lowest corner would sink, which is
-item 10's mend, used by the renderer and the tests alike. A bug found on the way, the zombie's and
-skeleton's arms hung down since they were written because a static field was declared below the
-kinds that read it and C# sets a class's statics in the order written, so their pose was zero; it
-stands above them and the arms are held out, the skeleton's bow upright. The mob model tests hold
-each kind's width, height, head pivot height and leg length against the numbers, the two hands held
-out, every kind standing with its lowest corner on the ground or within a pixel for the spider's
-angled legs, and no leg's corner below the ground at any swing within 0.8; 124 tests pass with the
-strict build clean, each kind captured from the side, frozen mid-stride and on a stepped bank with
-the feet showing, the play script passing under the validation layer with the room, noon, shadow and
-inventory captures matching item 9's exactly; the README says the boxes and sizes are the other
-game's numbers with the colors the game's and that a swung leg is lifted. The legless frame stays on
-the hunt. The owner pushed `58fa8a9` to `1477e82` through the evening, their runs green, and at
-22:20 gave the reviewer the pushes and the commits of its own edits, so the review's edits come in
-commits of their own from here on. The first review commit, `ccb4fb4`, was pushed with its sentence
-in the subject line where COMMITS.md's three marks belong, the reviewer's fault against N 7.2, which
-this repository checks by review and not by a test; a pushed commit is not amended, so it stands
-with this line as its record, and the review's commits after it have the form. Item 14's exposure is
-1.25 by the owner's word at 22:36, if it gives the light values back. The run of `a31d456`'s push
-had its three suites green in a minute at 22:26 and its play job running at 22:32. Item 12's reading
-at 22:42 found the distance held at 8 columns by the engine's model pass, which culls no draw
-through a program's own shader, so the terrain's every section is drawn by every pass; the game asks
-the engine for it as its item 36 and keeps 8 with the figures. Item 14's exposure is 1.25 by the
-owner's word at 22:53. Right. Next item 14, then items 11 and 12.
 
 ## Now
 
@@ -327,7 +312,11 @@ owner's word at 22:53. Right. Next item 14, then items 11 and 12.
     instance count and the view, since the engine draws instances in blocks of 64 and encloses each
     block for culling. The owner's answer names which of the three the owner saw. The stride's mend
     and the test are in at `a31d456`; what stays open is the owner's answer and the legless frame,
-    hunted.
+    hunted. The legless frame found and mended at `35696e2` on 2026-10-20, a stride worked out from
+    nothing over nothing in the frame before the first drawing, not a number from then on, so the
+    legs of the mobs placed before the first frame were drawn in no pass; the stride is left as it
+    was in a frame that took no time, held by a test. Done; what the owner saw was this, the mobs
+    near the spawn, and the stride's dip beside it.
 
 11. **The README's picture shows the world's life, structures, a village and animals, and not
     terrain alone (Decision 6).** The owner wrote at 21:23 on 2026-10-19 that the README's picture
