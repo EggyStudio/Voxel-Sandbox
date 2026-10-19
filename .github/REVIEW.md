@@ -20,9 +20,10 @@ and holds its stride and phase finite, failing without the mend; read live on th
 frames after opening, 9 of 124 mobs had a stride that was not a number before, four pigs and four
 cows among them near the spawn, and none after, the herd south-east of the spawn legless and
 floating before and standing after; the engine's culling of instances in blocks of 64 was read on
-the way and is not at fault. The strict build is clean and 126 tests pass. Right. Next item 36's
-package before the distance rises, the package with the engine's `a7c2da8b` and `cc334ab` read
-together, and the pictures script's row in AGENTS.md on the owner's word.
+the way and is not at fault. The strict build is clean and 126 tests pass. Right. The engine's item
+36 is done at `089761fb`, so item 16 marks the terrain's shaders and raises the distance when the
+package comes, which the reviewer's next pack run brings. Next item 16 on that package, the leak
+read on it with both halves, and the pictures script's row in AGENTS.md on the owner's word.
 
 Before it, `cc334ab` came, item 15 and nothing else, with the review's commits between. An opaque
 block keeps its face toward a lamp block in its section's mesh, hidden behind the lamp's cube, so
@@ -409,6 +410,19 @@ pictures script's row in AGENTS.md on the owner's word, and the engine's package
     a mesher test. Done at `cc334ab` on 2026-10-20, the corner probe moved into the air and the
     grass at the wall's foot from 14.1 times the reference to 1.67 on `5.2.92` alone, held by a
     mesher test.
+
+16. **The terrain's shaders are marked as keeping their positions, and the render distance rises to
+    what the frame then affords (items 12 and 36 of the engine).** The engine's `089761fb` lets a
+    program say of a shader that its vertex stage keeps the positions
+    (`E3D.SetShaderKeepsPositions`), so every pass culls its batches by their meshes' boxes;
+    measured by the engine's coder in this game with the two terrain shaders marked, the frame at 16
+    columns fell from 42 ms to 26 to 30 on the development machine's GPU and the shadows from 18.8
+    to 2.8, the pictures unchanged. When a package carries it, the game marks both copies of
+    `terrain.slang`, the sections' and the clouds', after loading them, with the reason in the
+    remark, reads the frame at 8 to 16 columns again as item 12 did, and sets the default distance
+    to what holds 60 a second at the game's pace, the figures in the setting's remark and the
+    README's costs section as before, the owner settling the figure where the reading leaves a
+    choice. One commit, with the package's bump.
 
 ## Verdicts
 
