@@ -115,8 +115,14 @@ public sealed record MobKind(string Name, float HalfWidth, float Height, float S
     /// <summary>Whether it burns under the open sky by day, as zombies and skeletons do.</summary>
     public bool Burns { get; init; }
 
+    /// <summary>
+    /// How large its model is drawn against the numbers its parts are given in, about its feet, as
+    /// Minecraft's layer of the villager is drawn at 0.9375.
+    /// </summary>
+    public float Scale { get; init; } = 1;
+
     /// <summary>The height of its eyes, which turn toward the player, at its head's pivot.</summary>
-    public float Eyes => Parts.FirstOrDefault(p => p.Swing == Swing.Head)?.Pivot.Y / 16 ?? Height * 0.85f;
+    public float Eyes => Parts.FirstOrDefault(p => p.Swing == Swing.Head)?.Pivot.Y / 16 * Scale ?? Height * 0.85f;
 
     /// <summary>A variant from a roll of 0 to 999.</summary>
     public byte Variant(int roll)
@@ -235,10 +241,12 @@ public static class MobKinds
                 Mc(body, -6, -10, -7, 12, 18, 10, brown, lying: true), Mc(body, -2, 2, -8, 4, 6, 1, udder, lying: true),
                 B(6, 14, -3, 6.05f, 20, 4, patch), B(-6.05f, 13, 1, -6, 18, 7, patch), B(-3, 22, -5, 2, 22.05f, 1, patch),
             ]),
+            // The nose standing a pixel out from the face and the horns as Minecraft 26.3's cow has
+            // them, the blaze above the nose the game's own.
             new(Swing.Head, At(head),
             [
-                Mc(head, -4, -4, -6, 8, 8, 6, brown), Mc(head, -5, -5, -4, 1, 3, 1, horn), Mc(head, 4, -5, -4, 1, 3, 1, horn),
-                B(-2, 16, -14.05f, 2, 19, -14, muzzle), B(-2, 19, -14.05f, 2, 22, -14, patch), .. Eyes(3, 20, -14, Black),
+                Mc(head, -4, -4, -6, 8, 8, 6, brown), Mc(head, -5, -5, -5, 1, 3, 1, horn), Mc(head, 4, -5, -5, 1, 3, 1, horn),
+                Mc(head, -3, 1, -7, 6, 3, 1, muzzle), B(-2, 19, -14.05f, 2, 22, -14, patch), .. Eyes(3, 20, -14, Black),
             ]),
             .. Legs(4, 12, 7, -6, leg => [Mc(leg, -2, 0, -2, 4, 12, 4, brown), Mc(leg, -2.05f, 8, -2.05f, 4.1f, 4, 4.1f, patch)]),
         ];
@@ -306,7 +314,9 @@ public static class MobKinds
         ];
         // A robe of the plains, the desert, the taiga and the snow, as Minecraft's villagers wear by biome.
         Color[] robes = [new(118, 86, 58), new(204, 168, 112), new(86, 62, 46), new(214, 218, 228)];
-        return new MobKind("villager", 0.3f, 1.95f, 1.5f, 20, robes, parts) { Id = 4, OpensDoors = true };
+        // Drawn at the scale Minecraft's layer gives it, about its feet, so its 34 pixels stand 1.99
+        // blocks as Minecraft's villager does, where at 1 they would stand 2.13.
+        return new MobKind("villager", 0.3f, 1.95f, 1.5f, 20, robes, parts) { Id = 4, OpensDoors = true, Scale = 0.9375f };
     }
 
     private static MobKind MakeZombie()

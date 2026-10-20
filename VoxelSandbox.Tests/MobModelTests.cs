@@ -38,6 +38,19 @@ public class MobModelTests
     }
 
     [Fact]
+    public void A_Villager_Stands_As_Tall_As_Minecrafts_At_Its_Layers_Scale()
+    {
+        // Minecraft's layer draws the villager's 34 pixels, its legs and its head of 10, at 0.9375
+        // about the feet.
+        var villager = MobKinds.Villager;
+        var top = villager.Parts.SelectMany(p => p.Boxes).Max(b => b.Max.Y);
+        Assert.Equal(34, top, 4);
+        Assert.Equal(0.9375f, villager.Scale);
+        Assert.Equal(1.992f, top / 16 * villager.Scale, 3);
+        Assert.Equal(1.406f, villager.Eyes, 3);
+    }
+
+    [Fact]
     public void A_Zombie_And_A_Skeleton_Hold_Their_Arms_Out_Ahead()
     {
         foreach (var kind in new[] { MobKinds.Zombie, MobKinds.Skeleton })

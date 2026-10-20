@@ -90,7 +90,7 @@ public sealed class MobRenderer : IDisposable
         {
             if (Vector3.DistanceSquared(mob.Body.Position, eye) > Distance * Distance) continue;
             drawn++;
-            var body = Matrix4x4.CreateRotationY(mob.Yaw) * Matrix4x4.CreateTranslation(mob.Body.Position);
+            var body = Matrix4x4.CreateScale(mob.Kind.Scale) * Matrix4x4.CreateRotationY(mob.Yaw) * Matrix4x4.CreateTranslation(mob.Body.Position);
             // A mob dying falls onto its side over most of a second, and a creeper swells as its
             // fuse burns, flashing white four times a second.
             if (mob.Dying >= 0) body = Matrix4x4.CreateRotationZ(MathF.Sqrt(MathF.Min(1, mob.Dying / 0.6f)) * MathF.PI / 2) * body;

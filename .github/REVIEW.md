@@ -5,57 +5,33 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `435b2de`, item 16 and nothing else, carrying Decision 10's sentence in COMMITS.md
-and the review's file. The game is on 3DEngine `5.2.155`, both workflows' engine checkout at
-`9f9180b7`, both copies of the terrain shader marked as keeping their positions with the reason in
-each remark, the default at 12 columns with the open view's figures and the margin over 14 in its
-remark, the light settings' comment on the field's share of the drawn land, and the README's costs
-section giving the open view's table at 4 to 16 columns, the flight's figures and lavapipe's and
-saying the engine's passes leave out the sections they cannot see while the field keeps them; a
-space the marks' patch had dropped was put back so the line is as it was, and the README's sentence
-on the cave, 905 of 1,085 sections and the frame from 16 ms to 4, stands as read in the engine
-tree's game before the move, the cave's place in no record. Checked were the strict build, the 126
-tests and the style grep over the staged diff and the message. Pushed at 10:37; its build run is
-read when it ends. Its build run was green at 10:43, the three suites and the play on lavapipe. At
-23:30 the owner named the game's next work whole, Decision 11 and items 17 to 28, the water first;
-the AGENTS.md row naming the pictures script still waits on the owner's word.
+Reviewed up to `5cd1521`, item 17, out of the water, and nothing else, carrying Decision 11 and
+items 17 to 28 as the tree held them, on the 5.2.190 package with the workflows' engine checkout at
+`b3922179`, the commit the package names. The player swims while the water's top stands above its
+feet, read up through the water with WaterHeight; Space lifts while the depth is over 0.4 and jumps
+on the ground in shallower water; a body pushing against a block's side with 0.6 free above climbs
+at the jump's speed of 9 and is stepped up to 0.6 onto what stops it while climbing, which holds the
+climb at the twentieth of a second lavapipe counts a frame, where the speed alone left the feet 0.07
+under; a bank two blocks up stays out of reach at 2.1 of the 2.125 needed, and the mobs keep their
+own rule. Before, with W held the player sank to the floor at 5.00 against the bank and with Space
+bobbed between 8.13 and 8.33 under its top at 10; after, from two places, it stands on the bank at
+10.00 within about 45 frames on the GPU and on lavapipe too. The play script gains a pool east of
+the room, holds W for 60 frames and fails unless the player stands at y 10 past x 36, passing in 25
+seconds at 37.73 on the GPU under the layer and in 644 seconds at 44.56 on lavapipe on four cores
+with no validation error; the README's water paragraph says the rule; 126 tests pass. Read at 00:22
+on 2026-10-21 and pushed at 00:24, the build run of `435b2de` long ended. The reviewer's words in
+items 17 to 28 that the style page lists, the scripted run, needs and emissive, are put right in the
+tree. At about 00:30 the owner added compute shaders for generation, Decision 12 and item 29, whose
+parts follow the engine's items 68 and 69. At about 00:55 the owner named their packs as the look,
+Decision 13, item 30 and words in items 23 and 24. At about 01:00 the owner put the modpack's mods
+in the reference folder as reference, Decision 14, with words in items 20, 23, 25 and 26 and
+candidates for the owner's word. Next item 18, the mobs' proportions, then the items in order; the
+AGENTS.md row naming the pictures script still waits on the owner's word.
 
-Before it, `35696e2` came, item 10's legless frame found and mended, one commit with its test, with
-the review's commit between. The game's loop updates before its first drawing begins, and the engine
-times a frame when it begins, so the frame's time reads nothing there; a mob's stride is the
-distance moved over the frame's seconds, so a mob standing still in that frame got nothing over
-nothing, which is not a number, the smaller of one and that is not a number, and not a number times
-anything stays so, so the mob's stride and every leg's swing matrix were not numbers from then on
-and its legs were drawn in no pass, their shadows with them; the mobs moved in that first frame are
-those placed with the columns around the spawn before it, so the cows and pigs near the spawn
-floated legless while the herds loaded later stood on their legs, which fits the owner's words and
-the frame of 2026-10-19. The stride is left as it was in a frame that took no time, the one division
-by the frame's seconds in the game; a mob test updates a cow for no seconds and then for a second
-and holds its stride and phase finite, failing without the mend; read live on the flat world 120
-frames after opening, 9 of 124 mobs had a stride that was not a number before, four pigs and four
-cows among them near the spawn, and none after, the herd south-east of the spawn legless and
-floating before and standing after; the engine's culling of instances in blocks of 64 was read on
-the way and is not at fault. The strict build is clean and 126 tests pass. Right. The engine's item
-36 is done at `089761fb`, so item 16 marks the terrain's shaders and raises the distance when the
-package comes, which the reviewer's next pack run brings. Next item 16 on that package, the leak
-read on it with both halves, and the pictures script's row in AGENTS.md on the owner's word.
+Before it, `435b2de` came, item 16 and nothing else, the default render distance 12 columns on
+5.2.155, carrying Decision 10 and the review's file, the build run green.
 
-Before it, `cc334ab` came, item 15 and nothing else, with the review's commits between. An opaque
-block keeps its face toward a lamp block in its section's mesh, hidden behind the lamp's cube, so
-the mesh is closed around the lamp, a whole emissive block drawn apart as a cube being named a lamp,
-the see-through mesh left as it was since it casts no shadow and the field reads it not, the lamp
-drawn as before and the README's paragraph on how the world is drawn saying why; a mesher test lays
-a floor and a wall of stone with a glowstone in their corner and holds that no edge of the mesh
-belongs to one triangle alone and that the floor's top and the wall's side toward the lamp are kept,
-failing without the change; the strict build is clean and 125 tests pass. Read on `5.2.92`, which
-lacks the engine's walling-in, at the leak scene with a 512-path reference: the corner probe, moved
-into the stone before and holding 855 percent over the reference, is moved into the room's air and
-holds 13 under, since the stone beside the lamp reads as inside; the grass at the wall's foot by the
-lamp with the screen probes off from 14.1 times the reference to 1.67, its red over green from 1.40
-to 0.46 against 0.36, the same row away from the lamp at 1.49 and 1.46; with the probes on the view
-at 1.40 and 1.41 either way; the room inside unmoved. The package with the engine's `a7c2da8b` and
-this commit together is read when it comes. Right. Next the legless frame's hunt, item 36's package
-before the distance rises, and the pictures script's row in AGENTS.md on the owner's word.
+Before it, `35696e2` came, item 10's legless frame found and mended, as the head said then.
 
 ## Now
 
@@ -467,8 +443,8 @@ before the distance rises, and the pictures script's row in AGENTS.md on the own
     one block up needs more lift than that gives. The mend is the source's rule: swimming while any
     part of the body is in water, and a body in water pushing against a block's side with the space
     above free lifted at a climbing speed until it stands, so the shore is reached by walking into
-    it; a test in the drive swims to a shore one block up and reads the player standing on it. One
-    commit, first.
+    it; a test in the scripted run swims to a shore one block up and reads the player standing on
+    it. One commit, first. Done at `5cd1521` on 2026-10-21, as the head says.
 
 18. **The mobs' proportions toward the source's, the villager first, with some character kept.** The
     owner's second word: the villagers are not the right proportions. Item 13 took the other game's
@@ -492,7 +468,9 @@ before the distance rises, and the pictures script's row in AGENTS.md on the own
     clicks alone; it gains shift-click moving a stack between the hotbar and the inventory or into
     the open container, number keys over a slot swapping it with the hotbar's, double-click
     gathering a kind, drag over slots spreading a stack, and drop by Q with control for the stack,
-    the keys read where the window is open in survival and creative alike. One commit.
+    the keys read where the window is open in survival and creative alike. A sort of the inventory
+    or the open container by a key and by a middle click on its panel, as the sorting mods of the
+    owner's modpack do (Decision 14), kinds together and stacks filled. One commit.
 
 21. **Stairs join at corners, place by the hit, and the aim picks the shape and not its cell.** The
     owner's word: stairs do not connect on a corner, placing is odd, and the hover outline is the
@@ -513,8 +491,12 @@ before the distance rises, and the pictures script's row in AGENTS.md on the own
     already; the inventory, the creative items, the settings and the pause screen become the game's
     own 2D drawing, panels of nine-slice textures, slots with item icons drawn from the block's
     faces, tooltips and a cursor stack, in the source's look with the game's own touches, the keys
-    of item 20 kept, ImGui left for the debug and settings' developer parts. Two or three commits,
-    the panels and slots first, then each window.
+    of item 20 kept, ImGui left for the debug and settings' developer parts. The look is Bare Bones'
+    (Decision 13), flat shapes, few lines and plain colors, drawn as the game's own art, and where a
+    pack of item 24 is loaded its gui textures, the hotbar, the hearts, the slots and the panels,
+    are drawn in place of the game's. The HUD's hearts, hunger and air fade when full and unchanged
+    and return on a change, as the owner's modpack's HUD does, a setting on by default (Decision
+    14). Two or three commits, the panels and slots first, then each window.
 
 24. **Texture packs read from the player's own resource packs, shipping no one's textures.** The
     owner's biggest word: texture pack support, with a mod called Shine in the reference folder as
@@ -526,8 +508,12 @@ before the distance rises, and the pictures script's row in AGENTS.md on the own
     names by a table the game keeps, falling back to its own texture where a pack lacks one, the
     atlas built from the pack at load with mipmaps and the pack's resolution, a setting naming the
     pack and a command to reload, so a player's pack shows and the repository ships only the game's
-    own art. Entity textures and models follow in a later part where the mobs' models match the
-    source's layout. Two commits, the loader and the atlas, then the setting and the reload.
+    own art. The loader reads the pack's item textures for the hotbar's and the inventory's icons
+    and its gui textures for item 23's interface as well as its blocks, so Bare Bones shows whole
+    (Decision 13); a pack is a zip or a folder, and a list of packs in order as the source layers
+    them, the later over the earlier, so Bare Bones with its add-ons reads as it does in the owner's
+    instance. Entity textures and models follow in item 30. Two commits, the loader and the atlas,
+    then the setting, the list and the reload.
 
 25. **More biomes, more blocks and more trees.** The owner's word, three times. The climate has
     eight biomes, the features three trees and the cactus, and the blocks about 140 ids: biomes gain
@@ -535,16 +521,18 @@ before the distance rises, and the pictures script's row in AGENTS.md on the own
     with its surface, its colors of grass and leaves and its features; blocks gain each biome's
     wood, leaves, sapling, flowers, tall grass, mushrooms, sand and gravel kinds, clay, ores by
     depth and the glass and wool colors; trees gain the jungle, the acacia, the dark oak, the big
-    oak and the giant mushroom, from the source's shapes as numbers with the game's own touches.
-    Three commits, biomes, blocks, trees, each with the drive's walk through one of each and a
-    capture.
+    oak and the giant mushroom, from the source's shapes as numbers with the game's own touches. The
+    climate ranges, the surface rules and the feature counts of the seven biomes are read for their
+    numbers from the biome overhaul's JSON in the owner's modpack as from the source's, a model and
+    not a copy, since its license forbids redistribution (Decision 14). Three commits, biomes,
+    blocks, trees, each with the scripted run's walk through one of each and a capture.
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's
     word: a column is 16 by 16 by 128, make it cubic at 16 or 32 or do a level of detail, where an
     earlier level of detail scaled far blocks by powers of two so they looked as big as near ones,
     which looked wrong. The reviewer's reading: meshing, drawing and culling go by 16-cubed sections
-    already, and generation, streaming and saving by whole columns; the terrain's generation wants
+    already, and generation, streaming and saving by whole columns; the terrain's generation needs
     the column's context, the heightmap, the biome and the surface, so it stays by column, and the
     world grows to 24 sections, 384 blocks from minus 64 to 320 as the source's, with the deep
     sections for caves; streaming, meshing and saving go by section with a distance in three
@@ -560,7 +548,10 @@ before the distance rises, and the pictures script's row in AGENTS.md on the own
     sections stays at the setting, and the far levels reach as far as the setting for them, with the
     memory and the frame read at 8, 12 and 16 near and 32 and 64 far. Read first, with the costs of
     the three parts and the form of the coarse mesh said before any commit: the taller world and the
-    sections' streaming and saving, then the far levels. Three or four commits.
+    sections' streaming and saving, then the far levels. The far levels read first from the saved
+    world, the sections a player has already visited and saved, before the generator's surface, as
+    the modpack's far-chunk cache keeps far land drawn from what was seen (Decision 14). Three or
+    four commits.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
@@ -571,13 +562,69 @@ before the distance rises, and the pictures script's row in AGENTS.md on the own
     gives them, and a cave's lighting from the sky above through its openings. After item 26. Two
     commits, the caves, then the aquifers.
 
-28. **The looks Shine shows, done as the game's own: a glow on emissive blocks, colored light from
-    glowing blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the
+28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
+    emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the
     reference folder's mod, whose code may not be taken: the engine's bloom on the emissive blocks'
-    faces, the colored light the engine's lamps and global illumination give from glowing blocks
+    faces, the colored light the engine's lamps and global illumination give from emissive blocks
     read and set so a lantern's light is its color, a rim light as a setting in the terrain shader,
     and an unshaded look as a setting, each a switch in the settings with a capture. After item 24.
     One or two commits.
+
+29. **Generation and meshing on the GPU, the blocks kept on the CPU (Decision 12).** The owner's
+    word of about 00:30 on 2026-10-21: compute shaders for generation and the rest are a big one.
+    The reading at `5cd1521`: each column is generated on a worker task off the main thread, and
+    item 16's flight readings put the frame's cost on the main thread in the join and the meshing,
+    21 to 29 ms a frame at 12 columns, so generation on the GPU makes columns arrive faster and
+    meshing on the GPU is what cuts the frame; the engine's compute, `LoadComputeShader`, the shader
+    buffers and `ComputeShaderDispatch`, reads a buffer back only through `ReadShaderBuffer`, which
+    holds the program until the GPU has caught up, and draws nothing a shader wrote as a mesh. The
+    approach: the blocks stay in memory on the CPU, since collisions, edits, light and saves read
+    them there and a column's blocks are about 100 KB, cheap to read back; the GPU computes what is
+    heavy, the noise fields and the meshes. Three parts, each after the engine's package brings what
+    it needs, asked in the engine's ASKS.md by the game's coder with the readings above. Part one,
+    the fields, after the engine reads a buffer back without a wait (its item 68): a compute shader
+    a batch of columns writes the terrain's density, the biome's climate values and item 27's cave
+    noises as fields of 16 by 16 by the world's height, 16 bits a cell, read back a frame or more
+    later while the game goes on, and the generator on the CPU places blocks from the fields as it
+    does from its noises today; the noise written as integer hashes in fixed point in both the
+    shader and C#, so the two give one field, and the CPU's functions kept as the path for a device
+    without compute, for the tests and for `voxel.gpu off`, a setting; a test that both paths give
+    the same field for a seed on a column, bit for bit, and the play run on lavapipe on the CPU path
+    and once on the GPU path. Part two, the meshing, after the engine draws a mesh over buffers a
+    shader wrote with a count the shader writes (its item 69): a compute mesher a section, the
+    section's blocks uploaded as 4 KB and its six neighbors' faces, writing the positions and item
+    7's packed stream into the mesh's buffers with the ambient occlusion of item 22 as a uniform,
+    the engine drawing them with no upload and the global illumination reading them as any mesh; an
+    edit uploads the section's blocks and dispatches again; the frame's meshing cost then read
+    against item 16's 21 to 29 ms, the CPU mesher kept for the path without compute and as the
+    reference the GPU mesh is tested against by triangle count and bounds. Part three, the far
+    levels of item 26 on the GPU, the heightmap and the top blocks of a far column computed and
+    meshed there without the column's blocks, so far land costs the CPU nothing but a dispatch.
+    Light levels, the flood of sky and block light, stay on the CPU until the three parts are read,
+    and are a fourth part if their cost shows. Item 26's reading says where the GPU path changes its
+    costs. Three or four commits, one a part, each after its package.
+
+30. **Entity models, textures and animations read from the player's packs in OptiFine's form, the
+    game's own the fallback (Decision 13).** The owner's word of about 00:55 on 2026-10-21: the
+    packs of their modpack, Bare Bones and Fresh Animations among them, have the look they like, and
+    a Bedrock add-on reworks all of this in the same spirit. Fresh Animations is 100 custom entity
+    models under `optifine/cem`, `.jem` files of parts and boxes with `.jpm` parts and animation
+    expressions over the entity's variables, with 170 entity textures, and its terms allow personal
+    use and building on it with credit, never redistribution, so none of it ships; the game reads
+    the player's own copy as item 24 reads the blocks. The game gains a reader of the form: a `.jem`
+    model's parts, boxes, texture offsets, pivots and rotations into the game's cuboid model of item
+    13 at the source's scale, its texture from the pack by the model's name, and its animations as
+    expressions parsed once and evaluated each frame over the variables the form names,
+    `limb_swing`, `limb_speed`, `head_yaw`, `head_pitch`, `age`, `hurt_time`, `is_child` and the
+    rest the game can give, the functions of the form's expression language in a small evaluator of
+    the game's own; a mob whose kind the loaded packs model is drawn with the pack's model and
+    animated by its expressions, the game's own model and walk of item 18 otherwise, read per kind
+    at load and on `voxel.packs reload`; the parts the game cannot give, random variables and the
+    attack times, hold their defaults. Tests: a `.jem` of a known box and a one-line animation
+    parsed to the counts and evaluated at two values, the expression language's functions each on a
+    value, and a capture of a villager and a cow from the owner's packs beside the game's own in the
+    record, read from the packs where the machine has them and skipped where it has not. After item
+    24. Two commits, the models and the textures, then the animations.
 
 ## Verdicts
 
@@ -698,6 +745,56 @@ No verdict is open.
     everything else by section in three dimensions, and far land at coarser levels that keep the
     world's size and let far blocks look smaller with distance, the opposite of the earlier scaling.
     The game's coder reads item 17 first.
+
+12. **Compute shaders for generation, the owner's word of 2026-10-21.** The owner wrote at about
+    00:30 on 2026-10-21 that compute shaders for generation and the rest are a big one too, and
+    asked the reviewer for the approach as for the rest of Decision 11. The reviewer's answer is
+    item 29: the blocks stay on the CPU, where collisions, edits, light and saves read them, and the
+    GPU computes the noise fields and the meshes, the fields read back without a wait and the meshes
+    drawn where they are written, with one noise in fixed point in both the shader and C# so the two
+    paths give one world; the engine first reads a buffer back without a wait and draws a mesh over
+    a shader's buffers, items 68 and 69 of its review, asked through its ASKS.md, and the game's
+    parts follow each package. Items 18 to 25 go on meanwhile, and item 26's reading takes the GPU
+    path into its costs.
+
+13. **The owner's packs set the look, read from the player's copy and never shipped.** The owner
+    wrote at about 00:55 on 2026-10-21 that the resource packs of their modpack, older but with
+    visuals they like a lot, the HUD among them, are in the reference folder, that Bare Bones and
+    its textures are awesome, that Fresh Animations and the better mods like it, a Bedrock add-on
+    reworking all of this among them, give the general gist with no reference at hand. The reading:
+    30 packs, Bare Bones 1.21 with 1,059 block, 594 item, 607 entity and 320 gui textures and its
+    add-ons, Fresh Animations 1.9.2 with 100 custom entity models in OptiFine's form and their
+    animations, the packs fitting the two together, and smaller ones; Bare Bones carries no license
+    file and Fresh Animations' terms allow personal use and building on it with credit and forbid
+    sharing, so none of them ships and the game reads the player's own copies. So item 24 reads a
+    list of packs layered as the source layers them, with their item and gui textures beside the
+    blocks; item 23 draws the interface in Bare Bones' look as the game's own art and in a loaded
+    pack's gui textures where there is one; and item 30 reads the entity models, textures and
+    animations in OptiFine's form, the game's own the fallback. Item 18 goes on with the scale, the
+    cow and the pairs, since the game's own mobs stay what a player without packs sees.
+
+14. **The owner's modpack is the reference of the game's feel, read for shapes, numbers and ideas,
+    and nothing of it ships.** The owner wrote at about 01:00 on 2026-10-21 that the mods of their
+    modpack are in the reference folder too, for reference and for what was in the modpack, not to
+    be added whole or at all, and asked the reviewer for the best approach. The reading: 223 Fabric
+    jars for 1.21.1 under `.ref/mods`, the packs moved to `.ref/resourcepacks`, each under its own
+    license and left out of the repository. The approach: the modpack is the owner's taste written
+    down, so each item reads the mods that bear on it for their shapes, numbers and what they show,
+    as it reads the source itself, a model and never a copy; a mod that is data, the biome
+    overhaul's JSON worldgen, is read for its numbers and the game writes its own; a mod that is
+    code is read only for what it shows. Where that changed an item: item 20 gains the inventory's
+    sort, item 23 the HUD's fading when full and unchanged, item 25 reads the biome overhaul's
+    climate and surface numbers for its seven biomes, item 26 feeds the far levels from the saved
+    world first as the far-chunk cache does, and items 18 and 30 are confirmed by the entity model
+    and texture mods that load Fresh Animations' models. Not taken into items, named for the owner's
+    word since the list is to be the owner's: structures in the world, villages, dungeons,
+    mineshafts and ruins; ambient particles and weather, falling leaves, rain on surfaces, cave dust
+    and wakes on water; ambient sound, footsteps by block and the sound's reverb and occlusion by
+    the room, which the engine's default spatial processor of its item 58 begins; connected textures
+    from the packs' properties; a zoom key; and the player's own animations in third person. The
+    speed mods, the culling and the chunk threading, are what items 26 and 29 are about in the
+    game's own terms, and the play mods, the combat and the trees, stay out until the owner names
+    one.
 
 ## Replies
 
