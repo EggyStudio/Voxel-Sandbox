@@ -5,29 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `e3d9a74`, item 37, the mobs' shade, and nothing else, carrying the review's file: a
-mob shader of the game's own on the material's three variants, keeping the sun's share and taking
-the hue out of the rest by its luminance with the source's flat shade as the floor in linear light;
-`voxel.color` answering a rectangle's mean color of the last frame; the play script reading a white
-sheep's shaded side over 80 by 60 pixels and failing unless the three channels lie between 120 and
-200 and within 20 of each other, 155.7, 158.0 and 158.7 on the GPU and on lavapipe alike; the pairs
-script writing a daylight capture of the nine in a row and the pairs made again under the new light;
-the README's paragraph with the readings before and after; the shaders script checking the mob
-shader, 129 stages compiled; 129 tests. The play script took 884 seconds on lavapipe against 644
-before, the sheep's 70 frames and the shader's two lighting calls a mob pixel among the cost, the
-play job's comment saying 15 minutes under its limit of 40; the mobs' pass on the GPU is read before
-item 19's commit. Read at 01:38 on 2026-10-21 and pushed at 01:40; `404ab74` before it started no
-run, touching only the review's folder. Next item 19, the four modes and the switcher, written and
-not yet built; then the items in order; item 38's second part when the package brings the call and
-the glow lights' bound; the AGENTS.md row naming the scripts still waits on the owner's word.
+Reviewed up to `d9c2f8d`, item 19, the four modes and the switcher, after `2b912ee`, the mob
+shader's cost in the README, and nothing else, carrying the review's file. The cost: on the GPU at
+noon the nine mobs in a row cost nothing the model pass can read, and a sheep filling the window
+costs 0.43 to 0.49 ms through the mob shader against 0.21 to 0.22 through the engine's material, a
+quarter of a millisecond at the worst, so nothing changed. Item 19: adventure and spectator beside
+creative and survival, with `GameModes` giving what a mode allows, lives, builds and touches, every
+check of the two old modes turned into one of those, adventure opening tables, furnaces and doors
+and hitting mobs but placing and breaking nothing, spectator flying through blocks by the game's own
+controller with no collision and nothing to touch or pick up and no hotbar, since the engine's
+flight of its item 55 belongs to the physics character the game does not use; the switcher as the
+source's, F3 held with F4 opening it on the previous mode, F4 stepping, F3 let go playing the choice
+and opening the settings where F4 was never pressed, the panel the source's 125 by 75 at two to one
+with the grass block and the sword from the atlas and the map and the eye painted in the file; the
+mode saved by name; `voxel.mode` taking all four; the README's modes section and controls;
+`ModeTests` of each mode's rights and the switcher; 132 tests, the strict build clean, the switcher,
+adventure's refusals, spectator's flight through a wall and F3 alone opening the settings read
+through the command line on the GPU, the switcher left out of the scripted run since holding F3 for
+90 frames costs lavapipe a minute and a half. Read at 01:50 on 2026-10-21 and pushed at 01:50; the
+build run of `e3d9a74` had ended green at 01:49 in 9 minutes. Next item 20, the inventory's quick
+moves and the sort, then the items in order; item 38's second part when the package brings the call
+and the glow lights' bound; the AGENTS.md row naming the scripts still waits on the owner's word.
+
+Before it, `e3d9a74` came, item 37, the mobs' shade through a shader of the game's own, and nothing
+else, carrying the review's file, the sheep's shaded wool at 155 to 159. Pushed at 01:40, its build
+run green in 9 minutes.
 
 Before it, `404ab74` came, item 38's first part, the captures of the cascades' faults, and nothing
 else, carrying the review's file, the entry in the engine's ASKS.md. Pushed at 01:17, no build run
 for a change under the review's folder alone.
-
-Before it, `28eb41c` came, item 18's second commit, the walk by the source's numbers, and nothing
-else, carrying the review's file, the nine pairs drawn again. Pushed at 00:57, its build run green
-in 8 minutes.
 
 ## Now
 
@@ -500,7 +506,8 @@ in 8 minutes.
     with no body, no collision and no inventory, which takes the engine's character flight of
     5.2.190 where it fits; F3 held with F4 shows the switcher, four boxes with icons and the mode's
     name, F4 stepping through them while held and the choice taken on release, as the source does;
-    the mode in the status and saved. One commit.
+    the mode in the status and saved. One commit. Done at `d9c2f8d` on 2026-10-21, as the head says,
+    spectator flying by the game's own controller.
 
 20. **The inventory's quick moves as the source has them.** The owner's word: the quick inventory
     control with shift and alt does not work in survival. The inventory window takes left and right

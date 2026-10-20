@@ -297,15 +297,23 @@ and any other block itself. A torch or a lantern that falls with the block it he
 placing a block uses one up.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
-survival, where a left click takes up a stack, puts it down, joins it to a stack of its item or
-swaps the two, and a right click takes up half a stack or puts down one of it. Q throws one of the
-chosen slot's items and Control with Q its stack. A stack on the ground falls, slides to a stop and
-turns slowly, and is picked up once the player comes within a block of it, half a second after it
-fell or two after it was thrown, joining stacks of its item in the inventory first. Two stacks of an
-item lying together join, and a stack is gone after five minutes. The stacks on the ground are not
-saved with the world. A mob drops its loot as it dies, in either mode. A pig drops porkchops, a cow
-leather and beef, a sheep a block of wool of its coat's color and mutton, and a chicken feathers and
-its meat.
+survival and adventure, where a left click takes up a stack, puts it down, joins it to a stack of
+its item or swaps the two, and a right click takes up half a stack or puts down one of it. The quick
+moves are Minecraft's, in that window, at a crafting table and at a furnace in any mode. Shift with
+a click moves a stack between the hotbar and the rest, into a furnace by what smelts or burns, or
+out of a grid or a furnace into the inventory, and on what a grid makes crafts as many as the
+inventory has room for. A number key over a slot swaps it with that slot of the hotbar, a
+double-click with a stack held gathers its kind onto it, and a drag over slots with a stack held
+spreads it over them, evenly with the left button and one each with the right. Q over a slot drops
+one of its items and Control with Q its stack, and a middle click on the window or R sorts the 27
+slots above the hotbar, each kind together in filled stacks, as the sorting mods do. With the window
+shut, Q throws one of the chosen slot's items and Control with Q its stack. A stack on the ground
+falls, slides to a stop and turns slowly, and is picked up once the player comes within a block of
+it, half a second after it fell or two after it was thrown, joining stacks of its item in the
+inventory first. Two stacks of an item lying together join, and a stack is gone after five minutes.
+The stacks on the ground are not saved with the world. A mob drops its loot as it dies, in either
+mode. A pig drops porkchops, a cow leather and beef, a sheep a block of wool of its coat's color and
+mutton, and a chicken feathers and its meat.
 
 Each item shows by an icon 16 pixels square, drawn once into an atlas. A block's icon is the block
 as a small cube seen from above and from two sides, cast pixel by pixel against its own boxes, so a

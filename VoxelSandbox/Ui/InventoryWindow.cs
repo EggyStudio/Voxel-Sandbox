@@ -18,6 +18,17 @@ namespace VoxelSandbox;
 /// takes it up, using one item of each of the grid's stacks, onto the held stack where it is of the
 /// same item and has room. What is held and what the grid holds go back into the inventory when the
 /// window closes.
+/// <para>
+/// The quick moves are Minecraft's too, as <see cref="SlotMoves"/> makes them. Shift with a click
+/// moves a slot's stack between the hotbar and the rest of the inventory, into the furnace open, or
+/// out of a grid or a furnace into the inventory, and on what the grid makes crafts as many as the
+/// inventory has room for. A number key over a slot swaps it with that slot of the hotbar, a
+/// double-click with a stack held gathers its kind onto it, a drag over slots with a stack held
+/// spreads it over them, evenly with the left button and one each with the right, and Q over a slot
+/// drops one of its items, with Control its stack. A middle click on the window or R sorts the
+/// inventory's 27 slots above the hotbar, each kind together and its stacks filled, as the sorting
+/// mods of Minecraft do.
+/// </para>
 /// </remarks>
 public sealed class InventoryWindow
 {
@@ -32,10 +43,24 @@ public sealed class InventoryWindow
     /// <summary>The stack taken up and following the mouse, or null.</summary>
     public ItemStack? Held { get; private set; }
 
+    /// <summary>The stacks Q and Control with Q dropped from the slot under the mouse, which the game throws and clears.</summary>
+    public List<ItemStack> Dropped { get; } = [];
+
+    // What the window shows this frame, for a shift-click to know where a stack goes.
+    private Inventory? _inventory;
+    private CraftingGrid? _grid;
+    private Furnace? _furnace;
+
+    // The slots a drag with a stack held has passed, from the one it was pressed on, and its button.
+    private readonly List<SlotAt> _dragged = [];
+    private ImGuiMouseButton _dragButton;
+    private bool _dragging;
+
     /// <summary>Draws the inventory's slots under a crafting grid, the chosen hotbar slot outlined.</summary>
     /// <returns>Whether the window stays open.</returns>
     public bool DrawInventory(Inventory inventory, int selected, CraftingGrid grid)
     {
+        (_inventory, _grid, _furnace) = (inventory, grid, null);
         Center();
         var open = true;
         if (ImGui.Begin(grid.Size == 3 ? "Crafting Table" : "Inventory", ref open, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse))
@@ -76,6 +101,14 @@ public sealed class InventoryWindow
         }
         ImGui.PopID();
         if (!clicked || made is not { } result) return;
+        if (Shift() && _inventory is { } inventory)
+        {
+            // As many as the inventory has room for, each into it as a stack out of a container goes.
+            var into = SlotMoves.FromContainer(inventory);
+            while (grid.Recipe is { } next && SlotMoves.Room(into, next.Result) >= next.Count && grid.Craft() is { } crafted)
+                SlotMoves.MoveInto(new SlotAt([crafted], 0), into);
+            return;
+        }
         if (Held is { } held && (held.Item != result.Item || held.Count + result.Count > held.Item.MostInStack)) return;
         grid.Craft();
         Held = new ItemStack(result.Item, (Held?.Count ?? 0) + result.Count);
@@ -89,6 +122,7 @@ public sealed class InventoryWindow
     /// <returns>Whether the window stays open.</returns>
     public bool DrawFurnace(Inventory inventory, int selected, Furnace furnace)
     {
+        (_inventory, _grid, _furnace) = (inventory, null, furnace);
         Center();
         var open = true;
         if (ImGui.Begin("Furnace", ref open, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse))
@@ -132,6 +166,11 @@ public sealed class InventoryWindow
         }
         ImGui.PopID();
         if (!clicked || stack is not { } taken) return;
+        if (Shift() && _inventory is { } inventory)
+        {
+            SlotMoves.MoveInto(new SlotAt(slots, slot), SlotMoves.FromContainer(inventory));
+            return;
+        }
         if (Held is not { } held) (Held, slots[slot]) = (taken, null);
         else if (held.Item == taken.Item && held.Count < held.Item.MostInStack)
         {
@@ -157,6 +196,86 @@ public sealed class InventoryWindow
             SlotButton(inventory.Slots, column, column == selected);
         }
         if (Held is { } held) DrawStack(ImGui.GetForegroundDrawList(), ImGui.GetIO().MousePos - new Vector2(Slot / 2), held);
+        Release();
+        if (ImGui.IsWindowHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Middle) || E3D.IsKeyPressed(Key.R))
+            SlotMoves.Sort(inventory.Slots, Hotbar.Size, Inventory.Size);
+    }
+
+    // A press on a slot: a shift-click's move, a double-click's gathering with a stack held, a click
+    // or a right click with none held, or the start of a drag with one held, which its release ends.
+    private void Press(SlotAt at, ImGuiMouseButton button)
+    {
+        if (button == ImGuiMouseButton.Left && Shift())
+        {
+            QuickMove(at);
+            return;
+        }
+        if (button == ImGuiMouseButton.Left && Held is { } held && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+        {
+            Held = SlotMoves.Gather(held, Gatherable());
+            return;
+        }
+        if (Held is null)
+        {
+            if (button == ImGuiMouseButton.Left) Click(at.Slots, at.Index);
+            else RightClick(at.Slots, at.Index);
+            return;
+        }
+        (_dragging, _dragButton) = (true, button);
+        _dragged.Clear();
+        _dragged.Add(at);
+    }
+
+    // A drag let go, which over one slot is a click or a right click there, and over more spreads the
+    // held stack over them.
+    private void Release()
+    {
+        if (!_dragging || !ImGui.IsMouseReleased(_dragButton)) return;
+        _dragging = false;
+        if (Held is { } held)
+        {
+            var right = _dragButton == ImGuiMouseButton.Right;
+            if (_dragged.Count > 1) Held = SlotMoves.Spread(held, _dragged, one: right);
+            else if (right) RightClick(_dragged[0].Slots, _dragged[0].Index);
+            else Click(_dragged[0].Slots, _dragged[0].Index);
+        }
+        _dragged.Clear();
+    }
+
+    // The keys over a slot: a number swaps it with that slot of the hotbar, and Q drops one of its
+    // items, with Control its stack.
+    private void Keys(SlotAt at)
+    {
+        if (_inventory is not { } inventory) return;
+        for (int n = 0; n < Hotbar.Size; n++)
+            if (E3D.IsKeyPressed(Key.One + n) && !(at.Slots == inventory.Slots && at.Index == n))
+                (at.Slots[at.Index], inventory.Slots[n]) = (inventory.Slots[n], at.Slots[at.Index]);
+        if (!E3D.IsKeyPressed(Key.Q) || at.Stack is not { } stack) return;
+        var count = E3D.IsKeyDown(Key.LeftControl) || E3D.IsKeyDown(Key.RightControl) ? stack.Count : 1;
+        Dropped.Add(stack with { Count = count });
+        at.Slots[at.Index] = stack.Count > count ? stack with { Count = stack.Count - count } : null;
+    }
+
+    // The keys are read through the engine, as the rest of the game reads them, which a key sent
+    // through ./e3d reaches as one pressed at the keyboard does, where ImGui's own key state saw no
+    // Shift, number, Q or R sent that way.
+    private static bool Shift() => E3D.IsKeyDown(Key.LeftShift) || E3D.IsKeyDown(Key.RightShift);
+
+    private void QuickMove(SlotAt at)
+    {
+        if (_inventory is not { } inventory) return;
+        if (at.Slots == inventory.Slots) SlotMoves.QuickMove(inventory, at.Index, _furnace);
+        else SlotMoves.MoveInto(at, SlotMoves.FromContainer(inventory));
+    }
+
+    // The slots a double-click gathers from, every one the window shows but what a grid or a furnace makes.
+    private List<SlotAt> Gatherable()
+    {
+        var slots = new List<SlotAt>();
+        if (_grid is { } grid) slots.AddRange(SlotMoves.Range(grid.Slots, 0, grid.Slots.Length));
+        if (_furnace is { } furnace) slots.AddRange([new SlotAt(furnace.Slots, Furnace.Input), new SlotAt(furnace.Slots, Furnace.Fuel)]);
+        if (_inventory is { } inventory) slots.AddRange(SlotMoves.Range(inventory.Slots, 0, Inventory.Size));
+        return slots;
     }
 
     /// <summary>Draws every item as a swatch, which puts one of it into the hotbar's chosen slot when clicked.</summary>
@@ -216,9 +335,16 @@ public sealed class InventoryWindow
             DrawStack(list, min, shown);
             if (ImGui.IsItemHovered()) ImGui.SetTooltip(shown.Item.Durability > 0 ? $"{shown.Item.Name}, {shown.Item.Durability - shown.Wear} uses left" : shown.Item.Name);
         }
-        if (chosen) list.AddRect(min - Vector2.One, ImGui.GetItemRectMax() + Vector2.One, 0xFFFFFFFF, 0, ImDrawFlags.None, 2);
-        if (left) Click(slots, slot);
-        else if (right) RightClick(slots, slot);
+        var max = ImGui.GetItemRectMax();
+        if (chosen) list.AddRect(min - Vector2.One, max + Vector2.One, 0xFFFFFFFF, 0, ImDrawFlags.None, 2);
+        var at = new SlotAt(slots, slot);
+        // While a drag holds its button, the slot it was pressed on stays ImGui's active item, so the
+        // slots it passes are found by the mouse over their squares.
+        var under = ImGui.IsMouseHoveringRect(min, max);
+        if (left) Press(at, ImGuiMouseButton.Left);
+        else if (right) Press(at, ImGuiMouseButton.Right);
+        else if (_dragging && under && ImGui.IsMouseDown(_dragButton) && !_dragged.Contains(at)) _dragged.Add(at);
+        if (under) Keys(at);
         ImGui.PopID();
     }
 

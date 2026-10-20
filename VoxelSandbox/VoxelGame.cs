@@ -258,7 +258,10 @@ public sealed class VoxelGame : IDisposable
         }
         if (_swallowClick && !IsMouseButtonDown(MouseButton.Left)) _swallowClick = false;
 
-        Hotbar.Update(keys, _captured);
+        // The number keys choose a hotbar slot unless a window of slots takes them to swap one, the
+        // inventory, a crafting table or a furnace, where the creative window of items leaves them.
+        var slotsShown = InventoryOpen && (Mode.Lives() || AtTable || AtFurnace is not null);
+        Hotbar.Update(keys && !slotsShown, _captured);
         var alive = !Mode.Lives() || !Vitals.Dead;
         Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
         Player.Update(World, seconds, look: _captured && alive, move: keys && alive);
@@ -271,6 +274,13 @@ public sealed class VoxelGame : IDisposable
         if (_captured && !_swallowClick && alive && Mode.Touches()) Interact(seconds);
         else (BreakingAt, BreakProgress, Eating) = (null, 0, 0);
         if (_captured && keys && Mode.Touches() && IsKeyPressed(Key.Q)) Throw(IsKeyDown(Key.LeftControl));
+        // What Q dropped from a slot of the window E opens is thrown ahead, as from the hotbar.
+        foreach (var stack in InventoryWindow.Dropped)
+        {
+            var look = Vector3.Normalize(Player.Look);
+            Drops.Spawn(stack.Item, stack.Count, Player.Eye - new Vector3(0, 0.3f, 0) + look * 0.3f, look * 6 + new Vector3(0, 1, 0), ItemDrops.ThrownDelay, stack.Wear);
+        }
+        InventoryWindow.Dropped.Clear();
         LeaveDrops();
         foreach (var ((x, y, z), stack) in Furnaces.Update(World, seconds))
         {
