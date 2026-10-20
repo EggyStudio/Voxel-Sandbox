@@ -5,7 +5,22 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `35696e2`, item 10's legless frame found and mended, one commit with its test, with
+Reviewed up to `435b2de`, item 16 and nothing else, carrying Decision 10's sentence in COMMITS.md
+and the review's file. The game is on 3DEngine `5.2.155`, both workflows' engine checkout at
+`9f9180b7`, both copies of the terrain shader marked as keeping their positions with the reason in
+each remark, the default at 12 columns with the open view's figures and the margin over 14 in its
+remark, the light settings' comment on the field's share of the drawn land, and the README's costs
+section giving the open view's table at 4 to 16 columns, the flight's figures and lavapipe's and
+saying the engine's passes leave out the sections they cannot see while the field keeps them; a
+space the marks' patch had dropped was put back so the line is as it was, and the README's sentence
+on the cave, 905 of 1,085 sections and the frame from 16 ms to 4, stands as read in the engine
+tree's game before the move, the cave's place in no record. Checked were the strict build, the 126
+tests and the style grep over the staged diff and the message. Pushed at 10:37; its build run is
+read when it ends. Its build run was green at 10:43, the three suites and the play on lavapipe. At
+23:30 the owner named the game's next work whole, Decision 11 and items 17 to 28, the water first;
+the AGENTS.md row naming the pictures script still waits on the owner's word.
+
+Before it, `35696e2` came, item 10's legless frame found and mended, one commit with its test, with
 the review's commit between. The game's loop updates before its first drawing begins, and the engine
 times a frame when it begins, so the frame's time reads nothing there; a mob's stride is the
 distance moved over the frame's seconds, so a mob standing still in that frame got nothing over
@@ -41,35 +56,6 @@ to 0.46 against 0.36, the same row away from the lamp at 1.49 and 1.46; with the
 at 1.40 and 1.41 either way; the room inside unmoved. The package with the engine's `a7c2da8b` and
 this commit together is read when it comes. Right. Next the legless frame's hunt, item 36's package
 before the distance rises, and the pictures script's row in AGENTS.md on the owner's word.
-
-Before it, `9158df8` came, item 12, with `569b5fb`, item 11, and `bde1fc1`, item 14, before it, and
-the review's commits between. Item 14: the engine's somewhat boring curve with an exposure of 1.25
-beside it at the light settings, the remark giving the figures over the play script's views, the
-pillar 136.6 against 136.7, the noon sky 137.8 against 136.4 and the night room 31.8 against 28.2,
-13 percent brighter, why the curve does that in the dark and what an exposure of 1 would do, naming
-no one; the captures taken under it, the README with a paragraph on the curve and the exposure and
-its picture retaken. Item 11: a pictures script takes both README pictures from the seed, the place,
-the hour, the heading and the cloud drift it writes in, at the game's render distance, encoded at
-800 by 450 through the engine checkout's script, the overworld of seed 1 opened transient with the
-mobs held where the land put them; the village picture shows the village south of the spawn from its
-meadow at hour 16, five houses with torches, a villager by the path facing the camera, the village's
-chickens and two sheep, a cow and a pig, the four placed by the script from above since the land's
-herds and the villagers at their homes stood out of view, said in its comment, so each run shows
-them where the last did; the hills picture is item 6's view with the clouds drifted 80 blocks so the
-sun stands clear of one; the still command holds the clouds as it holds the mobs and the clouds
-command takes a drift; the README opens with the two pictures side by side in a table as the
-engine's does, says which script takes them, and its commands paragraph names the new parts;
-AGENTS.md's row for the build folder names the workflows' scripts alone and waits on the owner's
-word to name the pictures script (N 7.4). Item 12: the distance stays at 8, the setting's remark
-giving the GPU's 12.1 ms at 8 and 16.6, 21.8, 29.7 and 46.4 at 9, 10, 12 and 16 with the shadows at
-4.3 against 23.5 and the reason, the engine culling none of the terrain's draws through the game's
-shader in the depth pass and the three cascades, the README's section on what it costs carrying the
-table at six distances with lavapipe's 0.58 and 0.92 seconds and losing its sentence on the engine
-culling each pass. 124 tests pass and the strict build is clean at each commit. Open: the legless
-frame on the hunt, the engine's item 36 before the distance can rise. On 2026-10-20 at 00:48 the
-engine's coder, mending the leak through a wall, found the mesher leaving out the stone's faces
-against a lamp block, so the scene field reads that stone as open; item 15. Right. Next item 15, the
-pictures script's row in AGENTS.md on the owner's word, and the engine's packages as they come.
 
 ## Now
 
@@ -471,7 +457,127 @@ pictures script's row in AGENTS.md on the owner's word, and the engine's package
     than the development machine's; the tree holds 12 meanwhile. Lavapipe's GPU work from the open
     view with the marks is 0.49 s a frame at 4 columns, 0.82 at 8, 1.20 at 12 and 1.42 at 14, most
     of it the camera's pass. The owner chose 12 at 10:36 on 2026-10-20, so the default is 12
-    columns, its remark giving the table and the margin, and the commit goes in.
+    columns, its remark giving the table and the margin, and the commit goes in. Done at `435b2de`
+    on 2026-10-20, as the head says.
+
+17. **Out of the water onto the shore, swimming while any of the body is in it.** The owner's first
+    word of 2026-10-20 at 23:30: inside water one cannot jump out. The controller counts the player
+    as swimming only while the body's middle is in water and Space then lifts, so once the middle
+    clears the surface the body falls under full gravity, bobbing with its feet under, and a shore
+    one block up needs more lift than that gives. The mend is the source's rule: swimming while any
+    part of the body is in water, and a body in water pushing against a block's side with the space
+    above free lifted at a climbing speed until it stands, so the shore is reached by walking into
+    it; a test in the drive swims to a shore one block up and reads the player standing on it. One
+    commit, first.
+
+18. **The mobs' proportions toward the source's, the villager first, with some character kept.** The
+    owner's second word: the villagers are not the right proportions. Item 13 took the other game's
+    cuboids as numbers, and the villager still reads wrong, so each mob's cuboids are read again
+    against the source's model boxes at the same scale, the villager's head, nose, robe, arms folded
+    and legs among them, each box's size and offset compared and put right where off, the game's own
+    character kept in the faces, colors and the few touches that were its own, with a capture of
+    each mob beside its source's silhouette in the record. One commit.
+
+19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
+    spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
+    there, and the small panel of boxes with icons is missing. The game has creative and survival;
+    it gains adventure, no placing or breaking but interaction, and spectator, flying through blocks
+    with no body, no collision and no inventory, which takes the engine's character flight of
+    5.2.190 where it fits; F3 held with F4 shows the switcher, four boxes with icons and the mode's
+    name, F4 stepping through them while held and the choice taken on release, as the source does;
+    the mode in the status and saved. One commit.
+
+20. **The inventory's quick moves as the source has them.** The owner's word: the quick inventory
+    control with shift and alt does not work in survival. The inventory window takes left and right
+    clicks alone; it gains shift-click moving a stack between the hotbar and the inventory or into
+    the open container, number keys over a slot swapping it with the hotbar's, double-click
+    gathering a kind, drag over slots spreading a stack, and drop by Q with control for the stack,
+    the keys read where the window is open in survival and creative alike. One commit.
+
+21. **Stairs join at corners, place by the hit, and the aim picks the shape and not its cell.** The
+    owner's word: stairs do not connect on a corner, placing is odd, and the hover outline is the
+    block and not the mesh, so the aim picks the one in front. The stairs' shape reads its neighbors
+    for the inner and outer corner forms as the source does, placing reads the hit's half and the
+    player's facing for upside-down and direction, the ray tests each piece of a shape and not the
+    box of all, so a ray through a stair's empty quarter reaches the block behind, and the outline
+    draws the shape's pieces; the same for slabs, fences and every shape of pieces. Two commits, the
+    corners and the placing, then the ray and the outline.
+
+22. **The baked ambient occlusion has a strength.** The owner's word: the AO baked into the mesh
+    needs a strength parameter. The mesher bakes four fixed levels; it takes a strength from zero to
+    one that scales the levels toward one, set in the settings and by a command, the meshes built
+    again when it changes, the default the levels of today. One commit.
+
+23. **The interface drawn as the game's own, in the source's style, ImGui kept for the debug
+    windows.** The owner's word: the UI is very ImGui-styled. The hotbar and HUD are drawn shapes
+    already; the inventory, the creative items, the settings and the pause screen become the game's
+    own 2D drawing, panels of nine-slice textures, slots with item icons drawn from the block's
+    faces, tooltips and a cursor stack, in the source's look with the game's own touches, the keys
+    of item 20 kept, ImGui left for the debug and settings' developer parts. Two or three commits,
+    the panels and slots first, then each window.
+
+24. **Texture packs read from the player's own resource packs, shipping no one's textures.** The
+    owner's biggest word: texture pack support, with a mod called Shine in the reference folder as
+    what adds a lot. Shine is a Fabric mod of code and shaders under all rights reserved, so none of
+    it may enter the game, only what it shows done, which is item 28; the packs the owner's own
+    instance holds are the source's resource packs, zips or folders of block, item and entity
+    textures by name under the source's paths. The game gains a pack loader reading such a pack from
+    a folder beside the game or a chosen path, mapping each block's faces to the pack's texture
+    names by a table the game keeps, falling back to its own texture where a pack lacks one, the
+    atlas built from the pack at load with mipmaps and the pack's resolution, a setting naming the
+    pack and a command to reload, so a player's pack shows and the repository ships only the game's
+    own art. Entity textures and models follow in a later part where the mobs' models match the
+    source's layout. Two commits, the loader and the atlas, then the setting and the reload.
+
+25. **More biomes, more blocks and more trees.** The owner's word, three times. The climate has
+    eight biomes, the features three trees and the cactus, and the blocks about 140 ids: biomes gain
+    the swamp, the savanna, the jungle, the dark forest, the badlands, the beach and the river, each
+    with its surface, its colors of grass and leaves and its features; blocks gain each biome's
+    wood, leaves, sapling, flowers, tall grass, mushrooms, sand and gravel kinds, clay, ores by
+    depth and the glass and wool colors; trees gain the jungle, the acacia, the dark oak, the big
+    oak and the giant mushroom, from the source's shapes as numbers with the game's own touches.
+    Three commits, biomes, blocks, trees, each with the drive's walk through one of each and a
+    capture.
+
+26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
+    world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's
+    word: a column is 16 by 16 by 128, make it cubic at 16 or 32 or do a level of detail, where an
+    earlier level of detail scaled far blocks by powers of two so they looked as big as near ones,
+    which looked wrong. The reviewer's reading: meshing, drawing and culling go by 16-cubed sections
+    already, and generation, streaming and saving by whole columns; the terrain's generation wants
+    the column's context, the heightmap, the biome and the surface, so it stays by column, and the
+    world grows to 24 sections, 384 blocks from minus 64 to 320 as the source's, with the deep
+    sections for caves; streaming, meshing and saving go by section with a distance in three
+    dimensions, so a far column's deep sections are neither meshed nor kept, and a column is
+    generated whole once and its sections saved apart. Far land is drawn at a coarser level by
+    distance, each doubling of the distance halving the detail, a far section meshed from blocks
+    merged two by two by two and then four by four by four into cubes of the merged size at their
+    own place, so the world keeps its size and far blocks look smaller with distance as near ones
+    do, lit flat with no ambient occlusion and no entities, the coarse levels made from the
+    generator's surface alone, the heightmap and the top blocks, without the column's full blocks,
+    so a far column costs a surface and not a volume; the earlier level of detail scaled the far
+    blocks up to look as big as near ones, which is the thing to avoid. The render distance of near
+    sections stays at the setting, and the far levels reach as far as the setting for them, with the
+    memory and the frame read at 8, 12 and 16 near and 32 and 64 far. Read first, with the costs of
+    the three parts and the form of the coarse mesh said before any commit: the taller world and the
+    sections' streaming and saving, then the far levels. Three or four commits.
+
+27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
+    word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
+    two noises are both near zero, caverns where a third is high below a depth, and ravines; it
+    gains the source's three kinds as numbers, cheese caves from a large three-dimensional noise's
+    low values, spaghetti tunnels from two noises thinned by a third, noodle caves thinner still,
+    and aquifers setting water and lava levels in caves by depth, with the deep sections item 26
+    gives them, and a cave's lighting from the sky above through its openings. After item 26. Two
+    commits, the caves, then the aquifers.
+
+28. **The looks Shine shows, done as the game's own: a glow on emissive blocks, colored light from
+    glowing blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the
+    reference folder's mod, whose code may not be taken: the engine's bloom on the emissive blocks'
+    faces, the colored light the engine's lamps and global illumination give from glowing blocks
+    read and set so a lantern's light is its color, a rim light as a setting in the terrain shader,
+    and an unshaded look as a setting, each a switch in the settings with a capture. After item 24.
+    One or two commits.
 
 ## Verdicts
 
@@ -572,6 +678,26 @@ No verdict is open.
     coder adds one sentence saying so to COMMITS.md in the next batch, in the paragraph on what a
     commit carries, naming the review's files, the batch that comes next and the one commit a day at
     most, and no one who decided it (N 4.7).
+
+11. **The owner's list of 2026-10-20 at 23:30, in the reviewer's order.** The owner named the game's
+    next work whole and asked the reviewer for the best approach, its order and its items: out of
+    the water first; the mobs' proportions toward the source's with some character kept; more types,
+    biomes, blocks and trees; the interface in its own style rather than ImGui's; the inventory's
+    quick moves; the four modes with the switcher of icons and spectator; the ambient occlusion's
+    strength; texture pack support, with the mod Shine in the reference folder as what adds a lot;
+    stairs at corners, their placing and the aim's outline; caves as the source's newer ones; and
+    the world's layout, cubic at 16 or 32 or a level of detail, an earlier one of the owner's having
+    scaled far blocks up so they looked as big as near ones, which looked wrong. The reviewer's
+    order is items 17 to 28: the small mechanics first in the owner's own order where it was given,
+    the water, the mobs, the modes, the quick moves, the stairs and the occlusion's strength, then
+    the interface, then the texture packs, then the content, biomes, blocks and trees, then the
+    world's layout as a reading first, the caves after it since they live in the deep sections it
+    gives, and the looks Shine shows last since they build on the packs; Shine's code and shaders
+    stay out, all rights reserved, and only what they show is done. The world's layout is the
+    reviewer's answer to the owner's question: generation by column with the world taller,
+    everything else by section in three dimensions, and far land at coarser levels that keep the
+    world's size and let far blocks look smaller with distance, the opposite of the earlier scaling.
+    The game's coder reads item 17 first.
 
 ## Replies
 

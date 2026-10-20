@@ -44,12 +44,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # After the game's checkout, which would clear the folder. 9f9180b7 is the commit the package
-      # VoxelSandbox.csproj names, 5.2.155, was packed from, so e3d compiles as the game's engine does.
+      # After the game's checkout, which would clear the folder. b3922179 is the commit the package
+      # VoxelSandbox.csproj names, 5.2.190, was packed from, so e3d compiles as the game's engine does.
       - uses: actions/checkout@v7
         with:
           repository: EggyStudio/3DEngine
-          ref: 9f9180b7a83a9076f009c030e8de53a511e2a2c0
+          ref: b392217961e48853b371b0c0bb4aac9e35d798e4
           path: .engine
 
       - uses: actions/setup-dotnet@v6

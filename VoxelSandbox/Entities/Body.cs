@@ -51,9 +51,11 @@ public sealed class Body(float halfWidth, float height)
     /// <summary>
     /// Moves the box by <paramref name="delta"/>, stopping it against the blocks and zeroing its
     /// velocity along each axis it was stopped on. With <paramref name="keepToEdges"/>, as when
-    /// sneaking, a step along x or z that would leave no block under the box is not taken.
+    /// sneaking, a step along x or z that would leave no block under the box is not taken. With
+    /// <paramref name="climbing"/>, as when climbing out of water, the box climbs onto what stops it
+    /// off the ground as on it.
     /// </summary>
-    public void Move(VoxelWorld world, Vector3 delta, bool keepToEdges)
+    public void Move(VoxelWorld world, Vector3 delta, bool keepToEdges, bool climbing = false)
     {
         var largest = MathF.Max(MathF.Abs(delta.X), MathF.Max(MathF.Abs(delta.Y), MathF.Abs(delta.Z)));
         var steps = Math.Max(1, (int)MathF.Ceiling(largest / 0.45f));
@@ -68,7 +70,7 @@ public sealed class Body(float halfWidth, float height)
                 Velocity.Y = 0;
                 step.Y = 0;
             }
-            var grounded = landed || OnGround;
+            var grounded = landed || OnGround || climbing;
             if (step.X != 0 && (keepToEdges && !Supported(world, Position + new Vector3(step.X, 0, 0)) || !StepUp(world, grounded, new Vector3(step.X, 0, 0)) && Blocked(world, 0, step.X)))
             {
                 Velocity.X = 0;

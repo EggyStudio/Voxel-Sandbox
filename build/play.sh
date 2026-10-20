@@ -5,8 +5,9 @@
 # night, walks toward it and captures the frame, then captures the night sky from the room's roof,
 # the full moon and the stars over the flat land from two places and headings, the sun and its glow
 # at noon and at dusk, a pillar's shadow under the morning sun, and the window of every item's
-# icon. It fails where the game does not open or answer, the player did not move, or the layer
-# reported an error, and says why in an error annotation, so the run's page names it.
+# icon, then swims the player out of a pool onto its bank. It fails where the game does not open or
+# answer, the player did not move or did not climb out onto the bank, or the layer reported an
+# error, and says why in an error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -143,8 +144,27 @@ cmd frames.wait 2
 capture inventory.png
 cmd input.key E 1
 
+# A pool of water four blocks deep east of the room, with a bank on its east side a block above the
+# water's top cell, and the player in the water facing the bank. W alone takes the player to the
+# bank, up its side and onto it, as walking into a shore does. The walk ends on the bank whether a
+# frame takes a sixtieth of a second or the twentieth the game counts at most, as on lavapipe, and
+# the bank ends at x 47, inside the columns lavapipe has loaded by then.
+cmd voxel.fill 30 4 -20 47 8 -14 stone
+cmd voxel.fill 31 5 -19 35 8 -15 water
+cmd voxel.fill 36 9 -20 47 9 -14 stone
+cmd voxel.fly off
+cmd voxel.tp 35.2 6 -17.5
+cmd voxel.look 90 0
+cmd frames.wait 10
+cmd input.key W 60
+shore=$(ask voxel.state)
+echo "$shore"
+landed=$(feet "$shore")
+printf '%s\n' "$shore" | grep -q "on the ground" && printf '%s\n' "$landed" | awk '{ exit !($1 > 36 && $2 == 10) }' \
+  || fail "the player did not climb out of the water onto the bank, whose top is at 10, and stands at $landed"
+
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
 if grep -F 'Validation Error' "$log"; then fail "the validation layer reported an error"; fi
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room and drew with no validation error"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, climbed out of a pool onto its bank and drew with no validation error"

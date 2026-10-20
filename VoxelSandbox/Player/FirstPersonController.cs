@@ -18,9 +18,15 @@ public sealed class FirstPersonController
     private const float StandingEyes = 1.62f, SneakingEyes = 1.27f;
     // In water the body sinks slowly, rises while Space is held and moves at a little over half speed.
     private const float SwimGravity = 6, SinkLimit = 3, SwimUp = 3.9f, SwimSpeed = 0.6f;
+    // Space lifts the body only while the water stands this far above its feet, as Minecraft's
+    // swimmer floats with its head and shoulders out, and in shallower water on the ground it jumps.
+    private const float Wade = 0.4f;
     private const float DoubleTap = 0.3f;
 
     private double _lastSpace = double.NegativeInfinity;
+    // Whether the body climbs out of water, from its first push against a block's side in the water
+    // until it stands or stops pushing.
+    private bool _climbing;
     private float _eyes = StandingEyes;
     private float _fov;
 
@@ -49,7 +55,7 @@ public sealed class FirstPersonController
 
     public bool Sneaking { get; private set; }
 
-    /// <summary>Whether the body's middle is in water, as of the last update.</summary>
+    /// <summary>Whether any of the body is in water, as of the last update.</summary>
     public bool Swimming { get; private set; }
 
     /// <summary>Whether the eye is in water, which tints the view.</summary>
@@ -112,8 +118,8 @@ public sealed class FirstPersonController
         if (forward <= 0) Sprinting = false;
         else if (sprintKey && MaySprint) Sprinting = true;
         if (!MaySprint) Sprinting = false;
-        var middle = Body.Position + new Vector3(0, 0.9f, 0);
-        Swimming = !Flying && world.GetBlock((int)MathF.Floor(middle.X), (int)MathF.Floor(middle.Y), (int)MathF.Floor(middle.Z)) is var at && Blocks.IsWater(at);
+        var depth = WaterDepth(world, Body.Position);
+        Swimming = !Flying && depth > 0;
         Sneaking = down && !Flying && !Swimming;
 
         var ahead = new Vector3(-MathF.Sin(Yaw), 0, -MathF.Cos(Yaw));
@@ -131,7 +137,17 @@ public sealed class FirstPersonController
             Body.Velocity.Y += (((up ? 1 : 0) - (down ? 1 : 0)) * FlyVertical - Body.Velocity.Y) * grip;
         else if (Swimming)
         {
-            Body.Velocity.Y = up ? SwimUp : MathF.Max(Body.Velocity.Y - SwimGravity * seconds, -SinkLimit);
+            Body.Velocity.Y = up && depth > Wade ? SwimUp : MathF.Max(Body.Velocity.Y - SwimGravity * seconds, -SinkLimit);
+            if (up && depth <= Wade && Body.OnGround) Body.Velocity.Y = JumpSpeed;
+            // Pushing against a block's side with the space above free, the body climbs it as fast
+            // as a jump rises, and leaving the water it climbs onto the bank it pushes against as onto
+            // a stair, so the shore a block above the water is reached by walking into it at any
+            // frame's length, as Minecraft's swimmer climbs out.
+            if (wish != Vector3.Zero && !Body.Fits(world, Body.Position + wish * 0.05f) && Body.Fits(world, Body.Position + new Vector3(0, 0.6f, 0)))
+            {
+                Body.Velocity.Y = MathF.Max(Body.Velocity.Y, JumpSpeed);
+                _climbing = true;
+            }
         }
         else
         {
@@ -139,7 +155,8 @@ public sealed class FirstPersonController
             if (up && Body.OnGround) Body.Velocity.Y = JumpSpeed;
         }
 
-        Body.Move(world, Body.Velocity * seconds, keepToEdges: Sneaking && Body.OnGround);
+        if (Flying || Body.OnGround || wish == Vector3.Zero) _climbing = false;
+        Body.Move(world, Body.Velocity * seconds, keepToEdges: Sneaking && Body.OnGround, climbing: _climbing);
         if (Flying && Body.OnGround && down) Flying = false;
 
         _eyes += ((Sneaking ? SneakingEyes : StandingEyes) - _eyes) * (1 - MathF.Exp(-20 * seconds));
@@ -155,5 +172,17 @@ public sealed class FirstPersonController
         Body.Position = feet;
         Body.Velocity = Vector3.Zero;
         Teleports++;
+    }
+
+    // How far the water's top stands above the feet, up through the water over them, the top of
+    // still water an eighth under its cell's and flowing water's lower, and nothing where the feet
+    // are above it or their cell holds none.
+    private static float WaterDepth(VoxelWorld world, Vector3 feet)
+    {
+        int x = (int)MathF.Floor(feet.X), y = (int)MathF.Floor(feet.Y), z = (int)MathF.Floor(feet.Z);
+        var at = world.GetBlock(x, y, z);
+        if (!Blocks.IsWater(at)) return 0;
+        for (var above = world.GetBlock(x, y + 1, z); Blocks.IsWater(above); above = world.GetBlock(x, y + 1, z)) (at, y) = (above, y + 1);
+        return MathF.Max(0, y + Blocks.WaterHeight(at, waterAbove: false) - feet.Y);
     }
 }

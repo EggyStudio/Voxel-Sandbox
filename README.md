@@ -140,8 +140,9 @@ lies flat and the hills sink as they near it.
 
 Wide basins sink the land under the sea level of 48, where water stands over a floor of sand near
 the shore and gravel deeper, its top frozen to ice where the climate is cold, as about a fourteenth
-of the land is on seed 1. The player swims in it, sinking slowly, rising while Space is held and
-moving at a little over half speed, and sees through a blue tint while the eye is under it. Glass,
+of the land is on seed 1. The player swims in it, sinking slowly, rising while Space is held until
+the head and shoulders are out and moving at a little over half speed, climbs out by walking into
+a bank a block above the water, and sees through a blue tint while the eye is under it. Glass,
 ice and water are drawn see-through, a second mesh of each section drawn after the opaque ones and
 farthest first, each vertex's alpha its surface's. They cast no shadow, which keeps them out of the
 scene's distance field as well, since the field holds a see-through mesh as solid, so the sun's
