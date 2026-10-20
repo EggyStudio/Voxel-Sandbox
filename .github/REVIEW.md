@@ -5,35 +5,33 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `7fe7639`, item 18's first commit, and nothing else, carrying the review's file: the
-villager drawn at the 0.9375 the source's layer gives it, about the feet, standing 1.99 blocks with
-its eyes scaled, the cow with 26.3's nose cube a pixel out and its horns at z minus 5, the white
-blaze kept as the game's own, a test of the villager's height, the README's paragraph, and nine
-pairs under `.github/assets/mobs`, each kind alone at noon facing south seen from 20 blocks through
-9 degrees from the front and the side, standing and mid-stride, with the source's outline drawn from
-its baked numbers through the same camera over the capture and its silhouette alone beneath.
-Standing, every outline lies on the game's to the pixel but for the game's touches. Mid-stride the
-game's legs swing about twice as far as the source's, 31 to 38 degrees against 16 to 20 and the
-villager's 46 against 12, so they leave its robe, and the stride cycles every 1.75 blocks against
-2.36; the zombie's arms are level where the source's sit 10 degrees under until it attacks, the
-skeleton holds its arms and bow out where the source's hang until it aims, and the spider's legs
-turn 46 degrees and fold under where the source's turn 7 and lift 7. So what the eye reads wrong is
-the walk and the arms at rest, not a box, and the second commit takes the source's numbers for them
-without waiting on the owner, who judges the pairs after. The strict build clean, 127 tests, the
-play script green on the GPU. Read at 00:44 on 2026-10-21 and pushed at 00:45; the build run of
-`5cd1521` had ended green at 00:32 in 8 minutes, its three suites and the play job. At about 00:55
-the owner named their packs as the look, Decision 13, item 30 and words in items 23 and 24; at about
-01:00 the owner put the modpack's mods in the reference folder as reference, Decision 14, with words
-in items 20, 23, 25 and 26 and candidates for the owner's word. Next item 18's second commit, the
-walk, then the items in order; the AGENTS.md row naming the pictures script still waits on the
+Reviewed up to `28eb41c`, item 18's second commit, the walk, and nothing else, carrying the review's
+file: `Gait.cs` with the source's 26.3 numbers, the stride moved on by four times the blocks a tick
+eased 0.4 a tick, the phase cycling every 2.36 blocks, the legs by the cosine of the phase times
+0.6662 times a swing of 1.4 and the villager's 0.7, the zombie's arms at pi over 2.25 at rest and pi
+over 1.5 hunting, the skeleton's hanging and swinging until it aims and then holding the bow by the
+head's pitch, the spider's leg pairs turning and lifting by 0.4 with offsets, the left side
+mirrored; the hunting state exposed, the model parts gaining pairs and turns; 129 tests, among them
+the zombie's hand 10 degrees under level at rest and 30 over hunting, the pig's stride settling at
+0.25 at 1.25 blocks a second, no foot sinking across the swing; the nine pairs drawn again and every
+kind mid-stride inside the source's outline; `build/mob-pairs.py` and `build/MobLayers.java`, the
+Java a single file run by the client's own Java against its jar by reflection, the Python finding
+the client by the launcher's folders or `MINECRAFT_DIR` and saying plainly where none is, 79 seconds
+a run, the README naming both. The strict build clean, the play script green on the GPU. Read at
+00:56 on 2026-10-21 and pushed at 00:57; the build run of `7fe7639` had ended green at 00:53 in 8
+minutes. Found on the way, the sheep's white reading blue-grey in shade, is item 37. Shortly before
+00:55 the owner took the six candidates, Decision 15 and items 31 to 36. At about 01:00 the owner
+said the screen probes stay off in the game and named the cascades' faults, Decision 16 and item 38.
+Next item 38's first part, the repros to the engine's ASKS.md, then item 37, then item 19 and the
+items in order; the AGENTS.md row naming the pictures script and the pairs script still waits on the
 owner's word.
 
-Before it, `5cd1521` came, item 17, out of the water, and nothing else, carrying Decision 11 and
-items 17 to 28, the swim while any of the body is in water and the climb onto a bank a block up, on
-the 5.2.190 package. Pushed at 00:24, its build run green in 8 minutes.
+Before it, `7fe7639` came, item 18's first commit, and nothing else, carrying the review's file, the
+villager at 0.9375, the cow's nose and horns and the nine pairs, which read the boxes right and the
+walk wrong. Pushed at 00:45, its build run green in 8 minutes.
 
-Before it, `435b2de` came, item 16 and nothing else, the default render distance 12 columns on
-5.2.155, carrying Decision 10 and the review's file, the build run green.
+Before it, `5cd1521` came, item 17, out of the water, and nothing else, carrying Decision 11 and
+items 17 to 28, on the 5.2.190 package. Pushed at 00:24, its build run green in 8 minutes.
 
 ## Now
 
@@ -459,7 +457,42 @@ Before it, `435b2de` came, item 16 and nothing else, the default render distance
     wrong, as the head says; the second takes the source's walk and rest poses, the swing's angles
     and the stride's 2.36 blocks a cycle for each kind, the villager's legs under its robe, the
     zombie's arms 10 degrees under level at rest, the skeleton's arms hanging until it aims, the
-    spider's legs turning 7 and lifting 7, with the mid-stride pairs made again.
+    spider's legs turning 7 and lifting 7, with the mid-stride pairs made again. Done at `28eb41c`
+    on 2026-10-21, as the head says.
+
+37. **A mob's faces away from the sun read blue-grey, lit by the sky alone.** Found by item 18's
+    pairs on 2026-10-21: the sheep's wool, white at 233, 236 and 236, reads 117, 160 and 173 on its
+    body below the head in the front capture and 119, 161 and 178 on its side at noon, about half
+    its red and three quarters of its blue, where its sunlit face reads 194, 181 and 162; the source
+    shades a face by its direction alone, 0.5 to 0.8 of the color with no hue, and a mob on grass at
+    noon in the game should read its white darkened and a little green from the ground, not blue.
+    Read first whether the mobs are drawn with the engine's indirect light, the field the terrain is
+    lit by, or by the sun and the sky's ambient alone, and say which; then the mend, the mobs taking
+    the indirect light where they lack it, or where they have it the sky's share of a mob's ambient
+    brought toward the ground's and the source's flat shade used as the floor under which no face
+    falls, so the wool in shade reads near 150 on all three and the pairs' colors say so. Tests: the
+    sheep's shaded body read from a capture within a distance of its white darkened, and a daylight
+    capture of the nine mobs in the record. One commit, after item 18 and before item 19.
+
+38. **The screen probes off by default, and the cascades' faults given to the engine with repros
+    (Decision 16).** The owner's word of about 01:00 on 2026-10-21: the game is not to enable the
+    screen probes, whose look is pixelated, the cascades without them being the better option for
+    the game's art, and the cascades still show faults. Two parts. First, now: an entry in the
+    engine's ASKS.md as Decision 26 has it, with a repro of each fault the owner names, the world's
+    seed, the place, the hour, the commands that put the camera there and a capture, the light
+    block's light leaking through the thin gap at the corner of two columns that hold it off, a
+    penumbra on the ground with zig-zags, the screen probes shifting on movement, z-fighting between
+    the global illumination and the opaque textures where it shows, and the noise, read in the game
+    at `28eb41c` on 5.2.190 with `voxel.gi high`, and beside each what `gi.screenprobe off` changes;
+    the engine's item 71 takes them. Second, when the package brings the engine's call that leaves
+    the screen probes out: the game calls it at start, off by default, a setting and `voxel.gi`
+    taking a word for them, the README's paragraph on the light saying why, and the measurement rows
+    and the captures made again without them. The entry also reads the model pass, `gpu.hdr_scene`
+    in the profile, with `gi.toggle screen off` against on, in a scene of many light blocks in view,
+    a village at night or a room of forty glowstones, since without the screen's probes the engine
+    takes the glow lights at each pixel and the cost grows with the lights in view, 0.3 to 1.0 ms on
+    four emitters in the engine's reading, which the engine's item 71 bounds. The first part before
+    item 37, the second when its package is listed.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -633,6 +666,75 @@ Before it, `435b2de` came, item 16 and nothing else, the default render distance
     record, read from the packs where the machine has them and skipped where it has not. After item
     24. Two commits, the models and the textures, then the animations.
 
+31. **Structures as the source's, more kinds and the modpack's taste (Decision 15).** The world has
+    igloos, desert pyramids, dungeons and villages; it gains mineshafts with their corridors, rails,
+    supports and chests, underwater ruins and shipwrecks in oceans, jungle temples, witch huts in
+    swamps and pillager outposts, each placed by the biome and a spacing and salt as the source
+    places them, built from blocks with loot in chests from item 25's blocks; the villages gain the
+    biome's kind, desert, savanna, taiga and snowy, with their own blocks and the modpack's
+    structure mods read for their shapes as a model; a structure that crosses a column's edge is
+    finished in the neighbor as the villages are. After items 25 and 26. Tests: each kind placed in
+    a laid world at a known seed with its blocks counted, a structure crossing an edge whole on both
+    sides, and a capture of each in the record. Two or three commits by kind.
+
+32. **Weather and the ambient particles, rain and snow by biome, falling leaves, cave dust and wakes
+    (Decision 15).** The game gains weather, rain in the wet biomes and snow in the cold at the same
+    hours, a chance a day and a length, with the sky and the light dimmed, the rain drawn as the
+    source draws it in a ring about the camera from the sky down to the highest block and the snow
+    laid a layer thick on the top blocks while it snows; and the ambient particles of the modpack's
+    kind through the engine's emitters, raindrops splashing on the blocks they meet and rings on
+    water, leaves falling from leaf blocks in the forests at a slow rate and turning as they fall,
+    dust drifting in caves under a depth, wakes and splashes on water the player and the mobs move
+    through, each a setting on by default with a density. The weather is saved. Tests: the weather's
+    clock over days at a seed, the snow laid and melted, the particle counts within their budget at
+    the default density in the frame's profile, and a capture of rain in a forest and snow on a
+    village in the record. Two commits, the weather, then the particles.
+
+33. **Ambient sound, footsteps by the block and the sound's occlusion and reverb by the room
+    (Decision 15).** The game gains footsteps that sound by the block walked on, grass, stone, wood,
+    sand, gravel, snow and water, for the player and the mobs within hearing, through the engine's
+    spatial play of its item 58 so a mob's steps come from its side; ambient sounds by the place,
+    birds in the forests by day, crickets by night, wind on the heights, drips and a low tone in
+    caves, water near water, faded in and out by where the listener stands; and the sound's
+    occlusion, a ray through the blocks from the listener to the source lowering the volume by what
+    it crosses, with the reverb of a cave or a room by the space around the listener, read by rays.
+    The low-pass of an occluded sound and the reverb itself are the engine's to give, a filter and a
+    reverb on a voice, which the game asks of it in the engine's ASKS.md with its readings when it
+    reaches this item, and the game does with the volume alone until the package brings them. The
+    sounds are the game's own recordings or synthesized, none from the source or the mods. Tests:
+    the step's sound chosen by the block, the occlusion's volume through one and three blocks, the
+    ambient sound chosen by the place, and the mix read as the engine's spatial tests read it. Two
+    commits, the footsteps and the ambience, then the occlusion and the reverb.
+
+34. **Connected textures from the packs' properties (Decision 15).** A pack of item 24 that carries
+    connected texture properties, OptiFine's `.properties` under its `optifine/ctm` folder with the
+    methods `ctm`, `horizontal`, `vertical`, `top`, `repeat` and `random` and their tiles, has them
+    read, and the mesher picks a block's face texture by its neighbors of the same kind as the
+    methods say, the 47 tiles of the full method by the eight neighbors, so glass, bookshelves and
+    sandstone join as they do in the owner's instance; the atlas takes the tiles as it takes the
+    blocks. Without a pack, the game's own blocks stay as they are. After item 24. Tests: the
+    properties parsed to their methods and tiles, the full method's tile chosen for each of a set of
+    neighbor cases, a random method stable by position, and a capture of a glass wall from a pack
+    where the machine has one, skipped where not. One commit.
+
+35. **A zoom key (Decision 15).** C held narrows the field of view to a quarter of the setting over
+    a tenth of a second and widens it back on release, the mouse's sensitivity scaled with it so the
+    aim stays steady, the wheel while held narrowing further to a tenth, as the modpack's zoom does;
+    the key settable in the settings. Tests: the field of view over the frames of a press and a
+    release, and the sensitivity's scale. One commit, small.
+
+36. **The player seen in third person, with their own animations (Decision 15).** F5 cycles the
+    first-person view, a camera behind the player and one in front, as the source's does, the camera
+    pulled in where a block would hide it; the player has a model of the source's layout, head,
+    body, arms and legs at the source's scale with the game's own skin, animated by walking,
+    running, sneaking, swimming, climbing, jumping, falling, mining and placing, the swings and the
+    stride from the source's numbers as item 18's mobs take them, the held item in the hand, and the
+    head following the aim; where item 30's packs model the player, the pack's model and animations
+    are taken, and the first-person arm and held item are drawn from the same model. Tests: the
+    camera's distance against blocks, each state's pose at a known phase, and a capture of the
+    player mid-stride and mid-swim from behind beside the source's silhouette in the record. After
+    item 30. Two commits, the camera and the model, then the animations.
+
 ## Verdicts
 
 No verdict is open.
@@ -802,6 +904,21 @@ No verdict is open.
     speed mods, the culling and the chunk threading, are what items 26 and 29 are about in the
     game's own terms, and the play mods, the combat and the trees, stay out until the owner names
     one.
+
+15. **The six candidates of Decision 14 are taken.** The owner wrote shortly before 00:55 on
+    2026-10-21, to the reviewer's list of what the modpack holds that was not yet an item,
+    structures, ambient particles and weather, ambient sound, connected textures, a zoom key and the
+    player's third-person animations, that all sound good. So items 31 to 36, each after the items
+    it builds on and otherwise in the order the list had, the play mods still out until the owner
+    names one.
+
+16. **The screen probes stay off in the game, and the cascades' faults go to the engine.** The owner
+    wrote at about 01:00 on 2026-10-21 that the game is not to enable the screen probes, since they
+    give a pixelated look even where none is meant, that the radiance cascades without them are the
+    better option for the game's art, and that the cascades still show faults, a light block's light
+    through a thin corner gap, zig-zag penumbrae, the screen probes' shift on movement, z-fighting
+    with the opaque textures and noise. So item 38, the repros to the engine's ASKS.md first, which
+    the engine's item 71 takes, and the screen probes off by default once the engine gives the call.
 
 ## Replies
 
