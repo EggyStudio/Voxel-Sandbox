@@ -129,6 +129,21 @@ public static class Measurements
         return count == 0 ? double.NaN : sum / count;
     }
 
+    /// <summary>The mean red, green and blue in sRGB levels of the pixels of a rectangle of the picture, or null where none of it is on the picture.</summary>
+    public static (double R, double G, double B)? MeanColor(Image image, int x, int y, int width, int height)
+    {
+        double r = 0, g = 0, b = 0;
+        var count = 0;
+        for (int py = Math.Max(0, y); py < Math.Min(image.Height, y + height); py++)
+            for (int px = Math.Max(0, x); px < Math.Min(image.Width, x + width); px++)
+            {
+                var at = (py * image.Width + px) * 4;
+                (r, g, b) = (r + image.Data[at], g + image.Data[at + 1], b + image.Data[at + 2]);
+                count++;
+            }
+        return count == 0 ? null : (r / count, g / count, b / count);
+    }
+
     /// <summary>
     /// The picture's luminance at points around a circle on a horizontal plane, by angle from +x
     /// toward +z, and how far it swings, given as its mean, its lowest and highest, the swing over

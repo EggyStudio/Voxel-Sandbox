@@ -5,33 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `28eb41c`, item 18's second commit, the walk, and nothing else, carrying the review's
-file: `Gait.cs` with the source's 26.3 numbers, the stride moved on by four times the blocks a tick
-eased 0.4 a tick, the phase cycling every 2.36 blocks, the legs by the cosine of the phase times
-0.6662 times a swing of 1.4 and the villager's 0.7, the zombie's arms at pi over 2.25 at rest and pi
-over 1.5 hunting, the skeleton's hanging and swinging until it aims and then holding the bow by the
-head's pitch, the spider's leg pairs turning and lifting by 0.4 with offsets, the left side
-mirrored; the hunting state exposed, the model parts gaining pairs and turns; 129 tests, among them
-the zombie's hand 10 degrees under level at rest and 30 over hunting, the pig's stride settling at
-0.25 at 1.25 blocks a second, no foot sinking across the swing; the nine pairs drawn again and every
-kind mid-stride inside the source's outline; `build/mob-pairs.py` and `build/MobLayers.java`, the
-Java a single file run by the client's own Java against its jar by reflection, the Python finding
-the client by the launcher's folders or `MINECRAFT_DIR` and saying plainly where none is, 79 seconds
-a run, the README naming both. The strict build clean, the play script green on the GPU. Read at
-00:56 on 2026-10-21 and pushed at 00:57; the build run of `7fe7639` had ended green at 00:53 in 8
-minutes. Found on the way, the sheep's white reading blue-grey in shade, is item 37. Shortly before
-00:55 the owner took the six candidates, Decision 15 and items 31 to 36. At about 01:00 the owner
-said the screen probes stay off in the game and named the cascades' faults, Decision 16 and item 38.
-Next item 38's first part, the repros to the engine's ASKS.md, then item 37, then item 19 and the
-items in order; the AGENTS.md row naming the pictures script and the pairs script still waits on the
-owner's word.
+Reviewed up to `404ab74`, item 38's first part, the captures of the cascades' faults and nothing
+else, carrying the review's file; the entry itself is in the engine's ASKS.md, read on the game's
+`28eb41c` on 5.2.190 at High offscreen on the flat world. The leak is reproduced in a room split by
+a wall that steps a block so its halves meet along one edge, glowstone on one side, the brightest
+pixel about the edge 29 levels with the screen's probes and 43 without, 0 and 3 with the edge
+closed, so it is the cascades' own; the zig-zags are reproduced in the leaked light's edges and a
+lamp's shadow on grass, wavy with the probes and stepped square without; the shift is small in
+numbers, 0.28 levels a frame over a half-block step with the probes and 0.26 without and 0.0085 at
+most in the frames after with them and nothing without; the z-fighting and the noise were not seen
+in the game, the still lamp room changing by 0.0002 levels a frame; and the model pass with forty
+glowstones in view reads 1.8 ms with the screen's probes and 12.9 ms without, the frame from 16.7 to
+20.2, so the glow lights' per-pixel path is what stands between the game and the probes off. The
+engine's item 71 takes the entry, the glow lights' bound right after the call. Read at 01:16 on
+2026-10-21 and pushed at 01:17; the build run of `28eb41c` had ended green at 01:02 in 8 minutes.
+Item 37 is read and nearly done: the mobs take the engine's indirect light as the terrain does, the
+sky alone giving 116, 149 and 193 and the ground's bounce 119, 161 and 178, and the mend is a mob
+shader of the game's own keeping the sun's share and taking the hue out of the rest by its luminance
+with the source's flat shade as the floor, the shaded wool reading 154, 158 and 159. Next item 37's
+commit, then item 19 and the items in order; item 38's second part when the package brings the call
+and the glow lights' bound; the AGENTS.md row naming the scripts still waits on the owner's word.
+
+Before it, `28eb41c` came, item 18's second commit, the walk by the source's numbers, and nothing
+else, carrying the review's file, the nine pairs drawn again by `build/mob-pairs.py`. Pushed at
+00:57, its build run green in 8 minutes.
 
 Before it, `7fe7639` came, item 18's first commit, and nothing else, carrying the review's file, the
-villager at 0.9375, the cow's nose and horns and the nine pairs, which read the boxes right and the
-walk wrong. Pushed at 00:45, its build run green in 8 minutes.
-
-Before it, `5cd1521` came, item 17, out of the water, and nothing else, carrying Decision 11 and
-items 17 to 28, on the 5.2.190 package. Pushed at 00:24, its build run green in 8 minutes.
+villager at 0.9375, the cow's nose and horns and the nine pairs. Pushed at 00:45, its build run
+green in 8 minutes.
 
 ## Now
 
@@ -492,7 +493,8 @@ items 17 to 28, on the 5.2.190 package. Pushed at 00:24, its build run green in 
     a village at night or a room of forty glowstones, since without the screen's probes the engine
     takes the glow lights at each pixel and the cost grows with the lights in view, 0.3 to 1.0 ms on
     four emitters in the engine's reading, which the engine's item 71 bounds. The first part before
-    item 37, the second when its package is listed.
+    item 37, the second when its package is listed. First part done at `404ab74` on 2026-10-21 with
+    the entry in the engine's ASKS.md, as the head says; the second part waits on the package.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not

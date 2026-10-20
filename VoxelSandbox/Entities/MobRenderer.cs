@@ -15,9 +15,10 @@ namespace VoxelSandbox;
 /// the half second it stays red, and one dying falls onto its side, as Minecraft's do.
 /// </para>
 /// <para>
-/// Mobs are drawn within 64 blocks of the eye, as Minecraft draws its entities, through the
-/// engine's own shader, so the haze the sections fade into is not on them. They cast shadows and
-/// take no part in global illumination, their materials' <see cref="ModelMaterial.BouncesLight"/>
+/// Mobs are drawn within 64 blocks of the eye, as Minecraft draws its entities, through the game's
+/// mob shader, which has none of the haze the sections fade into and takes the color out of the
+/// light from all around them, as the README's section on mobs says. They cast shadows and hold
+/// no light for others, their materials' <see cref="ModelMaterial.BouncesLight"/>
 /// off, which leaves them out of the scene's distance field, where each piece that moves would be
 /// stamped as a box every frame, milliseconds a frame for a herd walking in sight. A pig's pink so
 /// does not reach the grass.
@@ -33,16 +34,23 @@ public sealed class MobRenderer : IDisposable
         public readonly List<Matrix4x4> Plain = [], Hurt = [], Flash = [];
     }
 
-    private readonly ModelMaterial _skin = new(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false };
-    private readonly ModelMaterial _hurt = new(new Color(255, 96, 96)) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false };
-    // A creeper's flash as its fuse burns, white and a little emissive.
-    private readonly ModelMaterial _flash = new(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false, Emissive = Color.White, EmissiveIntensity = 0.6f };
+    // The game's mob shader, which takes the color out of the light from all around a mob and
+    // floors each face's light at Minecraft's flat shade of its top's (resources/shaders/mob.slang).
+    private readonly Shader _shader;
+    private readonly ModelMaterial _skin, _hurt, _flash;
     private readonly List<Slot> _slots = [];
     // Each kind's pieces' slots, by kind, piece and variant, a piece of one color holding one.
     private readonly Slot[][][] _byKind;
 
     public MobRenderer()
     {
+        _shader = LoadShader("resources/shaders/mob.slang");
+        // Its vertex stage keeps the positions, so each pass leaves out the mobs it cannot see.
+        SetShaderKeepsPositions(_shader, true);
+        _skin = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false, Shader = _shader };
+        _hurt = new ModelMaterial(new Color(255, 96, 96)) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false, Shader = _shader };
+        // A creeper's flash as its fuse burns, white and a little emissive.
+        _flash = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false, Shader = _shader, Emissive = Color.White, EmissiveIntensity = 0.6f };
         _byKind = new Slot[MobKinds.All.Length][][];
         foreach (var kind in MobKinds.All)
         {
@@ -134,5 +142,6 @@ public sealed class MobRenderer : IDisposable
     public void Dispose()
     {
         foreach (var slot in _slots) UnloadMesh(slot.Mesh);
+        UnloadShader(_shader);
     }
 }

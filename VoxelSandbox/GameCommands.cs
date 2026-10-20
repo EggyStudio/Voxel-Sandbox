@@ -424,6 +424,16 @@ public static class GameCommands
         return Measurements.Ring(LoadImageFromScreen(), game.Player.Camera, new System.Numerics.Vector3(x, y, z), radius, Math.Clamp(samples, 8, 720));
     }
 
+    [Command("voxel.color", "The last frame's mean red, green and blue in sRGB levels over a rectangle of the window: voxel.color <x> <y> <width> <height>")]
+    internal static string MeanColor(int x, int y, int width, int height)
+    {
+        if (Game is null) return "no world is loaded";
+        if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
+        return Measurements.MeanColor(LoadImageFromScreen(), x, y, width, height) is var (r, g, b)
+            ? $"red {r:0.0}, green {g:0.0}, blue {b:0.0} over {width} by {height} at {x}, {y}"
+            : $"no pixel of {width} by {height} at {x}, {y} is on the window";
+    }
+
     [Command("voxel.depth", "The block under a pixel of the window and how far it is from the eye, along the ray and along the ground: voxel.depth <x> <y>")]
     internal static string Depth(int x, int y)
     {

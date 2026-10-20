@@ -9,7 +9,8 @@ posed at the widest of a stride at its walking speed. Minecraft's model of it, r
 on this machine by build/MobLayers.java, is drawn through the same camera, standing and at the same
 stride by Minecraft's own walk, and its outline is laid over the game's capture in red, with the
 outline filled beneath it. Each kind's three pairs are written to .github/assets/mobs/<kind>.webp,
-so a model's change is shown again by running this.
+and the nine standing in a row in daylight to .github/assets/mobs/daylight.webp, so a model's or
+its light's change is shown again by running this.
 
 The client is the version MINECRAFT_VERSION names, 26.3 unless set, in the launcher folder
 MINECRAFT_DIR names, or else the first of ~/.minecraft, ~/.minecraftx and the folders the launcher
@@ -53,6 +54,7 @@ LAYERS = {"villager": ["VILLAGER"], "pig": ["PIG"], "cow": ["COW"], "sheep": ["S
 # The game's player looks through a narrow field of view, and the one loaded mob is posed at the
 # widest of a stride at its kind's speed as Gait.Step would bring it there, its phase at 0.
 NARROW = 'VoxelSandbox.GameCommands.Game!.Player.FieldOfView = 9f; "narrowed"'
+WIDE = 'VoxelSandbox.GameCommands.Game!.Player.FieldOfView = 70f; "widened"'
 POSE = """var mob = VoxelSandbox.GameCommands.Game!.Mobs.All[0];
 var type = mob.GetType();
 type.GetProperty("Stride")!.SetValue(mob, MathF.Min(1, 4 * mob.Kind.Speed / 20));
@@ -167,8 +169,24 @@ def capture(kinds):
             e3d("eval", POSE, *session)
             e3d("command", "frames.wait", "3", *session)
             e3d("shot", str(CAPTURES / f"{kind}-walk.png"), *session)
+        daylight(session)
     finally:
         subprocess.run(["./e3d", "stop", *session, "--quiet"], cwd=ROOT, capture_output=True)
+
+
+def daylight(session):
+    """The nine in a row facing south, two and a half blocks apart, seen at noon from the south and a
+    little above through the game's own field of view, held still from before the first is placed
+    so none turns or walks off home."""
+    e3d("eval", WIDE, *session)
+    for command in (["voxel.still", "off"], ["voxel.kill", "all"], ["voxel.still", "on"]):
+        e3d("command", *command, *session)
+    for i, kind in enumerate(LAYERS):
+        for command in (["voxel.tp", str(0.5 + 2.5 * i), "4", "0.5"], ["voxel.look", "0", "0"], ["frames.wait", "2"], ["voxel.spawn", kind, "0"]):
+            e3d("command", *command, *session)
+    for command in (["voxel.tp", "10.5", "4", "7"], ["voxel.look", "0", "-10"], ["frames.wait", "60"]):
+        e3d("command", *command, *session)
+    e3d("shot", str(CAPTURES / "daylight.png"), *session)
 
 
 def mul(a, b):
@@ -305,6 +323,8 @@ def main():
     capture(kinds)
     for kind in kinds:
         pairs(layers, kind, description.get("id", os.environ.get("MINECRAFT_VERSION", "26.3")))
+    Image.open(CAPTURES / "daylight.png").convert("RGB").save(OUT / "daylight.webp", quality=88)
+    print(f"the nine: {(OUT / 'daylight.webp').relative_to(ROOT)}")
 
 
 main()

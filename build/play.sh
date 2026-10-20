@@ -5,9 +5,10 @@
 # night, walks toward it and captures the frame, then captures the night sky from the room's roof,
 # the full moon and the stars over the flat land from two places and headings, the sun and its glow
 # at noon and at dusk, a pillar's shadow under the morning sun, and the window of every item's
-# icon, then swims the player out of a pool onto its bank. It fails where the game does not open or
-# answer, the player did not move or did not climb out onto the bank, or the layer reported an
-# error, and says why in an error annotation, so the run's page names it.
+# icon, then swims the player out of a pool onto its bank and reads a white sheep's wool in the
+# shade. It fails where the game does not open or answer, the player did not move or did not climb
+# out onto the bank, the wool in shade is not a gray, or the layer reported an error, and says why
+# in an error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -42,7 +43,7 @@ trap 'if [ -n "$pid" ]; then ./e3d stop --session "$pid" --quiet; else ./e3d sto
 cmd() { ./e3d command "$@" --quiet --timeout 600 --session "$pid" 2> "$said" || fail "./e3d command $* ended with $?, $(head -n 1 "$said")"; }
 ask() {
   local answer
-  answer=$(./e3d command "$1" --timeout 600 --session "$pid" 2> "$said") || fail "./e3d command $1 ended with $?, $(head -n 1 "$said")"
+  answer=$(./e3d command "$@" --timeout 600 --session "$pid" 2> "$said") || fail "./e3d command $* ended with $?, $(head -n 1 "$said")"
   printf '%s\n' "$answer"
 }
 # The player's feet from voxel.state, which begins "feet at x, y, z".
@@ -163,8 +164,32 @@ landed=$(feet "$shore")
 printf '%s\n' "$shore" | grep -q "on the ground" && printf '%s\n' "$landed" | awk '{ exit !($1 > 36 && $2 == 10) }' \
   || fail "the player did not climb out of the water onto the bank, whose top is at 10, and stands at $landed"
 
+# A white sheep south of the spawn at noon, held, its side in the shade seen from two blocks east at
+# its middle's height. The game's mob shader takes the color out of the light from all around it,
+# so its wool reads a gray near 150 on all three channels where the sky's blue reached it before.
+cmd voxel.clouds off
+cmd voxel.time 12
+cmd voxel.kill all
+cmd voxel.fly on
+cmd voxel.tp 0.5 4 12.5
+cmd voxel.look 0 0
+cmd frames.wait 2
+cmd voxel.spawn sheep 0
+cmd voxel.still on
+cmd voxel.hud off
+cmd voxel.tp 2.5 3.1 9.5
+cmd voxel.look 270 0
+cmd frames.wait 60
+ask voxel.color 1 1 1 1 > /dev/null
+cmd frames.wait 2
+wool=$(ask voxel.color 600 320 80 60)
+echo "$wool"
+channels=$(printf '%s\n' "$wool" | sed -nE 's/^red ([0-9.]+), green ([0-9.]+), blue ([0-9.]+) .*/\1 \2 \3/p')
+printf '%s\n' "$channels" | awk 'NF == 3 { lo = $1; hi = $1; for (i = 2; i <= 3; i++) { if ($i < lo) lo = $i; if ($i > hi) hi = $i } exit !(lo >= 120 && hi <= 200 && hi - lo <= 20) } NF != 3 { exit 1 }' \
+  || fail "the sheep's wool in shade reads $wool, where a gray between 120 and 200 with its channels within 20 of each other is asked"
+
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
 if grep -F 'Validation Error' "$log"; then fail "the validation layer reported an error"; fi
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, climbed out of a pool onto its bank and drew with no validation error"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, climbed out of a pool onto its bank, saw a sheep's wool in shade gray and drew with no validation error"

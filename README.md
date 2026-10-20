@@ -263,10 +263,16 @@ aims. Each kind stands beside Minecraft's outline through the same camera, stand
 in `.github/assets/mobs`, which `build/mob-pairs.py` draws again from the Minecraft client on the
 machine through `build/MobLayers.java`, and says so where the machine has none. A
 leg swung ahead or behind is lifted by however far its foot's corner would sink, so no foot goes
-below the ground. Mobs are drawn within 64 blocks, as Minecraft draws its entities, through the engine's own
-shader, so the haze is not on them. They cast shadows and take no part in global illumination, their
-materials' `BouncesLight` off, which leaves them out of the scene's distance field, so a pig's pink
-does not reach the grass.
+below the ground. Mobs are drawn within 64 blocks, as Minecraft draws its entities, through the
+game's own mob shader (`VoxelSandbox/resources/shaders/mob.slang`), which has no haze. It lights
+them as the engine lights a model, global illumination's indirect light among it, keeps the sun's
+share and takes the color out of the rest, the light from all around, and floors each face at
+Minecraft's flat shade of the light a face turned up takes there, 1 on top, 0.8 facing north or
+south, 0.6 facing east or west and 0.5 underneath. A white sheep's side in the shade at noon so
+reads 154, 158 and 159, a gray as Minecraft's does, where it read 119, 161 and 178, the blue of the
+sky its light's rays met. The nine stand in a row in daylight in `.github/assets/mobs/daylight.webp`.
+They cast shadows and hold no light for others, their materials' `BouncesLight` off, which leaves
+them out of the scene's distance field, so a pig's pink does not reach the grass.
 
 ## Creative and survival
 
