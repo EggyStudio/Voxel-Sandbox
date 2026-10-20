@@ -255,8 +255,13 @@ Each piece of a mob, its head, body, legs and a chicken's wings, is a few boxes,
 vertices drawn instanced for every mob of its kind, its legs swinging about their hips as it walks.
 The boxes, their pivots and each kind's width and height are Minecraft's, taken as numbers from its
 model definitions and its mobs' sizes as of 26.3, the villager drawn at the 0.9375 its layer is, and
-their colors, faces and markings are the game's own. Each kind stands beside Minecraft's outline
-through the same camera, standing and mid-stride, in `.github/assets/mobs`. A
+their colors, faces and markings are the game's own. The walk is Minecraft's too, a leg turning up
+to 1.4 radians each way with its stride, which follows the speed, and cycling every 2.36 blocks, a
+villager's half as far under its robe, a spider's legs turning and lifting by 0.4. A zombie reaches
+its arms out a little under level and raises them while it hunts, and a skeleton's hang until it
+aims. Each kind stands beside Minecraft's outline through the same camera, standing and mid-stride,
+in `.github/assets/mobs`, which `build/mob-pairs.py` draws again from the Minecraft client on the
+machine through `build/MobLayers.java`, and says so where the machine has none. A
 leg swung ahead or behind is lifted by however far its foot's corner would sink, so no foot goes
 below the ground. Mobs are drawn within 64 blocks, as Minecraft draws its entities, through the engine's own
 shader, so the haze is not on them. They cast shadows and take no part in global illumination, their

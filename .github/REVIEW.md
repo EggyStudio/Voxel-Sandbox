@@ -5,33 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `5cd1521`, item 17, out of the water, and nothing else, carrying Decision 11 and
-items 17 to 28 as the tree held them, on the 5.2.190 package with the workflows' engine checkout at
-`b3922179`, the commit the package names. The player swims while the water's top stands above its
-feet, read up through the water with WaterHeight; Space lifts while the depth is over 0.4 and jumps
-on the ground in shallower water; a body pushing against a block's side with 0.6 free above climbs
-at the jump's speed of 9 and is stepped up to 0.6 onto what stops it while climbing, which holds the
-climb at the twentieth of a second lavapipe counts a frame, where the speed alone left the feet 0.07
-under; a bank two blocks up stays out of reach at 2.1 of the 2.125 needed, and the mobs keep their
-own rule. Before, with W held the player sank to the floor at 5.00 against the bank and with Space
-bobbed between 8.13 and 8.33 under its top at 10; after, from two places, it stands on the bank at
-10.00 within about 45 frames on the GPU and on lavapipe too. The play script gains a pool east of
-the room, holds W for 60 frames and fails unless the player stands at y 10 past x 36, passing in 25
-seconds at 37.73 on the GPU under the layer and in 644 seconds at 44.56 on lavapipe on four cores
-with no validation error; the README's water paragraph says the rule; 126 tests pass. Read at 00:22
-on 2026-10-21 and pushed at 00:24, the build run of `435b2de` long ended. The reviewer's words in
-items 17 to 28 that the style page lists, the scripted run, needs and emissive, are put right in the
-tree. At about 00:30 the owner added compute shaders for generation, Decision 12 and item 29, whose
-parts follow the engine's items 68 and 69. At about 00:55 the owner named their packs as the look,
-Decision 13, item 30 and words in items 23 and 24. At about 01:00 the owner put the modpack's mods
-in the reference folder as reference, Decision 14, with words in items 20, 23, 25 and 26 and
-candidates for the owner's word. Next item 18, the mobs' proportions, then the items in order; the
-AGENTS.md row naming the pictures script still waits on the owner's word.
+Reviewed up to `7fe7639`, item 18's first commit, and nothing else, carrying the review's file: the
+villager drawn at the 0.9375 the source's layer gives it, about the feet, standing 1.99 blocks with
+its eyes scaled, the cow with 26.3's nose cube a pixel out and its horns at z minus 5, the white
+blaze kept as the game's own, a test of the villager's height, the README's paragraph, and nine
+pairs under `.github/assets/mobs`, each kind alone at noon facing south seen from 20 blocks through
+9 degrees from the front and the side, standing and mid-stride, with the source's outline drawn from
+its baked numbers through the same camera over the capture and its silhouette alone beneath.
+Standing, every outline lies on the game's to the pixel but for the game's touches. Mid-stride the
+game's legs swing about twice as far as the source's, 31 to 38 degrees against 16 to 20 and the
+villager's 46 against 12, so they leave its robe, and the stride cycles every 1.75 blocks against
+2.36; the zombie's arms are level where the source's sit 10 degrees under until it attacks, the
+skeleton holds its arms and bow out where the source's hang until it aims, and the spider's legs
+turn 46 degrees and fold under where the source's turn 7 and lift 7. So what the eye reads wrong is
+the walk and the arms at rest, not a box, and the second commit takes the source's numbers for them
+without waiting on the owner, who judges the pairs after. The strict build clean, 127 tests, the
+play script green on the GPU. Read at 00:44 on 2026-10-21 and pushed at 00:45; the build run of
+`5cd1521` had ended green at 00:32 in 8 minutes, its three suites and the play job. At about 00:55
+the owner named their packs as the look, Decision 13, item 30 and words in items 23 and 24; at about
+01:00 the owner put the modpack's mods in the reference folder as reference, Decision 14, with words
+in items 20, 23, 25 and 26 and candidates for the owner's word. Next item 18's second commit, the
+walk, then the items in order; the AGENTS.md row naming the pictures script still waits on the
+owner's word.
+
+Before it, `5cd1521` came, item 17, out of the water, and nothing else, carrying Decision 11 and
+items 17 to 28, the swim while any of the body is in water and the climb onto a bank a block up, on
+the 5.2.190 package. Pushed at 00:24, its build run green in 8 minutes.
 
 Before it, `435b2de` came, item 16 and nothing else, the default render distance 12 columns on
 5.2.155, carrying Decision 10 and the review's file, the build run green.
-
-Before it, `35696e2` came, item 10's legless frame found and mended, as the head said then.
 
 ## Now
 
@@ -452,7 +454,12 @@ Before it, `35696e2` came, item 10's legless frame found and mended, as the head
     against the source's model boxes at the same scale, the villager's head, nose, robe, arms folded
     and legs among them, each box's size and offset compared and put right where off, the game's own
     character kept in the faces, colors and the few touches that were its own, with a capture of
-    each mob beside its source's silhouette in the record. One commit.
+    each mob beside its source's silhouette in the record. Two commits. The first at `7fe7639` on
+    2026-10-21, the scale, the cow and the nine pairs, which read the boxes right and the walk
+    wrong, as the head says; the second takes the source's walk and rest poses, the swing's angles
+    and the stride's 2.36 blocks a cycle for each kind, the villager's legs under its robe, the
+    zombie's arms 10 degrees under level at rest, the skeleton's arms hanging until it aims, the
+    spider's legs turning 7 and lifting 7, with the mid-stride pairs made again.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not

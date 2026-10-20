@@ -97,25 +97,12 @@ public sealed class MobRenderer : IDisposable
             if (mob.Fuse >= 0) body = Matrix4x4.CreateScale(1 + 0.15f * mob.Fuse) * body;
             var red = mob.Hurt > 0 || mob.Dying >= 0;
             var white = mob.Fuse >= 0 && (int)(mob.Fuse * 8) % 2 == 1;
-            var swing = MathF.Sin(mob.StridePhase) * 0.8f * mob.Stride;
+            var stance = new Stance(mob.StridePhase, mob.Stride, mob.HeadYaw - mob.Yaw, mob.HeadPitch, mob.WingAngle, mob.Hunting);
             var parts = mob.Kind.Parts;
             for (int p = 0; p < parts.Length; p++)
             {
                 var part = parts[p];
-                var turn = part.Swing switch
-                {
-                    Swing.Head => Matrix4x4.CreateRotationX(mob.HeadPitch) * Matrix4x4.CreateRotationY(mob.HeadYaw - mob.Yaw),
-                    Swing.LegA => Matrix4x4.CreateRotationX(swing),
-                    Swing.LegB => Matrix4x4.CreateRotationX(-swing),
-                    Swing.LeftWing => Matrix4x4.CreateRotationZ(-mob.WingAngle),
-                    Swing.RightWing => Matrix4x4.CreateRotationZ(mob.WingAngle),
-                    Swing.ArmA => Matrix4x4.CreateRotationX(-swing * 0.4f),
-                    Swing.ArmB => Matrix4x4.CreateRotationX(swing * 0.4f),
-                    Swing.SpiderA => Matrix4x4.CreateRotationY(swing * 0.5f),
-                    Swing.SpiderB => Matrix4x4.CreateRotationY(-swing * 0.5f),
-                    _ => Matrix4x4.Identity,
-                };
-                var local = part.Placed(turn);
+                var local = part.PlacedBy(Gait.Turn(mob.Kind, part, stance));
                 var variants = _byKind[mob.Kind.Id][p];
                 var slot = variants[variants.Length == 1 ? 0 : mob.Variant % variants.Length];
                 (red ? slot.Hurt : white ? slot.Flash : slot.Plain).Add(local * body);

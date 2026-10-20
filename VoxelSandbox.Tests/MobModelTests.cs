@@ -51,16 +51,74 @@ public class MobModelTests
     }
 
     [Fact]
-    public void A_Zombie_And_A_Skeleton_Hold_Their_Arms_Out_Ahead()
+    public void A_Zombie_Reaches_Its_Arms_Out_And_A_Skeleton_Hangs_Them_Until_It_Hunts()
     {
-        foreach (var kind in new[] { MobKinds.Zombie, MobKinds.Skeleton })
-            foreach (var arm in kind.Parts.Where(p => p.Swing is Swing.ArmA or Swing.ArmB))
+        // An arm's hand, ten pixels below its shoulder, where the stance turns it, in blocks.
+        static Vector3 Hand(MobKind kind, ModelPart arm, bool hunting) =>
+            Vector3.Transform(new Vector3(arm.Pivot.X, arm.Pivot.Y - 10, arm.Pivot.Z) / 16, arm.PlacedBy(Gait.Turn(kind, arm, new Stance(0, 0, 0, 0, 0, hunting))));
+
+        foreach (var arm in MobKinds.Zombie.Parts.Where(p => p.Swing is Swing.ArmA or Swing.ArmB))
+        {
+            // Out ahead, toward -z, ten degrees under level at rest and thirty over it hunting.
+            var resting = Hand(MobKinds.Zombie, arm, false);
+            Assert.Equal((arm.Pivot.Y - 10 * MathF.Sin(MathF.PI / 18)) / 16, resting.Y, 3);
+            Assert.True(resting.Z < -0.5f, $"the zombie's hand is at {resting}");
+            var hunting = Hand(MobKinds.Zombie, arm, true);
+            Assert.Equal((arm.Pivot.Y + 10 * MathF.Sin(MathF.PI / 6)) / 16, hunting.Y, 3);
+        }
+        foreach (var arm in MobKinds.Skeleton.Parts.Where(p => p.Swing is Swing.ArmA or Swing.ArmB))
+        {
+            // Hanging at its side standing, and held out level ahead to aim while it hunts.
+            var resting = Hand(MobKinds.Skeleton, arm, false);
+            Assert.Equal((arm.Pivot.Y - 10) / 16, resting.Y, 3);
+            Assert.Equal(arm.Pivot.Z / 16, resting.Z, 3);
+            var aiming = Hand(MobKinds.Skeleton, arm, true);
+            Assert.Equal(arm.Pivot.Y / 16, aiming.Y, 3);
+            Assert.True(aiming.Z < -0.5f, $"the skeleton's hand is at {aiming}");
+        }
+    }
+
+    [Fact]
+    public void A_Stride_Follows_Minecrafts_Walk_And_Its_Legs_Cycle_Every_236_Blocks()
+    {
+        // A pig's 1.25 blocks a second at 60 frames a second, until the stride has caught up.
+        float stride = 0, phase = 0;
+        for (int i = 0; i < 600; i++) Gait.Step(ref stride, ref phase, 1.25f / 60, 1 / 60f);
+        // Four times the blocks moved in a tick of a twentieth of a second.
+        Assert.Equal(0.25f, stride, 3);
+
+        // Ten blocks on, the legs' cos(phase × 0.6662) has cycled once every 2.36 blocks.
+        var before = phase;
+        for (int i = 0; i < 480; i++) Gait.Step(ref stride, ref phase, 1.25f / 60, 1 / 60f);
+        Assert.Equal(2.36f, 10 * 2 * MathF.PI / (0.6662f * (phase - before)), 2);
+    }
+
+    [Fact]
+    public void Legs_Turn_By_Minecrafts_Angles_A_Villagers_Half_Under_Its_Robe_And_A_Spiders_About_The_Vertical()
+    {
+        // At the widest of a full stride.
+        var stance = new Stance(0, 1, 0, 0, 0, false);
+        foreach (var kind in MobKinds.All.Where(k => k != MobKinds.Spider))
+            foreach (var leg in kind.Parts.Where(p => p.Swing is Swing.LegA or Swing.LegB))
             {
-                // The arm's hand, below its shoulder, turned out ahead of the body, toward -z.
-                var hand = Vector3.Transform(new Vector3(arm.Pivot.X, arm.Pivot.Y - 10, arm.Pivot.Z) / 16, arm.Placed(Matrix4x4.Identity));
-                Assert.Equal(arm.Pivot.Y / 16, hand.Y, 3);
-                Assert.True(hand.Z < -0.5f, $"{kind.Name}'s hand is at {hand}");
+                var expected = Matrix4x4.CreateRotationX((leg.Swing == Swing.LegA ? 1 : -1) * (kind == MobKinds.Villager ? 0.7f : 1.4f));
+                Close(expected, Gait.Turn(kind, leg, stance));
             }
+
+        // A spider's hind legs turn 0.4 about the vertical at the cycle's start and its front legs
+        // lift 0.4, a quarter of a cycle on.
+        var hind = MobKinds.Spider.Parts.Single(p => p.Swing == Swing.SpiderA && p.Pair == 0);
+        Close(ModelPart.Turned(hind.Pose + new Vector3(0, 0.4f, 0)), Gait.Turn(MobKinds.Spider, hind, stance));
+        var front = MobKinds.Spider.Parts.Single(p => p.Swing == Swing.SpiderB && p.Pair == 3);
+        Close(ModelPart.Turned(front.Pose + new Vector3(0, 0, -0.4f)), Gait.Turn(MobKinds.Spider, front, stance));
+    }
+
+    // Two turns alike to a millionth in every entry.
+    private static void Close(Matrix4x4 expected, Matrix4x4 actual)
+    {
+        for (int row = 0; row < 4; row++)
+            for (int column = 0; column < 4; column++)
+                Assert.Equal(expected[row, column], actual[row, column], 5);
     }
 
     [Fact]
@@ -73,10 +131,10 @@ public class MobModelTests
             var standing = kind.Parts.Min(p => Lowest(p, Matrix4x4.Identity));
             Assert.InRange(standing, -1e-4f, kind == MobKinds.Spider ? 1 / 16f : 1e-4f);
 
-            // A leg swings about its hip by up to 0.8 radians each way, as the renderer swings it,
-            // its foot rising off the ground at the ends of the stride.
+            // A leg swings about its hip by up to Minecraft's 1.4 radians each way at a full
+            // stride, its foot rising off the ground at the ends of the stride.
             foreach (var leg in kind.Parts.Where(p => p.Swing is Swing.LegA or Swing.LegB))
-                for (float swing = -0.8f; swing <= 0.8f; swing += 0.05f)
+                for (float swing = -1.4f; swing <= 1.4f; swing += 0.05f)
                 {
                     var lowest = Lowest(leg, Matrix4x4.CreateRotationX(swing));
                     Assert.True(lowest >= -1e-4f, $"{kind.Name}'s leg at {leg.Pivot} sinks to {lowest * 16:0.00} pixels at a swing of {swing:0.00}");

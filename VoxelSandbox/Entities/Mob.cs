@@ -87,10 +87,13 @@ public sealed partial class Mob
     /// <summary>Whether it has fallen over for long enough to be taken away.</summary>
     public bool Gone => Dying >= DeathTime;
 
-    /// <summary>How far its legs swing, from 0 standing to 1 walking, and where in their swing they are.</summary>
+    /// <summary>How far its legs swing, from 0 standing to 1 at five blocks a second, and where in their swing they are, as <see cref="Gait.Step"/> moves them.</summary>
     public float Stride { get; private set; }
 
     public float StridePhase { get; private set; }
+
+    /// <summary>Whether it hunts the player, which raises a zombie's arms and a skeleton's bow.</summary>
+    public bool Hunting => _hunting;
 
     /// <summary>How far its wings are spread, from 0 to 1, as a chicken's flap while it falls.</summary>
     public float Flap { get; private set; }
@@ -349,11 +352,9 @@ public sealed partial class Mob
         var along = MathF.Sqrt(moved.X * moved.X + moved.Z * moved.Z);
         // A hunter faces its prey as it moves, a skeleton backing away from the player among them.
         if (along > 1e-4f && wish != Vector3.Zero && !_hunting) Yaw = Turn(Yaw, MathF.Atan2(-moved.X, -moved.Z), 10 * seconds);
-        // A frame that took no time, as the game's first does before the engine has timed one,
-        // leaves the stride as it was, where its speed would be 0 over 0 and the stride, and with it
-        // every leg's swing, not a number from then on, so the legs were drawn nowhere.
-        if (seconds > 0) Stride += (MathF.Min(1, along / seconds / 1.5f) - Stride) * MathF.Min(1, 10 * seconds);
-        StridePhase += along * 3.6f;
+        var (stride, phase) = (Stride, StridePhase);
+        Gait.Step(ref stride, ref phase, along, seconds);
+        (Stride, StridePhase) = (stride, phase);
         _swing += seconds;
         Flap += ((Kind.FallsSlowly && !Body.OnGround && !swimming ? 1 : 0) - Flap) * MathF.Min(1, 12 * seconds);
     }

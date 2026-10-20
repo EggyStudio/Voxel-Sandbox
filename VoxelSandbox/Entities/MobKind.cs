@@ -8,8 +8,8 @@ public readonly record struct ModelBox(Vector3 Min, Vector3 Max, Color? Color);
 
 /// <summary>
 /// How a piece of a model moves, whether not at all, with the head's look, as one of the two pairs
-/// of legs, as a wing, as one of two arms swinging against the legs, or as one of a spider's two
-/// sets of legs, which swing about the vertical.
+/// of legs, as a wing, as one of two arms, or as one of a spider's right or left legs, which turn
+/// about the vertical and lift, as <see cref="Gait.Turn"/> turns each.
 /// </summary>
 public enum Swing
 {
@@ -32,26 +32,36 @@ public sealed record ModelPart(Swing Swing, Vector3 Pivot, ModelBox[] Boxes)
 
     /// <summary>
     /// How the piece is turned about its pivot before it swings, in radians about x, then y, then
-    /// z, the order Minecraft turns its models' parts in, as a zombie holds its arms out.
+    /// z, the order Minecraft turns its models' parts in, as a villager folds its arms.
     /// </summary>
     public Vector3 Pose { get; init; }
+
+    /// <summary>Which of a spider's four pairs of legs the piece is, from 0 hind to 3 front, which walk a quarter of a cycle apart.</summary>
+    public int Pair { get; init; }
 
     /// <summary>Whether a box of it takes its mob's own color, so it is meshed once for each.</summary>
     public bool Varies => Boxes.Any(b => b.Color is null);
 
+    /// <summary>A turn by angles in radians about x, then y, then z.</summary>
+    public static Matrix4x4 Turned(Vector3 angles) =>
+        angles == Vector3.Zero ? Matrix4x4.Identity
+            : Matrix4x4.CreateRotationX(angles.X) * Matrix4x4.CreateRotationY(angles.Y) * Matrix4x4.CreateRotationZ(angles.Z);
+
+    /// <summary>Where the piece's boxes go in its model, in blocks, turned by its pose and then by a swing about its pivot.</summary>
+    public Matrix4x4 Placed(Matrix4x4 swing) => PlacedBy(Pose == Vector3.Zero ? swing : Turned(Pose) * swing);
+
     /// <summary>
-    /// Where the piece's boxes go in its model, in blocks, turned by its pose and then by a swing
-    /// about its pivot, and a leg lifted by however far its lowest corner would sink below the
-    /// feet, so a foot swung ahead or behind stays on the ground.
+    /// Where the piece's boxes go in its model, in blocks, turned by <paramref name="turn"/> about
+    /// its pivot in place of its pose, as <see cref="Gait.Turn"/> gives it, and a leg lifted by
+    /// however far its lowest corner would sink below the feet, so a foot swung ahead or behind
+    /// stays on the ground.
     /// </summary>
     /// <remarks>
     /// A leg turns about its top, so the corner of its foot ahead of the turn goes down as the leg
     /// swings, a chicken's toes, reaching three pixels ahead of the hip, by most of a pixel.
     /// </remarks>
-    public Matrix4x4 Placed(Matrix4x4 swing)
+    public Matrix4x4 PlacedBy(Matrix4x4 turn)
     {
-        var turn = Pose == Vector3.Zero ? swing
-            : Matrix4x4.CreateRotationX(Pose.X) * Matrix4x4.CreateRotationY(Pose.Y) * Matrix4x4.CreateRotationZ(Pose.Z) * swing;
         var pivot = Pivot / 16;
         var placed = turn.IsIdentity ? Matrix4x4.Identity : Matrix4x4.CreateTranslation(-pivot) * turn * Matrix4x4.CreateTranslation(pivot);
         if (Swing is not (Swing.LegA or Swing.LegB) || placed.IsIdentity) return placed;
@@ -121,6 +131,12 @@ public sealed record MobKind(string Name, float HalfWidth, float Height, float S
     /// </summary>
     public float Scale { get; init; } = 1;
 
+    /// <summary>
+    /// How far its legs turn each way at a full stride, in radians, Minecraft's 1.4, and half that
+    /// for a villager, whose legs keep under its robe.
+    /// </summary>
+    public float StrideSwing { get; init; } = 1.4f;
+
     /// <summary>The height of its eyes, which turn toward the player, at its head's pivot.</summary>
     public float Eyes => Parts.FirstOrDefault(p => p.Swing == Swing.Head)?.Pivot.Y / 16 * Scale ?? Height * 0.85f;
 
@@ -153,12 +169,9 @@ public sealed record MobKind(string Name, float HalfWidth, float Height, float S
 /// </remarks>
 public static class MobKinds
 {
+    // Set before the kinds below, which read them as they are made, the class's fields being set
+    // in the order they are written.
     private static readonly Color Black = new(28, 24, 24), White = new(236, 236, 236);
-
-    // An arm held out ahead, as a zombie's and a skeleton's are, Minecraft's turn of -π/2 about x
-    // with its y down. It and the colors above are set before the kinds below, which read them as
-    // they are made, the class's fields being set in the order they are written.
-    private static readonly Vector3 Ahead = new(MathF.PI / 2, 0, 0);
 
     // A box between two corners in the game's model space, in sixteenths of a block.
     private static ModelBox B(float x0, float y0, float z0, float x1, float y1, float z1, Color? color) =>
@@ -316,7 +329,7 @@ public static class MobKinds
         Color[] robes = [new(118, 86, 58), new(204, 168, 112), new(86, 62, 46), new(214, 218, 228)];
         // Drawn at the scale Minecraft's layer gives it, about its feet, so its 34 pixels stand 1.99
         // blocks as Minecraft's villager does, where at 1 they would stand 2.13.
-        return new MobKind("villager", 0.3f, 1.95f, 1.5f, 20, robes, parts) { Id = 4, OpensDoors = true, Scale = 0.9375f };
+        return new MobKind("villager", 0.3f, 1.95f, 1.5f, 20, robes, parts) { Id = 4, OpensDoors = true, Scale = 0.9375f, StrideSwing = 0.7f };
     }
 
     private static MobKind MakeZombie()
@@ -328,8 +341,8 @@ public static class MobKinds
             new(Swing.LegA, At(leftLeg), [Mc(leftLeg, -2, 0, -2, 4, 12, 4, pants)]),
             new(Swing.LegB, At(rightLeg), [Mc(rightLeg, -2, 0, -2, 4, 12, 4, pants)]),
             new(Swing.None, Vector3.Zero, [Mc(Vector3.Zero, -4, 0, -2, 8, 12, 4, shirt)]),
-            new(Swing.ArmA, At(leftArm), [Mc(leftArm, -1, -2, -2, 4, 12, 4, skin), Mc(leftArm, -1, -2, -2, 4, 6, 4, shirt, grow: 0.05f)]) { Pose = Ahead },
-            new(Swing.ArmB, At(rightArm), [Mc(rightArm, -3, -2, -2, 4, 12, 4, skin), Mc(rightArm, -3, -2, -2, 4, 6, 4, shirt, grow: 0.05f)]) { Pose = Ahead },
+            new(Swing.ArmA, At(leftArm), [Mc(leftArm, -1, -2, -2, 4, 12, 4, skin), Mc(leftArm, -1, -2, -2, 4, 6, 4, shirt, grow: 0.05f)]),
+            new(Swing.ArmB, At(rightArm), [Mc(rightArm, -3, -2, -2, 4, 12, 4, skin), Mc(rightArm, -3, -2, -2, 4, 6, 4, shirt, grow: 0.05f)]),
             new(Swing.Head, At(Vector3.Zero), [Mc(Vector3.Zero, -4, -8, -4, 8, 8, 8, skin), .. Eyes(1, 28, -4, eye), B(-2, 25, -4.05f, 2, 26, -4, eye)]),
         ];
         return new MobKind("zombie", 0.3f, 1.95f, 1.0f, 20, [skin], parts)
@@ -349,9 +362,10 @@ public static class MobKinds
             // A spine with ribs about it and shoulders across its top, within the body's cuboid of
             // 8 by 12 by 4, which Minecraft's texture leaves open but for the bones.
             new(Swing.None, Vector3.Zero, [B(-1, 12, -1, 1, 22, 1, bone), B(-3, 15, -1.5f, 3, 21, 1.5f, bone), B(-4, 22, -1, 4, 24, 1, bone)]),
-            new(Swing.ArmA, At(leftArm), [Mc(leftArm, -1, -2, -1, 2, 12, 2, bone)]) { Pose = Ahead },
-            // The right hand holds a bow upright once the arm is held out.
-            new(Swing.ArmB, At(rightArm), [Mc(rightArm, -1, -2, -1, 2, 12, 2, bone), B(4.5f, 10, -4, 5.5f, 12, 4, bow)]) { Pose = Ahead },
+            new(Swing.ArmA, At(leftArm), [Mc(leftArm, -1, -2, -1, 2, 12, 2, bone)]),
+            // The right hand holds a bow, lying ahead of it while the arm hangs and upright once the
+            // arm is held out to aim.
+            new(Swing.ArmB, At(rightArm), [Mc(rightArm, -1, -2, -1, 2, 12, 2, bone), B(4.5f, 10, -4, 5.5f, 12, 4, bow)]),
             new(Swing.Head, At(Vector3.Zero),
                 [Mc(Vector3.Zero, -4, -8, -4, 8, 8, 8, bone), .. Eyes(1, 27, -4, dark), B(-3, 28, -4.05f, 3, 29, -4, dark), B(-0.5f, 26, -4.05f, 0.5f, 27, -4, dark)]),
         ];
@@ -393,15 +407,15 @@ public static class MobKinds
         };
         // Four legs a side from hind to front, each reaching out along x from the neck, turned
         // about y to spread from back to forward and about z to reach down to the ground by
-        // Minecraft's angles, which the mirror of its x and y turns about y the other way here, the
-        // sides' sets swinging against each other.
+        // Minecraft's angles, which the mirror of its x and y turns about y the other way here, each
+        // pair walking a quarter of a cycle from the next.
         (float Z, float AboutY, float AboutZ)[] reach = [(2, MathF.PI / 4, -MathF.PI / 4), (1, MathF.PI / 8, -0.58119464f), (0, -MathF.PI / 8, -0.58119464f), (-1, -MathF.PI / 4, -MathF.PI / 4)];
         for (int i = 0; i < reach.Length; i++)
         {
             var (z, aboutY, aboutZ) = reach[i];
             Vector3 right = new(-4, 15, z), left = new(4, 15, z);
-            parts.Add(new(i % 2 == 0 ? Swing.SpiderA : Swing.SpiderB, At(right), [Mc(right, -15, -1, -1, 16, 2, 2, body)]) { Pose = new Vector3(0, -aboutY, aboutZ) });
-            parts.Add(new(i % 2 == 0 ? Swing.SpiderB : Swing.SpiderA, At(left), [Mc(left, -1, -1, -1, 16, 2, 2, body)]) { Pose = new Vector3(0, aboutY, -aboutZ) });
+            parts.Add(new(Swing.SpiderA, At(right), [Mc(right, -15, -1, -1, 16, 2, 2, body)]) { Pose = new Vector3(0, -aboutY, aboutZ), Pair = i });
+            parts.Add(new(Swing.SpiderB, At(left), [Mc(left, -1, -1, -1, 16, 2, 2, body)]) { Pose = new Vector3(0, aboutY, -aboutZ), Pair = i });
         }
         return new MobKind("spider", 0.7f, 0.9f, 1.5f, 16, [body], [.. parts])
         {
