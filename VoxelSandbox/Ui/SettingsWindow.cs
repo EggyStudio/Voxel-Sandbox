@@ -66,7 +66,7 @@ public sealed class SettingsWindow
         ImGui.TextUnformatted($"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count} sections to mesh");
         ImGui.TextUnformatted($"{renderer.Sections} sections drawn as a mesh each, {renderer.Lamps} lamps");
         ImGui.TextUnformatted($"{renderer.Draws} draws of {renderer.Triangles:N0} triangles");
-        if (game.Mode == GameMode.Survival)
+        if (game.Mode.Lives())
             ImGui.TextUnformatted($"Health {game.Vitals.Health}, food {game.Vitals.Food}, saturation {game.Vitals.Saturation:0.0}, exhaustion {game.Vitals.Exhaustion:0.00}");
         ImGui.TextUnformatted($"{game.Mobs.All.Count} mobs loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws, {game.Mobs.Kept} kept by columns not loaded");
     }

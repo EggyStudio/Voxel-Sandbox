@@ -79,9 +79,10 @@ with its history.
 | Right button | Place the chosen block or eat the food held, or open a door, a table or a furnace |
 | Middle button | Pick the block looked at into the hotbar, in survival from the inventory |
 | 1 to 9, wheel | Choose a slot of the hotbar |
-| E | In creative every item, to put any of them in the chosen slot, and in survival the inventory |
+| E | In creative every item, to put any of them in the chosen slot, in survival and adventure the inventory, and in spectator nothing |
 | Q | Throw one of the chosen slot's items, or with Left Control its stack |
-| F3 | The settings window, with what the frame holds and costs, the light, the sky and the world |
+| F3 | The settings window, with what the frame holds and costs, the light, the sky and the world, opened as F3 is let go |
+| F3 with F4 | The mode switcher, F4 stepping through creative, survival, adventure and spectator while F3 is held, and the mode chosen played as F3 is let go |
 | G | The next quality of global illumination, Off after High |
 | F1 | Hide the crosshair, the hotbar and the outline |
 | Escape | Free the cursor, or hold it again |
@@ -111,7 +112,7 @@ the world and opens or begins another of a kind and seed, `voxel.save` saves at 
 `voxel.blocks` lists the blocks by number and name. `voxel.mobs` counts the mobs and lists the
 nearest, `voxel.spawn` places one where the crosshair rests, `voxel.attack` hits the one it rests on
 as the left button does, `voxel.still` stops them where they stand and holds the clouds for a
-capture, and `voxel.kill` takes them away. `voxel.mode` plays in creative or survival mode,
+capture, and `voxel.kill` takes them away. `voxel.mode` plays in creative, survival, adventure or spectator mode,
 `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the inventory,
 `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and reads a
 furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item, and `voxel.throw`
@@ -274,16 +275,26 @@ sky its light's rays met. The nine stand in a row in daylight in `.github/assets
 They cast shadows and hold no light for others, their materials' `BouncesLight` off, which leaves
 them out of the scene's distance field, so a pig's pink does not reach the grass.
 
-## Creative and survival
+## The modes
 
-A world plays in creative mode, as a test of the light needs, or in survival, which `voxel.mode` and
-the settings window choose and the save keeps. In creative every item is to hand through E, a block
-breaks at once and drops nothing, placing a block uses nothing up, and Space pressed twice flies. In
-survival there is no flight, and a block takes its hardness times one and a half seconds to break
-with the button held, darkening as it goes, as by hand in Minecraft, and then drops what it leaves.
-Grass, farmland and a path drop their dirt, stone its cobblestone, coal ore its coal, wheat its
-wheat and seeds, leaves, glass and ice nothing, and any other block itself. A torch or a lantern
-that falls with the block it held to drops too, and placing a block uses one up.
+A world plays in creative mode, as a test of the light needs, in survival, in adventure or in
+spectator, which the switcher, `voxel.mode` and the settings window choose and the save keeps. F3
+held with F4 opens the switcher over the middle of the window, the four modes' icons in boxes under
+the chosen mode's name, as Minecraft's is, creative's grass block and survival's iron sword from the
+items and adventure's map and spectator's eye drawn for it. It opens on the mode played before the
+one now, or on survival from creative and on creative from the others where there is none, F4 steps
+it to the next while F3 is held, and letting F3 go plays the mode chosen. Adventure keeps survival's
+health, hunger and inventory and its doors, tables, furnaces and hits on mobs, and breaks and places
+no block. Spectator flies through the blocks with nothing held and nothing touched, no crosshair,
+hotbar or harm, and no mob hunts the player.
+
+In creative every item is to hand through E, a block breaks at once and drops nothing, placing a
+block uses nothing up, and Space pressed twice flies. In survival there is no flight, and a block
+takes its hardness times one and a half seconds to break with the button held, darkening as it goes,
+as by hand in Minecraft, and then drops what it leaves. Grass, farmland and a path drop their dirt,
+stone its cobblestone, coal ore its coal, wheat its wheat and seeds, leaves, glass and ice nothing,
+and any other block itself. A torch or a lantern that falls with the block it held to drops too, and
+placing a block uses one up.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival, where a left click takes up a stack, puts it down, joins it to a stack of its item or

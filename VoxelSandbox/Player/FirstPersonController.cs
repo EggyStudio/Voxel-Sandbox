@@ -45,6 +45,9 @@ public sealed class FirstPersonController
     /// <summary>Whether two presses of Space start flying, as in creative mode and not in survival.</summary>
     public bool MayFly { get; set; } = true;
 
+    /// <summary>Whether the body flies through the blocks, stopped by none, as in spectator mode, where it always flies.</summary>
+    public bool Spectating { get; set; }
+
     /// <summary>Whether Left Control sprints, which in survival asks for more than six food.</summary>
     public bool MaySprint { get; set; } = true;
 
@@ -156,8 +159,9 @@ public sealed class FirstPersonController
         }
 
         if (Flying || Body.OnGround || wish == Vector3.Zero) _climbing = false;
-        Body.Move(world, Body.Velocity * seconds, keepToEdges: Sneaking && Body.OnGround, climbing: _climbing);
-        if (Flying && Body.OnGround && down) Flying = false;
+        if (Spectating) Body.Position += Body.Velocity * seconds;
+        else Body.Move(world, Body.Velocity * seconds, keepToEdges: Sneaking && Body.OnGround, climbing: _climbing);
+        if (Flying && Body.OnGround && down && !Spectating) Flying = false;
 
         _eyes += ((Sneaking ? SneakingEyes : StandingEyes) - _eyes) * (1 - MathF.Exp(-20 * seconds));
         var eye = Eye;

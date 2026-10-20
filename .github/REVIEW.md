@@ -5,34 +5,29 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `404ab74`, item 38's first part, the captures of the cascades' faults and nothing
-else, carrying the review's file; the entry itself is in the engine's ASKS.md, read on the game's
-`28eb41c` on 5.2.190 at High offscreen on the flat world. The leak is reproduced in a room split by
-a wall that steps a block so its halves meet along one edge, glowstone on one side, the brightest
-pixel about the edge 29 levels with the screen's probes and 43 without, 0 and 3 with the edge
-closed, so it is the cascades' own; the zig-zags are reproduced in the leaked light's edges and a
-lamp's shadow on grass, wavy with the probes and stepped square without; the shift is small in
-numbers, 0.28 levels a frame over a half-block step with the probes and 0.26 without and 0.0085 at
-most in the frames after with them and nothing without; the z-fighting and the noise were not seen
-in the game, the still lamp room changing by 0.0002 levels a frame; and the model pass with forty
-glowstones in view reads 1.8 ms with the screen's probes and 12.9 ms without, the frame from 16.7 to
-20.2, so the glow lights' per-pixel path is what stands between the game and the probes off. The
-engine's item 71 takes the entry, the glow lights' bound right after the call. Read at 01:16 on
-2026-10-21 and pushed at 01:17; the build run of `28eb41c` had ended green at 01:02 in 8 minutes.
-Item 37 is read and nearly done: the mobs take the engine's indirect light as the terrain does, the
-sky alone giving 116, 149 and 193 and the ground's bounce 119, 161 and 178, and the mend is a mob
-shader of the game's own keeping the sun's share and taking the hue out of the rest by its luminance
-with the source's flat shade as the floor, the shaded wool reading 154, 158 and 159. Next item 37's
-commit, then item 19 and the items in order; item 38's second part when the package brings the call
-and the glow lights' bound; the AGENTS.md row naming the scripts still waits on the owner's word.
+Reviewed up to `e3d9a74`, item 37, the mobs' shade, and nothing else, carrying the review's file: a
+mob shader of the game's own on the material's three variants, keeping the sun's share and taking
+the hue out of the rest by its luminance with the source's flat shade as the floor in linear light;
+`voxel.color` answering a rectangle's mean color of the last frame; the play script reading a white
+sheep's shaded side over 80 by 60 pixels and failing unless the three channels lie between 120 and
+200 and within 20 of each other, 155.7, 158.0 and 158.7 on the GPU and on lavapipe alike; the pairs
+script writing a daylight capture of the nine in a row and the pairs made again under the new light;
+the README's paragraph with the readings before and after; the shaders script checking the mob
+shader, 129 stages compiled; 129 tests. The play script took 884 seconds on lavapipe against 644
+before, the sheep's 70 frames and the shader's two lighting calls a mob pixel among the cost, the
+play job's comment saying 15 minutes under its limit of 40; the mobs' pass on the GPU is read before
+item 19's commit. Read at 01:38 on 2026-10-21 and pushed at 01:40; `404ab74` before it started no
+run, touching only the review's folder. Next item 19, the four modes and the switcher, written and
+not yet built; then the items in order; item 38's second part when the package brings the call and
+the glow lights' bound; the AGENTS.md row naming the scripts still waits on the owner's word.
+
+Before it, `404ab74` came, item 38's first part, the captures of the cascades' faults, and nothing
+else, carrying the review's file, the entry in the engine's ASKS.md. Pushed at 01:17, no build run
+for a change under the review's folder alone.
 
 Before it, `28eb41c` came, item 18's second commit, the walk by the source's numbers, and nothing
-else, carrying the review's file, the nine pairs drawn again by `build/mob-pairs.py`. Pushed at
-00:57, its build run green in 8 minutes.
-
-Before it, `7fe7639` came, item 18's first commit, and nothing else, carrying the review's file, the
-villager at 0.9375, the cow's nose and horns and the nine pairs. Pushed at 00:45, its build run
-green in 8 minutes.
+else, carrying the review's file, the nine pairs drawn again. Pushed at 00:57, its build run green
+in 8 minutes.
 
 ## Now
 
@@ -473,7 +468,9 @@ green in 8 minutes.
     brought toward the ground's and the source's flat shade used as the floor under which no face
     falls, so the wool in shade reads near 150 on all three and the pairs' colors say so. Tests: the
     sheep's shaded body read from a capture within a distance of its white darkened, and a daylight
-    capture of the nine mobs in the record. One commit, after item 18 and before item 19.
+    capture of the nine mobs in the record. One commit, after item 18 and before item 19. Done at
+    `e3d9a74` on 2026-10-21, as the head says, the mobs found to take the indirect light already and
+    the mend a shader of the game's own.
 
 38. **The screen probes off by default, and the cascades' faults given to the engine with repros
     (Decision 16).** The owner's word of about 01:00 on 2026-10-21: the game is not to enable the

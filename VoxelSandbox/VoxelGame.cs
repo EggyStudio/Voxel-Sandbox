@@ -26,6 +26,8 @@ public sealed class VoxelGame : IDisposable
     private bool _spilled;
     private bool _captured, _swallowClick;
     private GameMode _mode;
+    // Whether F4 was pressed while F3 has been held, so letting F3 go opens no settings.
+    private bool _switched;
 
     /// <summary>
     /// Opens the world saved under <paramref name="name"/>, or under its kind and seed when no name is
@@ -92,18 +94,31 @@ public sealed class VoxelGame : IDisposable
 
     public InventoryWindow InventoryWindow { get; } = new();
 
-    /// <summary>How the player plays, which in survival stops flight and makes blocks take time to break and drop items.</summary>
+    /// <summary>
+    /// How the player plays, which in survival and adventure stops flight and makes blocks take time
+    /// to break and drop items, and in spectator flies the player through the blocks.
+    /// </summary>
     public GameMode Mode
     {
         get => _mode;
         set
         {
+            if (value != _mode) PreviousMode = _mode;
             _mode = value;
             Player.MayFly = value == GameMode.Creative;
-            if (value == GameMode.Survival) Player.Flying = false;
+            Player.Spectating = value == GameMode.Spectator;
+            if (value == GameMode.Spectator) Player.Flying = true;
+            else if (value != GameMode.Creative) Player.Flying = false;
+            if (!value.Touches() && InventoryOpen) CloseInventory();
             (BreakingAt, BreakProgress) = (null, 0);
         }
     }
+
+    /// <summary>The mode played before the one now, which the mode switcher opens on, or null before the first change.</summary>
+    public GameMode? PreviousMode { get; private set; }
+
+    /// <summary>The switcher F3 held with F4 opens.</summary>
+    public ModeSwitcher Switcher { get; } = new();
 
     /// <summary>The block being broken in survival, and how far from 0 to 1, as of this frame.</summary>
     public (int X, int Y, int Z)? BreakingAt { get; private set; }
@@ -177,6 +192,7 @@ public sealed class VoxelGame : IDisposable
         _blasts.Clear();
         // The mode and the inventory are the world's own, a new world's in creative with its hotbar of blocks.
         Mode = Enum.TryParse<GameMode>(info?.Mode, ignoreCase: true, out var mode) ? mode : GameMode.Creative;
+        PreviousMode = null;
         Inventory.Clear();
         if (info?.Inventory is { } slots) Inventory.Load(slots);
         else if (Mode == GameMode.Creative) Hotbar.FillCreative();
@@ -243,25 +259,25 @@ public sealed class VoxelGame : IDisposable
         if (_swallowClick && !IsMouseButtonDown(MouseButton.Left)) _swallowClick = false;
 
         Hotbar.Update(keys, _captured);
-        var alive = Mode == GameMode.Creative || !Vitals.Dead;
-        Player.MaySprint = Mode == GameMode.Creative || Vitals.MaySprint;
+        var alive = !Mode.Lives() || !Vitals.Dead;
+        Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
         Player.Update(World, seconds, look: _captured && alive, move: keys && alive);
-        if (Mode == GameMode.Survival) Live(seconds);
-        var hunted = Mode == GameMode.Survival && !Vitals.Dead;
+        if (Mode.Lives()) Live(seconds);
+        var hunted = Mode.Lives() && !Vitals.Dead;
         Mobs.Update(World, Player.Body, Player.Eye, Sky.Hour, seconds, hunted);
-        if (Mode == GameMode.Survival) Mobs.Spawn(World, Player.Body.Position, Sky.Hour, seconds);
+        if (Mode.Lives()) Mobs.Spawn(World, Player.Body.Position, Sky.Hour, seconds);
         Answer(seconds);
         Aim();
-        if (_captured && !_swallowClick && alive) Interact(seconds);
+        if (_captured && !_swallowClick && alive && Mode.Touches()) Interact(seconds);
         else (BreakingAt, BreakProgress, Eating) = (null, 0, 0);
-        if (_captured && keys && IsKeyPressed(Key.Q)) Throw(IsKeyDown(Key.LeftControl));
+        if (_captured && keys && Mode.Touches() && IsKeyPressed(Key.Q)) Throw(IsKeyDown(Key.LeftControl));
         LeaveDrops();
         foreach (var ((x, y, z), stack) in Furnaces.Update(World, seconds))
         {
             if (AtFurnace == (x, y, z)) CloseInventory();
             Drops.Spawn(stack.Item, stack.Count, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
-        Drops.Update(World, Player.Body, Inventory, seconds, pickUp: alive);
+        Drops.Update(World, Player.Body, Inventory, seconds, pickUp: alive && Mode.Touches());
 
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
@@ -337,7 +353,7 @@ public sealed class VoxelGame : IDisposable
     // Harms the player in survival and knocks it away from a place, as a mob's hit does.
     private void Harm(int damage, Vector3 from, string cause)
     {
-        if (Mode != GameMode.Survival || !Vitals.Damage(damage, cause)) return;
+        if (!Mode.Lives() || !Vitals.Damage(damage, cause)) return;
         var away = Player.Body.Position - from;
         away.Y = 0;
         if (away.LengthSquared() > 1e-6f) away = Vector3.Normalize(away);
@@ -351,7 +367,7 @@ public sealed class VoxelGame : IDisposable
     /// </summary>
     public void Explode(Vector3 at, float power, string cause)
     {
-        var survival = Mode == GameMode.Survival;
+        var survival = Mode.Lives();
         var pickaxe = Items.Find("stone_pickaxe");
         foreach (var (x, y, z) in Explosion.Breaks(World, at, power, _random))
         {
@@ -381,7 +397,7 @@ public sealed class VoxelGame : IDisposable
             foreach (var (item, count) in Loot.Of(mob, _random))
                 Drops.Spawn(item, count, mob.Body.Position + new Vector3(0, 0.25f, 0), new Vector3(0, 3, 0));
         Mobs.Died.Clear();
-        if (Mode == GameMode.Survival)
+        if (Mode.Lives())
             foreach (var (x, y, z, block) in World.Fallen)
                 foreach (var (item, count) in Loot.Of(block, _random))
                     Drops.Pop(item, count, x, y, z);
@@ -417,16 +433,29 @@ public sealed class VoxelGame : IDisposable
             if (InventoryOpen) CloseInventory();
             Capture(!_captured);
         }
-        if (IsKeyPressed(Key.E))
+        if (IsKeyPressed(Key.E) && Mode.Touches())
         {
             if (InventoryOpen) CloseInventory();
             else InventoryOpen = true;
             Capture(!InventoryOpen && !Settings.Open);
         }
-        if (IsKeyPressed(Key.F3))
+        // F3 held with F4 opens the mode switcher and steps it, and letting F3 go plays the mode
+        // chosen; F3 let go with no F4 pressed while it was held opens or shuts the settings, as
+        // Minecraft's debug screen opens when F3 is let go with no other key.
+        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.F4))
         {
-            Settings.Open = !Settings.Open;
-            Capture(!Settings.Open && !InventoryOpen);
+            Switcher.Step(Mode, PreviousMode);
+            _switched = true;
+        }
+        if (IsKeyReleased(Key.F3))
+        {
+            if (Switcher.Release() is { } chosen) Mode = chosen;
+            else if (!_switched)
+            {
+                Settings.Open = !Settings.Open;
+                Capture(!Settings.Open && !InventoryOpen);
+            }
+            _switched = false;
         }
         if (IsKeyPressed(Key.F1)) HudHidden = !HudHidden;
         if (IsKeyPressed(Key.G)) Light.NextQuality();
@@ -461,7 +490,9 @@ public sealed class VoxelGame : IDisposable
             if (!Attack()) Break();
         }
         if (Mode == GameMode.Survival) Dig(seconds);
-        if (Mode == GameMode.Survival && Eat(seconds)) return;
+        // In adventure a click hits a mob and breaks nothing.
+        if (Mode == GameMode.Adventure && IsMouseButtonPressed(MouseButton.Left)) Attack();
+        if (Mode.Lives() && Eat(seconds)) return;
         if (IsMouseButtonDown(MouseButton.Right) && _placeWait <= 0)
         {
             _placeWait = Repeat;
@@ -516,11 +547,12 @@ public sealed class VoxelGame : IDisposable
     /// <summary>
     /// Opens the crafting table or the furnace the crosshair rests on, opens or shuts the door it rests on, or places
     /// the chosen slot's block against the face it rests on, using one up in survival, as a right
-    /// click does.
+    /// click does, placing nothing in adventure and doing nothing in spectator.
     /// </summary>
     /// <returns>The table or furnace opened, the door's half turned or the block placed, or air where nothing happened.</returns>
     public BlockId Use()
     {
+        if (!Mode.Touches()) return BlockId.Air;
         if (Target is { } table && World.GetBlock(table.X, table.Y, table.Z) == BlockId.CraftingTable)
         {
             (InventoryOpen, AtTable) = (true, true);
@@ -535,6 +567,9 @@ public sealed class VoxelGame : IDisposable
             return World.GetBlock(oven.X, oven.Y, oven.Z);
         }
         var toggles = Target is { } door && Blocks.Get(World.GetBlock(door.X, door.Y, door.Z)).Toggled is not null;
+        // In adventure a door opens or shuts and nothing is placed.
+        if (!Mode.Builds())
+            return Target is { } shut && World.Toggle(shut.X, shut.Y, shut.Z) ? World.GetBlock(shut.X, shut.Y, shut.Z) : BlockId.Air;
         var placed = Place(Hotbar.CurrentBlock);
         if (Mode == GameMode.Survival && !toggles && placed != BlockId.Air) Inventory.Take(Hotbar.Selected);
         return placed;
@@ -549,7 +584,7 @@ public sealed class VoxelGame : IDisposable
     {
         if (TargetMob is not { } mob || !mob.Hit(Player.Body.Position, Hotbar.Current?.Item.Damage ?? 1)) return false;
         Vitals.Exhaust(0.1f);
-        if (Mode == GameMode.Survival && Hotbar.Current?.Item.Tool is { } tool and not ToolKind.None) Wear(tool == ToolKind.Sword ? 1 : 2);
+        if (Mode.Lives() && Hotbar.Current?.Item.Tool is { } tool and not ToolKind.None) Wear(tool == ToolKind.Sword ? 1 : 2);
         return true;
     }
 
@@ -561,13 +596,14 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>
-    /// Breaks the block the crosshair rests on at once, unless it cannot be broken, and in survival
-    /// drops what it leaves to the item held and wears a tool held by a use, a sword by two, as
-    /// Minecraft's do for a block that does not break at once.
+    /// Breaks the block the crosshair rests on at once, unless it cannot be broken or the mode breaks
+    /// none, as adventure and spectator do, and in survival drops what it leaves to the item held and
+    /// wears a tool held by a use, a sword by two, as Minecraft's do for a block that does not break
+    /// at once.
     /// </summary>
     public bool Break()
     {
-        if (Target is not { } hit) return false;
+        if (!Mode.Builds() || Target is not { } hit) return false;
         var block = World.GetBlock(hit.X, hit.Y, hit.Z);
         if (!Blocks.Get(block).Breakable || !World.SetBlock(hit.X, hit.Y, hit.Z, BlockId.Air)) return false;
         if (Mode != GameMode.Survival) return true;
@@ -648,7 +684,7 @@ public sealed class VoxelGame : IDisposable
         foreach (var (at, power, age) in _blasts)
             DrawSphere(at, power * (0.4f + age), new Color(255, 236, 200, (byte)(220 * (1 - age / 0.5f))));
         Clouds.Draw(Player.Eye, RenderDistance, Sky.Horizon);
-        if (Target is { } hit && !HudHidden)
+        if (Target is { } hit && !HudHidden && Mode.Touches())
         {
             Hud.DrawOutline(hit, World.ShapeAt(hit.X, hit.Y, hit.Z));
             if (BreakingAt == (hit.X, hit.Y, hit.Z)) Hud.DrawBreaking(hit, World.ShapeAt(hit.X, hit.Y, hit.Z), BreakProgress);
@@ -658,20 +694,21 @@ public sealed class VoxelGame : IDisposable
         // Under water the view is tinted blue, as Minecraft's is.
         if (Player.EyeInWater) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(20, 50, 140, 110));
         // A hit reddens the view for the half second no other harms.
-        if (Mode == GameMode.Survival && Vitals.Hurt > 0) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(200, 0, 0, (byte)(90 * Vitals.Hurt / 0.5f)));
+        if (Mode.Lives() && Vitals.Hurt > 0) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(200, 0, 0, (byte)(90 * Vitals.Hurt / 0.5f)));
         if (!HudHidden)
         {
-            Hud.DrawCrosshair();
+            if (Mode.Touches()) Hud.DrawCrosshair();
             if (Eating > 0) Hud.DrawEating(Eating);
-            Hud.DrawHotbar(Hotbar, Mode == GameMode.Survival ? 22 : 0);
-            if (Mode == GameMode.Survival) Hud.DrawVitals(Vitals);
+            if (Mode.Touches()) Hud.DrawHotbar(Hotbar, Mode.Lives() ? 22 : 0);
+            if (Mode.Lives()) Hud.DrawVitals(Vitals);
             if (!Settings.Open) Hud.DrawHelp(Light.Quality, Mode);
         }
+        Switcher.Draw();
         Settings.Draw(this);
-        if (Mode == GameMode.Survival && Vitals.Dead) DrawDeath();
+        if (Mode.Lives() && Vitals.Dead) DrawDeath();
         if (InventoryOpen && !(AtFurnace is var (fx, fy, fz) ? InventoryWindow.DrawFurnace(Inventory, Hotbar.Selected, Furnaces.At(fx, fy, fz))
             : AtTable ? InventoryWindow.DrawInventory(Inventory, Hotbar.Selected, InventoryWindow.Table)
-            : Mode == GameMode.Survival ? InventoryWindow.DrawInventory(Inventory, Hotbar.Selected, InventoryWindow.Small)
+            : Mode.Lives() ? InventoryWindow.DrawInventory(Inventory, Hotbar.Selected, InventoryWindow.Small)
             : InventoryWindow.DrawCreative(Hotbar)))
         {
             CloseInventory();

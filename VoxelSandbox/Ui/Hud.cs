@@ -135,10 +135,11 @@ public static class Hud
         DrawRectangle(cx - 20, cy, (int)(40 * Math.Clamp(progress, 0, 1)), 4, new Color(196, 120, 58));
     }
 
-    /// <summary>A line of help at the top left, while the settings window is closed.</summary>
+    /// <summary>A line of help at the top left, while the settings window is closed, with no inventory or throw in spectator, where nothing is held.</summary>
     public static void DrawHelp(GlobalIllumination light, GameMode mode)
     {
-        var text = $"F3 settings   E {(mode == GameMode.Survival ? "inventory" : "items")}   Q throw   G light: {light}   F1 hide   {mode}";
+        var holding = !mode.Touches() ? "" : $"E {(mode.Lives() ? "inventory" : "items")}   Q throw   ";
+        var text = $"F3 settings   F3+F4 mode   {holding}G light: {light}   F1 hide   {mode}";
         DrawText(text, 11, 11, 10, new Color(0, 0, 0, 160));
         DrawText(text, 10, 10, 10, Color.White);
     }

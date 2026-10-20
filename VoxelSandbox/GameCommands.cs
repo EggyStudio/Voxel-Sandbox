@@ -50,11 +50,11 @@ public static class GameCommands
         return Vitals(v);
     }
 
-    [Command("voxel.hurt", "Takes some health from the player in survival, as a hit does: voxel.hurt <amount>")]
+    [Command("voxel.hurt", "Takes some health from the player in survival or adventure, as a hit does: voxel.hurt <amount>")]
     internal static string Hurt(int amount)
     {
         if (Game is not { } game) return "no world is loaded";
-        if (game.Mode != GameMode.Survival) return "the player is harmed in survival alone";
+        if (!game.Mode.Lives()) return "the player is harmed in survival and adventure alone";
         game.Vitals.Damage(amount, "were hurt by a command");
         return Vitals(game.Vitals);
     }
@@ -267,11 +267,12 @@ public static class GameCommands
             + $"{(furnace.Lit ? $"burning, {furnace.Burning:0.0} of {furnace.BurnTotal:0} s left" : "out")}, smelted {furnace.Cooked:0.0} of {Smelting.Seconds:0} s";
     }
 
-    [Command("voxel.mode", "Plays in creative or survival mode: voxel.mode <creative|survival>")]
+    [Command("voxel.mode", "Plays in creative, survival, adventure or spectator mode, as the switcher F3 with F4 opens does: voxel.mode <creative|survival|adventure|spectator>")]
     internal static string SetMode(string mode)
     {
         if (Game is not { } game) return "no world is loaded";
-        if (!Enum.TryParse<GameMode>(mode, ignoreCase: true, out var chosen)) return $"no mode is called {mode}, which is creative or survival";
+        if (!Enum.TryParse<GameMode>(mode, ignoreCase: true, out var chosen) || !Enum.IsDefined(chosen))
+            return $"no mode is called {mode}, which is creative, survival, adventure or spectator";
         game.Mode = chosen;
         return $"the player plays in {chosen.ToString().ToLowerInvariant()} mode";
     }
