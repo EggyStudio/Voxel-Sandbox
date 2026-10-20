@@ -105,6 +105,10 @@ public sealed class ChunkRenderer : IDisposable
     {
         BuildLamps();
         _shader = LoadShader("resources/shaders/terrain.slang");
+        // The terrain's vertex stage keeps each corner's position as the mesh holds it and unpacks
+        // only its packed bytes, so each pass leaves out the sections whose boxes it cannot see,
+        // where the shadow cascades and the depth pass would draw every section within reach.
+        SetShaderKeepsPositions(_shader, true);
         (_fogColor, _fogStart, _fogEnd) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
         _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 0.08f, CastsShadows = false, Shader = _shader };

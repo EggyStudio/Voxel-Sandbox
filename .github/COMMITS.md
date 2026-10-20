@@ -11,7 +11,9 @@ the game this repository held before, and nothing is committed to it.
 
 A batch is one thing somebody would want to read, revert or cherry-pick alone, such as a fix, a
 feature with its tests and its docs, or a refactor. Work that is still half done stays uncommitted
-until it is whole.
+until it is whole. REVIEW.md and NORM.md are edited in the tree by the reviewing session and go in
+with whichever batch is committed next, never in a commit of their own but for one a day at most,
+at a day's end where no batch carried them.
 
 ## Before committing
 

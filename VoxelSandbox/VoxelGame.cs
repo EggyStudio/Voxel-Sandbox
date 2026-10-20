@@ -114,16 +114,20 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>How many columns around the player are drawn, and two more loaded.</summary>
     /// <remarks>
-    /// Eight by default, 128 blocks, the most the frame holds at 60 a second on the development
-    /// machine's RTX 4070 Laptop GPU at 1280 by 720, its GPU's work 12.1 ms on the first seed's
-    /// spawn at noon, where 9 columns take 16.6 ms, 10 take 21.8, 12 take 29.7 and 16 take 46.4.
-    /// Every section the eye can see within it is drawn each frame, since one left out leaves the
-    /// scene field, and the engine culls no draw made through a program's own shader, as the
-    /// terrain's are, so it draws each into the depth pass and each of the sun's three shadow
-    /// cascades as well as the camera's. So the shadows, though they reach 96 blocks, take 4.3 ms
-    /// at 8 columns and 23.5 at 16, where global illumination stays at about 2.1 ms.
+    /// Twelve by default, 192 blocks. Over the first seed's spawn at noon, seen from above the
+    /// forest at 1280 by 720 on the development machine's RTX 4070 Laptop GPU, the frame holds 60 a
+    /// second there with 6.9 ms of each frame to spare, its GPU's work 9.5 ms, where 8 columns take
+    /// 6.6 with 11.3 to spare, 14 take 11.3 with 3.2 to spare and 16 take 12.8 and lose the 60 a
+    /// second, the main thread bounding the frame, the game's update and drawing with the engine's
+    /// render work. So 12 keeps twice the margin of 14, the most that holds. Every section the eye
+    /// can see within it is drawn each frame, since one left out leaves the scene field, and each of
+    /// the engine's passes leaves out the sections whose boxes it cannot see, the terrain's shader
+    /// keeping its positions, so the shadows, though they reach 96 blocks, take 1.2 ms at 12 columns
+    /// and at 16, and global illumination 1.4. Flying over land not yet loaded, the main thread
+    /// meshes and joins the columns that come into reach, and the frame takes 18 to 19 ms at 8
+    /// columns and 21 to 29 at 12.
     /// </remarks>
-    public int RenderDistance { get; set; } = 8;
+    public int RenderDistance { get; set; } = 12;
 
     /// <summary>The block the crosshair rests on, as of this frame, or null where a mob stands before it.</summary>
     public BlockHit? Target { get; private set; }

@@ -422,7 +422,56 @@ pictures script's row in AGENTS.md on the owner's word, and the engine's package
     remark, reads the frame at 8 to 16 columns again as item 12 did, and sets the default distance
     to what holds 60 a second at the game's pace, the figures in the setting's remark and the
     README's costs section as before, the owner settling the figure where the reading leaves a
-    choice. One commit, with the package's bump.
+    choice. One commit, with the package's bump. Read on `5.2.155` by 09:40 on 2026-10-20, the
+    package the engine published at 08:38: standing at seed 1's spawn at noon offscreen at 1280 by
+    720 on the development machine's GPU with the two terrain shaders marked, the frame and the
+    GPU's work read 16.7 and 6.3 ms at 4 columns, 16.7 and 6.5 at 8, 16.9 and 7.7 at 10, 16.9 and
+    9.1 at 12 with 4.2 ms of each frame waiting, 19.0 and 10.7 at 14 and 22.1 and 12.2 at 16, the
+    shadows 1.2 to 1.3 ms from 8 to 16 where they took 4.3 and 23.5 unmarked and the camera's pass
+    from 12.0 to 5.5 at 16, against 17.2, 26.0 and 42.5 ms at 8, 12 and 16 without the marks, so the
+    gain is the marks'; from 13 columns the main thread bounds the frame; memory 865 MB at 8, 1,256
+    at 12 and 2,084 at 16; flying east over new land for ten seconds, 8 columns 18.3 to 18.9 ms, 10
+    18.4 to 20.9, 11 19.4 to 23.8 and 12 21.4 to 28.8, no distance holding 60 there since the update
+    meshes and joins the new columns on the main thread, 5 ms a frame at 8 and 10 to 14 at 12;
+    lavapipe's GPU work 0.57 s at 4, 0.88 at 8, 1.12 at 10 and 1.27 at 12. So standing holds 60 to
+    12 columns, and in a flight over new land 10 costs about what 8 does and 12 a third more; the
+    default's figure, 12 or 10, is the owner's, put to the owner with the reviewer's word for 12 and
+    the flight's meshing as a reading of its own after. The leak on `5.2.155` with both halves reads
+    as `cc334ab` did alone on `5.2.92`, the corner probe 13 under its reference, the grass at the
+    wall's foot 1.73 of the reference with the screen probes off and 1.34 on where the same row away
+    from the lamp reads 1.55 and 1.56, the room facing the lamp 1 under, and the walled-in rule
+    changing nothing since no probe lies in the stone after the mesh's mend. In the tree: the bump,
+    the workflows' engine checkout at `9f9180b7`, both terrain shaders marked with the reason and
+    Decision 10's sentence, the strict build clean and 126 tests passing; one commit carrying
+    REVIEW.md once the figure is in. By 09:51 the standing figures above were found read with an oak
+    leaf block one step before the eye filling the frame, item 12's teleport standing the player at
+    a leaf, so the camera's pass shaded almost nothing and its time and the frame's read low, and
+    item 12's table was very likely read the same way; the coder reads every distance again from an
+    open view, flying at 96 looking east over the forest to the sea, and the owner's figure waits on
+    that table. The flight and leak readings stand, from other places, and lavapipe's were from the
+    blocked view too and are read again after the GPU's table; the build workflow's play run on
+    lavapipe held to four cores passes at both distances, 448 seconds at 8 columns and 452 at 12,
+    since lavapipe does not finish meshing the wider land within the run. The open view read by
+    10:05: flying at 96 looking east 8 down over the forest to the sea, seed 1 at noon, 1280 by 720
+    offscreen on the development machine's GPU with the marks, each distance three times in a fresh
+    session over 15 seconds, the frame holds 16.7 ms to 12 columns with the GPU at 6.6, 8.1 and 9.5
+    ms at 8, 10 and 12 and 11.3, 9.9 and 6.9 ms of each frame spare, 16.7 to 16.9 at 14 with the GPU
+    at 11.3 and 3.2 spare, and 16.9 to 18.8 at 16 with the GPU at 12.8 and 0.4 spare, the shadows
+    1.1 to 1.2 ms at every distance and the global illumination 1.3 to 1.5, the 3.1 to 3.4 ms read
+    at 4 columns having been the leaf, 1.8 from the open view as item 12 had it; memory 812 MB at 8
+    columns, 1,277 at 12, 1,971 at 14 and 2,169 at 16; the main thread bounds the frame as the
+    distance grows while the GPU's work stays under 13 ms, the fifteen sessions agreeing within 0.2
+    ms below 16 columns where the blocked view's had moved between sessions; the gain is the marks',
+    the GPU without them 11.3, 26.0 and 42.5 ms at 8, 12 and 16 against 6.5, 9.1 and 12.2 in the
+    same view. Flying over new land the frame reads 18.3 to 18.9 ms at 8, 18.4 to 20.9 at 10, 21.4
+    to 28.8 at 12 and 23.8 to 24.7 at 14, the update meshing and joining new columns on the main
+    thread, 12 ms a frame at 14. So 14 is the most that holds 60 standing, with 3.2 ms spare, and
+    flies as 12 does; 12 keeps 6.9 ms spare and 700 MB less. The figure, 12 or 14, is the owner's,
+    put to the owner with the reviewer's word for 12, the margin and the memory on machines slower
+    than the development machine's; the tree holds 12 meanwhile. Lavapipe's GPU work from the open
+    view with the marks is 0.49 s a frame at 4 columns, 0.82 at 8, 1.20 at 12 and 1.42 at 14, most
+    of it the camera's pass. The owner chose 12 at 10:36 on 2026-10-20, so the default is 12
+    columns, its remark giving the table and the margin, and the commit goes in.
 
 ## Verdicts
 
@@ -512,6 +561,17 @@ No verdict is open.
    22:36 the owner said to take exposure 1.25 beside the curve if it gives the light values back,
    since the curve alone reads the frame about 8 percent darker; item 14 measures that it does. The
    owner chose 1.25 at 22:53, the day exact and the nights about a fifth brighter.
+
+10. **The review's files are committed by the batch that comes next, and by the reviewer at most
+    once a day.** The owner wrote on 2026-10-20 that the review's commits had become nine of every
+    ten in the history and were to stop, and then that the reviewer is to edit the review's files in
+    the tree and commit nothing, as it did before 2026-10-19, with one commit a day at most where
+    that makes sense. So REVIEW.md, SHARED.md and NORM.md stay edited in the tree and the coder's
+    next batch carries them, as AGENTS.md has it; the reviewer commits them in a commit of their own
+    only at a day's end where no batch carried them, never for a reading, a run or a package. The
+    coder adds one sentence saying so to COMMITS.md in the next batch, in the paragraph on what a
+    commit carries, naming the review's files, the batch that comes next and the one commit a day at
+    most, and no one who decided it (N 4.7).
 
 ## Replies
 

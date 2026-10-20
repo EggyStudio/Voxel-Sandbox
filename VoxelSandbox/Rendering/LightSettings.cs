@@ -9,7 +9,7 @@ public sealed class LightSettings
     /// <summary>The quality of global illumination, the highest by default, since the game is made to show it.</summary>
     public GlobalIllumination Quality = GlobalIllumination.High;
 
-    // Four cascades of 0.25 cover 128 blocks across around the eye, half of the 256 drawn at the
+    // Four cascades of 0.25 cover 128 blocks across around the eye, a third of the 384 drawn at the
     // default render distance, with four cells to a block, so the middle of a tunnel one block wide
     // is two cells clear of its walls.
     public int Cascades = 4;

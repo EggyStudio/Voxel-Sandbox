@@ -411,7 +411,8 @@ section it leaves by the faces the open cells around the eye reach. `voxel.cull`
 window turn it off. Sections are not culled to the view's frustum, because a mesh left out of a
 frame leaves the field, and the indirect light it reflected or blocked goes with it until the field
 settles again, where the land the flood leaves out lies behind walls the field holds, so a cave
-lit by a glowstone looks the same either way.
+lit by a glowstone looks the same either way. Each of the engine's passes leaves out on its own the
+sections whose boxes it cannot see, and the field keeps them all the same.
 
 ## Light levels and corners
 
@@ -509,29 +510,39 @@ bed to set where the player respawns, spiders that climb walls, and a bow and ar
 ## What it costs
 
 Every section within the render distance that the eye can see is drawn each frame, so the render
-distance sets most of the frame's cost. It is 8 columns by default, 128 blocks, and from 2 to 16 in
+distance sets most of the frame's cost. It is 12 columns by default, 192 blocks, and from 2 to 16 in
 the settings window, whose first lines give the frame's time, draws and triangles, and through
 `voxel.distance`, and a save keeps no distance of its own. The sections are drawn through the
-terrain's own shader, and the engine culls no draw made through a program's shader, so it draws
-each into the depth pass and each of the sun's three shadow cascades as well as the camera's, and
-the shadows, which reach 96 blocks, grow with every section within the render distance. On seed 1's
-spawn at noon, at 1280 by 720 on the development machine's RTX 4070 Laptop GPU, the frame keeps 60
-a second up to 8 columns. The frame's time, the GPU's and its passes' in milliseconds, and the
-memory the game holds:
+terrain's own shader, which keeps the positions their meshes hold, and the game marks it so with
+`SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and each of
+the sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the
+shadows, which reach 96 blocks, take about the same from 8 columns to 16. Over seed 1's spawn at
+noon, seen from above the forest, at 1280 by 720 on the development machine's RTX 4070 Laptop GPU,
+the frame keeps 60 a second up to 14 columns, with 6.9 ms of each frame to spare at 12 and 3.2 at
+14, and loses it at 16, where the main thread bounds it, the game's update and drawing with the
+engine's render work, while the GPU's work stays under 13 ms. The frame's time, the GPU's and its
+passes' in milliseconds, and the memory the game holds, each but the first the mean of three
+sessions:
 
 | columns | frame | GPU | shadows | depth | global illumination | memory |
 |---|---|---|---|---|---|---|
-| 4 | 16.7 | 4.7 | 0.5 | 0.6 | 1.8 | 609 MB |
-| 8 | 16.7 | 12.1 | 4.3 | 1.9 | 2.1 | 925 MB |
-| 9 | 17.2 | 16.6 | 6.5 | 2.7 | 2.0 | 1,040 MB |
-| 10 | 21.7 | 21.8 | 9.5 | 3.4 | 2.3 | 1,036 MB |
-| 12 | 29.7 | 29.7 | 14.0 | 4.9 | 2.2 | 1,213 MB |
-| 16 | 46.7 | 46.4 | 23.5 | 7.6 | 2.1 | 2,068 MB |
+| 4 | 16.7 | 5.5 | 0.6 | 0.2 | 1.8 | 599 MB |
+| 8 | 16.7 | 6.6 | 1.1 | 0.7 | 1.3 | 812 MB |
+| 10 | 16.7 | 8.1 | 1.2 | 1.1 | 1.4 | 1,163 MB |
+| 12 | 16.7 | 9.5 | 1.2 | 1.7 | 1.4 | 1,277 MB |
+| 14 | 16.8 | 11.3 | 1.2 | 2.4 | 1.4 | 1,971 MB |
+| 16 | 17.5 | 12.8 | 1.2 | 2.9 | 1.5 | 2,169 MB |
 
-On lavapipe, as the build workflow plays the game, the GPU's work is 0.58 s a frame at 4 columns and
-0.92 s at 8. Leaving the unseen sections out matters most underground. In a cave of seed 1's hills
-it leaves 905 of 1,085 sections undrawn and takes the frame from 16 ms to 4, the sun's shadows from
-6.9 ms to 0.07, and in a closed room on a flat world it takes 0.3 ms off the window's passes.
+Flying east over land the stream has not loaded, the game meshes the sections and joins the columns
+that come into reach on the main thread, and the frame keeps 60 a second at no distance. In three
+flights of ten seconds over the same land it takes 18.3 to 18.9 ms at 8 columns, 18.4 to 20.9 at 10,
+21.4 to 28.8 at 12 and 23.8 to 24.7 at 14.
+
+On lavapipe, as the build workflow plays the game, the GPU's work is 0.49 s a frame at 4 columns,
+0.82 s at 8, 1.20 s at 12 and 1.42 s at 14. Leaving the unseen sections out matters most underground.
+In a cave of seed 1's hills it leaves 905 of 1,085 sections undrawn and takes the frame from 16 ms
+to 4, the sun's shadows from 6.9 ms to 0.07, and in a closed room on a flat world it takes 0.3 ms
+off the window's passes.
 
 A mob's pieces take no part in global illumination, so the scene's distance field leaves them out.
 Each piece of a walking mob would otherwise be a moving mesh the field stamps as a box every frame,
