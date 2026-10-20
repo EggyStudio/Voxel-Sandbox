@@ -562,3 +562,8 @@ A mob's pieces take no part in global illumination, so the scene's distance fiel
 Each piece of a walking mob would otherwise be a moving mesh the field stamps as a box every frame,
 which over seed 1's first village with the hills at 8 columns cost the field 2.1 ms of the CPU and
 1.0 ms of the GPU a frame for the 17 mobs drawn walking, and 4.0 and 3.9 ms for a crowd of 76.
+The mob shader lights each of a mob's pixels twice, its own face and a face turned up. With the nine
+standing in a row at noon, as in the daylight capture, the window's pass reads the same with them as
+with none, within the 0.4 ms its readings swing by. With a sheep a block and a half from the eye
+filling most of the window it costs 0.43 to 0.49 ms more than with none, where the engine's own
+material cost 0.21 to 0.22, over four readings of 600 frames each.
