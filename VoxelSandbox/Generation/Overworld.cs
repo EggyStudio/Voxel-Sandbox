@@ -209,12 +209,14 @@ public sealed class Overworld : IWorldGenerator
     public ChunkColumn Generate(int columnX, int columnZ)
     {
         var column = new ChunkColumn(columnX, columnZ);
+        int minX = columnX * Section.Size, minZ = columnZ * Section.Size;
+        var villages = Structures.Village.GroundIn(minX, minZ, minX + Section.Mask, minZ + Section.Mask, this);
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
                 int wx = columnX * Section.Size + x, wz = columnZ * Section.Size + z;
                 var (height, biome, top, under, temperature, _) = Ground(wx, wz);
-                var open = height > SeaLevel + 4 && _mouths.Fractal(wx / 90f, wz / 90f, 2) > 0.3f;
+                var open = height > SeaLevel + 4 && _mouths.Fractal(wx / 90f, wz / 90f, 2) > 0.3f && !Structures.Village.OnGround(villages, wx, wz);
                 Paint(column, x, z, wx, wz, Shape(wx, wz));
                 var banded = biome == Biomes.Badlands;
                 column.Set(x, 0, z, BlockId.Bedrock);
@@ -230,7 +232,8 @@ public sealed class Overworld : IWorldGenerator
                         : BlockId.Stone;
                     // The caves stay three blocks under the ground, so they are dark until dug into,
                     // where an emissive block is the only light, but in patches of high ground a
-                    // tunnel that rises near the top breaks out, a mouth the sun shines into.
+                    // tunnel that rises near the top breaks out, a mouth the sun shines into, though
+                    // never on a village's ground, which its roads and footings lie on.
                     if ((y < height - 3 || open) && IsCave(wx, y, wz)) continue;
                     column.Set(x, y, z, block);
                 }

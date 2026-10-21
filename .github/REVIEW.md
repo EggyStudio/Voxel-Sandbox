@@ -5,31 +5,33 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `8261308`, item 45, the look without a pack in Bare Bones' colors, and nothing else,
-carrying the review's file: 116 surfaces taking the pack's averages through `voxel.palette`, the
-water as its gray under its tint at its alpha, the birch and spruce leaves under theirs, glass, ice
-and stained glass at their alphas; the ores keeping their own colors, since averaged the pack's coal
-ore reads near stone and an ore without a texture shows by its color alone, for the owner's word;
-the plants keeping theirs; a capture of the hills and the mesas with no pack beside the same with
-Bare Bones reading nearly alike; 198 tests, the strict build clean, the play script clean; the
-README's head pictures a palette behind, which item 46 takes again. Read at 05:15 on 2026-10-21. The
-build run of `c54f362` lost its play job to the 40 minute limit at 05:21, Verdict 1, its three test
-jobs green, which `cc46f25` mends with the limit at 60, so the three heads were pushed at 05:23, and
-their build run ended green at 05:47, the play job in 24 minutes 30 seconds under the 60 minute
-limit, which settles Verdict 1; the walk stays at render distance 4 while it keeps under 40. Shortly
-before 05:15 the owner asked for the README's pictures taken again, an animation at its head and
-pictures in its parts, item 46 and Decision 24. Shortly before 05:25 the owner turned item 46's
-pictures to the packs' look, credited. Shortly before 05:40 the owner gave three words on the
-scouted pictures, Decision 25 and items 47 to 49, before item 46's final captures. Next items 47 and
-49, then 48, then 50, then item 46's captures, then item 39, then the items in order; item 38's
-second part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the
-Ui and build folders wait on the owner's word.
+Reviewed up to `f7df279`, items 47 and 49, the dome beyond the bodies and the sun and the moon in
+the source's look, and nothing else, carrying the review's file: the sun and the moon as 32-pixel
+pictures of the game's own, an eight-pixel square body with a glow falling from a sixth of its color
+beside the body to nothing at fifteen pixels, held to levels of a thirty-second and dithered by a
+four by four Bayer pattern, the moon's glow as bright as its phase is lit, both drawn additively as
+the source draws its own, the halo rings gone; a pack's sun and moon pictures drawn where it has
+them, Bare Bones' when it is on; the dome's radius 3,600 beyond the stars' 3,200 and inside the far
+plane, its share given by height, each body a grid of quads whose corners take one minus the dome's
+share at their height, the stars too; the sky made before the first pack reload so the packs reach
+it; 200 tests, the square sun's glow clear at the picture's edge, a sun at three degrees whole above
+six and gone under zero, the dome beyond the bodies and its alphas equal to its share; the strict
+build clean, the play script clean; a sun at six degrees over the sea dimming into the haze with no
+line, and the moon showing its phase. Read at 05:52 on 2026-10-21 and pushed at 05:52; the build run
+of `8261308` had ended green at 05:47. Shortly before 05:55 the owner asked for Bare Bones' smooth
+glow in the game's own sun and moon, item 51. Next item 48, the villages' ground whole, then 51,
+then 50, then item 46's captures, then item 39, then the items in order; item 38's second part when
+the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and build
+folders wait on the owner's word.
 
-Before it, `236763d` came, item 41, the game's own ground looks with the grass's tile never turning,
-and nothing else, carrying the review's file.
+Before it, `8261308` came, item 45, the look without a pack in Bare Bones' colors, after `236763d`,
+item 41, and `cc46f25`, item 44 with the play job's limit at 60, and nothing else, each carrying the
+review's file. The three pushed at 05:23, their build run green at 05:47, the play job in 24 minutes
+30 seconds.
 
-Before it, `cc46f25` came, item 44, the dome under the horizon with the play job's limit raised to
-60 minutes, and nothing else, carrying the review's file. Pushed at 05:23 with the two after it.
+Before it, `c54f362` came, item 25's third commit, the nine trees with the cherry's lanterns, and
+nothing else, carrying the review's file. Pushed at 04:41 with `723e28c`, its play job lost to the
+40 minute limit, Verdict 1, mended by the head after it.
 
 ## Now
 
@@ -658,7 +660,7 @@ Before it, `cc46f25` came, item 44, the dome under the horizon with the play job
     whose vertices take the dome's clear share at their height, so the haze still covers a sinking
     sun as blending the dome over it would and nothing is cut; the test of item 44 kept and one of a
     low sun's glow whole across the horizon's six degrees. One commit, small, before item 46's final
-    captures.
+    captures. Done at `f7df279` on 2026-10-21, as the head says.
 
 48. **No tunnel mouth and no ravine under a village (Decision 25).** The owner wrote shortly before
     05:40 on 2026-10-21 of seeing a lot of rifts in villages, to be made rarer since they make the
@@ -681,7 +683,7 @@ Before it, `cc46f25` came, item 44, the dome under the horizon with the play job
     environment sun and moon phases picture, the game draws those, as pictures alone under Decision
     22, the moon's phase by the day; the dusk's color fan of the sky's gradient stays. A capture of
     the sun at noon and low and the moon at night in the record. One commit, small, with item 47
-    before item 46's final captures.
+    before item 46's final captures. Done at `f7df279` on 2026-10-21, as the head says.
 
 50. **The block's texture over the whole window while the eye is inside a block, as the source draws
     it (Decision 25).** The owner wrote shortly before 05:42 on 2026-10-21 that the camera lands
@@ -699,6 +701,21 @@ Before it, `cc46f25` came, item 44, the dome under the horizon with the play job
     anything but air, the script moving the eye up a block at a time to eight until its cell is air
     or failing with the view's name, and the views chosen where the eye is in the open. One commit,
     small, after item 48 and before item 46's final captures.
+
+51. **The sun's and the moon's glow smooth as Bare Bones' is, in the game's own art too (Decision
+    25).** The owner wrote shortly before 05:55 on 2026-10-21, seeing item 49, that they like Bare
+    Bones' one more and that it should be implemented in the native look without resources too,
+    being a smoothing of the dithering, the flares of the sun and the moon. The reading of the
+    owner's copy as numbers, nothing copied: a 128-pixel picture, the same three-ring square body at
+    four texels to each of the source's pixels, opaque and added to the sky, with a smooth glow from
+    about a tenth of its color beside the body falling nearly linearly to nothing fifteen of the
+    body's pixels from the middle. So the game paints the sun and the moon at four texels to a
+    pixel, 128 across, the body's pixels as four by four blocks so it stays pixel art, the glow
+    smooth with no dithering or levels from about a tenth beside the body falling linearly to
+    nothing at fifteen pixels, the moon's as bright as its phase is lit; the tests swap the dither's
+    check for a smooth fall, never rising outward and never stepping by more than a few levels
+    between neighbors; the sky's grid stays one quad to each of the 32 pixels. One commit, small,
+    after item 48.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1315,7 +1332,10 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     looking villages existing, so both are replaced in item 46. Shortly before 05:42 the owner added
     that the camera lands inside blocks in some captures, to show the block's texture on the whole
     screen then and to check the eye before a capture and move out or find a better spot, which is
-    item 50 and a check in item 46's script.
+    item 50 and a check in item 46's script. Shortly before 05:55 the owner, seeing item 49's sun,
+    said they like Bare Bones' more and that it is to be implemented in the native look without
+    resources too, a smoothing of the dithering, the flares of the sun and the moon; item 51, the
+    glow smooth as the pack's, read as numbers.
 
 ## Replies
 

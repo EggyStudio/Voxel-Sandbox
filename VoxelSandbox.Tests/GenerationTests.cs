@@ -97,6 +97,45 @@ public class GenerationTests
     }
 
     [Fact]
+    public void No_Tunnel_Opens_And_No_Ravine_Is_Cut_Under_Seed_1s_First_Villages()
+    {
+        var land = new Overworld(1);
+        var village = Structures.Find("village")!;
+        var ravines = Structures.Find("ravine")!;
+        var starts = Enumerable.Range(-12, 25).SelectMany(cz => Enumerable.Range(-12, 25).Select(cx => village.StartIn(cx, cz, land)))
+            .OfType<StructureStart>().OrderBy(s => Math.Abs(s.X) + Math.Abs(s.Z)).Take(8).ToList();
+        Assert.Equal(8, starts.Count);
+
+        int roads = 0;
+        foreach (var start in starts)
+        {
+            int x0 = start.X - 6, z0 = start.Z - 6, x1 = start.X + village.Size + 5, z1 = start.Z + village.Size + 5;
+            Assert.Empty(ravines.StartsIn(x0, z0, x1, z1, land));
+            var columns = new Dictionary<(int, int), ChunkColumn>();
+            for (int cz = z0 >> Section.Shift; cz <= z1 >> Section.Shift; cz++)
+                for (int cx = x0 >> Section.Shift; cx <= x1 >> Section.Shift; cx++)
+                    columns[(cx, cz)] = land.Generate(cx, cz);
+            BlockId At(int x, int y, int z) => columns[(x >> Section.Shift, z >> Section.Shift)].Get(x & Section.Mask, y, z & Section.Mask);
+
+            // Open air from over the ground reaches no deeper than three blocks under its top
+            // anywhere on the village's ground, as far as a house set into a slope clears, so no
+            // pit opens beside a road or a footing, and a road lies on three whole blocks.
+            for (int z = z0; z <= z1; z++)
+                for (int x = x0; x <= x1; x++)
+                {
+                    var ground = land.At(x, z).Height;
+                    var floor = ground + 1;
+                    while (floor > 0 && At(x, floor, z) == BlockId.Air) floor--;
+                    Assert.True(floor >= ground - 3, $"open air down to {floor + 1} at {x}, {z}, where the ground is {ground}, by the village from {start.X}, {start.Z}");
+                    if (At(x, ground, z) != BlockId.DirtPath) continue;
+                    roads++;
+                    for (int y = ground - 3; y < ground; y++) Assert.NotEqual(BlockId.Air, At(x, y, z));
+                }
+        }
+        Assert.True(roads > 8 * 100, $"{roads} blocks of road");
+    }
+
+    [Fact]
     public void A_Ravine_Cuts_The_Ground_Open_To_The_Sky_At_Its_Middle()
     {
         var land = new Overworld(1);

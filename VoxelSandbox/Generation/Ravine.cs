@@ -10,7 +10,8 @@ namespace VoxelSandbox;
 /// each column it crosses finds the same line from the start alone and cuts its own part, from the
 /// ground the generator makes at each place down. It cuts nothing beside ground at the sea's level,
 /// so no water stands beside its air, and it clears whatever grows over its cut, so no tree hangs
-/// over it.
+/// over it. None is cut across a village's ground, its margin too, where a road or a footing laid
+/// at the ground's height would hang over it.
 /// </remarks>
 public sealed class Ravine : Structure
 {
@@ -27,6 +28,9 @@ public sealed class Ravine : Structure
         y = ground;
         return ground > Overworld.SeaLevel + 3;
     }
+
+    protected override bool Fits(Overworld land, int x, int z) =>
+        Structures.Village.GroundIn(x - Margin, z - Margin, x + Size - 1 + Margin, z + Size - 1 + Margin, land).Count == 0;
 
     public override void Build(ColumnClip clip, StructureStart start, Overworld land)
     {

@@ -251,11 +251,12 @@ down.
 Tunnels wind under the ground where two noises are both near zero, and wide caverns open deep down
 where a third is high. They stay three blocks under the ground, so they are dark until dug into, but
 in patches of high ground away from the sea a tunnel that rises near the top breaks out, a mouth the
-sun shines into. A ravine cuts the ground open along a swaying line about 48 blocks long, up to
-seven wide at its middle and narrowing to its ends, its floor up to 30 blocks down with a few
-emissive magma blocks on it, so the sun's light falls down its walls and the magma's lights its
-depths at night. No ravine is cut beside the sea, so no water stands beside its air. `voxel.find
-ravine` gives the nearest.
+sun shines into, though never on a village's ground or within six blocks of it. A ravine cuts the
+ground open along a swaying line about 48 blocks long, up to seven wide at its middle and narrowing
+to its ends, its floor up to 30 blocks down with a few emissive magma blocks on it, so the sun's
+light falls down its walls and the magma's lights its depths at night. No ravine is cut beside the
+sea, so no water stands beside its air, nor across a village's ground, where a road or a footing
+laid at the ground's height would hang over it. `voxel.find ravine` gives the nearest.
 
 ## Trees and structures
 

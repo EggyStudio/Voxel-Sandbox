@@ -14,7 +14,9 @@ namespace VoxelSandbox;
 /// Every piece stands on the ground the generator makes at its own place, which it can tell for a
 /// column not generated, so each column the village crosses builds the same village. A road follows
 /// the ground block by block, crossing water on planks, and a building stands at the height of its
-/// middle on a footing of stone down to the ground.
+/// middle on a footing of stone down to the ground. So the ground is kept whole under the village
+/// and <see cref="Kept"/> blocks past its square, where no tunnel opens to the sky and no ravine is
+/// cut, since a road or a footing laid at the ground's height would hang over the pit.
 /// </para>
 /// <para>
 /// Each road has a near plot on its right and a far one on its left, so the four near plots fill
@@ -55,6 +57,21 @@ public sealed class Village : Structure
     }
 
     public override bool ClearsTrees => true;
+
+    /// <summary>How far past its square a village's ground is kept whole.</summary>
+    public const int Kept = 6;
+
+    /// <summary>The villages whose ground, their square and <see cref="Kept"/> blocks past it, reaches into a box between two corners.</summary>
+    public List<StructureStart> GroundIn(int minX, int minZ, int maxX, int maxZ, Overworld land) =>
+        [.. StartsIn(minX - (Kept - Margin), minZ - (Kept - Margin), maxX + (Kept - Margin), maxZ + (Kept - Margin), land)];
+
+    /// <summary>Whether a place lies on the ground of one of some villages, within <see cref="Kept"/> blocks of its square.</summary>
+    public bool OnGround(List<StructureStart> villages, int x, int z)
+    {
+        foreach (var start in villages)
+            if (x >= start.X - Kept && x < start.X + Size + Kept && z >= start.Z - Kept && z < start.Z + Size + Kept) return true;
+        return false;
+    }
 
     // The ground at the middle and at the four roads' ends lies within ten blocks, so the roads climb
     // no cliff and the buildings stand on short footings, and all five are of one biome, so a village
