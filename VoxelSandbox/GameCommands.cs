@@ -484,6 +484,14 @@ public static class GameCommands
         return Measurements.Ring(LoadImageFromScreen(), game.Player.Camera, new System.Numerics.Vector3(x, y, z), radius, Math.Clamp(samples, 8, 720));
     }
 
+    [Command("voxel.pixel", "The last frame's color in sRGB levels at the pixel a point in the world lies on: voxel.pixel <x> <y> <z>")]
+    internal static string Pixel(float x, float y, float z)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
+        return Measurements.Pixel(LoadImageFromScreen(), game.Player.Camera, new System.Numerics.Vector3(x, y, z));
+    }
+
     [Command("voxel.line", "The last frame's luminance at points evenly along a line in the world, and the largest change between neighbors as a share of the whole: voxel.line <x1> <y1> <z1> <x2> <y2> <z2> <samples>")]
     internal static string Line(float x1, float y1, float z1, float x2, float y2, float z2, int samples)
     {

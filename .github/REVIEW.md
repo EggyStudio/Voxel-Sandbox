@@ -5,28 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `e6a2c55`, item 63, the mobs' faces lit evenly, and nothing else, carrying the
-review's file with items 63 and 64 and Decision 31: mob.slang sees the turned-up light from straight
-above, the reason in its comment; the play script spawns a zombie at noon, confirms where it stands
-and reads 33 points down a column 3.5 pixels from the face's middle from the zombie's own height,
-the eye at 5.72 inside the face's 5.5 to 6.0, the column clear of the eyes and mouth today and of
-the eyes and nose after item 64, asking no step over 2 levels, 0.2 and 0.1 in the play run against
-the committed shader's 10.4; the sheep's shaded wool reads 192.0, 194.0 and 195.0 where it read
-169.5, 172.0 and 173.0, part of its side lying above the eye, the README's figure following and its
-mob paragraph saying why, the check's range of 120 to 200 holding with 5 to spare; the mob pictures
-not taken again here, item 64 taking the zombie's and villager's sheets and the daylight row and
-item 62 all of them; the strict build clean, 215 tests, the play script clean. Read at 10:01 on
-2026-10-21. Not pushed: the build run 39562169517 of `8f2a2c8` is still running, and the three heads
-are pushed when it ends. Next item 64, then 62, then item 39's cutout leaves, doors and glass, then
-its animated textures, then the pictures taken again at 40 degrees, then 26 and the items in order;
-items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and build
-folders wait on the owner's word.
+Reviewed up to `69ecb49`, item 64, the zombie's and villager's own faces, and nothing else, carrying
+the review's file: the game's own zombie takes the source's default face, read from the 26.3
+client's picture and Bare Bones' as reference in the scratchpad alone, the mouth gone, the eyes two
+dark lines two pixels wide in the fifth row from the top at 1 to 3 on either side of the middle, a
+nose in a darker green two pixels wide in the row below between them; the villager's brow and eyes
+move down a pixel together so no row of skin opens between them, their rows having matched the
+source's, which the comment says; the play script's zombie face column at 3.5 pixels from the middle
+stays clear of the new eyes and still reads 0.1; the two pair sheets and the daylight row taken
+again; the strict build clean, 215 tests, the play script clean. Read at 10:07 on 2026-10-21. The
+build run 39562169517 of `8f2a2c8` ended green, the three test jobs within a minute and the play job
+in 36 minutes 49 seconds, so the held heads were pushed at 10:06; this commit was made in that
+minute and went out in the same push, read at once after, the only commit pushed before its reading.
+Shortly before 10:15 the owner wrote of a mod replacing the creeper's skin for Bare Bones, item 65
+and Decision 32, written at 10:16. Next item 62, then 65, then item 39's cutout leaves, doors and
+glass, then its animated textures, then the pictures taken again at 40 degrees, then 26 and the
+items in order; items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for
+the Ui and build folders wait on the owner's word.
+
+Before it, `e6a2c55` came, item 63, the mobs' faces lit evenly, and nothing else, carrying the
+review's file with items 63 and 64 and Decision 31. Read at 10:01, pushed at 10:06 with `9a13c54`
+and `92112c5` after the build run of `8f2a2c8` ended green.
 
 Before it, `92112c5` came, item 61, the mobs' bands, and nothing else, carrying the review's file.
 Read at 09:41, held for the build run of `8f2a2c8`.
-
-Before it, `9a13c54` came, item 60, the lamps' light smooth, and nothing else, carrying the review's
-file with item 62 and Decision 30. Read at 09:33, held for the build run of `8f2a2c8`.
 
 ## Now
 
@@ -956,7 +958,26 @@ file with item 62 and Decision 30. Read at 09:33, held for the build run of `8f2
     art, worn where no pack gives a picture: the zombie's eyes as horizontal dark lines, a nose and
     no mouth, as the source's default zombie face is read, and the villager's eyes a little lower;
     the pair sheets of the two taken again. One commit, small, after item 63 and before item 62, so
-    item 62 keeps these faces for a game with no pack.
+    item 62 keeps these faces for a game with no pack. Done at `69ecb49` on 2026-10-21, as the head
+    says.
+
+65. **The Bare Bones x Fresh Animations pack as a fourth default pack above Bare Bones, so the mobs
+    wear its pictures (Decision 32).** The owner wrote shortly before 10:15 on 2026-10-21, relayed
+    verbatim, "I have a mod that replaces the creeper skin for bare bones. Check". Read in the
+    modpack: its pack order from lowest to highest is Bare Bones 1.21, Fresh Animations 1.9.2 and
+    Bare Bones x Fresh Animations 1.9, so the creeper the owner sees is the last pack's, Bare Bones'
+    creeper with a darker face plus Fresh Animations' pieces in parts of the picture the source's
+    cuboids never read, 64 by 32 in the vanilla layout; Entity Model Features draws Fresh
+    Animations' animated models, which the game does not draw, and Creeper Overhaul gives each biome
+    its own creeper in its own style and namespace, which no pack restyles and which stays out. On
+    Modrinth the pack is bare-bones-x-fresh-animations by TeamHibiscus under the Unlicense. The
+    mend, after item 62: the pack as a fourth default fetched as the three are under Decision 18
+    with its version and SHA-512 in resources/packs.json, listed above Bare Bones so its mob
+    pictures win as in the owner's order, the game reading a picture from the first pack that has
+    one; first each of the nine kinds' pictures in it checked for the vanilla layout as the
+    creeper's is, a kind whose picture departs from it kept on Bare Bones' and named in the commit,
+    and a capture of the mobs with and without the pack beside the reading. One commit, small, after
+    item 62's second commit and before item 39's remaining parts.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1644,6 +1665,14 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     shortly before 09:50 on 2026-10-21 to change the default native face of the zombie to the
     source's archetype default, horizontal lines and a nose but no mouth, and to set the villager's
     eyes a bit lower, item 64, the game's own art that shows where no pack is given.
+
+32. **The Bare Bones x Fresh Animations pack is the fourth default pack, above Bare Bones.** The
+    owner wrote shortly before 10:15 on 2026-10-21 that they have a mod replacing the creeper's skin
+    for Bare Bones and to check; it is the Bare Bones x Fresh Animations pack of TeamHibiscus,
+    highest of the three mob packs in the modpack's order, under the Unlicense on Modrinth, so it is
+    fetched as the others are under Decision 18 and listed above Bare Bones, item 65, its pictures
+    laid on the source's cuboids as Bare Bones' are and its animated models, which need Entity Model
+    Features, not drawn.
 
 ## Replies
 

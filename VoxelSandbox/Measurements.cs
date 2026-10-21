@@ -184,6 +184,17 @@ public static class Measurements
             $"radius {radius}: mean {mean:0.00}, low {low:0.00}, high {high:0.00}, swing {(high - low) / mean:0.000} of the mean, {peaks} peaks; by angle {list}");
     }
 
+    /// <summary>The picture's color in sRGB levels at the pixel a point in the world lies on, or why none is read.</summary>
+    public static string Pixel(Image image, Camera3D camera, Vector3 point)
+    {
+        if (!IsPointInFrontOfCamera(point, camera)) return "the point is behind the eye";
+        var at = GetWorldToScreen(point, camera);
+        int x = (int)MathF.Round(at.X), y = (int)MathF.Round(at.Y);
+        if ((uint)x >= image.Width || (uint)y >= image.Height) return "the point is off the picture";
+        var i = (y * image.Width + x) * 4;
+        return $"red {image.Data[i]}, green {image.Data[i + 1]}, blue {image.Data[i + 2]} at {x}, {y}";
+    }
+
     /// <summary>
     /// The picture's luminance at points evenly along a line in the world, from its first end to its
     /// second, and how smoothly it changes, given as its first and last values and the largest change

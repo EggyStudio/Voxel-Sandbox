@@ -115,6 +115,7 @@ public sealed class VoxelGame : IDisposable
         PackGui.Use(packs);
         InWall.Use(packs);
         Sky.Use(packs);
+        MobRenderer.Use(packs);
         Packs.Dispose();
         Packs = packs;
         // The world is not there yet as the game begins, and its sections are meshed as it opens.

@@ -264,6 +264,45 @@ largest=$(printf '%s\n' "$face" | sed -nE 's/^from [0-9.]+ to [0-9.]+, largest s
 [ -n "$largest" ] || fail "voxel.line read no line down the zombie's face, saying $face"
 awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the zombie's face steps in light at the eye's height, $face"
 
+# A creeper wears a pack's picture of it laid as the source lays it. The pack, a folder of one
+# picture written here as a PNG with perl's own zlib, is red where the source lays the head's front
+# and blue everywhere else, so the head's front reads red and the body's front blue.
+picture="$data/picture-pack/assets/minecraft/textures/entity/creeper"
+mkdir -p "$picture"
+printf '{"pack":{"pack_format":34,"description":"A creeper picture red on its face"}}' > "$data/picture-pack/pack.mcmeta"
+perl -MCompress::Zlib -e '
+  my ($w, $h, $raw) = (64, 32, "");
+  for my $y (0 .. $h - 1) {
+    $raw .= "\0";
+    $raw .= ($_ >= 8 && $_ < 16 && $y >= 8 && $y < 16) ? "\xff\x00\x00\xff" : "\x00\x00\xff\xff" for 0 .. $w - 1;
+  }
+  sub chunk { my ($type, $data) = @_; pack("N", length $data) . $type . $data . pack("N", crc32($type . $data)) }
+  binmode STDOUT;
+  print "\x89PNG\r\n\x1a\n", chunk("IHDR", pack("NNCCCCC", $w, $h, 8, 6, 0, 0, 0)), chunk("IDAT", compress($raw)), chunk("IEND", "");
+' > "$picture/creeper.png"
+pack="$data/picture-pack"
+if command -v cygpath > /dev/null; then pack=$(cygpath -m "$pack"); fi
+cmd voxel.packs "$pack"
+cmd voxel.kill all
+cmd voxel.tp 6.5 4 12.5
+cmd voxel.look 0 0
+cmd frames.wait 2
+cmd voxel.spawn creeper 0
+cmd voxel.tp 6.5 4 11.5
+cmd voxel.look 0 -8
+cmd frames.wait 30
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+front=$(ask voxel.pixel 6.5 5.375 9.76)
+body=$(ask voxel.pixel 6.5 4.75 9.635)
+echo "creeper's face $front, its body $body"
+read -r fr fg fb <<< "$(printf '%s\n' "$front" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p')"
+read -r br bg bb <<< "$(printf '%s\n' "$body" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p')"
+[ -n "$fb" ] && [ -n "$bb" ] || fail "voxel.pixel read no creeper, saying $front and $body"
+[ "$fr" -gt $((2 * fb)) ] && [ "$fr" -gt $((2 * fg)) ] || fail "the creeper's face does not wear the picture's red, $front"
+[ "$bb" -gt $((2 * br)) ] || fail "the creeper's body does not wear the picture's blue, $body"
+cmd voxel.packs none
+
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
 # from above, at a render distance of two columns, so lavapipe generates few at each.
@@ -352,4 +391,4 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a creeper wear a pack's picture, drew with no validation error and wrote $name on F2"

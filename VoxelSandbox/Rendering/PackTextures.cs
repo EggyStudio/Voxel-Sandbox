@@ -250,6 +250,24 @@ public static class PackTextures
     /// <summary>A surface's texture, or null where the table gives it none.</summary>
     public static Look? Of(int surface) => _surfaces.TryGetValue(surface, out var look) ? look : null;
 
+    // Each kind's picture under entity, the newer name first where Minecraft renamed it as it gave
+    // the kind variants by climate, a pack made for an older version holding the older. The sheep
+    // and the villager are drawn in their own colors, since the sheep's wool and the villager's
+    // clothes are pictures of their own laid over theirs.
+    private static readonly Dictionary<string, string[]> _mobs = new()
+    {
+        ["pig"] = ["entity/pig/temperate_pig", "entity/pig/pig"],
+        ["cow"] = ["entity/cow/temperate_cow", "entity/cow/cow"],
+        ["chicken"] = ["entity/chicken/temperate_chicken", "entity/chicken"],
+        ["zombie"] = ["entity/zombie/zombie"],
+        ["skeleton"] = ["entity/skeleton/skeleton"],
+        ["creeper"] = ["entity/creeper/creeper"],
+        ["spider"] = ["entity/spider/spider"],
+    };
+
+    /// <summary>The names a kind of mob's picture may have in a pack, the first a pack has taken, or none for a kind drawn in the game's own colors.</summary>
+    public static IReadOnlyList<string> OfMob(string kind) => _mobs.GetValueOrDefault(kind) ?? [];
+
     /// <summary>
     /// The texture an item's icon is drawn from, its key's under <c>item</c> for an item that places
     /// no block, or null for a block drawn as a small cube of its faces.

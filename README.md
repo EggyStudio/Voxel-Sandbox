@@ -380,7 +380,22 @@ Each piece of a mob, its head, body, legs and a chicken's wings, is a few boxes,
 vertices drawn instanced for every mob of its kind, its legs swinging about their hips as it walks.
 The boxes, their pivots and each kind's width and height are Minecraft's, taken as numbers from its
 model definitions and its mobs' sizes as of 26.3, the villager drawn at the 0.9375 its layer is, and
-their colors, faces and markings are the game's own. The walk is Minecraft's too, a leg turning up
+their colors, faces and markings are the game's own. With a pack loaded, each kind but the sheep and
+the villager wears the pack's picture of it, under `entity` by Minecraft's name, the newer name of
+the pig, the cow and the chicken first. Each of the source's cuboids takes its part of the picture
+from the offset its model definition gives it, read as numbers by `build/MobLayers.java` as the
+boxes were, and unwrapped as Minecraft unwraps a box, the top and the bottom side by side and the
+four sides below them, a mirrored cuboid's turned over. The game's own eyes and markings are left
+out, a cuboid only the picture draws, a hat's layer or a skeleton's body, is added and cut out
+where the picture is clear, and one the picture leaves clear throughout is left out, so its shadow
+does not stand where nothing shows. The sun's shadow takes a cuboid whole, since the engine's
+shadow pass reads no picture through a shader of the game's own, so a skeleton's body casts the
+shadow of its cuboid between its ribs. The skeleton's bow keeps its own color, laid on a row of white
+below the picture. A picture of another size than the one its cuboids are laid on, or a whole
+multiple of it, is not used, and a kind no pack gives a picture keeps the game's own colors.
+`build/play.sh` writes a pack of one creeper's picture, red on its head's front and blue elsewhere,
+and reads its face red and its body blue, and `voxel.pixel` reads the last frame's color where a
+point in the world lies. The walk is Minecraft's too, a leg turning up
 to 1.4 radians each way with its stride, which follows the speed, and cycling every 2.36 blocks, a
 villager's half as far under its robe, a spider's legs turning and lifting by 0.4. A zombie reaches
 its arms out a little under level and raises them while it hunts, and a skeleton's hang until it

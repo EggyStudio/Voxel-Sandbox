@@ -5,7 +5,8 @@ import java.util.Map;
 /**
  * Prints the parts, poses and cuboids of entity model layers of a Minecraft client, as its layer
  * definitions bake them, in Minecraft's own model space, pixels with y down and the feet at 24, one
- * line a part or cuboid, indented by depth. build/mob-pairs.py runs it as a single source file
+ * line a part or cuboid, indented by depth, each cuboid with its texture offset and whether it is
+ * mirrored, and each layer with its texture's size. build/mob-pairs.py runs it as a single source file
  * against the client on the machine, naming the layers of ModelLayers to print, and reads the
  * numbers. Nothing of the client is copied, and the client's classes are reached by reflection,
  * so this file compiles against none of them.
@@ -40,8 +41,11 @@ public class MobLayers {
         System.out.println(line);
         for (Object cube : (List<?>) get(part, "cubes")) {
             Object grow = get(cube, "grow");
+            Object uv = get(cube, "texCoord");
             System.out.println(indent + "  cube from " + three(get(cube, "origin")) + " size " + three(get(cube, "dimensions"))
-                + " grow " + get(grow, "growX") + " " + get(grow, "growY") + " " + get(grow, "growZ"));
+                + " grow " + get(grow, "growX") + " " + get(grow, "growY") + " " + get(grow, "growZ")
+                + " uv " + uv.getClass().getMethod("u").invoke(uv) + " " + uv.getClass().getMethod("v").invoke(uv)
+                + " mirror " + get(cube, "mirror"));
         }
         for (Map.Entry<?, ?> child : ((Map<?, ?>) get(part, "children")).entrySet())
             part((String) child.getKey(), child.getValue(), indent + "  ");
@@ -52,7 +56,10 @@ public class MobLayers {
         Class<?> names = Class.forName("net.minecraft.client.model.geom.ModelLayers");
         for (String layer : layers) {
             System.out.println("== " + layer);
-            part("root", get(get(roots.get(names.getField(layer).get(null)), "mesh"), "root"), "");
+            Object definition = roots.get(names.getField(layer).get(null));
+            Object material = get(definition, "material");
+            System.out.println("texture " + get(material, "xTexSize") + " " + get(material, "yTexSize"));
+            part("root", get(get(definition, "mesh"), "root"), "");
         }
     }
 }

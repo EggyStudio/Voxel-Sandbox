@@ -42,8 +42,10 @@ public class MobModelTests
     {
         // Minecraft's layer draws the villager's 34 pixels, its legs and its head of 10, at 0.9375
         // about the feet.
+        // The boxes drawn in the game's own colors, the hat's layer a pack's picture lays over the
+        // head left out.
         var villager = MobKinds.Villager;
-        var top = villager.Parts.SelectMany(p => p.Boxes).Max(b => b.Max.Y);
+        var top = villager.Parts.SelectMany(p => p.Boxes).Where(b => b.Drawn != Drawn.Pack).Max(b => b.Max.Y);
         Assert.Equal(34, top, 4);
         Assert.Equal(0.9375f, villager.Scale);
         Assert.Equal(1.992f, top / 16 * villager.Scale, 3);
