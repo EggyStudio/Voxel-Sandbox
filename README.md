@@ -388,20 +388,23 @@ picture of it, under `entity` by Minecraft's name, the newest of the names the p
 the chicken's have had first. A villager's clothes of its biome, Minecraft's picture of its type,
 are laid over its body's picture where they are not clear, as Minecraft cuts its layers out, into
 one picture a biome, and a sheep's wool is a picture of its own on the wool's cuboids, grown about
-the body's, tinted by its color. Each of the source's cuboids takes its part of the picture
-from the offset its model definition gives it, read as numbers by `build/MobLayers.java` as the
-boxes were, and unwrapped as Minecraft unwraps a box, the top and the bottom side by side and the
-four sides below them, a mirrored cuboid's turned over. The game's own eyes and markings are left
-out, a cuboid only the picture draws, a hat's layer or a skeleton's body, is added and cut out
-where the picture is clear, and one the picture leaves clear throughout is left out, so its shadow
-does not stand where nothing shows. The sun's shadow takes a cuboid whole, since the engine's
-shadow pass reads no picture through a shader of the game's own, so a skeleton's body casts the
-shadow of its cuboid between its ribs. The skeleton's bow keeps its own color, laid on a row of white
-below the picture. A picture of another size than the one its cuboids are laid on, or a whole
-multiple of it, is not used, and a kind no pack gives a picture keeps the game's own colors.
+the body's, tinted by its color. Each of the source's cuboids takes its part of the picture from the
+offset its model definition gives it, read as numbers by `build/MobLayers.java` as the boxes were,
+and unwrapped as Minecraft unwraps a box, the top and the bottom side by side and the four sides
+below them, a mirrored cuboid's turned over. The game's own eyes and markings are left out, a cuboid
+only the picture draws, a hat's layer or a skeleton's body, is added and cut out where the picture
+is clear, and one the picture leaves clear throughout is left out, so its shadow does not stand
+where nothing shows. The sun's shadow takes a cuboid whole, since the engine's shadow pass reads no
+picture through a shader of the game's own, so a skeleton's body casts the shadow of its cuboid
+between its ribs. The skeleton's bow keeps its own color, laid on a row of white below the picture.
+A picture fits at the scale of its cuboids' layout or a whole multiple of it, as tall as the layout
+or half as tall, as the pig's and the cow's were before Minecraft 1.21.5 doubled them on the same
+offsets, a cuboid wholly below such a picture left out, so a cow on an older picture has no muzzle,
+as Minecraft's had none, and a kind with no picture that fits keeps the game's own colors.
 `build/play.sh` writes a pack of one creeper's picture, red on its head's front and blue elsewhere,
 and reads its face red and its body blue, and `voxel.pixel` reads the last frame's color where a
-point in the world lies. The walk is Minecraft's too, a leg turning up
+point in the world lies.
+The walk is Minecraft's too, a leg turning up
 to 1.4 radians each way with its stride, which follows the speed, and cycling every 2.36 blocks, a
 villager's half as far under its robe, a spider's legs turning and lifting by 0.4. A zombie reaches
 its arms out a little under level and raises them while it hunts, and a skeleton's hang until it

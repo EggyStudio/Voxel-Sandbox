@@ -124,6 +124,22 @@ public class MobPictureTests
     }
 
     [Fact]
+    public void A_Cows_Picture_Half_As_Tall_Is_Laid_As_Before_Its_Muzzle()
+    {
+        // Bare Bones' cow of 64 by 32 on the layout of 64 by 64, the same offsets but for the muzzle,
+        // at row 33, which the picture does not reach.
+        var cow = MobKinds.Cow;
+        var old = new Image(Enumerable.Repeat((byte)255, 64 * 32 * 4).ToArray(), 64, 32);
+        Assert.True(MobRenderer.Fits(old, cow.PictureSize));
+        Assert.False(MobRenderer.Fits(new Image(new byte[64 * 48 * 4], 64, 48), cow.PictureSize));
+        var head = MobRenderer.PicturedBoxes(Part(cow, Swing.Head), old, cow.PictureSize).Vertices;
+        // The head and its two horns, and the front's upper left over the picture's 32 rows and the white one.
+        Assert.Equal(3 * 6 * 4, head.Count);
+        var front = head.Where(v => v.Normal.Z < -0.5f && v.Position.Z < -13.9f / 16).ToArray();
+        Assert.Equal(new Vector2(6f / 64, 6f / 33), front.MaxBy(v => v.Position.X + v.Position.Y).Uv);
+    }
+
+    [Fact]
     public void The_Skeletons_Bow_Takes_The_White_Row_Below_The_Picture()
     {
         var size = MobKinds.Skeleton.PictureSize;

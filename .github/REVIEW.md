@@ -5,39 +5,37 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `e4b850f`, item 62's first part, the mobs wearing the pack's pictures, and nothing
-else, carrying the review's file with item 65 and Decision 32: each cuboid carries its pivot, box,
-growth, offset and mirror as the source's model definitions give them, read as numbers by
-build/MobLayers.java printing each cuboid's texture offset and mirror flag and each layer's picture
-size, its six faces built as the source's cube builds them with the mirror's swap of x and each face
-counterclockwise from outside; every box of the eight kinds takes its offset, mirrored where the
-dump says, the hats, the villager's body under its robe, the skeleton's body and the chicken's leg
-drawn with a picture alone, the skeleton's bow the game's own in both modes; the renderer takes each
-kind's names from the pack, the newer temperate names first, the picture fitting the layer's size or
-a whole multiple, a white row below it for the bow, point filtering, one mesh a part with the own
-markings left out and a cuboid left out where every face's part of the picture is clear, the
-villager and the sheep keeping their own colors until the second part's layers; the sun's shadow
-takes cut-out cuboids whole until the engine's item 79 reaches the package, which the README says.
-Five new tests, 220 in all, the zombie head's faces at their places, the mirrored arm's front, every
-cuboid of every kind on its picture facing outward, the textured boxes leaving the eyes, nose and
-clear hat out, the bow at the white row; the play script writing a folder pack with a creeper
-picture red on the head's front and blue elsewhere, loading it, spawning a creeper and reading the
-new `voxel.pixel` command, 255, 0, 0 on the face and 0, 0, 255 on the body, on every machine; the
-strict build clean, the play script clean. Read at 10:21 on 2026-10-21. Not pushed: the build run
-39566771329 of `69ecb49` is still running, and the head is pushed when it ends. The pictures with
-the pack come with the second part, a daylight row in Bare Bones beside the own one. Next item 62's
-second part, the villager's base with its biome type and profession layers and the sheep with its
-fur tinted, then 65, then item 39's cutout leaves, doors and glass, then its animated textures, then
-the pictures taken again at 40 degrees, then 26 and the items in order; items 55, 38's second part
-and 54 when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's
-word.
+Reviewed up to `9ce44d7`, item 62's second part, the villager's layers and the sheep's wool, and
+nothing else, carrying the review's file: the villager wears its base picture with its biome type's
+picture laid over it, plains, desert, taiga and snow in the robes' order, an upper pixel at an alpha
+of a tenth or more replacing the lower as the source cuts its layers, one picture a biome rather
+than a second draw at the same depth, no profession layer or hat rim since the game has no
+professions, the four biomes showing their clothes in Bare Bones; the sheep's cuboids say which
+picture they take, the body's and the wool's grown as the source's fur layer is, the wool tinted by
+its color through the vertex color, the body under the wool drawn with the picture alone, the
+mirrors on its right legs as the dump has them; the names table trying 26.3's temperate names, then
+the 1.21.5 style, then Bare Bones 1.21's bare names, the first part's name not being 26.3's; a slot
+holding layers, each a mesh with its materials, a part varying by variant only where its picture
+differs or a cuboid is tinted, textures made once a picture. Two new tests, 222 in all, the overlay
+keeping a lower pixel under a clear upper one and taking a covering one with snow named for the
+fourth variant, and the sheep's head laying its body's picture on the skin in white and the wool's
+on the wool in its pink; build/mob-pairs.py taking the daylight row again wearing the default packs
+into mobs/daylight-pack.webp beside the own one, the README's mob section setting the two rows side
+by side, the own-art pictures restored from the head where the run re-encoded them; the strict build
+clean, the play script clean. Read at 10:30 on 2026-10-21. Not pushed: the build run 39566771329 of
+`69ecb49` is still running, and the two heads are pushed when it ends. At 10:31 a fault of item 62
+was found, the pig's and cow's 64 by 32 pictures refused by the 64 by 64 layout, mended in a small
+commit before item 65. Next that mend, then item 65, then item 39's cutout leaves, doors and glass,
+then its animated textures, then the pictures taken again at 40 degrees, then 26 and the items in
+order; items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `e4b850f` came, item 62's first part, the mobs wearing the pack's pictures, and nothing
+else, carrying the review's file with item 65 and Decision 32. Read at 10:21, held for the build run
+of `69ecb49`.
 
 Before it, `69ecb49` came, item 64, the zombie's and villager's own faces, and nothing else,
 carrying the review's file. Read at 10:07, pushed at 10:06 with the three before it.
-
-Before it, `e6a2c55` came, item 63, the mobs' faces lit evenly, and nothing else, carrying the
-review's file with items 63 and 64 and Decision 31. Read at 10:01, pushed at 10:06 with `9a13c54`
-and `92112c5` after the build run of `8f2a2c8` ended green.
 
 ## Now
 
@@ -945,7 +943,20 @@ and `92112c5` after the build run of `8f2a2c8` ended green.
     layers and the sheep's fur. After items 60 and 61 and before item 39's remaining parts. First
     commit done at `e4b850f` on 2026-10-21, eight kinds wearing the pictures, as the head says; the
     villager's layers and the sheep's fur follow, with the daylight row in Bare Bones beside the own
-    one.
+    one. Second commit done at `9ce44d7` on 2026-10-21, the villager's biome layers as one picture a
+    biome, no profession layer since the game has none, and the sheep's tinted wool; item 62 done. A
+    fault found at 10:31 while item 65's layouts were checked: with Bare Bones the pig and the cow
+    stood in their own colors, since Bare Bones 1.21's pictures of them are 64 by 32 where the 26.3
+    client's layers lay their cuboids on 64 by 64, the source having doubled the two pictures at
+    1.21.5 and given the cow a muzzle cuboid at row 33, so the fit refused both and the captures'
+    pink and brown were read as the pack's; the older layout matches the newer in every offset but
+    the muzzle. The mend, a small commit before item 65: a picture fits when it is as tall as its
+    layout or half as tall at a whole scale, the texture coordinates taken over the picture's own
+    rows and one white row, a cuboid all of whose faces lie below the picture left out as the
+    clear-face rule already leaves it, so a cow on an older picture loses its muzzle alone, as the
+    source's cow had none before 1.21.5; tests of a 64 by 32 cow fitting the layout, its head laying
+    the head and horns but not the muzzle, its coordinates over 33 rows, and mobs/daylight-pack.webp
+    taken again.
 
 63. **A mob's face is lit evenly from top to bottom, the turned-up light seen from straight above.**
     The owner wrote shortly before 09:50 on 2026-10-21 of item 61's noon picture, relayed verbatim,
@@ -989,7 +1000,11 @@ and `92112c5` after the build run of `8f2a2c8` ended green.
     one; first each of the nine kinds' pictures in it checked for the vanilla layout as the
     creeper's is, a kind whose picture departs from it kept on Bare Bones' and named in the commit,
     and a capture of the mobs with and without the pack beside the reading. One commit, small, after
-    item 62's second commit and before item 39's remaining parts.
+    item 62's second commit and before item 39's remaining parts. Read at 10:31: Fresh Animations
+    1.9.2 is the release whose creeper and cow are byte for byte the owner's 1.9 beta, its pig and
+    cow 64 by 32 as Bare Bones 1.21's, its sheep, chicken, villager, creeper and spider covering
+    every face the cuboids read as Bare Bones' do, and it has no zombie or skeleton, which stay on
+    Bare Bones'; after item 62's mend of the half-height fit.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not

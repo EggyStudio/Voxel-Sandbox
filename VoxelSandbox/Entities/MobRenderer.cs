@@ -152,10 +152,20 @@ public sealed class MobRenderer : IDisposable
         _pictures.Clear();
     }
 
-    // Whether a picture is of the size a kind's cuboids are laid on, or a whole multiple of it, as a
-    // pack drawn at twice the pixels is.
-    private static bool Fits(Image picture, Vector2 size) =>
-        picture.Width >= size.X && picture.Width % (int)size.X == 0 && picture.Height * (int)size.X == picture.Width * (int)size.Y;
+    /// <summary>
+    /// Whether a picture fits the layout a kind's cuboids are laid on, at a whole scale, as a pack
+    /// drawn at twice the pixels is, and as tall as the layout or half as tall, as the pig's and the
+    /// cow's were before Minecraft 1.21.5 doubled them on the same offsets.
+    /// </summary>
+    public static bool Fits(Image picture, Vector2 size)
+    {
+        if (picture.Width < size.X || picture.Width % (int)size.X != 0 || picture.Height % (picture.Width / (int)size.X) != 0) return false;
+        var rows = Rows(picture, size);
+        return rows == size.Y || rows * 2 == size.Y;
+    }
+
+    // How many of the layout's rows of pixels a picture holds.
+    private static int Rows(Image picture, Vector2 size) => picture.Height / (picture.Width / (int)size.X);
 
     /// <summary>Instanced draws the last <see cref="Draw"/> made.</summary>
     public int Draws { get; private set; }
@@ -175,7 +185,7 @@ public sealed class MobRenderer : IDisposable
     /// <summary>
     /// A kind's picture with a row of white below it, at the picture's own scale, which the boxes of
     /// the game's own drawn with the picture take, so a texture coordinate of the picture's in pixels
-    /// is its place over the kind's picture size and one more row down.
+    /// is its place over the layout's width and the picture's rows and one more.
     /// </summary>
     public static Image Whitened(Image picture, Vector2 size)
     {
@@ -188,15 +198,16 @@ public sealed class MobRenderer : IDisposable
 
     /// <summary>
     /// A piece's boxes drawn with one of its kind's pictures in blocks, each of the source's cuboids
-    /// laid with that picture laid with its part of it, one whose faces the picture leaves clear left
-    /// out, a tinted one in the variant's color, and with the body's picture each box of the game's
-    /// own drawn with the picture, laid on the white row below it.
+    /// laid with its part of that picture, one whose faces the picture leaves clear or
+    /// does not reach left out, a tinted one in the variant's color, and with the body's picture each
+    /// box of the game's own drawn with the picture, laid on the white row below it.
     /// </summary>
     public static BoxMesh PicturedBoxes(ModelPart part, Image picture, Vector2 size, int index = 0, Color variant = default)
     {
         var mesh = new BoxMesh();
         var scale = picture.Width / size.X;
-        var through = new Vector2(1 / size.X, 1 / (size.Y + 1));
+        var rows = Rows(picture, size);
+        var through = new Vector2(1 / size.X, 1f / (rows + 1));
         Span<Vector3> corners = stackalloc Vector3[4];
         Span<Vector2> places = stackalloc Vector2[4];
         foreach (var box in part.Boxes)
@@ -204,7 +215,7 @@ public sealed class MobRenderer : IDisposable
             if (box.Drawn == VoxelSandbox.Drawn.Own) continue;
             if (box.Source is not { } cuboid)
             {
-                if (index == 0) mesh.Add(box.Min / 16, box.Max / 16, box.Color ?? Color.White, new Vector2(0.5f, size.Y + 0.5f) * through);
+                if (index == 0) mesh.Add(box.Min / 16, box.Max / 16, box.Color ?? Color.White, new Vector2(0.5f, rows + 0.5f) * through);
                 continue;
             }
             if (cuboid.Picture != index) continue;
