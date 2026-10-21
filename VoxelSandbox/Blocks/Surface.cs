@@ -57,71 +57,77 @@ public static class Surfaces
         return _all.Count - 1;
     }
 
-    // The gray a tinted surface multiplies its climate's color by, about the brightness of Minecraft's
-    // gray grass and leaf textures, which its colormap tints.
-    public static readonly int Grass = Add("grass", new Color(184, 184, 184), tint: SurfaceTint.Grass);
-    public static readonly int Dirt = Add("dirt", new Color(134, 96, 67));
-    public static readonly int Stone = Add("stone", new Color(125, 125, 125));
-    public static readonly int Cobblestone = Add("cobblestone", new Color(98, 98, 98));
-    public static readonly int Bedrock = Add("bedrock", new Color(52, 52, 52));
-    public static readonly int Sand = Add("sand", new Color(219, 207, 163));
-    public static readonly int Bark = Add("bark", new Color(102, 81, 51));
-    public static readonly int LogTop = Add("log top", new Color(168, 136, 86));
-    public static readonly int Leaves = Add("leaves", new Color(150, 150, 150), tint: SurfaceTint.Foliage);
-    public static readonly int Planks = Add("planks", new Color(162, 130, 78));
-    public static readonly int Snow = Add("snow", new Color(240, 247, 250));
-    // Concrete in saturated colors, so the color a wall gives its neighbors is plain to see.
-    public static readonly int WhiteConcrete = Add("white concrete", new Color(212, 216, 217), 0.8f);
-    public static readonly int RedConcrete = Add("red concrete", new Color(170, 35, 35), 0.8f);
-    public static readonly int GreenConcrete = Add("green concrete", new Color(75, 140, 40), 0.8f);
-    public static readonly int BlueConcrete = Add("blue concrete", new Color(45, 60, 160), 0.8f);
-    public static readonly int Glowstone = Add("glowstone", new Color(230, 190, 110), emissive: new Color(255, 200, 120), glow: 4);
-    public static readonly int SeaLantern = Add("sea lantern", new Color(200, 225, 220), emissive: new Color(190, 230, 255), glow: 4);
-    public static readonly int Shroomlight = Add("shroomlight", new Color(240, 150, 70), emissive: new Color(255, 150, 60), glow: 4);
-    public static readonly int Magma = Add("magma", new Color(120, 40, 20), emissive: new Color(255, 90, 30), glow: 1.5f);
-    public static readonly int BirchBark = Add("birch bark", new Color(216, 212, 198));
-    public static readonly int BirchTop = Add("birch top", new Color(194, 174, 120));
+    // Each full block's color is the average of Bare Bones' texture of it, decoded and weighed by
+    // alpha, read from the owner's copy as numbers by voxel.palette, so the game drawn with no pack
+    // looks as it does with the pack it fetches, as the owner asked, a see-through block's alpha its
+    // texture's cover, and a surface the pack tints by a color of its own, as water and birch and
+    // spruce leaves, under that color. The plants keep their own, since a flower's average mixes
+    // its stem and its petals, and so do the ores, since without a texture an ore shows by its color
+    // alone and an average reads as the stone around it.
+    // The gray a tinted surface multiplies its climate's color by, Bare Bones' gray grass and leaves.
+    public static readonly int Grass = Add("grass", new Color(174, 174, 174), tint: SurfaceTint.Grass);
+    public static readonly int Dirt = Add("dirt", new Color(155, 101, 49));
+    public static readonly int Stone = Add("stone", new Color(130, 130, 130));
+    public static readonly int Cobblestone = Add("cobblestone", new Color(116, 116, 116));
+    public static readonly int Bedrock = Add("bedrock", new Color(97, 97, 97));
+    public static readonly int Sand = Add("sand", new Color(218, 207, 163));
+    public static readonly int Bark = Add("bark", new Color(107, 84, 50));
+    public static readonly int LogTop = Add("log top", new Color(162, 129, 80));
+    public static readonly int Leaves = Add("leaves", new Color(120, 128, 120), tint: SurfaceTint.Foliage);
+    public static readonly int Planks = Add("planks", new Color(166, 132, 83));
+    public static readonly int Snow = Add("snow", new Color(252, 255, 255));
+    // Concrete, whose saturated colors make the color a wall gives its neighbors plain to see.
+    public static readonly int WhiteConcrete = Add("white concrete", new Color(206, 212, 213), 0.8f);
+    public static readonly int RedConcrete = Add("red concrete", new Color(141, 32, 32), 0.8f);
+    public static readonly int GreenConcrete = Add("green concrete", new Color(73, 91, 36), 0.8f);
+    public static readonly int BlueConcrete = Add("blue concrete", new Color(46, 48, 144), 0.8f);
+    public static readonly int Glowstone = Add("glowstone", new Color(181, 154, 87), emissive: new Color(255, 200, 120), glow: 4);
+    public static readonly int SeaLantern = Add("sea lantern", new Color(219, 232, 222), emissive: new Color(190, 230, 255), glow: 4);
+    public static readonly int Shroomlight = Add("shroomlight", new Color(254, 196, 133), emissive: new Color(255, 150, 60), glow: 4);
+    public static readonly int Magma = Add("magma", new Color(180, 98, 40), emissive: new Color(255, 90, 30), glow: 1.5f);
+    public static readonly int BirchBark = Add("birch bark", new Color(239, 239, 239));
+    public static readonly int BirchTop = Add("birch top", new Color(209, 194, 156));
     // Birch and spruce leaves keep a color of their own whatever the climate, as Minecraft's do.
-    public static readonly int BirchLeaves = Add("birch leaves", new Color(102, 134, 68));
-    public static readonly int SpruceBark = Add("spruce bark", new Color(60, 44, 28));
-    public static readonly int SpruceTop = Add("spruce top", new Color(116, 86, 52));
-    public static readonly int SpruceLeaves = Add("spruce leaves", new Color(49, 79, 49));
-    public static readonly int Sandstone = Add("sandstone", new Color(216, 202, 155));
-    public static readonly int CactusSide = Add("cactus side", new Color(78, 128, 42));
-    public static readonly int CactusTop = Add("cactus top", new Color(108, 150, 64));
-    public static readonly int Gravel = Add("gravel", new Color(132, 126, 124));
+    public static readonly int BirchLeaves = Add("birch leaves", new Color(98, 129, 29));
+    public static readonly int SpruceBark = Add("spruce bark", new Color(56, 36, 17));
+    public static readonly int SpruceTop = Add("spruce top", new Color(113, 83, 48));
+    public static readonly int SpruceLeaves = Add("spruce leaves", new Color(45, 71, 45));
+    public static readonly int Sandstone = Add("sandstone", new Color(211, 196, 148));
+    public static readonly int CactusSide = Add("cactus side", new Color(104, 140, 55));
+    public static readonly int CactusTop = Add("cactus top", new Color(109, 142, 63));
+    public static readonly int Gravel = Add("gravel", new Color(127, 124, 123));
     // A see-through surface's alpha is how much of it covers what is behind.
-    public static readonly int Glass = Add("glass", new Color(214, 232, 236, 64), roughness: 0.05f);
-    public static readonly int Water = Add("water", new Color(44, 92, 196, 168), roughness: 0.05f);
-    public static readonly int Ice = Add("ice", new Color(164, 200, 242, 190), roughness: 0.1f);
-    public static readonly int DirtPath = Add("dirt path", new Color(148, 122, 65));
-    public static readonly int StoneBricks = Add("stone bricks", new Color(122, 121, 122));
-    public static readonly int DoorWood = Add("door wood", new Color(140, 108, 62));
-    public static readonly int Farmland = Add("farmland", new Color(96, 62, 36));
-    public static readonly int SprucePlanks = Add("spruce planks", new Color(115, 85, 49));
-    public static readonly int Hay = Add("hay", new Color(186, 152, 32));
-    public static readonly int HayTop = Add("hay top", new Color(166, 136, 40));
+    public static readonly int Glass = Add("glass", new Color(239, 247, 248, 65), roughness: 0.05f);
+    public static readonly int Water = Add("water", new Color(44, 84, 162, 191), roughness: 0.05f);
+    public static readonly int Ice = Add("ice", new Color(111, 180, 255, 158), roughness: 0.1f);
+    public static readonly int DirtPath = Add("dirt path", new Color(195, 169, 96));
+    public static readonly int StoneBricks = Add("stone bricks", new Color(123, 123, 123));
+    public static readonly int DoorWood = Add("door wood", new Color(136, 106, 62));
+    public static readonly int Farmland = Add("farmland", new Color(151, 86, 52));
+    public static readonly int SprucePlanks = Add("spruce planks", new Color(119, 88, 52));
+    public static readonly int Hay = Add("hay", new Color(176, 150, 42));
+    public static readonly int HayTop = Add("hay top", new Color(183, 161, 45));
     public static readonly int Wheat = Add("wheat", new Color(196, 178, 82));
-    public static readonly int TorchStick = Add("torch stick", new Color(104, 78, 46));
+    public static readonly int TorchStick = Add("torch stick", new Color(162, 132, 88));
     public static readonly int Iron = Add("dark iron", new Color(52, 54, 62), 0.5f);
     public static readonly int EndRodBase = Add("end rod base", new Color(150, 132, 160));
     // Wool of the colors a sheep is born with, the same as its coat.
-    public static readonly int WhiteWool = Add("white wool", new Color(233, 236, 236), 1);
-    public static readonly int LightGrayWool = Add("light gray wool", new Color(142, 142, 135), 1);
-    public static readonly int GrayWool = Add("gray wool", new Color(63, 68, 72), 1);
-    public static readonly int BlackWool = Add("black wool", new Color(24, 24, 30), 1);
-    public static readonly int BrownWool = Add("brown wool", new Color(114, 71, 40), 1);
-    public static readonly int PinkWool = Add("pink wool", new Color(237, 141, 172), 1);
-    public static readonly int BirchPlanks = Add("birch planks", new Color(196, 178, 122));
-    public static readonly int CraftingTableTop = Add("crafting table top", new Color(176, 132, 82));
-    public static readonly int CraftingTableSide = Add("crafting table side", new Color(128, 94, 58));
+    public static readonly int WhiteWool = Add("white wool", new Color(254, 254, 254), 1);
+    public static readonly int LightGrayWool = Add("light gray wool", new Color(157, 157, 151), 1);
+    public static readonly int GrayWool = Add("gray wool", new Color(71, 79, 82), 1);
+    public static readonly int BlackWool = Add("black wool", new Color(54, 53, 60), 1);
+    public static readonly int BrownWool = Add("brown wool", new Color(120, 75, 43), 1);
+    public static readonly int PinkWool = Add("pink wool", new Color(244, 147, 176), 1);
+    public static readonly int BirchPlanks = Add("birch planks", new Color(200, 179, 124));
+    public static readonly int CraftingTableTop = Add("crafting table top", new Color(131, 82, 48));
+    public static readonly int CraftingTableSide = Add("crafting table side", new Color(154, 128, 94));
     // Stone darkened by its coal, since without textures an ore shows by its color alone.
     public static readonly int CoalOre = Add("coal ore", new Color(72, 72, 74));
     // Stone warmed by its iron, pale tan, as the ore's flecks are.
     public static readonly int IronOre = Add("iron ore", new Color(170, 146, 128));
-    public static readonly int FurnaceSide = Add("furnace side", new Color(92, 92, 92));
-    public static readonly int FurnaceTop = Add("furnace top", new Color(116, 116, 116));
-    public static readonly int FurnaceLit = Add("lit furnace", new Color(110, 92, 80), emissive: new Color(255, 140, 50), glow: 1.2f);
+    public static readonly int FurnaceSide = Add("furnace side", new Color(110, 110, 110));
+    public static readonly int FurnaceTop = Add("furnace top", new Color(107, 107, 107));
+    public static readonly int FurnaceLit = Add("lit furnace", new Color(147, 134, 113), emissive: new Color(255, 140, 50), glow: 1.2f);
     // A small light's emissive intensity is its light over its surface, so a torch's flame, a 48th
     // of a block's surface, is far brighter than glowstone to light a room nearly as well, as a
     // torch's level of 14 nearly matches glowstone's 15. Each is set so a closed room's floor takes
@@ -135,37 +141,37 @@ public static class Surfaces
     // Faces in the color of the surfaces they are split from, told apart where a resource pack
     // gives each a texture of its own, the grass block's side its strip of grass, the upper half of
     // a door its window and sandstone its top.
-    public static readonly int GrassSide = Add("grass side", new Color(134, 96, 67));
-    public static readonly int DoorTop = Add("door top", new Color(140, 108, 62));
-    public static readonly int SandstoneTop = Add("sandstone top", new Color(216, 202, 155));
+    public static readonly int GrassSide = Add("grass side", new Color(150, 117, 49));
+    public static readonly int DoorTop = Add("door top", new Color(144, 114, 70));
+    public static readonly int SandstoneTop = Add("sandstone top", new Color(221, 211, 168));
     // The badlands' red sand and the colors of their banded terracotta, and the clay of river beds.
-    public static readonly int RedSand = Add("red sand", new Color(190, 102, 33));
-    public static readonly int Terracotta = Add("terracotta", new Color(152, 94, 67));
-    public static readonly int WhiteTerracotta = Add("white terracotta", new Color(209, 178, 161));
-    public static readonly int OrangeTerracotta = Add("orange terracotta", new Color(161, 83, 37));
-    public static readonly int YellowTerracotta = Add("yellow terracotta", new Color(186, 133, 35));
-    public static readonly int RedTerracotta = Add("red terracotta", new Color(143, 61, 46));
-    public static readonly int BrownTerracotta = Add("brown terracotta", new Color(77, 51, 35));
-    public static readonly int LightGrayTerracotta = Add("light gray terracotta", new Color(135, 106, 97));
-    public static readonly int Clay = Add("clay", new Color(160, 166, 179));
+    public static readonly int RedSand = Add("red sand", new Color(191, 103, 33));
+    public static readonly int Terracotta = Add("terracotta", new Color(148, 89, 63));
+    public static readonly int WhiteTerracotta = Add("white terracotta", new Color(209, 184, 173));
+    public static readonly int OrangeTerracotta = Add("orange terracotta", new Color(160, 81, 45));
+    public static readonly int YellowTerracotta = Add("yellow terracotta", new Color(201, 149, 8));
+    public static readonly int RedTerracotta = Add("red terracotta", new Color(145, 64, 43));
+    public static readonly int BrownTerracotta = Add("brown terracotta", new Color(83, 57, 42));
+    public static readonly int LightGrayTerracotta = Add("light gray terracotta", new Color(158, 127, 114));
+    public static readonly int Clay = Add("clay", new Color(161, 167, 178));
     // The woods of the jungle, the savanna, the dark forest and the cherry grove, their bark, the rings
     // of a log's end and their planks, and leaves the climate tints but the cherry's pink.
-    public static readonly int JungleBark = Add("jungle bark", new Color(85, 68, 25));
-    public static readonly int JungleTop = Add("jungle top", new Color(150, 110, 72));
-    public static readonly int JunglePlanks = Add("jungle planks", new Color(160, 115, 80));
-    public static readonly int AcaciaBark = Add("acacia bark", new Color(103, 96, 86));
-    public static readonly int AcaciaTop = Add("acacia top", new Color(171, 92, 51));
-    public static readonly int AcaciaPlanks = Add("acacia planks", new Color(168, 90, 50));
-    public static readonly int DarkOakBark = Add("dark oak bark", new Color(60, 46, 26));
-    public static readonly int DarkOakTop = Add("dark oak top", new Color(80, 58, 34));
-    public static readonly int DarkOakPlanks = Add("dark oak planks", new Color(66, 43, 20));
-    public static readonly int CherryBark = Add("cherry bark", new Color(54, 33, 44));
-    public static readonly int CherryTop = Add("cherry top", new Color(178, 130, 128));
-    public static readonly int CherryPlanks = Add("cherry planks", new Color(226, 178, 172));
-    public static readonly int JungleLeaves = Add("jungle leaves", new Color(150, 150, 150), tint: SurfaceTint.Foliage);
-    public static readonly int AcaciaLeaves = Add("acacia leaves", new Color(150, 150, 150), tint: SurfaceTint.Foliage);
-    public static readonly int DarkOakLeaves = Add("dark oak leaves", new Color(150, 150, 150), tint: SurfaceTint.Foliage);
-    public static readonly int CherryLeaves = Add("cherry leaves", new Color(229, 173, 194));
+    public static readonly int JungleBark = Add("jungle bark", new Color(85, 69, 25));
+    public static readonly int JungleTop = Add("jungle top", new Color(159, 116, 81));
+    public static readonly int JunglePlanks = Add("jungle planks", new Color(166, 120, 88));
+    public static readonly int AcaciaBark = Add("acacia bark", new Color(99, 93, 83));
+    public static readonly int AcaciaTop = Add("acacia top", new Color(164, 95, 62));
+    public static readonly int AcaciaPlanks = Add("acacia planks", new Color(173, 92, 51));
+    public static readonly int DarkOakBark = Add("dark oak bark", new Color(60, 47, 27));
+    public static readonly int DarkOakTop = Add("dark oak top", new Color(67, 45, 23));
+    public static readonly int DarkOakPlanks = Add("dark oak planks", new Color(65, 42, 20));
+    public static readonly int CherryBark = Add("cherry bark", new Color(72, 44, 56));
+    public static readonly int CherryTop = Add("cherry top", new Color(204, 159, 155));
+    public static readonly int CherryPlanks = Add("cherry planks", new Color(224, 173, 167));
+    public static readonly int JungleLeaves = Add("jungle leaves", new Color(108, 117, 97), tint: SurfaceTint.Foliage);
+    public static readonly int AcaciaLeaves = Add("acacia leaves", new Color(142, 135, 113), tint: SurfaceTint.Foliage);
+    public static readonly int DarkOakLeaves = Add("dark oak leaves", new Color(95, 105, 89), tint: SurfaceTint.Foliage);
+    public static readonly int CherryLeaves = Add("cherry leaves", new Color(247, 170, 215));
     // Saplings and the plants of the ground, each flower its stem and its petals, which a pack's one
     // texture of the flower covers both of, the grasses gray where the climate tints them.
     public static readonly int OakSapling = Add("oak sapling", new Color(70, 120, 40));
@@ -216,35 +222,35 @@ public static class Surfaces
     public static readonly int DiamondOre = Add("diamond ore", new Color(120, 164, 164));
     public static readonly int EmeraldOre = Add("emerald ore", new Color(108, 146, 116));
     // Glass and wool in the sixteen colors of Minecraft's dyes, the wool's six of a sheep's coat before.
-    public static readonly int WhiteStainedGlass = Add("white stained glass", new Color(255, 255, 255, 120), roughness: 0.05f);
-    public static readonly int OrangeStainedGlass = Add("orange stained glass", new Color(216, 127, 51, 120), roughness: 0.05f);
-    public static readonly int MagentaStainedGlass = Add("magenta stained glass", new Color(178, 76, 216, 120), roughness: 0.05f);
-    public static readonly int LightBlueStainedGlass = Add("light blue stained glass", new Color(102, 153, 216, 120), roughness: 0.05f);
-    public static readonly int YellowStainedGlass = Add("yellow stained glass", new Color(229, 229, 51, 120), roughness: 0.05f);
-    public static readonly int LimeStainedGlass = Add("lime stained glass", new Color(127, 204, 25, 120), roughness: 0.05f);
-    public static readonly int PinkStainedGlass = Add("pink stained glass", new Color(242, 127, 165, 120), roughness: 0.05f);
-    public static readonly int GrayStainedGlass = Add("gray stained glass", new Color(76, 76, 76, 120), roughness: 0.05f);
-    public static readonly int LightGrayStainedGlass = Add("light gray stained glass", new Color(153, 153, 153, 120), roughness: 0.05f);
-    public static readonly int CyanStainedGlass = Add("cyan stained glass", new Color(76, 127, 153, 120), roughness: 0.05f);
-    public static readonly int PurpleStainedGlass = Add("purple stained glass", new Color(127, 63, 178, 120), roughness: 0.05f);
-    public static readonly int BlueStainedGlass = Add("blue stained glass", new Color(51, 76, 178, 120), roughness: 0.05f);
-    public static readonly int BrownStainedGlass = Add("brown stained glass", new Color(102, 76, 51, 120), roughness: 0.05f);
-    public static readonly int GreenStainedGlass = Add("green stained glass", new Color(102, 127, 51, 120), roughness: 0.05f);
-    public static readonly int RedStainedGlass = Add("red stained glass", new Color(153, 51, 51, 120), roughness: 0.05f);
-    public static readonly int BlackStainedGlass = Add("black stained glass", new Color(25, 25, 25, 120), roughness: 0.05f);
-    public static readonly int OrangeWool = Add("orange wool", new Color(240, 118, 19), 1);
-    public static readonly int MagentaWool = Add("magenta wool", new Color(189, 68, 179), 1);
-    public static readonly int LightBlueWool = Add("light blue wool", new Color(58, 175, 217), 1);
-    public static readonly int YellowWool = Add("yellow wool", new Color(248, 197, 39), 1);
-    public static readonly int LimeWool = Add("lime wool", new Color(112, 185, 25), 1);
-    public static readonly int CyanWool = Add("cyan wool", new Color(21, 137, 145), 1);
-    public static readonly int PurpleWool = Add("purple wool", new Color(121, 42, 172), 1);
-    public static readonly int BlueWool = Add("blue wool", new Color(53, 57, 157), 1);
-    public static readonly int GreenWool = Add("green wool", new Color(84, 109, 27), 1);
-    public static readonly int RedWool = Add("red wool", new Color(160, 39, 34), 1);
+    public static readonly int WhiteStainedGlass = Add("white stained glass", new Color(255, 255, 255, 191), roughness: 0.05f);
+    public static readonly int OrangeStainedGlass = Add("orange stained glass", new Color(222, 117, 27, 191), roughness: 0.05f);
+    public static readonly int MagentaStainedGlass = Add("magenta stained glass", new Color(181, 58, 226, 191), roughness: 0.05f);
+    public static readonly int LightBlueStainedGlass = Add("light blue stained glass", new Color(107, 163, 232, 191), roughness: 0.05f);
+    public static readonly int YellowStainedGlass = Add("yellow stained glass", new Color(255, 255, 2, 191), roughness: 0.05f);
+    public static readonly int LimeStainedGlass = Add("lime stained glass", new Color(130, 221, 10, 191), roughness: 0.05f);
+    public static readonly int PinkStainedGlass = Add("pink stained glass", new Color(242, 127, 165, 191), roughness: 0.05f);
+    public static readonly int GrayStainedGlass = Add("gray stained glass", new Color(76, 76, 76, 191), roughness: 0.05f);
+    public static readonly int LightGrayStainedGlass = Add("light gray stained glass", new Color(153, 153, 153, 191), roughness: 0.05f);
+    public static readonly int CyanStainedGlass = Add("cyan stained glass", new Color(63, 128, 161, 191), roughness: 0.05f);
+    public static readonly int PurpleStainedGlass = Add("purple stained glass", new Color(127, 63, 178, 191), roughness: 0.05f);
+    public static readonly int BlueStainedGlass = Add("blue stained glass", new Color(30, 60, 180, 191), roughness: 0.05f);
+    public static readonly int BrownStainedGlass = Add("brown stained glass", new Color(100, 69, 40, 191), roughness: 0.05f);
+    public static readonly int GreenStainedGlass = Add("green stained glass", new Color(105, 134, 45, 191), roughness: 0.05f);
+    public static readonly int RedStainedGlass = Add("red stained glass", new Color(200, 19, 19, 191), roughness: 0.05f);
+    public static readonly int BlackStainedGlass = Add("black stained glass", new Color(2, 2, 2, 191), roughness: 0.05f);
+    public static readonly int OrangeWool = Add("orange wool", new Color(247, 121, 22), 1);
+    public static readonly int MagentaWool = Add("magenta wool", new Color(192, 70, 182), 1);
+    public static readonly int LightBlueWool = Add("light blue wool", new Color(64, 187, 223), 1);
+    public static readonly int YellowWool = Add("yellow wool", new Color(252, 199, 37), 1);
+    public static readonly int LimeWool = Add("lime wool", new Color(111, 187, 24), 1);
+    public static readonly int CyanWool = Add("cyan wool", new Color(22, 141, 148), 1);
+    public static readonly int PurpleWool = Add("purple wool", new Color(135, 48, 182), 1);
+    public static readonly int BlueWool = Add("blue wool", new Color(55, 58, 160), 1);
+    public static readonly int GreenWool = Add("green wool", new Color(88, 114, 25), 1);
+    public static readonly int RedWool = Add("red wool", new Color(170, 42, 36), 1);
     // A giant mushroom's caps and its stem.
-    public static readonly int BrownMushroomCap = Add("brown mushroom cap", new Color(146, 108, 76));
-    public static readonly int RedMushroomCap = Add("red mushroom cap", new Color(196, 44, 40));
+    public static readonly int BrownMushroomCap = Add("brown mushroom cap", new Color(150, 113, 81));
+    public static readonly int RedMushroomCap = Add("red mushroom cap", new Color(225, 56, 56));
     public static readonly int MushroomStem = Add("mushroom stem", new Color(206, 198, 182));
 
     /// <summary>Every surface, its index its id.</summary>

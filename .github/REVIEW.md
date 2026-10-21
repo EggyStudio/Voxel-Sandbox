@@ -5,33 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `cc46f25`, item 44, the dome under the horizon, and nothing else, carrying the
-review's file: rings from six degrees above the horizon, clear, through three and one and a half to
-the horizon and down to the pole, opaque, 48 around at a radius of 2,400, past the haze's end at the
-farthest render distance and short of the sun, each triangle facing the eye; drawn about the eye
-through the terrain shader with a blend material casting no shadow, beyond the fog's end so the
-shader outputs the fog's color itself through the same light, exposure and tonemap as the land's
-fogged edge, the water's blue under water, item 43's tint following with nothing more, no dome with
-the fog off; `voxel.edge` finding where the drawn land ends up a column of the last frame and giving
-the land's last pixel, the one above and the largest step within 16, reading on seed 1 the same
-color above and below and a step of 0; the play script checking it after the meadow; the play job's
-limit raised to 60 minutes with its reason; 195 tests, the strict build clean, the play script
-clean. The walk's 37 minutes are lavapipe drawing, the script taking 70 seconds on the machine's
-GPU; the coder's way to shorten it without losing a biome, the walk at render distance 2 with the
-edge's reading at 4 alone, is taken once the run under the 60 minute limit reports the walk's time.
-Read at 04:45 on 2026-10-21. Not pushed: the build run of `c54f362` is still running under the old
-limit, and the head is pushed when it ends. Shortly before 05:00 the owner turned item 41 to the
-game's own ground looks in its style, the pack out of the manifest. Shortly before 05:04 the owner
-set the rule that packs give pictures alone and every rule is the game's own, Decision 22, with
-words in items 30, 34 and 41. Next item 41, then item 39, then the items in order; item 38's second
-part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+Reviewed up to `236763d`, item 41, the game's own ground looks, and nothing else, carrying the
+review's file: the grass top's looks drawn as the game's own pixels in its flat style wherever no
+pack lists any, little blossoms in a few colors, clover darkened from the grass and tinted by the
+climate, and pebbles, turned four ways and weighed near the pack's, over Bare Bones' top and the
+game's own alike, each block's look picked by a hash of its place; the block state reader gone under
+Decision 22; and the owner's word folded in before the commit, that Bare Bones' grass runs one way
+as its art style and the turned looks made horizontal streaks that looked bad, so the grass's own
+tile never turns, the plain look one entry weighted four times, the clover darkening the unturned
+grass where its patch lies and the decor turning over it, a test holding the plain and decor looks
+to the pack's tile and a capture from above showing every streak running one way; 198 tests, the
+strict build clean, the play script clean. Read at 05:10 on 2026-10-21. Not pushed, with `cc46f25`
+before it: the build run of `c54f362` is still on its play job under the old limit, and both heads
+are pushed when it ends. Shortly before 05:10 the owner asked that the look without a pack take Bare
+Bones' colors, item 45. Next item 45, then item 39, then the items in order; item 38's second part
+when the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and build
+folders wait on the owner's word.
+
+Before it, `cc46f25` came, item 44, the dome under the horizon with the play job's limit raised to
+60 minutes, and nothing else, carrying the review's file.
 
 Before it, `c54f362` came, item 25's third commit, the nine trees with the cherry's lanterns, and
 nothing else, carrying the review's file. Pushed at 04:41 with `723e28c`.
-
-Before it, `723e28c` came, item 25's second commit, the seventy blocks, the plants as planes and the
-ores by depth, and nothing else, carrying the review's file.
 
 ## Now
 
@@ -561,7 +556,8 @@ ores by depth, and nothing else, carrying the review's file.
     weights over a field, the clover tinted and the decor untinted, and the plain look leaving the
     grass as it was. One commit as before. Under Decision 22 the block state reader goes too, the
     grass top taking the game's own looks alone over a pack's grass tile, the README saying a pack
-    gives the pictures alone.
+    gives the pictures alone. Done at `236763d` on 2026-10-21, as the head says, the grass's tile
+    never turning on the owner's word.
 
 42. **Water that mirrors the sky and the shore, with the bed seen through it (Decision 21).** The
     look the owner aims at shows calm water mirroring the sky and the shore and clear pools in
@@ -604,6 +600,19 @@ ores by depth, and nothing else, carrying the review's file.
     Tests: a capture's pixels read across the land's edge at the horizon with no step over a pixel,
     and the dome's color equal to the haze's. One commit, small, after item 25. Done at `cc46f25` on
     2026-10-21, as the head says.
+
+45. **The look without a pack takes Bare Bones' colors (Decision 23).** The owner wrote shortly
+    before 05:10 on 2026-10-21 that the look without a resource pack can use Bare Bones' colors to
+    match it at least, the game having different colors for them. The game's own flat colors, its
+    surfaces' colors used where no pack is loaded, become Bare Bones' averages read as numbers from
+    the owner's copy as Terralith's colors were, nothing of its pixels shipping: `voxel.palette`
+    prints each surface the table names with its texture's alpha-weighted sRGB average from the
+    packs loaded, so the numbers can be read again; the surfaces take those numbers for the full
+    blocks, the grass and the leaves as their gray before the climate's tint, the water as its gray
+    under the table's tint, glass and ice keeping their alpha and the emissive blocks their glow;
+    the plants keep their own masks and colors, since a flower's average mixes stem and petals.
+    Tests: the field's colors unchanged in kind, and a capture with no pack beside one with Bare
+    Bones showing the match. One commit, small, before item 39.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1178,6 +1187,12 @@ No verdict is open.
     own timing and stay; item 34's connected textures take the tiles and the method a pack's
     properties name, as metadata of a picture, with the methods written natively, which the owner
     says otherwise if they read it as a rule; item 28 was already what Shine shows done natively.
+
+23. **The look without a pack takes Bare Bones' colors.** The owner wrote shortly before 05:10 on
+    2026-10-21, after item 41, that for the look without a resource pack the game can use Bare
+    Bones' colors to match it at least, since the game has different colors for them. So item 45,
+    the surfaces' flat colors set to the pack's averages read as numbers, nothing of its pixels
+    shipping, the plants keeping their own.
 
 ## Replies
 

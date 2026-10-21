@@ -532,8 +532,11 @@ with T read the packs again after one changes, and each `--pack` on the command 
 with the packs given in place of the list. A transient run reads no list and writes none, so it is
 drawn the same on every machine. The repository ships no pack and none of a pack's files.
 `VoxelSandbox/Rendering/PackTextures.cs` names the texture each surface and item is drawn with, by
-Minecraft's names, and a surface it leaves out, or one no pack has, keeps the game's own color, so
-with no pack the world is drawn as before.
+Minecraft's names, and a surface it leaves out, or one no pack has, keeps the game's own color. Each
+full block's own color is the average of Bare Bones' texture of it, read from the owner's copy as
+numbers by `voxel.palette`, which prints each surface's average from the packs loaded, so the world
+with no pack looks as it does with the pack the game fetches. The plants keep their own colors, and
+the ores theirs, since without a texture an ore shows by its color alone.
 
 At the first start, with no list yet, the game fetches its three default packs from their makers'
 own pages on Modrinth into its folder, on a task of its own while it plays with its own art, and

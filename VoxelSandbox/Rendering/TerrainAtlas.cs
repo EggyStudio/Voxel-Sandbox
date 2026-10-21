@@ -253,6 +253,15 @@ public sealed class TerrainAtlas
             Encode(Mix(r, or * Linear(grass.R), covered), Mix(g, og * Linear(grass.G), covered), Mix(b, ob * Linear(grass.B), covered)));
     }
 
+    /// <summary>The average color of a surface's texture as a pack gives it, before any tint, decoded and weighed by alpha and encoded again in sRGB, with how much of it is covered as its alpha, or null where no pack gives it one.</summary>
+    public Color? Average(int surface)
+    {
+        var tile = _tile[surface];
+        if (tile == 0 || _own[surface]) return null;
+        var (r, g, b, covered) = _averages[tile];
+        return Encode(r, g, b) with { A = (byte)MathF.Round(covered * 255) };
+    }
+
     /// <summary>A surface's own looks, their tiles packed as <see cref="Paint"/> packs them and their weights, none for a surface that has none.</summary>
     public IReadOnlyList<(uint Tiles, int Weight)> Variants(int surface) => _variants[surface] ?? [];
 

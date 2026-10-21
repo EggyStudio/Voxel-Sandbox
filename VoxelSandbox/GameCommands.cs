@@ -225,6 +225,15 @@ public static class GameCommands
         return $"on, the first over the rest: {on}; read {game.Packs.Names.Count} of them; in {list.Folder}: {kept}";
     }
 
+    [Command("voxel.palette", "Each surface's color as the packs loaded give it, its texture's average before any tint, in sRGB, and how much of it is covered, which the game's own colors are read from")]
+    internal static string Palette()
+    {
+        if (Game is not { } game) return "no world is loaded";
+        var atlas = game.Renderer.Atlas;
+        var lines = Surfaces.All.Select(s => atlas.Average(s.Id) is { } c ? $"{s.Name}: {c.R} {c.G} {c.B} {c.A}" : null).OfType<string>().ToList();
+        return lines.Count == 0 ? "no pack gives a surface a texture" : string.Join("; ", lines);
+    }
+
     [Command("voxel.reload", "Reads the resource packs on again from their files, as F3 with T does")]
     internal static string Reload()
     {
