@@ -14,12 +14,15 @@ namespace VoxelSandbox;
 /// edge, so the two meet with no step, under water as above it and whatever color the haze takes.
 /// The sky's image keeps its darker lower half for the light it gives the world. The dome lies
 /// beyond the farthest render distance's haze, and the land and the water, nearer, hide it where
-/// they stand.
+/// they stand. It lies beyond the sun, the moon and the stars too, inside the far plane, since it
+/// writes depth over its whole band, its clear top too, and the sky's bodies drawn behind it would
+/// end in a line at the band's top. They are drawn over it instead, each taking the share of the
+/// haze <see cref="Shown"/> leaves clear at its height.
 /// </remarks>
 public static class HazeDome
 {
-    /// <summary>How far the dome lies from the eye, past the haze's end at the farthest render distance and short of the sun.</summary>
-    public const float Radius = 2400;
+    /// <summary>How far the dome lies from the eye, past the haze's end at the farthest render distance and the stars, and inside the engine's far plane of 4000.</summary>
+    public const float Radius = 3600;
 
     // Rings of the dome by their height above the horizon in degrees, and how much of the haze each
     // shows, nothing at its top, the whole from the horizon down.
@@ -27,6 +30,18 @@ public static class HazeDome
         [(6, 0), (3, 0.35f), (1.5f, 0.75f), (0, 1), (-3, 1), (-15, 1), (-40, 1), (-70, 1), (-90, 1)];
 
     private const int Around = 48;
+
+    /// <summary>How much of the haze the dome shows at a height above the horizon in degrees, between its rings as its faces blend it.</summary>
+    public static float Shown(float degrees)
+    {
+        if (degrees >= Rings[0].Degrees) return Rings[0].Shown;
+        for (int ring = 1; ring < Rings.Length; ring++)
+        {
+            var (low, high) = (Rings[ring], Rings[ring - 1]);
+            if (degrees >= low.Degrees) return low.Shown + (high.Shown - low.Shown) * (degrees - low.Degrees) / (high.Degrees - low.Degrees);
+        }
+        return Rings[^1].Shown;
+    }
 
     /// <summary>The dome's faces about the origin, each vertex white with the alpha of its ring, its corners counterclockwise seen from the middle.</summary>
     public static SectionMesher.Faces Build()

@@ -19,17 +19,24 @@ namespace VoxelSandbox;
 /// <see cref="RepaintHours"/>, since each painting is a new map to filter.
 /// </para>
 /// <para>
-/// The sun and the moon, the glow around each and the stars are pixel art (<see cref="SkyArt"/>)
-/// on quads fixed on the sky, sampled without filtering, so their pixels stay square however large
-/// they are drawn. A quad lies across the way to its middle, its right side along the way the sky
-/// turns there and its up across that, so where it stands and which way its sides run depend on
-/// the hour alone and never on which way the camera looks, and the sky turns them all as one. A
-/// glow's pixels are its body's, its quad's middle the body's, so its rings step along the body's
-/// grid, and it is added to the sky behind it.
+/// The sun and the moon, each a square body with its glow around it, and the stars are pixel art
+/// (<see cref="SkyArt"/>) on quads fixed on the sky, sampled without filtering, so their pixels
+/// stay square however large they are drawn. A quad lies across the way to its middle, its right
+/// side along the way the sky turns there and its up across that, so where it stands and which way
+/// its sides run depend on the hour alone and never on which way the camera looks, and the sky
+/// turns them all as one. The sun and the moon are added to the sky behind them, as Minecraft adds
+/// its own, and where a resource pack has its own pictures of them, those are drawn in their place.
 /// The sky turns about the axis from north to south, the sun on one side of it and the moon on the
 /// other, and the stars keep their places on it, so they turn with the sun and the moon. They are
 /// drawn far out, inside the far plane and in front of the sky's backdrop, so the land and the
 /// clouds hide them.
+/// </para>
+/// <para>
+/// They are drawn in front of the haze dome too (<see cref="HazeDome"/>), which lies beyond them,
+/// and each takes the share of the dome's haze left clear at its height instead, the sun and the
+/// moon as a grid of a quad to each pixel of their pictures with that share at each corner. So a
+/// sun sinking into the haze dims under it as the dome blended over it would show it, where behind
+/// the dome, which writes depth over its whole band, it would end in a line at the band's clear top.
 /// </para>
 /// </remarks>
 public sealed class Sky : IDisposable
@@ -38,12 +45,16 @@ public sealed class Sky : IDisposable
     private const int Height = 128;
     private const float RepaintHours = 0.05f;
 
-    // How far out the sun and the moon are drawn, and the stars behind them. The sun and the
-    // moon are as wide as Minecraft's against their distance, its sun the middle 8 pixels of a
-    // texture of 32 on a quad 60 across at a distance of 100, so 15 at 100, about 8.6 degrees, and
-    // its moon the same 8 of 32 on a quad 40 across, so 10 at 100, about 5.7 degrees. A star's
-    // pixel spans 0.16 degrees.
-    private const float Distance = 3000, StarDistance = 3200;
+    /// <summary>How far out the sun and the moon are drawn.</summary>
+    public const float Distance = 3000;
+
+    /// <summary>How far out the stars are drawn, behind the sun and the moon.</summary>
+    public const float StarDistance = 3200;
+
+    // The sun's and the moon's bodies are as wide as Minecraft's against their distance, its sun the
+    // middle 8 pixels of a texture of 32 on a quad 60 across at a distance of 100, so 15 at 100,
+    // about 8.6 degrees, and its moon the same 8 of 32 on a quad 40 across, so 10 at 100, about 5.7
+    // degrees. A star's pixel spans 0.16 degrees.
     private const float SunAcross = 0.15f, MoonAcross = 0.10f, StarPixel = 0.16f;
     private const int StarCount = 500;
 
@@ -61,18 +72,45 @@ public sealed class Sky : IDisposable
 
     private readonly LightHandle _light;
     private readonly byte[] _pixels = new byte[Width * Height * 4];
-    private readonly Texture2D _sun, _halo, _moon, _star;
+    private readonly Texture2D _sun, _moon, _star;
     private float _litHour = float.NaN, _paintedHour = float.NaN;
+
+    // A pack's sun, and its moon as one sheet of four phases by two or as a picture to each phase,
+    // or none where no pack has them.
+    private Texture2D? _packSun, _packMoonSheet;
+    private Texture2D?[] _packMoons = new Texture2D?[SkyArt.Phases];
+
+    // The names Minecraft gives the moon's phases' own pictures, in the order of the phases.
+    private static readonly string[] PhaseNames =
+        ["full_moon", "waning_gibbous", "third_quarter", "waning_crescent", "new_moon", "waxing_crescent", "first_quarter", "waxing_gibbous"];
 
     public Sky(float hour)
     {
         Hour = hour;
         _light = CreateDirectionalLight(-Vector3.UnitY, Color.White, 1, castsShadows: true);
-        _sun = Load(SkyArt.SunPixels(), SkyArt.Size, SkyArt.Size);
-        _halo = Load(SkyArt.HaloPixels(SunPixelDegrees), SkyArt.HaloSize, SkyArt.HaloSize);
+        _sun = Load(SkyArt.SunPixels(), SkyArt.Across, SkyArt.Across);
         _moon = Load(SkyArt.MoonPixels(), SkyArt.Cell * 4, SkyArt.Cell * 2);
         _star = Load(SkyArt.StarPixels(), 3, 3);
         Apply();
+    }
+
+    /// <summary>
+    /// Draws the sun and the moon with the resource packs' own pictures of them where a pack has
+    /// them, under <c>environment/celestial</c> as Minecraft reads them now or as the sun and the
+    /// sheet of the moon's phases under <c>environment</c> as it read them before, and with the
+    /// game's own where none has.
+    /// </summary>
+    public void Use(ResourcePacks packs)
+    {
+        UnloadPacks();
+        _packSun = Loaded(packs.Texture("environment/celestial/sun") ?? packs.Texture("environment/sun"));
+        for (int phase = 0; phase < SkyArt.Phases; phase++) _packMoons[phase] = Loaded(packs.Texture($"environment/celestial/moon/{PhaseNames[phase]}"));
+        if (_packMoons.Any(m => m is null))
+        {
+            foreach (var moon in _packMoons) if (moon is { } texture) UnloadTexture(texture);
+            _packMoons = new Texture2D?[SkyArt.Phases];
+            _packMoonSheet = Loaded(packs.Texture("environment/moon_phases"));
+        }
     }
 
     /// <summary>The hour of the day, from 0 to 24, the sun rising at 6 in the east and setting at 18 in the west.</summary>
@@ -118,9 +156,6 @@ public sealed class Sky : IDisposable
     /// <summary>The way toward the sun at an hour, of length one, tilted toward the south a little so the shadows of the blocks do not run along their edges at noon.</summary>
     public static Vector3 SunToward(float hour) => Turned(hour, SunWay);
 
-    /// <summary>How many degrees each pixel of the sun's art and of its glow spans on the sky.</summary>
-    public static float SunPixelDegrees => float.RadiansToDegrees(MathF.Atan(SunAcross / SkyArt.Size));
-
     /// <summary>
     /// A way on the sky as it stands at 6, turned as the sky turns by an hour, about the axis from
     /// north to south, so the sun goes from the east at 6 up over the south to the west at 18.
@@ -152,14 +187,15 @@ public sealed class Sky : IDisposable
 
     /// <summary>
     /// Draws the stars, the moon and the sun on the sky about the eye, the stars fading in as the
-    /// day fades and near the horizon, the sun and the moon fading as they set, and the glow around
-    /// each. Called inside <c>BeginMode3D</c>.
+    /// day fades and near the horizon, and the sun and the moon fading as they set, each taking the
+    /// share of the haze dome left clear at its height where the dome is drawn. Called inside
+    /// <c>BeginMode3D</c>.
     /// </summary>
-    public void Draw(Vector3 eye)
+    public void Draw(Vector3 eye, bool hazed)
     {
         var toSun = SunToward(Hour);
         var night = 1 - DayShare(toSun);
-        var dusk = DuskShare(toSun);
+        var turn = Turn(Hour);
 
         // Every quad is given in the sky's space as it stands at 6, which turns it about the eye.
         rlPushMatrix();
@@ -167,12 +203,12 @@ public sealed class Sky : IDisposable
         rlRotatef(TurnDegrees(Hour), 0, 0, 1);
         if (night > 0.01f)
         {
-            var turn = Turn(Hour);
             rlSetTexture(_star.Id);
             rlBegin(RlDrawMode.Quads);
             foreach (var (way, right, up, uv, brightness) in Stars)
             {
-                var alpha = night * brightness * SmoothStep(0.0f, 0.15f, Vector3.Transform(way, turn).Y);
+                var turned = Vector3.Transform(way, turn);
+                var alpha = night * brightness * SmoothStep(0.0f, 0.15f, turned.Y) * (hazed ? Clear(turned) : 1);
                 if (alpha < 0.01f) continue;
                 rlColor4ub(255, 255, 255, (byte)(255 * alpha));
                 Corners(way * StarDistance, right, up, uv);
@@ -181,50 +217,100 @@ public sealed class Sky : IDisposable
             rlSetTexture(0);
         }
 
-        // Each glow is added to the sky and writes no depth, since its body is drawn over it at the
-        // same distance and would fail against it where the two quads' depths part by a rounding.
-        // The sun's is warmer and stronger at dawn and dusk and gone a little after the sun has
-        // set, and the moon's is dimmer, in the moonlight's color, by night.
-        var moon = MoonPhase(Day, Hour);
-        float sunPixel = Distance * SunAcross / SkyArt.Size, moonPixel = Distance * MoonAcross / SkyArt.Size;
-        var halo = new Rectangle(0, 0, SkyArt.HaloSize, SkyArt.HaloSize);
+        // The moon and then the sun, each added to the sky and writing no depth, as Minecraft adds
+        // its own, so the glow brightens the sky behind it and a body drawn over another adds to it.
+        var phase = MoonPhase(Day, Hour);
+        var moon = _packMoons[phase] is { } own ? (own, new Rectangle(0, 0, own.Width, own.Height))
+            : _packMoonSheet is { } sheet ? (sheet, new Rectangle(phase % 4 * sheet.Width / 4f, phase / 4 * sheet.Height / 2f, sheet.Width / 4f, sheet.Height / 2f))
+            : (_moon, new Rectangle(phase % 4 * SkyArt.Cell + 1, phase / 4 * SkyArt.Cell + 1, SkyArt.Across, SkyArt.Across));
+        var sun = _packSun is { } packed ? packed : _sun;
         BeginBlendMode(BlendMode.Additive);
         rlDisableDepthMask();
-        Body(_halo, halo, -SunWay, moonPixel, ColorOf(Moonlight), 0.2f * night * SmoothStep(-0.2f, 0, -toSun.Y));
+        Body(moon.Item1, moon.Item2, -SunWay, Distance * MoonAcross / SkyArt.Size, Setting(-toSun), turn, hazed);
+        Body(sun, new Rectangle(0, 0, sun.Width, sun.Height), SunWay, Distance * SunAcross / SkyArt.Size, Setting(toSun), turn, hazed);
         rlEnableDepthMask();
         EndBlendMode();
-        Body(_moon, new Rectangle(moon % 4 * SkyArt.Cell + 1, moon / 4 * SkyArt.Cell + 1, SkyArt.Size, SkyArt.Size), -SunWay, moonPixel, Color.White, Setting(-toSun));
-        BeginBlendMode(BlendMode.Additive);
-        rlDisableDepthMask();
-        Body(_halo, halo, SunWay, sunPixel, ColorOf(Vector3.Lerp(Noon, DuskHorizon, dusk)), (0.25f + 0.5f * dusk) * SmoothStep(-0.2f, 0, toSun.Y));
-        rlEnableDepthMask();
-        EndBlendMode();
-        Body(_sun, new Rectangle(0, 0, SkyArt.Size, SkyArt.Size), SunWay, sunPixel, Color.White, Setting(toSun));
         rlPopMatrix();
     }
 
     public void Dispose()
     {
+        UnloadPacks();
         UnloadTexture(_sun);
-        UnloadTexture(_halo);
         UnloadTexture(_moon);
         UnloadTexture(_star);
     }
 
-    // A quad of part of a texture on the sky at the sun's and the moon's distance, its middle on a
-    // way in the sky's space, each of its pixels so wide, so two quads of one pixel's size share a
-    // grid where their middles meet, in a color at an alpha.
-    private static void Body(Texture2D texture, Rectangle source, Vector3 way, float pixel, Color color, float alpha)
+    /// <summary>
+    /// The corners of a grid of <see cref="SkyArt.Across"/> squares a side on the sky about a way,
+    /// at the sun's and the moon's distance in the sky's space as it stands at 6, each square a pixel
+    /// of their pictures so wide, a row at a time from the top left, so a quad of the grid is a pixel
+    /// of the picture.
+    /// </summary>
+    public static Vector3[] Grid(Vector3 way, float pixel)
+    {
+        const int side = SkyArt.Across + 1;
+        var (right, up) = Across(way);
+        var corners = new Vector3[side * side];
+        for (int row = 0; row < side; row++)
+            for (int column = 0; column < side; column++)
+                corners[row * side + column] = way * Distance + right * ((column - SkyArt.Across / 2f) * pixel) + up * ((SkyArt.Across / 2f - row) * pixel);
+        return corners;
+    }
+
+    /// <summary>
+    /// The share of what lies behind the haze dome that shows through it along a way about the eye,
+    /// all of it above the dome's band, none from the horizon down, as <see cref="HazeDome.Shown"/>
+    /// leaves it.
+    /// </summary>
+    public static float Clear(Vector3 way) => 1 - HazeDome.Shown(float.RadiansToDegrees(MathF.Asin(Math.Clamp(way.Y / way.Length(), -1, 1))));
+
+    // A picture or part of one on the sky at the sun's and the moon's distance, its middle on a way
+    // in the sky's space and each pixel of the game's own pictures so wide, as a grid of a quad to
+    // each of those pixels, each corner at an alpha and at the share of the haze left clear at its
+    // height on the sky turned by the hour, where the dome is drawn.
+    private static void Body(Texture2D texture, Rectangle source, Vector3 way, float pixel, float alpha, Matrix4x4 turn, bool hazed)
     {
         if (alpha <= 0) return;
-        var (right, up) = Across(way);
+        const int side = SkyArt.Across + 1;
+        var corners = Grid(way, pixel);
+        var shown = new byte[corners.Length];
+        for (int i = 0; i < corners.Length; i++)
+            shown[i] = (byte)(255 * Math.Clamp(alpha * (hazed ? Clear(Vector3.Transform(corners[i], turn)) : 1), 0, 1));
+        if (shown.All(s => s == 0)) return;
+        float step = source.Width / SkyArt.Across / texture.Width, rise = source.Height / SkyArt.Across / texture.Height;
+        float left = source.X / texture.Width, top = source.Y / texture.Height;
         rlSetTexture(texture.Id);
         rlBegin(RlDrawMode.Quads);
-        rlColor4ub(color.R, color.G, color.B, (byte)(255 * Math.Clamp(alpha, 0, 1)));
-        Corners(way * Distance, right * (source.Width * pixel / 2), up * (source.Height * pixel / 2),
-            new Vector4(source.X / texture.Width, source.Y / texture.Height, (source.X + source.Width) / texture.Width, (source.Y + source.Height) / texture.Height));
+        for (int row = 0; row < SkyArt.Across; row++)
+            for (int column = 0; column < SkyArt.Across; column++)
+                // From the top left down and round against the clock as the middle of the sky sees
+                // it, as Corners lays a quad.
+                foreach (var (down, across) in (ReadOnlySpan<(int, int)>)[(0, 0), (1, 0), (1, 1), (0, 1)])
+                {
+                    var at = (row + down) * side + column + across;
+                    rlColor4ub(255, 255, 255, shown[at]);
+                    Vertex(corners[at], left + (column + across) * step, top + (row + down) * rise);
+                }
         rlEnd();
         rlSetTexture(0);
+    }
+
+    private void UnloadPacks()
+    {
+        foreach (var texture in (Texture2D?[])[_packSun, _packMoonSheet, .. _packMoons])
+            if (texture is { } loaded) UnloadTexture(loaded);
+        (_packSun, _packMoonSheet) = (null, null);
+        Array.Clear(_packMoons);
+    }
+
+    private static Texture2D? Loaded(Image? image)
+    {
+        if (image is not { } picture) return null;
+        var texture = LoadTextureFromImage(picture);
+        SetTextureFilter(texture, TextureFilter.Point);
+        SetTextureWrap(texture, TextureWrap.Clamp);
+        return texture;
     }
 
     // A quad's corners about its middle, half its right side and half its up from it, from the top

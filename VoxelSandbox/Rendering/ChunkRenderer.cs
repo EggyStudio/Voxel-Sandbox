@@ -130,6 +130,9 @@ public sealed class ChunkRenderer : IDisposable
         Fog(Color.White, float.MaxValue, float.MaxValue);
     }
 
+    /// <summary>Whether the haze dome is drawn, which it is while a haze fades the land's edge short of it.</summary>
+    public bool Hazed => _fogEnd < HazeDome.Radius;
+
     /// <summary>Sets the haze the sections fade into, its color and the distances in blocks it starts at and covers by.</summary>
     public void Fog(Color color, float start, float end)
     {
@@ -369,7 +372,7 @@ public sealed class ChunkRenderer : IDisposable
             lamps += list.Count;
         }
         // The dome under the horizon, about the eye, while a haze fades the land's edge into it.
-        if (_fogEnd < HazeDome.Radius)
+        if (Hazed)
         {
             DrawMesh(_dome, _haze, Matrix4x4.CreateTranslation(eye));
             draws++;

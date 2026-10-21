@@ -112,36 +112,96 @@ public class SkyTests
                 var edge = x % SkyArt.Cell is 0 or SkyArt.Cell - 1 || y % SkyArt.Cell is 0 or SkyArt.Cell - 1;
                 if (edge) Assert.Equal(0, sheet[(y * across + x) * 4 + 3]);
             }
-        // The full moon's middle is lit and the new moon's is clear.
-        Assert.Equal(255, sheet[((1 + 6) * across + 1 + 6) * 4 + 3]);
-        Assert.Equal(0, sheet[((SkyArt.Cell + 1 + 6) * across + 1 + 6) * 4 + 3]);
+        // The full moon's middle is lit and the new moon's is clear, its glow too.
+        const int middle = 1 + SkyArt.Across / 2;
+        Assert.Equal(255, sheet[(middle * across + middle) * 4 + 3]);
+        Assert.Equal(0, sheet[((SkyArt.Cell + middle) * across + middle) * 4 + 3]);
+        Assert.Equal(0, sheet[((SkyArt.Cell + middle) * across + middle - SkyArt.Size) * 4 + 3]);
     }
 
     [Fact]
-    public void The_Glow_Around_The_Sun_Falls_In_Steps_On_The_Suns_Grid_And_Clears_Before_Its_Edge()
+    public void The_Sun_Is_A_Square_Of_Eight_At_The_Middle_Of_Its_Picture_With_A_Dithered_Glow_Clear_Before_Its_Edge()
     {
-        var glow = SkyArt.HaloPixels(Sky.SunPixelDegrees);
-        const int middle = SkyArt.HaloSize / 2;
-        int Alpha(int x, int y) => glow[(y * SkyArt.HaloSize + x) * 4 + 3];
+        var sun = SkyArt.SunPixels();
+        int Alpha(int x, int y) => sun[(y * SkyArt.Across + x) * 4 + 3];
+        const int from = (SkyArt.Across - SkyArt.Size) / 2;
 
-        // The sun's square and the glow's share their middle and their grid of pixels.
-        Assert.Equal(0, (SkyArt.HaloSize - SkyArt.Size) % 2);
-        Assert.Equal(255, Alpha(middle, middle));
+        // The body is whole, square and opaque, its corners too, and the glow beside it far dimmer.
+        for (int y = from; y < from + SkyArt.Size; y++)
+            for (int x = from; x < from + SkyArt.Size; x++)
+                Assert.Equal(255, Alpha(x, y));
+        Assert.InRange(Alpha(from - 1, SkyArt.Across / 2), 1, (int)(255 * SkyArt.GlowPeak) + 8);
+
+        // The glow is held to a few levels, and the ordered pattern leaves a pixel brighter than its
+        // neighbor nearer the body here and there, where a smooth fall would never rise outward.
         var levels = new HashSet<int>();
-        for (int x = middle; x < SkyArt.HaloSize; x++)
-        {
-            levels.Add(Alpha(x, middle));
-            if (x + 1 < SkyArt.HaloSize) Assert.True(Alpha(x + 1, middle) <= Alpha(x, middle));
-        }
-        // A few rings, each a step of brightness, rather than a smooth fall.
-        Assert.InRange(levels.Count, 4, SkyArt.HaloSteps + 1);
-        for (int i = 0; i < SkyArt.HaloSize; i++)
+        var rises = 0;
+        for (int y = 1; y < SkyArt.Across - 1; y++)
+            for (int x = 1; x < SkyArt.Across - 1; x++)
+            {
+                if (x >= from && x < from + SkyArt.Size && y >= from && y < from + SkyArt.Size) continue;
+                levels.Add(Alpha(x, y));
+                int nx = x + Math.Sign(SkyArt.Across / 2 - 0.5f - x), ny = y;
+                if (Math.Abs(x + 0.5f - SkyArt.Across / 2f) > Math.Abs(y + 0.5f - SkyArt.Across / 2f) && Alpha(x, y) > Alpha(nx, ny)) rises++;
+            }
+        Assert.InRange(levels.Count, 3, 8);
+        Assert.True(rises > 0, "the glow falls smoothly, with no dithering");
+
+        // It falls away from the body ring by ring, and is gone at the picture's edge.
+        double Ring(float radius) => Enumerable.Range(0, 64).Average(i =>
+            Alpha((int)(SkyArt.Across / 2 + radius * MathF.Cos(i * MathF.Tau / 64)), (int)(SkyArt.Across / 2 + radius * MathF.Sin(i * MathF.Tau / 64))));
+        Assert.True(Ring(6) > Ring(9) && Ring(9) > Ring(12), $"{Ring(6)}, {Ring(9)}, {Ring(12)}");
+        for (int i = 0; i < SkyArt.Across; i++)
         {
             Assert.Equal(0, Alpha(i, 0));
             Assert.Equal(0, Alpha(0, i));
-            Assert.Equal(0, Alpha(i, SkyArt.HaloSize - 1));
-            Assert.Equal(0, Alpha(SkyArt.HaloSize - 1, i));
+            Assert.Equal(0, Alpha(i, SkyArt.Across - 1));
+            Assert.Equal(0, Alpha(SkyArt.Across - 1, i));
         }
+    }
+
+    [Fact]
+    public void A_Low_Suns_Glow_Dims_Through_The_Haze_Domes_Band_And_Is_Not_Cut_At_Its_Top()
+    {
+        // The hour the sun's middle stands three degrees up, halfway through the dome's band.
+        var hour = 6f;
+        while (float.RadiansToDegrees(MathF.Asin(Sky.SunToward(hour).Y)) < 3) hour += 0.001f;
+        var turn = Matrix4x4.CreateRotationZ(float.DegreesToRadians((hour - 6) * 15));
+        var corners = Sky.Grid(Sky.SunToward(6), Sky.Distance * 0.15f / SkyArt.Size);
+        const int side = SkyArt.Across + 1;
+
+        int partly = 0;
+        var heights = new List<(float Degrees, float Clear)>();
+        for (int column = 0; column < side; column++)
+            for (int row = 0; row < side; row++)
+            {
+                var way = Vector3.Transform(corners[row * side + column], turn);
+                var degrees = float.RadiansToDegrees(MathF.Asin(way.Y / way.Length()));
+                var clear = Sky.Clear(way);
+                // Whole above the band, gone under the horizon and dimming between, so no line
+                // crosses the glow where the band begins.
+                if (degrees >= 6) Assert.Equal(1, clear, 3);
+                else if (degrees <= 0) Assert.Equal(0, clear, 3);
+                else if (degrees > 0.1f && degrees < 5.9f)
+                {
+                    Assert.True(clear > 0 && clear < 1, $"{clear} of the glow shows at {degrees} degrees");
+                    partly++;
+                }
+                heights.Add((degrees, clear));
+            }
+        Assert.True(partly > side, $"{partly} corners lie in the band");
+        // Higher on the sky, never less of it shows.
+        var ordered = heights.OrderBy(h => h.Degrees).ToList();
+        for (int i = 1; i < ordered.Count; i++) Assert.True(ordered[i].Clear >= ordered[i - 1].Clear - 1e-4f);
+    }
+
+    [Fact]
+    public void The_Haze_Dome_Lies_Beyond_The_Sun_The_Moon_And_The_Stars()
+    {
+        Assert.True(HazeDome.Radius > Sky.StarDistance && Sky.StarDistance > Sky.Distance);
+        // The sun's picture's farthest corner lies short of the dome too.
+        var corners = Sky.Grid(Sky.SunToward(6), Sky.Distance * 0.15f / SkyArt.Size);
+        Assert.True(corners.Max(c => c.Length()) < HazeDome.Radius);
     }
 
     private static (float, int) Rounded((float Hour, int Day) at) => (MathF.Round(at.Hour, 3), at.Day);

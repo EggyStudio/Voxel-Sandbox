@@ -5,28 +5,31 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `236763d`, item 41, the game's own ground looks, and nothing else, carrying the
-review's file: the grass top's looks drawn as the game's own pixels in its flat style wherever no
-pack lists any, little blossoms in a few colors, clover darkened from the grass and tinted by the
-climate, and pebbles, turned four ways and weighed near the pack's, over Bare Bones' top and the
-game's own alike, each block's look picked by a hash of its place; the block state reader gone under
-Decision 22; and the owner's word folded in before the commit, that Bare Bones' grass runs one way
-as its art style and the turned looks made horizontal streaks that looked bad, so the grass's own
-tile never turns, the plain look one entry weighted four times, the clover darkening the unturned
-grass where its patch lies and the decor turning over it, a test holding the plain and decor looks
-to the pack's tile and a capture from above showing every streak running one way; 198 tests, the
-strict build clean, the play script clean. Read at 05:10 on 2026-10-21. Not pushed, with `cc46f25`
-before it: the build run of `c54f362` is still on its play job under the old limit, and both heads
-are pushed when it ends. Shortly before 05:10 the owner asked that the look without a pack take Bare
-Bones' colors, item 45. Next item 45, then item 39, then the items in order; item 38's second part
-when the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and build
-folders wait on the owner's word.
+Reviewed up to `8261308`, item 45, the look without a pack in Bare Bones' colors, and nothing else,
+carrying the review's file: 116 surfaces taking the pack's averages through `voxel.palette`, the
+water as its gray under its tint at its alpha, the birch and spruce leaves under theirs, glass, ice
+and stained glass at their alphas; the ores keeping their own colors, since averaged the pack's coal
+ore reads near stone and an ore without a texture shows by its color alone, for the owner's word;
+the plants keeping theirs; a capture of the hills and the mesas with no pack beside the same with
+Bare Bones reading nearly alike; 198 tests, the strict build clean, the play script clean; the
+README's head pictures a palette behind, which item 46 takes again. Read at 05:15 on 2026-10-21. The
+build run of `c54f362` lost its play job to the 40 minute limit at 05:21, Verdict 1, its three test
+jobs green, which `cc46f25` mends with the limit at 60, so the three heads were pushed at 05:23, and
+their build run ended green at 05:47, the play job in 24 minutes 30 seconds under the 60 minute
+limit, which settles Verdict 1; the walk stays at render distance 4 while it keeps under 40. Shortly
+before 05:15 the owner asked for the README's pictures taken again, an animation at its head and
+pictures in its parts, item 46 and Decision 24. Shortly before 05:25 the owner turned item 46's
+pictures to the packs' look, credited. Shortly before 05:40 the owner gave three words on the
+scouted pictures, Decision 25 and items 47 to 49, before item 46's final captures. Next items 47 and
+49, then 48, then 50, then item 46's captures, then item 39, then the items in order; item 38's
+second part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the
+Ui and build folders wait on the owner's word.
+
+Before it, `236763d` came, item 41, the game's own ground looks with the grass's tile never turning,
+and nothing else, carrying the review's file.
 
 Before it, `cc46f25` came, item 44, the dome under the horizon with the play job's limit raised to
-60 minutes, and nothing else, carrying the review's file.
-
-Before it, `c54f362` came, item 25's third commit, the nine trees with the cherry's lanterns, and
-nothing else, carrying the review's file. Pushed at 04:41 with `723e28c`.
+60 minutes, and nothing else, carrying the review's file. Pushed at 05:23 with the two after it.
 
 ## Now
 
@@ -612,7 +615,90 @@ nothing else, carrying the review's file. Pushed at 04:41 with `723e28c`.
     under the table's tint, glass and ice keeping their alpha and the emissive blocks their glow;
     the plants keep their own masks and colors, since a flower's average mixes stem and petals.
     Tests: the field's colors unchanged in kind, and a capture with no pack beside one with Bare
-    Bones showing the match. One commit, small, before item 39.
+    Bones showing the match. One commit, small, before item 39. Done at `8261308` on 2026-10-21, as
+    the head says, the ores keeping their own colors.
+
+46. **The README's pictures taken again, an animation at its head and pictures in its parts
+    (Decision 24).** The owner wrote shortly before 05:15 on 2026-10-21 to update the README's
+    images, to put at the top a GIF of different captures with 250 ms between them, and to showcase
+    things as images in the parts below, the interface, crafting and such. At the head, one animated
+    image of about ten captures 250 ms apart, the village, the hills, the mesas, the cherry grove at
+    dusk with its lanterns, the jungle, a swamp, a cave lit by glowstone, the night sky, a river
+    valley and the snowy peaks, each from a fixed seed, place, hour and heading in
+    `build/pictures.sh` as the head pictures are, encoded together at 800 by 450 with the tools on
+    the machine, a GIF as the owner asked, measured beside an animated WebP of the same frames,
+    which the site plays too, and the GIF taken unless it is too large, said with the sizes; the
+    engine's recorder of its item 70 takes the frames once its package comes. In the parts below,
+    pictures at 800 by 450 by the same script, the biomes as a sheet of four, the plants and the
+    grass's looks, the trees, water, glass and ice, torches and lanterns lighting a room at night,
+    the interface with the HUD, the inventory, a crafting table, a furnace and the menu, the
+    resource packs' screen, and caves and ravines; the script gaining the interface's shots through
+    input keys and commands and a list of what it takes. The owner's word shortly before 05:25 on
+    2026-10-21: the captures use the resource packs as well. So the pictures are taken with the
+    three default packs on in the manifest's order, read as the terms allow, a picture of the game
+    drawn with a pack holding none of its files where Bare Bones forbids reuploading any instance of
+    the pack, Recolourful's terms allowing its use in any form of media with a link to its page, and
+    the font's page offering it for content creation; the repository still holds no file of any
+    pack, and the README credits each pack with a link beside the pictures. The pictures script
+    fetches the packs by the manifest's URLs into a captures folder, checks each hash and opens the
+    game with a pack flag for each; the resource packs section keeps one pair, the same view in the
+    game's own art and with the packs, so the look with no pack stays shown; the Resource Packs
+    screen is left out since a transient run lists no packs and prints the machine's folder; a
+    `voxel.scale` command sets the interface's scale for the scripted shots, the windows taken at 2
+    and cut out at 800 by 450 with no resampling. One commit, after item 45 and before item 39.
+
+47. **The haze dome no longer cuts the sun, the moon and their glows (Decision 25).** The owner
+    asked shortly before 05:40 on 2026-10-21 whether the far plane or the skybox cut the sun's and
+    the moon's flare off at the bottom. Neither: the far plane is at 4,000 and the bodies at 3,000
+    and 3,200, and item 44's dome at 2,400 is drawn in the model pass writing depth over its whole
+    span to its top ring six degrees up, so the bodies drawn after it fail behind it even where its
+    alpha is zero, measured with a low sun over the sea cut with the dome and whole with the fog
+    off; the engine's material has no depth write switch in 5.2.190. The mend: the dome moved beyond
+    the bodies, between the stars' 3,200 and the far plane, at 3,600, and each body's quad a grid
+    whose vertices take the dome's clear share at their height, so the haze still covers a sinking
+    sun as blending the dome over it would and nothing is cut; the test of item 44 kept and one of a
+    low sun's glow whole across the horizon's six degrees. One commit, small, before item 46's final
+    captures.
+
+48. **No tunnel mouth and no ravine under a village (Decision 25).** The owner wrote shortly before
+    05:40 on 2026-10-21 of seeing a lot of rifts in villages, to be made rarer since they make the
+    structure buggy and villagers could fall. The reading: the rifts are tunnel mouths, where a
+    patch of high ground opens to the tunnels, and ravines, both carved before the village builds
+    its roads and footings at the ground's height, so a footing or a road hangs over the pit, seen
+    at three plains villages and a desert one. The mend: no mouth and no ravine within a village's
+    square of 48 and a margin of a few blocks, the generator and the ravines asking for the
+    villages' places, which depend on the seed and the ground alone; tunnels deeper than three
+    blocks under the ground stay, so a village's ground is whole. A test generating the columns of
+    seed 1's first villages and finding no open cell under a road or a footing. One commit, before
+    item 46's final captures.
+
+49. **The sun and the moon in the source's default look, square with a dithered glow, and a pack's
+    own where it has one (Decision 25).** The owner wrote shortly before 05:40 on 2026-10-21 that
+    they do not quite like the sun and the flares, the source's default dithered pixelated square
+    one looking better. So the sun and the moon drop the game's six rings and take the source's
+    default look, a square body with a glow dithered in its own pixels around it, drawn by the game
+    in that style as its own pixels, since the source's own picture cannot ship; where a pack has an
+    environment sun and moon phases picture, the game draws those, as pictures alone under Decision
+    22, the moon's phase by the day; the dusk's color fan of the sky's gradient stays. A capture of
+    the sun at noon and low and the moon at night in the record. One commit, small, with item 47
+    before item 46's final captures.
+
+50. **The block's texture over the whole window while the eye is inside a block, as the source draws
+    it (Decision 25).** The owner wrote shortly before 05:42 on 2026-10-21 that the camera lands
+    inside blocks in some captures, and that when it does the game is to show the block's texture on
+    the whole screen, and the script is to check before a capture whether the eye is inside a block
+    and get out first or find a better spot; in the scouting, eye-level spots chosen from the ground
+    landed inside dark oak crowns and logs and the frame read black or showed the faces' insides.
+    While the eye's cell holds a block that blocks the view, a whole opaque cube, every mode but
+    spectator draws that block's side texture over the whole window under the HUD, the pack's or the
+    surface's own color, darkened to a tenth, repeated four times across and down and slid by the
+    yaw and the pitch over 64 as the source's screen effect draws it; leaves left out as the source
+    leaves them, and glass, water and the shaped blocks. A test of the overlay's block for an eye
+    inside stone, none inside air, leaves or glass, and none in spectator. Item 46's script checks
+    the eye before each capture, `voxel.state` saying the eye is inside a block when its cell holds
+    anything but air, the script moving the eye up a block at a time to eight until its cell is air
+    or failing with the view's name, and the views chosen where the eye is in the open. One commit,
+    small, after item 48 and before item 46's final captures.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -896,7 +982,20 @@ nothing else, carrying the review's file. Pushed at 04:41 with `723e28c`.
 
 ## Verdicts
 
-No verdict is open.
+No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-10-21, said under it.
+
+1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
+    build run of `c54f362`, 39534411760, on 2026-10-21, the three test jobs passed in a minute and
+    the play job was cancelled at 40 minutes 19 seconds, the job having exceeded its maximum
+    execution time, its scripted run on lavapipe walking the eight biomes with the plants and the
+    trees of item 25's second and third commits in the world, where the run of `a6ec820` before them
+    had taken 37 minutes 17 seconds of the same limit. The fault is a limit set for a walk of one
+    stop, kept as the walk grew to nine. The mend, made before the loss in item 44's commit, is the
+    limit raised to 60 minutes with its reason in the comment, and the walk at render distance 2
+    with the horizon's reading at 4 alone once this run reports the walk's time; a program that
+    never reaches a stop still fails within the limit. Mended at `cc46f25` on 2026-10-21. Settles on
+    the build run of `8261308` with its play job green and its time read. Settled on that run on
+    2026-10-21, the play job green in 24 minutes 30 seconds.
 
 ## Decisions
 
@@ -1193,6 +1292,30 @@ No verdict is open.
     Bones' colors to match it at least, since the game has different colors for them. So item 45,
     the surfaces' flat colors set to the pack's averages read as numbers, nothing of its pixels
     shipping, the plants keeping their own.
+
+24. **The README's pictures, an animation at its head and pictures in its parts.** The owner wrote
+    shortly before 05:15 on 2026-10-21 to update the README's images, to put a GIF of different
+    captures 250 ms apart at the top, and to showcase things as images in the parts below, the
+    interface and crafting among them. So item 46, every picture taken by the pictures script with
+    no pack in the game's own art, none of a pack's textures in the repository. Shortly before 05:25
+    the owner added that the captures use the resource packs as well, so the pictures are taken with
+    the three default packs on, read as their terms allow for pictures of the game, each credited
+    with a link beside the pictures, the repository holding no file of any pack and one pair showing
+    the look with no pack beside the packs'.
+
+25. **Three words during item 46's scouting, the sky's bodies cut, the rifts in villages and the
+    sun's look.** The owner wrote shortly before 05:40 on 2026-10-21, seeing the pictures scouted,
+    that the sun's and the moon's flare are cut off at the bottom, asking whether the far plane or
+    the skybox does it, which is item 44's dome and item 47; that there are a lot of rifts in
+    villages, to be made rarer since they make the structure buggy and villagers could fall, which
+    is item 48; and that they do not quite like the sun and the flares, the source's default
+    dithered pixelated square one looking better, which is item 49. The three come before item 46's
+    final captures, since the pictures show them. The owner also said of the earlier village and
+    forest shots that they are not composed well, other images being better suited and better
+    looking villages existing, so both are replaced in item 46. Shortly before 05:42 the owner added
+    that the camera lands inside blocks in some captures, to show the block's texture on the whole
+    screen then and to check the eye before a capture and move out or find a better spot, which is
+    item 50 and a check in item 46's script.
 
 ## Replies
 

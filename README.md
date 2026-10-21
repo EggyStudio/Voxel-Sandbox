@@ -656,20 +656,23 @@ gives it at 1, and a room lit by a lamp at night 13 percent more.
 
 The sky is painted as a smooth gradient from the horizon to the zenith, blue by day, orange at the
 horizon at dawn and dusk and dark blue at night, and given to the engine as the map that lights the
-world from all around and is drawn behind it. The sun, the moon, the glow around each and the
-stars are pixel art drawn over it on quads fixed on the sky, sampled without filtering, so their
-pixels stay square. A quad's sides run along the way the sky turns at its place and across it, so
-where it stands and which way it is turned depend on the hour alone, whichever way the player
-looks. The sun is as wide against its distance as Minecraft's, 15 to 100 or about 8.6 degrees, and
-the moon 10 to 100, about 5.7 degrees. The sun's glow is six rings of brightness on the sun's own
-grid of pixels, their edges stepping along it, warmer and stronger at dawn and dusk, and the moon's
-is the same rings on the moon's grid, dimmer and in the moonlight's color, each added to the sky
-behind it. The sky turns with the hour about the axis from north to south, the sun rising in the east at 6, passing
-over the south at noon and setting in the west at 18, and the moon stands opposite it. Its 500 stars
-keep their places on the turning sky and fade in as the day fades and near the horizon. The moon
-goes through Minecraft's eight phases, a phase a day from the full moon of the first night, and
-changes while it is down. `voxel.time` sets the hour and `voxel.day` the count of days, which a save
-keeps, and the land and the clouds hide the sun, the moon and the stars.
+world from all around and is drawn behind it. The sun, the moon and the stars are pixel art drawn
+over it on quads fixed on the sky, sampled without filtering, so their pixels stay square. A quad's
+sides run along the way the sky turns at its place and across it, so where it stands and which way
+it is turned depend on the hour alone, whichever way the player looks. The sun and the moon take the
+shape of Minecraft's default ones, a square body 8 pixels across at the middle of a picture of 32,
+with a faint glow around it falling off pixel by pixel and dithered between its few levels, so its
+steps break up into single pixels, each added to the sky behind it as Minecraft adds its own. The
+sun's body is as wide against its distance as Minecraft's, 15 to 100 or about 8.6 degrees, and the
+moon's 10 to 100, about 5.7 degrees. Where a resource pack has its own sun and moon, under
+`environment/celestial` as Minecraft reads them now or `environment/sun` and the sheet
+`environment/moon_phases` as it read them before, those are drawn in their place. The sky turns with
+the hour about the axis from north to south, the sun rising in the east at 6, passing over the south
+at noon and setting in the west at 18, and the moon stands opposite it. Its 500 stars keep their
+places on the turning sky and fade in as the day fades and near the horizon. The moon goes through
+Minecraft's eight phases, a phase a day from the full moon of the first night, and changes while it
+is down. `voxel.time` sets the hour and `voxel.day` the count of days, which a save keeps, and the
+land and the clouds hide the sun, the moon and the stars.
 
 ## Clouds
 
@@ -706,10 +709,15 @@ ends, so a dome about the eye below the horizon is drawn in the haze's color, as
 what lies below its horizon in its fog's color, fading into the sky over six degrees above the
 horizon. It is drawn through the same shader beyond the haze's end, which gives it the haze's color
 itself, so the land's fading edge meets it with no step at any render distance and under water,
-while the sky's image keeps its darker lower half for the light it gives the world. `voxel.edge`
-reads where the drawn land ends up a column of pixels and how it meets what lies above it. The
-settings window turns the fog off, and the dome with it. The lamps' cubes are drawn with the
-engine's own shader and take no haze.
+while the sky's image keeps its darker lower half for the light it gives the world. It lies 3,600
+blocks out, beyond the sun, the moon and the stars and inside the engine's far plane, since it
+writes depth over its whole band, so a sun drawn behind it would end in a line six degrees up, where
+its band begins clear. They are drawn over it instead, the sun and the moon as a grid of a quad to
+each pixel of their pictures, and each corner takes the share of the haze left clear at its height,
+so a low sun dims into the haze as the dome blended over it would show it. `voxel.edge` reads where
+the drawn land ends up a column of pixels and how it meets what lies above it. The settings window
+turns the fog off, and the dome with it. The lamps' cubes are drawn with the engine's own shader and
+take no haze.
 
 ## What is not here yet
 

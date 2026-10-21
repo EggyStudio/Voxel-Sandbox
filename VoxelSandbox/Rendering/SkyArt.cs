@@ -1,74 +1,76 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// The pixel art the sky's quads are drawn with, the sun, the moon in each of its phases, the glow
-/// around each and a star, as RGBA bytes a row at a time from the top, a clear pixel's alpha 0.
+/// The pixel art the sky's quads are drawn with, the sun and the moon in each of its phases, each a
+/// square body with its glow around it, and a star, as RGBA bytes a row at a time from the top, a
+/// clear pixel's alpha 0.
 /// </summary>
 /// <remarks>
-/// The sun and the moon are squares with their corners cut, 12 pixels across, as Minecraft's are
-/// squares. The moon's phases are one sheet four across and two down, phase 0 the full moon at the
-/// top left and 4 the new moon at the bottom left, in Minecraft's order, waning through the first
-/// row and waxing through the second. Each phase has a clear pixel around it in the sheet, since a
-/// sample at the edge of a phase's square, taken without filtering, may land on the pixel past it.
+/// The sun and the moon take the shape of Minecraft's default ones, a square body 8 pixels across
+/// at the middle of a picture 32 across, with a faint glow around it falling off from the body's
+/// edge to nothing before the picture's edge. The glow is held to a few levels of brightness and
+/// dithered between them by a 4 by 4 ordered pattern, so its steps break up into single pixels. The
+/// pictures are added to the sky, as Minecraft adds its sun and moon, each pixel's color by its
+/// alpha, so the glow brightens the sky behind it. The moon's phases are one sheet four across and
+/// two down, phase 0 the full moon at the top left and 4 the new moon at the bottom left, in
+/// Minecraft's order, waning through the first row and waxing through the second. Each phase has a
+/// clear pixel around it in the sheet, since a sample at the edge of a phase, taken without
+/// filtering, may land on the pixel past it.
 /// </remarks>
 public static class SkyArt
 {
-    /// <summary>How many pixels the sun and the moon are across.</summary>
-    public const int Size = 12;
+    /// <summary>How many pixels the sun's and the moon's bodies are across.</summary>
+    public const int Size = 8;
+
+    /// <summary>How many pixels the sun's and the moon's pictures are across, the body at the middle and its glow around it.</summary>
+    public const int Across = 32;
 
     /// <summary>How many phases the moon goes through, a day each, as Minecraft's does.</summary>
     public const int Phases = 8;
 
     /// <summary>How many pixels apart the moon's phases are in their sheet, each with its clear edge.</summary>
-    public const int Cell = Size + 2;
+    public const int Cell = Across + 2;
 
-    /// <summary>
-    /// How many pixels the glow around the sun or the moon is across, on its body's grid, the
-    /// body's own pixels at its middle, enough for the glow to clear before its edge at the sun's
-    /// pixels of <see cref="Sky.SunPixelDegrees"/>.
-    /// </summary>
-    public const int HaloSize = 104;
+    /// <summary>The brightest the glow is, beside the body, as a share of its color.</summary>
+    public const float GlowPeak = 0.16f;
 
-    /// <summary>How many steps of brightness the glow takes from its edge to the sun.</summary>
-    public const int HaloSteps = 6;
+    /// <summary>How far from the picture's middle the glow is gone, in pixels, short of the picture's edge.</summary>
+    public const float GlowReach = 15;
 
-    // The sun's edge, middle and core, the core the palest.
+    // How many levels of brightness the glow is held to from nothing to its color, and the ordered
+    // pattern's thresholds, a 4 by 4 Bayer matrix, which dither a pixel between the two levels about it.
+    private const int Levels = 32;
+    private static readonly int[] Bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+
+    // The sun's rings from its edge in, the core the palest.
     private static readonly string[] Sun =
     [
-        "..oooooooo..",
-        ".ommmmmmmmo.",
-        "ommmccccmmmo",
-        "ommccccccmmo",
-        "omccccccccmo",
-        "omccccccccmo",
-        "omccccccccmo",
-        "omccccccccmo",
-        "ommccccccmmo",
-        "ommmccccmmmo",
-        ".ommmmmmmmo.",
-        "..oooooooo..",
+        "oooooooo",
+        "ommmmmmo",
+        "omccccmo",
+        "omccccmo",
+        "omccccmo",
+        "omccccmo",
+        "ommmmmmo",
+        "oooooooo",
     ];
 
     // The moon's face and its darker craters.
     private static readonly string[] Moon =
     [
-        "..wwwwwwww..",
-        ".wwwwwwwgww.",
-        "wwggwwwwwwww",
-        "wwggwwwwwgww",
-        "wwwwwwwwwwww",
-        "wwwwwwwggwww",
-        "wgwwwwwggwww",
-        "wwwwwwwwwwww",
-        "wwwwgwwwwwgw",
-        "wwwwwwwwwwww",
-        ".wwwgwwwwww.",
-        "..wwwwwwww..",
+        "wwwwwwww",
+        "wwwwwgww",
+        "wggwwwww",
+        "wggwwwgw",
+        "wwwwwwww",
+        "wwwwggww",
+        "wgwwggww",
+        "wwwwwwww",
     ];
 
     // How far round the light on the moon has turned in each phase, in half turns, the crescents a
-    // little short of the eighth past the quarter, so the two pixels they keep run unbroken from
-    // tip to tip rather than one breaking off.
+    // little short of the eighth past the quarter, so the pixels they keep run unbroken from tip to
+    // tip rather than one breaking off.
     private static readonly float[] Turns = [0, 0.25f, 0.5f, 0.7f, 1, 1.3f, 1.5f, 1.75f];
 
     // A star's middle and its arms, which a dim star leaves out.
@@ -86,38 +88,43 @@ public static class SkyArt
         _ => throw new ArgumentOutOfRangeException(nameof(pixel)),
     };
 
-    /// <summary>The sun, <see cref="Size"/> pixels square.</summary>
-    public static byte[] SunPixels() => Paint(Sun, (_, _) => true);
+    // The colors the sun's and the moon's glows are of, a warm yellow and the moonlight's blue.
+    private static readonly (byte R, byte G, byte B) SunGlow = (255, 226, 120), MoonGlow = (150, 170, 230);
 
-    /// <summary>
-    /// The glow around the sun, <see cref="HaloSize"/> pixels square and each pixel
-    /// <paramref name="degrees"/> across, white with its brightness as its alpha. The brightness
-    /// falls off from the sun as the twelfth power of the cosine of a pixel's angle from it and is
-    /// held to <see cref="HaloSteps"/> steps, so the glow shows as rings whose edges step along the
-    /// pixels. The moon's glow is the same pixels on the moon's smaller grid.
-    /// </summary>
-    public static byte[] HaloPixels(float degrees)
+    /// <summary>The sun, <see cref="Across"/> pixels square, its body at the middle and its glow around it.</summary>
+    public static byte[] SunPixels()
     {
-        var pixels = new byte[HaloSize * HaloSize * 4];
-        for (int y = 0; y < HaloSize; y++)
-            for (int x = 0; x < HaloSize; x++)
-            {
-                float across = x + 0.5f - HaloSize / 2f, down = y + 0.5f - HaloSize / 2f;
-                var angle = float.DegreesToRadians(MathF.Sqrt(across * across + down * down) * degrees);
-                var glow = MathF.Pow(MathF.Max(0, MathF.Cos(angle)), 12);
-                var at = (y * HaloSize + x) * 4;
-                (pixels[at], pixels[at + 1], pixels[at + 2]) = (255, 255, 255);
-                pixels[at + 3] = (byte)(255 * MathF.Round(glow * HaloSteps) / HaloSteps);
-            }
+        var pixels = new byte[Across * Across * 4];
+        PaintGlow(pixels, Across, 0, 0, SunGlow, 1);
+        PaintBody(pixels, Across, (Across - Size) / 2, (Across - Size) / 2, Sun, (_, _) => true);
         return pixels;
     }
 
+    /// <summary>
+    /// How bright the glow is at a pixel of a picture, from nothing to <see cref="GlowPeak"/>,
+    /// falling from the body's edge to nothing at <see cref="GlowReach"/> from the middle and held
+    /// to steps that an ordered pattern dithers, so a pixel takes the level above or below by its
+    /// place in the pattern.
+    /// </summary>
+    public static float Glow(int x, int y)
+    {
+        float across = x + 0.5f - Across / 2f, down = y + 0.5f - Across / 2f;
+        var fall = Math.Clamp((GlowReach - MathF.Sqrt(across * across + down * down)) / (GlowReach - Size / 2f), 0, 1);
+        var glow = GlowPeak * fall * fall;
+        return MathF.Floor(glow * Levels + (Bayer[y % 4 * 4 + x % 4] + 0.5f) / 16) / Levels;
+    }
+
     /// <summary>A star, three pixels square, its middle the pixel at 1, 1.</summary>
-    public static byte[] StarPixels() => Paint(Star, (_, _) => true);
+    public static byte[] StarPixels()
+    {
+        var pixels = new byte[3 * 3 * 4];
+        PaintBody(pixels, 3, 0, 0, Star, (_, _) => true);
+        return pixels;
+    }
 
     /// <summary>
     /// The sheet of the moon's phases, <see cref="Cell"/> times four pixels across and twice
-    /// <see cref="Cell"/> down, each phase's dark side clear.
+    /// <see cref="Cell"/> down, each phase's dark side clear and its glow as bright as it is lit.
     /// </summary>
     public static byte[] MoonPixels()
     {
@@ -125,10 +132,12 @@ public static class SkyArt
         var sheet = new byte[across * Cell * 2 * 4];
         for (int phase = 0; phase < Phases; phase++)
         {
-            var cell = Paint(Moon, (x, y) => Lit(phase, x, y));
-            int x0 = phase % 4 * Cell + 1, y0 = phase / 4 * Cell + 1;
+            int x0 = phase % 4 * Cell + 1, y0 = phase / 4 * Cell + 1, lit = 0;
             for (int y = 0; y < Size; y++)
-                Array.Copy(cell, y * Size * 4, sheet, ((y0 + y) * across + x0) * 4, Size * 4);
+                for (int x = 0; x < Size; x++)
+                    if (Lit(phase, x, y)) lit++;
+            PaintGlow(sheet, across, x0, y0, MoonGlow, lit / (float)(Size * Size));
+            PaintBody(sheet, across, x0 + (Across - Size) / 2, y0 + (Across - Size) / 2, Moon, (x, y) => Lit(phase, x, y));
         }
         return sheet;
     }
@@ -152,18 +161,29 @@ public static class SkyArt
         return -u * MathF.Sin(angle) + depth * MathF.Cos(angle) > 1e-4f;
     }
 
-    private static byte[] Paint(string[] pattern, Func<int, int, bool> shown)
+    // A glow of a color over a picture's square of Across pixels at a place in a sheet so many pixels
+    // wide, as bright as a share of its own.
+    private static void PaintGlow(byte[] pixels, int width, int x0, int y0, (byte R, byte G, byte B) color, float share)
     {
-        int width = pattern[0].Length, height = pattern.Length;
-        var pixels = new byte[width * height * 4];
-        for (int y = 0; y < height; y++)
-            for (int x = 0; x < width; x++)
+        for (int y = 0; y < Across; y++)
+            for (int x = 0; x < Across; x++)
+            {
+                var at = ((y0 + y) * width + x0 + x) * 4;
+                (pixels[at], pixels[at + 1], pixels[at + 2]) = color;
+                pixels[at + 3] = (byte)MathF.Round(255 * Glow(x, y) * share);
+            }
+    }
+
+    // A pattern's pixels at a place in a sheet so many pixels wide, where it shows them.
+    private static void PaintBody(byte[] pixels, int width, int x0, int y0, string[] pattern, Func<int, int, bool> shown)
+    {
+        for (int y = 0; y < pattern.Length; y++)
+            for (int x = 0; x < pattern[y].Length; x++)
             {
                 if (pattern[y][x] == '.' || !shown(x, y)) continue;
                 var (r, g, b) = Shade(pattern[y][x]);
-                var at = (y * width + x) * 4;
+                var at = ((y0 + y) * width + x0 + x) * 4;
                 (pixels[at], pixels[at + 1], pixels[at + 2], pixels[at + 3]) = (r, g, b, 255);
             }
-        return pixels;
     }
 }

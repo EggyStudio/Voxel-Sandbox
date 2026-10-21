@@ -18,6 +18,8 @@ public class HazeDomeTests
             // The whole of the haze from the horizon down, none at the top of its band six degrees up.
             if (above <= 0.01f) Assert.Equal(255, tint.A);
             if (above >= 5.99f) Assert.Equal(0, tint.A);
+            // The share the sky's bodies take at a height is the dome's own there.
+            Assert.Equal(tint.A, 255 * HazeDome.Shown(above), 1.5);
         }
         // Every triangle's front is toward the eye at the middle.
         for (int t = 0; t < dome.Indices.Count; t += 3)

@@ -45,9 +45,9 @@ public sealed class VoxelGame : IDisposable
         Renderer = new ChunkRenderer();
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
         PackEntries = given.Count > 0 || transient ? given : PackList.Default.Read();
+        Sky = new Sky(10);
         ReloadPacks();
         if (given.Count == 0 && !transient && !File.Exists(PackList.Default.File)) FetchDefaults();
-        Sky = new Sky(10);
         Light.ApplyAll();
         Open(kind, seed, name);
         Capture(true);
@@ -113,6 +113,7 @@ public sealed class VoxelGame : IDisposable
         Renderer.Atlas = terrain;
         Icons.Use(terrain, packs);
         PackGui.Use(packs);
+        Sky.Use(packs);
         Packs.Dispose();
         Packs = packs;
         // The world is not there yet as the game begins, and its sections are meshed as it opens.
@@ -810,7 +811,7 @@ public sealed class VoxelGame : IDisposable
         ClearBackground(Sky.Horizon);
         BeginMode3D(Player.Camera);
         DrawSkybox();
-        Sky.Draw(Player.Eye);
+        Sky.Draw(Player.Eye, Renderer.Hazed);
         Renderer.Draw(World, Player.Eye, RenderDistance);
         MobRenderer.Draw(Mobs.All, Player.Eye);
         DropRenderer.Draw(Drops.All, Player.Eye, GetTime());
