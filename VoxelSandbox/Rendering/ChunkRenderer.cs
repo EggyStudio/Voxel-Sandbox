@@ -177,6 +177,13 @@ public sealed class ChunkRenderer : IDisposable
         set => _mesher.CornerShade = value;
     }
 
+    /// <summary>How far corners darken where blocks meet, from 0 to Minecraft's levels at 1, which takes effect as sections are shaded again.</summary>
+    public float CornerStrength
+    {
+        get => _mesher.CornerStrength;
+        set => _mesher.CornerStrength = Math.Clamp(value, 0, 1);
+    }
+
     private void BuildLamps() => _lamps = [.. Surfaces.All.Select(s => s.Material(_glowScale))];
 
     /// <summary>

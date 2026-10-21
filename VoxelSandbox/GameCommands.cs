@@ -146,6 +146,15 @@ public static class GameCommands
         return $"light levels {(levels ? "on" : "off")}, corners shaded {(corners ? "on" : "off")}, every section shaded again over the next frames";
     }
 
+    [Command("voxel.corners", "Sets how far the corners darken where blocks meet, from 0 for not at all to 1 for Minecraft's levels: voxel.corners <strength>")]
+    internal static string Corners(float strength)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        game.Renderer.CornerStrength = strength;
+        game.World.ReshadeAll();
+        return $"corners darken at {game.Renderer.CornerStrength:0.##} of Minecraft's levels, every section shaded again over the next frames";
+    }
+
     [Command("voxel.time", "Sets the hour of the day from 0 to 24, the sun up from 6 to 18: voxel.time <hour>")]
     internal static string Time(float hour)
     {

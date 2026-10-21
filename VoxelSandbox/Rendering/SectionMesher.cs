@@ -49,6 +49,12 @@ public sealed class SectionMesher
     public bool CornerShade { get; set; } = true;
 
     /// <summary>
+    /// How far the corners darken where blocks meet around them, from 0 for not at all to 1 for
+    /// Minecraft's four levels, each level taken that far from 1.
+    /// </summary>
+    public float CornerStrength { get; set; } = 1;
+
+    /// <summary>
     /// Faces as a mesh, with the position of each corner, eight packed bytes a corner
     /// (<see cref="Pack"/>) that the terrain shader unpacks into its normal, its texture coordinate
     /// and its color, the color of each corner as the scene's light field reads it, its surface's
@@ -274,7 +280,7 @@ public sealed class SectionMesher
 
             // The light kept is linear and the vertex's color sRGB, so it is encoded as the color is.
             var kept = LightLevels ? MathF.Pow(Lit((float)Math.Max(sky, lit) / open), 1 / 2.2f) : 1;
-            var shade = kept * (CornerShade ? Occlusion[occlusion[i]] : 1);
+            var shade = kept * (CornerShade ? 1 - CornerStrength * (1 - Occlusion[occlusion[i]]) : 1);
             var corner = Corners[face][i];
             corner.Y = corner.Y == 1 ? top : bottom;
             faces.Add(block + corner, face, i, shade, color);

@@ -107,23 +107,24 @@ and the light. `voxel.fill`, `voxel.room` and `voxel.set` change blocks, `voxel.
 and `voxel.fly` move the player, `voxel.break` and `voxel.place` act as the mouse buttons do,
 `voxel.time`, `voxel.day` and `voxel.cycle` set the sky, `voxel.clouds` shows or hides the clouds
 and places their drift, `voxel.distance` the render distance, `voxel.light` reads a block's light
-levels, `voxel.shade` turns the light levels and the shaded corners on or off, `voxel.world` saves
-the world and opens or begins another of a kind and seed, `voxel.save` saves at once, and
-`voxel.blocks` lists the blocks by number and name. `voxel.mobs` counts the mobs and lists the
-nearest, `voxel.spawn` places one where the crosshair rests, `voxel.attack` hits the one it rests on
-as the left button does, `voxel.still` stops them where they stand and holds the clouds for a
-capture, and `voxel.kill` takes them away. `voxel.mode` plays in creative, survival, adventure or spectator mode,
-`voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the inventory,
-`voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and reads a
-furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item, and `voxel.throw`
-throws as Q does. `voxel.vitals` says or sets the health and food, `voxel.hurt` harms the player,
-and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global
-illumination, the scene's distance field and the sun's shadows, and `voxel.hud` hides what is drawn
-over the world for a capture. Three measure the light. `voxel.flicker` records each frame's change
-in the picture around a turn or a step into a file, with the first frame after it, the settled one
-and their difference beside it, `voxel.ring` reads the last frame's light around a circle on the
-ground by angle, and `voxel.depth` says how far the block under a pixel is. The engine's own `gi.*`
-and `field.*` commands show and measure global illumination.
+levels, `voxel.shade` turns the light levels and the shaded corners on or off, `voxel.corners` sets
+how far the corners darken, `voxel.world` saves the world and opens or begins another of a kind and
+seed, `voxel.save` saves at once, and `voxel.blocks` lists the blocks by number and name.
+`voxel.mobs` counts the mobs and lists the nearest, `voxel.spawn` places one where the crosshair
+rests, `voxel.attack` hits the one it rests on as the left button does, `voxel.still` stops them
+where they stand and holds the clouds for a capture, and `voxel.kill` takes them away. `voxel.mode`
+plays in creative, survival, adventure or spectator mode, `voxel.select` puts an item in the chosen
+slot, `voxel.give` puts items in the inventory, `voxel.craft` makes an item from what the inventory
+holds, `voxel.furnace` fills and reads a furnace, `voxel.inventory` lists what it holds,
+`voxel.items` lists every item, and `voxel.throw` throws as Q does. `voxel.vitals` says or sets the
+health and food, `voxel.hurt` harms the player, and `voxel.respawn` gives a new life. `voxel.gi`,
+`voxel.field` and `voxel.shadows` set global illumination, the scene's distance field and the sun's
+shadows, and `voxel.hud` hides what is drawn over the world for a capture. Three measure the light.
+`voxel.flicker` records each frame's change in the picture around a turn or a step into a file, with
+the first frame after it, the settled one and their difference beside it, `voxel.ring` reads the
+last frame's light around a circle on the ground by angle, and `voxel.depth` says how far the block
+under a pixel is. The engine's own `gi.*` and `field.*` commands show and measure global
+illumination.
 
 ## Biomes
 
@@ -468,11 +469,15 @@ solid ones, and the shade darkens the block's color in the vertex, where neither
 reaches it and where blocks meet. A level keeps nearly all of the color down to a few levels from
 dark and next to none at 0, because global illumination brings a lamp's falloff itself, where
 Minecraft's own curve, which is its only light, dims by distance. The field reads the darkened color
-too, so an unlit cave reflects nearly no indirect light. A change of light gives a mesh
-new colors and keeps its vertices, which the field knows it by, so relighting leaves the meshes
-settled in the field, and the field and the ray-traced scene take the new colors in the frame after,
-so the indirect light off a section a lamp has lit since takes its new light. Each quad is split
-along the diagonal its occlusion favors, so a shaded corner darkens one triangle softly.
+too, so an unlit cave reflects nearly no indirect light. A change of light gives a mesh new colors
+and keeps its vertices, which the field knows it by, so relighting leaves the meshes settled in the
+field, and the field and the ray-traced scene take the new colors in the frame after, so the
+indirect light off a section a lamp has lit since takes its new light. Each quad is split along the
+diagonal its occlusion favors, so a shaded corner darkens one triangle softly. A corner where blocks
+meet keeps 0.8, 0.62 or 0.45 of its color for one, two or three of its cells closed, both its sides
+closed counted as three, as Minecraft's does, and the corner shade's strength, from 0 to 1 in the
+settings window and through `voxel.corners`, takes each level that far from 1, 1 by default, the
+sections shaded again when it changes.
 
 The settings window turns the light levels and the shaded corners off, each on its own, to see
 global illumination alone, and opens the engine's windows of what global illumination holds, of the

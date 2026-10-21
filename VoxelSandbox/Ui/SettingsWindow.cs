@@ -108,6 +108,10 @@ public sealed class SettingsWindow
             game.Renderer.CornerShade = corners;
             game.World.ReshadeAll();
         }
+        // The sections are shaded again once the slider is let go, rather than each frame it moves.
+        var strength = game.Renderer.CornerStrength;
+        if (ImGui.SliderFloat("Corner shade", ref strength, 0, 1)) game.Renderer.CornerStrength = strength;
+        if (ImGui.IsItemDeactivatedAfterEdit()) game.World.ReshadeAll();
 
         var glow = game.Renderer.GlowScale;
         if (ImGui.SliderFloat("Emission", ref glow, 0, 4)) game.Renderer.GlowScale = glow;

@@ -127,6 +127,26 @@ public class MesherTests
     }
 
     [Fact]
+    public void The_Corner_Strength_Takes_A_Closed_Corners_Shade_That_Far_From_One()
+    {
+        var world = Floor();
+        world.SetBlock(8, 20, 8, BlockId.Stone);
+        world.SetBlock(9, 21, 8, BlockId.Stone);
+        world.SetBlock(8, 21, 9, BlockId.Stone);
+
+        // With the light levels left out, the corner between the two walls is Minecraft's darkest,
+        // 0.45, at a strength of 1, halfway to 1 at 0.5, and 1 at 0.
+        foreach (var (strength, shade) in new[] { (1f, 0.45f), (0.5f, 0.725f), (0f, 1f) })
+        {
+            var mesher = new SectionMesher { LightLevels = false, CornerStrength = strength };
+            Assert.True(mesher.Mesh(world, new SectionKey(0, 1, 0)));
+            var faces = mesher.Solid;
+            var closed = Enumerable.Range(0, faces.Count).Single(i => faces.Unpack(i).Face == 2 && faces.Positions[i] == new System.Numerics.Vector3(9, 5, 9));
+            Assert.Equal(shade, faces.Unpack(closed).Shade, 2);
+        }
+    }
+
+    [Fact]
     public void A_Corners_Packed_Bytes_Hold_Its_Face_Corner_Shade_And_Color_As_The_Shader_Reads_Them()
     {
         var (first, second) = SectionMesher.Pack(4, 3, 0.5f, new Color(200, 100, 50, 168));
