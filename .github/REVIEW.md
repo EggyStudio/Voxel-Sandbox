@@ -5,35 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `9a13c54`, item 60, the lamps' light smooth, and nothing else, carrying the review's
-file with item 62 and Decision 30: the terrain shader takes the light at the point itself and moves
-the sun's share alone from its shadow at the point to the shadow at the step's middle, the sun's
-share recomputed from the engine's lights.slang helpers, the contact shadow read from the screen the
-same at both places and skipped past the map, two more shadow-map lookups a pixel rather than the
-one guessed; the cost over seed 1's plains at noon at 12 columns with Bare Bones, the frame
-unlimited, three sessions a shader in turn, the window's model pass 10.73 ms against 10.71 and the
-GPU's passes 15.42 against 15.44, within the half millisecond the sessions swing, so no cost can be
-read; a `voxel.line` command reading the last frame's luminance along a world line, the play script
-building a white concrete room on the flat world at night with a lantern and the HUD hidden and
-reading 33 points across the block before the glass, the largest neighbor change held to a tenth of
-the whole fall over a fall of 40 levels at least, 0.057 against the old shader's 0.136 with its
-jumps every fourth point; the README's shadows paragraph says the grid is the sun's alone, its two
-namings of the owner reworded under N 4.7; the strict build clean, 215 tests, the play script clean.
-Read at 09:33 on 2026-10-21. Not pushed: the build run 39562169517 of `8f2a2c8` is still running,
-and the head is pushed when it ends. Next item 61, then 62, then item 39's cutout leaves, doors and
-glass, then its animated textures, then the pictures taken again at 40 degrees, then 26 and the
-items in order; items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for
-the Ui and build folders wait on the owner's word.
+Reviewed up to `92112c5`, item 61, the mobs' bands, and nothing else, carrying the review's file:
+mob.slang takes the light a face turned up has a sixteenth of a block out from each face along its
+own normal, the reason in its comment; the play script spawns a creeper on the flat world at noon,
+confirms it stands at 6.5, 4.0 and 9.5 so bare ground cannot pass, and reads 61 points down the
+sunlit front of its body asking no neighboring change over 2 levels, a constant 159.1 with a largest
+step of 0.0 against the old shader's 145.3, 149.9 and 154.5 alternating with a step of 9.7; the
+sheep's shaded wool reads 169.5, 172.0 and 173.0 where the morning read 163.8, 166.3 and 167.3, its
+floor light no longer cut by the face's own shadow, the README's figure 170, 172 and 173 and its mob
+paragraph saying the sixteenth and why; mobs/daylight.webp and the nine pair sheets taken again
+against the 26.3 client, the bands gone in each; the strict build clean, 215 tests, the play script
+clean with the pool at 0.058. Read at 09:41 on 2026-10-21. Not pushed: the build run 39562169517 of
+`8f2a2c8` is still running, and the two heads are pushed when it ends. Shortly before 09:50 the
+owner wrote of the darkening at a height on the mobs' faces and of the zombie's and villager's own
+faces, items 63 and 64 and Decision 31, written at 09:56. Next items 63 and 64, then 62, then item
+39's cutout leaves, doors and glass, then its animated textures, then the pictures taken again at 40
+degrees, then 26 and the items in order; items 55, 38's second part and 54 when their packages come;
+the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `9a13c54` came, item 60, the lamps' light smooth, and nothing else, carrying the review's
+file with item 62 and Decision 30. Read at 09:33, held for the build run of `8f2a2c8`.
 
 Before it, `8f2a2c8` came, item 39's first part, the lanterns' and torches' pieces, and nothing
 else, carrying the review's file with items 60 and 61. Read at 09:16, pushed at 09:28 after the
 build run of `b56fa0b` ended green.
-
-Before it, `b56fa0b` came, item 58's parts d and e, the haze and the shadows' grid, after `293a5d1`,
-its part b, the night tint, and nothing else, the first carrying the review's file. Read at 08:49,
-pushed at 08:49 with the four before them after the build run of `815e4ca` ended green, its play job
-48 minutes 27 seconds at a render distance of 4. Its build run ended green with the play job at 36
-minutes 3 seconds.
 
 ## Now
 
@@ -918,7 +913,8 @@ minutes 3 seconds.
     at 16:00 with the sun on them; with the turned-up light taken a sixteenth of a block out from
     the face along its own normal the bands are gone. The mend: that line in mob.slang, a test
     reading a mob's side face in a noon capture for alternating rows and finding none, and
-    mobs/daylight.webp taken again. One commit, small, after item 60.
+    mobs/daylight.webp taken again. One commit, small, after item 60. Done at `92112c5` on
+    2026-10-21, as the head says.
 
 62. **Every mob wears the pack's entity picture (Decision 30).** The owner wrote shortly after 09:40
     on 2026-10-21, relayed verbatim, "Make the face of the villager from the bare bones and the
@@ -938,6 +934,30 @@ minutes 3 seconds.
     source's numbers, a face's pixels read in a capture, and mobs/daylight.webp and the pair sheets
     taken again. Two commits, the unwrap with the shader and the material, then the villager's
     layers and the sheep's fur. After items 60 and 61 and before item 39's remaining parts.
+
+63. **A mob's face is lit evenly from top to bottom, the turned-up light seen from straight above.**
+    The owner wrote shortly before 09:50 on 2026-10-21 of item 61's noon picture, relayed verbatim,
+    "The provided images of the 3 mobs it shows at some height the entity gets darker about the
+    height of he height above hevlips ofbthe uombie". The cause, confirmed live and older than
+    `92112c5`: down the zombie's face at noon the floor reads 134.7 above a height and 150.3 below
+    it, an even 134.7 with the floor removed, the boundary at the eye's height of 5.72 wherever the
+    eye stands and whatever the sample's distance out, the whole face 150 with the eye raised 0.3
+    blocks, since the engine's surfaceNormal turns a normal pointing away from the eye over as for
+    the back of a double-sided face, so the turned-up light taken above the eye's height is lit as a
+    face turned down and the floor falls under the face's own light there. The mend: one line in
+    mob.slang, the turned-up light's view direction straight down from above, the face reading an
+    even 150.3 to 150.7 from the same eye height; a play-script check reading down a zombie's face
+    at noon from its own height asking no step over 2 levels outside the mouth's rows, which fails
+    today with a step of 15.6. One commit, small, before item 64.
+
+64. **The zombie's own face is the source's archetype and the villager's eyes sit lower (Decision
+    31).** The owner wrote shortly before 09:50 on 2026-10-21, relayed verbatim, "And change the
+    default native face of the zombie to be the same archtype default like in minecraft with
+    horizotnal lines and a nose but no mouth and the villagers eyes lower a bit." The game's own
+    art, worn where no pack gives a picture: the zombie's eyes as horizontal dark lines, a nose and
+    no mouth, as the source's default zombie face is read, and the villager's eyes a little lower;
+    the pair sheets of the two taken again. One commit, small, after item 63 and before item 62, so
+    item 62 keeps these faces for a game with no pack.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1620,6 +1640,11 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     mob wears the pack's entity picture over the source's cuboids, item 62, the pictures fetched
     with the pack as Decision 18 has it and the game's own colors kept where no pack is given, as
     Decision 22 keeps every rule the game's own.
+
+31. **The zombie's own face is the source's archetype, the villager's eyes lower.** The owner wrote
+    shortly before 09:50 on 2026-10-21 to change the default native face of the zombie to the
+    source's archetype default, horizontal lines and a nose but no mouth, and to set the villager's
+    eyes a bit lower, item 64, the game's own art that shows where no pack is given.
 
 ## Replies
 

@@ -55,10 +55,13 @@ float4 fragmentMain(ModelStreamsOutput input) : SV_Target
     // normal, of which this face takes at least its flat shade's share, the shade to the power 2.2
     // in this linear light, since Minecraft multiplies it into the encoded color. Taken on the face
     // itself, the sun's shadow would be looked up with the shadow map's offset running up the face
-    // rather than out of it, and a side face would shadow itself in bands.
+    // rather than out of it, and a side face would shadow itself in bands. It is seen from straight
+    // above, since the engine lights a face turned from the eye as its back, turned over, and above
+    // the eye's height the face turned up would take the light of one turned down.
     ModelVertexOutput up = input.base;
     up.normal = float3(0.0, 1.0, 0.0);
     up.world = input.base.world + n * 0.0625;
+    up.toEye = float3(0.0, 1.0, 0.0);
     float top = dot(litLight(float3(1.0), up).diffuse, Luminance);
     diffuse = max(diffuse, float3(pow(flatShade(n), 2.2) * top));
 

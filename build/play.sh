@@ -242,6 +242,28 @@ largest=$(printf '%s\n' "$front" | sed -nE 's/^from [0-9.]+ to [0-9.]+, largest 
 [ -n "$largest" ] || fail "voxel.line read no line down the creeper's front, saying $front"
 awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the creeper's front shows bands at noon, $front"
 
+# A zombie's face at noon, seen from its own height, is as bright above the eye's height as below
+# it. Read down a column of the face clear of its features, no two neighboring points are more than 2
+# levels apart, where the light of a face turned up, which floors the face's, taken as the eye saw it
+# lit the face above the eye's height as one turned down, 15 levels darker.
+cmd voxel.kill all
+cmd voxel.tp 6.5 4 12.5
+cmd voxel.look 0 0
+cmd frames.wait 2
+cmd voxel.spawn zombie 0
+mobs=$(ask voxel.mobs 1)
+[[ "$mobs" == *"zombie "*" at 6.5, 4.0, 9.5,"* ]] || fail "the zombie does not stand at 6.5, 4.0, 9.5, $mobs"
+cmd voxel.tp 6.5 4.1 11.6
+cmd voxel.look 0 -5
+cmd frames.wait 60
+ask voxel.line 1 1 1 1 1 1 2 > /dev/null
+cmd frames.wait 2
+face=$(ask voxel.line 6.71875 5.96875 9.765 6.71875 5.53125 9.765 33)
+echo "zombie's face ${face%%; by place*}"
+largest=$(printf '%s\n' "$face" | sed -nE 's/^from [0-9.]+ to [0-9.]+, largest step ([0-9.]+),.*/\1/p')
+[ -n "$largest" ] || fail "voxel.line read no line down the zombie's face, saying $face"
+awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the zombie's face steps in light at the eye's height, $face"
+
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
 # from above, at a render distance of two columns, so lavapipe generates few at each.
@@ -330,4 +352,4 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, drew with no validation error and wrote $name on F2"
