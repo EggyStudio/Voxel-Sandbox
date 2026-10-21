@@ -797,13 +797,13 @@ place.
 
 The sun's shadows come from the engine's shadow map, out to 96 blocks unless `voxel.shadows` sets
 another distance, and are pixelated. The terrain's shader takes each point of a face's light at the
-middle of the block's pixel it lies in, a sixteenth of a block on a side as Minecraft's textures
-have them, so a shadow's edge steps along the pixels of the blocks it crosses rather than running
-slantwise across them. The lamps' light and global illumination are taken at the same points, and in
-a room lit by a lamp the light shows no steps. The engine's soft contact shadow, traced toward the
-sun through the scene's distance field, is left out where the shadow map holds a point, so no fringe
-lies beside a shadow's edge, and kept past the map's reach, where the land has no other shadow of
-the sun.
+middle of the step it lies in, an eighth of a block on a side, as the owner's modpack's shader steps
+its shadows with the owner's settings, two of a texture's sixteen pixels, so a shadow's edge steps
+along the face rather than running slantwise across it. The lamps' light and global illumination are
+taken at the same points, and in a room lit by a lamp the light shows no steps. The engine's soft
+contact shadow, traced toward the sun through the scene's distance field, is left out where the
+shadow map holds a point, so no fringe lies beside a shadow's edge, and kept past the map's reach,
+where the land has no other shadow of the sun.
 
 ## Fog
 
@@ -811,7 +811,12 @@ The sections are drawn through a shader of the game's own,
 `VoxelSandbox/resources/shaders/terrain.slang`, which takes the model pass's light, the sun, the
 shadows, global illumination and the sky, over each vertex's color as the engine's shader for
 colored meshes does, and fades the result into the sky's color at the horizon from two thirds of the
-render distance to the render distance, as Minecraft's fog hides where the world ends. Under water
+render distance to the render distance, as Minecraft's fog hides where the world ends. Nearer, the
+atmosphere hazes the land as the owner's modpack's shader does with the owner's settings, toward the
+same color by a share that grows as one less e to the minus half a millionth of the cube of the
+distance in blocks, as much slower as the render distance is past twelve columns, to 0.23 at most,
+its fog's strength of 0.95 less the 0.25 it keeps in clear weather, held to 0.325 of that under its
+altitude of 300, so about a tenth of the land's color at 100 blocks and a fifth at 150. Under water
 the haze is the water's blue and covers the view within 16 blocks. Past the last section the world
 ends, so a dome about the eye below the horizon is drawn in the haze's color, as Minecraft draws
 what lies below its horizon in its fog's color, fading into the sky over six degrees above the

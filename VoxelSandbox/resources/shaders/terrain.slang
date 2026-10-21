@@ -15,6 +15,8 @@ import modelpass;
 uniform float4 fogColor;
 uniform float fogStart;
 uniform float fogEnd;
+// The atmosphere's haze, the most of it and how fast it grows with distance, none under water.
+uniform float4 atmosphere;
 
 // The atlas of the packs' tiles, each twice its size in a cell of its own holding it two by two,
 // and its cells across and down and a tile's pixels across. The engine hands a shader's own texture
@@ -94,16 +96,16 @@ float4 tileColor(uint tile, float2 place, float level)
     return float4(srgbToLinear(texel.rgb), texel.a);
 }
 
-// How many pixels a block's face is across, as Minecraft's textures have sixteen, the grid each
-// point's light is taken on.
-static const float Pixels = 16.0;
+// How many steps a block's face is across in the grid each point's light is taken on, eight, as the
+// modpack's shader steps its shadows with its owner's settings, half a texture's sixteen pixels.
+static const float LightSteps = 8.0;
 
-// A point of a face moved to the middle of the block's pixel it lies in, along the face alone, so
-// every point of a pixel takes the same light and a shadow's edge steps along the pixels.
+// A point of a face moved to the middle of the step it lies in, along the face alone, so every
+// point of a step takes the same light and a shadow's edge steps along the grid.
 float3 pixelMiddle(float3 world, float3 normal)
 {
     float3 across = step(abs(normal), float3(0.5));
-    return lerp(world, (floor(world * Pixels) + 0.5) / Pixels, across);
+    return lerp(world, (floor(world * LightSteps) + 0.5) / LightSteps, across);
 }
 
 [shader("fragment")]
@@ -135,6 +137,10 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     ModelVertexOutput at = streams.base;
     at.world = pixelMiddle(streams.base.world, normalize(streams.base.normal));
     float3 shown = lit(color.rgb, at);
-    float haze = smoothstep(fogStart, fogEnd, length(streams.base.toEye));
+    // The land's edge fades into the haze, and the atmosphere hazes it from near on as the modpack's
+    // shader's does, its share growing as one less e to the minus the cube of the distance.
+    float distance = length(streams.base.toEye);
+    float aerial = atmosphere.x * (1.0 - exp(-distance * distance * distance * 1e-6 * atmosphere.y));
+    float haze = 1.0 - (1.0 - smoothstep(fogStart, fogEnd, distance)) * (1.0 - aerial);
     return float4(lerp(shown, fogColor.rgb, haze), color.a);
 }

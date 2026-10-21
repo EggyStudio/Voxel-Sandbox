@@ -96,7 +96,7 @@ public sealed class ChunkRenderer : IDisposable
     private readonly ModelMesh _dome;
     private float _fogEnd = float.MaxValue;
     private readonly Shader _shader;
-    private readonly int _fogColor, _fogStart, _fogEndAt, _atlas, _atlasLayout;
+    private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _atlas, _atlasLayout;
     private Texture2D _atlasTexture;
     // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with its
     // own texture where a pack has one, which the scene's distance field reads its average of.
@@ -119,6 +119,7 @@ public sealed class ChunkRenderer : IDisposable
         // where the shadow cascades and the depth pass would draw every section within reach.
         SetShaderKeepsPositions(_shader, true);
         (_fogColor, _fogStart, _fogEndAt) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
+        _atmosphere = GetShaderLocation(_shader, "atmosphere");
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
         Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
@@ -133,12 +134,17 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>Whether the haze dome is drawn, which it is while a haze fades the land's edge short of it.</summary>
     public bool Hazed => _fogEnd < HazeDome.Radius;
 
-    /// <summary>Sets the haze the sections fade into, its color and the distances in blocks it starts at and covers by.</summary>
-    public void Fog(Color color, float start, float end)
+    /// <summary>
+    /// Sets the haze the sections fade into, its color and the distances in blocks it starts at and
+    /// covers by, and the atmosphere's haze nearer than that, its most and how fast it grows, none
+    /// where the most is 0.
+    /// </summary>
+    public void Fog(Color color, float start, float end, float atmosphere = 0, float growth = 0)
     {
         SetShaderValue(_shader, _fogColor, new Vector4(color.R, color.G, color.B, 255) / 255);
         SetShaderValue(_shader, _fogStart, start);
         SetShaderValue(_shader, _fogEndAt, end);
+        SetShaderValue(_shader, _atmosphere, new Vector4(atmosphere, growth, 0, 0));
         _fogEnd = end;
     }
 
