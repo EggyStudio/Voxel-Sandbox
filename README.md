@@ -163,9 +163,7 @@ halfway to a dark olive, each as Minecraft colors them, blended into the climate
 a place is the biome, so they too change smoothly across its edge. The numbers, the climate's
 ranges, the colors and how many trees stand in a chunk, are read from Minecraft's and from those of
 Terralith, the biome overhaul of the owner's modpack, as a model and not a copy, since its license
-forbids handing its files out. Until their own trees grow, oaks stand in the swamp, the savanna, the
-jungle, the dark forest and the cherry grove, with birches in the dark forest. `voxel.biome` finds
-the nearest place of a biome.
+forbids handing its files out. `voxel.biome` finds the nearest place of a biome.
 
 ## Plants, woods and colors
 
@@ -266,6 +264,18 @@ columns around it and reach into it, keeping the blocks that fall inside itself.
 depends on the seed and the ground at its start alone, which the generator can tell for a column
 not generated, so a tree or a building crosses a column's edge whole although every column is
 generated alone on a worker, as Minecraft places a structure's pieces chunk by chunk.
+
+The trees take Minecraft's shapes as numbers with the game's own touches. Oaks of four to six logs,
+big oaks of six to fourteen with branches leaning out to balls of leaves, birches and spruces stand
+in the temperate and cold biomes, acacias bending to one side under flat crowns in the savanna,
+dark oaks of two logs by two under wide low crowns in the dark forest with giant brown and red
+mushrooms among them, jungle trees, bushes and giant jungle trees of two by two up to thirty high
+with branches in the jungle, and cherry trees forking under wide pink crowns with leaves hanging
+from their edges in the cherry grove, a lantern hung under one crown in three. The crowns are a few
+layers thick, as the source's, and leaves take a level of the light passing through each of them,
+so a forest's floor is shaded by its canopy rather than dark as a cave. As many trees stand in a
+thousand places as the source's chunks hold, fewer where a crown is wide, since the game's trees
+grow into each other where the source leaves out one with no room.
 
 A structure has at most one start in each cell of 64 by 64 blocks, where its chance falls and the
 land at its start suits it. An igloo of snow with a shroomlight inside stands on the snowy plains, a
@@ -689,10 +699,10 @@ no haze.
 A pack's animated textures, which show their first frame, its block models and its connected
 textures. Leaves seen through, which are solid, so the clear pixels of a pack's leaves, a door's
 window or a cactus's edge show the color the pixel holds. Slabs and stairs that keep light out, as
-Minecraft's do. Greedy meshing. Light that passes through
-leaves at a cost, as Minecraft's does. Structures read from files rather than built in code.
-Villagers that trade, sleep in beds or work their farms, and animals that breed or follow food. A
-bed to set where the player respawns, spiders that climb walls, and a bow and armor for the player.
+Minecraft's do. Greedy meshing. Saplings that grow, and vines and cocoa on the jungle's trees.
+Structures read from files rather than built in code. Villagers that trade, sleep in beds or work
+their farms, and animals that breed or follow food. A bed to set where the player respawns, spiders
+that climb walls, and a bow and armor for the player.
 
 ## What it costs
 

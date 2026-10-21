@@ -4,8 +4,10 @@ namespace VoxelSandbox;
 /// Minecraft's two light levels, the sky's and the emissive blocks'. The sky's is 15 under the open
 /// sky, falls straight down without losing any and loses one level for each block it goes sideways
 /// or up, and an emissive block's loses one level for each block from it. Opaque blocks stop both,
-/// glass lets them through, and water takes a level more for each block of it, so the sky's light
-/// fades with depth.
+/// glass lets them through, water takes a level more for each block of it, so the sky's light
+/// fades with depth, and leaves take one level for each block of them, the way down too, so a
+/// forest's floor is shaded by its canopy rather than darkened as a cave is, as Minecraft's leaves
+/// let the light through.
 /// </summary>
 /// <remarks>
 /// Each block's levels darken the faces beside it where neither the sky nor a lamp reaches, so a
@@ -27,6 +29,7 @@ public static class Lighting
     /// <summary>The level a neighbor of a kind of block takes from a block at <paramref name="level"/> the way <paramref name="direction"/> goes, or 0 for one light does not enter.</summary>
     internal static int Into(int level, int direction, bool sky, BlockId neighbor)
     {
+        if (Blocks.IsLeaves(neighbor)) return level - 1;
         if (Blocks.IsOpaque(neighbor)) return 0;
         if (Blocks.IsWater(neighbor)) return level - 2;
         return sky && direction == Down && level == Max ? Max : level - 1;
@@ -174,7 +177,7 @@ public sealed class LightEngine(VoxelWorld world)
     public void Changed(int x, int y, int z, BlockId now)
     {
         if (!TryCell(x, y, z, out var section, out var index)) return;
-        var opaque = Blocks.IsOpaque(now);
+        var opaque = Blocks.IsOpaque(now) && !Blocks.IsLeaves(now);
 
         var held = section.BlockLight(index);
         if (held > 0)

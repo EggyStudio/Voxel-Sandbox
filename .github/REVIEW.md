@@ -5,31 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `a6ec820`, item 25's first commit, the biomes, and nothing else, carrying the
-review's file: eight biomes chosen after the mountains and the cold by the climate's heat and wet,
-the badlands hottest and driest, the desert, the swamp, the jungle, the savanna, the cherry grove on
-raised ground, the dark forest, the forest, the birch forest and the plains; the land shaped by
-biome, the badlands rising in mesas in steps of five with bare banded terracotta above the sea and
-red sand below, the swamps sunk to the sea's level by a noise, the rivers in valleys with the
-channel cut three under the sea, the beaches where the basin sinks the land except in the cold; the
-colors from the biome overhaul and the source blended by each biome's smooth weight; the trees'
-counts a thousand with oaks standing in until the trees commit; red sand, terracotta plain and in
-six colors and clay with their pack textures, the bands by height and seed; `voxel.biome` naming the
-nearest place; seed 1's shares within 4,096 blocks read, plains 32 percent and badlands under one;
-177 tests with 15 of biomes, the play script's walk standing over each of the eight on seed 1 with
-its name read back and captured, the strict build clean. Read at 04:02 on 2026-10-21 and pushed at
-04:02; the build run of `5064479` had ended green at 03:59. The game stays on 5.2.190, nothing yet
-needing 5.2.204. Shortly before 04:02 the owner asked about the land's edge against the dark lower
-sky, item 44. Next item 25's blocks commit, then its trees, then item 44, then item 41, then item
-39, then the items in order; item 38's second part when the package brings the call and the glow
-lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `723e28c`, item 25's second commit, the blocks, and nothing else, carrying the
+review's file: seventy blocks, the jungle's, acacia's, dark oak's and cherry's log, leaves and
+planks with a sapling for each of the seven woods, twelve flowers, pink petals, short and tall
+grass, fern, dead bush and the two mushrooms, copper, gold, redstone, lapis, diamond and emerald
+ore, sixteen stained glasses and the wools to sixteen, each with its pack texture, flat icons for
+the plants and recipes for the woods; six items, the gems and the ingots smelted from their ores;
+block groups giving the drops, the tools, the hardness and the resistance, leaves dropping their
+sapling one in twenty and an apple one in two hundred, the ores by tier; plants as the owner asked
+mid-commit, two crossed planes of no thickness in place of a box, wheat's walls too, lit as facing
+up through two new faces in the free bits as the source lights its plants; a third mesh a section
+for the cutout with a mask material casting no shadow, so the field holds no grass, which is item
+39's cutout for the plants, the leaves, doors and glass staying for 39; the game's own sixteen-pixel
+plant masks tinted by the plant's color where no pack has a texture; the plants by biome a thousand
+and the ores by depth, emeralds in the mountains alone, coal and iron drawing the same random
+numbers as before; 183 tests, six new, a poppy eight flat quads spanning the cell and none in the
+solid mesh, saplings from four thousand jungle leaves within 150 to 250, a field of seed 1 with over
+500 short grass and diamonds no higher than 20; the play script's walk with a meadow up close,
+captures of every plant in both looks; the strict build clean. Read at 04:23 on 2026-10-21. Not
+pushed: the build run of `a6ec820` is still running, and the head is pushed when it ends. Next item
+25's trees commit, then item 44, then item 41, then item 39, then the items in order; item 38's
+second part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the
+Ui and build folders wait on the owner's word.
+
+Before it, `a6ec820` came, item 25's first commit, the biomes, and nothing else, carrying the
+review's file. Pushed at 04:02.
 
 Before it, `5064479` came, item 40, the screenshot on F2, and nothing else, carrying the review's
 file. Pushed at 03:50, its build run green at 03:59.
-
-Before it, `e14134d` came, item 24's fourth commit, the fetch of the three packs at first start,
-after `c5df182`, the windows' titles off, and nothing else, each carrying the review's file. Both
-pushed at 03:40, their build run green at 03:49.
 
 ## Now
 
@@ -691,8 +694,9 @@ pushed at 03:40, their build run green at 03:49.
     blocks, trees, each with the scripted run's walk through one of each and a capture. The badlands
     with its terracotta bands around turquoise pools and a cherry grove join the biomes, and a
     lantern and the flowers the look shows join the blocks (Decision 21). First commit done at
-    `a6ec820` on 2026-10-21, the eight biomes with their land, colors and new blocks, as the head
-    says; the blocks and the trees follow.
+    `a6ec820` on 2026-10-21, the eight biomes with their land, colors and new blocks, and the second
+    at `723e28c`, the seventy blocks, the plants as planes and the ores by depth, as the heads say;
+    the trees follow.
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's

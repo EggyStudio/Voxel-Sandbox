@@ -122,8 +122,8 @@ public class GenerationTests
         var land = new Overworld(1);
         var ravines = Structures.Find("ravine")!;
         var mouths = 0;
-        for (int cz = -8; cz < 8 && mouths == 0; cz++)
-            for (int cx = -8; cx < 8 && mouths == 0; cx++)
+        for (int cz = -12; cz < 12 && mouths == 0; cz++)
+            for (int cx = -12; cx < 12 && mouths == 0; cx++)
             {
                 if (ravines.StartsIn(cx * Section.Size, cz * Section.Size, cx * Section.Size + Section.Mask, cz * Section.Size + Section.Mask, land).Any()) continue;
                 var column = land.Generate(cx, cz);

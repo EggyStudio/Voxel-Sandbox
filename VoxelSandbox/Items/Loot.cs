@@ -15,7 +15,8 @@ public static class Loot
     /// <summary>
     /// The items a block broken in survival drops with an item held. Grass, farmland and a path
     /// drop their dirt, stone its cobblestone, coal ore its coal, diamond and emerald ore their gem,
-    /// lapis ore four to nine lapis and redstone ore four or five redstone, leaves their sapling one
+    /// lapis ore four to nine lapis and redstone ore four or five redstone, a giant mushroom's cap up to
+    /// two of its mushroom, leaves their sapling one
     /// time in twenty and an oak's or a dark oak's an apple one in two hundred, the grasses a seed of
     /// wheat one time in eight, a dead bush up to two sticks, glass and ice nothing, wheat its wheat
     /// and a few seeds, any other block the item that places it, and a block that asks for a pickaxe
@@ -41,6 +42,10 @@ public static class Loot
                 yield break;
             case BlockId.DeadBush:
                 if (random.Next(3) is > 0 and var sticks) yield return (Items.Stick, sticks);
+                yield break;
+            // A giant mushroom's cap up to two of its mushroom, as Minecraft's.
+            case BlockId.BrownMushroomBlock or BlockId.RedMushroomBlock:
+                if (random.Next(3) is > 0 and var caps) yield return (Items.Of(item == BlockId.BrownMushroomBlock ? BlockId.BrownMushroom : BlockId.RedMushroom), caps);
                 yield break;
             case BlockId.DiamondOre:
                 yield return (Items.Diamond, 1);
@@ -130,6 +135,7 @@ public static class Loot
     public static (ToolKind Tool, bool Needed) ToolFor(BlockId block) => Blocks.Get(block).Item switch
     {
         var wood when BlockGroups.Logs.Contains(wood) || BlockGroups.Planks.Contains(wood) => (ToolKind.Axe, false),
+        BlockId.BrownMushroomBlock or BlockId.RedMushroomBlock or BlockId.MushroomStem => (ToolKind.Axe, false),
         var clay when BlockGroups.Terracotta.Contains(clay) => (ToolKind.Pickaxe, true),
         BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => (ToolKind.Pickaxe, true),
         BlockId.RedSand or BlockId.Clay => (ToolKind.Shovel, false),
@@ -170,6 +176,7 @@ public static class Loot
         BlockId.Torch or BlockId.SoulTorch or BlockId.EndRod or BlockId.Wheat => 0,
         var plant when BlockGroups.Plants.Contains(plant) => 0,
         var leaves when BlockGroups.Leaves.ContainsKey(leaves) => 0.2f,
+        BlockId.BrownMushroomBlock or BlockId.RedMushroomBlock or BlockId.MushroomStem => 0.2f,
         var glass when BlockGroups.Glass.Contains(glass) => 0.3f,
         var wool when BlockGroups.Wool.Contains(wool) => 0.8f,
         var clay when BlockGroups.Terracotta.Contains(clay) => 1.25f,

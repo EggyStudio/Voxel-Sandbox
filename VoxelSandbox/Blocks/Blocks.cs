@@ -228,6 +228,9 @@ public enum BlockId : ushort
     BlueWool,
     GreenWool,
     RedWool,
+    BrownMushroomBlock,
+    RedMushroomBlock,
+    MushroomStem,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -533,6 +536,9 @@ public static class Blocks
             Same(BlockId.BlueWool, "blue_wool", "Blue Wool", Surfaces.BlueWool),
             Same(BlockId.GreenWool, "green_wool", "Green Wool", Surfaces.GreenWool),
             Same(BlockId.RedWool, "red_wool", "Red Wool", Surfaces.RedWool),
+            Same(BlockId.BrownMushroomBlock, "brown_mushroom_block", "Brown Mushroom Block", Surfaces.BrownMushroomCap),
+            Same(BlockId.RedMushroomBlock, "red_mushroom_block", "Red Mushroom Block", Surfaces.RedMushroomCap),
+            Same(BlockId.MushroomStem, "mushroom_stem", "Mushroom Stem", Surfaces.MushroomStem),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");
@@ -551,6 +557,7 @@ public static class Blocks
     private static readonly bool[] _collides = [.. _all.Select(b => b.Kind is BlockKind.Opaque or BlockKind.Glass)];
     private static readonly bool[] _seeThrough = [.. _all.Select(b => b.Kind is BlockKind.Glass or BlockKind.Water)];
     private static readonly bool[] _lamp = [.. _all.Select(b => b.Shape is null && b.Emits)];
+    private static readonly bool[] _leaves = [.. _all.Select(b => b.Key.EndsWith("_leaves", StringComparison.Ordinal))];
 
     // The block each item places facing each way in each half, or air where it has no such block.
     private static readonly BlockId[,,] _variants = Variants();
@@ -646,8 +653,11 @@ public static class Blocks
         _ => Facing.North,
     };
 
-    /// <summary>Whether a block hides the faces beside it, stops light and darkens the corners around it.</summary>
+    /// <summary>Whether a block hides the faces beside it, stops light and darkens the corners around it, but for leaves, which let light through at a cost.</summary>
     public static bool IsOpaque(BlockId id) => _opaque[(int)id];
+
+    /// <summary>Whether a block is leaves, which take a level of the light passing through each of them, as Minecraft's do.</summary>
+    public static bool IsLeaves(BlockId id) => _leaves[(int)id];
 
     /// <summary>Whether a body stands on and walks into a block, which it does all but air and water.</summary>
     public static bool Collides(BlockId id) => _collides[(int)id];

@@ -187,6 +187,9 @@ public static class PackTextures
         [Surfaces.BlueWool] = new("block/blue_wool"),
         [Surfaces.GreenWool] = new("block/green_wool"),
         [Surfaces.RedWool] = new("block/red_wool"),
+        [Surfaces.BrownMushroomCap] = new("block/brown_mushroom_block"),
+        [Surfaces.RedMushroomCap] = new("block/red_mushroom_block"),
+        [Surfaces.MushroomStem] = new("block/mushroom_stem"),
     };
 
     // The items whose texture is named apart from their key, and the blocks whose item Minecraft

@@ -242,6 +242,10 @@ public static class Surfaces
     public static readonly int BlueWool = Add("blue wool", new Color(53, 57, 157), 1);
     public static readonly int GreenWool = Add("green wool", new Color(84, 109, 27), 1);
     public static readonly int RedWool = Add("red wool", new Color(160, 39, 34), 1);
+    // A giant mushroom's caps and its stem.
+    public static readonly int BrownMushroomCap = Add("brown mushroom cap", new Color(146, 108, 76));
+    public static readonly int RedMushroomCap = Add("red mushroom cap", new Color(196, 44, 40));
+    public static readonly int MushroomStem = Add("mushroom stem", new Color(206, 198, 182));
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;
