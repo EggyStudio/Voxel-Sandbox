@@ -5,38 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `b56fa0b`, item 58's parts d and e, the haze and the shadows' grid, after `293a5d1`,
-part b, the night tint, and nothing else, the first of them carrying the review's file. Part b: the
-sky's colors multiplied in linear light by the shader's night tint 1.10, 0.90 and 1.30, lerped to
-white by the day's share, the moonlight in the shader's night light's hue 0.15, 0.14 and 0.20 at the
-luminance the game's moonlight had, a test of the tint by day and by night, the README's sky
-paragraph; the snowy village at 22 reading violet-blue with the snow more neutral. Part d: the
-shader's haze with its settings, a fog multiplier of 0.95 less 0.25 in clear weather, the distance's
-default halving the growth and the altitude's default lying over every block holding the share to
-0.325 for an eye below, so a share of 0.2275 times one less e to the minus half a millionth of the
-distance cubed, 9 percent at 100 blocks, 19 at 150 and 22 at 192, a `float4 atmosphere` uniform
-combined with the edge's fade as one less the product of the two remainders, none under water. Part
-e: the light taken on a grid of eight steps a block, Decision 29, the reach kept at 96, the lamp's
-light showing no banding beside sixteen, the README's fog and shadows paragraphs; the strict build,
-209 tests and the play script clean on both. Read at 08:49 on 2026-10-21. The build run 39552756211
-of `815e4ca` ended green, the three test jobs within two minutes and the play job in 48 minutes 27
-seconds, the last walk at a render distance of 4, so the six heads from `be968a2` were pushed at
-08:49, and the walk at a render distance of 2 is read from this push's run. One comment of the
-terrain shader says the modpack's shader steps its shadows with its owner's settings, which names
-the owner under N 4.7 and is reworded in the next batch. At about 09:20 the owner asked about the
-lanterns' stepped pools and the mobs' banded sides, items 60 and 61, written at 09:14 on the coder's
-reading of both causes. Next item 39's first commit, then items 60 and 61, then item 39's cutout
-leaves, doors and glass, then the animated textures, then the pictures taken again at 40 degrees,
-then 26 and the items in order; items 55, 38's second part and 54 when their packages come; the
-AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `8f2a2c8`, item 39's first part, the lanterns' and torches' pieces, and nothing else,
+carrying the review's file with items 60 and 61: the lantern's, the hanging lantern's and the soul
+lantern's pieces and the torches' sticks and flames take the source models' face coordinates,
+written as numbers in BlockShape, the handle and chain the source's two crossed walls turned 45
+degrees and cut out, a face with no overlay carrying its corner's texture place in the overlay's
+nine bits as kind 3, each emissive surface's cube a mesh of its own with the parts, an emission map
+making the glass's and flame's bright pixels emit four times their color with the iron dark while
+the field keeps the uniform emission so the light cast is unchanged, the own art's lantern iron a
+mask of links, the terrain shader's LightSteps comment reworded under N 4.7; the strict build clean,
+215 tests, the play script clean twice under the validation layer, the second after a renaming pass
+for STYLE.md's word table. Read at 09:16 on 2026-10-21. The build run 39557862107 of `b56fa0b` ended
+green, the three test jobs within 70 seconds and the play job in 36 minutes 3 seconds with the walk
+at a render distance of 2, down from 48 minutes 27 seconds at 4 the run before, so the head was
+pushed at 09:28. Shortly after 09:40 the owner asked for the mobs' faces from Bare Bones, item 62
+and Decision 30, written at 09:27. Next items 60 and 61, then 62, then item 39's cutout leaves,
+doors and glass, then its animated textures, then the pictures taken again at 40 degrees, then 26
+and the items in order; items 55, 38's second part and 54 when their packages come; the AGENTS.md
+rows for the Ui and build folders wait on the owner's word.
+
+Before it, `b56fa0b` came, item 58's parts d and e, the haze and the shadows' grid, after `293a5d1`,
+its part b, the night tint, and nothing else, the first carrying the review's file. Read at 08:49,
+pushed at 08:49 with the four before them after the build run of `815e4ca` ended green, its play job
+48 minutes 27 seconds at a render distance of 4. Its build run ended green with the play job at 36
+minutes 3 seconds.
 
 Before it, `396047d` came, item 58's part c, the grade, after `82da862`, its part a, and `fa7fba0`,
 item 59, and nothing else, the first of them carrying the review's file. Read at 08:16, pushed at
 08:49 with `be968a2`, `293a5d1` and `b56fa0b`.
-
-Before it, `be968a2` came, the scripted run's walk at a render distance of 2, and nothing else,
-carrying the review's file. Read at 08:10, pushed at 08:49 after the build run of `815e4ca` ended
-green.
 
 ## Now
 
@@ -521,7 +517,9 @@ green.
     first part also gives the lantern's, the hanging lantern's and the soul lantern's pieces a
     pack's lantern texture by the coordinates the source's lantern model gives each piece's faces,
     read as numbers as the mobs' boxes were, and the torches' flames and sticks the torch texture
-    the same way, each piece keeping its color where no pack has one. After item 46.
+    the same way, each piece keeping its color where no pack has one. After item 46. First commit
+    done at `8f2a2c8` on 2026-10-21, the lanterns' and torches' pieces, as the head says; the cutout
+    and the faces, then the animation follow after items 60 and 61.
 
 40. **F2 takes a screenshot, as the source does (Decision 19).** The owner wrote shortly before
     03:42 on 2026-10-21 that, as in Minecraft, a screenshot is to be taken in the game with F2, the
@@ -919,6 +917,25 @@ green.
     the face along its own normal the bands are gone. The mend: that line in mob.slang, a test
     reading a mob's side face in a noon capture for alternating rows and finding none, and
     mobs/daylight.webp taken again. One commit, small, after item 60.
+
+62. **Every mob wears the pack's entity picture (Decision 30).** The owner wrote shortly after 09:40
+    on 2026-10-21, relayed verbatim, "Make the face of the villager from the bare bones and the
+    zombie too and the other mobs", read as every mob taking the pack's entity texture. Bare Bones
+    holds pictures for all nine kinds, the villager with its biome type and profession overlays, the
+    zombie, the skeleton, the creeper, the spider, the pig, the cow, the sheep with its fur and the
+    chicken, fetched with the pack as Decision 18 has it, nothing shipped. The mobs' boxes are
+    already the source's cuboids taken as numbers, colored a face with no texture, the faces extra
+    small boxes. The mend: each cuboid takes its texture offset from the source's model definitions,
+    read as numbers as the boxes were, and the source's box unwrap, the top and bottom at the offset
+    moved right by the depth, then the right, front, left and back faces in the row below, a
+    mirrored box flipped; one material a kind with the pack's picture, the mob shader sampling it in
+    place of the vertex color; the face boxes left out where a pack gives the picture and kept with
+    the colors where none does; the villager's biome type drawn over its base picture and a
+    profession where the game has one; the sheep's fur as a second box set tinted by the wool's
+    color; each mob's own colors kept with no pack. Tests: a cuboid's face coordinates against the
+    source's numbers, a face's pixels read in a capture, and mobs/daylight.webp and the pair sheets
+    taken again. Two commits, the unwrap with the shader and the material, then the villager's
+    layers and the sheep's fur. After items 60 and 61 and before item 39's remaining parts.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1595,6 +1612,12 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     the reach stays 96, since 64 dropped part of a near tree's shadow in the capture and the owner
     did not take it. Read on the owner's question of about 09:20 as the sun's light and shadow
     alone, the lamps' light and the global illumination smooth, item 60.
+
+30. **The mobs take Bare Bones' entity pictures.** The owner wrote shortly after 09:40 on 2026-10-21
+    to make the villager's face from Bare Bones, and the zombie's too, and the other mobs', so every
+    mob wears the pack's entity picture over the source's cuboids, item 62, the pictures fetched
+    with the pack as Decision 18 has it and the game's own colors kept where no pack is given, as
+    Decision 22 keeps every rule the game's own.
 
 ## Replies
 

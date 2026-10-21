@@ -183,4 +183,29 @@ public static class Measurements
         return string.Create(CultureInfo.InvariantCulture,
             $"radius {radius}: mean {mean:0.00}, low {low:0.00}, high {high:0.00}, swing {(high - low) / mean:0.000} of the mean, {peaks} peaks; by angle {list}");
     }
+
+    /// <summary>
+    /// The picture's luminance at points evenly along a line in the world, from its first end to its
+    /// second, and how smoothly it changes, given as its first and last values and the largest change
+    /// between neighboring points as a share of the whole, which a light stepped on a grid across the
+    /// line holds in a few large changes with none between them.
+    /// </summary>
+    public static string Line(Image image, Camera3D camera, Vector3 from, Vector3 to, int samples)
+    {
+        var values = new double[samples];
+        for (int i = 0; i < samples; i++)
+        {
+            var point = Vector3.Lerp(from, to, i / (samples - 1f));
+            if (!IsPointInFrontOfCamera(point, camera)) return "a point of the line is behind the eye";
+            var at = GetWorldToScreen(point, camera);
+            values[i] = Luminance(image, (int)MathF.Round(at.X), (int)MathF.Round(at.Y), 1);
+            if (double.IsNaN(values[i])) return "a point of the line is off the picture";
+        }
+        var largest = 0.0;
+        for (int i = 1; i < samples; i++) largest = Math.Max(largest, Math.Abs(values[i] - values[i - 1]));
+        var whole = Math.Abs(values[^1] - values[0]);
+        var list = string.Join(" ", values.Select(v => v.ToString("0.0", CultureInfo.InvariantCulture)));
+        return string.Create(CultureInfo.InvariantCulture,
+            $"from {values[0]:0.0} to {values[^1]:0.0}, largest step {largest:0.0}, {(whole > 0 ? largest / whole : 0):0.000} of the change; by place {list}");
+    }
 }

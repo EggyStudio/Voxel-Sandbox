@@ -800,14 +800,20 @@ place.
 ## Shadows
 
 The sun's shadows come from the engine's shadow map, out to 96 blocks unless `voxel.shadows` sets
-another distance, and are pixelated. The terrain's shader takes each point of a face's light at the
-middle of the step it lies in, an eighth of a block on a side, as the owner's modpack's shader steps
-its shadows with the owner's settings, two of a texture's sixteen pixels, so a shadow's edge steps
-along the face rather than running slantwise across it. The lamps' light and global illumination are
-taken at the same points, and in a room lit by a lamp the light shows no steps. The engine's soft
-contact shadow, traced toward the sun through the scene's distance field, is left out where the
-shadow map holds a point, so no fringe lies beside a shadow's edge, and kept past the map's reach,
-where the land has no other shadow of the sun.
+another distance, and are pixelated. The terrain's shader takes the sun's shadow at each point of a
+face at the middle of the step it lies in, an eighth of a block on a side, as the modpack's shader
+steps its shadows with the settings it is played with, two of a texture's sixteen pixels, so a
+shadow's edge steps along the face rather than running slantwise across it. The grid is the sun's
+alone. The rest of the light, the lamps' and global illumination's, is taken at the point itself, so
+a lantern's light on the floor it stands on falls smoothly from its glass, and `voxel.line` reads
+the last frame's light along a line in the world. Taking the sun's shadow at the step's middle reads
+the shadow map twice more at each pixel the map holds, which over seed 1's plains at noon at 12
+columns with Bare Bones costs too little to read, the window's model pass taking 10.73 ms against
+10.71 with all of the light taken at the step's middle, the mean of three sessions each, whose
+readings swing by half a millisecond. The engine's soft contact shadow, traced toward the sun
+through the scene's distance field, is left out where the shadow map holds a point, so no fringe
+lies beside a shadow's edge, and kept past the map's reach, where the land has no other shadow of
+the sun.
 
 ## Fog
 

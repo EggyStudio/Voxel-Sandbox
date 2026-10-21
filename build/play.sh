@@ -108,6 +108,27 @@ to=$(feet "$after")
 distance=$(printf '%s %s\n' "$from" "$to" | awk '{ printf "%.2f", sqrt(($4 - $1) ^ 2 + ($5 - $2) ^ 2 + ($6 - $3) ^ 2) }')
 awk -v d="$distance" 'BEGIN { exit !(d > 0.5) }' || fail "the player did not walk toward the lamp, from $from to $to"
 
+# A lantern's light on the floor of white concrete in a closed room at night falls smoothly across
+# the block before its glass, the sun's shadow alone taken on the grid of eight steps a block. Read
+# along a line through the middles of a column of steps, no change between neighboring points is over
+# a tenth of the whole, where light taken at each step's middle falls in a few changes of up to 0.14
+# of it with none between, and the light falls by at least 40 levels, so a dark frame does not pass.
+# The HUD is hidden, since the outline of the block looked at lies across the line.
+cmd voxel.hud off
+cmd voxel.room 50 4 -24 58 9 -12 white_concrete
+cmd voxel.set 54 5 -20 lantern
+cmd voxel.tp 54.5 6.2 -16.5
+cmd voxel.look 0 -40
+cmd frames.wait 120
+ask voxel.line 1 1 1 1 1 1 2 > /dev/null
+cmd frames.wait 2
+pool=$(ask voxel.line 54.5625 5.001 -19.25 54.5625 5.001 -18.25 33)
+echo "lantern's pool ${pool%%; by place*}"
+read -r first last share <<< "$(printf '%s\n' "$pool" | sed -nE 's/^from ([0-9.]+) to ([0-9.]+), largest step [0-9.]+, ([0-9.]+) of the change;.*/\1 \2 \3/p')"
+[ -n "$share" ] || fail "voxel.line read no line across the lantern's pool, saying $pool"
+awk -v a="$first" -v b="$last" -v s="$share" 'BEGIN { exit !(a - b >= 40 && s <= 0.1) }' || fail "the lantern's light steps across the floor or does not fall, $pool"
+cmd voxel.hud on
+
 # The night sky from the roof, the full moon of the first night ahead in the east-northeast and
 # the stars around it, then from three blocks to the northwest looking further north and higher.
 # The moon, its glow and the stars are quads fixed on the sky, so the second capture shows each at
@@ -286,4 +307,4 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, drew with no validation error and wrote $name on F2"
