@@ -113,50 +113,44 @@ public class SkyTests
                 if (edge) Assert.Equal(0, sheet[(y * across + x) * 4 + 3]);
             }
         // The full moon's middle is lit and the new moon's is clear, its glow too.
-        const int middle = 1 + SkyArt.Across / 2;
+        const int middle = 1 + SkyArt.Texels / 2;
         Assert.Equal(255, sheet[(middle * across + middle) * 4 + 3]);
         Assert.Equal(0, sheet[((SkyArt.Cell + middle) * across + middle) * 4 + 3]);
-        Assert.Equal(0, sheet[((SkyArt.Cell + middle) * across + middle - SkyArt.Size) * 4 + 3]);
+        Assert.Equal(0, sheet[((SkyArt.Cell + middle) * across + middle - SkyArt.Size * SkyArt.Fine) * 4 + 3]);
     }
 
     [Fact]
-    public void The_Sun_Is_A_Square_Of_Eight_At_The_Middle_Of_Its_Picture_With_A_Dithered_Glow_Clear_Before_Its_Edge()
+    public void The_Sun_Is_A_Square_Of_Eight_Pixels_At_The_Middle_Of_Its_Picture_With_A_Smooth_Glow_Clear_Before_Its_Edge()
     {
         var sun = SkyArt.SunPixels();
-        int Alpha(int x, int y) => sun[(y * SkyArt.Across + x) * 4 + 3];
-        const int from = (SkyArt.Across - SkyArt.Size) / 2;
+        int Alpha(int x, int y) => sun[(y * SkyArt.Texels + x) * 4 + 3];
+        const int from = (SkyArt.Texels - SkyArt.Size * SkyArt.Fine) / 2, middle = SkyArt.Texels / 2;
 
-        // The body is whole, square and opaque, its corners too, and the glow beside it far dimmer.
-        for (int y = from; y < from + SkyArt.Size; y++)
-            for (int x = from; x < from + SkyArt.Size; x++)
-                Assert.Equal(255, Alpha(x, y));
-        Assert.InRange(Alpha(from - 1, SkyArt.Across / 2), 1, (int)(255 * SkyArt.GlowPeak) + 8);
-
-        // The glow is held to a few levels, and the ordered pattern leaves a pixel brighter than its
-        // neighbor nearer the body here and there, where a smooth fall would never rise outward.
-        var levels = new HashSet<int>();
-        var rises = 0;
-        for (int y = 1; y < SkyArt.Across - 1; y++)
-            for (int x = 1; x < SkyArt.Across - 1; x++)
+        // The body is whole, square and opaque, its corners too, each of its pixels a block of
+        // texels of one color, and the glow beside it far dimmer.
+        for (int y = from; y < from + SkyArt.Size * SkyArt.Fine; y++)
+            for (int x = from; x < from + SkyArt.Size * SkyArt.Fine; x++)
             {
-                if (x >= from && x < from + SkyArt.Size && y >= from && y < from + SkyArt.Size) continue;
-                levels.Add(Alpha(x, y));
-                int nx = x + Math.Sign(SkyArt.Across / 2 - 0.5f - x), ny = y;
-                if (Math.Abs(x + 0.5f - SkyArt.Across / 2f) > Math.Abs(y + 0.5f - SkyArt.Across / 2f) && Alpha(x, y) > Alpha(nx, ny)) rises++;
+                Assert.Equal(255, Alpha(x, y));
+                int px = from + (x - from) / SkyArt.Fine * SkyArt.Fine, py = from + (y - from) / SkyArt.Fine * SkyArt.Fine;
+                Assert.Equal(sun[(py * SkyArt.Texels + px) * 4], sun[(y * SkyArt.Texels + x) * 4]);
             }
-        Assert.InRange(levels.Count, 3, 8);
-        Assert.True(rises > 0, "the glow falls smoothly, with no dithering");
+        Assert.InRange(Alpha(from - 1, middle), 1, (int)(255 * SkyArt.GlowPeak) + 1);
 
-        // It falls away from the body ring by ring, and is gone at the picture's edge.
-        double Ring(float radius) => Enumerable.Range(0, 64).Average(i =>
-            Alpha((int)(SkyArt.Across / 2 + radius * MathF.Cos(i * MathF.Tau / 64)), (int)(SkyArt.Across / 2 + radius * MathF.Sin(i * MathF.Tau / 64))));
-        Assert.True(Ring(6) > Ring(9) && Ring(9) > Ring(12), $"{Ring(6)}, {Ring(9)}, {Ring(12)}");
-        for (int i = 0; i < SkyArt.Across; i++)
+        // Outward from the body the glow never brightens and falls a level or two a texel at most,
+        // with no steps a dithering would leave, and it is gone at the picture's edge.
+        for (int x = from - 1; x > 0; x--)
+        {
+            Assert.True(Alpha(x - 1, middle) <= Alpha(x, middle), $"the glow rises at {x - 1}");
+            Assert.True(Alpha(x, middle) - Alpha(x - 1, middle) <= 2, $"the glow steps at {x - 1}");
+        }
+        Assert.True(Alpha(from - 4 * SkyArt.Fine, middle) < Alpha(from - 1, middle));
+        for (int i = 0; i < SkyArt.Texels; i++)
         {
             Assert.Equal(0, Alpha(i, 0));
             Assert.Equal(0, Alpha(0, i));
-            Assert.Equal(0, Alpha(i, SkyArt.Across - 1));
-            Assert.Equal(0, Alpha(SkyArt.Across - 1, i));
+            Assert.Equal(0, Alpha(i, SkyArt.Texels - 1));
+            Assert.Equal(0, Alpha(SkyArt.Texels - 1, i));
         }
     }
 

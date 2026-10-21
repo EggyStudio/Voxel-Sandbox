@@ -7,11 +7,12 @@ namespace VoxelSandbox;
 /// </summary>
 /// <remarks>
 /// The sun and the moon take the shape of Minecraft's default ones, a square body 8 pixels across
-/// at the middle of a picture 32 across, with a faint glow around it falling off from the body's
-/// edge to nothing before the picture's edge. The glow is held to a few levels of brightness and
-/// dithered between them by a 4 by 4 ordered pattern, so its steps break up into single pixels. The
-/// pictures are added to the sky, as Minecraft adds its sun and moon, each pixel's color by its
-/// alpha, so the glow brightens the sky behind it. The moon's phases are one sheet four across and
+/// at the middle of a picture 32 across, with a faint glow around it falling from the body's edge to
+/// nothing before the picture's edge. They are painted at <see cref="Fine"/> texels to each of those
+/// pixels, as Bare Bones paints its own, so the body keeps its square pixels and the glow falls
+/// smoothly rather than in the source's steps of a pixel. The pictures are added to the sky, as
+/// Minecraft adds its sun and moon, each texel's color by its alpha, so the glow brightens the sky
+/// behind it. The moon's phases are one sheet four across and
 /// two down, phase 0 the full moon at the top left and 4 the new moon at the bottom left, in
 /// Minecraft's order, waning through the first row and waxing through the second. Each phase has a
 /// clear pixel around it in the sheet, since a sample at the edge of a phase, taken without
@@ -25,22 +26,23 @@ public static class SkyArt
     /// <summary>How many pixels the sun's and the moon's pictures are across, the body at the middle and its glow around it.</summary>
     public const int Across = 32;
 
+    /// <summary>How many texels the sun's and the moon's pictures are painted at to each of their pixels.</summary>
+    public const int Fine = 4;
+
+    /// <summary>How many texels the sun's and the moon's pictures are across.</summary>
+    public const int Texels = Across * Fine;
+
     /// <summary>How many phases the moon goes through, a day each, as Minecraft's does.</summary>
     public const int Phases = 8;
 
-    /// <summary>How many pixels apart the moon's phases are in their sheet, each with its clear edge.</summary>
-    public const int Cell = Across + 2;
+    /// <summary>How many texels apart the moon's phases are in their sheet, each with its clear edge.</summary>
+    public const int Cell = Texels + 2;
 
     /// <summary>The brightest the glow is, beside the body, as a share of its color.</summary>
-    public const float GlowPeak = 0.16f;
+    public const float GlowPeak = 0.1f;
 
     /// <summary>How far from the picture's middle the glow is gone, in pixels, short of the picture's edge.</summary>
     public const float GlowReach = 15;
-
-    // How many levels of brightness the glow is held to from nothing to its color, and the ordered
-    // pattern's thresholds, a 4 by 4 Bayer matrix, which dither a pixel between the two levels about it.
-    private const int Levels = 32;
-    private static readonly int[] Bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
 
     // The sun's rings from its edge in, the core the palest.
     private static readonly string[] Sun =
@@ -91,39 +93,36 @@ public static class SkyArt
     // The colors the sun's and the moon's glows are of, a warm yellow and the moonlight's blue.
     private static readonly (byte R, byte G, byte B) SunGlow = (255, 226, 120), MoonGlow = (150, 170, 230);
 
-    /// <summary>The sun, <see cref="Across"/> pixels square, its body at the middle and its glow around it.</summary>
+    /// <summary>The sun, <see cref="Texels"/> texels square, its body at the middle and its glow around it.</summary>
     public static byte[] SunPixels()
     {
-        var pixels = new byte[Across * Across * 4];
-        PaintGlow(pixels, Across, 0, 0, SunGlow, 1);
-        PaintBody(pixels, Across, (Across - Size) / 2, (Across - Size) / 2, Sun, (_, _) => true);
+        var pixels = new byte[Texels * Texels * 4];
+        PaintGlow(pixels, Texels, 0, 0, SunGlow, 1);
+        PaintBody(pixels, Texels, (Texels - Size * Fine) / 2, (Texels - Size * Fine) / 2, Fine, Sun, (_, _) => true);
         return pixels;
     }
 
     /// <summary>
-    /// How bright the glow is at a pixel of a picture, from nothing to <see cref="GlowPeak"/>,
-    /// falling from the body's edge to nothing at <see cref="GlowReach"/> from the middle and held
-    /// to steps that an ordered pattern dithers, so a pixel takes the level above or below by its
-    /// place in the pattern.
+    /// How bright the glow is at a texel of a picture, from nothing to <see cref="GlowPeak"/>,
+    /// falling evenly from the body's edge to nothing at <see cref="GlowReach"/> pixels from the
+    /// middle, as Bare Bones' glow falls.
     /// </summary>
     public static float Glow(int x, int y)
     {
-        float across = x + 0.5f - Across / 2f, down = y + 0.5f - Across / 2f;
-        var fall = Math.Clamp((GlowReach - MathF.Sqrt(across * across + down * down)) / (GlowReach - Size / 2f), 0, 1);
-        var glow = GlowPeak * fall * fall;
-        return MathF.Floor(glow * Levels + (Bayer[y % 4 * 4 + x % 4] + 0.5f) / 16) / Levels;
+        float across = (x + 0.5f) / Fine - Across / 2f, down = (y + 0.5f) / Fine - Across / 2f;
+        return GlowPeak * Math.Clamp((GlowReach - MathF.Sqrt(across * across + down * down)) / (GlowReach - Size / 2f), 0, 1);
     }
 
     /// <summary>A star, three pixels square, its middle the pixel at 1, 1.</summary>
     public static byte[] StarPixels()
     {
         var pixels = new byte[3 * 3 * 4];
-        PaintBody(pixels, 3, 0, 0, Star, (_, _) => true);
+        PaintBody(pixels, 3, 0, 0, 1, Star, (_, _) => true);
         return pixels;
     }
 
     /// <summary>
-    /// The sheet of the moon's phases, <see cref="Cell"/> times four pixels across and twice
+    /// The sheet of the moon's phases, <see cref="Cell"/> times four texels across and twice
     /// <see cref="Cell"/> down, each phase's dark side clear and its glow as bright as it is lit.
     /// </summary>
     public static byte[] MoonPixels()
@@ -137,7 +136,7 @@ public static class SkyArt
                 for (int x = 0; x < Size; x++)
                     if (Lit(phase, x, y)) lit++;
             PaintGlow(sheet, across, x0, y0, MoonGlow, lit / (float)(Size * Size));
-            PaintBody(sheet, across, x0 + (Across - Size) / 2, y0 + (Across - Size) / 2, Moon, (x, y) => Lit(phase, x, y));
+            PaintBody(sheet, across, x0 + (Texels - Size * Fine) / 2, y0 + (Texels - Size * Fine) / 2, Fine, Moon, (x, y) => Lit(phase, x, y));
         }
         return sheet;
     }
@@ -161,12 +160,12 @@ public static class SkyArt
         return -u * MathF.Sin(angle) + depth * MathF.Cos(angle) > 1e-4f;
     }
 
-    // A glow of a color over a picture's square of Across pixels at a place in a sheet so many pixels
-    // wide, as bright as a share of its own.
+    // A glow of a color over a picture's square of Texels at a place in a sheet so many texels wide,
+    // as bright as a share of its own.
     private static void PaintGlow(byte[] pixels, int width, int x0, int y0, (byte R, byte G, byte B) color, float share)
     {
-        for (int y = 0; y < Across; y++)
-            for (int x = 0; x < Across; x++)
+        for (int y = 0; y < Texels; y++)
+            for (int x = 0; x < Texels; x++)
             {
                 var at = ((y0 + y) * width + x0 + x) * 4;
                 (pixels[at], pixels[at + 1], pixels[at + 2]) = color;
@@ -174,14 +173,15 @@ public static class SkyArt
             }
     }
 
-    // A pattern's pixels at a place in a sheet so many pixels wide, where it shows them.
-    private static void PaintBody(byte[] pixels, int width, int x0, int y0, string[] pattern, Func<int, int, bool> shown)
+    // A pattern's pixels at a place in a sheet so many texels wide, each a square of so many texels,
+    // where it shows them.
+    private static void PaintBody(byte[] pixels, int width, int x0, int y0, int fine, string[] pattern, Func<int, int, bool> shown)
     {
-        for (int y = 0; y < pattern.Length; y++)
-            for (int x = 0; x < pattern[y].Length; x++)
+        for (int y = 0; y < pattern.Length * fine; y++)
+            for (int x = 0; x < pattern[0].Length * fine; x++)
             {
-                if (pattern[y][x] == '.' || !shown(x, y)) continue;
-                var (r, g, b) = Shade(pattern[y][x]);
+                if (pattern[y / fine][x / fine] == '.' || !shown(x / fine, y / fine)) continue;
+                var (r, g, b) = Shade(pattern[y / fine][x / fine]);
                 var at = ((y0 + y) * width + x0 + x) * 4;
                 (pixels[at], pixels[at + 1], pixels[at + 2], pixels[at + 3]) = (r, g, b, 255);
             }

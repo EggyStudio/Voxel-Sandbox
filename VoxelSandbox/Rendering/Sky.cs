@@ -88,7 +88,7 @@ public sealed class Sky : IDisposable
     {
         Hour = hour;
         _light = CreateDirectionalLight(-Vector3.UnitY, Color.White, 1, castsShadows: true);
-        _sun = Load(SkyArt.SunPixels(), SkyArt.Across, SkyArt.Across);
+        _sun = Load(SkyArt.SunPixels(), SkyArt.Texels, SkyArt.Texels);
         _moon = Load(SkyArt.MoonPixels(), SkyArt.Cell * 4, SkyArt.Cell * 2);
         _star = Load(SkyArt.StarPixels(), 3, 3);
         Apply();
@@ -222,7 +222,7 @@ public sealed class Sky : IDisposable
         var phase = MoonPhase(Day, Hour);
         var moon = _packMoons[phase] is { } own ? (own, new Rectangle(0, 0, own.Width, own.Height))
             : _packMoonSheet is { } sheet ? (sheet, new Rectangle(phase % 4 * sheet.Width / 4f, phase / 4 * sheet.Height / 2f, sheet.Width / 4f, sheet.Height / 2f))
-            : (_moon, new Rectangle(phase % 4 * SkyArt.Cell + 1, phase / 4 * SkyArt.Cell + 1, SkyArt.Across, SkyArt.Across));
+            : (_moon, new Rectangle(phase % 4 * SkyArt.Cell + 1, phase / 4 * SkyArt.Cell + 1, SkyArt.Texels, SkyArt.Texels));
         var sun = _packSun is { } packed ? packed : _sun;
         BeginBlendMode(BlendMode.Additive);
         rlDisableDepthMask();

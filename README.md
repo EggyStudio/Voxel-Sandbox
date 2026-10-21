@@ -662,18 +662,18 @@ over it on quads fixed on the sky, sampled without filtering, so their pixels st
 sides run along the way the sky turns at its place and across it, so where it stands and which way
 it is turned depend on the hour alone, whichever way the player looks. The sun and the moon take the
 shape of Minecraft's default ones, a square body 8 pixels across at the middle of a picture of 32,
-with a faint glow around it falling off pixel by pixel and dithered between its few levels, so its
-steps break up into single pixels, each added to the sky behind it as Minecraft adds its own. The
-sun's body is as wide against its distance as Minecraft's, 15 to 100 or about 8.6 degrees, and the
-moon's 10 to 100, about 5.7 degrees. Where a resource pack has its own sun and moon, under
-`environment/celestial` as Minecraft reads them now or `environment/sun` and the sheet
-`environment/moon_phases` as it read them before, those are drawn in their place. The sky turns with
-the hour about the axis from north to south, the sun rising in the east at 6, passing over the south
-at noon and setting in the west at 18, and the moon stands opposite it. Its 500 stars keep their
-places on the turning sky and fade in as the day fades and near the horizon. The moon goes through
-Minecraft's eight phases, a phase a day from the full moon of the first night, and changes while it
-is down. `voxel.time` sets the hour and `voxel.day` the count of days, which a save keeps, and the
-land and the clouds hide the sun, the moon and the stars.
+with a faint glow around it, each added to the sky behind it as Minecraft adds its own. They are
+painted at four texels to each of those pixels, as Bare Bones paints its own, so the body keeps its
+square pixels and the glow falls smoothly to nothing. The sun's body is as wide against its distance
+as Minecraft's, 15 to 100 or about 8.6 degrees, and the moon's 10 to 100, about 5.7 degrees. Where a
+resource pack has its own sun and moon, under `environment/celestial` as Minecraft reads them now or
+`environment/sun` and the sheet `environment/moon_phases` as it read them before, those are drawn in
+their place. The sky turns with the hour about the axis from north to south, the sun rising in the
+east at 6, passing over the south at noon and setting in the west at 18, and the moon stands
+opposite it. Its 500 stars keep their places on the turning sky and fade in as the day fades and
+near the horizon. The moon goes through Minecraft's eight phases, a phase a day from the full moon
+of the first night, and changes while it is down. `voxel.time` sets the hour and `voxel.day` the
+count of days, which a save keeps, and the land and the clouds hide the sun, the moon and the stars.
 
 ## Clouds
 
