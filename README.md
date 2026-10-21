@@ -735,10 +735,14 @@ global illumination alone, and opens the engine's windows of what global illumin
 frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
 depth of field, motion blur and bloom, each set at once as it is changed.
 
-The frame is tonemapped by the engine's somewhat boring curve, which keeps colors as they are and
-rolls the highlights off without a filmic look, so the blocks' colors and the pixel art read as
-drawn. It is taken at an exposure of 1.25, which gives the day the brightness the engine's own curve
-gives it at 1, and a room lit by a lamp at night 13 percent more.
+The frame is tonemapped by Reinhard's curve, the nearest of the engine's to the curve of the owner's
+modpack's shader with the owner's settings, its exposure 0.9, white curve 1.3, lower curve 1.05 and
+upper 1.0, within 0.023 of it in sRGB levels at lights from 0.05 to 4 at an exposure of 1.05, where
+ACES is 0.055 off and a cut at 1 0.062. It is taken at an exposure of 1.7 and graded, each channel
+pushed from the middle gray by 1.12 and the color by 1.4, so a village's roofs, its wheat and its
+grass in the afternoon read as vividly as in the modpack's pictures, whose shader's warm light and
+deep shade saturate them. `SetEnvironmentLight`, which the engine is asked for, would let the sky's
+light take the shader's share and whiteness too.
 
 ## Sky
 
