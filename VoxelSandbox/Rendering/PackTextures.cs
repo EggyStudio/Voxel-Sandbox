@@ -253,7 +253,9 @@ public static class PackTextures
     // Each kind's pictures under entity, its body's and, for the sheep, its wool's, each by the names
     // a pack may give it, the newest first. Minecraft 26 names a kind's picture by its climate after
     // its kind, as pig_temperate, the versions before it before its kind, as temperate_pig, and a
-    // pack made before the climates names it by its kind alone, as Bare Bones' 1.21 does.
+    // pack made before the climates names it by its kind alone, as Bare Bones' 1.21 does. The creeper
+    // keeps the game's own colors whatever pack is on, drawn after Minecraft's own creeper, which
+    // the repository cannot hold, where Bare Bones' is drawn in a style of its own.
     private static readonly Dictionary<string, string[][]> _mobs = new()
     {
         ["pig"] = [["entity/pig/pig_temperate", "entity/pig/temperate_pig", "entity/pig/pig"]],
@@ -263,7 +265,6 @@ public static class PackTextures
         ["villager"] = [["entity/villager/villager"]],
         ["zombie"] = [["entity/zombie/zombie"]],
         ["skeleton"] = [["entity/skeleton/skeleton"]],
-        ["creeper"] = [["entity/creeper/creeper"]],
         ["spider"] = [["entity/spider/spider"]],
     };
 

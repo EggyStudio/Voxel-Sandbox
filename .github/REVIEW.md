@@ -5,37 +5,27 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `9ce44d7`, item 62's second part, the villager's layers and the sheep's wool, and
-nothing else, carrying the review's file: the villager wears its base picture with its biome type's
-picture laid over it, plains, desert, taiga and snow in the robes' order, an upper pixel at an alpha
-of a tenth or more replacing the lower as the source cuts its layers, one picture a biome rather
-than a second draw at the same depth, no profession layer or hat rim since the game has no
-professions, the four biomes showing their clothes in Bare Bones; the sheep's cuboids say which
-picture they take, the body's and the wool's grown as the source's fur layer is, the wool tinted by
-its color through the vertex color, the body under the wool drawn with the picture alone, the
-mirrors on its right legs as the dump has them; the names table trying 26.3's temperate names, then
-the 1.21.5 style, then Bare Bones 1.21's bare names, the first part's name not being 26.3's; a slot
-holding layers, each a mesh with its materials, a part varying by variant only where its picture
-differs or a cuboid is tinted, textures made once a picture. Two new tests, 222 in all, the overlay
-keeping a lower pixel under a clear upper one and taking a covering one with snow named for the
-fourth variant, and the sheep's head laying its body's picture on the skin in white and the wool's
-on the wool in its pink; build/mob-pairs.py taking the daylight row again wearing the default packs
-into mobs/daylight-pack.webp beside the own one, the README's mob section setting the two rows side
-by side, the own-art pictures restored from the head where the run re-encoded them; the strict build
-clean, the play script clean. Read at 10:30 on 2026-10-21. Not pushed: the build run 39566771329 of
-`69ecb49` is still running, and the two heads are pushed when it ends. At 10:31 a fault of item 62
-was found, the pig's and cow's 64 by 32 pictures refused by the 64 by 64 layout, mended in a small
-commit before item 65. Next that mend, then item 65, then item 39's cutout leaves, doors and glass,
-then its animated textures, then the pictures taken again at 40 degrees, then 26 and the items in
-order; items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+Reviewed up to `d2bc3f0`, item 62's mend, the half-height fit, and nothing else, carrying the
+review's file: the fit, public, takes the layout's height or half of it at a whole scale, the
+coordinates run over the picture's own rows and the white row, a cuboid wholly below the picture is
+left out; one new test of three checks, a 64 by 32 cow picture fitting the 64 by 64 layout and a 64
+by 48 one refused, the cow's head part laying the head and two horns in 72 vertices without the
+muzzle, the front's upper left at 6/64 and 6/33, 223 tests in all; the pig and the cow wearing Bare
+Bones' pictures, mobs/daylight-pack.webp taken again with the own pictures restored, the README
+saying which pictures fit; the strict build clean, the play script clean. Read at 10:38 on
+2026-10-21. Not pushed: the build run 39566771329 of `69ecb49` is still running, and the three heads
+are pushed when it ends. Shortly before 10:38 the owner wrote that they do not like the creeper's
+picture in Bare Bones and to keep the vanilla, item 66 and Decision 33. Next item 66, then 65, then
+item 39's cutout leaves, doors and glass, then its animated textures, then the pictures taken again
+at 40 degrees, then 26 and the items in order; items 55, 38's second part and 54 when their packages
+come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `9ce44d7` came, item 62's second part, the villager's layers and the sheep's wool, and
+nothing else, carrying the review's file. Read at 10:30, held for the build run of `69ecb49`.
 
 Before it, `e4b850f` came, item 62's first part, the mobs wearing the pack's pictures, and nothing
 else, carrying the review's file with item 65 and Decision 32. Read at 10:21, held for the build run
 of `69ecb49`.
-
-Before it, `69ecb49` came, item 64, the zombie's and villager's own faces, and nothing else,
-carrying the review's file. Read at 10:07, pushed at 10:06 with the three before it.
 
 ## Now
 
@@ -956,7 +946,7 @@ carrying the review's file. Read at 10:07, pushed at 10:06 with the three before
     clear-face rule already leaves it, so a cow on an older picture loses its muzzle alone, as the
     source's cow had none before 1.21.5; tests of a 64 by 32 cow fitting the layout, its head laying
     the head and horns but not the muzzle, its coordinates over 33 rows, and mobs/daylight-pack.webp
-    taken again.
+    taken again. Mended at `d2bc3f0` on 2026-10-21, as the head says.
 
 63. **A mob's face is lit evenly from top to bottom, the turned-up light seen from straight above.**
     The owner wrote shortly before 09:50 on 2026-10-21 of item 61's noon picture, relayed verbatim,
@@ -1005,6 +995,16 @@ carrying the review's file. Read at 10:07, pushed at 10:06 with the three before
     cow 64 by 32 as Bare Bones 1.21's, its sheep, chicken, villager, creeper and spider covering
     every face the cuboids read as Bare Bones' do, and it has no zombie or skeleton, which stay on
     Bare Bones'; after item 62's mend of the half-height fit.
+
+66. **The creeper keeps the game's own vanilla-style art with any pack (Decision 33).** The owner
+    wrote shortly before 10:38 on 2026-10-21, relayed verbatim, "I dont like the creeper texture in
+    barebones. Keep the vanilla". The repository cannot hold the source's own creeper picture, and
+    the game's own creeper is drawn after it with its patches and its face, so the creeper is taken
+    out of the pack table with the reason in its comment and wears the game's own art whatever packs
+    are loaded; the play script's picture check moves to the zombie, whose head at 0, 0 and body at
+    16, 16 take the same offsets on one 64 by 32 picture that the half-height rule lays on its
+    layout; the README's sentence on which kinds wear pictures, and mobs/daylight-pack.webp taken
+    again. One commit, small, before item 65, whose layout check then leaves the creeper out.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1700,6 +1700,12 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     fetched as the others are under Decision 18 and listed above Bare Bones, item 65, its pictures
     laid on the source's cuboids as Bare Bones' are and its animated models, which need Entity Model
     Features, not drawn.
+
+33. **The creeper keeps the vanilla look, the game's own art, under every pack.** The owner wrote
+    shortly before 10:38 on 2026-10-21 that they do not like the creeper's picture in Bare Bones and
+    to keep the vanilla; the game cannot carry the source's picture, so its own creeper, drawn in
+    the source's style, stays whatever packs are loaded and no pack's creeper picture is read, item
+    66, item 65's pack included.
 
 ## Replies
 
