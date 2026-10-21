@@ -5,37 +5,25 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `2839dba`, item 24's second commit, the windows, the HUD and the font from a pack,
-and nothing else, carrying the review's file: the gui textures read by the source's paths on first
-ask and kept until the packs change, the hotbar, its selection, the hearts' and food's containers,
-the air and the crosshair, the buttons and the slider's track and handle with their lit forms, the
-tooltip's background and frame; a sprite drawn over the box the source draws it in whatever its
-pixels, a nine-slice from its metadata keeping its edges at their size in the interface's pixels
-through a camera zoomed to the scale, so a pack at twice the size keeps its edges as wide; the
-inventory, the crafting table and the furnace as the source's 256-pixel pictures with the window in
-the corner, the furnace's flame and arrow drawn where and as far as the source draws them, the
-creative scroller from a pack where one has it; the font's 16 by 16 sheet with each advance its lit
-columns scaled to 8 plus one, a space 4, the shadow a pixel down and right at a quarter of the
-color, used by the text calls where a pack has one; two follows of the source, no label on the
-player's own inventory and a count at the source's place under a pack's font; the loader cutting an
-animation's first frame only where the metadata says animation, where before any tall texture was
-cut; 156 tests, the strict build clean, the play script under the layer clean, captures with Bare
-Bones, Recolourful and the font pack of the HUD, the inventory on Recolourful's planks, the furnace
-burning, the menu's buttons, the options' sliders, a tooltip and the creative window in the game's
-own art with Recolourful's scroller, the same windows with no pack matching the game's own art. Read
-at 03:17 on 2026-10-21 and pushed at 03:18, its build run green at 03:26; the build run of `193da5e`
-had ended green at 03:17. Shortly before 03:23 the owner saw the game's own art moved toward the two
-looks and asked for the packs' look instead, so that commit was discarded unmade (Decision 17). Next
-item 24's last commit, the setting, the plain list, the reload and the resourcepacks folder beside
-the saves, then the windows' titles off on the owner's word shortly before 03:27 as a small commit,
-then the items in order; item 38's second part when the package brings the call and the glow lights'
-bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `056bb7b`, item 24's third commit, the setting, the list and the reload, and nothing
+else, carrying the review's file: a resourcepacks folder beside the saves, the list in
+`resourcepacks.txt` with a pack a line, a name in the folder or a whole path, the first over the
+rest, a Resource Packs screen in the options, `voxel.packs` and `voxel.reload`, F3 with T reloading,
+`--pack` for one run, a transient run reading and writing no list so the scripted run and the
+captures draw the same on every machine; 158 tests, the strict build clean, the play script clean,
+the screen, the commands and the toggles checked in a transient run. Read at 03:29 on 2026-10-21 and
+pushed at 03:29; the build run of `2839dba` had ended green at 03:26. Shortly before 03:29 the owner
+asked to include the three packs as defaults shipped in the repository, which the coder refused
+since all three are all rights reserved, and the owner chose the fetch on start the coder offered,
+Decision 18 and item 24's fourth commit. Next the windows' titles off as a small commit, then the
+fetch, then the items in order; item 38's second part when the package brings the call and the glow
+lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `2839dba` came, item 24's second commit, the windows, the HUD and the font from a pack,
+and nothing else, carrying the review's file. Pushed at 03:18, its build run green at 03:26.
 
 Before it, `193da5e` came, item 24's first commit, the pack loader and the atlas, and nothing else,
 carrying the review's file. Pushed at 03:09, its build run green at 03:17.
-
-Before it, `4c0c50e` came, item 23's last commit, the menu and the options, and nothing else,
-carrying the review's file. Pushed at 02:38, its build run green at 02:48.
 
 ## Now
 
@@ -590,8 +578,19 @@ carrying the review's file. Pushed at 02:38, its build run green at 02:48.
     the setting, the list and the reload with a resourcepacks folder beside the saves as the source
     keeps one; the game's own art stays as it is, the owner having seen it moved toward the two
     looks and asked for the packs' own look instead, shortly before 03:23 on 2026-10-21 (Decision
-    17). First commit done at `193da5e` on 2026-10-21, the loader and the atlas, and the second at
-    `2839dba`, the windows, the HUD and the font from a pack, as the heads say.
+    17). First commit done at `193da5e` on 2026-10-21, the loader and the atlas, the second at
+    `2839dba`, the windows, the HUD and the font from a pack, and the third at `056bb7b`, the
+    setting, the list and the reload, as the heads say. A fourth commit by Decision 18: with no list
+    written and the run not transient, the game fetches the three packs the owner named from their
+    creators' own Modrinth pages into its resourcepacks folder on a background task, each file
+    pinned by its Modrinth version, its file URL and its sha512 in a manifest the repository holds
+    as a modpack's manifest does, checks each hash, writes the list in the owner's order and reloads
+    when all three are in, the first frames drawn with the game's own art meanwhile; offline or on a
+    failed check it plays with its own art and tries again at the next start; the README says the
+    game fetches them at first start and names the three and their terms, the Resource Packs screen
+    shows the fetch's state with a switch to stop it, and the request carries a user agent naming
+    the game as Modrinth's API asks. Tests: the manifest's hashes read and a file of the wrong hash
+    refused, with the fetch itself skipped in the suite and in CI.
 
 25. **More biomes, more blocks and more trees.** The owner's word, three times. The climate has
     eight biomes, the features three trees and the cactus, and the blocks about 140 ids: biomes gain
@@ -1000,6 +999,21 @@ No verdict is open.
     Furnace, the Inventory label over the player's rows and the creative window's Items, all off
     with a pack and without, the slots, tooltips, counts and menus keeping their text; a small
     commit of its own after item 24's last.
+
+18. **The three packs are not shipped and are fetched at first start instead.** The owner wrote
+    shortly before 03:29 on 2026-10-21 to include Bare Bones, Recolourful Containers and the font
+    pack as defaults shipped in the repository. The coder said it cannot be done, all three being
+    all rights reserved, Bare Bones' page forbidding any reupload, Recolourful's terms forbidding
+    distribution of its assets on any platform in any form without consent, the font giving no
+    terms, and a public repository or a release zip being that distribution; and offered three ways,
+    of which the owner chose the fetch on start: the game downloads the three pinned files from the
+    creators' own Modrinth pages into its resourcepacks folder, checks each file's sha512 and writes
+    the list in the owner's order, the repository holding only each pack's name, its Modrinth
+    version and file URL and its hash, as a Modrinth modpack's manifest does, which Recolourful's
+    terms allow for free modpacks. The reviewer adds that the fetch runs on a background task so the
+    start is not held, the README says it, the Resource Packs screen shows it with a switch to stop
+    it, and the request names the game in its user agent as Modrinth's API asks. Item 24's fourth
+    commit.
 
 ## Replies
 

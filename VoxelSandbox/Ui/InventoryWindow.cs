@@ -38,7 +38,6 @@ public sealed class InventoryWindow
     private const int Width = 176, Height = 166, CreativeWidth = 195, CreativeHeight = 136, CreativeRows = 5;
     // A double-click is a second press on the same slot within this many seconds, as Minecraft's.
     private const double DoubleClick = 0.25;
-    private static readonly Color Label = new(64, 64, 64);
 
     // A slot of the window: where it is in the interface's pixels from the panel's corner, and whether
     // it is one a click only takes from, as a furnace's output, or what a grid makes.
@@ -84,7 +83,7 @@ public sealed class InventoryWindow
         slots.Add(new SlotView(default, madeX, madeY, Makes: grid));
         AddInventory(slots, inventory);
         // A pack's window holds its arrow.
-        Window(slots, inventory, "Crafting", table ? 28 : 97, table ? 6 : 8, table ? "crafting_table" : "inventory", !table, (left, top, s, packed) =>
+        Window(slots, inventory, table ? "crafting_table" : "inventory", (left, top, s, packed) =>
         {
             if (!packed) Gui.Sprite(GuiArt.Arrow, left + (table ? 90 : 130) * s, top + (table ? 35 : 28) * s);
         });
@@ -103,7 +102,7 @@ public sealed class InventoryWindow
             new(new SlotAt(furnace.Slots, Furnace.Output), 116, 35, TakeOnly: true),
         ];
         AddInventory(slots, inventory);
-        Window(slots, inventory, "Furnace", 70, 6, "furnace", false, (left, top, s, packed) =>
+        Window(slots, inventory, "furnace", (left, top, s, packed) =>
         {
             // The flame burns down from its top as the fuel burns out, and the arrow fills from its
             // left as the smelting goes on, as Minecraft's furnace shows them.
@@ -147,7 +146,6 @@ public sealed class InventoryWindow
         var pack = PackGui.Container("creative_inventory/tab_items");
         if (pack is { } window) PackGui.DrawPart(window, 256, 256, 0, 0, CreativeWidth, CreativeHeight, left, top, s);
         else Gui.Stretched(GuiArt.Panel, new Rectangle(left, top, CreativeWidth * s, CreativeHeight * s));
-        Gui.Text("Items", left + 8 * s, top + 6 * s, Label, shadow: false);
         Item? hovered = null;
         for (int row = 0; row < CreativeRows; row++)
             for (int column = 0; column < Hotbar.Size; column++)
@@ -211,13 +209,11 @@ public sealed class InventoryWindow
             slots.Add(new SlotView(new SlotAt(inventory.Slots, column), 8 + column * 18, 142));
     }
 
-    // The panel, or the window's texture of a pack under the name Minecraft gives it, its title and
-    // the inventory's label but in the player's own inventory, which Minecraft leaves without one,
-    // the window's own pictures, told whether the window is the pack's, its slots and their stacks,
-    // then the pointer's clicks and keys on them, the tooltip and the stack held. A pack's window
-    // holds its slots.
-    private void Window(List<SlotView> slots, Inventory inventory, string title, int titleX, int titleY, string container, bool own,
-        Action<int, int, int, bool> pictures)
+    // The panel, or the window's texture of a pack under the name Minecraft gives it, with no title
+    // or label over it, since its slots say what it is, the window's own pictures, told whether the
+    // window is the pack's, its slots and their stacks, then the pointer's clicks and keys on them,
+    // the tooltip and the stack held. A pack's window holds its slots.
+    private void Window(List<SlotView> slots, Inventory inventory, string container, Action<int, int, int, bool> pictures)
     {
         var s = Gui.Scale;
         int left = (GetScreenWidth() - Width * s) / 2, top = (GetScreenHeight() - Height * s) / 2;
@@ -225,8 +221,6 @@ public sealed class InventoryWindow
         var pack = PackGui.Container(container);
         if (pack is { } window) PackGui.DrawPart(window, 256, 256, 0, 0, Width, Height, left, top, s);
         else Gui.Stretched(GuiArt.Panel, new Rectangle(left, top, Width * s, Height * s));
-        Gui.Text(title, left + titleX * s, top + titleY * s, Label, shadow: false);
-        if (!own) Gui.Text("Inventory", left + 8 * s, top + 72 * s, Label, shadow: false);
         pictures(left, top, s, pack is not null);
 
         SlotView? under = null;
