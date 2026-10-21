@@ -19,7 +19,9 @@ public sealed class LightSettings
     public int Budget = 2;
 
     public float ShadowDistance = 96;
-    public float Bloom = 0.5f;
+    // A tenth of the light past 1 spread around it, a faint glow about a flame or a lamp, where more
+    // spreads a halo far wider than the flame's own block.
+    public float Bloom = 0.1f;
     public float Occlusion;
     public bool AutoExposure;
     // The somewhat boring curve the frame is tonemapped by takes a light of 1 to about 0.61, so the

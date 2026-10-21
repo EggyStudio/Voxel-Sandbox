@@ -5,24 +5,33 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `a96cea5`, item 50, the block's side over the window while the eye is inside a block,
-and nothing else, carrying the review's file, read from the commit at 06:03 on 2026-10-21 before the
-coder's word on it: with the eye inside a whole opaque block, in every mode but spectator, the
-block's side covers the window darkened to a tenth, repeated four by four and sliding as the player
-turns, as the source draws the inside of a block, leaves, glass, ice, water and the shaped blocks
-leaving the view open, with its tests and the README's paragraph. Not pushed, with `e4483af` and
-`0c93d3e` before it: the build run of `f7df279` is still running, and the three heads are pushed
-when it ends. Shortly before 06:10 the owner chose the modpack's shader's stars of three layouts,
-item 52's commit following its play script. Next item 52's commit, then item 46's captures, then
-item 39, then the items in order; item 38's second part when the package brings the call and the
-glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `f7bcf26`, item 52, the stars as the modpack's shader draws them, and nothing else,
+carrying the review's file: 3,000 squares of 0.28 degrees spread evenly over the turning sky, each
+drawn until its three noises' product passes 0.7, the light the excess squared in a cool white taken
+to sRGB, faded over the lowest 20 degrees and hidden near the sun and the moon, the cross, the star
+texture and the comparison switch gone, the test of the count, the size, the spread on each side of
+the three axes, the middle star faint and the brightest bright and cool; 203 tests, the strict build
+clean, the play script clean. Read at 06:26 on 2026-10-21. Not pushed, with `a96cea5`, `e4483af` and
+`0c93d3e` before it: the build run of `f7df279` is still running, and the four heads are pushed when
+it ends. Shortly before 06:26 the owner said twice to capture with the resource packs for the
+README, which the script does, the previews without them having been for composition, and that there
+is too much bloom, choosing 0.1 of four shown, item 53. Item 46's script is written, its views the
+badlands, the swamp, the savanna, the snowy taiga, the cherry grove from under its crowns, the
+jungle over its canopy, a meadow, a plains ravine, the desert village by its pyramid, the snowy
+village by day and at night, the plains village by its river with mobs and again with every pack
+off, a sunrise over the sea and a midnight sky, a room of oak planks lit by a lantern and torches,
+and the interface's seven shots, each view checking the eye and climbing to eight blocks, the GIF
+ten of them at four frames a second. Next item 53, the bloom at 0.1, then item 46's first full run
+and commit, then item 39, then the items in order; item 38's second part when the package brings the
+call and the glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's
+word.
+
+Before it, `a96cea5` came, item 50, the block's side over the window while the eye is inside a
+block, and nothing else, carrying the review's file.
 
 Before it, `e4483af` came, item 51, the sun's and the moon's glow smooth as Bare Bones', after
 `0c93d3e`, item 48, the villages' ground whole, and nothing else, the first carrying the review's
 file.
-
-Before it, `f7df279` came, items 47 and 49, the dome beyond the bodies and the sun and the moon in
-the source's look, and nothing else, carrying the review's file. Pushed at 05:52.
 
 ## Now
 
@@ -734,7 +743,13 @@ the source's look, and nothing else, carrying the review's file. Pushed at 05:52
     cross, the star texture and the comparison switch gone, the test covering the count, the size,
     an even spread on each side of the three axes, the middle star faint and the brightest bright
     and cool white; the shader's bloom on its brightest stars and its stars sliding with the moon
-    rather than turning with the sky left out.
+    rather than turning with the sky left out. Done at `f7bcf26` on 2026-10-21, as the head says.
+
+53. **The bloom at a tenth (Decision 25).** The owner wrote shortly before 06:26 on 2026-10-21 that
+    there is too much bloom, and shown the lamps' room at night at 0.5, the game's default, 0.25,
+    0.1 and 0, chose 0.1. The default goes from 0.5 to 0.1 with the reason in its comment, the
+    settings' slider still reaching 2. One line, committed alone after its checks and before item
+    46's captures, which then show it.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1359,7 +1374,9 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     the star shape and to try the source's layout with its values, comparing both; item 52, the
     owner choosing between the two side by side. Shown the pair shortly before 06:10, the owner said
     the night sky in their modpack looks different, and shown a third layout from the modpack's
-    shader read as numbers, chose it.
+    shader read as numbers, chose it. Shortly before 06:26 the owner said twice to capture with the
+    resource packs for the README, and that there is too much bloom, choosing 0.1 of four shown,
+    item 53.
 
 ## Replies
 
