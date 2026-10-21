@@ -5,35 +5,37 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `193da5e`, item 24's first commit, the pack loader and the atlas, and nothing else,
-carrying the review's file: packs as zips or folders, the first over the rest, an animated strip's
-first frame; a table of surfaces and items by the source's texture names, three surfaces split out
-in the colors they came from, the grass side with its overlay, a door's upper half and sandstone's
-top; the atlas of tiles at the largest pack size, a power of two up to 128, laid two by two in a
-cell twice the tile from a half tile in, point-filtered levels, the tiles packed into the corner's
-free 19 bits with the vertex's color white, the climate's or the table's tint, and the texture's
-average under its tint for the field's colors; the terrain shader laying each tile by where a point
-lies in its block with the source's default coordinates per face, so slabs, steps and a torch's
-stick show their part, sampling at an explicit level from the unbroken coordinate's derivatives,
-decoding sRGB itself and drawing the grass side's overlay over its base; emissive cubes carrying
-their texture, the icons taking the pack's items, `--pack` on the command line; the owner saw every
-texture shifted half a tile, mended before the commit by laying the copies from a half tile in and
-checked with a texture of four quarters laid as the source lays them; the closed room with no pack
-within 6 levels of the head before, a mean of 0.002; 154 tests, the strict build clean, the play
-script under the layer clean. Left for later as the README says and item 39 takes: animated textures
-past the first frame, clear pixels in leaves, door windows and cactus edges, and a lamp cube's one
-texture on all six faces. Read at 03:09 on 2026-10-21 and pushed at 03:09; the build run of
-`4c0c50e` had ended green at 02:48. Next item 24's second commit, the windows, the HUD and the font
-from a pack's gui textures by the source's paths and layouts, then its third and fourth, then the
-items in order; item 38's second part when the package brings the call and the glow lights' bound;
-the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `2839dba`, item 24's second commit, the windows, the HUD and the font from a pack,
+and nothing else, carrying the review's file: the gui textures read by the source's paths on first
+ask and kept until the packs change, the hotbar, its selection, the hearts' and food's containers,
+the air and the crosshair, the buttons and the slider's track and handle with their lit forms, the
+tooltip's background and frame; a sprite drawn over the box the source draws it in whatever its
+pixels, a nine-slice from its metadata keeping its edges at their size in the interface's pixels
+through a camera zoomed to the scale, so a pack at twice the size keeps its edges as wide; the
+inventory, the crafting table and the furnace as the source's 256-pixel pictures with the window in
+the corner, the furnace's flame and arrow drawn where and as far as the source draws them, the
+creative scroller from a pack where one has it; the font's 16 by 16 sheet with each advance its lit
+columns scaled to 8 plus one, a space 4, the shadow a pixel down and right at a quarter of the
+color, used by the text calls where a pack has one; two follows of the source, no label on the
+player's own inventory and a count at the source's place under a pack's font; the loader cutting an
+animation's first frame only where the metadata says animation, where before any tall texture was
+cut; 156 tests, the strict build clean, the play script under the layer clean, captures with Bare
+Bones, Recolourful and the font pack of the HUD, the inventory on Recolourful's planks, the furnace
+burning, the menu's buttons, the options' sliders, a tooltip and the creative window in the game's
+own art with Recolourful's scroller, the same windows with no pack matching the game's own art. Read
+at 03:17 on 2026-10-21 and pushed at 03:18, its build run green at 03:26; the build run of `193da5e`
+had ended green at 03:17. Shortly before 03:23 the owner saw the game's own art moved toward the two
+looks and asked for the packs' look instead, so that commit was discarded unmade (Decision 17). Next
+item 24's last commit, the setting, the plain list, the reload and the resourcepacks folder beside
+the saves, then the windows' titles off on the owner's word shortly before 03:27 as a small commit,
+then the items in order; item 38's second part when the package brings the call and the glow lights'
+bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `193da5e` came, item 24's first commit, the pack loader and the atlas, and nothing else,
+carrying the review's file. Pushed at 03:09, its build run green at 03:17.
 
 Before it, `4c0c50e` came, item 23's last commit, the menu and the options, and nothing else,
 carrying the review's file. Pushed at 02:38, its build run green at 02:48.
-
-Before it, `8b1d584` came, item 23's second commit, the windows as the game's own panels, after
-`8722725`, its first, the HUD in the game's flat look, and nothing else, each carrying the review's
-file. Pushed at 02:31, its build run green.
 
 ## Now
 
@@ -583,10 +585,13 @@ file. Pushed at 02:31, its build run green.
     owner's pick as the packs are, Bare Bones first and Recolourful Containers second (Decision 17);
     the windows and the HUD are drawn from a pack's gui textures by the source's paths and layouts,
     the container pictures of 176 by 166, the HUD's sprites of 9 and the widgets' nine-slices by
-    their metadata, where a pack has them. Entity textures and models follow in item 30. Four
+    their metadata, where a pack has them. Entity textures and models follow in item 30. Three
     commits, the loader and the atlas, then the windows and the HUD from a pack's gui textures, then
-    the game's own art moved toward the two looks, then the setting, the list and the reload. First
-    commit done at `193da5e` on 2026-10-21, the loader and the atlas, as the head says.
+    the setting, the list and the reload with a resourcepacks folder beside the saves as the source
+    keeps one; the game's own art stays as it is, the owner having seen it moved toward the two
+    looks and asked for the packs' own look instead, shortly before 03:23 on 2026-10-21 (Decision
+    17). First commit done at `193da5e` on 2026-10-21, the loader and the atlas, and the second at
+    `2839dba`, the windows, the HUD and the font from a pack, as the heads say.
 
 25. **More biomes, more blocks and more trees.** The owner's word, three times. The climate has
     eight biomes, the features three trees and the cactus, and the blocks about 140 ids: biomes gain
@@ -982,7 +987,19 @@ No verdict is open.
     pack where one has it, each glyph's width from its rightmost lit column as the source's bitmap
     font measures it with a pixel's gap and the shadow a pixel down and right, drawn at the
     interface's scale through the game's text calls, which fall back to the engine's font where no
-    pack has one, the game's own art keeping the engine's font.
+    pack has one, the game's own art keeping the engine's font. Shortly before 03:23 on 2026-10-21
+    the owner saw the game's own art moved toward the two looks, uncommitted, flat hearts and food,
+    a green lit button, white-edged slots, planks behind the crafting grids and stone over the
+    furnace, and said it looks ugly, naming the game's own windows and HUD, and to use what the
+    earlier captures showed, the interface with Bare Bones, Recolourful and the font pack loaded; so
+    the restyle was discarded before any commit, the game's own art stays as at `2839dba`, and the
+    look the owner asks for is the packs' own, which the fourth commit's setting gives at every
+    start on a machine that has them, the packs read from a resourcepacks folder beside the saves
+    and the setting naming which are on and in what order. Shortly before 03:27 the owner added that
+    the windows need not say inventory or crafting and such; read as the windows' titles, Crafting,
+    Furnace, the Inventory label over the player's rows and the creative window's Items, all off
+    with a pack and without, the slots, tooltips, counts and menus keeping their text; a small
+    commit of its own after item 24's last.
 
 ## Replies
 

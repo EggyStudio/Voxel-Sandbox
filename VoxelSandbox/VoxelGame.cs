@@ -26,26 +26,25 @@ public sealed class VoxelGame : IDisposable
     private bool _spilled;
     private bool _captured, _swallowClick;
     private GameMode _mode;
-    // Whether F4 was pressed while F3 has been held, so letting F3 go opens no settings.
+    // Whether F4 or T was pressed while F3 has been held, so letting F3 go opens no settings.
     private bool _switched;
 
     /// <summary>
     /// Opens the world saved under <paramref name="name"/>, or under its kind and seed when no name is
     /// given, or begins it there from <paramref name="kind"/> and <paramref name="seed"/> where none is
     /// saved yet. A <paramref name="transient"/> world is neither read from disk nor written to it, as
-    /// a test run's is. The blocks and items are drawn with the textures of the resource packs at
-    /// <paramref name="packs"/>, the first over the rest, where they have them.
+    /// a test run's is. The game is drawn with the resource packs at <paramref name="packs"/>, the first
+    /// over the rest, where they are given, and otherwise with those the setting names, which a
+    /// transient run leaves alone, so it is drawn the same on every machine.
     /// </summary>
     public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null)
     {
         _transient = transient;
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer();
-        Packs = new ResourcePacks(packs ?? []);
-        var terrain = TerrainAtlas.Build(Packs);
-        Renderer.Atlas = terrain;
-        Icons.Use(terrain, Packs);
-        PackGui.Use(Packs);
+        var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
+        PackEntries = given.Count > 0 || transient ? given : PackList.Default.Read();
+        ReloadPacks();
         Sky = new Sky(10);
         Light.ApplyAll();
         Open(kind, seed, name);
@@ -55,7 +54,36 @@ public sealed class VoxelGame : IDisposable
     public VoxelWorld World { get; private set; } = null!;
 
     /// <summary>The player's resource packs the game is drawn with, or none.</summary>
-    public ResourcePacks Packs { get; private set; }
+    public ResourcePacks Packs { get; private set; } = ResourcePacks.None;
+
+    /// <summary>The packs on, the first over the rest, each a line of the setting or a path given to the game.</summary>
+    public IReadOnlyList<string> PackEntries { get; private set; } = [];
+
+    /// <summary>Draws the game with these packs from now on and saves them as the setting, but in a transient run.</summary>
+    public void ChoosePacks(IReadOnlyList<string> entries)
+    {
+        PackEntries = entries;
+        if (!_transient) PackList.Default.Write(entries);
+        ReloadPacks();
+    }
+
+    /// <summary>
+    /// Reads the packs on again from their files, as Minecraft does with F3 and T, and draws the
+    /// terrain, the icons and the interface with them, the sections shaded again with their tiles.
+    /// </summary>
+    public void ReloadPacks()
+    {
+        var list = PackList.Default;
+        var packs = new ResourcePacks(PackEntries.Select(list.PathOf));
+        var terrain = TerrainAtlas.Build(packs);
+        Renderer.Atlas = terrain;
+        Icons.Use(terrain, packs);
+        PackGui.Use(packs);
+        Packs.Dispose();
+        Packs = packs;
+        // The world is not there yet as the game begins, and its sections are meshed as it opens.
+        if (World is { } world) world.ReshadeAll();
+    }
 
     /// <summary>The animals and villagers of the loaded columns, and those the unloaded ones keep.</summary>
     public Mobs Mobs { get; private set; } = null!;
@@ -493,6 +521,12 @@ public sealed class VoxelGame : IDisposable
         if (IsKeyDown(Key.F3) && IsKeyPressed(Key.F4))
         {
             Switcher.Step(Mode, PreviousMode);
+            _switched = true;
+        }
+        // F3 held with T reads the resource packs again, as Minecraft's does.
+        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.T))
+        {
+            ReloadPacks();
             _switched = true;
         }
         if (IsKeyReleased(Key.F3))

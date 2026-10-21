@@ -84,6 +84,7 @@ with its history.
 | Q | Throw one of the chosen slot's items, or with Left Control its stack |
 | F3 | The settings window, with what the frame holds and costs, the light, the sky and the world, opened as F3 is let go |
 | F3 with F4 | The mode switcher, F4 stepping through creative, survival, adventure and spectator while F3 is held, and the mode chosen played as F3 is let go |
+| F3 with T | Reads the resource packs again from their files, as Minecraft's does |
 | G | The next quality of global illumination, Off after High |
 | F1 | Hide the crosshair, the hotbar and the outline |
 | Escape | Shut the window open, go back a menu, or open the menu, which holds the world still |
@@ -117,10 +118,11 @@ where they stand and holds the clouds for a capture, and `voxel.kill` takes them
 plays in creative, survival, adventure or spectator mode, `voxel.select` puts an item in the chosen
 slot, `voxel.give` puts items in the inventory, `voxel.craft` makes an item from what the inventory
 holds, `voxel.furnace` fills and reads a furnace, `voxel.inventory` lists what it holds,
-`voxel.items` lists every item, and `voxel.throw` throws as Q does. `voxel.vitals` says or sets the
-health and food, `voxel.hurt` harms the player, and `voxel.respawn` gives a new life. `voxel.gi`,
-`voxel.field` and `voxel.shadows` set global illumination, the scene's distance field and the sun's
-shadows, and `voxel.hud` hides what is drawn over the world for a capture. Three measure the light.
+`voxel.items` lists every item, and `voxel.throw` throws as Q does. `voxel.packs` says or sets the
+resource packs on, and `voxel.reload` reads them again. `voxel.vitals` says or sets the health and
+food, `voxel.hurt` harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field`
+and `voxel.shadows` set global illumination, the scene's distance field and the sun's shadows, and
+`voxel.hud` hides what is drawn over the world for a capture. Three measure the light.
 `voxel.flicker` records each frame's change in the picture around a turn or a step into a file, with
 the first frame after it, the settled one and their difference beside it, `voxel.ring` reads the
 last frame's light around a circle on the ground by angle, and `voxel.depth` says how far the block
@@ -358,8 +360,9 @@ Escape opens the game's menu over the darkened world, which holds the world stil
 as Minecraft's does when played alone, with Back to Game, the options, Save the World, and Save and
 Quit. The options are the player's own, in two columns of buttons and sliders as Minecraft lays its
 options out, the render distance, the field of view, the mouse's sensitivity, the interface's scale,
-automatic or 1 to 4, whether full rows of the HUD fade, how far corners darken, and the quality of
-global illumination. The settings window F3 opens is the engine's ImGui, a tool for the developer.
+automatic or 1 to 4, whether full rows of the HUD fade, how far corners darken, the quality of
+global illumination, and the resource packs. The settings window F3 opens is the engine's ImGui, a
+tool for the developer.
 
 ## Tools and crafting
 
@@ -456,9 +459,16 @@ which cast no shadow.
 ## Resource packs
 
 The blocks and items are drawn with the textures of the Minecraft resource packs the player has,
-each a zip or a folder holding `assets/minecraft`, each given with `--pack`. The first given is laid
-over the rest, as Minecraft layers its packs, so a texture the first lacks is read from the next
-that has it. The repository ships no pack and none of a pack's files.
+each a zip or a folder holding `assets/minecraft`. They are kept in the `resourcepacks` folder
+beside the saves, as Minecraft keeps its own beside its worlds, and the options' Resource Packs
+screen turns them on and orders them, the first over the rest, as Minecraft layers its packs, so a
+texture the first lacks is read from the next that has it. A click turns a pack on over the rest or
+off, the arrow beside one moves it up, and Done saves the list in `resourcepacks.txt` beside the
+folder, a pack a line, by its name in the folder or by its whole path where it lies elsewhere, and
+the game reads it at every start. `voxel.packs` sets the list from a terminal, `voxel.reload` and F3
+with T read the packs again after one changes, and each `--pack` on the command line draws one run
+with the packs given in place of the list. A transient run reads no list and writes none, so it is
+drawn the same on every machine. The repository ships no pack and none of a pack's files.
 `VoxelSandbox/Rendering/PackTextures.cs` names the texture each surface and item is drawn with, by
 Minecraft's names, and a surface it leaves out, or one no pack has, keeps the game's own color, so
 with no pack the world is drawn as before.

@@ -221,6 +221,32 @@ public sealed class PackTests : IDisposable
     }
 
     [Fact]
+    public void The_List_Keeps_The_Packs_On_In_Order_Names_In_The_Folder_Or_Whole_Paths()
+    {
+        var list = new PackList(Path.Combine(_folder, "game"));
+        Assert.Empty(list.Read());
+        Folder(Path.Combine("game", "resourcepacks", "Zeta"), ("block/stone", Plain(Color.White)));
+        File.WriteAllText(Path.Combine(list.Folder, "alpha.zip"), "");
+        File.WriteAllText(Path.Combine(list.Folder, "notes.txt"), "");
+        Assert.Equal(new[] { "alpha.zip", "Zeta" }, list.Available());
+
+        var elsewhere = Path.Combine(_folder, "elsewhere.zip");
+        list.Write(["Zeta", elsewhere]);
+        File.AppendAllLines(list.File, ["", "# a note", "  alpha.zip  "]);
+        Assert.Equal(new[] { "Zeta", elsewhere, "alpha.zip" }, list.Read());
+        Assert.Equal(Path.Combine(list.Folder, "Zeta"), list.PathOf("Zeta"));
+        Assert.Equal(elsewhere, list.PathOf(elsewhere));
+    }
+
+    [Fact]
+    public void A_Packs_Name_Is_Shown_Without_Its_Zip_Its_Folder_And_Its_Color_Codes()
+    {
+        Assert.Equal("Bare Bones 1.21", PackList.Shown("Bare Bones 1.21.zip"));
+        Assert.Equal("Bare Bones x 1.21.2 Redstone Torch", PackList.Shown("/packs/§cBare Bones x 1.21.2 Redstone Torch§r.zip"));
+        Assert.Equal("Zeta", PackList.Shown("Zeta/"));
+    }
+
+    [Fact]
     public void The_Mesher_Writes_Each_Faces_Tile_And_The_Field_Reads_Its_Textures_Average()
     {
         using var packs = new ResourcePacks([Folder("stone", ("block/stone", Plain(new Color(100, 100, 100))))]);

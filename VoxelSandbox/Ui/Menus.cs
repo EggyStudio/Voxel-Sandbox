@@ -9,6 +9,7 @@ public enum Menu
     None,
     Pause,
     Options,
+    Packs,
 }
 
 /// <summary>
@@ -17,12 +18,25 @@ public enum Menu
 /// </summary>
 /// <remarks>
 /// The options are the ones a player sets, the render distance, the field of view, the mouse's
-/// sensitivity, the interface's scale, whether full rows of the HUD fade, how far corners darken and
-/// how much light bounces. What the developer reads and sets stays in the settings window F3 opens.
+/// sensitivity, the interface's scale, whether full rows of the HUD fade, how far corners darken, how
+/// much light bounces and the resource packs. What the developer reads and sets stays in the settings
+/// window F3 opens.
+/// <para>
+/// The resource packs' screen lists the packs that are on, the first over the rest, numbered, then
+/// the others in the game's folder. A click turns a pack on over the rest or off, the arrow beside a
+/// pack that is on moves it up a place, and Done saves the list and draws the game with it, as
+/// Minecraft's screen of packs does.
+/// </para>
 /// </remarks>
 public sealed class Menus
 {
-    private const int ButtonWidth = 200, ButtonHeight = 20;
+    private const int ButtonWidth = 200, ButtonHeight = 20, PackRows = 6;
+
+    // The packs' screen's list while it is open, the packs on first, the packs in the folder, and
+    // how many rows the list is scrolled past.
+    private List<string>? _chosen;
+    private IReadOnlyList<string> _available = [];
+    private int _packScroll;
 
     /// <summary>The menu open, or none.</summary>
     public Menu Open { get; set; }
@@ -31,7 +45,11 @@ public sealed class Menus
     public bool QuitAsked { get; private set; }
 
     /// <summary>Goes back a menu, from the options to the menu and from the menu to the game.</summary>
-    public void Back() => Open = Open == Menu.Options ? Menu.Pause : Menu.None;
+    public void Back()
+    {
+        _chosen = null;
+        Open = Open switch { Menu.Packs => Menu.Options, Menu.Options => Menu.Pause, _ => Menu.None };
+    }
 
     /// <summary>Draws the menu open over the darkened world and answers its buttons and sliders.</summary>
     public void Draw(VoxelGame game)
@@ -56,6 +74,11 @@ public sealed class Menus
             }
             return;
         }
+        if (Open == Menu.Packs)
+        {
+            DrawPacks(game, s, height);
+            return;
+        }
 
         // The options in two columns of 150, as Minecraft lays its options out, and Done under them.
         Rectangle Cell(int column, int row) => new(GetScreenWidth() / 2 - 155 * s + column * 160 * s, top + (row * 24 + 16) * s, 150 * s, height);
@@ -71,7 +94,54 @@ public sealed class Menus
         game.Renderer.CornerStrength = MathF.Round(corners * 20) / 20;
         if (letGo) game.World.ReshadeAll();
         if (Gui.Button($"Light: {game.Light.Quality}", Cell(0, 3))) game.Light.NextQuality();
+        if (Gui.Button("Resource Packs...", Cell(1, 3)))
+        {
+            (_chosen, _available, _packScroll) = ([.. game.PackEntries], PackList.Default.Available(), 0);
+            Open = Menu.Packs;
+        }
         if (Gui.Button("Done", Row(4))) Open = Menu.Pause;
+    }
+
+    // The packs on and the packs in the folder in rows the wheel scrolls, the folder's place under
+    // them, and Done, higher on the screen than the other menus to hold them.
+    private void DrawPacks(VoxelGame game, int s, int height)
+    {
+        _chosen ??= [.. game.PackEntries];
+        var top = GetScreenHeight() / 8;
+        var width = Math.Min(320 * s, GetScreenWidth() - 40 * s);
+        var x = (GetScreenWidth() - width) / 2;
+        Rectangle Row(int row, int from = 0, int across = -1) => new(x + from, top + (row * 24 + 16) * s, across < 0 ? width - from : across, height);
+        Title("Resource Packs", top);
+
+        List<string> rows = [.. _chosen, .. _available.Where(a => !_chosen.Contains(a))];
+        _packScroll = Math.Clamp(_packScroll - Math.Sign(GetMouseWheelMove()), 0, Math.Max(0, rows.Count - PackRows));
+        for (int row = 0; row < PackRows && row + _packScroll < rows.Count; row++)
+        {
+            var entry = rows[row + _packScroll];
+            var place = _chosen.IndexOf(entry);
+            var label = Fitted(place >= 0 ? $"{place + 1}. {PackList.Shown(entry)}" : PackList.Shown(entry), width - 36 * s);
+            if (Gui.Button(label, Row(row, 0, width - 24 * s)))
+            {
+                if (place >= 0) _chosen.RemoveAt(place);
+                else _chosen.Insert(0, entry);
+            }
+            if (place > 0 && Gui.Button("^", Row(row, width - 20 * s, 20 * s))) (_chosen[place - 1], _chosen[place]) = (_chosen[place], _chosen[place - 1]);
+        }
+        if (rows.Count == 0) Gui.Centered("No packs yet", Row(0), new Color(170, 170, 170));
+        Gui.Centered(Fitted($"Packs go in {PackList.Default.Folder}", width), Row(PackRows), new Color(170, 170, 170));
+        if (Gui.Button("Done", Row(PackRows + 1)))
+        {
+            game.ChoosePacks(_chosen);
+            Back();
+        }
+    }
+
+    // A line cut short with dots where it is wider than a width of the screen.
+    private static string Fitted(string text, int width)
+    {
+        if (Gui.TextWidth(text) <= width) return text;
+        while (text.Length > 1 && Gui.TextWidth(text + "...") > width) text = text[..^1];
+        return text + "...";
     }
 
     private static void Title(string text, int top) => Gui.Text(text, (GetScreenWidth() - Gui.TextWidth(text)) / 2, top - 4 * Gui.Scale, Color.White);

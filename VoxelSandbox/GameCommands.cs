@@ -208,6 +208,31 @@ public static class GameCommands
         return $"{game.RenderDistance} columns are drawn around the player";
     }
 
+    [Command("voxel.packs", "Says the resource packs on, the first over the rest, and those in the game's folder, or turns on the packs named, parted by semicolons, a name in the folder or a whole path, and saves them as the setting, or turns every one off with none: voxel.packs [pack; pack...|none]")]
+    internal static string Packs(string packs = "")
+    {
+        if (Game is not { } game) return "no world is loaded";
+        var list = PackList.Default;
+        if (packs.Length > 0)
+        {
+            var entries = packs.Trim() == "none" ? [] : packs.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (entries.FirstOrDefault(e => !File.Exists(list.PathOf(e)) && !Directory.Exists(list.PathOf(e))) is { } missing)
+                return $"no pack is at {list.PathOf(missing)}";
+            game.ChoosePacks(entries);
+        }
+        var on = game.PackEntries.Count == 0 ? "none" : string.Join("; ", game.PackEntries);
+        var kept = list.Available() is { Count: > 0 } available ? string.Join("; ", available) : "none";
+        return $"on, the first over the rest: {on}; read {game.Packs.Names.Count} of them; in {list.Folder}: {kept}";
+    }
+
+    [Command("voxel.reload", "Reads the resource packs on again from their files, as F3 with T does")]
+    internal static string Reload()
+    {
+        if (Game is not { } game) return "no world is loaded";
+        game.ReloadPacks();
+        return $"read {game.Packs.Names.Count} packs again";
+    }
+
     [Command("voxel.select", "Puts an item, a block or a thing of its own, in the hotbar's chosen slot, one in creative mode and a full stack in survival: voxel.select <item>")]
     internal static string Select(string item)
     {
