@@ -19,6 +19,20 @@ public enum Facing
 }
 
 /// <summary>
+/// The form stairs take from the stairs beside them, as Minecraft's do, straight, or turned into
+/// an inner corner, the step and a quarter before it, or an outer one, a quarter of the step, toward
+/// the left or the right of the way they climb.
+/// </summary>
+public enum StairForm
+{
+    Straight,
+    InnerLeft,
+    InnerRight,
+    OuterLeft,
+    OuterRight,
+}
+
+/// <summary>
 /// A box of a block smaller than its cell, between two corners in the cell's own space from 0 to 1,
 /// of one surface, its top face moved by <see cref="Lean"/>, as a torch on a wall leans out from it.
 /// </summary>
@@ -55,9 +69,10 @@ public readonly record struct Box(Vector3 Min, Vector3 Max)
 /// </remarks>
 public sealed class BlockShape
 {
-    public BlockShape(Facing facing, Piece[] pieces, bool falls = true, bool solid = false, bool upper = false, bool open = false, Box[]? collision = null)
+    public BlockShape(Facing facing, Piece[] pieces, bool falls = true, bool solid = false, bool upper = false, bool open = false, Box[]? collision = null, StairForm? form = null)
     {
         Facing = facing;
+        Form = form;
         Falls = falls;
         Upper = upper;
         Open = open;
@@ -89,6 +104,9 @@ public sealed class BlockShape
 
     /// <summary>Whether it is a door swung open, which a player places shut.</summary>
     public bool Open { get; }
+
+    /// <summary>The form of stairs, or null for a shape that is not stairs.</summary>
+    public StairForm? Form { get; }
 
     public IReadOnlyList<Piece> Pieces { get; }
 
@@ -220,11 +238,25 @@ public sealed class BlockShape
 
     /// <summary>
     /// Stairs climbing toward <paramref name="facing"/>, a slab with a step on its half that way, or
-    /// turned over against a ceiling where <paramref name="upper"/>.
+    /// turned over against a ceiling where <paramref name="upper"/>, in a form, the step whole, an
+    /// outer corner's quarter of it on the left or the right of that half, or an inner corner's step
+    /// with a quarter before it on the left or the right, as Minecraft's stairs models are.
     /// </summary>
-    public static BlockShape Stairs(int surface, Facing facing, bool upper) => new(facing, Yawed(facing,
-        upper ? Px(0, 8, 0, 16, 16, 16, surface) : Px(0, 0, 0, 16, 8, 16, surface),
-        upper ? Px(0, 0, 0, 16, 8, 8, surface) : Px(0, 8, 0, 16, 16, 8, surface)), falls: false, solid: true, upper: upper);
+    public static BlockShape Stairs(int surface, Facing facing, bool upper, StairForm form = StairForm.Straight)
+    {
+        // Facing north the step is the north half, z 0 to 8, and its left the west, x 0 to 8.
+        float low = upper ? 0 : 8, high = upper ? 8 : 16;
+        Piece[] step = form switch
+        {
+            StairForm.OuterLeft => [Px(0, low, 0, 8, high, 8, surface)],
+            StairForm.OuterRight => [Px(8, low, 0, 16, high, 8, surface)],
+            StairForm.InnerLeft => [Px(0, low, 0, 16, high, 8, surface), Px(0, low, 8, 8, high, 16, surface)],
+            StairForm.InnerRight => [Px(0, low, 0, 16, high, 8, surface), Px(8, low, 8, 16, high, 16, surface)],
+            _ => [Px(0, low, 0, 16, high, 8, surface)],
+        };
+        return new(facing, Yawed(facing, [upper ? Px(0, 8, 0, 16, 16, 16, surface) : Px(0, 0, 0, 16, 8, 16, surface), .. step]),
+            falls: false, solid: true, upper: upper, form: form);
+    }
 
     // Pieces given facing north, a wall behind them at +z or a step on their north half, turned about
     // the cell's upright middle line to face another side.

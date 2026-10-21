@@ -181,10 +181,14 @@ it, as a light that near a wall does.
 Slabs of stone, cobblestone, oak, spruce and sandstone fill the lower half of a block, or the upper
 half where placed against a ceiling or on the upper half of a side, and a slab placed on the open
 half of one of its kind joins it into the whole block. Stairs of cobblestone, oak, spruce, sandstone
-and stone brick climb the way the player looks, turned over in the upper half. A fence joins the
-fences and the whole blocks on its four sides with two rails each. An oak door stands two blocks
-high on a whole block, shut across the side away from the way the player looked placing it, and a
-right click opens or shuts both its halves, whatever is held. Breaking either half breaks the door.
+and stone brick climb the way the player looks, turned over in the upper half, and turn into a
+corner as Minecraft's do, an outer one, a quarter of the step, where stairs of the same half behind
+them climb across them, and an inner one, the step and a quarter before it, where stairs before them
+climb across them, each toward the side those climb to, so a ring of stairs climbing inward makes a
+hip roof's corners. A fence joins the fences and the whole blocks on its four sides with two rails
+each. An oak door stands two blocks high on a whole block, shut across the side away from the way
+the player looked placing it, and a right click opens or shuts both its halves, whatever is held.
+Breaking either half breaks the door.
 
 The player climbs half a block and a little more without jumping, onto a slab or a stair, as
 Minecraft's does. A slab, stairs, a door, a lantern, an end rod and a fence stop the player at their
@@ -534,8 +538,8 @@ no haze.
 
 ## What is not here yet
 
-Textures, and leaves seen through, which are solid. The corners stairs make where two meet, and
-slabs and stairs that keep light out, as Minecraft's do. Greedy meshing. Light that passes through
+Textures, and leaves seen through, which are solid. Slabs and stairs that keep light out, as
+Minecraft's do. Greedy meshing. Light that passes through
 leaves at a cost, as Minecraft's does. Structures read from files rather than built in code.
 Villagers that trade, sleep in beds or work their farms, and animals that breed or follow food. A
 bed to set where the player respawns, spiders that climb walls, and a bow and armor for the player.

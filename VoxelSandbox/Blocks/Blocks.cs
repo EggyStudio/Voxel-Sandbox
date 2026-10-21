@@ -409,6 +409,80 @@ public static class Blocks
     /// <summary>Whether a fence beside a block joins it, as it joins a fence or a whole block.</summary>
     public static bool JoinsFence(BlockId neighbor) => neighbor == BlockId.OakFence || IsSturdy(neighbor);
 
+    // Each stairs block's shape in each of its five forms, by block and form, none for another block.
+    private static readonly BlockShape?[,] _stairForms = StairForms();
+
+    private static BlockShape?[,] StairForms()
+    {
+        var forms = new BlockShape?[_all.Length, 5];
+        foreach (var block in _all)
+            if (block.Shape is { Form: StairForm.Straight } stairs)
+                for (int form = 0; form < 5; form++)
+                    forms[(int)block.Id, form] = BlockShape.Stairs(stairs.Pieces[0].Surface, stairs.Facing, stairs.Upper, (StairForm)form);
+        return forms;
+    }
+
+    /// <summary>Whether a block is stairs, of any kind, way and half.</summary>
+    public static bool IsStairs(BlockId id) => _stairForms[(int)id, 0] is not null;
+
+    /// <summary>
+    /// The form stairs take from the blocks north, east, south and west of them, as Minecraft's
+    /// shape theirs. Stairs of the same half behind them, toward the way they climb, turned across
+    /// them make an outer corner, unless stairs the same as these stand where those turn from; and
+    /// failing that, stairs of the same half before them turned across them make an inner corner,
+    /// unless stairs the same as these stand where those turn to. Each corner is to the left where
+    /// the other stairs climb to the left of these and to the right otherwise.
+    /// </summary>
+    public static StairForm StairFormAmong(BlockId block, BlockId north, BlockId east, BlockId south, BlockId west)
+    {
+        if (!IsStairs(block)) return StairForm.Straight;
+        var self = Get(block).Shape!;
+        BlockId At(Facing side) => side switch { Facing.North => north, Facing.East => east, Facing.South => south, _ => west };
+        // Other stairs of the same half turned across these, and whether stairs the same as these
+        // stand at a side, which keeps the corner from forming toward it.
+        BlockShape? Across(BlockId id) => IsStairs(id) && Get(id).Shape is { } other && other.Upper == self.Upper && IsNorthSouth(other.Facing) != IsNorthSouth(self.Facing) ? other : null;
+        bool Same(BlockId id) => IsStairs(id) && Get(id).Shape is { } other && other.Facing == self.Facing && other.Upper == self.Upper;
+
+        if (Across(At(self.Facing)) is { } behind && !Same(At(Opposite(behind.Facing))))
+            return behind.Facing == Left(self.Facing) ? StairForm.OuterLeft : StairForm.OuterRight;
+        if (Across(At(Opposite(self.Facing))) is { } before && !Same(At(before.Facing)))
+            return before.Facing == Left(self.Facing) ? StairForm.InnerLeft : StairForm.InnerRight;
+        return StairForm.Straight;
+    }
+
+    /// <summary>
+    /// The shape of a block among the blocks north, east, south and west of it, a fence's joined to
+    /// the sides it joins and stairs' in the form they take there, and any other's its own.
+    /// </summary>
+    public static BlockShape? ShapeAmong(BlockId block, BlockId north, BlockId east, BlockId south, BlockId west)
+    {
+        if (block == BlockId.OakFence)
+            return Fence((JoinsFence(north) ? 1 : 0) | (JoinsFence(east) ? 2 : 0) | (JoinsFence(south) ? 4 : 0) | (JoinsFence(west) ? 8 : 0));
+        return IsStairs(block) ? _stairForms[(int)block, (int)StairFormAmong(block, north, east, south, west)] : Get(block).Shape;
+    }
+
+    /// <summary>Whether a block's shape depends on the blocks beside it, as a fence's and stairs' do.</summary>
+    public static bool Joins(BlockId id) => id == BlockId.OakFence || IsStairs(id);
+
+    private static bool IsNorthSouth(Facing facing) => facing is Facing.North or Facing.South;
+
+    private static Facing Opposite(Facing facing) => facing switch
+    {
+        Facing.North => Facing.South,
+        Facing.South => Facing.North,
+        Facing.East => Facing.West,
+        _ => Facing.East,
+    };
+
+    // The side to the left of a way along the ground, as Minecraft turns a way counterclockwise.
+    private static Facing Left(Facing facing) => facing switch
+    {
+        Facing.North => Facing.West,
+        Facing.West => Facing.South,
+        Facing.South => Facing.East,
+        _ => Facing.North,
+    };
+
     /// <summary>Whether a block hides the faces beside it, stops light and darkens the corners around it.</summary>
     public static bool IsOpaque(BlockId id) => _opaque[(int)id];
 

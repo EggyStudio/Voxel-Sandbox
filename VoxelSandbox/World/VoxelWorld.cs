@@ -90,19 +90,21 @@ public sealed class VoxelWorld
         if (y >= ChunkColumn.Height) return [];
         if (!_columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column)) return [Box.Cell];
         var block = column.Get(x & Section.Mask, y, z & Section.Mask);
-        return block == BlockId.OakFence ? FenceAt(x, y, z).Collision : Blocks.Get(block).Boxes;
+        return Blocks.Joins(block) ? Joined(block, x, y, z)!.Collision : Blocks.Get(block).Boxes;
     }
 
-    /// <summary>The shape of the block at a world position, a fence's joined to the fences and whole blocks beside it, or null for a whole block.</summary>
+    /// <summary>
+    /// The shape of the block at a world position, a fence's joined to the fences and whole blocks
+    /// beside it and stairs' in the corner form the stairs beside them give, or null for a whole block.
+    /// </summary>
     public BlockShape? ShapeAt(int x, int y, int z)
     {
         var block = GetBlock(x, y, z);
-        return block == BlockId.OakFence ? FenceAt(x, y, z) : Blocks.Get(block).Shape;
+        return Blocks.Joins(block) ? Joined(block, x, y, z) : Blocks.Get(block).Shape;
     }
 
-    private BlockShape FenceAt(int x, int y, int z) => Blocks.Fence(
-        (Blocks.JoinsFence(GetBlock(x, y, z - 1)) ? 1 : 0) | (Blocks.JoinsFence(GetBlock(x + 1, y, z)) ? 2 : 0)
-        | (Blocks.JoinsFence(GetBlock(x, y, z + 1)) ? 4 : 0) | (Blocks.JoinsFence(GetBlock(x - 1, y, z)) ? 8 : 0));
+    private BlockShape? Joined(BlockId block, int x, int y, int z) =>
+        Blocks.ShapeAmong(block, GetBlock(x, y, z - 1), GetBlock(x + 1, y, z), GetBlock(x, y, z + 1), GetBlock(x - 1, y, z));
 
     /// <summary>
     /// Places a block, spreads the light around it again, and marks the section it is in to mesh

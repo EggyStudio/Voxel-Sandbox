@@ -142,6 +142,50 @@ public class ShapeTests
     }
 
     [Fact]
+    public void Stairs_Turn_Into_An_Outer_Corner_By_The_Stairs_Behind_Them_And_An_Inner_One_By_The_Stairs_Before_Them()
+    {
+        var world = Floor();
+        // Stairs climbing north with stairs climbing east behind them, to their north.
+        world.SetBlock(8, 20, 8, BlockId.OakStairs);
+        world.SetBlock(8, 20, 7, BlockId.OakStairsEast);
+        Assert.Equal(StairForm.OuterRight, world.ShapeAt(8, 20, 8)!.Form);
+
+        // Stairs climbing north with stairs climbing west before them, to their south.
+        world.SetBlock(8, 20, 7, BlockId.Air);
+        world.SetBlock(8, 20, 9, BlockId.OakStairsWest);
+        Assert.Equal(StairForm.InnerLeft, world.ShapeAt(8, 20, 8)!.Form);
+
+        // Stairs the same as these where those turn to keep them straight, as do stairs of the other half.
+        world.SetBlock(7, 20, 8, BlockId.OakStairs);
+        Assert.Equal(StairForm.Straight, world.ShapeAt(8, 20, 8)!.Form);
+        world.SetBlock(7, 20, 8, BlockId.Air);
+        world.SetBlock(8, 20, 9, BlockId.OakStairsWestTop);
+        Assert.Equal(StairForm.Straight, world.ShapeAt(8, 20, 8)!.Form);
+    }
+
+    [Fact]
+    public void A_Corner_Of_Stairs_Is_The_Slab_And_The_Quarters_Of_The_Step_Toward_Its_Side()
+    {
+        static (Vector3 From, Vector3 To)[] Steps(BlockShape shape) => [.. shape.Pieces.Skip(1).Select(p => (p.From, p.To))];
+
+        // Climbing north, the outer corner to the left keeps the north-west quarter of the step.
+        var outer = BlockShape.Stairs(Surfaces.Planks, Facing.North, false, StairForm.OuterLeft);
+        Assert.Equal((new Vector3(0, 0, 0), new Vector3(1, 0.5f, 1)), (outer.Pieces[0].From, outer.Pieces[0].To));
+        Assert.Equal([(new Vector3(0, 0.5f, 0), new Vector3(0.5f, 1, 0.5f))], Steps(outer));
+
+        // Climbing east, the left is north, so the quarter is the north-east one.
+        Assert.Equal([(new Vector3(0.5f, 0.5f, 0), new Vector3(1, 1, 0.5f))], Steps(BlockShape.Stairs(Surfaces.Planks, Facing.East, false, StairForm.OuterLeft)));
+
+        // An inner corner to the right, climbing north, adds the south-east quarter to the step.
+        var inner = Steps(BlockShape.Stairs(Surfaces.Planks, Facing.North, false, StairForm.InnerRight));
+        Assert.Contains((new Vector3(0, 0.5f, 0), new Vector3(1, 1, 0.5f)), inner);
+        Assert.Contains((new Vector3(0.5f, 0.5f, 0.5f), new Vector3(1, 1, 1)), inner);
+
+        // Turned over, the corner's quarter hangs under the slab.
+        Assert.Equal([(new Vector3(0, 0, 0), new Vector3(0.5f, 0.5f, 0.5f))], Steps(BlockShape.Stairs(Surfaces.Planks, Facing.North, true, StairForm.OuterLeft)));
+    }
+
+    [Fact]
     public void A_Fence_Joins_The_Fence_And_The_Block_Beside_It_And_Not_The_Air()
     {
         var world = Floor();

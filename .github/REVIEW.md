@@ -5,35 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `d9c2f8d`, item 19, the four modes and the switcher, after `2b912ee`, the mob
-shader's cost in the README, and nothing else, carrying the review's file. The cost: on the GPU at
-noon the nine mobs in a row cost nothing the model pass can read, and a sheep filling the window
-costs 0.43 to 0.49 ms through the mob shader against 0.21 to 0.22 through the engine's material, a
-quarter of a millisecond at the worst, so nothing changed. Item 19: adventure and spectator beside
-creative and survival, with `GameModes` giving what a mode allows, lives, builds and touches, every
-check of the two old modes turned into one of those, adventure opening tables, furnaces and doors
-and hitting mobs but placing and breaking nothing, spectator flying through blocks by the game's own
-controller with no collision and nothing to touch or pick up and no hotbar, since the engine's
-flight of its item 55 belongs to the physics character the game does not use; the switcher as the
-source's, F3 held with F4 opening it on the previous mode, F4 stepping, F3 let go playing the choice
-and opening the settings where F4 was never pressed, the panel the source's 125 by 75 at two to one
-with the grass block and the sword from the atlas and the map and the eye painted in the file; the
-mode saved by name; `voxel.mode` taking all four; the README's modes section and controls;
-`ModeTests` of each mode's rights and the switcher; 132 tests, the strict build clean, the switcher,
-adventure's refusals, spectator's flight through a wall and F3 alone opening the settings read
-through the command line on the GPU, the switcher left out of the scripted run since holding F3 for
-90 frames costs lavapipe a minute and a half. Read at 01:50 on 2026-10-21 and pushed at 01:50; the
-build run of `e3d9a74` had ended green at 01:49 in 9 minutes. Next item 20, the inventory's quick
-moves and the sort, then the items in order; item 38's second part when the package brings the call
-and the glow lights' bound; the AGENTS.md row naming the scripts still waits on the owner's word.
+Reviewed up to `9bd58e3`, item 20, the inventory's quick moves and the sort, and nothing else,
+carrying the review's file: the moves in `Items/SlotMoves.cs` over an array and an index, a stack
+moved onto its kind with room and then the first empty slot, the quick move sending what smelts and
+what burns into an open furnace and otherwise between the hotbar and the rest, a container's stack
+filling the inventory from the end as the source fills, the gather in two passes, the two spreads,
+and the sort by the items' order with worn tools apart and empty slots last; in the window
+shift-click quick-moving and crafting from a grid, a drag with a stack held spreading over the slots
+passed, a double-click gathering, a number key over a slot swapping it with the hotbar's, Q dropping
+one and the stack with Control, a middle click or R sorting slots 10 to 36; the keys read through
+the engine since ImGui's own key state saw none sent through the command line; number keys choosing
+no hotbar slot while a window is open but the creative window's; every move read through the command
+line in survival; `SlotMovesTests`; 138 tests, the strict build clean, the play script green on the
+GPU; the README's inventory paragraph. Read at 02:00 on 2026-10-21 and pushed at 02:01; the build
+run of `d9c2f8d` had ended green at 02:00 in 10 minutes, its play job the longest. Next item 21, the
+stairs' corners, the placing, the ray and the outline, then the items in order; item 38's second
+part when the package brings the call and the glow lights' bound; the AGENTS.md row naming the
+scripts still waits on the owner's word.
+
+Before it, `d9c2f8d` came, item 19, the four modes and the switcher, after `2b912ee`, the mob
+shader's cost in the README, and nothing else, carrying the review's file. Pushed at 01:50, its
+build run green in 10 minutes.
 
 Before it, `e3d9a74` came, item 37, the mobs' shade through a shader of the game's own, and nothing
-else, carrying the review's file, the sheep's shaded wool at 155 to 159. Pushed at 01:40, its build
-run green in 9 minutes.
-
-Before it, `404ab74` came, item 38's first part, the captures of the cascades' faults, and nothing
-else, carrying the review's file, the entry in the engine's ASKS.md. Pushed at 01:17, no build run
-for a change under the review's folder alone.
+else, carrying the review's file. Pushed at 01:40, its build run green in 9 minutes.
 
 ## Now
 
@@ -516,7 +511,9 @@ for a change under the review's folder alone.
     gathering a kind, drag over slots spreading a stack, and drop by Q with control for the stack,
     the keys read where the window is open in survival and creative alike. A sort of the inventory
     or the open container by a key and by a middle click on its panel, as the sorting mods of the
-    owner's modpack do (Decision 14), kinds together and stacks filled. One commit.
+    owner's modpack do (Decision 14), kinds together and stacks filled. One commit. Done at
+    `9bd58e3` on 2026-10-21, as the head says, the furnace and the grids being the open containers
+    the game has.
 
 21. **Stairs join at corners, place by the hit, and the aim picks the shape and not its cell.** The
     owner's word: stairs do not connect on a corner, placing is odd, and the hover outline is the
