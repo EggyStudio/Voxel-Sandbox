@@ -2,8 +2,8 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// The pixel art the sky's quads are drawn with, the sun and the moon in each of its phases, each a
-/// square body with its glow around it, and a star, as RGBA bytes a row at a time from the top, a
-/// clear pixel's alpha 0.
+/// square body with its glow around it, as RGBA bytes a row at a time from the top, a clear
+/// pixel's alpha 0.
 /// </summary>
 /// <remarks>
 /// The sun and the moon take the shape of Minecraft's default ones, a square body 8 pixels across
@@ -75,9 +75,6 @@ public static class SkyArt
     // tip rather than one breaking off.
     private static readonly float[] Turns = [0, 0.25f, 0.5f, 0.7f, 1, 1.3f, 1.5f, 1.75f];
 
-    // A star's middle and its arms, which a dim star leaves out.
-    private static readonly string[] Star = [".a.", "asa", ".a."];
-
     private static (byte R, byte G, byte B) Shade(char pixel) => pixel switch
     {
         'o' => (255, 196, 80),
@@ -85,8 +82,6 @@ public static class SkyArt
         'c' => (255, 252, 222),
         'w' => (226, 230, 240),
         'g' => (176, 182, 198),
-        'a' => (190, 198, 230),
-        's' => (255, 255, 255),
         _ => throw new ArgumentOutOfRangeException(nameof(pixel)),
     };
 
@@ -111,14 +106,6 @@ public static class SkyArt
     {
         float across = (x + 0.5f) / Fine - Across / 2f, down = (y + 0.5f) / Fine - Across / 2f;
         return GlowPeak * Math.Clamp((GlowReach - MathF.Sqrt(across * across + down * down)) / (GlowReach - Size / 2f), 0, 1);
-    }
-
-    /// <summary>A star, three pixels square, its middle the pixel at 1, 1.</summary>
-    public static byte[] StarPixels()
-    {
-        var pixels = new byte[3 * 3 * 4];
-        PaintBody(pixels, 3, 0, 0, 1, Star, (_, _) => true);
-        return pixels;
     }
 
     /// <summary>

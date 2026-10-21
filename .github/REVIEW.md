@@ -5,37 +5,24 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `e4483af`, item 51, the sun's and the moon's glow smooth as Bare Bones', after
+Reviewed up to `a96cea5`, item 50, the block's side over the window while the eye is inside a block,
+and nothing else, carrying the review's file, read from the commit at 06:03 on 2026-10-21 before the
+coder's word on it: with the eye inside a whole opaque block, in every mode but spectator, the
+block's side covers the window darkened to a tenth, repeated four by four and sliding as the player
+turns, as the source draws the inside of a block, leaves, glass, ice, water and the shaped blocks
+leaving the view open, with its tests and the README's paragraph. Not pushed, with `e4483af` and
+`0c93d3e` before it: the build run of `f7df279` is still running, and the three heads are pushed
+when it ends. Shortly before 06:10 the owner chose the modpack's shader's stars of three layouts,
+item 52's commit following its play script. Next item 52's commit, then item 46's captures, then
+item 39, then the items in order; item 38's second part when the package brings the call and the
+glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `e4483af` came, item 51, the sun's and the moon's glow smooth as Bare Bones', after
 `0c93d3e`, item 48, the villages' ground whole, and nothing else, the first carrying the review's
-file. Item 48: the villages known to the generator and the ravines, a village's square plus six
-reaching a box, no tunnel mouth opened on a village and no ravine whose square and margin meet its
-ground; the test over seed 1's eight nearest villages, no ravine start reaching their ground, open
-air from above never reaching more than three blocks under the top, and a road on three whole
-blocks, which failed before the fix both ways, on a ravine across the first village and on a tunnel
-mouth by another, a first form of the check also failing on a house whose floor sits a block into
-the slope, a building and not a rift, so the check reads open air from above instead. Item 51: the
-sun and the moon painted at four texels to a pixel, 128 across, the body's pixels as four by four
-blocks, the glow a tenth beside the body falling evenly to nothing at fifteen pixels with no levels
-or dithering, the test a fall along the middle row never rising outward and never stepping more than
-two of 255, matching Bare Bones' sun closely side by side at noon. 201 tests, the strict build
-clean, the play script clean. Read at 06:02 on 2026-10-21. Not pushed: the build run of `f7df279` is
-still running, and both heads are pushed when it ends. The owner asked what the stars are, blurry
-blobs or squares, and what the source's are; the coder answered that the source draws 1,500 plain
-white squares on a sphere of 100, each 0.17 to 0.29 degrees across and turned by a random angle,
-where the game draws 500 pixel-art stars of sharp squares, one in eight a cross, turned with the
-sky, and offered to match them, which waits on the owner's word. Shortly before 06:02 the owner
-asked for square stars and the two layouts compared, item 52. Next item 50, built and under the play
-script, then 52, then item 46's captures, then item 39, then the items in order; item 38's second
-part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+file.
 
 Before it, `f7df279` came, items 47 and 49, the dome beyond the bodies and the sun and the moon in
 the source's look, and nothing else, carrying the review's file. Pushed at 05:52.
-
-Before it, `8261308` came, item 45, the look without a pack in Bare Bones' colors, after `236763d`,
-item 41, and `cc46f25`, item 44 with the play job's limit at 60, and nothing else, each carrying the
-review's file. The three pushed at 05:23, their build run green at 05:47, the play job in 24 minutes
-30 seconds.
 
 ## Now
 
@@ -704,7 +691,8 @@ review's file. The three pushed at 05:23, their build run green at 05:47, the pl
     the eye before each capture, `voxel.state` saying the eye is inside a block when its cell holds
     anything but air, the script moving the eye up a block at a time to eight until its cell is air
     or failing with the view's name, and the views chosen where the eye is in the open. One commit,
-    small, after item 48 and before item 46's final captures.
+    small, after item 48 and before item 46's final captures. Done at `a96cea5` on 2026-10-21, as
+    the head says.
 
 51. **The sun's and the moon's glow smooth as Bare Bones' is, in the game's own art too (Decision
     25).** The owner wrote shortly before 05:55 on 2026-10-21, seeing item 49, that they like Bare
@@ -733,7 +721,20 @@ review's file. The three pushed at 05:23, their build run green at 05:47, the pl
     random angle about its own axis, white at the sky's star brightness. The owner chooses, and the
     chosen layout is committed with a test of the count, the sizes and the even spread over the sky.
     One commit, small, after item 50 and before item 46's captures, since a night picture shows the
-    stars.
+    stars. The owner, shown the pair shortly before 06:10 on 2026-10-21, said the night sky in their
+    modpack looks different; the modpack's shader draws its stars per pixel, the sky's direction
+    projected onto a plane from the moon's place, scaled and snapped to a grid so a star is a square
+    of about 0.28 degrees at the zenith, a cell a star where three hash noises multiplied pass 0.7,
+    about 0.58 percent of cells, its light the excess squared times a cool white, faded over the
+    lowest 20 degrees and hidden near the sun and the moon; the shader's license forbids
+    redistributing or changing its code, so it was read as numbers and the game's own written, a
+    third layout of 3,000 stars spread evenly over the turning sky, squares of 0.28 degrees, each
+    drawn until its product passes 0.7, the light taken to sRGB, with the fade and the hiding. Shown
+    the three side by side, the owner chose the modpack's shader's, so the game keeps it alone, the
+    cross, the star texture and the comparison switch gone, the test covering the count, the size,
+    an even spread on each side of the three axes, the middle star faint and the brightest bright
+    and cool white; the shader's bloom on its brightest stars and its stars sliding with the moon
+    rather than turning with the sky left out.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1356,7 +1357,9 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     glow smooth as the pack's, read as numbers. Shortly before 06:02 the owner asked what the stars
     are and what the source's are, and shortly before 06:02 the owner said to do squares instead of
     the star shape and to try the source's layout with its values, comparing both; item 52, the
-    owner choosing between the two side by side.
+    owner choosing between the two side by side. Shown the pair shortly before 06:10, the owner said
+    the night sky in their modpack looks different, and shown a third layout from the modpack's
+    shader read as numbers, chose it.
 
 ## Replies
 

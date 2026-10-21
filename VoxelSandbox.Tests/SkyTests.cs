@@ -190,6 +190,26 @@ public class SkyTests
     }
 
     [Fact]
+    public void Three_Thousand_Stars_Of_028_Degrees_Spread_Evenly_Over_The_Sky_Most_Faint_And_A_Few_Bright()
+    {
+        Assert.Equal(Sky.StarCount, Sky.Stars.Length);
+        var across = 2 * float.RadiansToDegrees(MathF.Atan(Sky.Stars[0].Right.Length() / Sky.StarDistance));
+        Assert.Equal(Sky.StarDegrees, across, 3);
+        Assert.All(Sky.Stars, star => Assert.Equal(star.Right.Length(), star.Up.Length(), 3));
+
+        // As many on each side of the sky's three axes, within a few percent of half.
+        foreach (var axis in new[] { Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ })
+            Assert.InRange(Sky.Stars.Count(s => Vector3.Dot(s.Way, axis) > 0), 0.46 * Sky.StarCount, 0.54 * Sky.StarCount);
+
+        // Most are faint and a few bright, the brightest of a cool white.
+        var levels = Sky.Stars.Select(s => s.Color.Y).OrderBy(l => l).ToList();
+        Assert.True(levels[levels.Count / 2] < 0.4f, $"the middle star's level is {levels[levels.Count / 2]}");
+        Assert.True(levels[^1] > 0.9f, $"the brightest star's level is {levels[^1]}");
+        var brightest = Sky.Stars.MaxBy(s => s.Color.Y).Color;
+        Assert.True(brightest.Z >= brightest.X, $"the brightest star is {brightest}");
+    }
+
+    [Fact]
     public void The_Haze_Dome_Lies_Beyond_The_Sun_The_Moon_And_The_Stars()
     {
         Assert.True(HazeDome.Radius > Sky.StarDistance && Sky.StarDistance > Sky.Distance);

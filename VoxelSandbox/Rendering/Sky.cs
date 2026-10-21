@@ -19,9 +19,9 @@ namespace VoxelSandbox;
 /// <see cref="RepaintHours"/>, since each painting is a new map to filter.
 /// </para>
 /// <para>
-/// The sun and the moon, each a square body with its glow around it, and the stars are pixel art
+/// The sun and the moon, each a square body with its glow around it, are pixel art
 /// (<see cref="SkyArt"/>) on quads fixed on the sky, sampled without filtering, so their pixels
-/// stay square however large they are drawn. A quad lies across the way to its middle, its right
+/// stay square however large they are drawn, and each star is a plain square. A quad lies across the way to its middle, its right
 /// side along the way the sky turns there and its up across that, so where it stands and which way
 /// its sides run depend on the hour alone and never on which way the camera looks, and the sky
 /// turns them all as one. The sun and the moon are added to the sky behind them, as Minecraft adds
@@ -55,8 +55,13 @@ public sealed class Sky : IDisposable
     // middle 8 pixels of a texture of 32 on a quad 60 across at a distance of 100, so 15 at 100,
     // about 8.6 degrees, and its moon the same 8 of 32 on a quad 40 across, so 10 at 100, about 5.7
     // degrees. A star's pixel spans 0.16 degrees.
-    private const float SunAcross = 0.15f, MoonAcross = 0.10f, StarPixel = 0.16f;
-    private const int StarCount = 500;
+    private const float SunAcross = 0.15f, MoonAcross = 0.10f;
+
+    /// <summary>How many stars the sky holds.</summary>
+    public const int StarCount = 3000;
+
+    /// <summary>How many degrees each star's square is across.</summary>
+    public const float StarDegrees = 0.28f;
 
     // The way toward the sun as the sky stands at 6, tilted toward the south a little so the
     // shadows of the blocks do not run along their edges at noon, the moon opposite it.
@@ -66,13 +71,15 @@ public sealed class Sky : IDisposable
     private static readonly Vector3 NightHorizon = new(18, 24, 44), DayHorizon = new(178, 208, 240), DuskHorizon = new(238, 150, 96);
     private static readonly Vector3 Noon = new(255, 244, 228), LowSun = new(255, 160, 90), Moonlight = new(150, 170, 230);
 
-    // Each star's way on the sky as it stands at 6, when the sun rises, the half of its quad's
-    // right side and of its up there, the part of the star's texture it shows, and its brightness.
-    private static readonly (Vector3 Way, Vector3 Right, Vector3 Up, Vector4 Uv, float Brightness)[] Stars = PlaceStars();
+    /// <summary>
+    /// Each star's way on the sky as it stands at 6, when the sun rises, the half of its square's
+    /// right side and of its up there, and its color in sRGB levels from 0 to 1.
+    /// </summary>
+    public static readonly (Vector3 Way, Vector3 Right, Vector3 Up, Vector3 Color)[] Stars = PlaceStars();
 
     private readonly LightHandle _light;
     private readonly byte[] _pixels = new byte[Width * Height * 4];
-    private readonly Texture2D _sun, _moon, _star;
+    private readonly Texture2D _sun, _moon;
     private float _litHour = float.NaN, _paintedHour = float.NaN;
 
     // A pack's sun, and its moon as one sheet of four phases by two or as a picture to each phase,
@@ -90,7 +97,6 @@ public sealed class Sky : IDisposable
         _light = CreateDirectionalLight(-Vector3.UnitY, Color.White, 1, castsShadows: true);
         _sun = Load(SkyArt.SunPixels(), SkyArt.Texels, SkyArt.Texels);
         _moon = Load(SkyArt.MoonPixels(), SkyArt.Cell * 4, SkyArt.Cell * 2);
-        _star = Load(SkyArt.StarPixels(), 3, 3);
         Apply();
     }
 
@@ -203,18 +209,18 @@ public sealed class Sky : IDisposable
         rlRotatef(TurnDegrees(Hour), 0, 0, 1);
         if (night > 0.01f)
         {
-            rlSetTexture(_star.Id);
             rlBegin(RlDrawMode.Quads);
-            foreach (var (way, right, up, uv, brightness) in Stars)
+            foreach (var (way, right, up, color) in Stars)
             {
                 var turned = Vector3.Transform(way, turn);
-                var alpha = night * brightness * SmoothStep(0.0f, 0.15f, turned.Y) * (hazed ? Clear(turned) : 1);
+                // Thinning over the lowest 20 degrees and gone beside the sun and the moon.
+                var beside = MathF.Pow(MathF.Min(1, MathF.Abs(Vector3.Dot(turned, toSun)) * 1.002f), 100);
+                var alpha = night * Math.Clamp(turned.Y * 3, 0, 1) * (1 - beside) * (hazed ? Clear(turned) : 1);
                 if (alpha < 0.01f) continue;
-                rlColor4ub(255, 255, 255, (byte)(255 * alpha));
-                Corners(way * StarDistance, right, up, uv);
+                rlColor4ub((byte)(255 * Math.Min(1, color.X)), (byte)(255 * Math.Min(1, color.Y)), (byte)(255 * Math.Min(1, color.Z)), (byte)(255 * alpha));
+                Corners(way * StarDistance, right, up, Vector4.Zero);
             }
             rlEnd();
-            rlSetTexture(0);
         }
 
         // The moon and then the sun, each added to the sky and writing no depth, as Minecraft adds
@@ -238,7 +244,6 @@ public sealed class Sky : IDisposable
         UnloadPacks();
         UnloadTexture(_sun);
         UnloadTexture(_moon);
-        UnloadTexture(_star);
     }
 
     /// <summary>
@@ -348,23 +353,27 @@ public sealed class Sky : IDisposable
         return texture;
     }
 
-    // The stars, spread evenly over the sky from a fixed hash, so each run has the same ones. One
-    // in eight is a bright one, a cross of five pixels, and the rest show the cross's middle alone.
-    private static (Vector3, Vector3, Vector3, Vector4, float)[] PlaceStars()
+    // The stars, spread evenly over the sky from a fixed hash, so each run has the same ones, as the
+    // modpack's shader, Aurora's Shaders after Complementary, draws its own: squares of StarDegrees,
+    // each as bright as 40 times the square of how far the product of three noises passes 0.7, the
+    // product drawn until it passes, so most are faint and a few bright, in a cool white, the light
+    // taken to sRGB levels.
+    private static (Vector3, Vector3, Vector3, Vector3)[] PlaceStars()
     {
-        var pixel = StarDistance * MathF.Tan(float.DegreesToRadians(StarPixel));
-        var stars = new (Vector3, Vector3, Vector3, Vector4, float)[StarCount];
+        var half = StarDistance * MathF.Tan(float.DegreesToRadians(StarDegrees)) / 2;
+        var stars = new (Vector3, Vector3, Vector3, Vector3)[StarCount];
+        float Next(int i, int k) => PlaceHash.Of(i, k, 13) / (float)uint.MaxValue;
         for (int i = 0; i < StarCount; i++)
         {
-            float a = PlaceHash.Of(i, 0, 7) / (float)uint.MaxValue, b = PlaceHash.Of(i, 1, 7) / (float)uint.MaxValue;
-            var shine = PlaceHash.Of(i, 2, 7);
-            var z = a * 2 - 1;
+            var z = Next(i, 0) * 2 - 1;
             var ring = MathF.Sqrt(1 - z * z);
-            var turn = b * 2 * MathF.PI;
+            var turn = Next(i, 1) * MathF.Tau;
             var way = new Vector3(ring * MathF.Cos(turn), ring * MathF.Sin(turn), z);
+            var product = 0f;
+            for (int k = 2; product <= 0.7f; k += 3) product = Next(i, k) * Next(i, k + 1) * Next(i, k + 2);
+            var light = 40 * (product - 0.7f) * (product - 0.7f) * new Vector3(0.38f, 0.4f, 0.5f);
             var (right, up) = Across(way);
-            var (half, uv) = shine % 8 == 0 ? (1.5f * pixel, new Vector4(0, 0, 1, 1)) : (0.5f * pixel, new Vector4(1, 1, 2, 2) / 3);
-            stars[i] = (way, right * half, up * half, uv, 0.45f + 0.55f * (shine % 1000) / 999f);
+            stars[i] = (way, right * half, up * half, new Vector3(MathF.Pow(light.X, 1 / 2.2f), MathF.Pow(light.Y, 1 / 2.2f), MathF.Pow(light.Z, 1 / 2.2f)));
         }
         return stars;
     }
