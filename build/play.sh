@@ -219,6 +219,29 @@ channels=$(printf '%s\n' "$wool" | sed -nE 's/^red ([0-9.]+), green ([0-9.]+), b
 printf '%s\n' "$channels" | awk 'NF == 3 { lo = $1; hi = $1; for (i = 2; i <= 3; i++) { if ($i < lo) lo = $i; if ($i > hi) hi = $i } exit !(lo >= 120 && hi <= 200 && hi - lo <= 20) } NF != 3 { exit 1 }' \
   || fail "the sheep's wool in shade reads $wool, where a gray between 120 and 200 with its channels within 20 of each other is asked"
 
+# A creeper's front at noon, turned from the sun, shows no bands of its own shadow. Read down the
+# sunlit part of its body's plain green from a block and a half, no two neighboring points are more
+# than 2 levels apart, where the floor of its light looked up with the sun's shadow on the face itself
+# laid bands that read up to 10 levels apart. The creeper is first found where the line is laid, so
+# the plain ground behind an empty place does not pass.
+cmd voxel.kill all
+cmd voxel.tp 6.5 4 12.5
+cmd voxel.look 0 0
+cmd frames.wait 2
+cmd voxel.spawn creeper 0
+mobs=$(ask voxel.mobs 1)
+[[ "$mobs" == *"creeper "*" at 6.5, 4.0, 9.5,"* ]] || fail "the creeper does not stand at 6.5, 4.0, 9.5, $mobs"
+cmd voxel.tp 6.5 4 11.0
+cmd voxel.look 0 -25
+cmd frames.wait 60
+ask voxel.line 1 1 1 1 1 1 2 > /dev/null
+cmd frames.wait 2
+front=$(ask voxel.line 6.5 4.71875 9.635 6.5 4.40625 9.635 61)
+echo "creeper's front ${front%%; by place*}"
+largest=$(printf '%s\n' "$front" | sed -nE 's/^from [0-9.]+ to [0-9.]+, largest step ([0-9.]+),.*/\1/p')
+[ -n "$largest" ] || fail "voxel.line read no line down the creeper's front, saying $front"
+awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the creeper's front shows bands at noon, $front"
+
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
 # from above, at a render distance of two columns, so lavapipe generates few at each.
@@ -307,4 +330,4 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, drew with no validation error and wrote $name on F2"

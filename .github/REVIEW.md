@@ -5,34 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `8f2a2c8`, item 39's first part, the lanterns' and torches' pieces, and nothing else,
-carrying the review's file with items 60 and 61: the lantern's, the hanging lantern's and the soul
-lantern's pieces and the torches' sticks and flames take the source models' face coordinates,
-written as numbers in BlockShape, the handle and chain the source's two crossed walls turned 45
-degrees and cut out, a face with no overlay carrying its corner's texture place in the overlay's
-nine bits as kind 3, each emissive surface's cube a mesh of its own with the parts, an emission map
-making the glass's and flame's bright pixels emit four times their color with the iron dark while
-the field keeps the uniform emission so the light cast is unchanged, the own art's lantern iron a
-mask of links, the terrain shader's LightSteps comment reworded under N 4.7; the strict build clean,
-215 tests, the play script clean twice under the validation layer, the second after a renaming pass
-for STYLE.md's word table. Read at 09:16 on 2026-10-21. The build run 39557862107 of `b56fa0b` ended
-green, the three test jobs within 70 seconds and the play job in 36 minutes 3 seconds with the walk
-at a render distance of 2, down from 48 minutes 27 seconds at 4 the run before, so the head was
-pushed at 09:28. Shortly after 09:40 the owner asked for the mobs' faces from Bare Bones, item 62
-and Decision 30, written at 09:27. Next items 60 and 61, then 62, then item 39's cutout leaves,
-doors and glass, then its animated textures, then the pictures taken again at 40 degrees, then 26
-and the items in order; items 55, 38's second part and 54 when their packages come; the AGENTS.md
-rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `9a13c54`, item 60, the lamps' light smooth, and nothing else, carrying the review's
+file with item 62 and Decision 30: the terrain shader takes the light at the point itself and moves
+the sun's share alone from its shadow at the point to the shadow at the step's middle, the sun's
+share recomputed from the engine's lights.slang helpers, the contact shadow read from the screen the
+same at both places and skipped past the map, two more shadow-map lookups a pixel rather than the
+one guessed; the cost over seed 1's plains at noon at 12 columns with Bare Bones, the frame
+unlimited, three sessions a shader in turn, the window's model pass 10.73 ms against 10.71 and the
+GPU's passes 15.42 against 15.44, within the half millisecond the sessions swing, so no cost can be
+read; a `voxel.line` command reading the last frame's luminance along a world line, the play script
+building a white concrete room on the flat world at night with a lantern and the HUD hidden and
+reading 33 points across the block before the glass, the largest neighbor change held to a tenth of
+the whole fall over a fall of 40 levels at least, 0.057 against the old shader's 0.136 with its
+jumps every fourth point; the README's shadows paragraph says the grid is the sun's alone, its two
+namings of the owner reworded under N 4.7; the strict build clean, 215 tests, the play script clean.
+Read at 09:33 on 2026-10-21. Not pushed: the build run 39562169517 of `8f2a2c8` is still running,
+and the head is pushed when it ends. Next item 61, then 62, then item 39's cutout leaves, doors and
+glass, then its animated textures, then the pictures taken again at 40 degrees, then 26 and the
+items in order; items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for
+the Ui and build folders wait on the owner's word.
+
+Before it, `8f2a2c8` came, item 39's first part, the lanterns' and torches' pieces, and nothing
+else, carrying the review's file with items 60 and 61. Read at 09:16, pushed at 09:28 after the
+build run of `b56fa0b` ended green.
 
 Before it, `b56fa0b` came, item 58's parts d and e, the haze and the shadows' grid, after `293a5d1`,
 its part b, the night tint, and nothing else, the first carrying the review's file. Read at 08:49,
 pushed at 08:49 with the four before them after the build run of `815e4ca` ended green, its play job
 48 minutes 27 seconds at a render distance of 4. Its build run ended green with the play job at 36
 minutes 3 seconds.
-
-Before it, `396047d` came, item 58's part c, the grade, after `82da862`, its part a, and `fa7fba0`,
-item 59, and nothing else, the first of them carrying the review's file. Read at 08:16, pushed at
-08:49 with `be968a2`, `293a5d1` and `b56fa0b`.
 
 ## Now
 
@@ -904,7 +905,8 @@ item 59, and nothing else, the first of them carrying the review's file. Read at
     machine at the usual view and in the commit's description; a test reading a lantern's pool on
     the floor in a night capture for a smooth fall across a block, and the README's shadows
     paragraph saying the grid is the sun's. One commit, small, after item 39's first commit and
-    before its second part.
+    before its second part. Done at `9a13c54` on 2026-10-21, as the head says, the cost unreadable
+    within the sessions' swing.
 
 61. **A mob's side faces take no bands from their own shadow at noon.** The owner said at about
     09:20 on 2026-10-21, relayed verbatim, that "the capture with the mobs showed pixelated layer
