@@ -32,10 +32,15 @@ public static class VoxelRay
             if (Blocks.IsTarget(block))
             {
                 if (world.ShapeAt(x, y, z) is not { } shape) return new BlockHit(x, y, z, nx, ny, nz, travelled);
-                // A block smaller than its cell is met only where the ray crosses the box around its pieces.
+                // A block smaller than its cell is met where the ray first crosses one of its pieces'
+                // boxes, so a ray through a stair's open quarter or between a fence's rails goes on
+                // to the block behind.
                 var cell = new Vector3(x, y, z);
-                if (Enters(origin, direction, cell + shape.Min, cell + shape.Max, out var at, out var normal) && at <= reach)
-                    return new BlockHit(x, y, z, normal.X, normal.Y, normal.Z, at);
+                BlockHit? nearest = null;
+                foreach (var box in shape.Boxes)
+                    if (Enters(origin, direction, cell + box.Min, cell + box.Max, out var at, out var normal) && at <= reach && (nearest is not { } met || at < met.Distance))
+                        nearest = new BlockHit(x, y, z, normal.X, normal.Y, normal.Z, at);
+                if (nearest is { } hit) return hit;
             }
             if (nextX < nextY && nextX < nextZ)
             {

@@ -11,25 +11,37 @@ public static class Hud
     private const int Gap = 4;
 
     /// <summary>
-    /// Outlines a block a hair larger than it, so its edges are not lost in its faces' depth, a block
-    /// smaller than its cell by the box around its pieces. Called inside <c>BeginMode3D</c>.
+    /// Outlines a block a hair larger than it, so its edges are not lost in its faces' depth, and a
+    /// block smaller than its cell by the edges of its pieces together, as a stair's step and slab
+    /// are outlined as one shape. Called inside <c>BeginMode3D</c>.
     /// </summary>
     public static void DrawOutline(BlockHit hit, BlockShape? shape)
     {
-        var (min, max) = shape is not null ? (shape.Min, shape.Max) : (Vector3.Zero, Vector3.One);
-        var size = max - min + new Vector3(0.004f);
-        DrawCubeWires(new Vector3(hit.X, hit.Y, hit.Z) + (min + max) / 2, size.X, size.Y, size.Z, new Color(0, 0, 0, 220));
+        var cell = new Vector3(hit.X, hit.Y, hit.Z);
+        var color = new Color(0, 0, 0, 220);
+        if (shape is null)
+        {
+            DrawCubeWires(cell + new Vector3(0.5f), 1.004f, 1.004f, 1.004f, color);
+            return;
+        }
+        // Each edge drawn a little out from the shape's middle, as the whole block's is drawn larger.
+        var middle = (shape.Min + shape.Max) / 2;
+        foreach (var (from, to) in shape.Edges)
+            DrawLine3D(cell + middle + (from - middle) * 1.004f, cell + middle + (to - middle) * 1.004f, color);
     }
 
     /// <summary>
-    /// Darkens a block being broken in survival over its outline, more the further it is broken, as
+    /// Darkens a block being broken in survival over its pieces, more the further it is broken, as
     /// Minecraft's cracks spread. Called inside <c>BeginMode3D</c>.
     /// </summary>
     public static void DrawBreaking(BlockHit hit, BlockShape? shape, float progress)
     {
-        var (min, max) = shape is not null ? (shape.Min, shape.Max) : (Vector3.Zero, Vector3.One);
-        var size = max - min + new Vector3(0.006f);
-        DrawCube(new Vector3(hit.X, hit.Y, hit.Z) + (min + max) / 2, size.X, size.Y, size.Z, new Color(20, 16, 12, (byte)(15 + 95 * Math.Clamp(progress, 0, 1))));
+        var color = new Color(20, 16, 12, (byte)(15 + 95 * Math.Clamp(progress, 0, 1)));
+        foreach (var box in shape?.Boxes ?? [Box.Cell])
+        {
+            var size = box.Max - box.Min + new Vector3(0.006f);
+            DrawCube(new Vector3(hit.X, hit.Y, hit.Z) + (box.Min + box.Max) / 2, size.X, size.Y, size.Z, color);
+        }
     }
 
     public static void DrawCrosshair()

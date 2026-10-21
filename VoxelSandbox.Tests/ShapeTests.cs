@@ -186,6 +186,39 @@ public class ShapeTests
     }
 
     [Fact]
+    public void A_Ray_Through_A_Stairs_Open_Quarter_Reaches_The_Block_Behind_And_One_From_Above_Meets_The_Low_Step()
+    {
+        var world = Floor();
+        // Stairs climbing north, their step on the north half, and stone east of them.
+        world.SetBlock(8, 20, 8, BlockId.OakStairs);
+        world.SetBlock(10, 20, 8, BlockId.Stone);
+
+        var past = VoxelRay.Cast(world, new Vector3(6, 20.75f, 8.75f), Vector3.UnitX, 10);
+        Assert.Equal((10, 20, 8), past is { } through ? (through.X, through.Y, through.Z) : default);
+
+        var down = VoxelRay.Cast(world, new Vector3(8.5f, 22, 8.75f), -Vector3.UnitY, 10);
+        Assert.Equal((8, 20, 8), down is { } met ? (met.X, met.Y, met.Z) : default);
+        Assert.Equal(1, down?.NormalY);
+        Assert.Equal(1.5f, down?.Distance ?? 0, 4);
+    }
+
+    [Fact]
+    public void A_Stairs_Outline_Has_The_Crease_Under_Its_Step_And_No_Line_Across_Its_Flat_Back()
+    {
+        var edges = Blocks.Get(BlockId.OakStairs).Shape!.Edges;
+        // An edge along x on a line where y is a and z is b.
+        bool Along(float y, float z) => edges.Any(e => e.From.Y == y && e.To.Y == y && e.From.Z == z && e.To.Z == z && e.From.X != e.To.X);
+
+        // Climbing north, the step's front at z 0.5 meets the slab's top at y 0.5.
+        Assert.True(Along(0.5f, 0.5f));
+        // The back at z 0 is one face from the bottom to the top, so no line crosses it at half height.
+        Assert.False(Along(0.5f, 0));
+        Assert.True(Along(1, 0) && Along(0, 0) && Along(1, 0.5f) && Along(0.5f, 1) && Along(0, 1));
+        // A whole slab's outline is its box's twelve edges.
+        Assert.Equal(12, Blocks.Get(BlockId.StoneSlab).Shape!.Edges.Count);
+    }
+
+    [Fact]
     public void A_Fence_Joins_The_Fence_And_The_Block_Beside_It_And_Not_The_Air()
     {
         var world = Floor();

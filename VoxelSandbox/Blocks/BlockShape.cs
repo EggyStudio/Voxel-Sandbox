@@ -91,8 +91,11 @@ public sealed class BlockShape
             (Min, Max) = (Vector3.Min(Min, low), Vector3.Max(Max, high));
             boxes.Add(new Box(low, high));
         }
+        Boxes = [.. boxes];
         Collision = !solid ? [] : collision ?? [.. boxes];
     }
+
+    private (Vector3 From, Vector3 To)[]? _edges;
 
     public Facing Facing { get; }
 
@@ -112,6 +115,16 @@ public sealed class BlockShape
 
     /// <summary>The boxes that stop the player, none for one the player walks through.</summary>
     public IReadOnlyList<Box> Collision { get; }
+
+    /// <summary>The box around each of its pieces, which the crosshair meets and the outline is drawn on.</summary>
+    public IReadOnlyList<Box> Boxes { get; }
+
+    /// <summary>
+    /// The edges of the outline of its boxes together, in the cell's own space, each where their
+    /// faces meet at an angle and not where two boxes' faces lie in one plane, as Minecraft outlines
+    /// a stair's step and its slab as one shape.
+    /// </summary>
+    public IReadOnlyList<(Vector3 From, Vector3 To)> Edges => _edges ??= Outline(Boxes);
 
     /// <summary>The corner of the box around every piece nearest the cell's origin.</summary>
     public Vector3 Min { get; }
@@ -143,6 +156,47 @@ public sealed class BlockShape
         (-1, 0, 0) => Facing.West,
         _ => Facing.East,
     };
+
+    // The edges of boxes together: along each axis, each box's four edges that way are cut where any
+    // box begins or ends along it, and a piece of an edge is kept where the four places around it,
+    // a hair off it across the other two axes, are one or three inside the boxes, or two that touch
+    // only at the edge, which is where the faces about it meet at an angle.
+    private static (Vector3 From, Vector3 To)[] Outline(IReadOnlyList<Box> boxes)
+    {
+        const float Hair = 1e-3f;
+        var edges = new HashSet<(Vector3 From, Vector3 To)>();
+        bool Inside(Vector3 p) => boxes.Any(b => p.X > b.Min.X && p.X < b.Max.X && p.Y > b.Min.Y && p.Y < b.Max.Y && p.Z > b.Min.Z && p.Z < b.Max.Z);
+        for (int along = 0; along < 3; along++)
+        {
+            int first = (along + 1) % 3, second = (along + 2) % 3;
+            var cuts = boxes.SelectMany(b => new[] { b.Min[along], b.Max[along] }).Distinct().Order().ToArray();
+            foreach (var box in boxes)
+                foreach (var u in (ReadOnlySpan<float>)[box.Min[first], box.Max[first]])
+                    foreach (var v in (ReadOnlySpan<float>)[box.Min[second], box.Max[second]])
+                        for (int i = 0; i + 1 < cuts.Length; i++)
+                        {
+                            float from = cuts[i], to = cuts[i + 1];
+                            if (from < box.Min[along] || to > box.Max[along]) continue;
+                            var middle = Point(along, (from + to) / 2, first, u, second, v);
+                            bool a = Inside(middle + Point(first, Hair, second, Hair)), b = Inside(middle + Point(first, Hair, second, -Hair));
+                            bool c = Inside(middle + Point(first, -Hair, second, -Hair)), d = Inside(middle + Point(first, -Hair, second, Hair));
+                            var count = (a ? 1 : 0) + (b ? 1 : 0) + (c ? 1 : 0) + (d ? 1 : 0);
+                            if (count is 1 or 3 || count == 2 && a == c)
+                                edges.Add((Point(along, from, first, u, second, v), Point(along, to, first, u, second, v)));
+                        }
+        }
+        return [.. edges];
+    }
+
+    // A point given by its value on one, two or three axes, zero on the others.
+    private static Vector3 Point(int axis, float value, int other, float otherValue, int third = -1, float thirdValue = 0)
+    {
+        var p = Vector3.Zero;
+        p[axis] = value;
+        p[other] = otherValue;
+        if (third >= 0) p[third] = thirdValue;
+        return p;
+    }
 
     /// <summary>A piece's eight corners, its top four moved by its lean.</summary>
     public static IEnumerable<Vector3> Corners(Piece piece)
