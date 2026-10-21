@@ -473,6 +473,22 @@ drawn the same on every machine. The repository ships no pack and none of a pack
 Minecraft's names, and a surface it leaves out, or one no pack has, keeps the game's own color, so
 with no pack the world is drawn as before.
 
+At the first start, with no list yet, the game fetches its three default packs from their makers'
+own pages on Modrinth into its folder, on a task of its own while it plays with its own art, and
+turns them on once all three are in, [Bare Bones](https://modrinth.com/resourcepack/bare-bones) by
+RobotPants first, then [Recolourful Containers GUI +
+HUD](https://modrinth.com/resourcepack/recolourful-containers-gui) by Vi_Tul and [qrafty's
+Capitalized Font](https://modrinth.com/resourcepack/qraftys-capitalized-font) by qrafty and Drqad.
+Each is under all rights reserved, and Bare Bones' and Recolourful's terms forbid handing them out
+again, so the repository and its builds hold none of them, and the game fetches each from its
+maker's page, as a Modrinth modpack names its files rather than holding them.
+`VoxelSandbox/resources/packs.json` names each pack's Modrinth version and the SHA-512 of its one
+file, so a file whose bytes differ is refused, and each request names the game in its user agent, as
+Modrinth asks. Offline, or where a file is refused, the game plays with its own art and tries again
+at the next start. The Resource Packs screen says how the fetch stands, with a switch that stops it,
+saving the list as it is, or begins it where a default pack is missing. A transient run fetches
+nothing.
+
 The textures are laid out at load in one atlas with its mip levels, each tile two by two in a cell
 of its own, so a smaller mip level read near a tile's edge reads the same tile, and sampled by the
 nearest pixel. A face's tile is laid across it by where each point lies in its block, as Minecraft

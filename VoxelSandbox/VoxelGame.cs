@@ -35,7 +35,8 @@ public sealed class VoxelGame : IDisposable
     /// saved yet. A <paramref name="transient"/> world is neither read from disk nor written to it, as
     /// a test run's is. The game is drawn with the resource packs at <paramref name="packs"/>, the first
     /// over the rest, where they are given, and otherwise with those the setting names, which a
-    /// transient run leaves alone, so it is drawn the same on every machine.
+    /// transient run leaves alone, so it is drawn the same on every machine. Where the setting names
+    /// none yet, as at the first start, the default packs are fetched and turned on once they are in.
     /// </summary>
     public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null)
     {
@@ -45,6 +46,7 @@ public sealed class VoxelGame : IDisposable
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
         PackEntries = given.Count > 0 || transient ? given : PackList.Default.Read();
         ReloadPacks();
+        if (given.Count == 0 && !transient && !File.Exists(PackList.Default.File)) FetchDefaults();
         Sky = new Sky(10);
         Light.ApplyAll();
         Open(kind, seed, name);
@@ -58,6 +60,38 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>The packs on, the first over the rest, each a line of the setting or a path given to the game.</summary>
     public IReadOnlyList<string> PackEntries { get; private set; } = [];
+
+    /// <summary>The packs the game is drawn with by default and their fetch.</summary>
+    public DefaultPacks Defaults { get; } = DefaultPacks.Load();
+
+    // Whether the default packs are turned on over the rest once the fetch under way brings them in.
+    private bool _awaitingDefaults;
+
+    /// <summary>Fetches the default packs that are missing from the game's folder, and turns them on over the rest once all are in.</summary>
+    public void FetchDefaults()
+    {
+        _awaitingDefaults = true;
+        Defaults.Start(PackList.Default);
+    }
+
+    /// <summary>Stops fetching the default packs, saving the packs on as they are, so the next start does not fetch them again.</summary>
+    public void StopDefaults()
+    {
+        Defaults.Stop();
+        _awaitingDefaults = false;
+        ChoosePacks(PackEntries);
+    }
+
+    // The default packs, once all are in and checked, turned on over the rest, and the game drawn
+    // with them; a fetch that failed leaves the setting unwritten, so the next start tries again.
+    private void TakeDefaults()
+    {
+        if (!_awaitingDefaults || Defaults.State is FetchState.Fetching or FetchState.Idle) return;
+        _awaitingDefaults = false;
+        if (Defaults.State != FetchState.Done) return;
+        var names = Defaults.Packs.Select(p => p.File).ToList();
+        ChoosePacks([.. names, .. PackEntries.Where(e => !names.Contains(e))]);
+    }
 
     /// <summary>Draws the game with these packs from now on and saves them as the setting, but in a transient run.</summary>
     public void ChoosePacks(IReadOnlyList<string> entries)
@@ -279,6 +313,7 @@ public sealed class VoxelGame : IDisposable
 
     public void Update()
     {
+        TakeDefaults();
         if (NextWorld is { } next)
         {
             NextWorld = null;

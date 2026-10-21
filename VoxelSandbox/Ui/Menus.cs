@@ -25,7 +25,8 @@ public enum Menu
 /// The resource packs' screen lists the packs that are on, the first over the rest, numbered, then
 /// the others in the game's folder. A click turns a pack on over the rest or off, the arrow beside a
 /// pack that is on moves it up a place, and Done saves the list and draws the game with it, as
-/// Minecraft's screen of packs does.
+/// Minecraft's screen of packs does. Under the list it says how the fetch of the default packs
+/// stands, with a switch that stops it while it runs and begins it where a default pack is missing.
 /// </para>
 /// </remarks>
 public sealed class Menus
@@ -37,6 +38,12 @@ public sealed class Menus
     private List<string>? _chosen;
     private IReadOnlyList<string> _available = [];
     private int _packScroll;
+    // The packs on as the screen last read them, so a fetch that turns the default packs on while it
+    // is open shows them, and whether a default pack is missing as the fetch last stood, worked out
+    // as it changes rather than each frame, since it reads every default pack's bytes.
+    private IReadOnlyList<string>? _seen;
+    private FetchState? _fetchSeen;
+    private bool _missing;
 
     /// <summary>The menu open, or none.</summary>
     public Menu Open { get; set; }
@@ -96,7 +103,7 @@ public sealed class Menus
         if (Gui.Button($"Light: {game.Light.Quality}", Cell(0, 3))) game.Light.NextQuality();
         if (Gui.Button("Resource Packs...", Cell(1, 3)))
         {
-            (_chosen, _available, _packScroll) = ([.. game.PackEntries], PackList.Default.Available(), 0);
+            (_chosen, _fetchSeen, _packScroll) = (null, null, 0);
             Open = Menu.Packs;
         }
         if (Gui.Button("Done", Row(4))) Open = Menu.Pause;
@@ -106,7 +113,15 @@ public sealed class Menus
     // them, and Done, higher on the screen than the other menus to hold them.
     private void DrawPacks(VoxelGame game, int s, int height)
     {
-        _chosen ??= [.. game.PackEntries];
+        var defaults = game.Defaults;
+        if (_chosen is null || !ReferenceEquals(_seen, game.PackEntries))
+            (_chosen, _seen, _available) = ([.. game.PackEntries], game.PackEntries, PackList.Default.Available());
+        if (_fetchSeen != defaults.State)
+        {
+            _fetchSeen = defaults.State;
+            _missing = defaults.State != FetchState.Fetching && defaults.Packs.Count > 0 && defaults.Missing(PackList.Default);
+            _available = PackList.Default.Available();
+        }
         var top = GetScreenHeight() / 8;
         var width = Math.Min(320 * s, GetScreenWidth() - 40 * s);
         var x = (GetScreenWidth() - width) / 2;
@@ -128,8 +143,23 @@ public sealed class Menus
             if (place > 0 && Gui.Button("^", Row(row, width - 20 * s, 20 * s))) (_chosen[place - 1], _chosen[place]) = (_chosen[place], _chosen[place - 1]);
         }
         if (rows.Count == 0) Gui.Centered("No packs yet", Row(0), new Color(170, 170, 170));
-        Gui.Centered(Fitted($"Packs go in {PackList.Default.Folder}", width), Row(PackRows), new Color(170, 170, 170));
-        if (Gui.Button("Done", Row(PackRows + 1)))
+        var fetching = defaults.State == FetchState.Fetching;
+        var said = fetching ? $"Fetching the default packs from Modrinth, {defaults.Fetched} of {defaults.Packs.Count} in"
+            : defaults.State == FetchState.Failed ? $"The default packs were not fetched: {defaults.Problem}"
+            : $"Packs go in {PackList.Default.Folder}";
+        Gui.Centered(Fitted(said, width), Row(PackRows), new Color(170, 170, 170));
+        // The switch beside Done while the fetch runs or a default pack is missing.
+        var half = (width - 10 * s) / 2;
+        var missing = !fetching && _missing;
+        if (fetching || missing)
+        {
+            if (Gui.Button(fetching ? "Stop Fetching" : "Fetch Default Packs", Row(PackRows + 1, 0, half)))
+            {
+                if (fetching) game.StopDefaults();
+                else game.FetchDefaults();
+            }
+        }
+        if (Gui.Button("Done", fetching || missing ? Row(PackRows + 1, width - half, half) : Row(PackRows + 1)))
         {
             game.ChoosePacks(_chosen);
             Back();

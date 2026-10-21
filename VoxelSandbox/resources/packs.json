@@ -1,0 +1,31 @@
+{
+  "packs": [
+    {
+      "file": "Bare Bones 1.21.zip",
+      "title": "Bare Bones",
+      "project": "rox3U8B6",
+      "version": "7zc13gCi",
+      "url": "https://cdn.modrinth.com/data/rox3U8B6/versions/7zc13gCi/Bare%20Bones%201.21.zip",
+      "size": 6394903,
+      "sha512": "5d4b71f8afb74de21db9b9c3ced140e690e509761a1e344a896311320da887677fc779ebb3aa4e24d1ba40a258b0015e8c1001a9650a6dc41d802590c183088c"
+    },
+    {
+      "file": "Recolourful Containers 1.1.2 (1.19.4-1.21.x).zip",
+      "title": "Recolourful Containers",
+      "project": "lewweaHO",
+      "version": "mq0c3i3i",
+      "url": "https://cdn.modrinth.com/data/lewweaHO/versions/mq0c3i3i/Recolourful%20Containers%201.1.2%20%281.19.4-1.21.x%29.zip",
+      "size": 732268,
+      "sha512": "d37eca532d97b1cad2fe279773503e9278e762c2e15dec28f68dfc8f04b453e6a02e7a0c94acd083336f0d7f44b82ef08a444af266d5024596c8a96c626c94f8"
+    },
+    {
+      "file": "qrafty's-capitalized-font.zip",
+      "title": "qrafty's Capitalized Font",
+      "project": "FA4ebMMU",
+      "version": "dlWQqLUu",
+      "url": "https://cdn.modrinth.com/data/FA4ebMMU/versions/dlWQqLUu/qrafty%27s-capitalized-font.zip",
+      "size": 282269,
+      "sha512": "0750d8d4ecac67be752ab61a317a6e38ac2688ec1d6aa1ae7a01e94066f9540fe757d704b5ccf109ced4ba76e632b76d7e5509a21588840713d375d707d34632"
+    }
+  ]
+}

@@ -246,6 +246,68 @@ public sealed class PackTests : IDisposable
         Assert.Equal("Zeta", PackList.Shown("Zeta/"));
     }
 
+    // A stand-in for the network, answering each request with the bytes a rule gives and counting
+    // the requests and the user agents they named.
+    private sealed class Served(Func<string, byte[]> bytes) : HttpMessageHandler
+    {
+        public readonly List<string> Asked = [], Agents = [];
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
+        {
+            Asked.Add(request.RequestUri!.ToString());
+            Agents.Add(request.Headers.UserAgent.ToString());
+            return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK) { Content = new ByteArrayContent(bytes(request.RequestUri.ToString())) });
+        }
+    }
+
+    private static DefaultPack Pinned(string file, byte[] bytes) =>
+        new(file, file, "project", "version", $"https://cdn.example/{file}", bytes.Length, Convert.ToHexStringLower(System.Security.Cryptography.SHA512.HashData(bytes)));
+
+    [Fact]
+    public void The_Default_Packs_Are_Bare_Bones_Recolourful_And_The_Font_Pinned_On_Modrinth_By_Their_Bytes()
+    {
+        var packs = DefaultPacks.Load().Packs;
+        Assert.Equal(new[] { "Bare Bones 1.21.zip", "Recolourful Containers 1.1.2 (1.19.4-1.21.x).zip", "qrafty's-capitalized-font.zip" }, packs.Select(p => p.File));
+        Assert.All(packs, p =>
+        {
+            Assert.StartsWith($"https://cdn.modrinth.com/data/{p.Project}/versions/{p.Version}/", p.Url);
+            Assert.Matches("^[0-9a-f]{128}$", p.Sha512);
+            Assert.True(p.Size > 0);
+        });
+        Assert.True(DefaultPacks.Accepts("pack"u8, Pinned("a.zip", "pack"u8.ToArray()).Sha512));
+        Assert.False(DefaultPacks.Accepts("park"u8, Pinned("a.zip", "pack"u8.ToArray()).Sha512));
+    }
+
+    [Fact]
+    public void A_Fetch_Keeps_A_Pack_In_The_Folder_Takes_The_Right_Bytes_And_Refuses_Others()
+    {
+        var list = new PackList(Path.Combine(_folder, "game"));
+        byte[] kept = [1, 2, 3], fetched = [4, 5, 6], refused = [7, 8, 9];
+        Directory.CreateDirectory(list.Folder);
+        File.WriteAllBytes(list.PathOf("kept.zip"), kept);
+        var served = new Served(url => url.EndsWith("refused.zip") ? [0, 0, 0] : fetched);
+
+        var defaults = new DefaultPacks([Pinned("kept.zip", kept), Pinned("fetched.zip", fetched), Pinned("refused.zip", refused)]);
+        defaults.Start(list, served);
+        defaults.Wait();
+
+        Assert.Equal(FetchState.Failed, defaults.State);
+        Assert.Contains("refused.zip", defaults.Problem);
+        Assert.Equal(new[] { "https://cdn.example/fetched.zip", "https://cdn.example/refused.zip" }, served.Asked);
+        Assert.All(served.Agents, agent => Assert.StartsWith("VoxelSandbox/", agent));
+        Assert.Equal(fetched, File.ReadAllBytes(list.PathOf("fetched.zip")));
+        Assert.False(File.Exists(list.PathOf("refused.zip")));
+        Assert.Empty(Directory.GetFiles(list.Folder, "*.part"));
+        Assert.True(defaults.Missing(list));
+
+        // With the right bytes served, the next fetch brings the last one in.
+        served = new Served(_ => refused);
+        defaults.Start(list, served);
+        defaults.Wait();
+        Assert.Equal((FetchState.Done, 3), (defaults.State, defaults.Fetched));
+        Assert.False(defaults.Missing(list));
+    }
+
     [Fact]
     public void The_Mesher_Writes_Each_Faces_Tile_And_The_Field_Reads_Its_Textures_Average()
     {
