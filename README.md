@@ -1,5 +1,7 @@
 # Voxel Sandbox
 
+<img src=".github/assets/head.gif" width="800" height="450" alt="Ten views of seed 1 a quarter of a second each, a desert village by its pyramid, the badlands, a cherry grove, a plains village by its river, a swamp, the jungle, a snowy village by day and by night, a room lit by a lantern and torches, and the sun rising over the sea">
+
 A voxel game written in C# on [3DEngine](https://github.com/EggyStudio/3DEngine) through its
 package on nuget.org, set in an endless generated world whose blocks are placed and broken, with its
 light, its water, its mobs and the items they drop. Its first use is to test the engine's global
@@ -11,10 +13,13 @@ creative mode or in survival with health and hunger, an inventory, tools and cra
 light levels with smooth lighting and shaded corners, a sky whose sun, moon and stars cross it
 behind drifting clouds, and an ImGui window of the light's settings.
 
-<table><tr>
-<td><img src=".github/assets/village.webp" width="400" height="225" alt="The houses of a village in seed 1's taiga in the afternoon, a villager by its path and sheep, a cow and a pig in its meadow"></td>
-<td><img src=".github/assets/hills.webp" width="400" height="225" alt="The wooded hills of seed 1 by the sea in the morning, the sun and its rings of glow over blocky clouds"></td>
-</tr></table>
+The pictures show the game drawn with the three resource packs it fetches at its first start, [Bare
+Bones](https://modrinth.com/resourcepack/bare-bones) by RobotPants, [Recolourful Containers GUI +
+HUD](https://modrinth.com/resourcepack/recolourful-containers-gui) by Vi_Tul and [qrafty's
+Capitalized Font](https://modrinth.com/resourcepack/qraftys-capitalized-font) by qrafty and Drqad,
+each fetched from its maker's page and none of their files held here, and `build/pictures.sh` takes
+them again. The section on resource packs sets a view in the game's own art beside the same with the
+packs.
 
 ## Running it
 
@@ -54,9 +59,16 @@ dotnet build VoxelSandbox.slnx
 ./e3d stop
 ```
 
-The pictures at the head of this file are taken by `build/pictures.sh`, each from the seed, the
-place, the hour and the heading the script names, with the mobs and the clouds held where it puts
-them, so running it again shows a change to how the world is drawn in the same pictures.
+The pictures in this file are taken by `build/pictures.sh`, each from the seed, the place, the hour
+and the heading the script names, with the mobs and the clouds held where it puts them, so running
+it again shows a change to how the world is drawn in the same pictures. It fetches the three default
+packs by the addresses and the SHA-512 sums `VoxelSandbox/resources/packs.json` names into
+`captures/packs`, which git leaves out, and opens the game with them. Each view of the world is
+encoded at 800 by 450, each window of the interface is drawn at 2 of the screen's pixels to each of
+its own and cut out at 800 by 450 so its pixels keep their edges, the eye is raised out of any block
+it lands in before a capture, and ten of the views make the animation at the head, a GIF of 1.4 MB
+with a palette of its own for each frame, kept over an animated WebP of the same frames at 0.3 MB
+since a GIF plays wherever a README is read.
 
 ## Builds to play
 
@@ -110,31 +122,40 @@ looked at from the terminal. A closed room lit by one lamp, at night:
 ```
 
 `voxel.state` says where the player stands and looks, what is loaded and drawn, the hour, the day
-and the light. `voxel.fill`, `voxel.room` and `voxel.set` change blocks, `voxel.tp`, `voxel.look`
-and `voxel.fly` move the player, `voxel.break` and `voxel.place` act as the mouse buttons do,
-`voxel.time`, `voxel.day` and `voxel.cycle` set the sky, `voxel.clouds` shows or hides the clouds
-and places their drift, `voxel.distance` the render distance, `voxel.light` reads a block's light
-levels, `voxel.shade` turns the light levels and the shaded corners on or off, `voxel.corners` sets
-how far the corners darken, `voxel.world` saves the world and opens or begins another of a kind and
-seed, `voxel.save` saves at once, and `voxel.blocks` lists the blocks by number and name.
-`voxel.mobs` counts the mobs and lists the nearest, `voxel.spawn` places one where the crosshair
-rests, `voxel.attack` hits the one it rests on as the left button does, `voxel.still` stops them
-where they stand and holds the clouds for a capture, and `voxel.kill` takes them away. `voxel.mode`
-plays in creative, survival, adventure or spectator mode, `voxel.select` puts an item in the chosen
-slot, `voxel.give` puts items in the inventory, `voxel.craft` makes an item from what the inventory
-holds, `voxel.furnace` fills and reads a furnace, `voxel.inventory` lists what it holds,
-`voxel.items` lists every item, and `voxel.throw` throws as Q does. `voxel.packs` says or sets the
-resource packs on, and `voxel.reload` reads them again. `voxel.vitals` says or sets the health and
-food, `voxel.hurt` harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field`
-and `voxel.shadows` set global illumination, the scene's distance field and the sun's shadows, and
-`voxel.hud` hides what is drawn over the world for a capture. Three measure the light.
-`voxel.flicker` records each frame's change in the picture around a turn or a step into a file, with
-the first frame after it, the settled one and their difference beside it, `voxel.ring` reads the
-last frame's light around a circle on the ground by angle, and `voxel.depth` says how far the block
-under a pixel is. The engine's own `gi.*` and `field.*` commands show and measure global
-illumination.
+and the light, and the block the eye is inside where it is in one. `voxel.fill`, `voxel.room` and
+`voxel.set` change blocks, `voxel.tp`, `voxel.look` and `voxel.fly` move the player, `voxel.break`
+and `voxel.place` act as the mouse buttons do, `voxel.time`, `voxel.day` and `voxel.cycle` set the
+sky, `voxel.clouds` shows or hides the clouds and places their drift, `voxel.distance` the render
+distance, `voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the
+shaded corners on or off, `voxel.corners` sets how far the corners darken, `voxel.world` saves the
+world and opens or begins another of a kind and seed, `voxel.save` saves at once, and `voxel.blocks`
+lists the blocks by number and name. `voxel.mobs` counts the mobs and lists the nearest,
+`voxel.spawn` places one where the crosshair rests, `voxel.attack` hits the one it rests on as the
+left button does, `voxel.still` stops them where they stand and holds the clouds for a capture, and
+`voxel.kill` takes them away. `voxel.mode` plays in creative, survival, adventure or spectator mode,
+`voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the inventory,
+`voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and reads a
+furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item, and `voxel.throw`
+throws as Q does. `voxel.packs` says or sets the resource packs on, and `voxel.reload` reads them
+again. `voxel.vitals` says or sets the health and food, `voxel.hurt` harms the player, and
+`voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global
+illumination, the scene's distance field and the sun's shadows, `voxel.hud` hides what is drawn over
+the world for a capture, and `voxel.scale` sets the interface's scale, at which `build/pictures.sh`
+takes the windows. Three measure the light. `voxel.flicker` records each frame's change in the
+picture around a turn or a step into a file, with the first frame after it, the settled one and
+their difference beside it, `voxel.ring` reads the last frame's light around a circle on the ground
+by angle, and `voxel.depth` says how far the block under a pixel is. The engine's own `gi.*` and
+`field.*` commands show and measure global illumination.
 
 ## Biomes
+
+<table><tr>
+<td><img src=".github/assets/world/badlands.webp" width="400" height="225" alt="The badlands of seed 1, mesas of banded terracotta over a river's canyon"></td>
+<td><img src=".github/assets/world/swamp.webp" width="400" height="225" alt="A swamp of seed 1, pools among its olive oaks and its grass"></td>
+</tr><tr>
+<td><img src=".github/assets/world/savanna.webp" width="400" height="225" alt="The savanna of seed 1, flat acacias over its grass in the afternoon"></td>
+<td><img src=".github/assets/world/snowy-taiga.webp" width="400" height="225" alt="The snowy taiga of seed 1, spruces standing in the snow"></td>
+</tr></table>
 
 Two slow noises give each place a temperature and a humidity, as Minecraft's climate does, and they
 choose its biome among plains with a few oaks, forests of oak and birch, birch forests, a dark
@@ -166,6 +187,11 @@ Terralith, the biome overhaul of the owner's modpack, as a model and not a copy,
 forbids handing its files out. `voxel.biome` finds the nearest place of a biome.
 
 ## Plants, woods and colors
+
+<table><tr>
+<td><img src=".github/assets/world/meadow.webp" width="400" height="225" alt="Short grass, a poppy and the grass's own looks in a meadow of seed 1"></td>
+<td><img src=".github/assets/world/cherry-grove.webp" width="400" height="225" alt="A cherry grove of seed 1 from under the edge of its pink crowns, a lantern hanging from one"></td>
+</tr></table>
 
 The ground grows Minecraft's plants by biome, short and tall grass and ferns, dandelions, poppies,
 cornflowers, oxeye daisies, azure bluets and tulips in the plains, lilies of the valley and alliums
@@ -209,6 +235,11 @@ stands as it was until then.
 
 ## Torches, lanterns and end rods
 
+<table><tr>
+<td><img src=".github/assets/world/room.webp" width="400" height="225" alt="A closed room of oak planks at night lit by a hanging lantern and two torches, wool, a crafting table and a furnace on its floor"></td>
+<td><img src=".github/assets/world/village-night.webp" width="400" height="225" alt="A snowy village of seed 1 at night, its lanterns and torches lit"></td>
+</tr></table>
+
 A torch, a lantern, an end rod, and the soul torch and soul lantern of blue fire are smaller than a
 block, each a few boxes as Minecraft's models are. A torch placed on a wall's side leans out from
 it, a lantern placed under a block hangs from it, and an end rod points away from the face it is
@@ -248,6 +279,10 @@ down.
 
 ## Caves and ravines
 
+<table><tr>
+<td><img src=".github/assets/world/ravine.webp" width="400" height="225" alt="A ravine cutting the plains of seed 1 at noon, magma on its floor"></td>
+</tr></table>
+
 Tunnels wind under the ground where two noises are both near zero, and wide caverns open deep down
 where a third is high. They stay three blocks under the ground, so they are dark until dug into, but
 in patches of high ground away from the sea a tunnel that rises near the top breaks out, a mouth the
@@ -259,6 +294,11 @@ sea, so no water stands beside its air, nor across a village's ground, where a r
 laid at the ground's height would hang over it. `voxel.find ravine` gives the nearest.
 
 ## Trees and structures
+
+<table><tr>
+<td><img src=".github/assets/world/desert-village.webp" width="400" height="225" alt="A desert village of seed 1 beside its stepped pyramid in the evening"></td>
+<td><img src=".github/assets/world/jungle.webp" width="400" height="225" alt="The jungle of seed 1 from over its canopy, its giant trees standing out of it"></td>
+</tr></table>
 
 Each column places the trees and the structures that start in it and those that start in the
 columns around it and reach into it, keeping the blocks that fall inside itself. Where one starts
@@ -296,6 +336,11 @@ footing of stone, and no tree grows within the village. A villager lives in each
 long house, and one keeps each forge and each farm.
 
 ## Animals and villagers
+
+<table><tr>
+<td><img src=".github/assets/world/plains-village.webp" width="400" height="225" alt="A plains village of seed 1 by its river, two sheep, a cow, a pig and a villager in the meadow before it"></td>
+<td><img src=".github/assets/mobs/daylight.webp" width="400" height="225" alt="The nine mobs standing in a row in daylight"></td>
+</tr></table>
 
 Pigs, cows, sheep and chickens graze the plains, the forests and the taiga, and sheep the mountains,
 a herd of two to four of one kind in about a tenth of the columns, placed as a column is first
@@ -343,6 +388,11 @@ They cast shadows and hold no light for others, their materials' `BouncesLight` 
 them out of the scene's distance field, so a pig's pink does not reach the grass.
 
 ## The modes
+
+<table><tr>
+<td><img src=".github/assets/interface/creative.webp" width="400" height="225" alt="Creative mode's window of every item over the darkened world"></td>
+<td><img src=".github/assets/interface/switcher.webp" width="400" height="225" alt="The mode switcher F3 with F4 opens, the four modes' icons in boxes"></td>
+</tr></table>
 
 A world plays in creative mode, as a test of the light needs, in survival, in adventure or in
 spectator, which the switcher, `voxel.mode` and the settings window choose and the save keeps. F3
@@ -399,6 +449,11 @@ its size.
 
 ## The interface
 
+<table><tr>
+<td><img src=".github/assets/interface/hud.webp" width="400" height="225" alt="The HUD in survival, the hotbar with tools, blocks and food, the hearts and the food over it"></td>
+<td><img src=".github/assets/interface/options.webp" width="400" height="225" alt="The options over the darkened world, in two columns of buttons and sliders"></td>
+</tr></table>
+
 The interface is the game's own pictures in a flat look, a dark outline, a pixel of light above and
 of shade below and plain colors, drawn at a whole number of the screen's pixels to each of its own,
 the largest at which 320 by 240 of them fit the window, 3 at 1280 by 720, as Minecraft scales its
@@ -425,6 +480,11 @@ global illumination, and the resource packs. The settings window F3 opens is the
 tool for the developer.
 
 ## Tools and crafting
+
+<table><tr>
+<td><img src=".github/assets/interface/inventory.webp" width="400" height="225" alt="The inventory, the pointer over an iron pickaxe naming it with its uses left"></td>
+<td><img src=".github/assets/interface/crafting.webp" width="400" height="225" alt="A crafting table with an iron pickaxe laid out in its grid, three ingots over two sticks"></td>
+</tr></table>
 
 A pickaxe, an axe, a shovel and a sword are made of wood, stone or iron. A tool breaks the blocks
 its kind is for faster than a hand, twice as fast of wood, four times of stone and six times of
@@ -453,6 +513,10 @@ color warmed or cooled by what is in it, which the walls of a cave or a ravine s
 128 blocks high, so Minecraft's depths are raised to keep the rarest under the sea level.
 
 ## Furnaces and iron
+
+<table><tr>
+<td><img src=".github/assets/interface/furnace.webp" width="800" height="450" alt="A furnace smelting iron ore over coal, an ingot made and the next on its way"></td>
+</tr></table>
 
 A furnace smelts what it is given, ten seconds an item. It cooks raw meat, porkchop and beef to
 eight points of food and mutton and chicken to six, and turns sand to glass, cobblestone to stone,
@@ -520,6 +584,11 @@ out ahead and a skeleton's bow upright in its hand, and arrows are thin shafts d
 which cast no shadow.
 
 ## Resource packs
+
+<table><tr>
+<td><img src=".github/assets/world/plains-village-own.webp" width="400" height="225" alt="The plains village in the game's own art, with no pack"></td>
+<td><img src=".github/assets/world/plains-village.webp" width="400" height="225" alt="The same view drawn with Bare Bones, Recolourful Containers and qrafty's Capitalized Font"></td>
+</tr></table>
 
 The blocks and items are drawn with the textures of the Minecraft resource packs the player has,
 each a zip or a folder holding `assets/minecraft`. They are kept in the `resourcepacks` folder
@@ -660,6 +729,11 @@ drawn. It is taken at an exposure of 1.25, which gives the day the brightness th
 gives it at 1, and a room lit by a lamp at night 13 percent more.
 
 ## Sky
+
+<table><tr>
+<td><img src=".github/assets/world/sunrise.webp" width="400" height="225" alt="The sun's square rising over the sea of seed 1 behind an island"></td>
+<td><img src=".github/assets/world/night.webp" width="400" height="225" alt="The sky of seed 1 at midnight, its stars over the sea and an island"></td>
+</tr></table>
 
 The sky is painted as a smooth gradient from the horizon to the zenith, blue by day, orange at the
 horizon at dawn and dusk and dark blue at night, and given to the engine as the map that lights the

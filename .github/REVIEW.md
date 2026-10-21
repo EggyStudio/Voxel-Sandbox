@@ -5,33 +5,36 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `f7bcf26`, item 52, the stars as the modpack's shader draws them, and nothing else,
-carrying the review's file: 3,000 squares of 0.28 degrees spread evenly over the turning sky, each
-drawn until its three noises' product passes 0.7, the light the excess squared in a cool white taken
-to sRGB, faded over the lowest 20 degrees and hidden near the sun and the moon, the cross, the star
-texture and the comparison switch gone, the test of the count, the size, the spread on each side of
-the three axes, the middle star faint and the brightest bright and cool; 203 tests, the strict build
-clean, the play script clean. Read at 06:26 on 2026-10-21. Not pushed, with `a96cea5`, `e4483af` and
-`0c93d3e` before it: the build run of `f7df279` is still running, and the four heads are pushed when
-it ends. Shortly before 06:26 the owner said twice to capture with the resource packs for the
-README, which the script does, the previews without them having been for composition, and that there
-is too much bloom, choosing 0.1 of four shown, item 53. Item 46's script is written, its views the
-badlands, the swamp, the savanna, the snowy taiga, the cherry grove from under its crowns, the
-jungle over its canopy, a meadow, a plains ravine, the desert village by its pyramid, the snowy
-village by day and at night, the plains village by its river with mobs and again with every pack
-off, a sunrise over the sea and a midnight sky, a room of oak planks lit by a lantern and torches,
-and the interface's seven shots, each view checking the eye and climbing to eight blocks, the GIF
-ten of them at four frames a second. Next item 53, the bloom at 0.1, then item 46's first full run
-and commit, then item 39, then the items in order; item 38's second part when the package brings the
-call and the glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's
-word.
+Reviewed up to `6845654`, item 53, the bloom at a tenth, read from the commit at 06:28 on
+2026-10-21, after `f7bcf26`, item 52, the stars as the modpack's shader draws them, and nothing
+else, each carrying the review's file. Item 52: 3,000 squares of 0.28 degrees spread evenly over the
+turning sky, each drawn until its three noises' product passes 0.7, the light the excess squared in
+a cool white taken to sRGB, faded over the lowest 20 degrees and hidden near the sun and the moon,
+the cross, the star texture and the comparison switch gone, the test of the count, the size, the
+spread on each side of the three axes, the middle star faint and the brightest bright and cool; 203
+tests, the strict build clean, the play script clean. Read at 06:26 on 2026-10-21. The build run of
+`f7df279` ended green at 06:26, its play job in 33 minutes 50 seconds of the 60 minute limit, up
+from 24, so the five heads, `0c93d3e`, `e4483af`, `a96cea5`, `f7bcf26` and `6845654`, were pushed at
+06:28, their build run green at 07:02 with the play job in 33 minutes 54 seconds; the walk goes to
+render distance 2 once a run passes 40. Shortly before 06:26 the owner said twice to capture with
+the resource packs for the README, which the script does, the previews without them having been for
+composition, and that there is too much bloom, choosing 0.1 of four shown, item 53. Item 46's script
+is written, its views the badlands, the swamp, the savanna, the snowy taiga, the cherry grove from
+under its crowns, the jungle over its canopy, a meadow, a plains ravine, the desert village by its
+pyramid, the snowy village by day and at night, the plains village by its river with mobs and again
+with every pack off, a sunrise over the sea and a midnight sky, a room of oak planks lit by a
+lantern and torches, and the interface's seven shots, each view checking the eye and climbing to
+eight blocks, the GIF ten of them at four frames a second. Shortly before 07:06 the owner set the
+engines' F1 and F3 keys, Decision 26 and item 54 for when the package comes. Next item 46's first
+full run and commit, then item 39, then the items in order; item 38's second part when the package
+brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on
+the owner's word.
+
+Before it, `f7bcf26` came, item 52, the stars as the modpack's shader draws them, and nothing else,
+carrying the review's file.
 
 Before it, `a96cea5` came, item 50, the block's side over the window while the eye is inside a
 block, and nothing else, carrying the review's file.
-
-Before it, `e4483af` came, item 51, the sun's and the moon's glow smooth as Bare Bones', after
-`0c93d3e`, item 48, the villages' ground whole, and nothing else, the first carrying the review's
-file.
 
 ## Now
 
@@ -510,7 +513,13 @@ file.
     the mesher writing the first and the shader stepping by the frame, so water, lava and fire move.
     Tests: a cutout face kept beside its kind and its clear pixels discarded in a capture's pixels,
     the furnace's front on its front, and an animated tile's frame at a known time. After item 24.
-    Two commits, the cutout and the faces, then the animation.
+    Two commits, the cutout and the faces, then the animation. The owner added shortly before 06:46
+    on 2026-10-21 that the lantern could take Bare Bones' texture to look better, a lantern's glass
+    being a lamp's cube drawn white today under a cap and a chain in their surfaces' colors; so the
+    first part also gives the lantern's, the hanging lantern's and the soul lantern's pieces a
+    pack's lantern texture by the coordinates the source's lantern model gives each piece's faces,
+    read as numbers as the mobs' boxes were, and the torches' flames and sticks the torch texture
+    the same way, each piece keeping its color where no pack has one. After item 46.
 
 40. **F2 takes a screenshot, as the source does (Decision 19).** The owner wrote shortly before
     03:42 on 2026-10-21 that, as in Minecraft, a screenshot is to be taken in the game with F2, the
@@ -749,7 +758,30 @@ file.
     there is too much bloom, and shown the lamps' room at night at 0.5, the game's default, 0.25,
     0.1 and 0, chose 0.1. The default goes from 0.5 to 0.1 with the reason in its comment, the
     settings' slider still reaching 2. One line, committed alone after its checks and before item
-    46's captures, which then show it.
+    46's captures, which then show it. Done at `6845654` on 2026-10-21, as the head says.
+
+54. **The game takes the engine's F1 and F3, its HUD in the hidden scope and its developer's parts
+    as overlay sections (Decision 26).** The owner asked shortly before 07:05 on 2026-10-21 for F1
+    to hide the interface as Minecraft does, as an engine feature, F2 the screenshot, and F3 a debug
+    overlay like the newest Minecraft's, sorted in parts logically with modules a game adds, world
+    generation among them, showing the system, the camera and the renderer, memory, fps and
+    frametime with a graph like the RivaTuner overlay's, both for BevyCSharp and 3DEngine, F1 hiding
+    the interface and ImGui but not the F3 overlay so everything hides but the overlay over the
+    renderer, and Shift+F3 showing the frame debugger too; and answered the reviewer's questions
+    shortly before 07:06: the interface hidden by a scope, F3 the overlay's on its release alone
+    with any chord left to the program, the look Minecraft's with no header, window styling or
+    border, text on a transparent backing, and the order as the reviewer sees fit. When the package
+    brings the engine's item 78, the game's HUD goes inside the engine's interface scope so F1 hides
+    it, and its screens, the inventory, the tables, the menu and the options, stay outside the scope
+    and never hide, as the source hides its HUD and not its screens, the F3 settings window of the
+    game's own gives way, its developer's parts becoming sections of the engine's overlay, the
+    world's generation, the biome and the climate at the eye, the light levels, the loaded and drawn
+    columns and sections, the mobs and the streaming, with the game's own settings moved to the
+    options screen of item 23, and the game's F3 chords stay, F3 with F4 the switcher and F3 with T
+    the reload, which the engine's rule leaves to the program; the engine's performance window
+    hidden off screen since item 40 is no longer needed. Tests: F1 leaving the frame without the HUD
+    read from its pixels, and the game's sections in the overlay's text. One commit, when the
+    package comes.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1376,7 +1408,21 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     the night sky in their modpack looks different, and shown a third layout from the modpack's
     shader read as numbers, chose it. Shortly before 06:26 the owner said twice to capture with the
     resource packs for the README, and that there is too much bloom, choosing 0.1 of four shown,
-    item 53.
+    item 53. Shortly before 06:46 the owner added that the lantern could take Bare Bones' texture to
+    look better, which item 39's first part takes with the torches.
+
+26. **The engine's F1 and F3 come to the game.** The owner asked shortly before 07:05 on 2026-10-21
+    for F1 to hide the interface as Minecraft does, as an engine feature, F2 the screenshot, and F3
+    a debug overlay like the newest Minecraft's, sorted in parts logically with modules a game adds,
+    world generation among them, showing the system, the camera and the renderer, memory, fps and
+    frametime with a graph like the RivaTuner overlay's, both for BevyCSharp and 3DEngine, F1 hiding
+    the interface and ImGui but not the F3 overlay so everything hides but the overlay over the
+    renderer, and Shift+F3 showing the frame debugger too; and answered the reviewer's questions
+    shortly before 07:06: the interface hidden by a scope, F3 the overlay's on its release alone
+    with any chord left to the program, the look Minecraft's with no header, window styling or
+    border, text on a transparent backing, and the order as the reviewer sees fit. The engines take
+    them as their items 78 and 49, and the game takes them as item 54 when the package comes, its
+    developer's parts as overlay sections and its F3 chords kept.
 
 ## Replies
 

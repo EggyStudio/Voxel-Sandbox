@@ -28,7 +28,7 @@ public static class GameCommands
             : game.Target is { } hit ? $"looking at {Blocks.Get(game.World.GetBlock(hit.X, hit.Y, hit.Z)).Key} at {hit.X}, {hit.Y}, {hit.Z}"
             : "looking at nothing within reach";
         return $"feet at {at.X:0.00}, {at.Y:0.00}, {at.Z:0.00} in {game.World.BiomeAt((int)MathF.Floor(at.X), (int)MathF.Floor(at.Z))?.Name ?? "nowhere loaded"}, facing {player.Heading:0} and pitched {player.Pitch * 180 / MathF.PI:0}, "
-            + $"{(player.Flying ? "flying" : player.Body.OnGround ? "on the ground" : "in the air")}, {target}; "
+            + $"{(player.Flying ? "flying" : player.Body.OnGround ? "on the ground" : "in the air")}{EyeInside(game)}, {target}; "
             + $"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count} sections to mesh; "
             + $"{renderer.Sections} sections, {renderer.Draws} draws, {renderer.Triangles} triangles, {renderer.Lamps} lamps, {renderer.Culled} culled; "
             + $"{game.Mobs.All.Count} mobs loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws; "
@@ -36,6 +36,15 @@ public static class GameCommands
             + $"{(game.Save is { } save ? $"saved in {save.Name}" : "transient")}, {game.Mode.ToString().ToLowerInvariant()}, "
             + $"holding {(game.Hotbar.Current is { } held ? $"{held.Count} {held.Item.Key}" : "nothing")}, {game.Drops.All.Count} stacks on the ground; "
             + Vitals(game.Vitals);
+    }
+
+    // Which block the eye's cell holds where it holds anything but air, so a capture taken from inside
+    // one is caught before it is taken.
+    private static string EyeInside(VoxelGame game)
+    {
+        var eye = game.Player.Eye;
+        var block = game.World.GetBlock((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
+        return block == BlockId.Air ? "" : $", the eye inside {Blocks.Get(block).Key}";
     }
 
     private static string Vitals(Vitals v) =>
@@ -448,6 +457,13 @@ public static class GameCommands
         if (Game is not { } game) return "no world is loaded";
         game.HudHidden = !on;
         return on ? "the hud is shown" : "the hud is hidden";
+    }
+
+    [Command("voxel.scale", "Sets the interface's scale, 1 to 4 of the screen's pixels to each of its own or 0 for the largest that fits, as the options' GUI Scale does: voxel.scale <scale>")]
+    internal static string SetScale(int scale)
+    {
+        Gui.Chosen = Math.Clamp(scale, 0, 4);
+        return $"the interface is drawn at {Gui.Scale} of the screen's pixels to each of its own";
     }
 
     [Command("voxel.flicker", "Records each frame's change in the picture from the one before for some frames, the player turning some degrees and stepping some blocks ahead in equal parts over some frames from the tenth, into a file: voxel.flicker <frames> <turn> <step> <over> <path>")]
