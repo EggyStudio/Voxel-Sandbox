@@ -217,6 +217,14 @@ for biome in swamp savanna jungle dark_forest badlands beach river cherry_grove;
   [[ "$state" == *" in ${biome//_/ }, facing"* ]] || fail "the player over the $biome found at $bx, $bz stands in another biome, $state"
   capture "biomes/$biome.png"
 done
+# A meadow of the plains up close, its grass and flowers cut out of their crossed walls.
+found=$(ask voxel.biome plains)
+read -r bx by bz <<< "$(printf '%s\n' "$found" | sed -nE 's/.* is at (-?[0-9]+), (-?[0-9]+), (-?[0-9]+),.*/\1 \2 \3/p')"
+[ -n "$bz" ] || fail "voxel.biome found no plains, saying $found"
+cmd voxel.tp "$bx" "$((by + 3))" "$((bz + 6))"
+cmd voxel.look 0 -20
+cmd frames.wait 90
+capture biomes/meadow.png
 
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"

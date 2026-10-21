@@ -232,7 +232,10 @@ public static class Icons
             {
                 "stick" => [M(0.25f, 0.8f, 0.75f, 0.2f, 0.13f, c)],
                 "coal" or "charcoal" => [Dot(0.45f, 0.56f, 0.28f, c), Dot(0.6f, 0.42f, 0.22f, c), Dot(0.36f, 0.4f, 0.17f, c)],
-                "iron_ingot" => [M(0.2f, 0.62f, 0.8f, 0.46f, 0.26f, c)],
+                "iron_ingot" or "copper_ingot" or "gold_ingot" => [M(0.2f, 0.62f, 0.8f, 0.46f, 0.26f, c)],
+                "diamond" or "emerald" => [M(0.5f, 0.2f, 0.8f, 0.5f, 0.16f, c), M(0.8f, 0.5f, 0.5f, 0.8f, 0.16f, c), M(0.5f, 0.8f, 0.2f, 0.5f, 0.16f, c),
+                    M(0.2f, 0.5f, 0.5f, 0.2f, 0.16f, c), Dot(0.5f, 0.5f, 0.2f, c)],
+                "redstone" or "lapis_lazuli" => [Dot(0.36f, 0.6f, 0.16f, c), Dot(0.6f, 0.62f, 0.14f, c), Dot(0.5f, 0.4f, 0.17f, c), Dot(0.7f, 0.38f, 0.1f, c)],
                 "apple" => [Dot(0.5f, 0.58f, 0.3f, c), M(0.5f, 0.3f, 0.56f, 0.14f, 0.08f, Handle), Dot(0.66f, 0.22f, 0.08f, new Color(70, 150, 50))],
                 "bread" => [M(0.2f, 0.62f, 0.8f, 0.42f, 0.3f, c)],
                 "leather" => [M(0.32f, 0.5f, 0.68f, 0.5f, 0.52f, c)],

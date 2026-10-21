@@ -158,6 +158,76 @@ public enum BlockId : ushort
     BrownTerracotta,
     LightGrayTerracotta,
     Clay,
+    JungleLog,
+    JungleLeaves,
+    JunglePlanks,
+    AcaciaLog,
+    AcaciaLeaves,
+    AcaciaPlanks,
+    DarkOakLog,
+    DarkOakLeaves,
+    DarkOakPlanks,
+    CherryLog,
+    CherryLeaves,
+    CherryPlanks,
+    OakSapling,
+    BirchSapling,
+    SpruceSapling,
+    JungleSapling,
+    AcaciaSapling,
+    DarkOakSapling,
+    CherrySapling,
+    Dandelion,
+    Poppy,
+    BlueOrchid,
+    Allium,
+    AzureBluet,
+    RedTulip,
+    OrangeTulip,
+    WhiteTulip,
+    PinkTulip,
+    OxeyeDaisy,
+    Cornflower,
+    LilyOfTheValley,
+    PinkPetals,
+    ShortGrass,
+    TallGrass,
+    Fern,
+    DeadBush,
+    BrownMushroom,
+    RedMushroom,
+    CopperOre,
+    GoldOre,
+    RedstoneOre,
+    LapisOre,
+    DiamondOre,
+    EmeraldOre,
+    WhiteStainedGlass,
+    OrangeStainedGlass,
+    MagentaStainedGlass,
+    LightBlueStainedGlass,
+    YellowStainedGlass,
+    LimeStainedGlass,
+    PinkStainedGlass,
+    GrayStainedGlass,
+    LightGrayStainedGlass,
+    CyanStainedGlass,
+    PurpleStainedGlass,
+    BlueStainedGlass,
+    BrownStainedGlass,
+    GreenStainedGlass,
+    RedStainedGlass,
+    BlackStainedGlass,
+    OrangeWool,
+    MagentaWool,
+    LightBlueWool,
+    YellowWool,
+    LimeWool,
+    CyanWool,
+    PurpleWool,
+    BlueWool,
+    GreenWool,
+    RedWool,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -225,6 +295,11 @@ public static class Blocks
         // A half of a door, which opening or shutting turns into its other way.
         BlockInfo Door(BlockId id, string key, BlockShape shape, BlockId toggled, BlockId? heldAs = null) =>
             new(id, key, "Oak Door", Surfaces.DoorWood, Surfaces.DoorWood, Surfaces.DoorWood, Kind: BlockKind.Shaped, Shape: shape, HeldAs: heldAs, Toggled: toggled);
+
+        // A plant takes the surface it is known by for its faces, a flower's petals rather than its
+        // stem, which colors its item's cube on the ground.
+        BlockInfo Plant(BlockId id, string key, string name, BlockShape shape, int look) =>
+            new(id, key, name, look, look, look, Kind: BlockKind.Shaped, Shape: shape);
 
         // A block smaller than its cell takes its emissive piece's surface for its faces, which
         // makes it emissive and colors its item's cube on the ground.
@@ -388,6 +463,76 @@ public static class Blocks
             Same(BlockId.BrownTerracotta, "brown_terracotta", "Brown Terracotta", Surfaces.BrownTerracotta),
             Same(BlockId.LightGrayTerracotta, "light_gray_terracotta", "Light Gray Terracotta", Surfaces.LightGrayTerracotta),
             Same(BlockId.Clay, "clay", "Clay", Surfaces.Clay),
+            new(BlockId.JungleLog, "jungle_log", "Jungle Log", Surfaces.JungleTop, Surfaces.JungleBark, Surfaces.JungleTop),
+            Same(BlockId.JungleLeaves, "jungle_leaves", "Jungle Leaves", Surfaces.JungleLeaves),
+            Same(BlockId.JunglePlanks, "jungle_planks", "Jungle Planks", Surfaces.JunglePlanks),
+            new(BlockId.AcaciaLog, "acacia_log", "Acacia Log", Surfaces.AcaciaTop, Surfaces.AcaciaBark, Surfaces.AcaciaTop),
+            Same(BlockId.AcaciaLeaves, "acacia_leaves", "Acacia Leaves", Surfaces.AcaciaLeaves),
+            Same(BlockId.AcaciaPlanks, "acacia_planks", "Acacia Planks", Surfaces.AcaciaPlanks),
+            new(BlockId.DarkOakLog, "dark_oak_log", "Dark Oak Log", Surfaces.DarkOakTop, Surfaces.DarkOakBark, Surfaces.DarkOakTop),
+            Same(BlockId.DarkOakLeaves, "dark_oak_leaves", "Dark Oak Leaves", Surfaces.DarkOakLeaves),
+            Same(BlockId.DarkOakPlanks, "dark_oak_planks", "Dark Oak Planks", Surfaces.DarkOakPlanks),
+            new(BlockId.CherryLog, "cherry_log", "Cherry Log", Surfaces.CherryTop, Surfaces.CherryBark, Surfaces.CherryTop),
+            Same(BlockId.CherryLeaves, "cherry_leaves", "Cherry Leaves", Surfaces.CherryLeaves),
+            Same(BlockId.CherryPlanks, "cherry_planks", "Cherry Planks", Surfaces.CherryPlanks),
+            Plant(BlockId.OakSapling, "oak_sapling", "Oak Sapling", BlockShape.Plant(Surfaces.OakSapling, 14), Surfaces.OakSapling),
+            Plant(BlockId.BirchSapling, "birch_sapling", "Birch Sapling", BlockShape.Plant(Surfaces.BirchSapling, 14), Surfaces.BirchSapling),
+            Plant(BlockId.SpruceSapling, "spruce_sapling", "Spruce Sapling", BlockShape.Plant(Surfaces.SpruceSapling, 14), Surfaces.SpruceSapling),
+            Plant(BlockId.JungleSapling, "jungle_sapling", "Jungle Sapling", BlockShape.Plant(Surfaces.JungleSapling, 14), Surfaces.JungleSapling),
+            Plant(BlockId.AcaciaSapling, "acacia_sapling", "Acacia Sapling", BlockShape.Plant(Surfaces.AcaciaSapling, 14), Surfaces.AcaciaSapling),
+            Plant(BlockId.DarkOakSapling, "dark_oak_sapling", "Dark Oak Sapling", BlockShape.Plant(Surfaces.DarkOakSapling, 14), Surfaces.DarkOakSapling),
+            Plant(BlockId.CherrySapling, "cherry_sapling", "Cherry Sapling", BlockShape.Plant(Surfaces.CherrySapling, 14), Surfaces.CherrySapling),
+            Plant(BlockId.Dandelion, "dandelion", "Dandelion", BlockShape.Plant(Surfaces.DandelionStem, 11, Surfaces.Dandelion, 6), Surfaces.Dandelion),
+            Plant(BlockId.Poppy, "poppy", "Poppy", BlockShape.Plant(Surfaces.PoppyStem, 11, Surfaces.Poppy, 6), Surfaces.Poppy),
+            Plant(BlockId.BlueOrchid, "blue_orchid", "Blue Orchid", BlockShape.Plant(Surfaces.BlueOrchidStem, 11, Surfaces.BlueOrchid, 6), Surfaces.BlueOrchid),
+            Plant(BlockId.Allium, "allium", "Allium", BlockShape.Plant(Surfaces.AlliumStem, 11, Surfaces.Allium, 6), Surfaces.Allium),
+            Plant(BlockId.AzureBluet, "azure_bluet", "Azure Bluet", BlockShape.Plant(Surfaces.AzureBluetStem, 11, Surfaces.AzureBluet, 6), Surfaces.AzureBluet),
+            Plant(BlockId.RedTulip, "red_tulip", "Red Tulip", BlockShape.Plant(Surfaces.RedTulipStem, 11, Surfaces.RedTulip, 6), Surfaces.RedTulip),
+            Plant(BlockId.OrangeTulip, "orange_tulip", "Orange Tulip", BlockShape.Plant(Surfaces.OrangeTulipStem, 11, Surfaces.OrangeTulip, 6), Surfaces.OrangeTulip),
+            Plant(BlockId.WhiteTulip, "white_tulip", "White Tulip", BlockShape.Plant(Surfaces.WhiteTulipStem, 11, Surfaces.WhiteTulip, 6), Surfaces.WhiteTulip),
+            Plant(BlockId.PinkTulip, "pink_tulip", "Pink Tulip", BlockShape.Plant(Surfaces.PinkTulipStem, 11, Surfaces.PinkTulip, 6), Surfaces.PinkTulip),
+            Plant(BlockId.OxeyeDaisy, "oxeye_daisy", "Oxeye Daisy", BlockShape.Plant(Surfaces.OxeyeDaisyStem, 11, Surfaces.OxeyeDaisy, 6), Surfaces.OxeyeDaisy),
+            Plant(BlockId.Cornflower, "cornflower", "Cornflower", BlockShape.Plant(Surfaces.CornflowerStem, 11, Surfaces.Cornflower, 6), Surfaces.Cornflower),
+            Plant(BlockId.LilyOfTheValley, "lily_of_the_valley", "Lily of the Valley", BlockShape.Plant(Surfaces.LilyOfTheValleyStem, 11, Surfaces.LilyOfTheValley, 6), Surfaces.LilyOfTheValley),
+            Plant(BlockId.PinkPetals, "pink_petals", "Pink Petals", BlockShape.Carpet(Surfaces.PinkPetals), Surfaces.PinkPetals),
+            Plant(BlockId.ShortGrass, "short_grass", "Short Grass", BlockShape.Plant(Surfaces.ShortGrass, 12), Surfaces.ShortGrass),
+            Plant(BlockId.TallGrass, "tall_grass", "Tall Grass", BlockShape.Plant(Surfaces.TallGrass, 16), Surfaces.TallGrass),
+            Plant(BlockId.Fern, "fern", "Fern", BlockShape.Plant(Surfaces.Fern, 13), Surfaces.Fern),
+            Plant(BlockId.DeadBush, "dead_bush", "Dead Bush", BlockShape.Plant(Surfaces.DeadBush, 13), Surfaces.DeadBush),
+            Plant(BlockId.BrownMushroom, "brown_mushroom", "Brown Mushroom", BlockShape.Plant(Surfaces.BrownMushroomStem, 7, Surfaces.BrownMushroom, 3), Surfaces.BrownMushroom),
+            Plant(BlockId.RedMushroom, "red_mushroom", "Red Mushroom", BlockShape.Plant(Surfaces.RedMushroomStem, 7, Surfaces.RedMushroom, 3), Surfaces.RedMushroom),
+            Same(BlockId.CopperOre, "copper_ore", "Copper Ore", Surfaces.CopperOre),
+            Same(BlockId.GoldOre, "gold_ore", "Gold Ore", Surfaces.GoldOre),
+            Same(BlockId.RedstoneOre, "redstone_ore", "Redstone Ore", Surfaces.RedstoneOre),
+            Same(BlockId.LapisOre, "lapis_ore", "Lapis Ore", Surfaces.LapisOre),
+            Same(BlockId.DiamondOre, "diamond_ore", "Diamond Ore", Surfaces.DiamondOre),
+            Same(BlockId.EmeraldOre, "emerald_ore", "Emerald Ore", Surfaces.EmeraldOre),
+            Same(BlockId.WhiteStainedGlass, "white_stained_glass", "White Stained Glass", Surfaces.WhiteStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.OrangeStainedGlass, "orange_stained_glass", "Orange Stained Glass", Surfaces.OrangeStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.MagentaStainedGlass, "magenta_stained_glass", "Magenta Stained Glass", Surfaces.MagentaStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.LightBlueStainedGlass, "light_blue_stained_glass", "Light Blue Stained Glass", Surfaces.LightBlueStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.YellowStainedGlass, "yellow_stained_glass", "Yellow Stained Glass", Surfaces.YellowStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.LimeStainedGlass, "lime_stained_glass", "Lime Stained Glass", Surfaces.LimeStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.PinkStainedGlass, "pink_stained_glass", "Pink Stained Glass", Surfaces.PinkStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.GrayStainedGlass, "gray_stained_glass", "Gray Stained Glass", Surfaces.GrayStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.LightGrayStainedGlass, "light_gray_stained_glass", "Light Gray Stained Glass", Surfaces.LightGrayStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.CyanStainedGlass, "cyan_stained_glass", "Cyan Stained Glass", Surfaces.CyanStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.PurpleStainedGlass, "purple_stained_glass", "Purple Stained Glass", Surfaces.PurpleStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.BlueStainedGlass, "blue_stained_glass", "Blue Stained Glass", Surfaces.BlueStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.BrownStainedGlass, "brown_stained_glass", "Brown Stained Glass", Surfaces.BrownStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.GreenStainedGlass, "green_stained_glass", "Green Stained Glass", Surfaces.GreenStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.RedStainedGlass, "red_stained_glass", "Red Stained Glass", Surfaces.RedStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.BlackStainedGlass, "black_stained_glass", "Black Stained Glass", Surfaces.BlackStainedGlass, kind: BlockKind.Glass),
+            Same(BlockId.OrangeWool, "orange_wool", "Orange Wool", Surfaces.OrangeWool),
+            Same(BlockId.MagentaWool, "magenta_wool", "Magenta Wool", Surfaces.MagentaWool),
+            Same(BlockId.LightBlueWool, "light_blue_wool", "Light Blue Wool", Surfaces.LightBlueWool),
+            Same(BlockId.YellowWool, "yellow_wool", "Yellow Wool", Surfaces.YellowWool),
+            Same(BlockId.LimeWool, "lime_wool", "Lime Wool", Surfaces.LimeWool),
+            Same(BlockId.CyanWool, "cyan_wool", "Cyan Wool", Surfaces.CyanWool),
+            Same(BlockId.PurpleWool, "purple_wool", "Purple Wool", Surfaces.PurpleWool),
+            Same(BlockId.BlueWool, "blue_wool", "Blue Wool", Surfaces.BlueWool),
+            Same(BlockId.GreenWool, "green_wool", "Green Wool", Surfaces.GreenWool),
+            Same(BlockId.RedWool, "red_wool", "Red Wool", Surfaces.RedWool),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");
@@ -562,4 +707,34 @@ public static class Blocks
         id = BlockId.Air;
         return false;
     }
+}
+
+/// <summary>
+/// The kinds of block that share their drops, the tool they break to and their hardness, as
+/// Minecraft's tags group its logs, planks, leaves, plants, wool, glass and terracotta.
+/// </summary>
+public static class BlockGroups
+{
+    public static readonly HashSet<BlockId> Logs =
+        [BlockId.OakLog, BlockId.BirchLog, BlockId.SpruceLog, BlockId.JungleLog, BlockId.AcaciaLog, BlockId.DarkOakLog, BlockId.CherryLog];
+
+    public static readonly HashSet<BlockId> Planks =
+        [BlockId.OakPlanks, BlockId.BirchPlanks, BlockId.SprucePlanks, BlockId.JunglePlanks, BlockId.AcaciaPlanks, BlockId.DarkOakPlanks, BlockId.CherryPlanks];
+
+    /// <summary>Each kind of leaves and the sapling it drops now and then.</summary>
+    public static readonly Dictionary<BlockId, BlockId> Leaves = new()
+    {
+        [BlockId.OakLeaves] = BlockId.OakSapling, [BlockId.BirchLeaves] = BlockId.BirchSapling, [BlockId.SpruceLeaves] = BlockId.SpruceSapling,
+        [BlockId.JungleLeaves] = BlockId.JungleSapling, [BlockId.AcaciaLeaves] = BlockId.AcaciaSapling, [BlockId.DarkOakLeaves] = BlockId.DarkOakSapling,
+        [BlockId.CherryLeaves] = BlockId.CherrySapling,
+    };
+
+    /// <summary>The plants of the ground, the saplings, the flowers, the grasses and the mushrooms, which break at once.</summary>
+    public static readonly HashSet<BlockId> Plants = [.. Blocks.All.Where(b => b.Shape is { Cutout: true } && b.Id != BlockId.Wheat).Select(b => b.Id)];
+
+    public static readonly HashSet<BlockId> Wool = [.. Blocks.All.Where(b => b.Key.EndsWith("_wool", StringComparison.Ordinal)).Select(b => b.Id)];
+
+    public static readonly HashSet<BlockId> Glass = [.. Blocks.All.Where(b => b.Kind == BlockKind.Glass && b.Id != BlockId.Ice).Select(b => b.Id)];
+
+    public static readonly HashSet<BlockId> Terracotta = [.. Blocks.All.Where(b => b.Key.EndsWith("terracotta", StringComparison.Ordinal)).Select(b => b.Id)];
 }

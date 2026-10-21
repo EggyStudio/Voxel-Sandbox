@@ -46,7 +46,7 @@ public static class Recipes
 {
     private static Item I(BlockId block) => Items.Of(block);
 
-    private static readonly Item[] Planks = [I(BlockId.OakPlanks), I(BlockId.SprucePlanks), I(BlockId.BirchPlanks)];
+    private static readonly Item[] Planks = [.. BlockGroups.Planks.Select(I)];
     private static readonly Item[] Stick = [Items.Stick];
 
     private static Recipe R(Item result, int count, string[] rows, params (char Key, Item[] Items)[] keys) =>
@@ -61,6 +61,10 @@ public static class Recipes
             R(I(BlockId.OakPlanks), 4, ["L"], ('L', [I(BlockId.OakLog)])),
             R(I(BlockId.SprucePlanks), 4, ["L"], ('L', [I(BlockId.SpruceLog)])),
             R(I(BlockId.BirchPlanks), 4, ["L"], ('L', [I(BlockId.BirchLog)])),
+            R(I(BlockId.JunglePlanks), 4, ["L"], ('L', [I(BlockId.JungleLog)])),
+            R(I(BlockId.AcaciaPlanks), 4, ["L"], ('L', [I(BlockId.AcaciaLog)])),
+            R(I(BlockId.DarkOakPlanks), 4, ["L"], ('L', [I(BlockId.DarkOakLog)])),
+            R(I(BlockId.CherryPlanks), 4, ["L"], ('L', [I(BlockId.CherryLog)])),
             R(Items.Stick, 4, ["P", "P"], ('P', Planks)),
             R(I(BlockId.CraftingTable), 1, ["PP", "PP"], ('P', Planks)),
             R(I(BlockId.Torch), 4, ["C", "S"], ('C', [Items.Coal, Items.Charcoal]), ('S', Stick)),

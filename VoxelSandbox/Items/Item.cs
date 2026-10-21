@@ -78,6 +78,12 @@ public static class Items
     public static readonly Item SpiderEye = Find("spider_eye")!;
     public static readonly Item IronIngot = Find("iron_ingot")!;
     public static readonly Item Charcoal = Find("charcoal")!;
+    public static readonly Item Diamond = Find("diamond")!;
+    public static readonly Item Emerald = Find("emerald")!;
+    public static readonly Item LapisLazuli = Find("lapis_lazuli")!;
+    public static readonly Item Redstone = Find("redstone")!;
+    public static readonly Item CopperIngot = Find("copper_ingot")!;
+    public static readonly Item GoldIngot = Find("gold_ingot")!;
 
     private static Item[] Build()
     {
@@ -119,6 +125,13 @@ public static class Items
             ("steak", "Steak", new Color(150, 84, 52), 8, 12.8f),
             ("cooked_mutton", "Cooked Mutton", new Color(176, 104, 70), 6, 9.6f),
             ("cooked_chicken", "Cooked Chicken", new Color(214, 160, 100), 6, 7.2f),
+            // What the ores deep in the stone give, mined or smelted.
+            ("diamond", "Diamond", new Color(100, 230, 220), 0, 0),
+            ("emerald", "Emerald", new Color(40, 200, 90), 0, 0),
+            ("lapis_lazuli", "Lapis Lazuli", new Color(40, 70, 190), 0, 0),
+            ("redstone", "Redstone", new Color(200, 20, 20), 0, 0),
+            ("copper_ingot", "Copper Ingot", new Color(220, 120, 80), 0, 0),
+            ("gold_ingot", "Gold Ingot", new Color(250, 210, 60), 0, 0),
         ];
         foreach (var (key, name, color, food, saturation) in own)
             all.Add(new Item(key, name, color, null) { Id = all.Count, Food = food, Saturation = saturation });

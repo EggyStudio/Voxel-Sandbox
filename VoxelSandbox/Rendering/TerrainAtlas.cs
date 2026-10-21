@@ -18,7 +18,9 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// Tile 0 is white, which a surface no pack gives a texture keeps, drawn in the game's own color, so
-/// with no pack the terrain is drawn as it was before packs were read.
+/// with no pack the terrain is drawn as it was before packs were read. A plant no pack gives one
+/// takes the game's own mask of <see cref="PlantArt"/>, white where the plant is, tinted by its own
+/// color as the white tile is.
 /// </para>
 /// </remarks>
 public sealed class TerrainAtlas
@@ -37,13 +39,15 @@ public sealed class TerrainAtlas
 
     private readonly int[] _tile, _overlay;
     private readonly Color?[] _tint;
+    // Whether a surface's tile is the game's own mask, tinted by its own color rather than a pack's tint.
+    private readonly bool[] _own;
     private readonly List<byte[]> _pictures;
     // Each tile's average color decoded from sRGB, weighed by alpha, and how much of it is covered.
     private readonly List<(float R, float G, float B, float Covered)> _averages;
 
-    private TerrainAtlas(int pixels, int[] tile, int[] overlay, Color?[] tint, List<byte[]> pictures)
+    private TerrainAtlas(int pixels, int[] tile, int[] overlay, Color?[] tint, bool[] own, List<byte[]> pictures)
     {
-        (Pixels, _tile, _overlay, _tint, _pictures) = (pixels, tile, overlay, tint, pictures);
+        (Pixels, _tile, _overlay, _tint, _own, _pictures) = (pixels, tile, overlay, tint, own, pictures);
         _averages = [.. pictures.Select(Average)];
         Rows = (pictures.Count + Columns - 1) / Columns;
     }
@@ -58,7 +62,7 @@ public sealed class TerrainAtlas
     public int Tiles => _pictures.Count;
 
     /// <summary>Whether any surface has a texture of a pack.</summary>
-    public bool Any => _pictures.Count > 1;
+    public bool Any => _own.Length > 0 && _tile.Where((tile, surface) => tile != 0 && !_own[surface]).Any();
 
     /// <summary>The image's width in pixels.</summary>
     public int Width => Columns * 2 * Pixels;
@@ -70,9 +74,10 @@ public sealed class TerrainAtlas
     public static TerrainAtlas Build(ResourcePacks packs)
     {
         var count = Surfaces.All.Count;
-        var (tile, overlay, tint) = (new int[count], new int[count], new Color?[count]);
+        var (tile, overlay, tint, own) = (new int[count], new int[count], new Color?[count], new bool[count]);
         var found = new List<Image> { new(Enumerable.Repeat((byte)255, 4).ToArray(), 1, 1) };
         var numbers = new Dictionary<string, int>(StringComparer.Ordinal);
+        var masks = new Dictionary<byte[], int>(ReferenceEqualityComparer.Instance);
 
         int Number(string name)
         {
@@ -84,13 +89,25 @@ public sealed class TerrainAtlas
 
         for (int surface = 0; surface < count; surface++)
         {
-            if (PackTextures.Of(surface) is not { } look || (tile[surface] = Number(look.Texture)) == 0) continue;
-            tint[surface] = look.Tint;
-            if (look.Overlay is { } over) overlay[surface] = Number(over);
+            if (PackTextures.Of(surface) is { } look && (tile[surface] = Number(look.Texture)) != 0)
+            {
+                tint[surface] = look.Tint;
+                if (look.Overlay is { } over) overlay[surface] = Number(over);
+            }
+            // A plant no pack has takes the game's own mask, each mask one tile however many plants share it.
+            else if (PlantArt.Mask(surface) is { } mask && found.Count < MostTiles)
+            {
+                if (!masks.TryGetValue(mask, out var number))
+                {
+                    masks[mask] = number = found.Count;
+                    found.Add(new Image(mask, 16, 16));
+                }
+                (tile[surface], own[surface]) = (number, true);
+            }
         }
 
         var pixels = (int)System.Numerics.BitOperations.RoundUpToPowerOf2((uint)Math.Clamp(found.Skip(1).Select(i => i.Width).DefaultIfEmpty(1).Max(), 1, MostPixels));
-        return new TerrainAtlas(pixels, tile, overlay, tint, [.. found.Select(i => Resized(i, pixels))]);
+        return new TerrainAtlas(pixels, tile, overlay, tint, own, [.. found.Select(i => Resized(i, pixels))]);
     }
 
     // An image sampled to so many pixels square by its nearest pixel, so a smaller tile's pixels
@@ -140,10 +157,10 @@ public sealed class TerrainAtlas
     {
         var look = Surfaces.All[surface];
         var tile = _tile[surface];
-        if (tile == 0)
+        if (tile == 0 || _own[surface])
         {
             var own = look.Under(grass, foliage);
-            return (0, own, own);
+            return ((uint)tile, own, own);
         }
         var tint = _tint[surface] ?? look.Tint switch { SurfaceTint.Grass => grass, SurfaceTint.Foliage => foliage, _ => Color.White };
         var (r, g, b, _) = _averages[tile];

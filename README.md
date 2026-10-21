@@ -167,6 +167,26 @@ forbids handing its files out. Until their own trees grow, oaks stand in the swa
 jungle, the dark forest and the cherry grove, with birches in the dark forest. `voxel.biome` finds
 the nearest place of a biome.
 
+## Plants, woods and colors
+
+The ground grows Minecraft's plants by biome, short and tall grass and ferns, dandelions, poppies,
+cornflowers, oxeye daisies, azure bluets and tulips in the plains, lilies of the valley and alliums
+in the forests, blue orchids in the swamp, brown and red mushrooms under the trees, pink petals
+under the cherry grove and dead bushes on the sand, each as many to a thousand places as the
+source's patches give. A plant is two flat walls crossed from corner to corner of its cell, drawn
+from both sides and lit as if they faced up, as Minecraft lights its plants with no shade by the way
+they face, and its walls are a mesh of their own in each section, cut out where their texture is
+clear and casting no shadow, so the scene's distance field holds no grass. A pack's texture lies
+across the walls from the cell's foot, and where no pack has one the game's own pixels stand in,
+blades of grass, a flower's stem and its petals, a sapling's crown and a mushroom's cap, white masks
+tinted by each plant's own color. A plant breaks at once and falls when the block under it is
+broken.
+
+The jungle, the savanna's acacia, the dark oak and the cherry each have their log, their leaves and
+their planks, and each wood its sapling, which leaves drop one time in twenty. The cherry's leaves
+are its own pink and the others' the climate's green. Glass and wool come in Minecraft's sixteen
+colors.
+
 ## Water, glass and ice
 
 Wide basins sink the land under the sea level of 48, where water stands over a floor of sand near
@@ -328,9 +348,12 @@ In creative every item is to hand through E, a block breaks at once and drops no
 block uses nothing up, and Space pressed twice flies. In survival there is no flight, and a block
 takes its hardness times one and a half seconds to break with the button held, darkening as it goes,
 as by hand in Minecraft, and then drops what it leaves. Grass, farmland and a path drop their dirt,
-stone its cobblestone, coal ore its coal, wheat its wheat and seeds, leaves, glass and ice nothing,
-and any other block itself. A torch or a lantern that falls with the block it held to drops too, and
-placing a block uses one up.
+stone its cobblestone, coal ore its coal, diamond and emerald ore their gem, lapis ore four to nine
+lapis and redstone ore four or five redstone, wheat its wheat and seeds, the grasses a seed one time
+in eight, a dead bush up to two sticks, leaves their sapling one time in twenty, glass and ice
+nothing, and any other block itself. An ore asks a pickaxe, of stone or better for iron, copper and
+lapis and of iron for gold, redstone, diamond and emerald, and gives nothing to a lesser one. A
+torch or a lantern that falls with the block it held to drops too, and placing a block uses one up.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival and adventure, where a left click takes up a stack, puts it down, joins it to a stack of
@@ -411,22 +434,25 @@ item of each stack. A log makes four planks of its wood, two planks four sticks,
 or charcoal four torches, eight cobblestone in a ring a furnace, planks, cobblestone or iron ingots
 with sticks the tools in Minecraft's shapes, three blocks in a row six slabs, a staircase of six
 blocks four stairs, planks and sticks three fences, six planks three doors, four sand a block of
-sandstone, four stone four stone bricks, and nine wheat a hay bale. Veins of coal lie in the stone
-from 5 to 100 blocks up, 18 to a column, darker than the stone around them, which the walls of a
-cave or a ravine show.
+sandstone, four stone four stone bricks, and nine wheat a hay bale. Ores lie in veins in the stone
+by depth, as Minecraft's do, coal 18 to a column from 5 to 100 blocks up, iron 10 from 5 to 64,
+copper 10 from 20 to 80, gold 4 from 5 to 32, redstone 6 from 5 to 16, lapis 2 from 5 to 32, a
+diamond vein from 5 to 16 and, in the mountains, single emeralds from 48 to 98, each in the stone's
+color warmed or cooled by what is in it, which the walls of a cave or a ravine show. The world is
+128 blocks high, so Minecraft's depths are raised to keep the rarest under the sea level.
 
 ## Furnaces and iron
 
 A furnace smelts what it is given, ten seconds an item. It cooks raw meat, porkchop and beef to
 eight points of food and mutton and chicken to six, and turns sand to glass, cobblestone to stone,
-iron ore to an ingot and a log to charcoal. It burns coal or charcoal for 80 seconds, a log, planks
-or a crafting table for 15, a wooden tool for 10, a slab for 7.5 and a stick for 5, lights a new
-fuel only when it has something to smelt with room for what it makes, and starts an item over when
-its fire goes out, as Minecraft's does. A right click opens it, what it smelts over its fuel with
-the fire's bar between them, the smelting's bar, and what it made, which a click takes up. While it
-burns it is emissive as a whole block and lights the blocks around it to 13. It burns on while its
-column is loaded, its window shut or not, gives up what it holds when it is broken or blown up, and
-is kept by the save in `furnaces.json`.
+iron, copper and gold ore to their ingots and a log to charcoal. It burns coal or charcoal for 80
+seconds, a log, planks or a crafting table for 15, a wooden tool for 10, a slab for 7.5 and a stick
+for 5, lights a new fuel only when it has something to smelt with room for what it makes, and starts
+an item over when its fire goes out, as Minecraft's does. A right click opens it, what it smelts
+over its fuel with the fire's bar between them, the smelting's bar, and what it made, which a click
+takes up. While it burns it is emissive as a whole block and lights the blocks around it to 13. It
+burns on while its column is loaded, its window shut or not, gives up what it holds when it is
+broken or blown up, and is kept by the save in `furnaces.json`.
 
 Iron ore lies in the stone in veins of six, ten to a column from 5 to 64 blocks up, pale tan against
 the gray, and drops itself only to a pickaxe of stone or iron. Three ingots over two sticks make an

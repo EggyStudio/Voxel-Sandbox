@@ -171,24 +171,25 @@ public sealed class PackTests : IDisposable
     [Fact]
     public void Every_Tile_Is_Drawn_At_The_Largest_Size_Two_By_Two_In_Its_Cell()
     {
-        // A tile of four pixels of four colors, and one twice its size.
+        // A tile of four pixels of four colors, and one of 32, larger than the game's own masks of 16.
         var quarters = new Image([200, 0, 0, 255, 0, 200, 0, 255, 0, 0, 200, 255, 200, 200, 0, 255], 2, 2);
-        using var packs = new ResourcePacks([Folder("sizes", ("block/stone", quarters), ("block/dirt", Plain(new Color(9, 9, 9), 4, 4)))]);
+        using var packs = new ResourcePacks([Folder("sizes", ("block/stone", quarters), ("block/dirt", Plain(new Color(9, 9, 9), 32, 32)))]);
         var atlas = TerrainAtlas.Build(packs);
         var image = new Image(atlas.Image(), atlas.Width, atlas.Height);
-        Assert.Equal(4, atlas.Pixels);
-        Assert.Equal((TerrainAtlas.Columns * 8, 8), (atlas.Width, atlas.Height));
+        const int p = 32;
+        Assert.Equal(p, atlas.Pixels);
+        Assert.Equal(TerrainAtlas.Columns * 2 * p, atlas.Width);
 
-        var cell = atlas.Tile(Surfaces.Stone) * 8;
-        // Each pixel of the small tile is two by two, and the tile is repeated across and down its
-        // cell from a half tile in, its upper left corner at the middle's corner, where the shader
-        // reads from, and its lower right at the cell's corner.
-        Assert.Equal(new Color(200, 0, 0), At(image, cell + 2, 2));
-        Assert.Equal(new Color(200, 0, 0), At(image, cell + 3, 3));
-        Assert.Equal(new Color(0, 200, 0), At(image, cell + 4, 2));
-        Assert.Equal(new Color(0, 0, 200), At(image, cell + 2, 4));
-        Assert.Equal(new Color(200, 200, 0), At(image, cell, 0));
-        Assert.Equal(At(image, cell + 1, 2), At(image, cell + 5, 6));
+        int cell = atlas.Tile(Surfaces.Stone) % TerrainAtlas.Columns * 2 * p, row = atlas.Tile(Surfaces.Stone) / TerrainAtlas.Columns * 2 * p;
+        // Each pixel of the small tile is a half tile square, and the tile is repeated across and
+        // down its cell from a half tile in, its upper left corner at the middle's corner, where the
+        // shader reads from, and its lower right at the cell's corner.
+        Assert.Equal(new Color(200, 0, 0), At(image, cell + p / 2, row + p / 2));
+        Assert.Equal(new Color(200, 0, 0), At(image, cell + p - 1, row + p - 1));
+        Assert.Equal(new Color(0, 200, 0), At(image, cell + p, row + p / 2));
+        Assert.Equal(new Color(0, 0, 200), At(image, cell + p / 2, row + p));
+        Assert.Equal(new Color(200, 200, 0), At(image, cell, row));
+        Assert.Equal(At(image, cell + 1, row + p / 2), At(image, cell + p + 1, row + 3 * p / 2));
         Assert.Equal(Color.White, At(image, 3, 3));
     }
 

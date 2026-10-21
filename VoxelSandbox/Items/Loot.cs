@@ -14,21 +14,45 @@ public static class Loot
 {
     /// <summary>
     /// The items a block broken in survival drops with an item held. Grass, farmland and a path
-    /// drop their dirt, stone its cobblestone, coal ore its coal, oak leaves an apple now and then,
-    /// other leaves, glass and ice nothing, wheat its wheat and a few seeds, any other block the
-    /// item that places it, and a block that asks for a pickaxe broken without one nothing.
+    /// drop their dirt, stone its cobblestone, coal ore its coal, diamond and emerald ore their gem,
+    /// lapis ore four to nine lapis and redstone ore four or five redstone, leaves their sapling one
+    /// time in twenty and an oak's or a dark oak's an apple one in two hundred, the grasses a seed of
+    /// wheat one time in eight, a dead bush up to two sticks, glass and ice nothing, wheat its wheat
+    /// and a few seeds, any other block the item that places it, and a block that asks for a pickaxe
+    /// broken without one nothing, as Minecraft's do.
     /// </summary>
     public static IEnumerable<(Item Item, int Count)> Of(BlockId block, Random random, Item? held = null)
     {
         if (!Harvests(block, held)) yield break;
         var item = Blocks.Get(block).Item;
+        if (BlockGroups.Leaves.TryGetValue(item, out var sapling))
+        {
+            if (random.Next(20) == 0) yield return (Items.Of(sapling), 1);
+            if (item is BlockId.OakLeaves or BlockId.DarkOakLeaves && random.Next(200) == 0) yield return (Items.Apple, 1);
+            yield break;
+        }
+        if (BlockGroups.Glass.Contains(item)) yield break;
         switch (item)
         {
-            case BlockId.OakLeaves:
-                // An apple now and then, one in two hundred, as Minecraft's oak leaves drop.
-                if (random.Next(200) == 0) yield return (Items.Apple, 1);
+            case BlockId.Air or BlockId.Water or BlockId.Bedrock or BlockId.Ice:
                 yield break;
-            case BlockId.Air or BlockId.Water or BlockId.Bedrock or BlockId.BirchLeaves or BlockId.SpruceLeaves or BlockId.Glass or BlockId.Ice:
+            case BlockId.ShortGrass or BlockId.TallGrass or BlockId.Fern:
+                if (random.Next(8) == 0) yield return (Items.Of(BlockId.Wheat), 1);
+                yield break;
+            case BlockId.DeadBush:
+                if (random.Next(3) is > 0 and var sticks) yield return (Items.Stick, sticks);
+                yield break;
+            case BlockId.DiamondOre:
+                yield return (Items.Diamond, 1);
+                yield break;
+            case BlockId.EmeraldOre:
+                yield return (Items.Emerald, 1);
+                yield break;
+            case BlockId.LapisOre:
+                yield return (Items.LapisLazuli, 4 + random.Next(6));
+                yield break;
+            case BlockId.RedstoneOre:
+                yield return (Items.Redstone, 4 + random.Next(2));
                 yield break;
             case BlockId.Grass or BlockId.Farmland or BlockId.DirtPath:
                 yield return (Items.Of(BlockId.Dirt), 1);
@@ -94,12 +118,21 @@ public static class Loot
     public static bool Harvests(BlockId block, Item? held) =>
         ToolFor(block) is not (ToolKind.Pickaxe, true) || held?.Tool == ToolKind.Pickaxe && held.Tier >= TierFor(block);
 
-    /// <summary>The tier of pickaxe a block's ore asks, 2 for iron ore and 1 for the rest.</summary>
-    public static int TierFor(BlockId block) => block == BlockId.IronOre ? 2 : 1;
+    /// <summary>The tier of pickaxe a block's ore asks, 2 for iron, copper and lapis ore, 3 for gold, redstone, diamond and emerald ore and 1 for the rest.</summary>
+    public static int TierFor(BlockId block) => block switch
+    {
+        BlockId.IronOre or BlockId.CopperOre or BlockId.LapisOre => 2,
+        BlockId.GoldOre or BlockId.RedstoneOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
+        _ => 1,
+    };
 
     /// <summary>The kind of tool a block breaks fastest to, and whether it drops anything broken without one, as Minecraft's stone does not.</summary>
     public static (ToolKind Tool, bool Needed) ToolFor(BlockId block) => Blocks.Get(block).Item switch
     {
+        var wood when BlockGroups.Logs.Contains(wood) || BlockGroups.Planks.Contains(wood) => (ToolKind.Axe, false),
+        var clay when BlockGroups.Terracotta.Contains(clay) => (ToolKind.Pickaxe, true),
+        BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => (ToolKind.Pickaxe, true),
+        BlockId.RedSand or BlockId.Clay => (ToolKind.Shovel, false),
         BlockId.Stone or BlockId.Cobblestone or BlockId.CoalOre or BlockId.IronOre or BlockId.Furnace or BlockId.Sandstone or BlockId.StoneBricks or BlockId.Magma
             or BlockId.WhiteConcrete or BlockId.RedConcrete or BlockId.GreenConcrete or BlockId.BlueConcrete
             or BlockId.Lantern or BlockId.SoulLantern or BlockId.StoneSlab or BlockId.CobblestoneSlab or BlockId.SandstoneSlab
@@ -120,6 +153,9 @@ public static class Loot
     public static float Resistance(BlockId block) => Blocks.Get(block).Item switch
     {
         BlockId.Bedrock => 3_600_000,
+        var wood when BlockGroups.Logs.Contains(wood) || BlockGroups.Planks.Contains(wood) => 3,
+        var clay when BlockGroups.Terracotta.Contains(clay) => 4.2f,
+        BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
         BlockId.Water => 100,
         BlockId.Stone or BlockId.Cobblestone or BlockId.StoneBricks or BlockId.StoneSlab or BlockId.CobblestoneSlab
             or BlockId.CobblestoneStairs or BlockId.StoneBrickStairs => 6,
@@ -132,6 +168,14 @@ public static class Loot
     public static float Hardness(BlockId block) => Blocks.Get(block).Item switch
     {
         BlockId.Torch or BlockId.SoulTorch or BlockId.EndRod or BlockId.Wheat => 0,
+        var plant when BlockGroups.Plants.Contains(plant) => 0,
+        var leaves when BlockGroups.Leaves.ContainsKey(leaves) => 0.2f,
+        var glass when BlockGroups.Glass.Contains(glass) => 0.3f,
+        var wool when BlockGroups.Wool.Contains(wool) => 0.8f,
+        var clay when BlockGroups.Terracotta.Contains(clay) => 1.25f,
+        BlockId.RedSand => 0.5f,
+        BlockId.Clay => 0.6f,
+        BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
         BlockId.OakLeaves or BlockId.BirchLeaves or BlockId.SpruceLeaves or BlockId.Snow => 0.2f,
         BlockId.Glass or BlockId.Glowstone or BlockId.SeaLantern => 0.3f,
         BlockId.Cactus => 0.4f,

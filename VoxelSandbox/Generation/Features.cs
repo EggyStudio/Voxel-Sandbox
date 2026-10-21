@@ -173,6 +173,31 @@ public sealed class CactusFeature : IFeature
     }
 }
 
+/// <summary>
+/// A plant on the ground, one of a few kinds by weight, as Minecraft's patches of grass and its
+/// flowers scatter them, growing only into air, so none stands under water.
+/// </summary>
+public sealed class PlantFeature((BlockId Plant, int Weight)[] kinds, params BlockId[] grounds) : IFeature
+{
+    private readonly int _total = kinds.Sum(k => k.Weight);
+
+    public int Reach => 0;
+
+    public bool GrowsOn(BlockId ground) => Array.IndexOf(grounds, ground) >= 0;
+
+    public void Place(ColumnClip clip, int x, int y, int z, uint hash)
+    {
+        if (y + 1 >= ChunkColumn.Height) return;
+        var pick = (int)(hash % (uint)_total);
+        foreach (var (plant, weight) in kinds)
+            if ((pick -= weight) < 0)
+            {
+                clip.Grow(x, y + 1, z, plant);
+                return;
+            }
+    }
+}
+
 /// <summary>A hash of a place and a seed, the same on every run, so the features a seed gives repeat.</summary>
 public static class PlaceHash
 {

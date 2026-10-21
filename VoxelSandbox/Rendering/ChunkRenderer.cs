@@ -78,7 +78,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         public readonly Matrix4x4 Transform = transform;
         public readonly Vector3 Middle = middle;
-        public readonly Part Solid = new(), SeeThrough = new();
+        public readonly Part Solid = new(), SeeThrough = new(), Cutout = new();
         public readonly List<(int Surface, Matrix4x4 At)> Emitters = [];
     }
 
@@ -87,8 +87,11 @@ public sealed class ChunkRenderer : IDisposable
     // makes the draw blend, which the vertices' alpha alone does not. The see-through faces cast no
     // shadow, which keeps them out of the scene's distance field too, since the field holds a
     // see-through mesh as solid and a window of glass would then shut out the indirect light
-    // through it. Both are drawn through the game's terrain shader, the engine's light with a haze.
-    private readonly ModelMaterial _terrain, _clear;
+    // through it. A section's plants are a third mesh, cut out where a pack's texture is clear, kept
+    // apart so the solid faces keep the depth test that runs before their pixels are lit, and casting
+    // no shadow, so the scene's distance field holds no grass. All three are drawn through the game's
+    // terrain shader, the engine's light with a haze.
+    private readonly ModelMaterial _terrain, _clear, _cutout;
     private readonly Shader _shader;
     private readonly int _fogColor, _fogStart, _fogEnd, _atlas, _atlasLayout;
     private Texture2D _atlasTexture;
@@ -117,6 +120,7 @@ public sealed class ChunkRenderer : IDisposable
         Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
         _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 0.08f, CastsShadows = false, Shader = _shader };
+        _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, CastsShadows = false, Shader = _shader };
         Fog(Color.White, float.MaxValue, float.MaxValue);
     }
 
@@ -259,7 +263,7 @@ public sealed class ChunkRenderer : IDisposable
         }
         if (!_mesher.Mesh(world, key)) return false;
 
-        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Emitters.Count == 0)
+        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.Emitters.Count == 0)
         {
             Forget(key);
             return true;
@@ -269,6 +273,7 @@ public sealed class ChunkRenderer : IDisposable
 
         entry.Solid.Take(_mesher.Solid);
         entry.SeeThrough.Take(_mesher.SeeThrough);
+        entry.Cutout.Take(_mesher.Cutout);
 
         entry.Emitters.Clear();
         foreach (var (index, block) in _mesher.Emitters)
@@ -284,6 +289,7 @@ public sealed class ChunkRenderer : IDisposable
         if (!_sections.Remove(key, out var entry)) return;
         entry.Solid.Forget();
         entry.SeeThrough.Forget();
+        entry.Cutout.Forget();
     }
 
     /// <summary>Lets go of the meshes of a column's sections, as it unloads.</summary>
@@ -326,6 +332,12 @@ public sealed class ChunkRenderer : IDisposable
                 DrawMesh(entry.Solid.Mesh, _terrain, entry.Transform);
                 draws++;
                 triangles += entry.Solid.Mesh.TriangleCount;
+            }
+            if (entry.Cutout.Mesh.IsValid)
+            {
+                DrawMesh(entry.Cutout.Mesh, _cutout, entry.Transform);
+                draws++;
+                triangles += entry.Cutout.Mesh.TriangleCount;
             }
             if (entry.SeeThrough.Mesh.IsValid) _seeThrough.Add((Vector3.DistanceSquared(entry.Middle, eye), entry));
         }

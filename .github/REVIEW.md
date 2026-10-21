@@ -5,33 +5,31 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `5064479`, item 40, the screenshot on F2, and nothing else, carrying the review's
-file: a screenshots folder beside the saves made on first use, the name from the time in the
-source's form with a count from the second file in a second, each name reserved from the moment it
-is asked since the engine writes the file only once the frame is presented; F2 calling the engine's
-capture, the HUD's line saying the file was saved from the next frame over a band above the hearts
-for six seconds and fading, so it is not in the picture; a transient run writing nothing and saying
-so; the engine's own performance window toggled on F2 by an internal key nothing public changes, so
-the game submits a window of that name each frame placed far off screen, into which the engine's
-window appends out of sight, until the engine's item 73 gives it a key, said in the comment and the
-README; the README's controls row and the folder in the saves paragraph; tests of the name and the
-count, and the play script's second run keeping its files in a temporary data folder with an empty
-pack list, pressing F2 and checking a file of the window's size named as the source names; 162
-tests, the strict build clean, the play script under the layer clean. Read at 03:50 on 2026-10-21
-and pushed at 03:50, its build run green at 03:59; the build run of `e14134d` had ended green at
-03:49. Shortly before 03:53 the owner named Simple Grass Flowers, Decision 20 and item 41. Shortly
-before 03:57 the owner named their modpack's gallery as the look, Decision 21, items 42 and 43 and
-words in items 25, 27 and 32. Next item 25, the biomes first, its work stashed while item 40 was
-made and back in the tree, then item 41, then item 39, then the items in order; item 38's second
-part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+Reviewed up to `a6ec820`, item 25's first commit, the biomes, and nothing else, carrying the
+review's file: eight biomes chosen after the mountains and the cold by the climate's heat and wet,
+the badlands hottest and driest, the desert, the swamp, the jungle, the savanna, the cherry grove on
+raised ground, the dark forest, the forest, the birch forest and the plains; the land shaped by
+biome, the badlands rising in mesas in steps of five with bare banded terracotta above the sea and
+red sand below, the swamps sunk to the sea's level by a noise, the rivers in valleys with the
+channel cut three under the sea, the beaches where the basin sinks the land except in the cold; the
+colors from the biome overhaul and the source blended by each biome's smooth weight; the trees'
+counts a thousand with oaks standing in until the trees commit; red sand, terracotta plain and in
+six colors and clay with their pack textures, the bands by height and seed; `voxel.biome` naming the
+nearest place; seed 1's shares within 4,096 blocks read, plains 32 percent and badlands under one;
+177 tests with 15 of biomes, the play script's walk standing over each of the eight on seed 1 with
+its name read back and captured, the strict build clean. Read at 04:02 on 2026-10-21 and pushed at
+04:02; the build run of `5064479` had ended green at 03:59. The game stays on 5.2.190, nothing yet
+needing 5.2.204. Shortly before 04:02 the owner asked about the land's edge against the dark lower
+sky, item 44. Next item 25's blocks commit, then its trees, then item 44, then item 41, then item
+39, then the items in order; item 38's second part when the package brings the call and the glow
+lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `5064479` came, item 40, the screenshot on F2, and nothing else, carrying the review's
+file. Pushed at 03:50, its build run green at 03:59.
 
 Before it, `e14134d` came, item 24's fourth commit, the fetch of the three packs at first start,
 after `c5df182`, the windows' titles off, and nothing else, each carrying the review's file. Both
 pushed at 03:40, their build run green at 03:49.
-
-Before it, `056bb7b` came, item 24's third commit, the setting, the list and the reload, and nothing
-else, carrying the review's file. Pushed at 03:29, its build run green at 03:40.
 
 ## Now
 
@@ -576,6 +574,21 @@ else, carrying the review's file. Pushed at 03:29, its build run green at 03:40.
     beside the modpack's. Tests: the sun's color at four hours and the haze's density by distance
     and height. After item 26. One or two commits.
 
+44. **The land's fading edge meets a sky of the haze's color below the horizon.** The owner asked
+    shortly before 04:02 on 2026-10-21, seeing the cherry grove's capture from the scripted run's
+    walk, what could be done about the chunks' fading border contrasting with the dark lower half of
+    the skybox, and whether distance fog would do it. The reading: the terrain shader's haze fades
+    the land toward the sky's horizon color from 0.65 to 0.95 of the render distance, and past the
+    last section the skybox's lower half shows, which the sky's equirectangular image paints dark
+    since it lights the scene through the environment map too, so the fogged edge meets a darker sky
+    than the color it fades into, most at small render distances; a longer fog alone would not mend
+    it. The mend, as the source does it: the game draws a dome around the eye below the horizon in
+    the haze's color after the skybox, blending into the sky over a few degrees above the horizon,
+    so the edge fades into the color it meets, the image's darker lower half kept for the lighting
+    alone; the dome's color following the haze's by the hour when item 43 gives the haze its tint.
+    Tests: a capture's pixels read across the land's edge at the horizon with no step over a pixel,
+    and the dome's color equal to the haze's. One commit, small, after item 25.
+
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
     there, and the small panel of boxes with icons is missing. The game has creative and survival;
@@ -677,7 +690,9 @@ else, carrying the review's file. Pushed at 03:29, its build run green at 03:40.
     not a copy, since its license forbids redistribution (Decision 14). Three commits, biomes,
     blocks, trees, each with the scripted run's walk through one of each and a capture. The badlands
     with its terracotta bands around turquoise pools and a cherry grove join the biomes, and a
-    lantern and the flowers the look shows join the blocks (Decision 21).
+    lantern and the flowers the look shows join the blocks (Decision 21). First commit done at
+    `a6ec820` on 2026-10-21, the eight biomes with their land, colors and new blocks, as the head
+    says; the blocks and the trees follow.
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's

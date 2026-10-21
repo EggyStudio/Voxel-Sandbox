@@ -22,6 +22,12 @@ public static class Smelting
         [I(BlockId.Sand)] = I(BlockId.Glass),
         [I(BlockId.Cobblestone)] = I(BlockId.Stone),
         [I(BlockId.IronOre)] = Items.IronIngot,
+        [I(BlockId.CopperOre)] = Items.CopperIngot,
+        [I(BlockId.GoldOre)] = Items.GoldIngot,
+        [I(BlockId.JungleLog)] = Items.Charcoal,
+        [I(BlockId.AcaciaLog)] = Items.Charcoal,
+        [I(BlockId.DarkOakLog)] = Items.Charcoal,
+        [I(BlockId.CherryLog)] = Items.Charcoal,
         [I(BlockId.OakLog)] = Items.Charcoal,
         [I(BlockId.BirchLog)] = Items.Charcoal,
         [I(BlockId.SpruceLog)] = Items.Charcoal,
@@ -35,6 +41,7 @@ public static class Smelting
     {
         _ when item == Items.Coal || item == Items.Charcoal => 80,
         _ when item == Items.Stick => 5,
+        BlockId wood when BlockGroups.Logs.Contains(wood) || BlockGroups.Planks.Contains(wood) => 15,
         _ when item.Tool != ToolKind.None && item.Key.StartsWith("wooden_", StringComparison.Ordinal) => 10,
         BlockId.OakLog or BlockId.BirchLog or BlockId.SpruceLog or BlockId.OakPlanks or BlockId.SprucePlanks or BlockId.BirchPlanks
             or BlockId.CraftingTable or BlockId.OakFence or BlockId.OakStairs or BlockId.SpruceStairs => 15,

@@ -34,9 +34,11 @@ public enum StairForm
 
 /// <summary>
 /// A box of a block smaller than its cell, between two corners in the cell's own space from 0 to 1,
-/// of one surface, its top face moved by <see cref="Lean"/>, as a torch on a wall leans out from it.
+/// of one surface, its top face moved by <see cref="Lean"/>, as a torch on a wall leans out from it,
+/// or where it is a <see cref="Plane"/> a flat wall standing from its first corner across to its
+/// second, as a plant's are.
 /// </summary>
-public readonly record struct Piece(Vector3 From, Vector3 To, int Surface, Vector3 Lean = default)
+public readonly record struct Piece(Vector3 From, Vector3 To, int Surface, Vector3 Lean = default, bool Plane = false)
 {
     /// <summary>Whether its surface is emissive, so it is drawn as a lamp's cube rather than as faces of its section.</summary>
     public bool Glows => Surfaces.All[Surface].Emits;
@@ -69,10 +71,12 @@ public readonly record struct Box(Vector3 Min, Vector3 Max)
 /// </remarks>
 public sealed class BlockShape
 {
-    public BlockShape(Facing facing, Piece[] pieces, bool falls = true, bool solid = false, bool upper = false, bool open = false, Box[]? collision = null, StairForm? form = null)
+    public BlockShape(Facing facing, Piece[] pieces, bool falls = true, bool solid = false, bool upper = false, bool open = false, Box[]? collision = null, StairForm? form = null,
+        bool cutout = false)
     {
         Facing = facing;
         Form = form;
+        Cutout = cutout;
         Falls = falls;
         Upper = upper;
         Open = open;
@@ -110,6 +114,12 @@ public sealed class BlockShape
 
     /// <summary>The form of stairs, or null for a shape that is not stairs.</summary>
     public StairForm? Form { get; }
+
+    /// <summary>
+    /// Whether its faces are cut out where a pack's texture is clear, as a plant's are, drawn apart
+    /// from the solid faces so those keep the depth test that runs before their pixels are lit.
+    /// </summary>
+    public bool Cutout { get; }
 
     public IReadOnlyList<Piece> Pieces { get; }
 
@@ -269,14 +279,40 @@ public sealed class BlockShape
         static Box Tall(float x0, float z0, float x1, float z1) => new(new Vector3(x0, 0, z0) / 16, new Vector3(x1, 24, z1) / 16);
     }
 
+    /// <summary>
+    /// A plant of two flat walls crossed from corner to corner of the cell, as Minecraft draws its grasses,
+    /// saplings and flowers, so many sixteenths high, its lower part of one surface and from
+    /// <paramref name="split"/> up of another, as a flower's stem and its petals are. A pack's texture
+    /// lies across the walls from the cell's foot, so its plant drawn at the bottom of the texture
+    /// shows whole, and its clear pixels are cut out. It falls when the block under it is broken.
+    /// </summary>
+    public static BlockShape Plant(int lower, float height, int upper = -1, float split = 0)
+    {
+        List<Piece> pieces = [];
+        (float From, float To, int Surface)[] parts = split > 0 && upper >= 0 ? [(0, split, lower), (split, height, upper)] : [(0, height, lower)];
+        foreach (var (from, to, surface) in parts)
+        {
+            pieces.Add(Wall(0, from, 0, 16, to, 16, surface));
+            pieces.Add(Wall(0, from, 16, 16, to, 0, surface));
+        }
+        return new BlockShape(Facing.Up, [.. pieces], cutout: true);
+    }
+
+    // A flat wall from one corner across to another in sixteenths, standing from the lower height to the upper.
+    private static Piece Wall(float x0, float y0, float z0, float x1, float y1, float z1, int surface) =>
+        new(new Vector3(x0, y0, z0) / 16, new Vector3(x1, y1, z1) / 16, surface, Plane: true);
+
+    /// <summary>A carpet of petals a sixteenth high over the ground, as the cherry grove's pink petals lie, cut out where its texture is clear.</summary>
+    public static BlockShape Carpet(int surface) => new(Facing.Up, [Px(0, 0, 0, 16, 1, 16, surface)], cutout: true);
+
     /// <summary>Ripe wheat, four thin stalks' walls crossed as Minecraft's crops are, which falls when its farmland is broken.</summary>
     public static BlockShape Wheat(int stalks) => new(Facing.Up,
     [
-        Px(0, 0, 3.5f, 16, 14, 4.5f, stalks),
-        Px(0, 0, 11.5f, 16, 14, 12.5f, stalks),
-        Px(3.5f, 0, 0, 4.5f, 14, 16, stalks),
-        Px(11.5f, 0, 0, 12.5f, 14, 16, stalks),
-    ]);
+        Wall(0, 0, 4, 16, 14, 4, stalks),
+        Wall(0, 0, 12, 16, 14, 12, stalks),
+        Wall(4, 0, 0, 4, 14, 16, stalks),
+        Wall(12, 0, 0, 12, 14, 16, stalks),
+    ], cutout: true);
 
     /// <summary>
     /// A half of a door, a panel three sixteenths thick across the side of its cell away from

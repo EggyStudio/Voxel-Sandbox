@@ -132,13 +132,20 @@ public sealed class SectionMesher
     /// <summary>The last section's faces of see-through blocks, glass, ice and water, each vertex's alpha its surface's.</summary>
     public Faces SeeThrough { get; } = new();
 
+    /// <summary>The last section's faces of plants, which a pack's texture cuts out where it is clear.</summary>
+    public Faces Cutout { get; } = new();
+
     /// <summary>The emissive blocks of the last section, by their index in it.</summary>
     public List<(int Index, BlockId Block)> Emitters { get; } = [];
 
     // The six directions in the order +x, -x, +y, -y, +z, -z, each face's corners counterclockwise
     // seen from outside the block, which is the side the model pass draws. The terrain shader holds
     // the same six normals, by the face a vertex's packed bytes give.
-    private static readonly Vector3[] Normals = [Vector3.UnitX, -Vector3.UnitX, Vector3.UnitY, -Vector3.UnitY, Vector3.UnitZ, -Vector3.UnitZ];
+    private static readonly Vector3[] Normals = [Vector3.UnitX, -Vector3.UnitX, Vector3.UnitY, -Vector3.UnitY, Vector3.UnitZ, -Vector3.UnitZ, Vector3.UnitY, Vector3.UnitY];
+
+    // A plant's wall along x and along z, the two faces after the six, lit as if it faced up and its
+    // texture laid along it, as the terrain shader's table holds them.
+    private const int WallAlongX = 6, WallAlongZ = 7;
     private static readonly int[] Steps = [1, -1, P * P, -P * P, P, -P];
     private static readonly Vector3[][] Corners =
     [
@@ -192,12 +199,13 @@ public sealed class SectionMesher
         return 1 - 0.98f * dark * dark * dark * dark;
     }
 
-    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/> and <see cref="Emitters"/>.</summary>
+    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/>, <see cref="Cutout"/> and <see cref="Emitters"/>.</summary>
     /// <returns>False when one of the eight columns around it is not loaded, so its edges cannot be told yet, and nothing is meshed.</returns>
     public bool Mesh(VoxelWorld world, SectionKey key)
     {
         Solid.Clear();
         SeeThrough.Clear();
+        Cutout.Clear();
         Emitters.Clear();
 
         for (int dz = -1; dz <= 1; dz++)
@@ -324,9 +332,11 @@ public sealed class SectionMesher
     // The pieces of a block smaller than its cell that are not emissive, each a box of six faces,
     // its top's corners moved by its lean. A face on the cell's side against an opaque block is
     // left out, as a torch's foot on the ground is. Every corner takes the light of the block's own
-    // cell, since the pieces stand inside it, and none is shaded by the blocks around.
+    // cell, since the pieces stand inside it, and none is shaded by the blocks around. A plant's
+    // pieces go with the faces cut out where a pack's texture is clear.
     private void AddShape(BlockShape shape, int at, Vector3 block)
     {
+        var faces = shape.Cutout ? Cutout : Solid;
         int sky = _light[at] >> 4, lit = _light[at] & 15;
         var kept = LightLevels ? MathF.Pow(Lit(Math.Max(sky, lit)), 1 / 2.2f) : 1;
         var place = (int)block.Z * Section.Size + (int)block.X;
@@ -334,6 +344,11 @@ public sealed class SectionMesher
         {
             if (piece.Glows) continue;
             var (tiles, color, albedo) = Atlas.Paint(piece.Surface, _column.GrassTint[place], _column.FoliageTint[place]);
+            if (piece.Plane)
+            {
+                AddWall(faces, piece, block, kept, color, tiles, albedo);
+                continue;
+            }
             var size = piece.To - piece.From;
             for (int face = 0; face < 6; face++)
             {
@@ -343,19 +358,44 @@ public sealed class SectionMesher
 
                 // A leaning face keeps the normal of the face it leans from, the terrain shader holding
                 // six, which a wall torch's stick, leaning by 23 degrees, shows little of.
-                var first = (uint)Solid.Count;
+                var first = (uint)faces.Count;
                 for (int i = 0; i < 4; i++)
                 {
                     var corner = Corners[face][i];
-                    Solid.Add(block + piece.From + corner * size + corner.Y * piece.Lean, face, i, kept, color, tiles, albedo);
+                    faces.Add(block + piece.From + corner * size + corner.Y * piece.Lean, face, i, kept, color, tiles, albedo);
                 }
-                Solid.Indices.Add(first);
-                Solid.Indices.Add(first + 1);
-                Solid.Indices.Add(first + 2);
-                Solid.Indices.Add(first);
-                Solid.Indices.Add(first + 2);
-                Solid.Indices.Add(first + 3);
+                faces.Indices.Add(first);
+                faces.Indices.Add(first + 1);
+                faces.Indices.Add(first + 2);
+                faces.Indices.Add(first);
+                faces.Indices.Add(first + 2);
+                faces.Indices.Add(first + 3);
             }
+        }
+    }
+
+    // A plant's flat wall, from its piece's first corner across to its second, drawn from both sides
+    // with no edges, as Minecraft's crossed planes are. Both sides are lit as if they faced up, as
+    // Minecraft lights its plants with no shade by the way they face, and take the wall's texture
+    // laid along the axis it runs most along, and each side's corners run counterclockwise seen from it.
+    private static void AddWall(Faces faces, Piece piece, Vector3 block, float kept, Color color, uint tiles, Color albedo)
+    {
+        var (a, b) = (piece.From, piece.To);
+        Span<Vector3> quad = [new(a.X, a.Y, a.Z), new(b.X, a.Y, b.Z), new(b.X, b.Y, b.Z), new(a.X, b.Y, a.Z)];
+        var across = new Vector3(b.Z - a.Z, 0, a.X - b.X);
+        var face = MathF.Abs(b.X - a.X) >= MathF.Abs(b.Z - a.Z) ? WallAlongX : WallAlongZ;
+        foreach (var side in (ReadOnlySpan<float>)[1, -1])
+        {
+            var normal = across * side;
+            var turned = Vector3.Dot(Vector3.Cross(quad[1] - quad[0], quad[2] - quad[0]), normal) < 0;
+            var first = (uint)faces.Count;
+            for (int i = 0; i < 4; i++) faces.Add(block + quad[turned ? 3 - i : i], face, i, kept, color, tiles, albedo);
+            faces.Indices.Add(first);
+            faces.Indices.Add(first + 1);
+            faces.Indices.Add(first + 2);
+            faces.Indices.Add(first);
+            faces.Indices.Add(first + 2);
+            faces.Indices.Add(first + 3);
         }
     }
 

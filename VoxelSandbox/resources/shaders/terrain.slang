@@ -31,9 +31,10 @@ struct TerrainOutput
 };
 
 // The six faces' outward normals in the order +x, -x, +y, -y, +z, -z, as SectionMesher's Normals
-// lays them.
-static const float3 Normals[6] = {
-    float3(1, 0, 0), float3(-1, 0, 0), float3(0, 1, 0), float3(0, -1, 0), float3(0, 0, 1), float3(0, 0, -1),
+// lays them, then a plant's walls along x and along z, lit as if they faced up, as Minecraft lights
+// its plants with no shade by the way they face.
+static const float3 Normals[8] = {
+    float3(1, 0, 0), float3(-1, 0, 0), float3(0, 1, 0), float3(0, -1, 0), float3(0, 0, 1), float3(0, 0, -1), float3(0, 1, 0), float3(0, 1, 0),
 };
 
 // The packed bytes as SectionMesher.Pack writes them. The first uint holds the face at its low 3
@@ -65,7 +66,9 @@ float2 across(float3 world, uint face)
     case 2: return float2(world.x, world.z);
     case 3: return float2(world.x, -world.z);
     case 4: return float2(world.x, -world.y);
-    default: return float2(-world.x, -world.y);
+    case 5: return float2(-world.x, -world.y);
+    case 6: return float2(world.x, -world.y);
+    default: return float2(world.z, -world.y);
     }
 }
 
