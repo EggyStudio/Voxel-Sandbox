@@ -334,6 +334,15 @@ shaded, and each kind of tool keeps one shape, its head in the color of its mate
 and the inventory window draw the atlas as a texture sampled without filtering, each icon at twice
 its size.
 
+## The interface
+
+The interface is the game's own pictures in a flat look, a dark outline, a pixel of light above and
+of shade below and plain colors, drawn at a whole number of the screen's pixels to each of its own,
+the largest at which 320 by 240 of them fit the window, 3 at 1280 by 720, as Minecraft scales its
+interface. The hotbar is Minecraft's nine slots 20 apart along the bottom, the chosen one framed in
+green, with the name of what it holds above the hearts and the food, which sit over its two halves
+as Minecraft's do. A window's panel and a button are stretched between edges that keep their size.
+
 ## Tools and crafting
 
 A pickaxe, an axe, a shovel and a sword are made of wood, stone or iron. A tool breaks the blocks
@@ -379,13 +388,16 @@ iron pickaxe, and the other iron tools come in their shapes.
 ## Health and hunger
 
 In survival the player has Minecraft's 20 points of health and of food, drawn as ten hearts and ten
-drumsticks over the hotbar. Walking, sprinting, swimming, jumping, breaking blocks, hitting and
-healing tire the player, and each four points of that exhaustion take a point of the saturation food
-leaves, or of the food once none is left. With 18 food or more the player heals a point every four
-seconds, with none starves a point every four seconds down to one, and with six or less cannot
-sprint. Holding the right button with food eats it over a second and a half while the player is
-hungry. Raw porkchop or beef feeds three points, raw mutton or chicken two, an apple four and bread,
-three wheat in a row, five. Oak leaves drop an apple once in two hundred.
+drumsticks over the hotbar, with bubbles of breath over the food while it runs short. Each row fades
+out once it is full and has not changed for three seconds and shows again at once when it changes,
+as HUD mods of Minecraft hide theirs, unless the settings turn the fading off. Walking, sprinting,
+swimming, jumping, breaking blocks, hitting and healing tire the player, and each four points of
+that exhaustion take a point of the saturation food leaves, or of the food once none is left. With
+18 food or more the player heals a point every four seconds, with none starves a point every four
+seconds down to one, and with six or less cannot sprint. Holding the right button with food eats it
+over a second and a half while the player is hungry. Raw porkchop or beef feeds three points, raw
+mutton or chicken two, an apple four and bread, three wheat in a row, five. Oak leaves drop an apple
+once in two hundred.
 
 A fall of more than three blocks takes a point for each block past three, a fifth of that onto a hay
 bale and none into water. Under water the player holds fifteen seconds of breath, shown as bubbles

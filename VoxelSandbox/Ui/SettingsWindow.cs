@@ -153,6 +153,8 @@ public sealed class SettingsWindow
         if (ImGui.Checkbox($"Clouds, {game.Clouds.Faces} faces###clouds", ref clouds)) game.Clouds.Shown = clouds;
         var distance = game.RenderDistance;
         if (ImGui.SliderInt("Render distance", ref distance, 2, 16)) game.RenderDistance = distance;
+        var fades = game.Fade.Enabled;
+        if (ImGui.Checkbox("Full hearts, food and breath fade", ref fades)) game.Fade.Enabled = fades;
         var mode = (int)game.Mode;
         if (ImGui.Combo("Mode", ref mode, Modes, Modes.Length)) game.Mode = (GameMode)mode;
         var still = game.Mobs.Still;

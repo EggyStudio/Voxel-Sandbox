@@ -5,33 +5,24 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `5b2f9d3`, item 21's second commit, the ray and the outline, after `baf26b9`, its
-first, the stairs' corners, and nothing else, the first carrying the review's file. The corners:
-five forms of stairs, straight and the inner and outer corners each way, the source's models as its
-block states turn them, checked against the 26.3 files, the form read from the four neighbors by the
-source's own rule, cached per block and form, and read by the world's shapes, the collision and the
-mesher alike through one lookup with the fence's joins; placing already read the hit's half and the
-player's facing as the source does, so it stands; a ring of stairs climbing inward gives a hip
-roof's outer corners without a notch. The ray and the outline: each piece's box tested and the
-nearest entry taken, so a ray through a stair's open quarter reaches the block behind and between a
-fence's rails too; the outline the edges of the pieces together, cut where any box begins or ends
-and kept where the places around hold one or three inside, so a stair shows its step's profile with
-the crease under the step and no line across its back, drawn 0.4 percent out, the breaking darkening
-each piece's box; captures of the outline on stairs, an outer corner, a fence and a slab. Tests of
-the forms from neighbors, the quarters climbing each way and turned over, the ray through the open
-quarter and onto the low step, the stair's crease and the slab's twelve edges; 142 tests, the strict
-build clean, the play script green on the GPU; the README's shapes and pieces paragraphs. Read at
-02:11 on 2026-10-21 and pushed at 02:12; the build run of `9bd58e3` had ended green at 02:06. Next
-item 22, the ambient occlusion's strength, then the items in order; item 38's second part when the
-package brings the call and the glow lights' bound; the AGENTS.md row naming the scripts still waits
-on the owner's word.
+Reviewed up to `bf13ff6`, item 22, the ambient occlusion's strength, and nothing else, carrying the
+review's file: the mesher's corner strength, 1 by default, a corner's shade the light kept times one
+less the strength times one less the level, so today's four levels stand at 1 and every corner is 1
+at 0; the renderer passing it clamped; a slider beside the corners' switch in the settings, shading
+the sections again once let go; `voxel.corners <strength>`; a test of the corner between two walls
+at 0.45, 0.725 and 1; captures of a concrete corner at 1, 0.5 and 0; the README's smooth lighting
+paragraph with the levels and the strength; 143 tests, the strict build clean, the play script green
+on the GPU. Read at 02:15 on 2026-10-21 and pushed at 02:21; the build run of `5b2f9d3` had ended
+green at 02:21. Next item 23, the interface as the game's own in Bare Bones' look, then the items in
+order; item 38's second part when the package brings the call and the glow lights' bound; the
+AGENTS.md row naming the scripts still waits on the owner's word.
+
+Before it, `5b2f9d3` came, item 21's second commit, the ray and the outline, after `baf26b9`, its
+first, the stairs' corners, and nothing else, the first carrying the review's file. Pushed at 02:12,
+its build run green in 9 minutes.
 
 Before it, `9bd58e3` came, item 20, the inventory's quick moves and the sort, and nothing else,
 carrying the review's file. Pushed at 02:01, its build run green.
-
-Before it, `d9c2f8d` came, item 19, the four modes and the switcher, after `2b912ee`, the mob
-shader's cost in the README, and nothing else, carrying the review's file. Pushed at 01:50, its
-build run green in 10 minutes.
 
 ## Now
 
@@ -531,7 +522,8 @@ build run green in 10 minutes.
 22. **The baked ambient occlusion has a strength.** The owner's word: the AO baked into the mesh
     needs a strength parameter. The mesher bakes four fixed levels; it takes a strength from zero to
     one that scales the levels toward one, set in the settings and by a command, the meshes built
-    again when it changes, the default the levels of today. One commit.
+    again when it changes, the default the levels of today. One commit. Done at `bf13ff6` on
+    2026-10-21, as the head says.
 
 23. **The interface drawn as the game's own, in the source's style, ImGui kept for the debug
     windows.** The owner's word: the UI is very ImGui-styled. The hotbar and HUD are drawn shapes

@@ -120,6 +120,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The switcher F3 held with F4 opens.</summary>
     public ModeSwitcher Switcher { get; } = new();
 
+    /// <summary>How much of the hearts, the food and the breath the HUD shows, each fading once full and unchanged.</summary>
+    public VitalsFade Fade { get; } = new();
+
     /// <summary>The block being broken in survival, and how far from 0 to 1, as of this frame.</summary>
     public (int X, int Y, int Z)? BreakingAt { get; private set; }
 
@@ -265,7 +268,12 @@ public sealed class VoxelGame : IDisposable
         var alive = !Mode.Lives() || !Vitals.Dead;
         Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
         Player.Update(World, seconds, look: _captured && alive, move: keys && alive);
-        if (Mode.Lives()) Live(seconds);
+        if (Mode.Lives())
+        {
+            Live(seconds);
+            Fade.Update(Vitals, seconds);
+        }
+        else Fade.Reset();
         var hunted = Mode.Lives() && !Vitals.Dead;
         Mobs.Update(World, Player.Body, Player.Eye, Sky.Hour, seconds, hunted);
         if (Mode.Lives()) Mobs.Spawn(World, Player.Body.Position, Sky.Hour, seconds);
@@ -709,8 +717,8 @@ public sealed class VoxelGame : IDisposable
         {
             if (Mode.Touches()) Hud.DrawCrosshair();
             if (Eating > 0) Hud.DrawEating(Eating);
-            if (Mode.Touches()) Hud.DrawHotbar(Hotbar, Mode.Lives() ? 22 : 0);
-            if (Mode.Lives()) Hud.DrawVitals(Vitals);
+            if (Mode.Touches()) Hud.DrawHotbar(Hotbar, Mode.Lives());
+            if (Mode.Lives()) Hud.DrawVitals(Vitals, Fade);
             if (!Settings.Open) Hud.DrawHelp(Light.Quality, Mode);
         }
         Switcher.Draw();
