@@ -8,7 +8,8 @@ namespace VoxelSandbox;
 /// The window E opens, which shows in survival the inventory's 36 slots under a crafting grid of
 /// two by two, in creative every item to put in the hotbar's chosen slot, at a crafting table the
 /// inventory under a grid of three by three in either mode, and at a furnace the inventory under
-/// the furnace's slots, each drawn as the game's own panel at Minecraft's places.
+/// the furnace's slots, each drawn as the game's own panel at Minecraft's places, or as the window's
+/// texture of the player's resource packs where one has it.
 /// </summary>
 /// <remarks>
 /// The slots are laid out as Minecraft's are, three rows of nine and the hotbar's below them. A left
@@ -82,8 +83,11 @@ public sealed class InventoryWindow
             slots.Add(new SlotView(new SlotAt(grid.Slots, i), gridX + i % grid.Size * 18, gridY + i / grid.Size * 18));
         slots.Add(new SlotView(default, madeX, madeY, Makes: grid));
         AddInventory(slots, inventory);
-        Window(slots, inventory, "Crafting", table ? 28 : 97, table ? 6 : 8, (left, top, s) =>
-            Gui.Sprite(GuiArt.Arrow, left + (table ? 90 : 130) * s, top + (table ? 35 : 28) * s));
+        // A pack's window holds its arrow.
+        Window(slots, inventory, "Crafting", table ? 28 : 97, table ? 6 : 8, table ? "crafting_table" : "inventory", !table, (left, top, s, packed) =>
+        {
+            if (!packed) Gui.Sprite(GuiArt.Arrow, left + (table ? 90 : 130) * s, top + (table ? 35 : 28) * s);
+        });
         return true;
     }
 
@@ -99,12 +103,23 @@ public sealed class InventoryWindow
             new(new SlotAt(furnace.Slots, Furnace.Output), 116, 35, TakeOnly: true),
         ];
         AddInventory(slots, inventory);
-        Window(slots, inventory, "Furnace", 70, 6, (left, top, s) =>
+        Window(slots, inventory, "Furnace", 70, 6, "furnace", false, (left, top, s, packed) =>
         {
             // The flame burns down from its top as the fuel burns out, and the arrow fills from its
             // left as the smelting goes on, as Minecraft's furnace shows them.
-            Gui.Sprite(GuiArt.Flame, left + 57 * s, top + 37 * s);
             var burnt = furnace.BurnTotal > 0 ? furnace.Burning / furnace.BurnTotal : 0;
+            var lit = PackGui.Get("sprites/container/furnace/lit_progress");
+            var burn = PackGui.Get("sprites/container/furnace/burn_progress");
+            if (packed && lit is { } flameSprite && burn is { } arrowSprite)
+            {
+                // A pack's furnace holds the empty flame and arrow, over which its sprites are drawn
+                // where and as far as Minecraft draws them, the flame a pixel high at least while it burns.
+                var high = furnace.Burning > 0 ? (int)MathF.Ceiling(burnt * 13) + 1 : 0;
+                PackGui.DrawPart(flameSprite, 14, 14, 0, 14 - high, 14, high, left + 56 * s, top + (50 - high) * s, s);
+                PackGui.DrawPart(arrowSprite, 24, 16, 0, 0, (int)MathF.Ceiling(furnace.Cooked / Smelting.Seconds * 24), 16, left + 79 * s, top + 34 * s, s);
+                return;
+            }
+            Gui.Sprite(GuiArt.Flame, left + 57 * s, top + 37 * s);
             var flame = (int)MathF.Ceiling(burnt * GuiArt.FlameFull.Height);
             Gui.SpritePart(GuiArt.FlameFull, left + 57 * s, top + 37 * s, GuiArt.FlameFull.Width, flame, GuiArt.FlameFull.Height - flame);
             Gui.Sprite(GuiArt.Arrow, left + 79 * s, top + 35 * s);
@@ -128,7 +143,10 @@ public sealed class InventoryWindow
         if (Gui.Over(new Rectangle(left, top, CreativeWidth * s, CreativeHeight * s)))
             _scroll = Math.Clamp(_scroll - Math.Sign(GetMouseWheelMove()), 0, Math.Max(0, rows - CreativeRows));
 
-        Gui.Stretched(GuiArt.Panel, new Rectangle(left, top, CreativeWidth * s, CreativeHeight * s));
+        // A pack's creative window holds its slots and its scroll bar's track.
+        var pack = PackGui.Container("creative_inventory/tab_items");
+        if (pack is { } window) PackGui.DrawPart(window, 256, 256, 0, 0, CreativeWidth, CreativeHeight, left, top, s);
+        else Gui.Stretched(GuiArt.Panel, new Rectangle(left, top, CreativeWidth * s, CreativeHeight * s));
         Gui.Text("Items", left + 8 * s, top + 6 * s, Label, shadow: false);
         Item? hovered = null;
         for (int row = 0; row < CreativeRows; row++)
@@ -136,7 +154,7 @@ public sealed class InventoryWindow
             {
                 var index = (row + _scroll) * Hotbar.Size + column;
                 int x = left + (9 + column * 18) * s, y = top + (18 + row * 18) * s;
-                Gui.Sprite(GuiArt.Slot, x - s, y - s);
+                if (pack is null) Gui.Sprite(GuiArt.Slot, x - s, y - s);
                 if (index >= Items.All.Count) continue;
                 var item = Items.All[index];
                 Gui.Item(new ItemStack(item, 1), x, y);
@@ -147,14 +165,15 @@ public sealed class InventoryWindow
             }
         // The scroll bar beside the rows, its thumb as far down as the rows are scrolled.
         int barX = left + 175 * s, barY = top + 18 * s, barHeight = CreativeRows * 18 * s - 2 * s;
-        DrawRectangle(barX, barY, 12 * s, barHeight, new Color(139, 139, 139));
+        if (pack is null) DrawRectangle(barX, barY, 12 * s, barHeight, new Color(139, 139, 139));
         var thumb = rows > CreativeRows ? (int)((float)_scroll / (rows - CreativeRows) * (barHeight - 15 * s)) : 0;
-        Gui.Stretched(GuiArt.Button, new Rectangle(barX, barY + thumb, 12 * s, 15 * s));
+        if (PackGui.Get("sprites/container/creative_inventory/scroller") is { } scroller) PackGui.Draw(scroller, new Rectangle(barX, barY + thumb, 12 * s, 15 * s), s);
+        else Gui.Stretched(GuiArt.Button, new Rectangle(barX, barY + thumb, 12 * s, 15 * s));
 
         for (int i = 0; i < Hotbar.Size; i++)
         {
             int x = left + (9 + i * 18) * s, y = top + 112 * s;
-            Gui.Sprite(GuiArt.Slot, x - s, y - s);
+            if (pack is null) Gui.Sprite(GuiArt.Slot, x - s, y - s);
             if (hotbar.Inventory.Slots[i] is { } stack) Gui.Item(stack, x, y);
             if (i == hotbar.Selected) DrawRectangleLinesEx(new Rectangle(x - s, y - s, 18 * s, 18 * s), s, Color.White);
             if (!Gui.Over(new Rectangle(x, y, 16 * s, 16 * s))) continue;
@@ -192,23 +211,29 @@ public sealed class InventoryWindow
             slots.Add(new SlotView(new SlotAt(inventory.Slots, column), 8 + column * 18, 142));
     }
 
-    // The panel, its title and the inventory's label, the window's own pictures, its slots and their
-    // stacks, then the pointer's clicks and keys on them, the tooltip and the stack held.
-    private void Window(List<SlotView> slots, Inventory inventory, string title, int titleX, int titleY, Action<int, int, int> pictures)
+    // The panel, or the window's texture of a pack under the name Minecraft gives it, its title and
+    // the inventory's label but in the player's own inventory, which Minecraft leaves without one,
+    // the window's own pictures, told whether the window is the pack's, its slots and their stacks,
+    // then the pointer's clicks and keys on them, the tooltip and the stack held. A pack's window
+    // holds its slots.
+    private void Window(List<SlotView> slots, Inventory inventory, string title, int titleX, int titleY, string container, bool own,
+        Action<int, int, int, bool> pictures)
     {
         var s = Gui.Scale;
         int left = (GetScreenWidth() - Width * s) / 2, top = (GetScreenHeight() - Height * s) / 2;
         Gui.Backdrop();
-        Gui.Stretched(GuiArt.Panel, new Rectangle(left, top, Width * s, Height * s));
+        var pack = PackGui.Container(container);
+        if (pack is { } window) PackGui.DrawPart(window, 256, 256, 0, 0, Width, Height, left, top, s);
+        else Gui.Stretched(GuiArt.Panel, new Rectangle(left, top, Width * s, Height * s));
         Gui.Text(title, left + titleX * s, top + titleY * s, Label, shadow: false);
-        Gui.Text("Inventory", left + 8 * s, top + 72 * s, Label, shadow: false);
-        pictures(left, top, s);
+        if (!own) Gui.Text("Inventory", left + 8 * s, top + 72 * s, Label, shadow: false);
+        pictures(left, top, s, pack is not null);
 
         SlotView? under = null;
         foreach (var slot in slots)
         {
             int x = left + slot.X * s, y = top + slot.Y * s;
-            Gui.Sprite(GuiArt.Slot, x - s, y - s);
+            if (pack is null) Gui.Sprite(GuiArt.Slot, x - s, y - s);
             var stack = slot.Makes is { } grid ? grid.Recipe is { } recipe ? new ItemStack(recipe.Result, recipe.Count) : null : slot.At.Stack;
             if (stack is { } shown) Gui.Item(shown, x, y);
             if (!Gui.Over(new Rectangle(x, y, 16 * s, 16 * s))) continue;

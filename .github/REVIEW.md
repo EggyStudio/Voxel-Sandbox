@@ -5,29 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `4c0c50e`, item 23's last commit, the menu and the options, and nothing else,
-carrying the review's file: Escape opening the game menu with back, options, save and save and quit,
-the options in the source's two columns of 150 with sliders for the render distance, the field of
-view, the sensitivity and the corner shade in steps of five percent, buttons for the interface's
-scale, the fading HUD and the light's quality; the world holding still while a menu is open, as the
-source's does played alone; Escape shutting a window, going back a menu or opening it; the button,
-slider and centered text widgets; the F3 window keeping the developer's parts alone; the README's
-rows; every screen read through the command line at scale 3, the hour holding over 120 frames paused
-and moving after, save and quit ending the loop; 145 tests, the strict build clean, the play script
-green on the GPU. Read at 02:35 on 2026-10-21 and pushed at 02:38, its build run green at 02:48; the
-build run of `8b1d584` had ended green at 02:38. AGENTS.md's row for `VoxelSandbox/Ui` says the HUD,
-the windows and the icons are drawn with ImGui, which is wrong since this item, the settings window
-alone being ImGui's; it waits on the owner's word under N 7.4 with the build row. Shortly before
-02:44 the owner named the packs the interface follows, Decision 17 and words in item 24. Next item
-24, the texture packs in four commits, then the items in order; item 38's second part when the
-package brings the call and the glow lights' bound.
+Reviewed up to `193da5e`, item 24's first commit, the pack loader and the atlas, and nothing else,
+carrying the review's file: packs as zips or folders, the first over the rest, an animated strip's
+first frame; a table of surfaces and items by the source's texture names, three surfaces split out
+in the colors they came from, the grass side with its overlay, a door's upper half and sandstone's
+top; the atlas of tiles at the largest pack size, a power of two up to 128, laid two by two in a
+cell twice the tile from a half tile in, point-filtered levels, the tiles packed into the corner's
+free 19 bits with the vertex's color white, the climate's or the table's tint, and the texture's
+average under its tint for the field's colors; the terrain shader laying each tile by where a point
+lies in its block with the source's default coordinates per face, so slabs, steps and a torch's
+stick show their part, sampling at an explicit level from the unbroken coordinate's derivatives,
+decoding sRGB itself and drawing the grass side's overlay over its base; emissive cubes carrying
+their texture, the icons taking the pack's items, `--pack` on the command line; the owner saw every
+texture shifted half a tile, mended before the commit by laying the copies from a half tile in and
+checked with a texture of four quarters laid as the source lays them; the closed room with no pack
+within 6 levels of the head before, a mean of 0.002; 154 tests, the strict build clean, the play
+script under the layer clean. Left for later as the README says and item 39 takes: animated textures
+past the first frame, clear pixels in leaves, door windows and cactus edges, and a lamp cube's one
+texture on all six faces. Read at 03:09 on 2026-10-21 and pushed at 03:09; the build run of
+`4c0c50e` had ended green at 02:48. Next item 24's second commit, the windows, the HUD and the font
+from a pack's gui textures by the source's paths and layouts, then its third and fourth, then the
+items in order; item 38's second part when the package brings the call and the glow lights' bound;
+the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `4c0c50e` came, item 23's last commit, the menu and the options, and nothing else,
+carrying the review's file. Pushed at 02:38, its build run green at 02:48.
 
 Before it, `8b1d584` came, item 23's second commit, the windows as the game's own panels, after
 `8722725`, its first, the HUD in the game's flat look, and nothing else, each carrying the review's
 file. Pushed at 02:31, its build run green.
-
-Before it, `bf13ff6` came, item 22, the ambient occlusion's strength, and nothing else, carrying the
-review's file. Pushed at 02:21, its build run green in 9 minutes.
 
 ## Now
 
@@ -493,6 +499,21 @@ review's file. Pushed at 02:21, its build run green in 9 minutes.
     item 37, the second when its package is listed. First part done at `404ab74` on 2026-10-21 with
     the entry in the engine's ASKS.md, as the head says; the second part waits on the package.
 
+39. **Cutout textures, a texture a face for the lamp's kind, and animated textures.** Found by item
+    24's first commit on 2026-10-21: a pack's clear pixels in leaves, a door's window and a cactus's
+    edges show the pixel's stored color, since the solid faces cut nothing out; a lamp cube takes
+    one texture on all six faces, which puts the lit furnace's front on its top; and an animated
+    texture shows its first frame alone. The mend in three parts: a block kind marked cutout has its
+    faces drawn with the shader discarding clear pixels and its faces kept where a neighbor of the
+    same kind would cull them, as the source draws leaves, so a pack's leaves and doors read as they
+    do in the source; the furnace, the lamp and every kind with a texture a face take their faces
+    from the table by side, top and bottom, and the lit furnace its front; and an animated texture's
+    frames are laid in the atlas as the strip holds them and stepped by its metadata's frame time,
+    the mesher writing the first and the shader stepping by the frame, so water, lava and fire move.
+    Tests: a cutout face kept beside its kind and its clear pixels discarded in a capture's pixels,
+    the furnace's front on its front, and an animated tile's frame at a known time. After item 24.
+    Two commits, the cutout and the faces, then the animation.
+
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
     there, and the small panel of boxes with icons is missing. The game has creative and survival;
@@ -558,14 +579,14 @@ review's file. Pushed at 02:21, its build run green in 9 minutes.
     and its gui textures for item 23's interface as well as its blocks, so Bare Bones shows whole
     (Decision 13); a pack is a zip or a folder, and a list of packs in order as the source layers
     them, the later over the earlier, so Bare Bones with its add-ons reads as it does in the owner's
-    instance. An entry of the list may name the folders it is used for, `textures/gui/container`
-    after a colon, and then gives those alone, since the source layers whole files and no plain
-    order gives one pack's windows with another's hearts (Decision 17); the windows and the HUD are
-    drawn from a pack's gui textures by the source's paths and layouts, the container pictures of
-    176 by 166, the HUD's sprites of 9 and the widgets' nine-slices by their metadata, where a pack
-    has them. Entity textures and models follow in item 30. Four commits, the loader and the atlas,
-    then the windows and the HUD from a pack's gui textures, then the game's own art moved toward
-    the two looks, then the setting with its folders, the list and the reload.
+    instance. The list is the source's plain order, the first pack over the rest, which gives the
+    owner's pick as the packs are, Bare Bones first and Recolourful Containers second (Decision 17);
+    the windows and the HUD are drawn from a pack's gui textures by the source's paths and layouts,
+    the container pictures of 176 by 166, the HUD's sprites of 9 and the widgets' nine-slices by
+    their metadata, where a pack has them. Entity textures and models follow in item 30. Four
+    commits, the loader and the atlas, then the windows and the HUD from a pack's gui textures, then
+    the game's own art moved toward the two looks, then the setting, the list and the reload. First
+    commit done at `193da5e` on 2026-10-21, the loader and the atlas, as the head says.
 
 25. **More biomes, more blocks and more trees.** The owner's word, three times. The climate has
     eight biomes, the features three trees and the cactus, and the blocks about 140 ids: biomes gain
@@ -941,23 +962,27 @@ No verdict is open.
     white edges, the crafting area on planks and the furnace's top in stone, and 73 HUD sprites too,
     68 of them differing from Bare Bones'; Bare Bones carries its own container pictures beside its
     flat hearts, food, air, crosshair, dark olive hotbar with a green selection and its nine-slice
-    widgets; neither carries a license file, so neither ships. Since the source layers whole files,
-    the first pack over the rest, no plain order gives one pack's windows with the other's hearts,
-    so item 24's list lets an entry name the folders it serves, the owner's pick being Recolourful
-    for the container pictures and Bare Bones for the rest, the hotbar from Bare Bones by the
-    owner's word shortly before 02:47 and the crosshair with it as the HUD's sprites; and the game's
-    own art, what ships with no pack, moves toward the two looks as the room for character allows,
-    Recolourful's grey slots and white edges with the planks and the stone in the windows and Bare
-    Bones' flat hearts, food, hotbar and green selection in the HUD, all drawn as the game's own
-    pixels and nothing traced from either. The owner asked shortly before 02:50 what license their
-    font pack has: qrafty's capitalized font holds one bitmap font picture and no license file, its
-    page says all rights reserved with no terms, and Recolourful Containers' page says the same with
-    terms allowing personal use and forbidding distribution of its assets in any form; so neither
-    ships, and item 24's second commit reads the font picture from the player's pack where one has
-    it, each glyph's width from its rightmost lit column as the source's bitmap font measures it
-    with a pixel's gap and the shadow a pixel down and right, drawn at the interface's scale through
-    the game's text calls, which fall back to the engine's font where no pack has one, the game's
-    own art keeping the engine's font.
+    widgets; neither carries a license file, so neither ships. The coder's first reading had Bare
+    Bones carrying its own container pictures, which would have needed an entry limited to folders;
+    corrected at 03:09, Bare Bones' container folder holds the anvil and the beacon alone, so the
+    source's plain order, Bare Bones first and Recolourful second, gives the owner's pick as the
+    packs are, Bare Bones' hearts, food, air, hotbar, selection, crosshair, buttons and sliders over
+    Recolourful's inventory, crafting table, furnace and furnace sprites, with Recolourful's tooltip
+    and creative scroller coming along since Bare Bones lacks them and the creative window's items
+    keeping the game's own art since neither pack has them; the hotbar from Bare Bones by the
+    owner's word shortly before 02:47; no entry names folders, the list being the plain order; and
+    the game's own art, what ships with no pack, moves toward the two looks as the room for
+    character allows, Recolourful's grey slots and white edges with the planks and the stone in the
+    windows and Bare Bones' flat hearts, food, hotbar and green selection in the HUD, all drawn as
+    the game's own pixels and nothing traced from either. The owner asked shortly before 02:50 what
+    license their font pack has: qrafty's capitalized font holds one bitmap font picture and no
+    license file, its page says all rights reserved with no terms, and Recolourful Containers' page
+    says the same with terms allowing personal use and forbidding distribution of its assets in any
+    form; so neither ships, and item 24's second commit reads the font picture from the player's
+    pack where one has it, each glyph's width from its rightmost lit column as the source's bitmap
+    font measures it with a pixel's gap and the shadow a pixel down and right, drawn at the
+    interface's scale through the game's text calls, which fall back to the engine's font where no
+    pack has one, the game's own art keeping the engine's font.
 
 ## Replies
 

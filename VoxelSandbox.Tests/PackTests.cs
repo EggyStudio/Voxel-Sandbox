@@ -30,6 +30,10 @@ public sealed class PackTests : IDisposable
         return root;
     }
 
+    // A texture's metadata beside it in a folder pack.
+    private static void Meta(string pack, string texture, string json) =>
+        File.WriteAllText(Path.Combine(pack, "assets", "minecraft", "textures", texture + ".png.mcmeta"), json);
+
     // The same pack as a zip, as a pack is shared.
     private string Zip(string name, params (string Texture, Image Image)[] textures)
     {
@@ -65,15 +69,53 @@ public sealed class PackTests : IDisposable
     }
 
     [Fact]
-    public void An_Animated_Texture_Gives_Its_First_Frame()
+    public void An_Animated_Texture_Gives_Its_First_Frame_And_A_Tall_One_Its_Metadata_Does_Not_Animate_Stays_Whole()
     {
-        // Two frames of two pixels square, red over blue, as Minecraft strips a texture's frames.
+        // Two frames of two pixels square, red over blue, as Minecraft strips a texture's frames, and
+        // the same strip as a slider's handle, taller than it is wide.
         var strip = new Image([.. Plain(new Color(200, 0, 0)).Data, .. Plain(new Color(0, 0, 200)).Data], 2, 4);
-        using var packs = new ResourcePacks([Folder("animated", ("block/water_still", strip))]);
+        var pack = Folder("animated", ("block/water_still", strip), ("gui/sprites/widget/slider_handle", strip));
+        Meta(pack, "block/water_still", """{ "animation": { "frametime": 2 } }""");
+        using var packs = new ResourcePacks([pack]);
 
         var frame = packs.Texture("block/water_still")!.Value;
         Assert.Equal((2, 2), (frame.Width, frame.Height));
         Assert.Equal(new Color(200, 0, 0), At(frame, 1, 1));
+        Assert.Equal((2, 4), (packs.Texture("gui/sprites/widget/slider_handle")!.Value.Width, packs.Texture("gui/sprites/widget/slider_handle")!.Value.Height));
+    }
+
+    [Fact]
+    public void A_Sprites_Nine_Slice_Is_Read_From_Its_Metadata_With_One_Border_Or_Four()
+    {
+        var pack = Folder("sliced", ("gui/sprites/widget/button", Plain(Color.White, 200, 20)), ("gui/sprites/widget/slider_handle", Plain(Color.White, 8, 20)),
+            ("gui/sprites/hud/hotbar", Plain(Color.White, 182, 22)));
+        Meta(pack, "gui/sprites/widget/button", """{ "gui": { "scaling": { "type": "nine_slice", "width": 200, "height": 20, "border": 3 } } }""");
+        Meta(pack, "gui/sprites/widget/slider_handle",
+            """{ "gui": { "scaling": { "type": "nine_slice", "width": 8, "height": 20, "border": { "left": 2, "top": 2, "right": 2, "bottom": 3 } } } }""");
+        using var packs = new ResourcePacks([pack]);
+
+        Assert.Equal((200, 20, 3, 3, 3, 3), PackGui.Scaling(packs.Picture("gui/sprites/widget/button")!.Value.Meta));
+        Assert.Equal((8, 20, 2, 2, 2, 3), PackGui.Scaling(packs.Picture("gui/sprites/widget/slider_handle")!.Value.Meta));
+        Assert.Equal((0, 0, 0, 0, 0, 0), PackGui.Scaling(packs.Picture("gui/sprites/hud/hotbar")!.Value.Meta));
+    }
+
+    [Fact]
+    public void A_Pack_Fonts_Glyph_Is_As_Wide_As_Its_Lit_Columns_And_A_Pixels_Gap_At_Any_Size()
+    {
+        // A sheet of eight pixels a glyph with A lit to its fifth column, and the same at twice the
+        // size lit to its tenth, both five of the interface's pixels and a gap, and a space four.
+        foreach (var cell in new[] { 8, 16 })
+        {
+            var sheet = Plain(new Color(0, 0, 0, 0), 16 * cell, 16 * cell);
+            int left = 'A' % 16 * cell, top = 'A' / 16 * cell;
+            for (int y = 0; y < cell; y++)
+                for (int x = 0; x < 5 * cell / 8; x++)
+                    sheet.Data[((top + y) * sheet.Width + left + x) * 4 + 3] = 255;
+            var advances = PackFont.Advances(sheet);
+            Assert.Equal(6, advances['A']);
+            Assert.Equal(4, advances[' ']);
+            Assert.Equal(4, advances['B']);
+        }
     }
 
     [Fact]

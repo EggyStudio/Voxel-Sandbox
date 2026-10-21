@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Text.Json;
 using Engine;
 using static Engine.E3D;
 
@@ -11,9 +12,9 @@ namespace VoxelSandbox;
 /// </summary>
 /// <remarks>
 /// A pack's files are listed once as it loads, a zip's entries and a folder's files under
-/// <c>assets/minecraft</c>, and read when asked for. A texture is decoded from its PNG to RGBA, and an
-/// animated one, a strip of square frames one above another as Minecraft draws water and lanterns,
-/// gives its first frame.
+/// <c>assets/minecraft</c>, and read when asked for. A texture is decoded from its PNG to RGBA with
+/// the <c>.mcmeta</c> beside it in the same pack, and an animated one, which its metadata says is a
+/// strip of frames one above another as Minecraft draws water and lanterns, gives its first frame.
 /// </remarks>
 public sealed class ResourcePacks : IDisposable
 {
@@ -58,34 +59,69 @@ public sealed class ResourcePacks : IDisposable
     public bool Any => _packs.Count > 0;
 
     /// <summary>The bytes of a file under <c>assets/minecraft</c> from the first pack that has it, or null where none does.</summary>
-    public byte[]? Read(string path)
+    public byte[]? Read(string path) => Find(path) is { } pack ? Read(pack, path) : null;
+
+    // The first pack holding a file, or null.
+    private int? Find(string path)
     {
-        foreach (var (_, zip, files) in _packs)
-        {
-            if (!files.TryGetValue(path, out var at)) continue;
-            if (zip is null) return File.ReadAllBytes(at);
-            using var stream = zip.GetEntry(at)!.Open();
-            using var copy = new MemoryStream();
-            stream.CopyTo(copy);
-            return copy.ToArray();
-        }
+        for (int i = 0; i < _packs.Count; i++)
+            if (_packs[i].Files.ContainsKey(path)) return i;
         return null;
+    }
+
+    private byte[]? Read(int pack, string path)
+    {
+        var (_, zip, files) = _packs[pack];
+        if (!files.TryGetValue(path, out var at)) return null;
+        if (zip is null) return File.ReadAllBytes(at);
+        using var stream = zip.GetEntry(at)!.Open();
+        using var copy = new MemoryStream();
+        stream.CopyTo(copy);
+        return copy.ToArray();
     }
 
     /// <summary>
     /// A texture under <c>assets/minecraft/textures</c> by its path there without <c>.png</c>, as
     /// <c>block/stone</c>, decoded to RGBA, the first frame of an animated one, or null where no pack has it.
     /// </summary>
-    public Image? Texture(string name)
+    public Image? Texture(string name) => Picture(name)?.Image;
+
+    /// <summary>
+    /// A texture as <see cref="Texture"/> reads it with the root of the <c>.mcmeta</c> the same pack
+    /// holds beside it, or null for the metadata where it has none or it is not JSON.
+    /// </summary>
+    public (Image Image, JsonElement? Meta)? Picture(string name)
     {
-        if (Read($"textures/{name}.png") is not { } png) return null;
+        var path = $"textures/{name}.png";
+        if (Find(path) is not { } pack || Read(pack, path) is not { } png) return null;
         var image = LoadImageFromMemory(".png", png);
         if (image.Data is null || image.Width <= 0) return null;
-        if (image.Height <= image.Width) return image;
-        // A strip of frames as tall as it is wide, one above another, of which the first is kept.
-        var frame = new byte[image.Width * image.Width * 4];
-        Array.Copy(image.Data, frame, frame.Length);
-        return new Image(frame, image.Width, image.Width);
+        var meta = Meta(Read(pack, path + ".mcmeta"));
+        if (meta is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return (image, meta);
+        // A strip of frames one above another, each as tall as it is wide unless the metadata says
+        // otherwise, of which the first is kept.
+        int width = Number(animation, "width") ?? image.Width, height = Number(animation, "height") ?? width;
+        if (width > image.Width || height > image.Height) return (image, meta);
+        var frame = new byte[width * height * 4];
+        for (int y = 0; y < height; y++) Array.Copy(image.Data, y * image.Width * 4, frame, y * width * 4, width * 4);
+        return (new Image(frame, width, height), meta);
+    }
+
+    private static int? Number(JsonElement element, string name) =>
+        element.TryGetProperty(name, out var value) && value.TryGetInt32(out var number) && number > 0 ? number : null;
+
+    private static JsonElement? Meta(byte[]? bytes)
+    {
+        if (bytes is null) return null;
+        try
+        {
+            using var document = JsonDocument.Parse(bytes, new JsonDocumentOptions { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip });
+            return document.RootElement.Clone();
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 
     public void Dispose()

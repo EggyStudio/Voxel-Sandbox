@@ -45,6 +45,7 @@ public sealed class VoxelGame : IDisposable
         var terrain = TerrainAtlas.Build(Packs);
         Renderer.Atlas = terrain;
         Icons.Use(terrain, Packs);
+        PackGui.Use(Packs);
         Sky = new Sky(10);
         Light.ApplyAll();
         Open(kind, seed, name);

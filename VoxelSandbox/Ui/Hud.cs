@@ -44,6 +44,13 @@ public static class Hud
     public static void DrawCrosshair()
     {
         int cx = GetScreenWidth() / 2, cy = GetScreenHeight() / 2;
+        // A pack's crosshair is fifteen of the interface's pixels across, centered as Minecraft's is.
+        if (PackGui.Get("sprites/hud/crosshair") is { } crosshair)
+        {
+            var s = Gui.Scale;
+            PackGui.Draw(crosshair, new Rectangle(cx - 7 * s, cy - 7 * s, 15 * s, 15 * s), s);
+            return;
+        }
         var shadow = new Color(0, 0, 0, 120);
         DrawRectangle(cx - 10, cy - 2, 20, 4, shadow);
         DrawRectangle(cx - 2, cy - 10, 4, 20, shadow);
@@ -71,8 +78,9 @@ public static class Hud
 
     /// <summary>
     /// Ten hearts of health over the hotbar's left half and ten drumsticks of food over its right,
-    /// each worth two points and half drawn for one, as Minecraft's are, and while breath runs short,
-    /// bubbles of it over the food, each row as much as <paramref name="fade"/> shows of it.
+    /// each worth two points and half drawn for one over the empty place, as Minecraft's are, and
+    /// while breath runs short, bubbles of it over the food, each row as much as
+    /// <paramref name="fade"/> shows of it.
     /// </summary>
     public static void DrawVitals(Vitals vitals, VitalsFade fade)
     {
@@ -85,13 +93,15 @@ public static class Hud
             if (fade.Hearts > 0)
             {
                 var health = Math.Clamp(vitals.Health - i * 2, 0, 2);
-                Gui.Sprite(health == 2 ? GuiArt.HeartFull : health == 1 ? GuiArt.HeartHalf : GuiArt.HeartEmpty, x0 + i * 8 * s, y, Faded(fade.Hearts));
+                Gui.Sprite(GuiArt.HeartEmpty, x0 + i * 8 * s, y, Faded(fade.Hearts));
+                if (health > 0) Gui.Sprite(health == 2 ? GuiArt.HeartFull : GuiArt.HeartHalf, x0 + i * 8 * s, y, Faded(fade.Hearts));
             }
             // Food from the right, as Minecraft's is drawn.
             if (fade.Food > 0)
             {
                 var food = Math.Clamp(vitals.Food - i * 2, 0, 2);
-                Gui.Sprite(food == 2 ? GuiArt.FoodFull : food == 1 ? GuiArt.FoodHalf : GuiArt.FoodEmpty, right - i * 8 * s, y, Faded(fade.Food));
+                Gui.Sprite(GuiArt.FoodEmpty, right - i * 8 * s, y, Faded(fade.Food));
+                if (food > 0) Gui.Sprite(food == 2 ? GuiArt.FoodFull : GuiArt.FoodHalf, right - i * 8 * s, y, Faded(fade.Food));
             }
             if (fade.Air > 0 && i < (int)MathF.Ceiling(vitals.Air / Vitals.Breath * 10))
                 Gui.Sprite(GuiArt.Air, right - i * 8 * s, y - 10 * s, Faded(fade.Air));

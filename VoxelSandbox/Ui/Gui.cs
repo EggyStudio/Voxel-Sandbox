@@ -12,7 +12,9 @@ namespace VoxelSandbox;
 /// <remarks>
 /// The scale is the largest whole number at which 320 by 240 of the interface's pixels fit the
 /// window, as Minecraft's automatic scale is, 3 at 1280 by 720, unless <see cref="Chosen"/> sets
-/// one. Text is the engine's own font at ten of its pixels for each of the interface's eight.
+/// one. Text is the font of the player's resource packs where one has it, and the engine's own font
+/// at ten of its pixels for each of the interface's eight otherwise. A picture a pack has, as
+/// <see cref="PackGui"/> reads it, is drawn in place of the game's own.
 /// </remarks>
 public static class Gui
 {
@@ -33,8 +35,13 @@ public static class Gui
     public static int LineHeight => 9 * Scale;
 
     /// <summary>A picture at a place on the screen, at the interface's scale, tinted.</summary>
-    public static void Sprite(GuiSprite sprite, int x, int y, Color? tint = null) =>
-        DrawTexturePro(GuiArt.Texture(), sprite.Source, new Rectangle(x, y, sprite.Width * Scale, sprite.Height * Scale), Vector2.Zero, 0, tint ?? Color.White);
+    public static void Sprite(GuiSprite sprite, int x, int y, Color? tint = null)
+    {
+        if (PackGui.For(sprite) is { } pack)
+            PackGui.Draw(pack.Picture, new Rectangle(x, y, pack.Width * Scale, pack.Height * Scale), Scale, tint);
+        else
+            DrawTexturePro(GuiArt.Texture(), sprite.Source, new Rectangle(x, y, sprite.Width * Scale, sprite.Height * Scale), Vector2.Zero, 0, tint ?? Color.White);
+    }
 
     /// <summary>A part of a picture from its left, as an arrow or a flame fills, at the interface's scale.</summary>
     public static void SpritePart(GuiSprite sprite, int x, int y, int width, int height, int fromY = 0)
@@ -46,6 +53,11 @@ public static class Gui
     /// <summary>A picture stretched over a box of the screen between its edges, which keep their size at the interface's scale.</summary>
     public static void Stretched(GuiSprite sprite, Rectangle box, Color? tint = null)
     {
+        if (PackGui.For(sprite) is { } pack)
+        {
+            PackGui.Draw(pack.Picture, box, Scale, tint);
+            return;
+        }
         // The engine's nine-patch keeps the edges at their size in the pixels it draws in, so the box
         // is drawn in the interface's own pixels under a 2D camera scaled to the interface.
         var info = new NPatchInfo(sprite.Source, sprite.Border, sprite.Border, sprite.Border, sprite.Border);
@@ -58,13 +70,20 @@ public static class Gui
     /// <summary>Text at a place on the screen with its shadow a pixel of the interface's below and to the right, as Minecraft's is.</summary>
     public static void Text(string text, int x, int y, Color color, bool shadow = true)
     {
-        var size = 10 * Scale;
-        if (shadow) DrawText(text, x + Scale, y + Scale, size, new Color((byte)(color.R / 4), (byte)(color.G / 4), (byte)(color.B / 4), color.A));
-        DrawText(text, x, y, size, color);
+        var s = Scale;
+        var dark = new Color((byte)(color.R / 4), (byte)(color.G / 4), (byte)(color.B / 4), color.A);
+        if (PackGui.Font is { } font)
+        {
+            if (shadow) font.Draw(text, x + s, y + s, s, dark);
+            font.Draw(text, x, y, s, color);
+            return;
+        }
+        if (shadow) DrawText(text, x + s, y + s, 10 * s, dark);
+        DrawText(text, x, y, 10 * s, color);
     }
 
     /// <summary>How wide a line of text is on the screen.</summary>
-    public static int TextWidth(string text) => MeasureText(text, 10 * Scale);
+    public static int TextWidth(string text) => PackGui.Font is { } font ? font.Width(text) * Scale : MeasureText(text, 10 * Scale);
 
     /// <summary>
     /// An item's icon sixteen of the interface's pixels across at a place, a worn tool's bar of uses
@@ -82,7 +101,9 @@ public static class Gui
         }
         if (stack.Count <= 1) return;
         var text = stack.Count.ToString();
-        Text(text, x + 17 * s - TextWidth(text), y + 7 * s, Color.White);
+        // A pack's font at Minecraft's place, nine below the icon's top, and the engine's, which sits
+        // lower in its line, two higher.
+        Text(text, x + 17 * s - TextWidth(text), y + (PackGui.Font is null ? 7 : 9) * s, Color.White);
     }
 
     /// <summary>The world darkened behind a window, as Minecraft darkens it behind its screens.</summary>
@@ -98,7 +119,15 @@ public static class Gui
         int x = (int)mouse.X + 12 * s, y = (int)mouse.Y - 12 * s;
         if (x + width > GetScreenWidth()) x = (int)mouse.X - 12 * s - width;
         y = Math.Clamp(y, 0, Math.Max(0, GetScreenHeight() - height));
-        Stretched(GuiArt.Tooltip, new Rectangle(x, y, width, height));
+        // A pack's tooltip is its background and its frame over the lines and twelve pixels around
+        // them, as Minecraft draws its tooltips, the frame's glow reaching past the box.
+        if (PackGui.Get("sprites/tooltip/background") is { } background)
+        {
+            var around = new Rectangle(x - 8 * s, y - 8 * s, width + 16 * s, height + 16 * s);
+            PackGui.Draw(background, around, s);
+            if (PackGui.Get("sprites/tooltip/frame") is { } frame) PackGui.Draw(frame, around, s);
+        }
+        else Stretched(GuiArt.Tooltip, new Rectangle(x, y, width, height));
         for (int i = 0; i < lines.Count; i++)
             Text(lines[i], x + 4 * s, y + 4 * s + i * LineHeight, i == 0 ? Color.White : new Color(170, 170, 170));
     }
@@ -137,10 +166,21 @@ public static class Gui
                 letGo = true;
             }
         }
-        Stretched(GuiArt.Button, box, new Color(150, 150, 150));
+        var lit = Over(box) || _sliding == box;
         var at = (value - low) / (high - low);
         var knob = new Rectangle(box.X + (box.Width - 8 * s) * Math.Clamp(at, 0, 1), box.Y, 8 * s, box.Height);
-        Stretched(Over(box) || _sliding == box ? GuiArt.ButtonLit : GuiArt.Button, knob);
+        // A pack's slider is its track, lit under the pointer, and its handle, as Minecraft's are.
+        if (PackGui.Get(lit ? "sprites/widget/slider_highlighted" : "sprites/widget/slider") is { } track
+            && PackGui.Get(lit ? "sprites/widget/slider_handle_highlighted" : "sprites/widget/slider_handle") is { } handle)
+        {
+            PackGui.Draw(track, box, s);
+            PackGui.Draw(handle, knob, s);
+        }
+        else
+        {
+            Stretched(GuiArt.Button, box, new Color(150, 150, 150));
+            Stretched(lit ? GuiArt.ButtonLit : GuiArt.Button, knob);
+        }
         Centered(label, box, Over(box) ? new Color(255, 255, 160) : Color.White);
         return value;
     }

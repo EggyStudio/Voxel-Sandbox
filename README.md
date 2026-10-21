@@ -343,6 +343,8 @@ the largest at which 320 by 240 of them fit the window, 3 at 1280 by 720, as Min
 interface. The hotbar is Minecraft's nine slots 20 apart along the bottom, the chosen one framed in
 green, with the name of what it holds above the hearts and the food, which sit over its two halves
 as Minecraft's do. A window's panel and a button are stretched between edges that keep their size.
+With resource packs loaded, their pictures, windows and font take the place of the game's own, as
+the section on resource packs says.
 
 The windows E opens are the game's own panels with Minecraft's slots at Minecraft's places, 176 by
 166 of the interface's pixels, the inventory with its grid of two, a crafting table's grid of three,
@@ -471,6 +473,18 @@ Minecraft gives them, and the grass block's side its overlay tinted over the dir
 scene's distance field reads each face as its texture's average under its tint, so the light a wall
 gives back takes its texture's color. An emissive block's cube is drawn with its texture, and an
 item's icon is the pack's texture for it, or a block's cube with its faces' textures.
+
+The interface takes a pack's pictures where Minecraft reads them, the hotbar, its frame, the hearts,
+the food, the bubbles of breath and the crosshair under `gui/sprites/hud`, the buttons and sliders
+under `gui/sprites/widget` and the tooltip under `gui/sprites/tooltip`, each drawn over the box
+Minecraft draws it in and kept to its edges where its `.mcmeta` makes it a nine-slice. The
+inventory, a crafting table, a furnace and the creative window take their textures under
+`gui/container`, which hold their slots, with the furnace's flame and arrow over them from
+`gui/sprites/container/furnace`, and the text takes the font of `font/ascii`, each glyph as wide as
+its lit columns as Minecraft measures it. Bare Bones given first and Recolourful Containers after it
+draw the HUD and the widgets as Bare Bones does and the windows as Recolourful does, since Bare
+Bones has no windows of its own but an anvil's and a beacon's, and neither has a creative window, so
+that one keeps the game's own.
 
 ## How the world is drawn
 
