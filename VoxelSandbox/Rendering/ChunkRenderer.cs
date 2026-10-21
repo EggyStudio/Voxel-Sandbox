@@ -91,9 +91,12 @@ public sealed class ChunkRenderer : IDisposable
     // apart so the solid faces keep the depth test that runs before their pixels are lit, and casting
     // no shadow, so the scene's distance field holds no grass. All three are drawn through the game's
     // terrain shader, the engine's light with a haze.
-    private readonly ModelMaterial _terrain, _clear, _cutout;
+    private readonly ModelMaterial _terrain, _clear, _cutout, _haze;
+    // The dome under the horizon in the haze's color, drawn while there is a haze to meet it.
+    private readonly ModelMesh _dome;
+    private float _fogEnd = float.MaxValue;
     private readonly Shader _shader;
-    private readonly int _fogColor, _fogStart, _fogEnd, _atlas, _atlasLayout;
+    private readonly int _fogColor, _fogStart, _fogEndAt, _atlas, _atlasLayout;
     private Texture2D _atlasTexture;
     // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with its
     // own texture where a pack has one, which the scene's distance field reads its average of.
@@ -115,12 +118,15 @@ public sealed class ChunkRenderer : IDisposable
         // only its packed bytes, so each pass leaves out the sections whose boxes it cannot see,
         // where the shadow cascades and the depth pass would draw every section within reach.
         SetShaderKeepsPositions(_shader, true);
-        (_fogColor, _fogStart, _fogEnd) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
+        (_fogColor, _fogStart, _fogEndAt) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
         Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
         _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 0.08f, CastsShadows = false, Shader = _shader };
         _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, CastsShadows = false, Shader = _shader };
+        _haze = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Blend, CastsShadows = false, Shader = _shader };
+        var dome = HazeDome.Build();
+        _dome = UploadMesh([.. dome.Positions], [.. dome.Indices], MeshStream.From(MeshStreamFormat.UInt2, dome.Packed.ToArray().AsSpan()), null);
         Fog(Color.White, float.MaxValue, float.MaxValue);
     }
 
@@ -129,7 +135,8 @@ public sealed class ChunkRenderer : IDisposable
     {
         SetShaderValue(_shader, _fogColor, new Vector4(color.R, color.G, color.B, 255) / 255);
         SetShaderValue(_shader, _fogStart, start);
-        SetShaderValue(_shader, _fogEnd, end);
+        SetShaderValue(_shader, _fogEndAt, end);
+        _fogEnd = end;
     }
 
     /// <summary>
@@ -361,6 +368,12 @@ public sealed class ChunkRenderer : IDisposable
             triangles += _cube.TriangleCount * list.Count;
             lamps += list.Count;
         }
+        // The dome under the horizon, about the eye, while a haze fades the land's edge into it.
+        if (_fogEnd < HazeDome.Radius)
+        {
+            DrawMesh(_dome, _haze, Matrix4x4.CreateTranslation(eye));
+            draws++;
+        }
         (Draws, Triangles, Lamps, Culled) = (draws, triangles, lamps, culled);
     }
 
@@ -368,6 +381,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         Clear();
         UnloadMesh(_cube);
+        UnloadMesh(_dome);
         UnloadShader(_shader);
         if (_atlasTexture.IsValid) UnloadTexture(_atlasTexture);
         foreach (var texture in _lampTextures)

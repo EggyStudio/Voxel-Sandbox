@@ -469,6 +469,42 @@ public static class GameCommands
             : $"no pixel of {width} by {height} at {x}, {y} is on the window";
     }
 
+    [Command("voxel.edge", "Where the drawn land ends up a column of the last frame's pixels, the land's last pixel's color and the one above's, and the largest step between neighboring pixels within 16 of it, in sRGB levels: voxel.edge <x>")]
+    internal static string Edge(int x)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
+        var image = LoadImageFromScreen();
+        if ((uint)x >= image.Width) return $"no column {x} is on the window";
+        // The highest pixel whose ray meets a block of a column the renderer draws, from the bottom up.
+        int eyeX = (int)MathF.Floor(game.Player.Eye.X) >> Section.Shift, eyeZ = (int)MathF.Floor(game.Player.Eye.Z) >> Section.Shift;
+        var reach = game.RenderDistance * game.RenderDistance + game.RenderDistance;
+        bool Land(int y)
+        {
+            var ray = GetScreenToWorldRay(new System.Numerics.Vector2(x, y), game.Player.Camera);
+            if (VoxelRay.Cast(game.World, ray.Position, ray.Direction, 1000) is not { } hit) return false;
+            int dx = (hit.X >> Section.Shift) - eyeX, dz = (hit.Z >> Section.Shift) - eyeZ;
+            return dx * dx + dz * dz <= reach;
+        }
+        var edge = -1;
+        for (int y = image.Height - 1; y >= 0 && edge < 0; y--)
+            if (!Land(y)) edge = y + 1;
+        if (edge <= 0 || edge >= image.Height) return $"column {x} shows {(edge <= 0 ? "land to its top" : "no land")}";
+        (int R, int G, int B) At(int y)
+        {
+            var i = (y * image.Width + x) * 4;
+            return (image.Data[i], image.Data[i + 1], image.Data[i + 2]);
+        }
+        var step = 0;
+        for (int y = Math.Max(1, edge - 16); y < Math.Min(image.Height, edge + 16); y++)
+        {
+            var (a, c) = (At(y - 1), At(y));
+            step = Math.Max(step, Math.Max(Math.Abs(a.R - c.R), Math.Max(Math.Abs(a.G - c.G), Math.Abs(a.B - c.B))));
+        }
+        var (land, sky) = (At(edge), At(edge - 1));
+        return $"land ends at {edge}, land {land.R} {land.G} {land.B}, above {sky.R} {sky.G} {sky.B}, largest step {step}";
+    }
+
     [Command("voxel.depth", "The block under a pixel of the window and how far it is from the eye, along the ray and along the ground: voxel.depth <x> <y>")]
     internal static string Depth(int x, int y)
     {

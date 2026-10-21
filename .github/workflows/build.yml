@@ -62,9 +62,11 @@ jobs:
   play:
     runs-on: ubuntu-24.04
     # build/play.sh took 15 minutes on four cores of a desktop's lavapipe, most of it the frames
-    # drawn before the walk, and the engine's command line builds in a minute, so 40 minutes is
-    # reached only where the game or e3d hangs.
-    timeout-minutes: 40
+    # drawn before the walk, and the engine's command line builds in a minute. The walk over the
+    # eight biomes the climate gained brought the hosted runner's run to 37 of 40 minutes, the land
+    # generated about each of them, its plants and its trees drawn on lavapipe, so 60 minutes keeps
+    # room for the walk to grow and is reached only where the game or e3d hangs.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
 

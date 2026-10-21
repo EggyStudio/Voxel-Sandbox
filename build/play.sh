@@ -4,14 +4,15 @@
 # closed room of stone with a glowstone block in it, puts the player in the room facing the lamp at
 # night, walks toward it and captures the frame, then captures the night sky from the room's roof,
 # the full moon and the stars over the flat land from two places and headings, the sun and its glow
-# at noon and at dusk, a pillar's shadow under the morning sun, and the window of every item's
-# icon, then swims the player out of a pool onto its bank and reads a white sheep's wool in the
-# shade, and over seed 1's overworld stands the player over each of the eight biomes the climate
-# gained and captures it. A second run that keeps its files, in a data folder of its own, then takes a screenshot
-# with F2. It fails where the game does not open or answer, the player did not move or did not climb
-# out onto the bank, the wool in shade is not a gray, a biome is not found or not where it was
-# found, the layer reported an error, or F2 left no
-# screenshot of the window's size, and says why in an error annotation, so the run's page names it.
+# at noon and at dusk, a pillar's shadow under the morning sun, and the window of every item's icon,
+# then swims the player out of a pool onto its bank and reads a white sheep's wool in the shade, and
+# over seed 1's overworld stands the player over each of the eight biomes the climate gained and
+# captures it and reads the drawn land's edge against the sky. A second run that keeps its files, in
+# a data folder of its own, then takes a screenshot with F2. It fails where the game does not open
+# or answer, the player did not move or did not climb out onto the bank, the wool in shade is not a
+# gray, a biome is not found or not where it was found, the land's edge steps to the sky beyond it,
+# the layer reported an error, or F2 left no screenshot of the window's size, and says why in an
+# error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -225,6 +226,24 @@ cmd voxel.tp "$bx" "$((by + 3))" "$((bz + 6))"
 cmd voxel.look 0 -20
 cmd frames.wait 90
 capture biomes/meadow.png
+
+# From high over the land, the drawn land's edge meets the dome under the horizon in the haze's color
+# with no step, read up the window's middle column: the land's last pixel and the one above it alike,
+# and no two neighbors within 16 of the edge more than a few levels apart.
+cmd voxel.tp "$bx" 120 "$bz"
+cmd voxel.look 0 -20
+cmd frames.wait 60
+ask voxel.edge 640 > /dev/null
+cmd frames.wait 2
+edge=$(ask voxel.edge 640)
+echo "$edge"
+read -r lr lg lb ar ag ab step <<< "$(printf '%s\n' "$edge" | sed -nE 's/^land ends at [0-9]+, land ([0-9]+) ([0-9]+) ([0-9]+), above ([0-9]+) ([0-9]+) ([0-9]+), largest step ([0-9]+)$/\1 \2 \3 \4 \5 \6 \7/p')"
+[ -n "$step" ] || fail "voxel.edge found no edge of the land, saying $edge"
+for pair in "$lr $ar" "$lg $ag" "$lb $ab"; do
+  read -r land above <<< "$pair"
+  [ $((land > above ? land - above : above - land)) -le 3 ] || fail "the land's edge meets the sky in another color, $edge"
+done
+[ "$step" -le 4 ] || fail "the land's edge steps to the sky, $edge"
 
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"

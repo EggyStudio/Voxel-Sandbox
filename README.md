@@ -689,10 +689,15 @@ The sections are drawn through a shader of the game's own,
 shadows, global illumination and the sky, over each vertex's color as the engine's shader for
 colored meshes does, and fades the result into the sky's color at the horizon from two thirds of the
 render distance to the render distance, as Minecraft's fog hides where the world ends. Under water
-the haze is the water's blue and covers the view within 16 blocks. The sky below the horizon keeps
-the horizon's color a while, so the haze at the world's edge meets a sky of its own color. The
-settings window turns the fog off. The lamps' cubes are drawn with the engine's own shader and take
-no haze.
+the haze is the water's blue and covers the view within 16 blocks. Past the last section the world
+ends, so a dome about the eye below the horizon is drawn in the haze's color, as Minecraft draws
+what lies below its horizon in its fog's color, fading into the sky over six degrees above the
+horizon. It is drawn through the same shader beyond the haze's end, which gives it the haze's color
+itself, so the land's fading edge meets it with no step at any render distance and under water,
+while the sky's image keeps its darker lower half for the light it gives the world. `voxel.edge`
+reads where the drawn land ends up a column of pixels and how it meets what lies above it. The
+settings window turns the fog off, and the dome with it. The lamps' cubes are drawn with the
+engine's own shader and take no haze.
 
 ## What is not here yet
 

@@ -5,34 +5,33 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `723e28c`, item 25's second commit, the blocks, and nothing else, carrying the
-review's file: seventy blocks, the jungle's, acacia's, dark oak's and cherry's log, leaves and
-planks with a sapling for each of the seven woods, twelve flowers, pink petals, short and tall
-grass, fern, dead bush and the two mushrooms, copper, gold, redstone, lapis, diamond and emerald
-ore, sixteen stained glasses and the wools to sixteen, each with its pack texture, flat icons for
-the plants and recipes for the woods; six items, the gems and the ingots smelted from their ores;
-block groups giving the drops, the tools, the hardness and the resistance, leaves dropping their
-sapling one in twenty and an apple one in two hundred, the ores by tier; plants as the owner asked
-mid-commit, two crossed planes of no thickness in place of a box, wheat's walls too, lit as facing
-up through two new faces in the free bits as the source lights its plants; a third mesh a section
-for the cutout with a mask material casting no shadow, so the field holds no grass, which is item
-39's cutout for the plants, the leaves, doors and glass staying for 39; the game's own sixteen-pixel
-plant masks tinted by the plant's color where no pack has a texture; the plants by biome a thousand
-and the ores by depth, emeralds in the mountains alone, coal and iron drawing the same random
-numbers as before; 183 tests, six new, a poppy eight flat quads spanning the cell and none in the
-solid mesh, saplings from four thousand jungle leaves within 150 to 250, a field of seed 1 with over
-500 short grass and diamonds no higher than 20; the play script's walk with a meadow up close,
-captures of every plant in both looks; the strict build clean. Read at 04:23 on 2026-10-21. Not
-pushed: the build run of `a6ec820` is still running, and the head is pushed when it ends. Next item
-25's trees commit, then item 44, then item 41, then item 39, then the items in order; item 38's
-second part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the
-Ui and build folders wait on the owner's word.
+Reviewed up to `c54f362`, item 25's third commit, the trees, and nothing else, carrying the review's
+file: nine trees from the source's numbers, the jungle tree and the mega jungle tree with its 2 by 2
+trunk and branches, the jungle bush, the acacia bending to one side with its flat crown, the dark
+oak with its 2 by 2 trunk and cap, the big oak with branches leaning out to balls of leaves, the
+giant mushrooms with the brown cap flat and the red a dome, and the cherry forking into two branches
+under wide pink crowns with hanging leaves and a lantern under one crown in three lighting the grove
+at night; the mushroom blocks and stem; the trees a thousand by biome; leaves passing light at one
+less a block as the source's do, which the jungle's floor needed, the crowns thinned to the source's
+layers; the cherry's hanging leaves drawing the same random numbers across the columns they cross;
+194 tests, eleven of trees, each tree at four hashes through the columns' clips within its reach,
+lanterns under a share of the cherries, sky light under three layers of leaves; the tunnel test's
+search widened since the big oaks cover the mouths; the play script clean; captures of the jungle
+from the air and its floor, the dark forest's canopy with red caps, the savanna, the cherry grove by
+day and its lanterns at night; the strict build clean; saplings that grow, vines and cocoa left as
+the README says. Read at 04:38 on 2026-10-21 and both pushed at 04:41; the build run of `a6ec820`
+ended green at 04:39, its play job in 37 minutes 17 seconds of its 40 minute limit, the walk over
+the eight biomes on lavapipe, so the limit is raised with its reason in item 44's commit before the
+walk grows, and the walk's time read. Item 25 is done. Next item 44, the dome under the horizon,
+then item 41, then item 39, then the items in order; item 38's second part when the package brings
+the call and the glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on the
+owner's word.
+
+Before it, `723e28c` came, item 25's second commit, the seventy blocks, the plants as planes and the
+ores by depth, and nothing else, carrying the review's file.
 
 Before it, `a6ec820` came, item 25's first commit, the biomes, and nothing else, carrying the
-review's file. Pushed at 04:02.
-
-Before it, `5064479` came, item 40, the screenshot on F2, and nothing else, carrying the review's
-file. Pushed at 03:50, its build run green at 03:59.
+review's file. Pushed at 04:02, its build run green at 04:39, the play job in 37 minutes.
 
 ## Now
 
@@ -694,9 +693,9 @@ file. Pushed at 03:50, its build run green at 03:59.
     blocks, trees, each with the scripted run's walk through one of each and a capture. The badlands
     with its terracotta bands around turquoise pools and a cherry grove join the biomes, and a
     lantern and the flowers the look shows join the blocks (Decision 21). First commit done at
-    `a6ec820` on 2026-10-21, the eight biomes with their land, colors and new blocks, and the second
-    at `723e28c`, the seventy blocks, the plants as planes and the ores by depth, as the heads say;
-    the trees follow.
+    `a6ec820` on 2026-10-21, the eight biomes with their land, colors and new blocks, the second at
+    `723e28c`, the seventy blocks, the plants as planes and the ores by depth, and the third at
+    `c54f362`, the nine trees with the cherry's lanterns, as the heads say; item 25 done.
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's
