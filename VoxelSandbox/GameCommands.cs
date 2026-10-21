@@ -505,6 +505,27 @@ public static class GameCommands
         return $"no {structure.Name} within {40 * Structure.Cell} blocks";
     }
 
+    [Command("voxel.biome", "The nearest place of a biome from the player, its ground's top, searched outward in rings 8 blocks apart to 3000 blocks: voxel.biome <name>")]
+    internal static string FindBiome(string name)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        if (Biomes.All.FirstOrDefault(b => b.Name.Equals(name.Replace('_', ' '), StringComparison.OrdinalIgnoreCase)) is not { } biome)
+            return $"no biome is called {name}, which is {string.Join(", ", Biomes.All.Select(b => b.Name))}";
+        if (game.World.Generator is not Overworld land) return "only the overworld has biomes";
+        var at = game.Player.Body.Position;
+        int px = (int)MathF.Floor(at.X), pz = (int)MathF.Floor(at.Z);
+        for (int ring = 0; ring <= 375; ring++)
+            for (int z = -ring; z <= ring; z++)
+                for (int x = -ring; x <= ring; x++)
+                {
+                    if (Math.Max(Math.Abs(x), Math.Abs(z)) != ring) continue;
+                    int wx = px + x * 8, wz = pz + z * 8;
+                    var (height, _, _, found) = land.At(wx, wz);
+                    if (found == biome) return $"the nearest {biome.Name} is at {wx}, {height}, {wz}, {ring * 8} blocks away";
+                }
+        return $"no {biome.Name} within 3000 blocks";
+    }
+
     [Command("voxel.blocks", "Every block's number and name, which voxel.set, voxel.fill and voxel.select take")]
     internal static string List() => string.Join(", ", Blocks.All.Select(b => $"{(int)b.Id} {b.Key}{(b.Emits ? " (emissive)" : "")}"));
 }

@@ -88,6 +88,15 @@ public static class PackTextures
         [Surfaces.FurnaceSide] = new("block/furnace_front"),
         [Surfaces.FurnaceTop] = new("block/furnace_top"),
         [Surfaces.FurnaceLit] = new("block/furnace_front_on"),
+        [Surfaces.RedSand] = new("block/red_sand"),
+        [Surfaces.Terracotta] = new("block/terracotta"),
+        [Surfaces.WhiteTerracotta] = new("block/white_terracotta"),
+        [Surfaces.OrangeTerracotta] = new("block/orange_terracotta"),
+        [Surfaces.YellowTerracotta] = new("block/yellow_terracotta"),
+        [Surfaces.RedTerracotta] = new("block/red_terracotta"),
+        [Surfaces.BrownTerracotta] = new("block/brown_terracotta"),
+        [Surfaces.LightGrayTerracotta] = new("block/light_gray_terracotta"),
+        [Surfaces.Clay] = new("block/clay"),
     };
 
     // The items whose texture is named apart from their key, and the blocks whose item Minecraft

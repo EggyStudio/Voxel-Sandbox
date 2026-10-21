@@ -137,14 +137,35 @@ illumination.
 ## Biomes
 
 Two slow noises give each place a temperature and a humidity, as Minecraft's climate does, and they
-choose its biome among plains with a few oaks, forests of oak and birch, birch forests, taiga of
-spruce, snowy taiga and snowy plains where it is cold, flat desert of sand over sandstone with cacti
-where it is hot and dry, and bare stone mountains wherever the ground rises past 82 blocks, snow
-above 92. Grass and oak leaves are gray surfaces tinted by a color looked up from the two values at
-the corners of Minecraft's colormaps, so their green changes smoothly across a biome's edge,
-yellowing near a desert and cooling toward the snow, while the biome itself changes at once. Birch
-and spruce leaves keep a color of their own. A hot, dry climate also flattens the land, so a desert
-lies flat and the hills sink as they near it.
+choose its biome among plains with a few oaks, forests of oak and birch, birch forests, a dark
+forest where it is wettest, taiga of spruce, snowy taiga and snowy plains where it is cold, flat
+desert of sand over sandstone with cacti where it is hot and dry, the badlands inside it where it is
+hottest and driest, the savanna beside it, the jungle where it is hot and wet, a swamp where it is
+warm and wettest, a cherry grove on raised ground where it is cool and wet, and bare stone mountains
+wherever the ground rises past 82 blocks, snow above 92. Grass and oak leaves are gray surfaces
+tinted by a color looked up from the two values at the corners of Minecraft's colormaps, so their
+green changes smoothly across a biome's edge, yellowing near a desert and cooling toward the snow,
+while the biome itself changes at once. Birch and spruce leaves keep a color of their own. A hot,
+dry climate also flattens the land, so a desert lies flat and the hills sink as they near it.
+
+The land shapes some of them. A river winds where a noise is near zero, in a valley that sinks the
+land most of the way to the water and cut to three blocks under the sea level where it runs, over
+sand with patches of clay, fading out on high ground as Minecraft's rivers keep out of its
+mountains. A beach of sand over sandstone lies along the sea where the basins sink the land, from a
+block under the water to two over it, but where it is cold. A swamp sinks its land to a block or two
+about the sea level, so pools stand among its grass, over dirt and clay. The badlands rise in mesas
+whose flat tops climb in steps of five, their terracotta bare in bands of seven colors one to three
+blocks high, the same for a seed, with red sand on the low ground between them.
+
+A swamp's grass is two greens laid out by a noise and its leaves an olive, the badlands' grass and
+leaves a dusty yellow, a cherry grove's grass and leaves a light green, and a dark forest's grass
+halfway to a dark olive, each as Minecraft colors them, blended into the climate's colors as far as
+a place is the biome, so they too change smoothly across its edge. The numbers, the climate's
+ranges, the colors and how many trees stand in a chunk, are read from Minecraft's and from those of
+Terralith, the biome overhaul of the owner's modpack, as a model and not a copy, since its license
+forbids handing its files out. Until their own trees grow, oaks stand in the swamp, the savanna, the
+jungle, the dark forest and the cherry grove, with birches in the dark forest. `voxel.biome` finds
+the nearest place of a biome.
 
 ## Water, glass and ice
 

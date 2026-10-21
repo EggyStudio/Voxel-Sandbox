@@ -6,9 +6,11 @@
 # the full moon and the stars over the flat land from two places and headings, the sun and its glow
 # at noon and at dusk, a pillar's shadow under the morning sun, and the window of every item's
 # icon, then swims the player out of a pool onto its bank and reads a white sheep's wool in the
-# shade. A second run that keeps its files, in a data folder of its own, then takes a screenshot
+# shade, and over seed 1's overworld stands the player over each of the eight biomes the climate
+# gained and captures it. A second run that keeps its files, in a data folder of its own, then takes a screenshot
 # with F2. It fails where the game does not open or answer, the player did not move or did not climb
-# out onto the bank, the wool in shade is not a gray, the layer reported an error, or F2 left no
+# out onto the bank, the wool in shade is not a gray, a biome is not found or not where it was
+# found, the layer reported an error, or F2 left no
 # screenshot of the window's size, and says why in an error annotation, so the run's page names it.
 #
 #   build/play.sh
@@ -194,6 +196,27 @@ echo "$wool"
 channels=$(printf '%s\n' "$wool" | sed -nE 's/^red ([0-9.]+), green ([0-9.]+), blue ([0-9.]+) .*/\1 \2 \3/p')
 printf '%s\n' "$channels" | awk 'NF == 3 { lo = $1; hi = $1; for (i = 2; i <= 3; i++) { if ($i < lo) lo = $i; if ($i > hi) hi = $i } exit !(lo >= 120 && hi <= 200 && hi - lo <= 20) } NF != 3 { exit 1 }' \
   || fail "the sheep's wool in shade reads $wool, where a gray between 120 and 200 with its channels within 20 of each other is asked"
+
+# Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
+# nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
+# from above, at a render distance of four columns, so lavapipe generates few at each.
+cmd voxel.hud on
+cmd voxel.world overworld 1
+cmd voxel.distance 4
+cmd voxel.fly on
+cmd voxel.time 10
+mkdir -p captures/biomes
+for biome in swamp savanna jungle dark_forest badlands beach river cherry_grove; do
+  found=$(ask voxel.biome "$biome")
+  read -r bx by bz <<< "$(printf '%s\n' "$found" | sed -nE 's/.* is at (-?[0-9]+), (-?[0-9]+), (-?[0-9]+),.*/\1 \2 \3/p')"
+  [ -n "$bz" ] || fail "voxel.biome found no $biome, saying $found"
+  cmd voxel.tp "$bx" "$((by + 24))" "$bz"
+  cmd voxel.look 0 -45
+  cmd frames.wait 90
+  state=$(ask voxel.state)
+  [[ "$state" == *" in ${biome//_/ }, facing"* ]] || fail "the player over the $biome found at $bx, $bz stands in another biome, $state"
+  capture "biomes/$biome.png"
+done
 
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"

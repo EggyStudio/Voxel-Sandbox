@@ -138,6 +138,16 @@ public static class Surfaces
     public static readonly int GrassSide = Add("grass side", new Color(134, 96, 67));
     public static readonly int DoorTop = Add("door top", new Color(140, 108, 62));
     public static readonly int SandstoneTop = Add("sandstone top", new Color(216, 202, 155));
+    // The badlands' red sand and the colors of their banded terracotta, and the clay of river beds.
+    public static readonly int RedSand = Add("red sand", new Color(190, 102, 33));
+    public static readonly int Terracotta = Add("terracotta", new Color(152, 94, 67));
+    public static readonly int WhiteTerracotta = Add("white terracotta", new Color(209, 178, 161));
+    public static readonly int OrangeTerracotta = Add("orange terracotta", new Color(161, 83, 37));
+    public static readonly int YellowTerracotta = Add("yellow terracotta", new Color(186, 133, 35));
+    public static readonly int RedTerracotta = Add("red terracotta", new Color(143, 61, 46));
+    public static readonly int BrownTerracotta = Add("brown terracotta", new Color(77, 51, 35));
+    public static readonly int LightGrayTerracotta = Add("light gray terracotta", new Color(135, 106, 97));
+    public static readonly int Clay = Add("clay", new Color(160, 166, 179));
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

@@ -5,35 +5,33 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `e14134d`, item 24's fourth commit, the fetch of the three packs at first start,
-after `c5df182`, the windows' titles off, and nothing else, each carrying the review's file. The
-titles: Crafting, Furnace, the Inventory label and Items gone, with a pack and without. The fetch,
-in the shape Decision 18 set: a manifest in the resources with each pack's file, title, Modrinth
-project and version, file URL, size and sha512, the owner's own files found by their sha1 through
-Modrinth's version file endpoint, Bare Bones 1.2.8, Recolourful 1.1.2 and the capitalized font 2.2;
-the fetch on a task, a file already there with the right size and bytes kept, a file written to a
-part file and moved into place only after its hash checks, the user agent naming the game and its
-repository, no JSON serializer so the native build keeps it; the fetch started when no pack is given
-on the command line, the run is not transient and no list exists, polled on the main thread, the
-three turned on over the rest when done, which writes the list, a failure leaving no list so the
-next start tries again, a stop saving the list as it is; the Resource Packs screen saying what is
-fetched and offering to stop or to fetch the defaults, a pack's absence worked out as the fetch's
-state changes; the README naming the three with their makers, all rights reserved and the fetch. 160
-tests, the manifest, the hashes and a fetch through a stand-in handler keeping, taking, refusing and
-naming as it should; the strict build clean, the play script clean with every scripted run transient
-so CI fetches nothing; the real fetch 3 files in 6 seconds with the hashes matching, and a real
-first start in a scratch data folder playing with the game's own art and then with the three packs.
-Read at 03:36 on 2026-10-21 and both pushed at 03:40, their build run green at 03:49; the build run
-of `056bb7b` had ended green at 03:40. Item 24 is done. Next item 40, the F2 screenshot the owner
-asked for shortly before 03:42, small, then item 25, the biomes, the blocks and the trees, then the
-items in order with item 39 after; item 38's second part when the package brings the call and the
-glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `5064479`, item 40, the screenshot on F2, and nothing else, carrying the review's
+file: a screenshots folder beside the saves made on first use, the name from the time in the
+source's form with a count from the second file in a second, each name reserved from the moment it
+is asked since the engine writes the file only once the frame is presented; F2 calling the engine's
+capture, the HUD's line saying the file was saved from the next frame over a band above the hearts
+for six seconds and fading, so it is not in the picture; a transient run writing nothing and saying
+so; the engine's own performance window toggled on F2 by an internal key nothing public changes, so
+the game submits a window of that name each frame placed far off screen, into which the engine's
+window appends out of sight, until the engine's item 73 gives it a key, said in the comment and the
+README; the README's controls row and the folder in the saves paragraph; tests of the name and the
+count, and the play script's second run keeping its files in a temporary data folder with an empty
+pack list, pressing F2 and checking a file of the window's size named as the source names; 162
+tests, the strict build clean, the play script under the layer clean. Read at 03:50 on 2026-10-21
+and pushed at 03:50, its build run green at 03:59; the build run of `e14134d` had ended green at
+03:49. Shortly before 03:53 the owner named Simple Grass Flowers, Decision 20 and item 41. Shortly
+before 03:57 the owner named their modpack's gallery as the look, Decision 21, items 42 and 43 and
+words in items 25, 27 and 32. Next item 25, the biomes first, its work stashed while item 40 was
+made and back in the tree, then item 41, then item 39, then the items in order; item 38's second
+part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `e14134d` came, item 24's fourth commit, the fetch of the three packs at first start,
+after `c5df182`, the windows' titles off, and nothing else, each carrying the review's file. Both
+pushed at 03:40, their build run green at 03:49.
 
 Before it, `056bb7b` came, item 24's third commit, the setting, the list and the reload, and nothing
 else, carrying the review's file. Pushed at 03:29, its build run green at 03:40.
-
-Before it, `2839dba` came, item 24's second commit, the windows, the HUD and the font from a pack,
-and nothing else, carrying the review's file. Pushed at 03:18, its build run green at 03:26.
 
 ## Now
 
@@ -527,7 +525,56 @@ and nothing else, carrying the review's file. Pushed at 03:18, its build run gre
     the window's size in a scratch data folder. One commit, small, before item 25. The engine's
     performance window moves from F2 to F3 with its item 73, which is the game's own F3; when that
     package comes, the game turns the engine's window key off or gives it a free key through the
-    engine's call, its own F3 window keeping the developer's parts.
+    engine's call, its own F3 window keeping the developer's parts. Done at `5064479` on 2026-10-21,
+    as the head says, the engine's performance window hidden off screen until item 73 gives it a
+    key.
+
+41. **A pack's blockstate variants give a surface several tiles picked per block by its position,
+    and Simple Grass Flowers is a fourth default pack (Decision 20).** The owner wrote shortly
+    before 03:53 on 2026-10-21 that Simple Grass Flowers looks great, linking its gallery, and that
+    beside flowers and grass, which the game lacks yet, it adds variations of the ground. The
+    reading: the pack by 2DWisp puts flowers, rocks and clovers on the tops of grass, podzol and
+    mycelium through the source's block states, a block's state listing several models with weights,
+    each naming its own top texture, and the source picking one per block by a hash of its position;
+    its page says all rights reserved and allows adding it to modpacks with credit. The game reads
+    textures by a table of its own and no block states, so it gains, for the surfaces the table
+    names, a reader of a pack's block state variants and their models' textures, the surface then
+    holding several tiles with weights in the atlas's free bits, the mesher picking one per block by
+    a hash of its position as the source does, the same block the same tile every time, and the
+    table's single tile where a pack lists no variants. Simple Grass Flowers joins the manifest as a
+    fourth default pack, fetched from its maker's own Modrinth page as the three are, pinned by its
+    version and hash, after Bare Bones in the list so Bare Bones' blocks stay and the flowers go on
+    top, and credited in the README with its terms; nothing of it ships. Item 25's own flowers and
+    its short and tall grass stay as blocks. Tests: a block state file of two weighted variants
+    parsed to its tiles, the pick by position stable and within the weights over a field, and a
+    capture of a meadow with the pack where the machine has it, skipped where not. After item 25 and
+    before item 39. One commit.
+
+42. **Water that mirrors the sky and the shore, with the bed seen through it (Decision 21).** The
+    look the owner aims at shows calm water mirroring the sky and the shore and clear pools in
+    caves. The game's water gains a surface of its own: the sky and the land across the water
+    reflected in it, through the engine's reflections where they reach a flat surface and a planar
+    reflection of the game's own where they do not, read first and said; the bed seen through the
+    water, refracted a little and darkened with depth by the water's color, so a pool reads clear
+    and a lake reads deep; a slow wave in the normal so the reflection moves; the water's edge drawn
+    where it meets a block without a hard line; and the view from under the water tinted and fogged
+    as the source's is. Captures of a lake at noon and at a low sun and of a cave pool in the
+    record, beside the modpack's own pictures. Tests: the reflection's picture read in a capture's
+    pixels where the sky should mirror, and the bed's color darkening with depth in a laid pool.
+    After item 27. Two commits, the reflection, then the depth and the edge.
+
+43. **The sun's look, warm and low with long soft shadows, and a blue haze over distant land
+    (Decision 21).** The look the owner aims at has a warm low sun with long soft shadows and a blue
+    haze over the far land. The game gives the sun a color and a strength by the hour as the
+    source's shader packs do, white at noon, warm at a low sun and red at the edge of night, the
+    sky's ambient turning with it; the shadows' softness read against the engine's, a penumbra
+    widening with the distance from the caster where the engine has it and asked of it in its
+    ASKS.md where not, with the hour's long shadows kept sharp enough to read; and a haze over
+    distant land as fog by distance and by height tinted by the sky, thin at noon and thick at dawn,
+    through the engine's fog where it takes a tint and a height, the far land of item 26 fading into
+    it. A setting for each, on by default. Captures at dawn, noon and dusk of one view in the record
+    beside the modpack's. Tests: the sun's color at four hours and the haze's density by distance
+    and height. After item 26. One or two commits.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -628,7 +675,9 @@ and nothing else, carrying the review's file. Pushed at 03:18, its build run gre
     climate ranges, the surface rules and the feature counts of the seven biomes are read for their
     numbers from the biome overhaul's JSON in the owner's modpack as from the source's, a model and
     not a copy, since its license forbids redistribution (Decision 14). Three commits, biomes,
-    blocks, trees, each with the scripted run's walk through one of each and a capture.
+    blocks, trees, each with the scripted run's walk through one of each and a capture. The badlands
+    with its terracotta bands around turquoise pools and a cherry grove join the biomes, and a
+    lantern and the flowers the look shows join the blocks (Decision 21).
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's
@@ -663,7 +712,8 @@ and nothing else, carrying the review's file. Pushed at 03:18, its build run gre
     low values, spaghetti tunnels from two noises thinned by a third, noodle caves thinner still,
     and aquifers setting water and lava levels in caves by depth, with the deep sections item 26
     gives them, and a cave's lighting from the sky above through its openings. After item 26. Two
-    commits, the caves, then the aquifers.
+    commits, the caves, then the aquifers. The lush caves of the source, moss, glow berries hanging
+    from the roof and vines over clear pools, join the kinds (Decision 21).
 
 28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
     emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the
@@ -751,7 +801,8 @@ and nothing else, carrying the review's file. Pushed at 03:18, its build run gre
     through, each a setting on by default with a density. The weather is saved. Tests: the weather's
     clock over days at a seed, the snow laid and melted, the particle counts within their budget at
     the default density in the frame's profile, and a capture of rain in a forest and snow on a
-    village in the record. Two commits, the weather, then the particles.
+    village in the record. Two commits, the weather, then the particles. Embers in the nether's kind
+    of dark and spores in lush and deep caves drift as the look shows (Decision 21).
 
 33. **Ambient sound, footsteps by the block and the sound's occlusion and reverb by the room
     (Decision 15).** The game gains footsteps that sound by the block walked on, grass, stone, wood,
@@ -1046,6 +1097,31 @@ No verdict is open.
     captures put in the root or a subfolder. So item 40, a screenshots folder beside the saves with
     the source's names and the HUD's line, and the engines' items 73 and 47 giving every program the
     key.
+
+20. **Simple Grass Flowers as a fourth default pack, through block state variants.** The owner wrote
+    shortly before 03:53 on 2026-10-21, during item 25, that Simple Grass Flowers looks great and
+    adds variations of the ground beside the grass and flowers the game lacks. Its page allows
+    modpacks with credit, so it joins the manifest as a fourth default pack fetched from its maker's
+    page and credited, and the game reads a pack's block state variants for the surfaces its table
+    names, picked per block by position as the source does; item 41, after item 25.
+
+21. **The look the game aims at is the owner's modpack's gallery.** The owner wrote shortly before
+    03:57 on 2026-10-21, during item 25's biome commit, that visually they aim at their modpack,
+    Better Trailer Optimized+, linking its gallery of 39 pictures, which the coder read and the
+    reviewer looked at: Bare Bones' textures under a warm low sun with long soft shadows, calm water
+    mirroring the sky and the shore, a blue haze over distant land, ores, lanterns, lava, sculk and
+    a portal emissive with bloom in dark caves and halls, lush caves hung with glow berries and
+    vines over clear pools, villages with flowers and lanterns, cherry groves, badlands of yellow
+    and orange terracotta around turquoise pools, snowy spruce peaks, and embers and spores drifting
+    in the dark. Against the game: the global illumination, the bloom, the fog, the sun's shadows
+    and Bare Bones' textures are in; the rest goes by item, the glow of emissive blocks in item 28,
+    the flowers and the biomes with the badlands and the cherry grove in item 25, lush caves with
+    glow berries and vines in item 27, the ambient particles with the embers and spores in item 32,
+    the villages' lanterns in item 31, and two items added for what no item held, the water's
+    reflection and depth as item 42 and the sun's color by the hour with the soft shadows and the
+    haze as item 43; the nether stays out until the owner names it. Each item that carries a part of
+    the look puts its capture beside the modpack's picture in the record, so the owner judges the
+    distance.
 
 ## Replies
 

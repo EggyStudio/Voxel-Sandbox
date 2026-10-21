@@ -149,6 +149,15 @@ public enum BlockId : ushort
     IronOre,
     Furnace,
     FurnaceLit,
+    RedSand,
+    Terracotta,
+    WhiteTerracotta,
+    OrangeTerracotta,
+    YellowTerracotta,
+    RedTerracotta,
+    BrownTerracotta,
+    LightGrayTerracotta,
+    Clay,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -370,6 +379,15 @@ public static class Blocks
             new(BlockId.Furnace, "furnace", "Furnace", Surfaces.FurnaceTop, Surfaces.FurnaceSide, Surfaces.FurnaceTop),
             // A furnace alight is emissive as a whole block, as magma is, and lights the blocks around it to 13.
             Same(BlockId.FurnaceLit, "lit_furnace", "Furnace", Surfaces.FurnaceLit, light: 13) with { HeldAs = BlockId.Furnace },
+            Same(BlockId.RedSand, "red_sand", "Red Sand", Surfaces.RedSand),
+            Same(BlockId.Terracotta, "terracotta", "Terracotta", Surfaces.Terracotta),
+            Same(BlockId.WhiteTerracotta, "white_terracotta", "White Terracotta", Surfaces.WhiteTerracotta),
+            Same(BlockId.OrangeTerracotta, "orange_terracotta", "Orange Terracotta", Surfaces.OrangeTerracotta),
+            Same(BlockId.YellowTerracotta, "yellow_terracotta", "Yellow Terracotta", Surfaces.YellowTerracotta),
+            Same(BlockId.RedTerracotta, "red_terracotta", "Red Terracotta", Surfaces.RedTerracotta),
+            Same(BlockId.BrownTerracotta, "brown_terracotta", "Brown Terracotta", Surfaces.BrownTerracotta),
+            Same(BlockId.LightGrayTerracotta, "light_gray_terracotta", "Light Gray Terracotta", Surfaces.LightGrayTerracotta),
+            Same(BlockId.Clay, "clay", "Clay", Surfaces.Clay),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");
