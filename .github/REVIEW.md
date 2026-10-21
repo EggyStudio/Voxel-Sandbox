@@ -5,27 +5,29 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `7039d5a`, item 46, the README's pictures, and nothing else, carrying the review's
-file and the capture the engine's entry of the blotches links: the README opening on an animation of
-ten views at 250 ms, 1.45 MB as a GIF, and 24 pictures in its sections, the world's views and the
-windows, all with the three packs on in the manifest's order and credited, the old village and hills
-pictures removed, every view checking the eye before its capture and climbing out of a block, the
-script fetching the packs by the manifest with the hashes checked, the final run about 13 minutes on
-the machine's GPU; 203 tests, the strict build clean, the play script clean. Read at 07:12 on
-2026-10-21 and pushed at 07:12; the build run of `6845654` had ended green at 07:02. Shortly before
-07:12 the owner, seeing the pictures, said there is way too little vegetation and that the plants
-are to cast shadows, which fit being pixelated, items 55 and 56. Next item 55, the plants' shadows,
-then 56, more plants, then item 39, then 26 and the items in order; items 38's second part and 54
-when the package comes; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `bc02459`, item 55's capture for the engine's entry, after `fc38219`, the README's
+animation at two seconds a picture, and nothing else, the first carrying the review's file. The
+owner said the README's animation switches too fast and chose two seconds a picture of the choices
+offered, so the GIF is made again from the final run's frames at half a frame a second, every
+frame's delay two seconds, 1.45 MB as before, the script's rate and the README's text saying so.
+Item 55 is the engine's to unblock: with the plants' mask material casting shadows, each plant's
+shadow is its two walls' whole quads, the same after the material takes the atlas and the vertex
+stage gives each corner its tile's coordinate, so 5.2.190's shadow pass does not cut a masked
+surface drawn through a program's own shader; the test's edits undone, the plants casting no shadow
+as before, the entry in the engine's ASKS.md with the scene, the commands and the capture committed
+here, the engine's item 79. The owner also said the vegetation meant is the grass and the flowers
+and such, which item 56 is. Read at 07:19 on 2026-10-21. Not pushed: the build run of `7039d5a` is
+still running, and both heads are pushed when it ends. Next item 56, more plants, then item 39, then
+26 and the items in order; item 55 when the package brings the cut, with items 38's second part and
+54; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `7039d5a` came, item 46, the README's pictures with the packs and the blotches capture,
+and nothing else, carrying the review's file. Pushed at 07:12.
 
 Before it, `6845654` came, item 53, the bloom at a tenth, after `f7bcf26`, item 52, the stars as the
 modpack's shader draws them, `a96cea5`, item 50, `e4483af`, item 51, and `0c93d3e`, item 48, and
 nothing else, each carrying the review's file. The five pushed at 06:28, their build run green at
 07:02, the play job in 33 minutes 54 seconds.
-
-Before it, `f7df279` came, items 47 and 49, the dome beyond the bodies and the sun and the moon in
-the source's look, and nothing else, carrying the review's file. Pushed at 05:52, its build run
-green at 06:26.
 
 ## Now
 
@@ -648,7 +650,8 @@ green at 06:26.
     screen is left out since a transient run lists no packs and prints the machine's folder; a
     `voxel.scale` command sets the interface's scale for the scripted shots, the windows taken at 2
     and cut out at 800 by 450 with no resampling. One commit, after item 45 and before item 39. Done
-    at `7039d5a` on 2026-10-21, as the head says, the GIF at 1.45 MB.
+    at `7039d5a` on 2026-10-21, as the head says, the GIF at 1.45 MB. The animation's pictures at
+    two seconds each at `fc38219` on the owner's word.
 
 47. **The haze dome no longer cuts the sun, the moon and their glows (Decision 25).** The owner
     asked shortly before 05:40 on 2026-10-21 whether the far plane or the skybox cut the sun's and
@@ -786,7 +789,10 @@ green at 06:26.
     pixels step with the sun's map, which the owner reads as fitting the look; the plants stay out
     of the scene's field, so the global illumination is untouched. Tests: a blade's shadow on the
     ground read from a capture's pixels as narrower than its quad, and a capture of a meadow at a
-    low sun in the record. One commit, small, or the ask.
+    low sun in the record. One commit, small, or the ask. Read at `bc02459` on 2026-10-21: the
+    shadow pass does not cut a masked surface drawn through a program's shader, so the entry is in
+    the engine's ASKS.md as its item 79 and the game takes the shadows when the package brings the
+    cut; the capture committed.
 
 56. **More plants, the source's counts read and the modpack's look matched (Decision 27).** The
     owner wrote shortly before 07:12 on 2026-10-21 that there is way too little vegetation. The
@@ -1447,7 +1453,9 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     plants are to cast shadows too, the grass blades and such, which fit as they are pixelated. So
     item 55, the plants' shadows cut by their texture or an ask of the engine, first since it is
     small, and item 56, more plants from the source's counts and the modpack's look; item 39's
-    lantern part waits behind them.
+    lantern part waits behind them. Shortly before 07:19 the owner said the README's animation
+    switches too fast and chose two seconds a picture, and that the vegetation meant is the grass
+    and the flowers and such.
 
 ## Replies
 

@@ -196,8 +196,14 @@ forbids handing its files out. `voxel.biome` finds the nearest place of a biome.
 The ground grows Minecraft's plants by biome, short and tall grass and ferns, dandelions, poppies,
 cornflowers, oxeye daisies, azure bluets and tulips in the plains, lilies of the valley and alliums
 in the forests, blue orchids in the swamp, brown and red mushrooms under the trees, pink petals
-under the cherry grove and dead bushes on the sand, each as many to a thousand places as the
-source's patches give. A plant is two flat walls crossed from corner to corner of its cell, drawn
+under the cherry grove and dead bushes on the sand, as thick as the source's patches with the biome
+overhaul of the owner's modpack cover their ground, read from their placed features, grass on about
+82 of a hundred of the plains' grass tops, a ninth of it tall, and flowers on 3, grass on 79 in the
+savanna, 60 in the dark forest, 55 in the jungle among its trees, 45 in the swamp and 25 in the
+forests with flowers on 6, ferns on 25 in the taiga, and grass and pink petals on 41 and 45 in the
+cherry grove. The plants take a roll of their own at each place of their own column, after the
+trees, so a meadow nearly covered stands no fewer trees, and they read the ground the column already
+holds for its blocks. A plant is two flat walls crossed from corner to corner of its cell, drawn
 from both sides and lit as if they faced up, as Minecraft lights its plants with no shade by the way
 they face, and its walls are a mesh of their own in each section, cut out where their texture is
 clear and casting no shadow, so the scene's distance field holds no grass. A pack's texture lies
@@ -839,6 +845,13 @@ sessions:
 | 12 | 16.7 | 9.5 | 1.2 | 1.7 | 1.4 | 1,277 MB |
 | 14 | 16.8 | 11.3 | 1.2 | 2.4 | 1.4 | 1,971 MB |
 | 16 | 17.5 | 12.8 | 1.2 | 2.9 | 1.5 | 2,169 MB |
+
+The plants are most of what a meadow draws. Over seed 1's plains at noon at 12 columns, from 20
+blocks up at -288, 64 looking east, they take the frame from 1.18 million triangles to 1.64, the
+window's model pass from 7.7 ms to 10.1 and the GPU's passes from 13.1 ms to 14.9, the mean of three
+sessions each, and the frame keeps 60 a second. They cast no shadow and the scene's distance field
+holds none of them, so the shadows and global illumination take no more for them. A column takes
+about as long to generate with them, 9 ms.
 
 Flying east over land the stream has not loaded, the game meshes the sections and joins the columns
 that come into reach on the main thread, and the frame keeps 60 a second at no distance. In three

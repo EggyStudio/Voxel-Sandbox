@@ -211,11 +211,13 @@ public sealed class Overworld : IWorldGenerator
         var column = new ChunkColumn(columnX, columnZ);
         int minX = columnX * Section.Size, minZ = columnZ * Section.Size;
         var villages = Structures.Village.GroundIn(minX, minZ, minX + Section.Mask, minZ + Section.Mask, this);
+        var grounds = new (int Height, Biome Biome, BlockId Top)[Section.Size * Section.Size];
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
                 int wx = columnX * Section.Size + x, wz = columnZ * Section.Size + z;
                 var (height, biome, top, under, temperature, _) = Ground(wx, wz);
+                grounds[z * Section.Size + x] = (height, biome, top);
                 var open = height > SeaLevel + 4 && _mouths.Fractal(wx / 90f, wz / 90f, 2) > 0.3f && !Structures.Village.OnGround(villages, wx, wz);
                 Paint(column, x, z, wx, wz, Shape(wx, wz));
                 var banded = biome == Biomes.Badlands;
@@ -245,13 +247,15 @@ public sealed class Overworld : IWorldGenerator
         Ores.Place(column, Seed);
         var clip = new ColumnClip(column);
         PlaceFeatures(clip, columnX, columnZ);
+        PlacePlants(clip, grounds);
         foreach (var structure in Structures.All) structure.BuildIn(clip, this);
         Herds.Place(column, Seed);
         return column;
     }
 
-    // The features that start in this column and in the eight around it within reach of it, in one
-    // order every column keeps, so two that overlap overlap the same way wherever they are placed.
+    // The features that reach past their place, the trees, that start in this column and in the eight
+    // around it within reach of it, in one order every column keeps, so two that overlap overlap the
+    // same way wherever they are placed.
     private void PlaceFeatures(ColumnClip clip, int columnX, int columnZ)
     {
         // The areas where structures keep trees out, which a tree reaching into them is kept out of too.
@@ -276,6 +280,7 @@ public sealed class Overworld : IWorldGenerator
                         var (height, biome, top, _, _, _) = Ground(wx, wz);
                         foreach (var (feature, perThousand) in biome.Trees)
                         {
+                            if (feature.Reach == 0) continue;
                             if (roll >= perThousand)
                             {
                                 roll -= (uint)perThousand;
@@ -287,9 +292,35 @@ public sealed class Overworld : IWorldGenerator
                     }
     }
 
-    // The most features any biome places in a thousand places, and the farthest any reaches, so a
-    // place that cannot hold one or cannot reach the column is passed over without reading its ground.
-    private static readonly int MostFeatures = Biomes.All.Max(b => b.Trees.Sum(t => t.PerThousand));
+    // The plants and the other features that keep to their place, on a roll of their own at each place
+    // of this column alone, on the ground it read for its blocks, after the trees, so a plant takes the
+    // air beside a trunk and a meadow can be nearly covered with no tree the fewer for it.
+    private void PlacePlants(ColumnClip clip, (int Height, Biome Biome, BlockId Top)[] grounds)
+    {
+        for (int z = 0; z < Section.Size; z++)
+            for (int x = 0; x < Section.Size; x++)
+            {
+                int wx = clip.MinX + x, wz = clip.MinZ + z;
+                var (height, biome, top) = grounds[z * Section.Size + x];
+                var hash = PlaceHash.Of(wx, wz, Seed ^ 0x5a17);
+                var roll = hash % 1000;
+                foreach (var (feature, perThousand) in biome.Trees)
+                {
+                    if (feature.Reach > 0) continue;
+                    if (roll >= perThousand)
+                    {
+                        roll -= (uint)perThousand;
+                        continue;
+                    }
+                    if (feature.GrowsOn(top)) feature.Place(clip, wx, height, wz, hash / 1000);
+                    break;
+                }
+            }
+    }
+
+    // The most trees any biome places in a thousand places, and the farthest any reaches, so a place
+    // that cannot hold one or cannot reach the column is passed over without reading its ground.
+    private static readonly int MostFeatures = Biomes.All.Max(b => b.Trees.Where(t => t.Feature.Reach > 0).Sum(t => t.PerThousand));
     private static readonly int MostReach = Biomes.All.SelectMany(b => b.Trees).Max(t => t.Feature.Reach);
 
     // Tunnels where two noises are both near zero, and wide caverns where a third is high.

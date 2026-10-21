@@ -81,6 +81,37 @@ public class PlantAndOreTests
     }
 
     [Fact]
+    public void A_Plains_Field_Is_Mostly_Covered_With_Grass_A_Few_In_A_Hundred_With_Flowers()
+    {
+        // Seed 1's plains about -288, 64, twelve columns by twelve, the grass tops of the plains alone.
+        var land = new Overworld(1);
+        BlockId[] flowers = [BlockId.Dandelion, BlockId.Poppy, BlockId.OxeyeDaisy, BlockId.AzureBluet, BlockId.Cornflower, BlockId.RedTulip, BlockId.OrangeTulip, BlockId.WhiteTulip, BlockId.PinkTulip];
+        int tops = 0, grass = 0, tall = 0, flowered = 0;
+        for (int cz = -2; cz < 10; cz++)
+            for (int cx = -24; cx < -12; cx++)
+            {
+                var column = land.Generate(cx, cz);
+                for (int z = 0; z < 16; z++)
+                    for (int x = 0; x < 16; x++)
+                    {
+                        var (height, biome, _, _, _, _) = land.Ground(cx * 16 + x, cz * 16 + z);
+                        if (biome != Biomes.Plains || column.Get(x, height, z) != BlockId.Grass) continue;
+                        tops++;
+                        var above = column.Get(x, height + 1, z);
+                        if (above == BlockId.ShortGrass) grass++;
+                        else if (above == BlockId.TallGrass) tall++;
+                        else if (Array.IndexOf(flowers, above) >= 0) flowered++;
+                    }
+            }
+        Assert.True(tops > 10000, $"{tops} grass tops of the plains");
+        // About as the source's plains with the biome overhaul's patches cover them, 86 in a hundred
+        // short grass and 11 tall, a few in a hundred of flowers among them.
+        Assert.InRange((grass + tall) / (double)tops, 0.72, 0.86);
+        Assert.InRange(tall / (double)(grass + tall), 0.10, 0.18);
+        Assert.InRange(flowered / (double)tops, 0.02, 0.04);
+    }
+
+    [Fact]
     public void A_Meadow_Grows_Grass_And_Flowers_And_Diamonds_Lie_Deep()
     {
         var land = new Overworld(1);
