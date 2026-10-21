@@ -51,8 +51,15 @@ TerrainOutput vertexMain(float3 position : POSITION, uint2 packed : CUSTOM0, Mod
     float shade = float((packed.x >> 5) & 127) / 127.0;
     float4 tint = float4(float(packed.y & 255), float((packed.y >> 8) & 255), float((packed.y >> 16) & 255), float(packed.y >> 24)) / 255.0;
     TerrainOutput output;
-    output.streams = transformModelVertex(position, Normals[face], float2(0, 0), float4(tint.rgb * shade, tint.a), float2(shade, 0), instance);
-    output.surface = uint4(face, (packed.x >> 13) & 511, (packed.x >> 22) & 511, (packed.x >> 31) | ((packed.x >> 12) & 1) << 1);
+    // A plant's wall carries its corner's place on its texture in sixteenths where a face carries its
+    // overlay tile and decor flag, across in five bits and down in four and the flag, so the texture
+    // lies on the wall wherever its offset puts it; it has no overlay and no decor.
+    bool wall = face >= 6;
+    float2 place = float2(0, 0);
+    if (wall) place = float2(float((packed.x >> 22) & 31), float(((packed.x >> 27) & 15) | ((packed.x >> 12) & 1) << 4)) / 16.0;
+    output.streams = transformModelVertex(position, Normals[face], place, float4(tint.rgb * shade, tint.a), float2(shade, 0), instance);
+    output.surface = wall ? uint4(face, (packed.x >> 13) & 511, 0, packed.x >> 31)
+        : uint4(face, (packed.x >> 13) & 511, (packed.x >> 22) & 511, (packed.x >> 31) | ((packed.x >> 12) & 1) << 1);
     return output;
 }
 
@@ -106,7 +113,7 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     uint4 surface = input.surface;
     // The mip level from how many of a tile's pixels a pixel of the screen spans, worked out before
     // any fragment is dropped.
-    float2 place = across(streams.base.world, surface.x);
+    float2 place = surface.x >= 6 ? min(streams.base.uv, float2(0.99999)) : across(streams.base.world, surface.x);
     float pixels = max(atlasLayout.z, 1.0);
     float2 texels = place * pixels;
     float spans = max(length(ddx(texels)), length(ddy(texels)));

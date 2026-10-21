@@ -346,13 +346,14 @@ public sealed class SectionMesher
         int sky = _light[at] >> 4, lit = _light[at] & 15;
         var kept = LightLevels ? MathF.Pow(Lit(Math.Max(sky, lit)), 1 / 2.2f) : 1;
         var place = (int)block.Z * Section.Size + (int)block.X;
+        var offset = Offset(shape.Offset, _origin.X + (int)block.X, _origin.Z + (int)block.Z);
         foreach (var piece in shape.Pieces)
         {
             if (piece.Glows) continue;
             var (tiles, color, albedo) = Atlas.Paint(piece.Surface, _column.GrassTint[place], _column.FoliageTint[place]);
             if (piece.Plane)
             {
-                AddWall(faces, piece, block, kept, color, tiles, albedo);
+                AddWall(faces, piece, block + offset, kept, color, tiles, albedo);
                 continue;
             }
             var size = piece.To - piece.From;
@@ -384,18 +385,50 @@ public sealed class SectionMesher
     // with no edges, as Minecraft's crossed planes are. Both sides are lit as if they faced up, as
     // Minecraft lights its plants with no shade by the way they face, and take the wall's texture
     // laid along the axis it runs most along, and each side's corners run counterclockwise seen from it.
+    /// <summary>
+    /// How far a plant of an offset kind stands off its cell's middle at a place, as Minecraft offsets
+    /// it: a nibble of the place's hash each for across x and z, from a quarter of a block one way to
+    /// a quarter the other in sixteen steps, and for the kind that sinks a third nibble, down to a fifth.
+    /// </summary>
+    public static Vector3 Offset(PlantOffset kind, int x, int z)
+    {
+        if (kind == PlantOffset.None) return Vector3.Zero;
+        var hash = PlaceHash.Of(x, z, 0x0ff5);
+        float across = ((hash & 15) / 15f - 0.5f) * 0.5f, along = ((hash >> 8 & 15) / 15f - 0.5f) * 0.5f;
+        var down = kind == PlantOffset.AcrossAndDown ? ((hash >> 4 & 15) / 15f - 1) * 0.2f : 0;
+        return new Vector3(across, down, along);
+    }
+
+    // A wall's corner carries its place on the texture in sixteenths, across in the five bits a face's
+    // overlay tile begins with and down in the four after and the decor flag, since a wall has neither,
+    // so the texture lies on the wall wherever the wall's offset puts it.
+    private static uint WithPlace(uint tiles, float across, float down)
+    {
+        uint u = (uint)Math.Clamp(MathF.Round(across * 16), 0, 16), v = (uint)Math.Clamp(MathF.Round(down * 16), 0, 16);
+        return tiles & ~(0x1FFu << 9 | 1u << 19) | (u | (v & 15) << 5) << 9 | (v >> 4) << 19;
+    }
+
     private static void AddWall(Faces faces, Piece piece, Vector3 block, float kept, Color color, uint tiles, Color albedo)
     {
         var (a, b) = (piece.From, piece.To);
+        var face = MathF.Abs(b.X - a.X) >= MathF.Abs(b.Z - a.Z) ? WallAlongX : WallAlongZ;
+        // The wall runs from its lower end along the axis its texture is laid across, so its corners
+        // 0 to 3, the lower end's foot, the upper end's foot, the upper end's top and the lower end's
+        // top, lie at the texture's lower left, lower right, upper right and upper left.
+        if (face == WallAlongX ? a.X > b.X : a.Z > b.Z) (a, b) = (new Vector3(b.X, a.Y, b.Z), new Vector3(a.X, b.Y, a.Z));
         Span<Vector3> quad = [new(a.X, a.Y, a.Z), new(b.X, a.Y, b.Z), new(b.X, b.Y, b.Z), new(a.X, b.Y, a.Z)];
         var across = new Vector3(b.Z - a.Z, 0, a.X - b.X);
-        var face = MathF.Abs(b.X - a.X) >= MathF.Abs(b.Z - a.Z) ? WallAlongX : WallAlongZ;
         foreach (var side in (ReadOnlySpan<float>)[1, -1])
         {
             var normal = across * side;
             var turned = Vector3.Dot(Vector3.Cross(quad[1] - quad[0], quad[2] - quad[0]), normal) < 0;
             var first = (uint)faces.Count;
-            for (int i = 0; i < 4; i++) faces.Add(block + quad[turned ? 3 - i : i], face, i, kept, color, tiles, albedo);
+            for (int i = 0; i < 4; i++)
+            {
+                var corner = turned ? 3 - i : i;
+                var at = quad[corner];
+                faces.Add(block + at, face, corner, kept, color, WithPlace(tiles, face == WallAlongX ? at.X : at.Z, 1 - at.Y), albedo);
+            }
             faces.Indices.Add(first);
             faces.Indices.Add(first + 1);
             faces.Indices.Add(first + 2);

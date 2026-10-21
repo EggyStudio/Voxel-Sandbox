@@ -42,6 +42,58 @@ public class PlantAndOreTests
     }
 
     [Fact]
+    public void A_Plant_Stands_Off_Its_Cells_Middle_By_Its_Place_As_The_Source_Offsets_It()
+    {
+        Assert.Equal(System.Numerics.Vector3.Zero, SectionMesher.Offset(PlantOffset.None, 3, 7));
+        var seen = new HashSet<System.Numerics.Vector3>();
+        for (int z = 0; z < 16; z++)
+            for (int x = 0; x < 16; x++)
+            {
+                var across = SectionMesher.Offset(PlantOffset.Across, x, z);
+                var down = SectionMesher.Offset(PlantOffset.AcrossAndDown, x, z);
+                // Up to a quarter of a block either way across, the same at a place every time, a
+                // flower never sunk and grass sunk up to a fifth.
+                Assert.InRange(across.X, -0.25f, 0.25f);
+                Assert.InRange(across.Z, -0.25f, 0.25f);
+                Assert.Equal(0, across.Y);
+                Assert.InRange(down.Y, -0.2f, 0);
+                Assert.Equal(across.X, down.X);
+                Assert.Equal(across, SectionMesher.Offset(PlantOffset.Across, x, z));
+                seen.Add(across);
+            }
+        Assert.True(seen.Count > 100, $"{seen.Count} offsets among 256 places");
+        Assert.Equal(PlantOffset.AcrossAndDown, Blocks.Get(BlockId.ShortGrass).Shape!.Offset);
+        Assert.Equal(PlantOffset.Across, Blocks.Get(BlockId.Poppy).Shape!.Offset);
+        Assert.Equal(PlantOffset.None, Blocks.Get(BlockId.OakSapling).Shape!.Offset);
+    }
+
+    [Fact]
+    public void An_Offset_Grass_Keeps_Its_Walls_A_Block_Wide_And_Its_Texture_From_Its_Own_Corners()
+    {
+        var world = Laid.World(c => c.Set(0, 0, 0, BlockId.Bedrock));
+        world.SetBlock(5, 20, 9, BlockId.Grass);
+        world.SetBlock(5, 21, 9, BlockId.ShortGrass);
+        var mesher = new SectionMesher();
+        Assert.True(mesher.Mesh(world, new SectionKey(0, 1, 0)));
+        var offset = SectionMesher.Offset(PlantOffset.AcrossAndDown, 5, 9);
+        var faces = mesher.Cutout;
+        Assert.Equal(16, faces.Count);
+        Assert.Equal(5 + offset.X, faces.Positions.Min(p => p.X), 3);
+        Assert.Equal(6 + offset.X, faces.Positions.Max(p => p.X), 3);
+        Assert.Equal(21 - 16 + offset.Y, faces.Positions.Min(p => p.Y), 3);
+        for (int i = 0; i < faces.Count; i++)
+        {
+            // The corner's place on the texture, across from the lower end and down from the top of
+            // the block, read back as the shader reads it.
+            var first = faces.Packed[2 * i];
+            float u = (first >> 22 & 31) / 16f, v = ((first >> 27 & 15) | (first >> 12 & 1) << 4) / 16f;
+            var (_, corner, _, _) = faces.Unpack(i);
+            Assert.Equal(corner is 1 or 2 ? 1 : 0, u);
+            Assert.Equal(corner < 2 ? 1 : 1 - 12 / 16f, v, 3);
+        }
+    }
+
+    [Fact]
     public void A_Plant_No_Pack_Has_Takes_The_Games_Own_Mask_Tinted_By_Its_Color()
     {
         var atlas = TerrainAtlas.None;

@@ -72,11 +72,12 @@ public readonly record struct Box(Vector3 Min, Vector3 Max)
 public sealed class BlockShape
 {
     public BlockShape(Facing facing, Piece[] pieces, bool falls = true, bool solid = false, bool upper = false, bool open = false, Box[]? collision = null, StairForm? form = null,
-        bool cutout = false)
+        bool cutout = false, PlantOffset offset = PlantOffset.None)
     {
         Facing = facing;
         Form = form;
         Cutout = cutout;
+        Offset = offset;
         Falls = falls;
         Upper = upper;
         Open = open;
@@ -120,6 +121,9 @@ public sealed class BlockShape
     /// from the solid faces so those keep the depth test that runs before their pixels are lit.
     /// </summary>
     public bool Cutout { get; }
+
+    /// <summary>How a plant stands off its cell's middle, by its place's hash, as Minecraft offsets its flowers and grass.</summary>
+    public PlantOffset Offset { get; }
 
     public IReadOnlyList<Piece> Pieces { get; }
 
@@ -286,7 +290,7 @@ public sealed class BlockShape
     /// lies across the walls from the cell's foot, so its plant drawn at the bottom of the texture
     /// shows whole, and its clear pixels are cut out. It falls when the block under it is broken.
     /// </summary>
-    public static BlockShape Plant(int lower, float height, int upper = -1, float split = 0)
+    public static BlockShape Plant(int lower, float height, int upper = -1, float split = 0, PlantOffset offset = PlantOffset.None)
     {
         List<Piece> pieces = [];
         (float From, float To, int Surface)[] parts = split > 0 && upper >= 0 ? [(0, split, lower), (split, height, upper)] : [(0, height, lower)];
@@ -295,7 +299,7 @@ public sealed class BlockShape
             pieces.Add(Wall(0, from, 0, 16, to, 16, surface));
             pieces.Add(Wall(0, from, 16, 16, to, 0, surface));
         }
-        return new BlockShape(Facing.Up, [.. pieces], cutout: true);
+        return new BlockShape(Facing.Up, [.. pieces], cutout: true, offset: offset);
     }
 
     // A flat wall from one corner across to another in sixteenths, standing from the lower height to the upper.
@@ -378,4 +382,16 @@ public sealed class BlockShape
         Vector3 a = turn(piece.From - half) + half, b = turn(piece.To - half) + half;
         return piece with { From = Vector3.Min(a, b), To = Vector3.Max(a, b), Lean = turn(piece.Lean) };
     }
+}
+
+/// <summary>
+/// How a plant stands off its cell's middle, as Minecraft's offset types are: not at all, as a
+/// sapling, a mushroom and a dead bush stand, up to a quarter of a block either way across, as a
+/// flower and tall grass do, or across and sunk up to a fifth of a block, as short grass and a fern are.
+/// </summary>
+public enum PlantOffset
+{
+    None,
+    Across,
+    AcrossAndDown,
 }

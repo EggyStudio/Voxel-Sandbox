@@ -5,29 +5,39 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `bc02459`, item 55's capture for the engine's entry, after `fc38219`, the README's
-animation at two seconds a picture, and nothing else, the first carrying the review's file. The
-owner said the README's animation switches too fast and chose two seconds a picture of the choices
-offered, so the GIF is made again from the final run's frames at half a frame a second, every
-frame's delay two seconds, 1.45 MB as before, the script's rate and the README's text saying so.
-Item 55 is the engine's to unblock: with the plants' mask material casting shadows, each plant's
-shadow is its two walls' whole quads, the same after the material takes the atlas and the vertex
-stage gives each corner its tile's coordinate, so 5.2.190's shadow pass does not cut a masked
-surface drawn through a program's own shader; the test's edits undone, the plants casting no shadow
-as before, the entry in the engine's ASKS.md with the scene, the commands and the capture committed
-here, the engine's item 79. The owner also said the vegetation meant is the grass and the flowers
-and such, which item 56 is. Read at 07:19 on 2026-10-21. Not pushed: the build run of `7039d5a` is
-still running, and both heads are pushed when it ends. Next item 56, more plants, then item 39, then
-26 and the items in order; item 55 when the package brings the cut, with items 38's second part and
-54; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `d32ee21`, item 56, more plants, and nothing else, carrying the review's file: the
+source's placed features read from the client's data and the biome overhaul's from the modpack's jar
+as numbers, a patch 32 tries spread by a triangle of seven, the plains 5 or 10 patches a chunk and
+20 of short grass with 7 of tall from the overhaul, the forest 2, the taiga 7 of ferns, the savanna
+20, the jungle 25, the dark forest 11 or 14 from the overhaul, simulated on flat ground to shares of
+open grass, the plains 86 percent short and 11 tall, the savanna 90, the jungle 94, the dark forest
+82, the swamp 44, the cherry grove 46 with 49 of petals, the forest 20 with 8 of flowers, the taiga
+11 of ferns, against the game's 14, 18, 12, 2, 4 and 4 before; the plants now rolled on their own at
+each place of their own column alone on the ground already read, after the trees, the trees keeping
+their roll and rates and the neighbor loop reading no more ground; measured on seed 1's ground the
+plains 82 percent with 3.2 of flowers, the savanna 79, the dark forest 60, the jungle 55 among its
+trees, the swamp 45, the forest 25 with 6.3 of flowers, the taiga 25 of ferns, the cherry grove 41
+with 45 of petals; a test over 12 by 12 columns of the plains at 72 to 86 percent covered; the cost
+over the plains at 12 columns 1.64 million triangles against 1.18, the model pass 10.1 ms against
+7.7, the GPU's passes 14.9 against 13.1, still 60 a second, a column generating in 9 ms either way,
+in the README; 204 tests, the strict build clean, the play script clean. Read at 07:35 on
+2026-10-21. Not pushed, with `bc02459` and `fc38219` before it: the build run of `7039d5a` is still
+running, and the three heads are pushed when it ends. Two readings for the owner: beside the
+modpack's pictures the grass covers the ground but reads flat at a distance, its blades taking the
+grass top's color and lit as facing up so they blend into the block where the modpack's read
+brighter and taller, partly from its shader; and the README's pictures show the old sparse grass,
+taken again after item 39 so one run covers the plants, the lantern and the cutout. Shortly before
+07:36 the owner asked for the plants offset in their block as the source's are, item 57. Shortly
+before 07:38 the owner said the blades should look like the modpack's and the colors are to follow
+the shader settings they set, Decision 28 and item 58. Next item 57, then 58, then item 39, then the
+pictures taken again, then 26 and the items in order; items 55, 38's second part and 54 when their
+packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `bc02459` came, item 55's capture for the engine's entry, after `fc38219`, the README's
+animation at two seconds a picture, and nothing else, the first carrying the review's file.
 
 Before it, `7039d5a` came, item 46, the README's pictures with the packs and the blotches capture,
 and nothing else, carrying the review's file. Pushed at 07:12.
-
-Before it, `6845654` came, item 53, the bloom at a tenth, after `f7bcf26`, item 52, the stars as the
-modpack's shader draws them, `a96cea5`, item 50, `e4483af`, item 51, and `0c93d3e`, item 48, and
-nothing else, each carrying the review's file. The five pushed at 06:28, their build run green at
-07:02, the play job in 33 minutes 54 seconds.
 
 ## Now
 
@@ -590,7 +600,9 @@ nothing else, each carrying the review's file. The five pushed at 06:28, their b
     through the engine's fog where it takes a tint and a height, the far land of item 26 fading into
     it. A setting for each, on by default. Captures at dawn, noon and dusk of one view in the record
     beside the modpack's. Tests: the sun's color at four hours and the haze's density by distance
-    and height. After item 26. One or two commits.
+    and height. After item 26. One or two commits. Item 58 takes the sun's color by hour and the
+    haze's strength from the modpack's settings; this item keeps the shadows' softness, the haze by
+    height and the captures at three hours.
 
 44. **The land's fading edge meets a sky of the haze's color below the horizon.** The owner asked
     shortly before 04:02 on 2026-10-21, seeing the cherry grove's capture from the scripted run's
@@ -651,7 +663,8 @@ nothing else, each carrying the review's file. The five pushed at 06:28, their b
     `voxel.scale` command sets the interface's scale for the scripted shots, the windows taken at 2
     and cut out at 800 by 450 with no resampling. One commit, after item 45 and before item 39. Done
     at `7039d5a` on 2026-10-21, as the head says, the GIF at 1.45 MB. The animation's pictures at
-    two seconds each at `fc38219` on the owner's word.
+    two seconds each at `fc38219` on the owner's word. The pictures are taken again after item 39,
+    one run covering the plants, the lantern and the cutout.
 
 47. **The haze dome no longer cuts the sun, the moon and their glows (Decision 25).** The owner
     asked shortly before 05:40 on 2026-10-21 whether the far plane or the skybox cut the sun's and
@@ -805,7 +818,51 @@ nothing else, each carrying the review's file. The five pushed at 06:28, their b
     toward the modpack's look, the biome overhaul's numbers read as numbers, each biome's grasses,
     tall grass, ferns and flowers. A test counting short grass, ferns and flowers in a 12 by 12
     columns plains of seed 1 against the new share, and the meadow's capture taken again beside the
-    modpack's picture. One commit, after item 55.
+    modpack's picture. One commit, after item 55. Done at `d32ee21` on 2026-10-21, as the head says;
+    the blades reading flat at a distance beside the modpack's is for the owner's word.
+
+57. **The plants stand offset in their block as the source places them (Decision 27).** The owner
+    wrote shortly before 07:36 on 2026-10-21 that in Minecraft the grass and the flowers are not
+    placed uniformly on the block but randomly positioned and rotated or so. The source offsets them
+    and does not turn them, read from the client's code as numbers: from a seed of the place, up to
+    a quarter block either way in 16 steps along x and z, and the short grass and the ferns sinking
+    up to a fifth of a block too, the flowers, the saplings and the tall grass only sideways. The
+    mesher offsets each plant's walls by the place's hash the same way, the grass and the ferns
+    sinking, the petals, the wheat, the mushrooms and the dead bushes keeping their place as in the
+    source; a wall carries its own texture coordinates, the mesher numbering its corners from the
+    lower left with the vertex stage handing the fragment zero to one across and down, since the
+    shader laid a wall's texture by its world position, which would slide under an offset, the light
+    staying snapped to the block's pixels; the README's plants paragraph. Tests: the same place
+    giving the same offset and two places differing, every offset within a quarter, the grass
+    sinking no more than a fifth and the flowers not at all, and the walls a block wide corner to
+    corner. One commit, small, before item 39.
+
+58. **The light and the grade after the modpack's shader settings the owner set, read as numbers
+(Decision 28).** The owner wrote shortly before 07:38 on 2026-10-21 that the blades should look like
+the modpack's, and that comparing the colors the game's and the modpack's pictures differ, so the
+modpack is to be pulled and the shader settings they set fetched, the colors by time of day, the
+saturation and so on. The modpack's shader runs under a license forbidding redistributing or
+changing its code, so it is read as numbers and the game's own written: the owner's settings against
+the shader's defaults, the exposure 0.90 against 1.40, the white curve 1.3 against 2.0, the lower
+curve 1.05 against 1.20 and the upper 1.00 against 1.50, the saturation 1.05 against 1.55, the
+ambient 50 against 150, the fog 0.95 against 0.50, the night tint 1.10, 0.90 and 1.30, the bloom
+0.027, the shadows stepped at 8 a block and reaching 64, no color grading; the shader's tonemap
+multiplying by the exposure, dividing by the white curve's term, a power from the lower curve in the
+darks to the upper in the lights mixed by the root, gamma and the saturation about the channels'
+mean; its sunlight at noon a warm yellow, orange at sunset by a power past noon, dim and cool at
+night, the ambient the sky's color to the 0.65 times 0.85 scaled by the ambient setting, where the
+game's sun is near white, the warmth and the deep shade being most of the pictures' difference. Five
+parts, each shown beside the modpack's pictures before its commit: the sun's color by hour after the
+shader's numbers and the sky's light at the share the owner's ambient gives, measured as the
+shade-to-sun ratio on a white wall before and after, which takes item 43's sun from it; the night
+sky and the moonlight tinted; the grade, the saturation through the engine's color grading and the
+curve asked of the engine in its ASKS.md, a parametric curve set by the four numbers or a tonemap
+through a program's shader, the engine's nearest curve and exposure chosen meanwhile by the curves'
+values at a few levels and stated; the haze's start and strength read from the fog setting and
+matched, which item 43's haze follows; and the shadows stepped at 8 a block and reaching 64, offered
+to the owner rather than taken. The bloom stays at the owner's tenth. Tests on the sun's color at
+four hours, the ratio, the tint and the haze. Three or four commits, after item 57 and before item
+39.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1455,7 +1512,18 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     small, and item 56, more plants from the source's counts and the modpack's look; item 39's
     lantern part waits behind them. Shortly before 07:19 the owner said the README's animation
     switches too fast and chose two seconds a picture, and that the vegetation meant is the grass
-    and the flowers and such.
+    and the flowers and such. Shortly before 07:36 the owner added that in Minecraft the grass and
+    the flowers are randomly positioned and rotated or so, which the source does by an offset and no
+    turn; item 57.
+
+28. **The blades like the modpack's, and the light and the grade from the shader settings the owner
+    set.** The owner wrote shortly before 07:38 on 2026-10-21, asked how the blades should look,
+    like in the modpack; and that comparing the colors the game's and the modpack's pictures differ,
+    so the modpack is to be pulled and the shader settings they set fetched, the colors by time of
+    day, the saturation and so on. The shader's license forbids redistributing or changing its code,
+    so its settings and its formulas are read as numbers and the game's own written, item 58, the
+    tonemap's curve asked of the engine; the blades' look comes with the light, the warmth and the
+    deep shade being most of the difference.
 
 ## Replies
 
