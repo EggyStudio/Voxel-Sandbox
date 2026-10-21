@@ -20,6 +20,11 @@ namespace VoxelSandbox;
 /// and each kind of tool keeps one shape, its head in the color of the tool's material.
 /// </para>
 /// <para>
+/// With resource packs loaded (<see cref="Use"/>) a block's faces take their surfaces' textures in
+/// place of the speckle, and an item a pack has a texture for is that texture, as a block Minecraft
+/// draws flat is, a torch, a lantern or a door.
+/// </para>
+/// <para>
 /// The atlas is <see cref="Columns"/> icons across, each in a cell with a clear pixel around it,
 /// since a sample at an icon's edge, taken without filtering, may land on the pixel past it.
 /// </para>
@@ -49,6 +54,8 @@ public static class Icons
 
     private static byte[]? _atlas;
     private static Texture2D _texture;
+    private static TerrainAtlas _terrain = TerrainAtlas.None;
+    private static ResourcePacks _packs = ResourcePacks.None;
 
     // The way from a block toward the eye, from the south and east and 30 degrees above, and the
     // icon's right and up across it.
@@ -90,12 +97,24 @@ public static class Icons
         return _texture;
     }
 
+    /// <summary>
+    /// Paints the icons again from the textures of the packs, the faces' from the terrain's tiles and
+    /// an item's from the packs' own texture for it, where they have them.
+    /// </summary>
+    public static void Use(TerrainAtlas terrain, ResourcePacks packs)
+    {
+        (_terrain, _packs, _atlas) = (terrain, packs, null);
+        if (_texture.IsValid) UnloadTexture(_texture);
+        _texture = default;
+    }
+
     private static byte[] Paint()
     {
         var atlas = new byte[Width * Height * 4];
         foreach (var item in Items.All)
         {
-            var icon = item.Block is { } block ? Cube(Blocks.Get(block)) : Drawn(item);
+            var icon = PackTextures.OfItem(item) is { } name && _packs.Texture(name) is { } image ? Flat(image)
+                : item.Block is { } block ? Cube(Blocks.Get(block)) : Drawn(item);
             var source = Source(item);
             for (int y = 0; y < Size; y++)
                 Array.Copy(icon, y * Size * 4, atlas, (((int)source.Y + y) * Width + (int)source.X) * 4, Size * 4);
@@ -145,12 +164,33 @@ public static class Icons
                 var speckle = 1 + ((int)(PlaceHash.Of(x, y, surface) % 9) - 4) * 0.012f;
                 var color = look.Plain;
                 var at = (y * Size + x) * 4;
+                // A pack's texture where the way meets the face, laid on the top, the south side and
+                // the east side as a face of the world lays it, its clear pixels showing the slot.
+                var hit = from - ToEye * nearest;
+                var (u, v) = face == 1 ? (hit.X, hit.Z) : face == 2 ? (hit.X, 1 - hit.Y) : (1 - hit.Z, 1 - hit.Y);
+                if (_terrain.Texel(surface, u, v, Climate.Grass(Climate.PlainsTemperature, Climate.PlainsHumidity),
+                    Climate.Foliage(Climate.PlainsTemperature, Climate.PlainsHumidity)) is { } texel)
+                {
+                    if (texel.A == 0) continue;
+                    (pixels[at], pixels[at + 1], pixels[at + 2], pixels[at + 3]) = (Channel(texel.R * shade), Channel(texel.G * shade), Channel(texel.B * shade), 255);
+                    continue;
+                }
                 pixels[at] = Channel(color.R * shade * speckle);
                 pixels[at + 1] = Channel(color.G * shade * speckle);
                 pixels[at + 2] = Channel(color.B * shade * speckle);
                 // Opaque, so glass, ice and water show their color rather than the slot through it.
                 pixels[at + 3] = 255;
             }
+        return pixels;
+    }
+
+    // A pack's texture of an item, sampled to the icon's size by its nearest pixel.
+    private static byte[] Flat(Image image)
+    {
+        var pixels = new byte[Size * Size * 4];
+        for (int y = 0; y < Size; y++)
+            for (int x = 0; x < Size; x++)
+                Array.Copy(image.Data, (y * image.Height / Size * image.Width + x * image.Width / Size) * 4, pixels, (y * Size + x) * 4, 4);
         return pixels;
     }
 

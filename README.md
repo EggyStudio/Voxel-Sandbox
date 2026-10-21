@@ -27,6 +27,7 @@ build/fetch-slang.sh
 dotnet run --project VoxelSandbox                      # the hills of seed 1
 dotnet run --project VoxelSandbox -- --flat --seed 7   # a flat world to build a test on
 dotnet run --project VoxelSandbox -- --world house     # a save of its own name
+dotnet run --project VoxelSandbox -- --pack pack.zip   # drawn with a resource pack's textures
 dotnet test VoxelSandbox.Tests                         # its light, meshes, mobs, saves and land
 ```
 
@@ -450,17 +451,38 @@ it blew itself up. Their models are boxes of Minecraft's too, a zombie's and a s
 out ahead and a skeleton's bow upright in its hand, and arrows are thin shafts drawn over the frame,
 which cast no shadow.
 
+## Resource packs
+
+The blocks and items are drawn with the textures of the Minecraft resource packs the player has,
+each a zip or a folder holding `assets/minecraft`, each given with `--pack`. The first given is laid
+over the rest, as Minecraft layers its packs, so a texture the first lacks is read from the next
+that has it. The repository ships no pack and none of a pack's files.
+`VoxelSandbox/Rendering/PackTextures.cs` names the texture each surface and item is drawn with, by
+Minecraft's names, and a surface it leaves out, or one no pack has, keeps the game's own color, so
+with no pack the world is drawn as before.
+
+The textures are laid out at load in one atlas with its mip levels, each tile two by two in a cell
+of its own, so a smaller mip level read near a tile's edge reads the same tile, and sampled by the
+nearest pixel. A face's tile is laid across it by where each point lies in its block, as Minecraft
+lays a texture on a face of a block or of a smaller box within one, so a slab, a step of the stairs
+or a torch's stick shows the part of the texture its place covers. Grass and oak leaves take the
+climate's color over their gray textures, birch and spruce leaves and water a color of their own as
+Minecraft gives them, and the grass block's side its overlay tinted over the dirt under it. The
+scene's distance field reads each face as its texture's average under its tint, so the light a wall
+gives back takes its texture's color. An emissive block's cube is drawn with its texture, and an
+item's icon is the pack's texture for it, or a block's cube with its faces' textures.
+
 ## How the world is drawn
 
 A section of 16 blocks a side is one mesh in one white material, each corner of a face its position
 and eight packed bytes of the game's own, twenty bytes a corner on the GPU. The bytes hold the face
-the corner lies on, which of the face's corners it is, its shade and its surface's color, and
-`VoxelSandbox/resources/shaders/terrain.slang` unpacks them, taking the normal and texture
-coordinate by table and the color under the shade. The colors go with the mesh as well for the
-scene's distance field, which the light is traced through, so indirect light takes each block's
-color. Faces between two blocks are left out, and each face that remains is two triangles of its
-own, since greedy meshing is not written yet. A section meshed again with the same faces keeps its
-mesh and takes only new packed bytes, written in place.
+the corner lies on, which of the face's corners it is, its shade, its surface's tiles in the atlas
+of the resource packs and the color it carries, and `VoxelSandbox/resources/shaders/terrain.slang`
+unpacks them, taking the normal by table and the tile tinted by the color under the shade. The
+colors go with the mesh as well for the scene's distance field, which the light is traced through,
+so indirect light takes each block's color. Faces between two blocks are left out, and each face
+that remains is two triangles of its own, since greedy meshing is not written yet. A section meshed
+again with the same faces keeps its mesh and takes only new packed bytes, written in place.
 
 An emissive block (glowstone, a sea lantern, shroomlight, magma) is drawn as a cube of its own, and
 the emissive piece of a torch, a lantern or an end rod as that cube scaled to it, every cube of one
@@ -572,7 +594,9 @@ no haze.
 
 ## What is not here yet
 
-Textures, and leaves seen through, which are solid. Slabs and stairs that keep light out, as
+A pack's animated textures, which show their first frame, its block models and its connected
+textures. Leaves seen through, which are solid, so the clear pixels of a pack's leaves, a door's
+window or a cactus's edge show the color the pixel holds. Slabs and stairs that keep light out, as
 Minecraft's do. Greedy meshing. Light that passes through
 leaves at a cost, as Minecraft's does. Structures read from files rather than built in code.
 Villagers that trade, sleep in beds or work their farms, and animals that breed or follow food. A

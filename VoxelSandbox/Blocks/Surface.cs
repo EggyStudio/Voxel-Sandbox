@@ -132,6 +132,12 @@ public static class Surfaces
     public static readonly int LanternGlass = Add("lantern glass", new Color(250, 205, 125), emissive: new Color(255, 175, 85), glow: 25);
     public static readonly int SoulLanternGlass = Add("soul lantern glass", new Color(130, 225, 235), emissive: new Color(70, 210, 255), glow: 12);
     public static readonly int EndRod = Add("end rod", new Color(245, 242, 235), emissive: new Color(255, 248, 240), glow: 17);
+    // Faces in the color of the surfaces they are split from, told apart where a resource pack
+    // gives each a texture of its own, the grass block's side its strip of grass, the upper half of
+    // a door its window and sandstone its top.
+    public static readonly int GrassSide = Add("grass side", new Color(134, 96, 67));
+    public static readonly int DoorTop = Add("door top", new Color(140, 108, 62));
+    public static readonly int SandstoneTop = Add("sandstone top", new Color(216, 202, 155));
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

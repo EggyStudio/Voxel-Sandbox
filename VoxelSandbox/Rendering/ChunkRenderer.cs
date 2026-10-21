@@ -13,8 +13,8 @@ namespace VoxelSandbox;
 /// <remarks>
 /// <para>
 /// A section is one mesh in one white material, each vertex its position and eight packed bytes the
-/// terrain shader unpacks into its normal, texture coordinate and color (SectionMesher.Pack),
-/// twenty bytes a vertex on the GPU. The colors also go with the upload for the scene's distance
+/// terrain shader unpacks into its normal, its tiles in the atlas of the resource packs and its color
+/// (SectionMesher.Pack), twenty bytes a vertex on the GPU. The colors also go with the upload for the scene's distance
 /// field, which reads them as the model pass reads the packed bytes, so indirect light takes each
 /// block's color from the mesh it shares with its neighbors. A section meshed again with the same
 /// faces keeps its mesh and takes new packed bytes and new colors in place, which keep its
@@ -90,7 +90,11 @@ public sealed class ChunkRenderer : IDisposable
     // through it. Both are drawn through the game's terrain shader, the engine's light with a haze.
     private readonly ModelMaterial _terrain, _clear;
     private readonly Shader _shader;
-    private readonly int _fogColor, _fogStart, _fogEnd;
+    private readonly int _fogColor, _fogStart, _fogEnd, _atlas, _atlasLayout;
+    private Texture2D _atlasTexture;
+    // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with its
+    // own texture where a pack has one, which the scene's distance field reads its average of.
+    private Texture2D[] _lampTextures = [];
 
     private readonly Dictionary<SectionKey, SectionMeshes> _sections = [];
     private readonly SectionMesher _mesher = new();
@@ -103,13 +107,14 @@ public sealed class ChunkRenderer : IDisposable
 
     public ChunkRenderer()
     {
-        BuildLamps();
         _shader = LoadShader("resources/shaders/terrain.slang");
         // The terrain's vertex stage keeps each corner's position as the mesh holds it and unpacks
         // only its packed bytes, so each pass leaves out the sections whose boxes it cannot see,
         // where the shadow cascades and the depth pass would draw every section within reach.
         SetShaderKeepsPositions(_shader, true);
         (_fogColor, _fogStart, _fogEnd) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
+        (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
+        Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
         _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 0.08f, CastsShadows = false, Shader = _shader };
         Fog(Color.White, float.MaxValue, float.MaxValue);
@@ -121,6 +126,31 @@ public sealed class ChunkRenderer : IDisposable
         SetShaderValue(_shader, _fogColor, new Vector4(color.R, color.G, color.B, 255) / 255);
         SetShaderValue(_shader, _fogStart, start);
         SetShaderValue(_shader, _fogEnd, end);
+    }
+
+    /// <summary>
+    /// The textures of the packs loaded, whose tiles the faces are drawn with, the image built with
+    /// its mip levels as it is set, which takes effect on the faces as sections are shaded again.
+    /// </summary>
+    public TerrainAtlas Atlas
+    {
+        get => _mesher.Atlas;
+        set
+        {
+            _mesher.Atlas = value;
+            if (_atlasTexture.IsValid) UnloadTexture(_atlasTexture);
+            _atlasTexture = LoadTextureFromImage(new Image(value.Image(), value.Width, value.Height));
+            GenTextureMipmaps(ref _atlasTexture);
+            SetTextureFilter(_atlasTexture, TextureFilter.Point);
+            SetShaderValueTexture(_shader, _atlas, _atlasTexture);
+            SetShaderValue(_shader, _atlasLayout, new Vector4(TerrainAtlas.Columns, value.Rows, value.Pixels, 0));
+            foreach (var texture in _lampTextures)
+                if (texture.IsValid) UnloadTexture(texture);
+            _lampTextures = [.. Surfaces.All.Select(s => s.Emits && value.Picture(s.Id) is { } picture ? LoadTextureFromImage(picture) : default)];
+            foreach (var texture in _lampTextures)
+                if (texture.IsValid) SetTextureFilter(texture, TextureFilter.Point);
+            BuildLamps();
+        }
     }
 
     /// <summary>What the light of every emissive surface is multiplied by.</summary>
@@ -184,7 +214,11 @@ public sealed class ChunkRenderer : IDisposable
         set => _mesher.CornerStrength = Math.Clamp(value, 0, 1);
     }
 
-    private void BuildLamps() => _lamps = [.. Surfaces.All.Select(s => s.Material(_glowScale))];
+    // Each surface's material for the cubes of its emissive blocks, white under a pack's texture.
+    private void BuildLamps() =>
+        _lamps = [.. Surfaces.All.Select(s => _lampTextures[s.Id].IsValid
+            ? s.Material(_glowScale) with { Color = Color.White, Texture = _lampTextures[s.Id] }
+            : s.Material(_glowScale))];
 
     /// <summary>
     /// Meshes every section an edit changed, then those whose shading changed and those that loaded,
@@ -323,5 +357,8 @@ public sealed class ChunkRenderer : IDisposable
         Clear();
         UnloadMesh(_cube);
         UnloadShader(_shader);
+        if (_atlasTexture.IsValid) UnloadTexture(_atlasTexture);
+        foreach (var texture in _lampTextures)
+            if (texture.IsValid) UnloadTexture(texture);
     }
 }

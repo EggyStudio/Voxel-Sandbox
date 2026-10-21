@@ -2,6 +2,7 @@ using Xunit;
 
 namespace VoxelSandbox.Tests;
 
+[Collection(nameof(Icons))]
 public class IconTests
 {
     private static int Alpha(byte[] icon, int x, int y) => icon[(y * Icons.Size + x) * 4 + 3];

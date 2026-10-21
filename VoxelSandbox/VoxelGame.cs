@@ -33,13 +33,18 @@ public sealed class VoxelGame : IDisposable
     /// Opens the world saved under <paramref name="name"/>, or under its kind and seed when no name is
     /// given, or begins it there from <paramref name="kind"/> and <paramref name="seed"/> where none is
     /// saved yet. A <paramref name="transient"/> world is neither read from disk nor written to it, as
-    /// a test run's is.
+    /// a test run's is. The blocks and items are drawn with the textures of the resource packs at
+    /// <paramref name="packs"/>, the first over the rest, where they have them.
     /// </summary>
-    public VoxelGame(string kind, int seed, string? name, bool transient)
+    public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null)
     {
         _transient = transient;
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer();
+        Packs = new ResourcePacks(packs ?? []);
+        var terrain = TerrainAtlas.Build(Packs);
+        Renderer.Atlas = terrain;
+        Icons.Use(terrain, Packs);
         Sky = new Sky(10);
         Light.ApplyAll();
         Open(kind, seed, name);
@@ -47,6 +52,9 @@ public sealed class VoxelGame : IDisposable
     }
 
     public VoxelWorld World { get; private set; } = null!;
+
+    /// <summary>The player's resource packs the game is drawn with, or none.</summary>
+    public ResourcePacks Packs { get; private set; }
 
     /// <summary>The animals and villagers of the loaded columns, and those the unloaded ones keep.</summary>
     public Mobs Mobs { get; private set; } = null!;
@@ -794,5 +802,6 @@ public sealed class VoxelGame : IDisposable
         DropRenderer.Dispose();
         Clouds.Dispose();
         Sky.Dispose();
+        Packs.Dispose();
     }
 }
