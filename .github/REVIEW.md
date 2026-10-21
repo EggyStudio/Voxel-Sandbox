@@ -5,24 +5,23 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `bf13ff6`, item 22, the ambient occlusion's strength, and nothing else, carrying the
-review's file: the mesher's corner strength, 1 by default, a corner's shade the light kept times one
-less the strength times one less the level, so today's four levels stand at 1 and every corner is 1
-at 0; the renderer passing it clamped; a slider beside the corners' switch in the settings, shading
-the sections again once let go; `voxel.corners <strength>`; a test of the corner between two walls
-at 0.45, 0.725 and 1; captures of a concrete corner at 1, 0.5 and 0; the README's smooth lighting
-paragraph with the levels and the strength; 143 tests, the strict build clean, the play script green
-on the GPU. Read at 02:15 on 2026-10-21 and pushed at 02:21; the build run of `5b2f9d3` had ended
-green at 02:21. Next item 23, the interface as the game's own in Bare Bones' look, then the items in
-order; item 38's second part when the package brings the call and the glow lights' bound; the
-AGENTS.md row naming the scripts still waits on the owner's word.
+Reviewed up to `8722725`, item 23's first commit, the HUD in the game's own flat look, and nothing
+else, carrying the review's file, read from the commit at 02:24 on 2026-10-21 before the coder's
+word on it: pictures of the game's own drawn at the source's scale under `Ui/Gui.cs` and
+`Ui/GuiArt.cs`, the hotbar and its chosen slot, the hearts, the food and the breath drawn with them,
+and the rows of vitals fading once full and unchanged, a setting on by default, with
+`VitalsFadeTests`, the settings window's switch and the README's paragraphs. Not pushed: the build
+run of `bf13ff6` is still running, and the head is pushed when it ends. Next item 23's remaining
+commits, the inventory, the creative items, the settings and the pause screen as the game's own,
+then the items in order; item 38's second part when the package brings the call and the glow lights'
+bound; the AGENTS.md row naming the scripts still waits on the owner's word.
+
+Before it, `bf13ff6` came, item 22, the ambient occlusion's strength, and nothing else, carrying the
+review's file. Pushed at 02:21.
 
 Before it, `5b2f9d3` came, item 21's second commit, the ray and the outline, after `baf26b9`, its
 first, the stairs' corners, and nothing else, the first carrying the review's file. Pushed at 02:12,
 its build run green in 9 minutes.
-
-Before it, `9bd58e3` came, item 20, the inventory's quick moves and the sort, and nothing else,
-carrying the review's file. Pushed at 02:01, its build run green.
 
 ## Now
 

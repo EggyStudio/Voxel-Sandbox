@@ -82,8 +82,11 @@ public static class Gui
         }
         if (stack.Count <= 1) return;
         var text = stack.Count.ToString();
-        Text(text, x + 17 * s - TextWidth(text), y + 9 * s, Color.White);
+        Text(text, x + 17 * s - TextWidth(text), y + 7 * s, Color.White);
     }
+
+    /// <summary>The world darkened behind a window, as Minecraft darkens it behind its screens.</summary>
+    public static void Backdrop() => DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(16, 16, 16, 150));
 
     /// <summary>A tooltip of lines beside the pointer, its first line white and the rest gray, kept inside the window.</summary>
     public static void Tooltip(IReadOnlyList<string> lines)

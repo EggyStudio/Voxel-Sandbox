@@ -343,6 +343,14 @@ interface. The hotbar is Minecraft's nine slots 20 apart along the bottom, the c
 green, with the name of what it holds above the hearts and the food, which sit over its two halves
 as Minecraft's do. A window's panel and a button are stretched between edges that keep their size.
 
+The windows E opens are the game's own panels with Minecraft's slots at Minecraft's places, 176 by
+166 of the interface's pixels, the inventory with its grid of two, a crafting table's grid of three,
+and a furnace with its flame burning down and its arrow filling as it smelts, each over the
+inventory's three rows and the hotbar, and in creative every item in rows of nine that the wheel
+scrolls, over the hotbar, a slot of which a click chooses. The world behind darkens, the slot under
+the pointer is lit and its item named in a tooltip, with a tool's uses left, and the stack taken up
+follows the pointer. The settings window F3 opens is the engine's ImGui, a tool for the developer.
+
 ## Tools and crafting
 
 A pickaxe, an axe, a shovel and a sword are made of wood, stone or iron. A tool breaks the blocks

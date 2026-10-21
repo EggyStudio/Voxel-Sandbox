@@ -254,7 +254,8 @@ public sealed class VoxelGame : IDisposable
         var keys = !io.WantTextInput;
 
         if (keys) Toggles();
-        if (!_captured && IsMouseButtonPressed(MouseButton.Left) && !io.WantCaptureMouse)
+        // A click takes the cursor back unless it falls on a window of the game's own or of ImGui's.
+        if (!_captured && IsMouseButtonPressed(MouseButton.Left) && !io.WantCaptureMouse && !InventoryOpen)
         {
             Capture(true);
             _swallowClick = true;
@@ -724,9 +725,9 @@ public sealed class VoxelGame : IDisposable
         Switcher.Draw();
         Settings.Draw(this);
         if (Mode.Lives() && Vitals.Dead) DrawDeath();
-        if (InventoryOpen && !(AtFurnace is var (fx, fy, fz) ? InventoryWindow.DrawFurnace(Inventory, Hotbar.Selected, Furnaces.At(fx, fy, fz))
-            : AtTable ? InventoryWindow.DrawInventory(Inventory, Hotbar.Selected, InventoryWindow.Table)
-            : Mode.Lives() ? InventoryWindow.DrawInventory(Inventory, Hotbar.Selected, InventoryWindow.Small)
+        if (InventoryOpen && !(AtFurnace is var (fx, fy, fz) ? InventoryWindow.DrawFurnace(Inventory, Furnaces.At(fx, fy, fz))
+            : AtTable ? InventoryWindow.DrawInventory(Inventory, InventoryWindow.Table)
+            : Mode.Lives() ? InventoryWindow.DrawInventory(Inventory, InventoryWindow.Small)
             : InventoryWindow.DrawCreative(Hotbar)))
         {
             CloseInventory();
