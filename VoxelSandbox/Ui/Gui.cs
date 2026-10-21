@@ -103,6 +103,52 @@ public static class Gui
             Text(lines[i], x + 4 * s, y + 4 * s + i * LineHeight, i == 0 ? Color.White : new Color(170, 170, 170));
     }
 
+    // The box of the slider a press began on, which follows the pointer until the button is let go,
+    // known by its box since its label shows its value and changes as it moves.
+    private static Rectangle? _sliding;
+
+    /// <summary>A button of the interface's, lit under the pointer with its label yellow, as Minecraft's is.</summary>
+    /// <returns>Whether it was clicked this frame.</returns>
+    public static bool Button(string label, Rectangle box)
+    {
+        var over = Over(box);
+        Stretched(over ? GuiArt.ButtonLit : GuiArt.Button, box);
+        Centered(label, box, over ? new Color(255, 255, 160) : Color.White);
+        return over && IsMouseButtonPressed(MouseButton.Left);
+    }
+
+    /// <summary>
+    /// A slider of the interface's, its knob along a darker button at its value between two ends and
+    /// its label over it, which a press and a drag along it move, as Minecraft's are.
+    /// </summary>
+    /// <returns>The value, moved where the slider is held, and through <paramref name="letGo"/> whether it was let go this frame.</returns>
+    public static float Slider(string label, Rectangle box, float value, float low, float high, out bool letGo)
+    {
+        var s = Scale;
+        letGo = false;
+        if (Over(box) && IsMouseButtonPressed(MouseButton.Left)) _sliding = box;
+        if (_sliding == box)
+        {
+            var along = Math.Clamp((GetMousePosition().X - box.X - 4 * s) / (box.Width - 8 * s), 0, 1);
+            value = low + along * (high - low);
+            if (!IsMouseButtonDown(MouseButton.Left))
+            {
+                _sliding = null;
+                letGo = true;
+            }
+        }
+        Stretched(GuiArt.Button, box, new Color(150, 150, 150));
+        var at = (value - low) / (high - low);
+        var knob = new Rectangle(box.X + (box.Width - 8 * s) * Math.Clamp(at, 0, 1), box.Y, 8 * s, box.Height);
+        Stretched(Over(box) || _sliding == box ? GuiArt.ButtonLit : GuiArt.Button, knob);
+        Centered(label, box, Over(box) ? new Color(255, 255, 160) : Color.White);
+        return value;
+    }
+
+    /// <summary>A line of text in the middle of a box, with its shadow.</summary>
+    public static void Centered(string text, Rectangle box, Color color) =>
+        Text(text, (int)(box.X + (box.Width - TextWidth(text)) / 2), (int)(box.Y + (box.Height - 8 * Scale) / 2), color);
+
     /// <summary>Whether the pointer is within a box of the screen.</summary>
     public static bool Over(Rectangle box)
     {

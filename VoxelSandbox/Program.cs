@@ -26,7 +26,7 @@ SetExitKey(Key.Null);
 using (var game = new VoxelGame(flat ? "flat" : "overworld", seed, name, transient))
 {
     GameCommands.Game = game;
-    while (!WindowShouldClose())
+    while (!WindowShouldClose() && !game.Menus.QuitAsked)
     {
         game.Update();
         game.Draw();

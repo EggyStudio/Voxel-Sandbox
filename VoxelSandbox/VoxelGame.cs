@@ -123,6 +123,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>How much of the hearts, the food and the breath the HUD shows, each fading once full and unchanged.</summary>
     public VitalsFade Fade { get; } = new();
 
+    /// <summary>The menu Escape opens and its options, which hold the world still while open.</summary>
+    public Menus Menus { get; } = new();
+
     /// <summary>The block being broken in survival, and how far from 0 to 1, as of this frame.</summary>
     public (int X, int Y, int Z)? BreakingAt { get; private set; }
 
@@ -248,6 +251,9 @@ public sealed class VoxelGame : IDisposable
         // A long frame, as when the window is dragged, is taken as a short one, so the player does
         // not fall through the time it took.
         var seconds = MathF.Min(GetFrameTime(), 0.05f);
+        // The menu holds the world still, as Minecraft's does when played alone, the frame taking
+        // no time, as the game's first does.
+        if (Menus.Open != Menu.None) seconds = 0;
         _sinceSave += seconds;
         if (_sinceSave > SaveSeconds) SaveWorld();
         var io = ImGui.GetIO();
@@ -255,7 +261,7 @@ public sealed class VoxelGame : IDisposable
 
         if (keys) Toggles();
         // A click takes the cursor back unless it falls on a window of the game's own or of ImGui's.
-        if (!_captured && IsMouseButtonPressed(MouseButton.Left) && !io.WantCaptureMouse && !InventoryOpen)
+        if (!_captured && IsMouseButtonPressed(MouseButton.Left) && !io.WantCaptureMouse && !InventoryOpen && Menus.Open == Menu.None)
         {
             Capture(true);
             _swallowClick = true;
@@ -447,12 +453,26 @@ public sealed class VoxelGame : IDisposable
 
     private void Toggles()
     {
+        // Escape shuts the window open, goes back a menu, or opens the menu over the game.
         if (IsKeyPressed(Key.Escape))
         {
-            if (InventoryOpen) CloseInventory();
-            Capture(!_captured);
+            if (InventoryOpen)
+            {
+                CloseInventory();
+                Capture(!Settings.Open);
+            }
+            else if (Menus.Open != Menu.None)
+            {
+                Menus.Back();
+                Capture(Menus.Open == Menu.None && !Settings.Open);
+            }
+            else
+            {
+                Menus.Open = Menu.Pause;
+                Capture(false);
+            }
         }
-        if (IsKeyPressed(Key.E) && Mode.Touches())
+        if (IsKeyPressed(Key.E) && Mode.Touches() && Menus.Open == Menu.None)
         {
             if (InventoryOpen) CloseInventory();
             else InventoryOpen = true;
@@ -733,6 +753,10 @@ public sealed class VoxelGame : IDisposable
             CloseInventory();
             Capture(!Settings.Open);
         }
+        var menu = Menus.Open;
+        Menus.Draw(this);
+        // A button that shut the menu gives the cursor back to the game.
+        if (menu != Menu.None && Menus.Open == Menu.None) Capture(!Settings.Open);
         EndDrawing();
     }
 

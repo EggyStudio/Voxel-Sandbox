@@ -5,19 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `8722725`, item 23's first commit, the HUD in the game's own flat look, and nothing
-else, carrying the review's file, read from the commit at 02:24 on 2026-10-21 before the coder's
-word on it: pictures of the game's own drawn at the source's scale under `Ui/Gui.cs` and
-`Ui/GuiArt.cs`, the hotbar and its chosen slot, the hearts, the food and the breath drawn with them,
-and the rows of vitals fading once full and unchanged, a setting on by default, with
-`VitalsFadeTests`, the settings window's switch and the README's paragraphs. Not pushed: the build
-run of `bf13ff6` is still running, and the head is pushed when it ends. Next item 23's remaining
-commits, the inventory, the creative items, the settings and the pause screen as the game's own,
-then the items in order; item 38's second part when the package brings the call and the glow lights'
-bound; the AGENTS.md row naming the scripts still waits on the owner's word.
+Reviewed up to `8b1d584`, item 23's second commit, the windows as the game's own, after `8722725`,
+its first, the HUD in the game's flat look, and nothing else, each carrying the review's file, both
+read from the commits before the coder's word on them: the HUD's pictures of the game's own drawn at
+the source's scale, the hotbar and its chosen slot, the hearts, the food and the breath, the rows of
+vitals fading once full and unchanged as a setting on by default with `VitalsFadeTests`; then the
+inventory, the crafting table, the furnace and the creative window of items drawn as the game's own
+panels with the source's slots at the source's places, the slot under the pointer lit and named in a
+tooltip, the held stack following the pointer, ImGui's windows gone from them and item 20's quick
+moves kept; the README's paragraphs. The coder's word at 02:32: one atlas of 256 by 64 painted in
+the flat look, a black outline with a pixel of light above and of shade below, its sprites named so
+item 24 swaps a pack's in; the scale the largest whole number at which 320 by 240 fit, 3 at 1280 by
+720; the hearts, food and bubbles at the source's places and a row fading over half a second once
+full and unchanged for three, shown at once on a change; the windows' layouts the source's 176 by
+166 and the creative window's 195 by 136 with the wheel scrolling the items; the input through the
+engine's mouse and keys, a double-click a second press within a quarter second; every quick move
+read again through the command line at scale 3 and the four windows captured; 145 tests, the strict
+build clean and the play script green at each commit. Read at 02:30 on 2026-10-21 and pushed at
+02:31; the build run of `bf13ff6` had ended green at 02:30. Next item 23's last commit, the settings
+and the pause screen, with ImGui left for the debug and the settings' developer parts, then the
+items in order; item 38's second part when the package brings the call and the glow lights' bound;
+the AGENTS.md row naming the scripts still waits on the owner's word.
 
 Before it, `bf13ff6` came, item 22, the ambient occlusion's strength, and nothing else, carrying the
-review's file. Pushed at 02:21.
+review's file. Pushed at 02:21, its build run green in 9 minutes.
 
 Before it, `5b2f9d3` came, item 21's second commit, the ray and the outline, after `baf26b9`, its
 first, the stairs' corners, and nothing else, the first carrying the review's file. Pushed at 02:12,

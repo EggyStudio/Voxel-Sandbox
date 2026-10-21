@@ -85,7 +85,7 @@ with its history.
 | F3 with F4 | The mode switcher, F4 stepping through creative, survival, adventure and spectator while F3 is held, and the mode chosen played as F3 is let go |
 | G | The next quality of global illumination, Off after High |
 | F1 | Hide the crosshair, the hotbar and the outline |
-| Escape | Free the cursor, or hold it again |
+| Escape | Shut the window open, go back a menu, or open the menu, which holds the world still |
 
 ## Commands
 
@@ -349,7 +349,14 @@ and a furnace with its flame burning down and its arrow filling as it smelts, ea
 inventory's three rows and the hotbar, and in creative every item in rows of nine that the wheel
 scrolls, over the hotbar, a slot of which a click chooses. The world behind darkens, the slot under
 the pointer is lit and its item named in a tooltip, with a tool's uses left, and the stack taken up
-follows the pointer. The settings window F3 opens is the engine's ImGui, a tool for the developer.
+follows the pointer.
+
+Escape opens the game's menu over the darkened world, which holds the world still while it is open,
+as Minecraft's does when played alone, with Back to Game, the options, Save the World, and Save and
+Quit. The options are the player's own, in two columns of buttons and sliders as Minecraft lays its
+options out, the render distance, the field of view, the mouse's sensitivity, the interface's scale,
+automatic or 1 to 4, whether full rows of the HUD fade, how far corners darken, and the quality of
+global illumination. The settings window F3 opens is the engine's ImGui, a tool for the developer.
 
 ## Tools and crafting
 
