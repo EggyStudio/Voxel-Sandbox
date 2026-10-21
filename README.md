@@ -770,14 +770,17 @@ over the south at noon and setting in the west at 18, and the moon stands opposi
 lights the world in the colors of the modpack's shader, read as numbers, a warm white at noon, (0.7,
 0.55, 0.4) times 1.9 in linear light, turning orange toward the horizon, (0.64, 0.45, 0.3) to the
 power of 1.5 and the share short of noon, times 5, mixed by the square root of the sun's height, and
-as bright at noon as a white sun of the same luminance. Its 3,000 stars are squares of 0.28 degrees,
-most faint and a few bright, in a cool white, as the modpack's shader, Aurora's Shaders after
-Complementary, draws its own, each as bright as 40 times the square of how far the product of three
-noises passes 0.7. They keep their places on the turning sky, fade in as the day fades, thin out
-over the lowest 20 degrees above the horizon and are gone beside the sun and the moon. The moon goes
-through Minecraft's eight phases, a phase a day from the full moon of the first night, and changes
-while it is down. `voxel.time` sets the hour and `voxel.day` the count of days, which a save keeps,
-and the land and the clouds hide the sun, the moon and the stars.
+as bright at noon as a white sun of the same luminance. By night the sky takes the shader's night
+tint of the owner's settings, its colors multiplied by 1.10, 0.90 and 1.30 in linear light as far as
+the day's light is gone, a violet blue, and the moon lights the world in the shader's night light,
+(0.15, 0.14, 0.20), as bright as before. Its 3,000 stars are squares of 0.28 degrees, most faint and
+a few bright, in a cool white, as the modpack's shader, Aurora's Shaders after Complementary, draws
+its own, each as bright as 40 times the square of how far the product of three noises passes 0.7.
+They keep their places on the turning sky, fade in as the day fades, thin out over the lowest 20
+degrees above the horizon and are gone beside the sun and the moon. The moon goes through
+Minecraft's eight phases, a phase a day from the full moon of the first night, and changes while it
+is down. `voxel.time` sets the hour and `voxel.day` the count of days, which a save keeps, and the
+land and the clouds hide the sun, the moon and the stars.
 
 ## Clouds
 

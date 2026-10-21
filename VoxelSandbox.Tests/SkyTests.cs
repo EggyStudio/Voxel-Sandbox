@@ -230,6 +230,20 @@ public class SkyTests
     }
 
     [Fact]
+    public void The_Night_Sky_Takes_The_Modpacks_Violet_Tint_And_The_Day_Keeps_Its_Colors()
+    {
+        var blue = new Vector3(18, 24, 44);
+        var day = Sky.AtNight(blue, 1);
+        Assert.Equal(blue.X, day.X, 0.5f);
+        Assert.Equal(blue.Y, day.Y, 0.5f);
+        Assert.Equal(blue.Z, day.Z, 0.5f);
+        // By night red and blue rise and green falls, each by its share of 1.10, 0.90 and 1.30 in
+        // linear light.
+        var night = Sky.AtNight(blue, 0);
+        Assert.True(night.X > blue.X && night.Y < blue.Y && night.Z > blue.Z, $"{night}");
+    }
+
+    [Fact]
     public void The_Haze_Dome_Lies_Beyond_The_Sun_The_Moon_And_The_Stars()
     {
         Assert.True(HazeDome.Radius > Sky.StarDistance && Sky.StarDistance > Sky.Distance);

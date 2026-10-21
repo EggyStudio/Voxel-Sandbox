@@ -5,21 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `be968a2`, the scripted run's walk at a render distance of two columns with the
-land's edge read at four once its columns are meshed, so lavapipe generates fewer columns, and
-nothing else, carrying the review's file, read from the commit at 08:10 on 2026-10-21 before the
-coder's word on it, the walk's time to read from its run against the 46 minutes before. Not pushed:
-the build run of `815e4ca` is still running, and the head is pushed when it ends. Next item 59, the
-biomes' colors from the source's fixed values, then item 58's parts, then item 39, then the pictures
-taken again, then 26 and the items in order; items 55, 38's second part and 54 when their packages
-come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `396047d`, item 58's third part, the grade, after `82da862`, its first part, the warm
+sun, `fa7fba0`, item 59, the biomes' colors, and `be968a2`, the walk at render distance 2, and
+nothing else, the first of them carrying the review's file. The walk: the biomes at render distance
+2, then 4 set and the edge read once nothing generates or waits to mesh, the whole run 1 minute 13
+seconds on the machine, the runner's time from the run after the push. Item 59: each biome a grass
+and a foliage color read from the client's colormaps at the source's temperature and downfall for
+all sixteen, the dark forest's grass the forest's darkened as the source does, the swamp, the
+badlands and the cherry grove keeping their own, blended by the climate's choice made soft over 0.02
+about each bound so no extra noise is read, the continuous colormap gone, a test of twelve biomes'
+middles within two levels; the plains village's sunlit grass 148, 150 and 55 against the modpack's
+127, 139 and 31 and the game's 140, 157 and 97 before. Part a: the sun's color by height after the
+shader's numbers with the game's noon brightness kept, a test of the hue by height, the ambient's
+share asked of the engine as its item 81 with the entry's readings. Part c: Reinhard's curve at an
+exposure of 1.7 with the saturation 1.4 and the contrast 1.12 graded, the owner asked again on the
+green grass and shown the modpack's literal 1.05, 1.2 and 1.4, choosing 1.4, the curve asked of the
+engine as its item 80 with the entry's formula and fits; 208 tests, the strict build clean, the play
+script clean. Read at 08:16 on 2026-10-21. Not pushed: the build run of `815e4ca` is still running,
+and the four heads are pushed when it ends. Shortly before 08:16 the owner said that for screenshots
+they zoom with alt to about 40 degrees and the cinematic captures should too, which item 46's retake
+takes. Next item 58's parts b, d and e, then item 39, then the pictures taken again at 40 degrees,
+then 26 and the items in order; items 55, 38's second part and 54 when their packages come; the
+AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `815e4ca` came, item 57, the plants offset in their block, and nothing else, carrying the
+review's file. Pushed at 08:00 with `d32ee21`, `bc02459` and `fc38219`.
 
 Before it, `815e4ca` came, item 57, the plants offset in their block, and nothing else, carrying the
 review's file. Pushed at 08:00 with `d32ee21`, `bc02459` and `fc38219`, the build run of `7039d5a`
 having ended green at 07:58 with the play job in 46 minutes.
-
-Before it, `d32ee21` came, item 56, more plants from the source's and the overhaul's counts, and
-nothing else, carrying the review's file.
 
 ## Now
 
@@ -646,7 +660,10 @@ nothing else, carrying the review's file.
     and cut out at 800 by 450 with no resampling. One commit, after item 45 and before item 39. Done
     at `7039d5a` on 2026-10-21, as the head says, the GIF at 1.45 MB. The animation's pictures at
     two seconds each at `fc38219` on the owner's word. The pictures are taken again after item 39,
-    one run covering the plants, the lantern and the cutout.
+    one run covering the plants, the lantern and the cutout. The owner said shortly before 08:16
+    that for screenshots they zoom with alt to about 40 degrees of field of view and the cinematic
+    captures should too, so the retake takes the world's views at 40 degrees through a `voxel.fov`
+    command, each view's place moved back to frame the same subject.
 
 47. **The haze dome no longer cuts the sun, the moon and their glows (Decision 25).** The owner
     asked shortly before 05:40 on 2026-10-21 whether the far plane or the skybox cut the sun's and
@@ -848,7 +865,10 @@ nothing else, carrying the review's file.
     ambient's share, read at 08:00, cannot be set apart from the drawn sky with the engine's
     environment map, so it is asked of the engine as its item 81 and the game takes the share when
     that package comes; the grade chosen by the owner at 08:00 is Reinhard at an exposure of 1.7
-    with the saturation and contrast graded, checked again on the green grass of item 59.
+    with the saturation and contrast graded, checked again on the green grass of item 59. Part a
+    done at `82da862` and part c at `396047d` on 2026-10-21, the saturation 1.4 on the owner's
+    second word, the two entries in the engine's ASKS.md for its items 80 and 81; parts b, d and e
+    follow.
 
 59. **Each biome's grass and foliage color from the source's fixed values, not a blend of the game's
     own climate (Decision 28).** The owner wrote shortly before 08:01 on 2026-10-21 that the game's
@@ -864,7 +884,8 @@ nothing else, carrying the review's file.
     across biome edges by weight as the special biomes already blend, the dark forest, swamp,
     badlands and cherry grove keeping their own; the continuous climate colormap goes. A test reads
     each biome's middle at its color within a level or two. Then the grade is checked again with the
-    owner on the green grass. One commit, before item 58's first commit.
+    owner on the green grass. One commit, before item 58's first commit. Done at `fa7fba0` on
+    2026-10-21, as the head says.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1529,7 +1550,9 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     deep shade being most of the difference. Shown three grades beside the modpack's picture shortly
     before 08:01, the owner chose Reinhard graded; and said the game's grass is tealish where the
     modpack's is green, which is the game's climate tint against the source's fixed colors a biome,
-    item 59.
+    item 59. Asked again on the green grass shortly before 08:16, the owner said it looks good but
+    to check the modpack's saturation, and shown 1.05, 1.2 and 1.4 chose 1.4 as chosen; and said
+    that for screenshots they zoom with alt to about 40 degrees, which the pictures' retake takes.
 
 ## Replies
 

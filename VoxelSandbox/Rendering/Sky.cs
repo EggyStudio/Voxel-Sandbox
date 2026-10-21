@@ -69,7 +69,14 @@ public sealed class Sky : IDisposable
 
     private static readonly Vector3 NightZenith = new(6, 9, 22), DayZenith = new(78, 134, 222);
     private static readonly Vector3 NightHorizon = new(18, 24, 44), DayHorizon = new(178, 208, 240), DuskHorizon = new(238, 150, 96);
-    private static readonly Vector3 Moonlight = new(150, 170, 230);
+    // The moonlight in the hue of the modpack's shader's night light, (0.15, 0.14, 0.20) in linear
+    // light, as strong as a moonlight of the luminance the game's had, a quarter of a white's 0.41.
+    private static readonly Vector3 Moonlight = new Vector3(0.15f, 0.14f, 0.20f) / 0.20f;
+    private const float MoonStrength = 0.25f * 0.409f / 0.732f;
+
+    // The night's tint of the modpack's shader with its owner's settings, which multiplies the sky's
+    // colors and so the haze's in linear light, a violet blue, by as much as the night is the night.
+    private static readonly Vector3 NightTint = new(1.10f, 0.90f, 1.30f);
 
     // The sunlight of the modpack's shader, Aurora's Shaders after Complementary, read as numbers, in
     // linear light (0.7, 0.55, 0.4) times 1.9 at noon, a warm white, and toward the horizon
@@ -408,7 +415,7 @@ public sealed class Sky : IDisposable
         else
         {
             SetLightDirection(_light, toSun);
-            SetLightColor(_light, ColorOf(Moonlight), 0.25f * SmoothStep(0.05f, 0.2f, -toSun.Y));
+            SetLightColor(_light, ColorOf(Encode(Moonlight) * 255), MoonStrength * SmoothStep(0.05f, 0.2f, -toSun.Y));
         }
 
         if (!float.IsNaN(_paintedHour) && HoursApart(Hour, _paintedHour) < RepaintHours) return;
@@ -421,8 +428,8 @@ public sealed class Sky : IDisposable
     {
         var day = DayShare(toSun);
         var dusk = DuskShare(toSun);
-        var zenith = Vector3.Lerp(NightZenith, DayZenith, day);
-        var horizon = Vector3.Lerp(Vector3.Lerp(NightHorizon, DayHorizon, day), DuskHorizon, dusk * 0.8f);
+        var zenith = AtNight(Vector3.Lerp(NightZenith, DayZenith, day), day);
+        var horizon = AtNight(Vector3.Lerp(Vector3.Lerp(NightHorizon, DayHorizon, day), DuskHorizon, dusk * 0.8f), day);
         var ground = horizon * 0.5f;
         Horizon = ColorOf(horizon);
 
@@ -457,6 +464,17 @@ public sealed class Sky : IDisposable
         var power = 1.5f + (1 - noon);
         var low = new Vector3(MathF.Pow(LowLight.X, power), MathF.Pow(LowLight.Y, power), MathF.Pow(LowLight.Z, power)) * 5;
         return Vector3.Lerp(low, NoonLight, noon);
+    }
+
+    /// <summary>A sky's color in sRGB levels from 0 to 255 tinted by the night's tint as far as the day's light is gone, <paramref name="day"/> from 0 at night to 1 by day.</summary>
+    public static Vector3 AtNight(Vector3 color, float day) => Tinted(color, Vector3.Lerp(NightTint, Vector3.One, day));
+
+    // A color in sRGB levels from 0 to 255 multiplied by a tint in linear light.
+    private static Vector3 Tinted(Vector3 color, Vector3 tint)
+    {
+        static float Decode(float c) => c <= 0.04045f ? c / 12.92f : MathF.Pow((c + 0.055f) / 1.055f, 2.4f);
+        var linear = new Vector3(Decode(color.X / 255), Decode(color.Y / 255), Decode(color.Z / 255)) * tint;
+        return Encode(Vector3.Min(linear, Vector3.One)) * 255;
     }
 
     // Linear light to sRGB levels from 0 to 1.
