@@ -200,10 +200,10 @@ printf '%s\n' "$channels" | awk 'NF == 3 { lo = $1; hi = $1; for (i = 2; i <= 3;
 
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
-# from above, at a render distance of four columns, so lavapipe generates few at each.
+# from above, at a render distance of two columns, so lavapipe generates few at each.
 cmd voxel.hud on
 cmd voxel.world overworld 1
-cmd voxel.distance 4
+cmd voxel.distance 2
 cmd voxel.fly on
 cmd voxel.time 10
 mkdir -p captures/biomes
@@ -239,8 +239,14 @@ fi
 
 # From high over the land, the drawn land's edge meets the dome under the horizon in the haze's color
 # with no step, read up the window's middle column: the land's last pixel and the one above it alike,
-# and no two neighbors within 16 of the edge more than a few levels apart.
+# and no two neighbors within 16 of the edge more than a few levels apart. It is read at four
+# columns, the land within them generated and meshed first, so the edge lies past the haze's start.
+cmd voxel.distance 4
 cmd voxel.tp "$bx" 120 "$bz"
+for i in $(seq 1 600); do
+  ask voxel.state | grep -q " 0 generating, 0 sections to mesh" && break
+  cmd frames.wait 10
+done
 cmd voxel.look 0 -20
 cmd frames.wait 60
 ask voxel.edge 640 > /dev/null

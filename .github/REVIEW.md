@@ -5,39 +5,39 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `d32ee21`, item 56, more plants, and nothing else, carrying the review's file: the
-source's placed features read from the client's data and the biome overhaul's from the modpack's jar
-as numbers, a patch 32 tries spread by a triangle of seven, the plains 5 or 10 patches a chunk and
-20 of short grass with 7 of tall from the overhaul, the forest 2, the taiga 7 of ferns, the savanna
-20, the jungle 25, the dark forest 11 or 14 from the overhaul, simulated on flat ground to shares of
-open grass, the plains 86 percent short and 11 tall, the savanna 90, the jungle 94, the dark forest
-82, the swamp 44, the cherry grove 46 with 49 of petals, the forest 20 with 8 of flowers, the taiga
-11 of ferns, against the game's 14, 18, 12, 2, 4 and 4 before; the plants now rolled on their own at
-each place of their own column alone on the ground already read, after the trees, the trees keeping
-their roll and rates and the neighbor loop reading no more ground; measured on seed 1's ground the
-plains 82 percent with 3.2 of flowers, the savanna 79, the dark forest 60, the jungle 55 among its
-trees, the swamp 45, the forest 25 with 6.3 of flowers, the taiga 25 of ferns, the cherry grove 41
-with 45 of petals; a test over 12 by 12 columns of the plains at 72 to 86 percent covered; the cost
-over the plains at 12 columns 1.64 million triangles against 1.18, the model pass 10.1 ms against
-7.7, the GPU's passes 14.9 against 13.1, still 60 a second, a column generating in 9 ms either way,
-in the README; 204 tests, the strict build clean, the play script clean. Read at 07:35 on
-2026-10-21. Not pushed, with `bc02459` and `fc38219` before it: the build run of `7039d5a` is still
-running, and the three heads are pushed when it ends. Two readings for the owner: beside the
-modpack's pictures the grass covers the ground but reads flat at a distance, its blades taking the
-grass top's color and lit as facing up so they blend into the block where the modpack's read
-brighter and taller, partly from its shader; and the README's pictures show the old sparse grass,
-taken again after item 39 so one run covers the plants, the lantern and the cutout. Shortly before
-07:36 the owner asked for the plants offset in their block as the source's are, item 57. Shortly
-before 07:38 the owner said the blades should look like the modpack's and the colors are to follow
-the shader settings they set, Decision 28 and item 58. Next item 57, then 58, then item 39, then the
-pictures taken again, then 26 and the items in order; items 55, 38's second part and 54 when their
-packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `815e4ca`, item 57, the plants offset in their block, and nothing else, carrying the
+review's file: each plant's walls offset by the place's hash as the source offsets them, up to a
+quarter block sideways in sixteen steps and the short grass and the fern sinking up to a fifth, the
+twelve flowers and the tall grass sideways alone, the saplings, the mushrooms, the dead bush and the
+wheat in place, the petals a carpet; a wall turned to run from its lower end along its axis with its
+corners numbered from the lower left, each carrying its place on the texture in sixteenths in the
+overlay's free bits, the vertex stage reading them into the stream's coordinate for the plant faces
+and the fragment taking that where a block face takes its world position, so the texture stays whole
+on an offset wall and the light stays snapped to the block's pixels; tests of the offsets within a
+quarter, sunk only for the grass and never past a fifth, the same at a place and over 100 distinct
+among 256, the kinds by block, and an offset grass's walls a block wide with their corners' places
+read back; a row of poppies no longer straight and the meadow scattered with whole textures; 206
+tests, the strict build clean, the play script clean. Read at 07:44 on 2026-10-21. The build run of
+`7039d5a` ended green at 07:58, its play job in 46 minutes 4 seconds under the 60 minute limit and
+past the 40 that turns the walk to render distance 2, so the four heads, `fc38219`, `bc02459`,
+`d32ee21` and `815e4ca`, were pushed at 08:00. Item 58's reading so far, uncommitted: the warm sun
+by the shader's numbers lifts a cobblestone's sunlit face from 150, 151 and 151 to 165, 151 and 140
+against the modpack's 146, 112 and 94, the shaded face 49, 70 and 93 against 45, 43 and 53, the
+modpack's shade-to-sun ratio 0.38 against the game's 0.45; the ambient's share cannot be set alone,
+since the environment map's intensity darkens the drawn sky too, which is the engine's item 81; the
+grade fitted by numbers is nearest Reinhard's at an exposure of 1.05 within 0.023 from 0.05 to 4,
+and the owner, shown three grades beside the modpack's picture, chose Reinhard graded. Shortly
+before 08:01 the owner said the game's grass is teal where the modpack's is green, item 59, the
+biomes' colors from the source's fixed values. Next the walk at render distance 2, small, then item
+59, then item 58's parts, then item 39, then the pictures taken again, then 26 and the items in
+order; items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `d32ee21` came, item 56, more plants from the source's and the overhaul's counts, and
+nothing else, carrying the review's file.
 
 Before it, `bc02459` came, item 55's capture for the engine's entry, after `fc38219`, the README's
 animation at two seconds a picture, and nothing else, the first carrying the review's file.
-
-Before it, `7039d5a` came, item 46, the README's pictures with the packs and the blotches capture,
-and nothing else, carrying the review's file. Pushed at 07:12.
 
 ## Now
 
@@ -835,34 +835,54 @@ and nothing else, carrying the review's file. Pushed at 07:12.
     staying snapped to the block's pixels; the README's plants paragraph. Tests: the same place
     giving the same offset and two places differing, every offset within a quarter, the grass
     sinking no more than a fifth and the flowers not at all, and the walls a block wide corner to
-    corner. One commit, small, before item 39.
+    corner. One commit, small, before item 39. Done at `815e4ca` on 2026-10-21, as the head says.
 
 58. **The light and the grade after the modpack's shader settings the owner set, read as numbers
-(Decision 28).** The owner wrote shortly before 07:38 on 2026-10-21 that the blades should look like
-the modpack's, and that comparing the colors the game's and the modpack's pictures differ, so the
-modpack is to be pulled and the shader settings they set fetched, the colors by time of day, the
-saturation and so on. The modpack's shader runs under a license forbidding redistributing or
-changing its code, so it is read as numbers and the game's own written: the owner's settings against
-the shader's defaults, the exposure 0.90 against 1.40, the white curve 1.3 against 2.0, the lower
-curve 1.05 against 1.20 and the upper 1.00 against 1.50, the saturation 1.05 against 1.55, the
-ambient 50 against 150, the fog 0.95 against 0.50, the night tint 1.10, 0.90 and 1.30, the bloom
-0.027, the shadows stepped at 8 a block and reaching 64, no color grading; the shader's tonemap
-multiplying by the exposure, dividing by the white curve's term, a power from the lower curve in the
-darks to the upper in the lights mixed by the root, gamma and the saturation about the channels'
-mean; its sunlight at noon a warm yellow, orange at sunset by a power past noon, dim and cool at
-night, the ambient the sky's color to the 0.65 times 0.85 scaled by the ambient setting, where the
-game's sun is near white, the warmth and the deep shade being most of the pictures' difference. Five
-parts, each shown beside the modpack's pictures before its commit: the sun's color by hour after the
-shader's numbers and the sky's light at the share the owner's ambient gives, measured as the
-shade-to-sun ratio on a white wall before and after, which takes item 43's sun from it; the night
-sky and the moonlight tinted; the grade, the saturation through the engine's color grading and the
-curve asked of the engine in its ASKS.md, a parametric curve set by the four numbers or a tonemap
-through a program's shader, the engine's nearest curve and exposure chosen meanwhile by the curves'
-values at a few levels and stated; the haze's start and strength read from the fog setting and
-matched, which item 43's haze follows; and the shadows stepped at 8 a block and reaching 64, offered
-to the owner rather than taken. The bloom stays at the owner's tenth. Tests on the sun's color at
-four hours, the ratio, the tint and the haze. Three or four commits, after item 57 and before item
-39.
+    (Decision 28).** The owner wrote shortly before 07:38 on 2026-10-21 that the blades should look
+    like the modpack's, and that comparing the colors the game's and the modpack's pictures differ,
+    so the modpack is to be pulled and the shader settings they set fetched, the colors by time of
+    day, the saturation and so on. The modpack's shader runs under a license forbidding
+    redistributing or changing its code, so it is read as numbers and the game's own written: the
+    owner's settings against the shader's defaults, the exposure 0.90 against 1.40, the white curve
+    1.3 against 2.0, the lower curve 1.05 against 1.20 and the upper 1.00 against 1.50, the
+    saturation 1.05 against 1.55, the ambient 50 against 150, the fog 0.95 against 0.50, the night
+    tint 1.10, 0.90 and 1.30, the bloom 0.027, the shadows stepped at 8 a block and reaching 64, no
+    color grading; the shader's tonemap multiplying by the exposure, dividing by the white curve's
+    term, a power from the lower curve in the darks to the upper in the lights mixed by the root,
+    gamma and the saturation about the channels' mean; its sunlight at noon a warm yellow, orange at
+    sunset by a power past noon, dim and cool at night, the ambient the sky's color to the 0.65
+    times 0.85 scaled by the ambient setting, where the game's sun is near white, the warmth and the
+    deep shade being most of the pictures' difference. Five parts, each shown beside the modpack's
+    pictures before its commit: the sun's color by hour after the shader's numbers and the sky's
+    light at the share the owner's ambient gives, measured as the shade-to-sun ratio on a white wall
+    before and after, which takes item 43's sun from it; the night sky and the moonlight tinted; the
+    grade, the saturation through the engine's color grading and the curve asked of the engine in
+    its ASKS.md, a parametric curve set by the four numbers or a tonemap through a program's shader,
+    the engine's nearest curve and exposure chosen meanwhile by the curves' values at a few levels
+    and stated; the haze's start and strength read from the fog setting and matched, which item 43's
+    haze follows; and the shadows stepped at 8 a block and reaching 64, offered to the owner rather
+    than taken. The bloom stays at the owner's tenth. Tests on the sun's color at four hours, the
+    ratio, the tint and the haze. Three or four commits, after item 57 and before item 39. The
+    ambient's share, read at 08:00, cannot be set apart from the drawn sky with the engine's
+    environment map, so it is asked of the engine as its item 81 and the game takes the share when
+    that package comes; the grade chosen by the owner at 08:00 is Reinhard at an exposure of 1.7
+    with the saturation and contrast graded, checked again on the green grass of item 59.
+
+59. **Each biome's grass and foliage color from the source's fixed values, not a blend of the game's
+    own climate (Decision 28).** The owner wrote shortly before 08:01 on 2026-10-21 that the game's
+    grass is not the same as the modpack's, which is green where the game's is tealish. Measured,
+    the modpack's sunlit grass top reads 127, 139 and 31 and the game's 140, 157 and 97 graded; the
+    cause is the game's tint, which blends the colormap's corners by its own temperature and
+    humidity noise, the plains at 0.38 and 0.41 giving 137, 184 and 116 with blue in it, where the
+    source gives each biome one color from its fixed temperature and downfall, the plains' 0.8 and
+    0.4 giving 145, 189 and 89; lowering and whitening the sky's light alone took the blue only from
+    97 to the seventies. So each biome's grass and foliage color is the colormap's value at that
+    biome's own temperature and downfall as the source's biome files give them, read as numbers, the
+    plains, forest, birch forest, taiga, snowy, savanna, jungle, windswept hills and river, blended
+    across biome edges by weight as the special biomes already blend, the dark forest, swamp,
+    badlands and cherry grove keeping their own; the continuous climate colormap goes. A test reads
+    each biome's middle at its color within a level or two. Then the grade is checked again with the
+    owner on the green grass. One commit, before item 58's first commit.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1523,7 +1543,10 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     day, the saturation and so on. The shader's license forbids redistributing or changing its code,
     so its settings and its formulas are read as numbers and the game's own written, item 58, the
     tonemap's curve asked of the engine; the blades' look comes with the light, the warmth and the
-    deep shade being most of the difference.
+    deep shade being most of the difference. Shown three grades beside the modpack's picture shortly
+    before 08:01, the owner chose Reinhard graded; and said the game's grass is tealish where the
+    modpack's is green, which is the game's climate tint against the source's fixed colors a biome,
+    item 59.
 
 ## Replies
 
