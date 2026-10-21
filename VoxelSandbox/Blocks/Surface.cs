@@ -108,8 +108,12 @@ public static class Surfaces
     public static readonly int Hay = Add("hay", new Color(176, 150, 42));
     public static readonly int HayTop = Add("hay top", new Color(183, 161, 45));
     public static readonly int Wheat = Add("wheat", new Color(196, 178, 82));
+    // A soul torch's stick and a soul lantern's iron look as the others do, apart so a pack's soul
+    // torch and soul lantern textures lie on them.
     public static readonly int TorchStick = Add("torch stick", new Color(162, 132, 88));
-    public static readonly int Iron = Add("dark iron", new Color(52, 54, 62), 0.5f);
+    public static readonly int SoulTorchStick = Add("soul torch stick", new Color(162, 132, 88));
+    public static readonly int LanternIron = Add("lantern iron", new Color(52, 54, 62), 0.5f);
+    public static readonly int SoulLanternIron = Add("soul lantern iron", new Color(52, 54, 62), 0.5f);
     public static readonly int EndRodBase = Add("end rod base", new Color(150, 132, 160));
     // Wool of the colors a sheep is born with, the same as its coat.
     public static readonly int WhiteWool = Add("white wool", new Color(254, 254, 254), 1);

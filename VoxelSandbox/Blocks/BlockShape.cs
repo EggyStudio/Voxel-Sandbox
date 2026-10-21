@@ -33,12 +33,25 @@ public enum StairForm
 }
 
 /// <summary>
+/// The parts of a texture a piece's faces show, as Minecraft's models give a face's coordinates,
+/// each from its left and top corner to its right and bottom one in sixteenths of the texture as
+/// seen from outside, one the four sides share, one for the top and one for the bottom. A flat wall
+/// shows the sides' part from its first corner's end to its second's.
+/// </summary>
+public readonly record struct Parts(Vector4 Sides, Vector4 Top, Vector4 Bottom)
+{
+    /// <summary>A flat wall's part, from the end at its first corner to the end at its second.</summary>
+    public static Parts Wall(float u0, float v0, float u1, float v1) => new(new Vector4(u0, v0, u1, v1), default, default);
+}
+
+/// <summary>
 /// A box of a block smaller than its cell, between two corners in the cell's own space from 0 to 1,
 /// of one surface, its top face moved by <see cref="Lean"/>, as a torch on a wall leans out from it,
 /// or where it is a <see cref="Plane"/> a flat wall standing from its first corner across to its
-/// second, as a plant's are.
+/// second, as a plant's are. Its faces show the <see cref="Parts"/> of its texture where it has them,
+/// and otherwise the part its place in the cell covers.
 /// </summary>
-public readonly record struct Piece(Vector3 From, Vector3 To, int Surface, Vector3 Lean = default, bool Plane = false)
+public readonly record struct Piece(Vector3 From, Vector3 To, int Surface, Vector3 Lean = default, bool Plane = false, Parts? Parts = null)
 {
     /// <summary>Whether its surface is emissive, so it is drawn as a lamp's cube rather than as faces of its section.</summary>
     public bool Glows => Surfaces.All[Surface].Emits;
@@ -223,38 +236,69 @@ public sealed class BlockShape
     }
 
     // A piece given in sixteenths of a block, as Minecraft's models give theirs.
-    private static Piece Px(float x0, float y0, float z0, float x1, float y1, float z1, int surface, Vector3 lean = default) =>
-        new(new Vector3(x0, y0, z0) / 16, new Vector3(x1, y1, z1) / 16, surface, lean / 16);
+    private static Piece Px(float x0, float y0, float z0, float x1, float y1, float z1, int surface, Vector3 lean = default, Parts? parts = null) =>
+        new(new Vector3(x0, y0, z0) / 16, new Vector3(x1, y1, z1) / 16, surface, lean / 16, Parts: parts);
 
-    /// <summary>A torch standing on the block below, a stick with a flame at its top.</summary>
-    public static BlockShape Torch(int flame) => new(Facing.Up,
+    // The parts of a texture a box shows, its sides', its top's and its bottom's, in sixteenths.
+    private static Parts Shows(float u0, float v0, float u1, float v1, float tu0, float tv0, float tu1, float tv1, float bu0, float bv0, float bu1, float bv1) =>
+        new(new Vector4(u0, v0, u1, v1), new Vector4(tu0, tv0, tu1, tv1), new Vector4(bu0, bv0, bu1, bv1));
+
+    // A flat wall as the source's model gives it in sixteenths, turned by 45 degrees about the cell's
+    // upright middle line as the model turns it, so its first corner's end, the lower along x or z,
+    // turns to the lower along x.
+    private static Piece Turned45(float x0, float y0, float z0, float x1, float y1, float z1, int surface, Parts parts)
+    {
+        var half = MathF.Sqrt(0.5f);
+        Vector3 Turn(float x, float y, float z) => new(8 + (x - 8 + z - 8) * half, y, 8 + (z - 8 - (x - 8)) * half);
+        return new Piece(Turn(x0, y0, z0) / 16, Turn(x1, y1, z1) / 16, surface, Plane: true, Parts: parts);
+    }
+
+    // The source's torch is one box from the foot up 10 sixteenths, its sides showing the torch's
+    // texture from row 6 down to 16, its top rows 6 and 7 and its bottom rows 13 and 14, here cut into
+    // the stick's 7 and the flame's 3, each showing its share of the rows.
+    private static readonly Parts StickParts = Shows(7, 9, 9, 16, 7, 6, 9, 8, 7, 13, 9, 15);
+    private static readonly Parts FlameParts = Shows(7, 6, 9, 9, 7, 6, 9, 8, 7, 13, 9, 15);
+
+    /// <summary>A torch standing on the block below, a stick with a flame at its top, showing the parts of the torch's texture the source's model gives.</summary>
+    public static BlockShape Torch(int flame, int stick) => new(Facing.Up,
     [
-        Px(7, 0, 7, 9, 7, 9, Surfaces.TorchStick),
-        Px(7, 7, 7, 9, 10, 9, flame),
+        Px(7, 0, 7, 9, 7, 9, stick, parts: StickParts),
+        Px(7, 7, 7, 9, 10, 9, flame, parts: FlameParts),
     ]);
 
     /// <summary>
     /// A torch fixed to the wall behind it, its stick leaning out from the wall's face by about 23
     /// degrees as Minecraft's does, and its flame upright at the stick's top.
     /// </summary>
-    public static BlockShape WallTorch(Facing facing, int flame) => new(facing, Yawed(facing,
-        Px(7, 3, 14, 9, 10, 16, Surfaces.TorchStick, new Vector3(0, 0, -3)),
-        Px(7, 10, 11, 9, 13, 13, flame)));
+    public static BlockShape WallTorch(Facing facing, int flame, int stick) => new(facing, Yawed(facing,
+        Px(7, 3, 14, 9, 10, 16, stick, new Vector3(0, 0, -3), StickParts),
+        Px(7, 10, 11, 9, 13, 13, flame, parts: FlameParts)));
 
-    /// <summary>A lantern standing on the block below, its glass lit and its cap and handle of dark iron.</summary>
-    public static BlockShape Lantern(int glass) => new(Facing.Up,
+    // The source's lantern shows its texture's rows 2 to 8 on its glass's sides and rows 9 to 14 on
+    // its top and bottom, its cap's sides rows 0 and 1 and its top and bottom rows 10 to 13, and its
+    // handle's and chain's crossed walls columns 11 to 13 of the rows each covers.
+    private static readonly Parts GlassParts = Shows(0, 2, 6, 9, 0, 9, 6, 15, 0, 9, 6, 15);
+    private static readonly Parts CapParts = Shows(1, 0, 5, 2, 1, 10, 5, 14, 1, 10, 5, 14);
+
+    /// <summary>
+    /// A lantern standing on the block below, its glass lit, and its cap and handle, a pair of
+    /// crossed walls, of iron, each showing the parts of the lantern's texture the source's model gives.
+    /// </summary>
+    public static BlockShape Lantern(int glass, int iron) => new(Facing.Up,
     [
-        Px(5, 0, 5, 11, 7, 11, glass),
-        Px(6, 7, 6, 10, 9, 10, Surfaces.Iron),
-        Px(7, 9, 7.5f, 9, 11, 8.5f, Surfaces.Iron),
+        Px(5, 0, 5, 11, 7, 11, glass, parts: GlassParts),
+        Px(6, 7, 6, 10, 9, 10, iron, parts: CapParts),
+        Turned45(6.5f, 9, 8, 9.5f, 11, 8, iron, Parts.Wall(11, 1, 14, 3)),
+        Turned45(8, 9, 6.5f, 8, 11, 9.5f, iron, Parts.Wall(14, 10, 11, 12)),
     ], solid: true);
 
-    /// <summary>A lantern hanging from the block above by a short chain.</summary>
-    public static BlockShape HangingLantern(int glass) => new(Facing.Down,
+    /// <summary>A lantern hanging from the block above by a short chain, a pair of crossed walls.</summary>
+    public static BlockShape HangingLantern(int glass, int iron) => new(Facing.Down,
     [
-        Px(5, 1, 5, 11, 8, 11, glass),
-        Px(6, 8, 6, 10, 10, 10, Surfaces.Iron),
-        Px(7.5f, 10, 7.5f, 8.5f, 16, 8.5f, Surfaces.Iron),
+        Px(5, 1, 5, 11, 8, 11, glass, parts: GlassParts),
+        Px(6, 8, 6, 10, 10, 10, iron, parts: CapParts),
+        Turned45(6.5f, 11, 8, 9.5f, 15, 8, iron, Parts.Wall(11, 1, 14, 5)),
+        Turned45(8, 10, 6.5f, 8, 16, 9.5f, iron, Parts.Wall(14, 6, 11, 12)),
     ], solid: true);
 
     /// <summary>An end rod, an emissive white rod on a small base, its base on the block it is fixed to.</summary>
@@ -363,7 +407,8 @@ public sealed class BlockShape
     }))];
 
     // Pieces given facing up, standing on the block below, turned about the cell's middle to face
-    // another way. A piece that leans cannot be turned off its upright, so none of these leans.
+    // another way. A piece that leans cannot be turned off its upright, and the parts of a texture
+    // a piece shows on its sides would turn onto its ends, so none of these leans or has parts.
     private static Piece[] Turned(Facing facing, params Piece[] pieces) => [.. pieces.Select(p => Moved(p, c => facing switch
     {
         Facing.Down => new Vector3(c.X, -c.Y, -c.Z),

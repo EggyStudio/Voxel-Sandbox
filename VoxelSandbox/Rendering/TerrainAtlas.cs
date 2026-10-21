@@ -320,13 +320,13 @@ public sealed class TerrainAtlas
 
     private static float Mix(float under, float over, float covered) => under + (over - under) * covered;
 
-    private static float Linear(byte value)
+    internal static float Linear(byte value)
     {
         var c = value / 255f;
         return c <= 0.04045f ? c / 12.92f : MathF.Pow((c + 0.055f) / 1.055f, 2.4f);
     }
 
-    private static Color Encode(float r, float g, float b)
+    internal static Color Encode(float r, float g, float b)
     {
         static byte Channel(float c) => (byte)Math.Clamp(MathF.Round((c <= 0.0031308f ? c * 12.92f : 1.055f * MathF.Pow(c, 1 / 2.4f) - 0.055f) * 255), 0, 255);
         return new Color(Channel(r), Channel(g), Channel(b));

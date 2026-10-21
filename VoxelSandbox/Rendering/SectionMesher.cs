@@ -110,7 +110,9 @@ public sealed class SectionMesher
     /// the tile under the overlay is left untinted, and the second the color it carries, red, green
     /// and blue a byte each from the lowest, and its alpha in the highest byte. The color is sRGB,
     /// as a vertex color is, and the shade multiplies it in that space. A shade of 128 levels holds
-    /// the light's sixteen levels and the corners' four darkenings with room to spare.
+    /// the light's sixteen levels and the corners' four darkenings with room to spare. A face with no
+    /// overlay and neither flag may carry its corner's place on its texture in the overlay's bits
+    /// instead, as <see cref="PlaceOf"/> reads it.
     /// </summary>
     public static (uint First, uint Second) Pack(int face, int corner, float shade, Color tint, uint tiles = 0)
     {
@@ -129,6 +131,40 @@ public sealed class SectionMesher
 
     /// <summary>The outward normal of a face by its number, as the terrain shader's table holds it.</summary>
     public static Vector3 Normal(int face) => Normals[face];
+
+    /// <summary>A corner of a box's face, 0 or 1 along each axis, counterclockwise seen from outside, as the faces are meshed.</summary>
+    public static Vector3 Corner(int face, int corner) => Corners[face][corner];
+
+    /// <summary>
+    /// The place on its texture in sixteenths a corner carries in the first of its uints, across and
+    /// down, or null for a corner whose texture is laid by where it lies in its block.
+    /// </summary>
+    public static Vector2? PlaceOf(uint first)
+    {
+        var placed = first >> 22 & 511;
+        if (placed == 0 || first >> 31 != 0 || (first >> 12 & 1) != 0) return null;
+        return new Vector2((placed - 1) % 17, (placed - 1) / 17);
+    }
+
+    /// <summary>
+    /// Where a corner of a box's face lies on the part of its texture the face shows, in sixteenths,
+    /// across from the part's left and down from its top as seen from outside, as Minecraft lays a
+    /// model's face on its texture, from where the corner lies on its box, 0 or 1 along each axis.
+    /// </summary>
+    public static Vector2 Place(Parts parts, int face, Vector3 corner)
+    {
+        var part = face == 2 ? parts.Top : face == 3 ? parts.Bottom : parts.Sides;
+        var (across, down) = face switch
+        {
+            0 => (1 - corner.Z, 1 - corner.Y),
+            1 => (corner.Z, 1 - corner.Y),
+            2 => (corner.X, corner.Z),
+            3 => (corner.X, 1 - corner.Z),
+            4 => (corner.X, 1 - corner.Y),
+            _ => (1 - corner.X, 1 - corner.Y),
+        };
+        return new Vector2(part.X + (part.Z - part.X) * across, part.Y + (part.W - part.Y) * down);
+    }
 
     /// <summary>The last section's faces of opaque blocks.</summary>
     public Faces Solid { get; } = new();
@@ -336,13 +372,13 @@ public sealed class SectionMesher
     }
 
     // The pieces of a block smaller than its cell that are not emissive, each a box of six faces,
-    // its top's corners moved by its lean. A face on the cell's side against an opaque block is
-    // left out, as a torch's foot on the ground is. Every corner takes the light of the block's own
-    // cell, since the pieces stand inside it, and none is shaded by the blocks around. A plant's
-    // pieces go with the faces cut out where a pack's texture is clear.
+    // its top's corners moved by its lean, or a flat wall. A face on the cell's side against an
+    // opaque block is left out, as a torch's foot on the ground is. Every corner takes the light of
+    // the block's own cell, since the pieces stand inside it, and none is shaded by the blocks
+    // around. A plant's pieces and every flat wall, as a lantern's handle is, go with the faces cut
+    // out where a pack's texture is clear, and a piece with parts of its texture shows them.
     private void AddShape(BlockShape shape, int at, Vector3 block)
     {
-        var faces = shape.Cutout ? Cutout : Solid;
         int sky = _light[at] >> 4, lit = _light[at] & 15;
         var kept = LightLevels ? MathF.Pow(Lit(Math.Max(sky, lit)), 1 / 2.2f) : 1;
         var place = (int)block.Z * Section.Size + (int)block.X;
@@ -350,6 +386,7 @@ public sealed class SectionMesher
         foreach (var piece in shape.Pieces)
         {
             if (piece.Glows) continue;
+            var faces = shape.Cutout || piece.Plane ? Cutout : Solid;
             var (tiles, color, albedo) = Atlas.Paint(piece.Surface, _column.GrassTint[place], _column.FoliageTint[place]);
             if (piece.Plane)
             {
@@ -369,7 +406,8 @@ public sealed class SectionMesher
                 for (int i = 0; i < 4; i++)
                 {
                     var corner = Corners[face][i];
-                    faces.Add(block + piece.From + corner * size + corner.Y * piece.Lean, face, i, kept, color, tiles, albedo);
+                    var shown = piece.Parts is { } parts ? WithPlace(tiles, Place(parts, face, corner)) : tiles;
+                    faces.Add(block + piece.From + corner * size + corner.Y * piece.Lean, face, i, kept, color, shown, albedo);
                 }
                 faces.Indices.Add(first);
                 faces.Indices.Add(first + 1);
@@ -381,10 +419,6 @@ public sealed class SectionMesher
         }
     }
 
-    // A plant's flat wall, from its piece's first corner across to its second, drawn from both sides
-    // with no edges, as Minecraft's crossed planes are. Both sides are lit as if they faced up, as
-    // Minecraft lights its plants with no shade by the way they face, and take the wall's texture
-    // laid along the axis it runs most along, and each side's corners run counterclockwise seen from it.
     /// <summary>
     /// How far a plant of an offset kind stands off its cell's middle at a place, as Minecraft offsets
     /// it: a nibble of the place's hash each for across x and z, from a quarter of a block one way to
@@ -399,23 +433,34 @@ public sealed class SectionMesher
         return new Vector3(across, down, along);
     }
 
-    // A wall's corner carries its place on the texture in sixteenths, across in the five bits a face's
-    // overlay tile begins with and down in the four after and the decor flag, since a wall has neither,
-    // so the texture lies on the wall wherever the wall's offset puts it.
-    private static uint WithPlace(uint tiles, float across, float down)
+    // A corner carries its place on its texture in sixteenths where a face carries its overlay's
+    // tile, one more than across and seventeen times down, with neither flag, since a face showing a
+    // part of its texture has no overlay, so the texture lies on it wherever the face stands.
+    private static uint WithPlace(uint tiles, Vector2 place)
     {
-        uint u = (uint)Math.Clamp(MathF.Round(across * 16), 0, 16), v = (uint)Math.Clamp(MathF.Round(down * 16), 0, 16);
-        return tiles & ~(0x1FFu << 9 | 1u << 19) | (u | (v & 15) << 5) << 9 | (v >> 4) << 19;
+        uint u = (uint)Math.Clamp(MathF.Round(place.X), 0, 16), v = (uint)Math.Clamp(MathF.Round(place.Y), 0, 16);
+        return tiles & 511 | (1 + u + 17 * v) << 9;
     }
 
+    // A flat wall, from its piece's first corner across to its second, drawn from both sides with no
+    // edges, as Minecraft's crossed planes are. Both sides are lit as if they faced up, as Minecraft
+    // lights its plants with no shade by the way they face, and show the wall's part of its texture,
+    // or for a plant the texture laid along the axis the wall runs most along from the cell's foot,
+    // and each side's corners run counterclockwise seen from it.
     private static void AddWall(Faces faces, Piece piece, Vector3 block, float kept, Color color, uint tiles, Color albedo)
     {
         var (a, b) = (piece.From, piece.To);
         var face = MathF.Abs(b.X - a.X) >= MathF.Abs(b.Z - a.Z) ? WallAlongX : WallAlongZ;
+        var part = piece.Parts?.Sides;
         // The wall runs from its lower end along the axis its texture is laid across, so its corners
         // 0 to 3, the lower end's foot, the upper end's foot, the upper end's top and the lower end's
-        // top, lie at the texture's lower left, lower right, upper right and upper left.
-        if (face == WallAlongX ? a.X > b.X : a.Z > b.Z) (a, b) = (new Vector3(b.X, a.Y, b.Z), new Vector3(a.X, b.Y, a.Z));
+        // top, lie at the texture's lower left, lower right, upper right and upper left, a part's ends
+        // swapped with the wall's.
+        if (face == WallAlongX ? a.X > b.X : a.Z > b.Z)
+        {
+            (a, b) = (new Vector3(b.X, a.Y, b.Z), new Vector3(a.X, b.Y, a.Z));
+            if (part is { } ends) part = new Vector4(ends.Z, ends.Y, ends.X, ends.W);
+        }
         Span<Vector3> quad = [new(a.X, a.Y, a.Z), new(b.X, a.Y, b.Z), new(b.X, b.Y, b.Z), new(a.X, b.Y, a.Z)];
         var across = new Vector3(b.Z - a.Z, 0, a.X - b.X);
         foreach (var side in (ReadOnlySpan<float>)[1, -1])
@@ -427,7 +472,9 @@ public sealed class SectionMesher
             {
                 var corner = turned ? 3 - i : i;
                 var at = quad[corner];
-                faces.Add(block + at, face, corner, kept, color, WithPlace(tiles, face == WallAlongX ? at.X : at.Z, 1 - at.Y), albedo);
+                var place = part is { } shown ? new Vector2(corner is 0 or 3 ? shown.X : shown.Z, corner < 2 ? shown.W : shown.Y)
+                    : new Vector2(face == WallAlongX ? at.X : at.Z, 1 - at.Y) * 16;
+                faces.Add(block + at, face, corner, kept, color, WithPlace(tiles, place), albedo);
             }
             faces.Indices.Add(first);
             faces.Indices.Add(first + 1);

@@ -8,11 +8,11 @@ namespace VoxelSandbox;
 /// and only some of them have a likeness in the source.
 /// </summary>
 /// <remarks>
-/// A surface the table leaves out keeps the game's own color with a pack loaded, as do the small
-/// pieces whose texture Minecraft lays out by a model of its own, a lantern's cap and an end rod's
-/// foot, and the lit parts of a torch, a lantern and an end rod, drawn as emissive cubes. A furnace
-/// and a crafting table have no front, so each of their sides takes the front's texture, which
-/// tells them apart from stone and planks.
+/// A surface the table leaves out keeps the game's own color with a pack loaded, as does an end
+/// rod, whose texture Minecraft lays out by a model of its own. A torch's and a lantern's pieces
+/// take their textures by the parts the source's models give their faces, the lit flame and glass
+/// drawn as emissive cubes showing theirs. A furnace and a crafting table have no front, so each of
+/// their sides takes the front's texture, which tells them apart from stone and planks.
 /// </remarks>
 public static class PackTextures
 {
@@ -77,9 +77,14 @@ public static class PackTextures
         [Surfaces.Hay] = new("block/hay_block_side"),
         [Surfaces.HayTop] = new("block/hay_block_top"),
         [Surfaces.Wheat] = new("block/wheat_stage7"),
-        // The torch's texture holds its stick where the stick stands in its cell, so the stick's
-        // faces show the stick's pixels.
         [Surfaces.TorchStick] = new("block/torch"),
+        [Surfaces.Flame] = new("block/torch"),
+        [Surfaces.SoulTorchStick] = new("block/soul_torch"),
+        [Surfaces.SoulFlame] = new("block/soul_torch"),
+        [Surfaces.LanternIron] = new("block/lantern"),
+        [Surfaces.LanternGlass] = new("block/lantern"),
+        [Surfaces.SoulLanternIron] = new("block/soul_lantern"),
+        [Surfaces.SoulLanternGlass] = new("block/soul_lantern"),
         [Surfaces.WhiteWool] = new("block/white_wool"),
         [Surfaces.LightGrayWool] = new("block/light_gray_wool"),
         [Surfaces.GrayWool] = new("block/gray_wool"),

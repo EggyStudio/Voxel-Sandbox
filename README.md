@@ -639,8 +639,12 @@ nothing.
 The textures are laid out at load in one atlas with its mip levels, each tile two by two in a cell
 of its own, so a smaller mip level read near a tile's edge reads the same tile, and sampled by the
 nearest pixel. A face's tile is laid across it by where each point lies in its block, as Minecraft
-lays a texture on a face of a block or of a smaller box within one, so a slab, a step of the stairs
-or a torch's stick shows the part of the texture its place covers. Grass and oak leaves take the
+lays a texture on a face of a block or of a smaller box within one, so a slab or a step of the
+stairs shows the part of the texture its place covers. A torch's and a lantern's pieces show the
+parts of the torch's and the lantern's textures the source's models give their faces, read from the
+models as numbers, a lantern's handle and chain two crossed walls cut out where the texture is
+clear, and its glass and a torch's flame, drawn as lamps' cubes, emit four times the color of their
+bright pixels, so the iron around the glass shows as iron. Grass and oak leaves take the
 climate's color over their gray textures, birch and spruce leaves and water a color of their own as
 Minecraft gives them, and the grass block's side its overlay tinted over the dirt under it. The
 scene's distance field reads each face as its texture's average under its tint, so the light a wall

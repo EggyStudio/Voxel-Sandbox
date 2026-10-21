@@ -99,12 +99,15 @@ public sealed class ChunkRenderer : IDisposable
     private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _atlas, _atlasLayout;
     private Texture2D _atlasTexture;
     // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with its
-    // own texture where a pack has one, which the scene's distance field reads its average of.
-    private Texture2D[] _lampTextures = [];
+    // own texture where a pack has one, which the scene's distance field reads its average of, and
+    // the maps of the emission of those that show parts of their textures.
+    private Texture2D[] _lampTextures = [], _lampEmission = [];
 
     private readonly Dictionary<SectionKey, SectionMeshes> _sections = [];
     private readonly SectionMesher _mesher = new();
     private readonly ModelMesh _cube = GenMeshCube(1, 1, 1);
+    // Each emissive surface's cube, the one above for a surface showing its whole texture on each face.
+    private readonly ModelMesh[] _lampCubes;
     private readonly List<Matrix4x4>[] _emitterDraws = [.. Surfaces.All.Select(_ => new List<Matrix4x4>())];
     private readonly List<SectionKey> _queue = [];
     private readonly List<(float Distance, SectionMeshes Entry)> _seeThrough = [];
@@ -121,6 +124,7 @@ public sealed class ChunkRenderer : IDisposable
         (_fogColor, _fogStart, _fogEndAt) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
         _atmosphere = GetShaderLocation(_shader, "atmosphere");
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
+        _lampCubes = [.. LampParts.Select(parts => parts is { } shown ? LampCube(shown) : _cube)];
         Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
         _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 0.08f, CastsShadows = false, Shader = _shader };
@@ -164,10 +168,12 @@ public sealed class ChunkRenderer : IDisposable
             SetTextureFilter(_atlasTexture, TextureFilter.Point);
             SetShaderValueTexture(_shader, _atlas, _atlasTexture);
             SetShaderValue(_shader, _atlasLayout, new Vector4(TerrainAtlas.Columns, value.Rows, value.Pixels, 0));
-            foreach (var texture in _lampTextures)
+            foreach (var texture in _lampTextures.Concat(_lampEmission))
                 if (texture.IsValid) UnloadTexture(texture);
             _lampTextures = [.. Surfaces.All.Select(s => s.Emits && value.Picture(s.Id) is { } picture ? LoadTextureFromImage(picture) : default)];
-            foreach (var texture in _lampTextures)
+            _lampEmission = [.. Surfaces.All.Select(s => s.Emits && LampParts[s.Id] is not null && value.Picture(s.Id) is { } picture
+                ? LoadTextureFromImage(EmissionMap(picture, s)) : default)];
+            foreach (var texture in _lampTextures.Concat(_lampEmission))
                 if (texture.IsValid) SetTextureFilter(texture, TextureFilter.Point);
             BuildLamps();
         }
@@ -237,8 +243,62 @@ public sealed class ChunkRenderer : IDisposable
     // Each surface's material for the cubes of its emissive blocks, white under a pack's texture.
     private void BuildLamps() =>
         _lamps = [.. Surfaces.All.Select(s => _lampTextures[s.Id].IsValid
-            ? s.Material(_glowScale) with { Color = Color.White, Texture = _lampTextures[s.Id] }
+            ? s.Material(_glowScale) with { Color = Color.White, Texture = _lampTextures[s.Id], EmissiveMap = _lampEmission[s.Id] }
             : s.Material(_glowScale))];
+
+    // The parts of its texture each emissive surface's cube shows, as the source's model gives a
+    // lantern's glass and a torch's flame theirs, or null for a cube showing its whole texture on each
+    // face. A surface's cubes are one instanced draw of one mesh, so its lit pieces share their parts.
+    private static readonly Parts?[] LampParts = [.. Surfaces.All.Select(s =>
+        Blocks.All.SelectMany(b => b.Shape?.Pieces ?? []).FirstOrDefault(p => p.Glows && p.Surface == s.Id).Parts)];
+
+    // A cube a unit across about its middle, each face showing its part of the texture.
+    private static ModelMesh LampCube(Parts parts)
+    {
+        var (vertices, indices) = (new ModelVertex[24], new uint[36]);
+        for (int face = 0; face < 6; face++)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                var corner = SectionMesher.Corner(face, i);
+                vertices[face * 4 + i] = new ModelVertex(corner - new Vector3(0.5f), SectionMesher.Normal(face), SectionMesher.Place(parts, face, corner) / 16);
+            }
+            var first = (uint)face * 4;
+            ((ReadOnlySpan<uint>)[first, first + 1, first + 2, first, first + 2, first + 3]).CopyTo(indices.AsSpan(face * 6));
+        }
+        return UploadMesh(vertices, indices);
+    }
+
+    /// <summary>How many times its own color a lit piece's bright pixels show, a lantern's glass or a torch's flame.</summary>
+    public const float LampShown = 4;
+
+    /// <summary>
+    /// The map of the emission of a lit piece that shows parts of its texture, so its bright pixels
+    /// emit <see cref="LampShown"/> times their own color and its dark ones, a lantern's iron and a
+    /// torch's stick, show as they are lit, where the material's emission over every pixel would draw
+    /// the iron as bright as the flame. The scene's distance field takes the material's emission
+    /// whole, so the light the lamp casts is the same.
+    /// </summary>
+    /// <remarks>
+    /// A pixel emits by the eighth power of its brightest channel, so iron at 0.4 keeps under a
+    /// thousandth of the emission and a flame's yellow most of it. The map multiplies the material's
+    /// emission, so each channel is divided by the material's, its color times the surface's
+    /// <see cref="Surface.Glow"/>, and encoded as sRGB, as the engine decodes an emissive map.
+    /// </remarks>
+    public static Image EmissionMap(Image picture, Surface surface)
+    {
+        var (data, map) = (picture.Data, new byte[picture.Data.Length]);
+        var emitted = new Vector3(TerrainAtlas.Linear(surface.Emissive.R), TerrainAtlas.Linear(surface.Emissive.G), TerrainAtlas.Linear(surface.Emissive.B)) * surface.Glow;
+        for (int at = 0; at < data.Length; at += 4)
+        {
+            var bright = MathF.Pow(Math.Max(data[at], Math.Max(data[at + 1], data[at + 2])) / 255f, 8) * LampShown;
+            var own = new Vector3(TerrainAtlas.Linear(data[at]), TerrainAtlas.Linear(data[at + 1]), TerrainAtlas.Linear(data[at + 2]));
+            var share = Vector3.Min(own * bright / Vector3.Max(emitted, new Vector3(1e-4f)), Vector3.One);
+            var encoded = TerrainAtlas.Encode(share.X, share.Y, share.Z);
+            (map[at], map[at + 1], map[at + 2], map[at + 3]) = (encoded.R, encoded.G, encoded.B, 255);
+        }
+        return new Image(map, picture.Width, picture.Height);
+    }
 
     /// <summary>
     /// Meshes every section an edit changed, then those whose shading changed and those that loaded,
@@ -372,9 +432,9 @@ public sealed class ChunkRenderer : IDisposable
         {
             var list = _emitterDraws[surface];
             if (list.Count == 0) continue;
-            DrawMeshInstanced(_cube, _lamps[surface], CollectionsMarshal.AsSpan(list));
+            DrawMeshInstanced(_lampCubes[surface], _lamps[surface], CollectionsMarshal.AsSpan(list));
             draws++;
-            triangles += _cube.TriangleCount * list.Count;
+            triangles += _lampCubes[surface].TriangleCount * list.Count;
             lamps += list.Count;
         }
         // The dome under the horizon, about the eye, while a haze fades the land's edge into it.
@@ -390,10 +450,12 @@ public sealed class ChunkRenderer : IDisposable
     {
         Clear();
         UnloadMesh(_cube);
+        foreach (var cube in _lampCubes)
+            if (cube.Id != _cube.Id) UnloadMesh(cube);
         UnloadMesh(_dome);
         UnloadShader(_shader);
         if (_atlasTexture.IsValid) UnloadTexture(_atlasTexture);
-        foreach (var texture in _lampTextures)
+        foreach (var texture in _lampTextures.Concat(_lampEmission))
             if (texture.IsValid) UnloadTexture(texture);
     }
 }

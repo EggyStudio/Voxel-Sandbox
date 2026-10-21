@@ -9,7 +9,8 @@ namespace VoxelSandbox;
 /// A plant's walls take the rows of its tile from the cell's foot up, as a pack's texture lies on
 /// them, so a mask draws its plant at the bottom: a flower's stem in the rows its stem's walls
 /// cover and its petals in the rows above, a mushroom's stem and cap the same, and grass in blades
-/// of heights a hash of their column gives.
+/// of heights a hash of their column gives. A lantern's iron takes one too, for its handle's and
+/// chain's crossed walls, which are cut out as a plant's are.
 /// </remarks>
 public static class PlantArt
 {
@@ -75,6 +76,13 @@ public static class PlantArt
 
         // Wheat in stalks, every other column, with ears at their tops.
         masks[Surfaces.Wheat] = Paint((x, y) => x % 3 != 2 && y >= 2 + Hash(x, 5) % 3);
+
+        // A lantern's iron, whole but in columns 11 to 13 of rows 1 to 11, where the source's model
+        // lays its handle's and chain's crossed walls, which hold an arch over the cap or a chain's
+        // links, each wall's rows its own, rather than two panels of iron.
+        string[] links = ["###", "#.#", "#.#", "###", "...", "#.#", "###", "...", "...", "###", "#.#"];
+        var iron = Paint((x, y) => x is < 11 or > 13 || y is < 1 or > 11 || links[y - 1][x - 11] == '#');
+        (masks[Surfaces.LanternIron], masks[Surfaces.SoulLanternIron]) = (iron, iron);
         return masks;
     }
 }

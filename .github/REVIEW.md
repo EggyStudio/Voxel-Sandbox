@@ -5,35 +5,38 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `396047d`, item 58's third part, the grade, after `82da862`, its first part, the warm
-sun, `fa7fba0`, item 59, the biomes' colors, and `be968a2`, the walk at render distance 2, and
-nothing else, the first of them carrying the review's file. The walk: the biomes at render distance
-2, then 4 set and the edge read once nothing generates or waits to mesh, the whole run 1 minute 13
-seconds on the machine, the runner's time from the run after the push. Item 59: each biome a grass
-and a foliage color read from the client's colormaps at the source's temperature and downfall for
-all sixteen, the dark forest's grass the forest's darkened as the source does, the swamp, the
-badlands and the cherry grove keeping their own, blended by the climate's choice made soft over 0.02
-about each bound so no extra noise is read, the continuous colormap gone, a test of twelve biomes'
-middles within two levels; the plains village's sunlit grass 148, 150 and 55 against the modpack's
-127, 139 and 31 and the game's 140, 157 and 97 before. Part a: the sun's color by height after the
-shader's numbers with the game's noon brightness kept, a test of the hue by height, the ambient's
-share asked of the engine as its item 81 with the entry's readings. Part c: Reinhard's curve at an
-exposure of 1.7 with the saturation 1.4 and the contrast 1.12 graded, the owner asked again on the
-green grass and shown the modpack's literal 1.05, 1.2 and 1.4, choosing 1.4, the curve asked of the
-engine as its item 80 with the entry's formula and fits; 208 tests, the strict build clean, the play
-script clean. Read at 08:16 on 2026-10-21. Not pushed: the build run of `815e4ca` is still running,
-and the four heads are pushed when it ends. Shortly before 08:16 the owner said that for screenshots
-they zoom with alt to about 40 degrees and the cinematic captures should too, which item 46's retake
-takes. Next item 58's parts b, d and e, then item 39, then the pictures taken again at 40 degrees,
+Reviewed up to `b56fa0b`, item 58's parts d and e, the haze and the shadows' grid, after `293a5d1`,
+part b, the night tint, and nothing else, the first of them carrying the review's file. Part b: the
+sky's colors multiplied in linear light by the shader's night tint 1.10, 0.90 and 1.30, lerped to
+white by the day's share, the moonlight in the shader's night light's hue 0.15, 0.14 and 0.20 at the
+luminance the game's moonlight had, a test of the tint by day and by night, the README's sky
+paragraph; the snowy village at 22 reading violet-blue with the snow more neutral. Part d: the
+shader's haze with its settings, a fog multiplier of 0.95 less 0.25 in clear weather, the distance's
+default halving the growth and the altitude's default lying over every block holding the share to
+0.325 for an eye below, so a share of 0.2275 times one less e to the minus half a millionth of the
+distance cubed, 9 percent at 100 blocks, 19 at 150 and 22 at 192, a `float4 atmosphere` uniform
+combined with the edge's fade as one less the product of the two remainders, none under water. Part
+e: the light taken on a grid of eight steps a block, Decision 29, the reach kept at 96, the lamp's
+light showing no banding beside sixteen, the README's fog and shadows paragraphs; the strict build,
+209 tests and the play script clean on both. Read at 08:49 on 2026-10-21. The build run 39552756211
+of `815e4ca` ended green, the three test jobs within two minutes and the play job in 48 minutes 27
+seconds, the last walk at a render distance of 4, so the six heads from `be968a2` were pushed at
+08:49, and the walk at a render distance of 2 is read from this push's run. One comment of the
+terrain shader says the modpack's shader steps its shadows with its owner's settings, which names
+the owner under N 4.7 and is reworded in the next batch. At about 09:20 the owner asked about the
+lanterns' stepped pools and the mobs' banded sides, items 60 and 61, written at 09:14 on the coder's
+reading of both causes. Next item 39's first commit, then items 60 and 61, then item 39's cutout
+leaves, doors and glass, then the animated textures, then the pictures taken again at 40 degrees,
 then 26 and the items in order; items 55, 38's second part and 54 when their packages come; the
 AGENTS.md rows for the Ui and build folders wait on the owner's word.
 
-Before it, `815e4ca` came, item 57, the plants offset in their block, and nothing else, carrying the
-review's file. Pushed at 08:00 with `d32ee21`, `bc02459` and `fc38219`.
+Before it, `396047d` came, item 58's part c, the grade, after `82da862`, its part a, and `fa7fba0`,
+item 59, and nothing else, the first of them carrying the review's file. Read at 08:16, pushed at
+08:49 with `be968a2`, `293a5d1` and `b56fa0b`.
 
-Before it, `815e4ca` came, item 57, the plants offset in their block, and nothing else, carrying the
-review's file. Pushed at 08:00 with `d32ee21`, `bc02459` and `fc38219`, the build run of `7039d5a`
-having ended green at 07:58 with the play job in 46 minutes.
+Before it, `be968a2` came, the scripted run's walk at a render distance of 2, and nothing else,
+carrying the review's file. Read at 08:10, pushed at 08:49 after the build run of `815e4ca` ended
+green.
 
 ## Now
 
@@ -867,8 +870,10 @@ having ended green at 07:58 with the play job in 46 minutes.
     that package comes; the grade chosen by the owner at 08:00 is Reinhard at an exposure of 1.7
     with the saturation and contrast graded, checked again on the green grass of item 59. Part a
     done at `82da862` and part c at `396047d` on 2026-10-21, the saturation 1.4 on the owner's
-    second word, the two entries in the engine's ASKS.md for its items 80 and 81; parts b, d and e
-    follow.
+    second word, the two entries in the engine's ASKS.md for its items 80 and 81; part b done at
+    `293a5d1` and parts d and e at `b56fa0b` on 2026-10-21, the shadows' grid eight a block on the
+    owner's word, Decision 29; the ambient's share waits on the engine's item 81 as said. Done at
+    `b56fa0b`.
 
 59. **Each biome's grass and foliage color from the source's fixed values, not a blend of the game's
     own climate (Decision 28).** The owner wrote shortly before 08:01 on 2026-10-21 that the game's
@@ -886,6 +891,34 @@ having ended green at 07:58 with the play job in 46 minutes.
     each biome's middle at its color within a level or two. Then the grade is checked again with the
     owner on the green grass. One commit, before item 58's first commit. Done at `fa7fba0` on
     2026-10-21, as the head says.
+
+60. **The lamps' light falls off smoothly, the eight-a-block grid taking the sun's light and shadow
+    alone.** The owner asked at about 09:20 on 2026-10-21, relayed verbatim, "Why is the torches
+    fallof smooth and the lanterns pixelated?" The cause, confirmed in a live session: the terrain
+    shader takes all of a face's light at the middle of its step on the grid of Decision 29, the
+    sun's light and shadow, the lamps' light and the global illumination alike; a lantern's lit
+    glass stands on the floor, so its light on the floor falls steeply over the first half block and
+    the eighth-block steps show as squares, where a torch's flame of 2 by 7 to 10 pixels lights the
+    floor slowly and the steps do not show; at 64 steps a block the pools come out round. The mend,
+    Decision 29 read as the sun's shadows alone as its words say: the grid stays for the sun's light
+    and shadow and the rest of the light is taken at the point itself, as the mob shader already
+    takes the sun apart from the rest, one more shadow lookup a pixel, its cost measured on the
+    machine at the usual view and in the commit's description; a test reading a lantern's pool on
+    the floor in a night capture for a smooth fall across a block, and the README's shadows
+    paragraph saying the grid is the sun's. One commit, small, after item 39's first commit and
+    before its second part.
+
+61. **A mob's side faces take no bands from their own shadow at noon.** The owner said at about
+    09:20 on 2026-10-21, relayed verbatim, that "the capture with the mobs showed pixelated layer
+    lines on there bodies which should not happen i think". The cause, confirmed in a live session:
+    the mob shader floors each face's light at the flat shade of the light a face turned up takes at
+    the same point, which looks up the sun's shadow at a point on a side face with an upward normal,
+    so the shadow map's offset runs along the face instead of out of it and the face shadows itself
+    in horizontal bands wherever the floor outweighs its own light, every side face at noon and none
+    at 16:00 with the sun on them; with the turned-up light taken a sixteenth of a block out from
+    the face along its own normal the bands are gone. The mend: that line in mob.slang, a test
+    reading a mob's side face in a noon capture for alternating rows and finding none, and
+    mobs/daylight.webp taken again. One commit, small, after item 60.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1553,6 +1586,15 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     item 59. Asked again on the green grass shortly before 08:16, the owner said it looks good but
     to check the modpack's saturation, and shown 1.05, 1.2 and 1.4 chose 1.4 as chosen; and said
     that for screenshots they zoom with alt to about 40 degrees, which the pictures' retake takes.
+
+29. **The sun's shadows step on a grid of eight a block.** Shown a house and a tree's shadow at
+    sixteen and at eight steps a block and at a reach of 64, before the commit of 08:46 on
+    2026-10-21, the owner said, verbatim, "Pixelate 8 so a block has 8 shadow pixels", so the
+    terrain shader takes each point's light on a grid of eight steps a block, half a texture's
+    sixteen pixels, as the modpack's shader steps its shadows with the settings it is played with;
+    the reach stays 96, since 64 dropped part of a near tree's shadow in the capture and the owner
+    did not take it. Read on the owner's question of about 09:20 as the sun's light and shadow
+    alone, the lamps' light and the global illumination smooth, item 60.
 
 ## Replies
 

@@ -85,11 +85,10 @@ public class PlantAndOreTests
         {
             // The corner's place on the texture, across from the lower end and down from the top of
             // the block, read back as the shader reads it.
-            var first = faces.Packed[2 * i];
-            float u = (first >> 22 & 31) / 16f, v = ((first >> 27 & 15) | (first >> 12 & 1) << 4) / 16f;
+            var place = SectionMesher.PlaceOf(faces.Packed[2 * i])!.Value / 16;
             var (_, corner, _, _) = faces.Unpack(i);
-            Assert.Equal(corner is 1 or 2 ? 1 : 0, u);
-            Assert.Equal(corner < 2 ? 1 : 1 - 12 / 16f, v, 3);
+            Assert.Equal(corner is 1 or 2 ? 1 : 0, place.X);
+            Assert.Equal(corner < 2 ? 1 : 1 - 12 / 16f, place.Y, 3);
         }
     }
 
