@@ -5,33 +5,37 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `f7df279`, items 47 and 49, the dome beyond the bodies and the sun and the moon in
-the source's look, and nothing else, carrying the review's file: the sun and the moon as 32-pixel
-pictures of the game's own, an eight-pixel square body with a glow falling from a sixth of its color
-beside the body to nothing at fifteen pixels, held to levels of a thirty-second and dithered by a
-four by four Bayer pattern, the moon's glow as bright as its phase is lit, both drawn additively as
-the source draws its own, the halo rings gone; a pack's sun and moon pictures drawn where it has
-them, Bare Bones' when it is on; the dome's radius 3,600 beyond the stars' 3,200 and inside the far
-plane, its share given by height, each body a grid of quads whose corners take one minus the dome's
-share at their height, the stars too; the sky made before the first pack reload so the packs reach
-it; 200 tests, the square sun's glow clear at the picture's edge, a sun at three degrees whole above
-six and gone under zero, the dome beyond the bodies and its alphas equal to its share; the strict
-build clean, the play script clean; a sun at six degrees over the sea dimming into the haze with no
-line, and the moon showing its phase. Read at 05:52 on 2026-10-21 and pushed at 05:52; the build run
-of `8261308` had ended green at 05:47. Shortly before 05:55 the owner asked for Bare Bones' smooth
-glow in the game's own sun and moon, item 51. Next item 48, the villages' ground whole, then 51,
-then 50, then item 46's captures, then item 39, then the items in order; item 38's second part when
-the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and build
-folders wait on the owner's word.
+Reviewed up to `e4483af`, item 51, the sun's and the moon's glow smooth as Bare Bones', after
+`0c93d3e`, item 48, the villages' ground whole, and nothing else, the first carrying the review's
+file. Item 48: the villages known to the generator and the ravines, a village's square plus six
+reaching a box, no tunnel mouth opened on a village and no ravine whose square and margin meet its
+ground; the test over seed 1's eight nearest villages, no ravine start reaching their ground, open
+air from above never reaching more than three blocks under the top, and a road on three whole
+blocks, which failed before the fix both ways, on a ravine across the first village and on a tunnel
+mouth by another, a first form of the check also failing on a house whose floor sits a block into
+the slope, a building and not a rift, so the check reads open air from above instead. Item 51: the
+sun and the moon painted at four texels to a pixel, 128 across, the body's pixels as four by four
+blocks, the glow a tenth beside the body falling evenly to nothing at fifteen pixels with no levels
+or dithering, the test a fall along the middle row never rising outward and never stepping more than
+two of 255, matching Bare Bones' sun closely side by side at noon. 201 tests, the strict build
+clean, the play script clean. Read at 06:02 on 2026-10-21. Not pushed: the build run of `f7df279` is
+still running, and both heads are pushed when it ends. The owner asked what the stars are, blurry
+blobs or squares, and what the source's are; the coder answered that the source draws 1,500 plain
+white squares on a sphere of 100, each 0.17 to 0.29 degrees across and turned by a random angle,
+where the game draws 500 pixel-art stars of sharp squares, one in eight a cross, turned with the
+sky, and offered to match them, which waits on the owner's word. Shortly before 06:02 the owner
+asked for square stars and the two layouts compared, item 52. Next item 50, built and under the play
+script, then 52, then item 46's captures, then item 39, then the items in order; item 38's second
+part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `f7df279` came, items 47 and 49, the dome beyond the bodies and the sun and the moon in
+the source's look, and nothing else, carrying the review's file. Pushed at 05:52.
 
 Before it, `8261308` came, item 45, the look without a pack in Bare Bones' colors, after `236763d`,
 item 41, and `cc46f25`, item 44 with the play job's limit at 60, and nothing else, each carrying the
 review's file. The three pushed at 05:23, their build run green at 05:47, the play job in 24 minutes
 30 seconds.
-
-Before it, `c54f362` came, item 25's third commit, the nine trees with the cherry's lanterns, and
-nothing else, carrying the review's file. Pushed at 04:41 with `723e28c`, its play job lost to the
-40 minute limit, Verdict 1, mended by the head after it.
 
 ## Now
 
@@ -672,7 +676,7 @@ nothing else, carrying the review's file. Pushed at 04:41 with `723e28c`, its pl
     villages' places, which depend on the seed and the ground alone; tunnels deeper than three
     blocks under the ground stay, so a village's ground is whole. A test generating the columns of
     seed 1's first villages and finding no open cell under a road or a footing. One commit, before
-    item 46's final captures.
+    item 46's final captures. Done at `0c93d3e` on 2026-10-21, as the head says.
 
 49. **The sun and the moon in the source's default look, square with a dithered glow, and a pack's
     own where it has one (Decision 25).** The owner wrote shortly before 05:40 on 2026-10-21 that
@@ -715,7 +719,21 @@ nothing else, carrying the review's file. Pushed at 04:41 with `723e28c`, its pl
     nothing at fifteen pixels, the moon's as bright as its phase is lit; the tests swap the dither's
     check for a smooth fall, never rising outward and never stepping by more than a few levels
     between neighbors; the sky's grid stays one quad to each of the 32 pixels. One commit, small,
-    after item 48.
+    after item 48. Done at `e4483af` on 2026-10-21, as the head says.
+
+52. **The stars as plain squares, the game's layout and the source's compared for the owner's choice
+    (Decision 25).** The owner wrote shortly before 06:02 on 2026-10-21 to do squares instead of the
+    star shape and to try the source's star layout with its values, comparing both, the values as
+    they stand and the source's. The cross goes and every star is a plain square. Two layouts are
+    taken from the same night view at the same hour, moon and heading and shown to the owner side by
+    side: the game's as now, 500 stars of 0.16 degrees at a brightness of 0.45 to 1 with their sides
+    along the sky's turn; and the source's, read from its client as numbers with nothing copied,
+    1,500 stars each placed by a point in the unit cube kept where its squared length lies between
+    0.01 and 1 and pushed out to the sphere, a square of 0.17 to 0.29 degrees across turned by a
+    random angle about its own axis, white at the sky's star brightness. The owner chooses, and the
+    chosen layout is committed with a test of the count, the sizes and the even spread over the sky.
+    One commit, small, after item 50 and before item 46's captures, since a night picture shows the
+    stars.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1335,7 +1353,10 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     item 50 and a check in item 46's script. Shortly before 05:55 the owner, seeing item 49's sun,
     said they like Bare Bones' more and that it is to be implemented in the native look without
     resources too, a smoothing of the dithering, the flares of the sun and the moon; item 51, the
-    glow smooth as the pack's, read as numbers.
+    glow smooth as the pack's, read as numbers. Shortly before 06:02 the owner asked what the stars
+    are and what the source's are, and shortly before 06:02 the owner said to do squares instead of
+    the star shape and to try the source's layout with its values, comparing both; item 52, the
+    owner choosing between the two side by side.
 
 ## Replies
 

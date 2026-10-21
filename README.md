@@ -618,6 +618,12 @@ settles again, where the land the flood leaves out lies behind walls the field h
 lit by a glowstone looks the same either way. Each of the engine's passes leaves out on its own the
 sections whose boxes it cannot see, and the field keeps them all the same.
 
+With the eye inside a whole opaque block, in every mode but spectator, the block's side covers the
+window, its texture or its own color darkened to a tenth, repeated four times across and four down
+and sliding a repeat for each 64 degrees the player turns or pitches, as Minecraft draws the inside
+of a block, so a view set down in a wall shows the wall. Leaves, glass, ice, water and the blocks
+smaller than their cell leave the view open, as they do in Minecraft.
+
 ## Light levels and corners
 
 Each block holds Minecraft's two light levels from 0 to 15. The sky's is 15 under the open sky,

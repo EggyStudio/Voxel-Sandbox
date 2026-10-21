@@ -113,6 +113,7 @@ public sealed class VoxelGame : IDisposable
         Renderer.Atlas = terrain;
         Icons.Use(terrain, packs);
         PackGui.Use(packs);
+        InWall.Use(packs);
         Sky.Use(packs);
         Packs.Dispose();
         Packs = packs;
@@ -827,6 +828,8 @@ public sealed class VoxelGame : IDisposable
         }
         EndMode3D();
 
+        // From inside a block that blocks the view its inside covers the window, as Minecraft's does.
+        if (InWall.Block(World, Player.Eye, Mode) is { } wall) InWall.Draw(wall, Player.Heading, float.RadiansToDegrees(Player.Pitch));
         // Under water the view is tinted blue, as Minecraft's is.
         if (Player.EyeInWater) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(20, 50, 140, 110));
         // A hit reddens the view for the half second no other harms.
