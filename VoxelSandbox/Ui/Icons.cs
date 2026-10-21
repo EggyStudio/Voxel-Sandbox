@@ -168,8 +168,7 @@ public static class Icons
                 // the east side as a face of the world lays it, its clear pixels showing the slot.
                 var hit = from - ToEye * nearest;
                 var (u, v) = face == 1 ? (hit.X, hit.Z) : face == 2 ? (hit.X, 1 - hit.Y) : (1 - hit.Z, 1 - hit.Y);
-                if (_terrain.Texel(surface, u, v, Climate.Grass(Climate.PlainsTemperature, Climate.PlainsHumidity),
-                    Climate.Foliage(Climate.PlainsTemperature, Climate.PlainsHumidity)) is { } texel)
+                if (_terrain.Texel(surface, u, v, Biomes.Plains.GrassColor, Biomes.Plains.FoliageColor) is { } texel)
                 {
                     if (texel.A == 0) continue;
                     (pixels[at], pixels[at + 1], pixels[at + 2], pixels[at + 3]) = (Channel(texel.R * shade), Channel(texel.G * shade), Channel(texel.B * shade), 255);

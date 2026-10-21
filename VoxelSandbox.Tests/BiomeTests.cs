@@ -85,4 +85,31 @@ public class BiomeTests
         Assert.Equal(Biomes.Swamp.Id, column.Biome[(z & 15) * 16 + (x & 15)]);
         Assert.Contains(column.GrassTint[(z & 15) * 16 + (x & 15)], new[] { new Color(76, 118, 60), new Color(106, 112, 57) });
     }
+
+    [Fact]
+    public void Each_Biomes_Middle_Takes_Its_Own_Grass_And_Leaves_As_The_Sources_Colormaps_Give_Them()
+    {
+        var land = new Overworld(1);
+        // Places well inside each biome of seed 1, read from a map of its biomes 32 blocks apart.
+        (int X, int Z, Biome Biome)[] middles =
+        [
+            (-288, 64, Biomes.Plains), (-1120, 320, Biomes.Forest), (96, -1120, Biomes.BirchForest), (-384, -96, Biomes.Taiga),
+            (256, 1312, Biomes.SnowyTaiga), (416, 256, Biomes.SnowyPlains), (704, -704, Biomes.Desert), (352, -448, Biomes.Savanna),
+            (-928, -1376, Biomes.Jungle), (-1024, 1248, Biomes.DarkForest), (1440, 608, Biomes.Badlands), (-736, -960, Biomes.CherryGrove),
+        ];
+        foreach (var (x, z, biome) in middles)
+        {
+            var column = land.Generate(x >> 4, z >> 4);
+            var at = (z & 15) * 16 + (x & 15);
+            Assert.Equal(biome.Id, column.Biome[at]);
+            Near(biome.GrassColor, column.GrassTint[at], biome.Name);
+            Near(biome.FoliageColor, column.FoliageTint[at], biome.Name);
+        }
+        // The plains' grass the source's own green, no blue in it to read as teal.
+        Assert.Equal(new Color(145, 189, 89), Biomes.Plains.GrassColor);
+    }
+
+    private static void Near(Color expected, Color actual, string where) =>
+        Assert.True(Math.Abs(expected.R - actual.R) <= 2 && Math.Abs(expected.G - actual.G) <= 2 && Math.Abs(expected.B - actual.B) <= 2,
+            $"{where} reads {actual}, where {expected} is asked");
 }

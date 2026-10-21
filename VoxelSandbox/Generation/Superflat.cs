@@ -11,8 +11,8 @@ public sealed class Superflat(int seed) : IWorldGenerator
     public void Paint(ChunkColumn column)
     {
         Array.Fill(column.Biome, Biomes.Plains.Id);
-        Array.Fill(column.GrassTint, Climate.Grass(Climate.PlainsTemperature, Climate.PlainsHumidity));
-        Array.Fill(column.FoliageTint, Climate.Foliage(Climate.PlainsTemperature, Climate.PlainsHumidity));
+        Array.Fill(column.GrassTint, Biomes.Plains.GrassColor);
+        Array.Fill(column.FoliageTint, Biomes.Plains.FoliageColor);
     }
 
     public ChunkColumn Generate(int columnX, int columnZ)

@@ -1,3 +1,4 @@
+using System.Numerics;
 using Engine;
 
 namespace VoxelSandbox;
@@ -16,26 +17,14 @@ public sealed record Biome(string Name, BlockId Top, BlockId Under, BlockId Deep
     /// <summary>The animals that graze on it, one kind of which a column's herd is.</summary>
     public MobKind[] Animals { get; init; } = [];
 
-    /// <summary>The color of its grass where it has one of its own rather than the climate's, as the badlands' is.</summary>
-    public Color? GrassColor { get; init; }
+    /// <summary>The color of its grass, as Minecraft's grass colormap gives it at the source biome's own temperature and downfall.</summary>
+    public Color GrassColor { get; init; }
 
-    /// <summary>The color of its leaves where it has one of its own rather than the climate's, as a swamp's and the badlands' are.</summary>
-    public Color? FoliageColor { get; init; }
+    /// <summary>The color of its oak leaves, as Minecraft's foliage colormap gives it there.</summary>
+    public Color FoliageColor { get; init; }
 
-    /// <summary>How it changes the climate's color of its grass, as a dark forest darkens it and a swamp mottles it.</summary>
-    public GrassShade Shade { get; init; }
-}
-
-/// <summary>How a biome changes the climate's color of its grass, as Minecraft's dark forest and swamp do.</summary>
-public enum GrassShade
-{
-    None,
-
-    /// <summary>Halfway to a dark olive, as Minecraft's dark forest darkens its grass.</summary>
-    DarkForest,
-
-    /// <summary>In patches of two greens a noise lays out, as Minecraft's swamp mottles its grass.</summary>
-    Swamp,
+    /// <summary>Whether its grass lies in patches of two greens a noise lays out, as Minecraft's swamp mottles its grass.</summary>
+    public bool Mottled { get; init; }
 }
 
 /// <summary>Every biome, by its id.</summary>
@@ -67,14 +56,14 @@ public static class Biomes
         BlockId.WhiteTerracotta, BlockId.OrangeTerracotta, BlockId.YellowTerracotta, BlockId.RedTerracotta, BlockId.BrownTerracotta, BlockId.LightGrayTerracotta);
     private static readonly MobKind[] Farm = [MobKinds.Pig, MobKinds.Cow, MobKinds.Sheep, MobKinds.Chicken];
 
-    public static readonly Biome Plains = new("plains", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 2), (BigOak, 1), (Grasses, 820), (Meadow, 30)]) { Id = 0, Animals = Farm };
-    public static readonly Biome Forest = new("forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 26), (BigOak, 4), (Birch, 8), (Grasses, 250), (Woodland, 60), (Mushrooms, 4)]) { Id = 1, Animals = Farm };
-    public static readonly Biome BirchForest = new("birch forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Birch, 34), (Grasses, 250), (Woodland, 50)]) { Id = 2, Animals = Farm };
-    public static readonly Biome Taiga = new("taiga", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Spruce, 28), (Ferns, 250), (Mushrooms, 4)]) { Id = 3, Animals = Farm };
-    public static readonly Biome SnowyTaiga = new("snowy taiga", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 22)]) { Id = 4 };
-    public static readonly Biome SnowyPlains = new("snowy plains", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 2)]) { Id = 5 };
-    public static readonly Biome Desert = new("desert", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, [(Cactus, 6), (DeadBushes, 4)]) { Id = 6 };
-    public static readonly Biome Mountains = new("mountains", BlockId.Stone, BlockId.Stone, BlockId.Air, [(Spruce, 3), (Grasses, 60)]) { Id = 7, Animals = [MobKinds.Sheep] };
+    public static readonly Biome Plains = new("plains", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 2), (BigOak, 1), (Grasses, 820), (Meadow, 30)]) { GrassColor = new Color(145, 189, 89), FoliageColor = new Color(119, 171, 47), Id = 0, Animals = Farm };
+    public static readonly Biome Forest = new("forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 26), (BigOak, 4), (Birch, 8), (Grasses, 250), (Woodland, 60), (Mushrooms, 4)]) { GrassColor = new Color(121, 192, 90), FoliageColor = new Color(89, 174, 48), Id = 1, Animals = Farm };
+    public static readonly Biome BirchForest = new("birch forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Birch, 34), (Grasses, 250), (Woodland, 50)]) { GrassColor = new Color(136, 187, 103), FoliageColor = new Color(107, 169, 65), Id = 2, Animals = Farm };
+    public static readonly Biome Taiga = new("taiga", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Spruce, 28), (Ferns, 250), (Mushrooms, 4)]) { GrassColor = new Color(134, 183, 131), FoliageColor = new Color(104, 164, 100), Id = 3, Animals = Farm };
+    public static readonly Biome SnowyTaiga = new("snowy taiga", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 22)]) { GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 4 };
+    public static readonly Biome SnowyPlains = new("snowy plains", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 2)]) { GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 5 };
+    public static readonly Biome Desert = new("desert", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, [(Cactus, 6), (DeadBushes, 4)]) { GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 6 };
+    public static readonly Biome Mountains = new("mountains", BlockId.Stone, BlockId.Stone, BlockId.Air, [(Spruce, 3), (Grasses, 60)]) { GrassColor = new Color(138, 182, 137), FoliageColor = new Color(109, 163, 107), Id = 7, Animals = [MobKinds.Sheep] };
 
     // The seven of the source's biomes after them, their colors and how often their trees stand read
     // from Minecraft's numbers and the biome overhaul's, a tree a column in a chunk being four in a
@@ -82,17 +71,17 @@ public static class Biomes
     // where the source's leave out one that has no room.
     public static readonly Biome Swamp = new("swamp", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 14), (Grasses, 450), (Orchids, 12), (Mushrooms, 4)])
     {
-        Id = 8, FoliageColor = new Color(106, 112, 57), Shade = GrassShade.Swamp,
+        Id = 8, GrassColor = new Color(106, 112, 57), FoliageColor = new Color(106, 112, 57), Mottled = true,
     };
-    public static readonly Biome Savanna = new("savanna", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Acacia, 4), (Grasses, 800), (Warm, 5)]) { Id = 9, Animals = [MobKinds.Cow, MobKinds.Sheep] };
-    public static readonly Biome Jungle = new("jungle", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(MegaJungle, 8), (SmallJungle, 30), (Bush, 30), (Grasses, 600), (Ferns, 250), (Warm, 4)]) { Id = 10, Animals = [MobKinds.Chicken, MobKinds.Pig] };
-    public static readonly Biome DarkForest = new("dark forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(DarkOak, 40), (BrownMushroom, 3), (RedMushroom, 3), (Oak, 6), (Birch, 4), (Mushrooms, 12), (Grasses, 600), (Woodland, 4)]) { Id = 11, Shade = GrassShade.DarkForest, Animals = Farm };
+    public static readonly Biome Savanna = new("savanna", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Acacia, 4), (Grasses, 800), (Warm, 5)]) { GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 9, Animals = [MobKinds.Cow, MobKinds.Sheep] };
+    public static readonly Biome Jungle = new("jungle", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(MegaJungle, 8), (SmallJungle, 30), (Bush, 30), (Grasses, 600), (Ferns, 250), (Warm, 4)]) { GrassColor = new Color(89, 201, 60), FoliageColor = new Color(48, 187, 11), Id = 10, Animals = [MobKinds.Chicken, MobKinds.Pig] };
+    public static readonly Biome DarkForest = new("dark forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(DarkOak, 40), (BrownMushroom, 3), (RedMushroom, 3), (Oak, 6), (Birch, 4), (Mushrooms, 12), (Grasses, 600), (Woodland, 4)]) { GrassColor = new Color(80, 122, 50), FoliageColor = new Color(89, 174, 48), Id = 11, Animals = Farm };
     public static readonly Biome Badlands = new("badlands", BlockId.RedSand, BlockId.RedSand, BlockId.Terracotta, [(Cactus, 3), (DeadBushes, 10)])
     {
         Id = 12, GrassColor = new Color(144, 129, 77), FoliageColor = new Color(158, 129, 77),
     };
-    public static readonly Biome Beach = new("beach", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, []) { Id = 13 };
-    public static readonly Biome River = new("river", BlockId.Sand, BlockId.Sand, BlockId.Air, []) { Id = 14 };
+    public static readonly Biome Beach = new("beach", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, []) { GrassColor = new Color(145, 189, 89), FoliageColor = new Color(119, 171, 47), Id = 13 };
+    public static readonly Biome River = new("river", BlockId.Sand, BlockId.Sand, BlockId.Air, []) { GrassColor = new Color(142, 185, 113), FoliageColor = new Color(113, 167, 77), Id = 14 };
     // The cherry grove on raised ground where it is cool and wet, its grass and leaves a light green
     // of their own, as the gallery of the owner's modpack shows it.
     public static readonly Biome CherryGrove = new("cherry grove", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Cherry, 14), (Petals, 450), (Grasses, 420), (Blossoms, 6)])
@@ -108,15 +97,12 @@ public static class Biomes
 /// grass and leaves.
 /// </summary>
 /// <remarks>
-/// Both vary over hundreds of blocks, so the tint of grass and leaves, which is a color looked up
-/// from the two as Minecraft's colormaps are, changes smoothly across a biome's edge where the
-/// biome itself changes at once. Read only once made, so the workers share one.
+/// Both vary over hundreds of blocks, so the tint of grass and leaves, each biome's own blended by
+/// how far a place is each biome, changes smoothly across a biome's edge where the biome itself
+/// changes at once. Read only once made, so the workers share one.
 /// </remarks>
 public sealed class Climate(int seed)
 {
-    /// <summary>The plains' temperature and humidity, which a tinted block's hotbar color is shown at.</summary>
-    public const float PlainsTemperature = 0.65f, PlainsHumidity = 0.45f;
-
     private readonly Noise _temperature = new(seed + 10), _humidity = new(seed + 11);
 
     public float Temperature(int x, int z) => Math.Clamp(0.5f + 0.9f * _temperature.Fractal(x / 700f, z / 700f, 3), 0, 1);
@@ -168,21 +154,60 @@ public sealed class Climate(int seed)
         return Biomes.Plains;
     }
 
-    // The colors at the corners of Minecraft's grass and foliage colormaps, cold and dry, cold and
-    // wet, hot and dry, and hot and wet, between which a place's color is blended.
-    private static readonly Color[] GrassCorners = [new(128, 180, 151), new(134, 183, 131), new(191, 183, 85), new(89, 201, 60)];
-    private static readonly Color[] FoliageCorners = [new(96, 161, 123), new(104, 164, 100), new(174, 164, 42), new(48, 187, 43)];
+    // How far about each of Choose's bounds its choice is made soft for the colors, in the climate's
+    // units, which spreads a biome's edge over about twenty blocks, as Minecraft blends its colors
+    // over the biomes around a place.
+    private const float Soft = 0.02f;
 
-    public static Color Grass(float temperature, float humidity) => Blend(GrassCorners, temperature, humidity);
-
-    public static Color Foliage(float temperature, float humidity) => Blend(FoliageCorners, temperature, humidity);
-
-    private static Color Blend(Color[] corners, float t, float h)
+    /// <summary>
+    /// The grass's and the leaves' colors of a place, each biome's own blended by how far the place is
+    /// that biome, its share from <see cref="Choose"/> made soft about each of its bounds, the swamp's
+    /// grass the green its mottle lays there.
+    /// </summary>
+    public static (Color Grass, Color Foliage) Colors(float t, float h, int height, int mountainsFrom, Color swampGrass)
     {
-        static float Lerp(float a, float b, float s) => a + (b - a) * s;
-        byte Channel(Func<Color, byte> of) =>
-            (byte)Lerp(Lerp(of(corners[0]), of(corners[1]), h), Lerp(of(corners[2]), of(corners[3]), h), t);
-        return new Color(Channel(c => c.R), Channel(c => c.G), Channel(c => c.B));
+        Vector3 grass = Vector3.Zero, foliage = Vector3.Zero;
+        void Add(Biome biome, float share, Color? grassColor = null)
+        {
+            if (share <= 0) return;
+            var g = grassColor ?? biome.GrassColor;
+            grass += share * new Vector3(g.R, g.G, g.B);
+            foliage += share * new Vector3(biome.FoliageColor.R, biome.FoliageColor.G, biome.FoliageColor.B);
+        }
+        float Above(float x, float at) => SmoothStep(at - Soft, at + Soft, x);
+
+        var mountains = SmoothStep(mountainsFrom - 3, mountainsFrom + 3, height);
+        Add(Biomes.Mountains, mountains);
+        var rest = 1 - mountains;
+        var cold = 1 - Above(t, 0.3f);
+        var wet = Above(h, 0.4f);
+        Add(Biomes.SnowyTaiga, rest * cold * wet * (1 - Above(t, 0.18f)));
+        Add(Biomes.Taiga, rest * cold * wet * Above(t, 0.18f));
+        Add(Biomes.SnowyPlains, rest * cold * (1 - wet));
+        rest *= 1 - cold;
+        var badlands = Badlands(t, h);
+        Add(Biomes.Badlands, rest * badlands);
+        rest *= 1 - badlands;
+        var desert = Above(t, 0.7f) * (1 - Above(h, 0.4f));
+        Add(Biomes.Desert, rest * desert);
+        rest *= 1 - desert;
+        var swamp = Swampness(t, h);
+        Add(Biomes.Swamp, rest * swamp, swampGrass);
+        rest *= 1 - swamp;
+        float jungle = Above(t, 0.62f) * Above(h, 0.66f), savanna = Above(t, 0.62f) * (1 - Above(h, 0.5f));
+        Add(Biomes.Jungle, rest * jungle);
+        Add(Biomes.Savanna, rest * savanna);
+        rest *= 1 - jungle - savanna;
+        var cherry = Cherry(t, h) * Raised(height, mountainsFrom);
+        Add(Biomes.CherryGrove, rest * cherry);
+        rest *= 1 - cherry;
+        float dark = Above(h, 0.76f), forest = Above(h, 0.62f) * (1 - dark), birch = Above(h, 0.48f) * (1 - Above(h, 0.62f)) * (1 - Above(t, 0.6f));
+        Add(Biomes.DarkForest, rest * dark);
+        Add(Biomes.Forest, rest * forest);
+        Add(Biomes.BirchForest, rest * birch);
+        Add(Biomes.Plains, rest * (1 - dark - forest - birch));
+        static Color Of(Vector3 c) => new((byte)MathF.Round(c.X), (byte)MathF.Round(c.Y), (byte)MathF.Round(c.Z));
+        return (Of(grass), Of(foliage));
     }
 
     private static float SmoothStep(float from, float to, float x)

@@ -164,10 +164,13 @@ desert of sand over sandstone with cacti where it is hot and dry, the badlands i
 hottest and driest, the savanna beside it, the jungle where it is hot and wet, a swamp where it is
 warm and wettest, a cherry grove on raised ground where it is cool and wet, and bare stone mountains
 wherever the ground rises past 82 blocks, snow above 92. Grass and oak leaves are gray surfaces
-tinted by a color looked up from the two values at the corners of Minecraft's colormaps, so their
-green changes smoothly across a biome's edge, yellowing near a desert and cooling toward the snow,
-while the biome itself changes at once. Birch and spruce leaves keep a color of their own. A hot,
-dry climate also flattens the land, so a desert lies flat and the hills sink as they near it.
+tinted by each biome's own color, the one Minecraft's colormaps give at that biome's fixed
+temperature and downfall, the plains' grass (145, 189, 89), the forest's (121, 192, 90), the taiga's
+(134, 183, 131) and the jungle's (89, 201, 60), and a place takes each biome's color as far as it is
+that biome, its choice made soft over about twenty blocks about each of its bounds, so the colors
+change smoothly across a biome's edge while the biome itself changes at once. Birch and spruce
+leaves keep a color of their own. A hot, dry climate also flattens the land, so a desert lies flat
+and the hills sink as they near it.
 
 The land shapes some of them. A river winds where a noise is near zero, in a valley that sinks the
 land most of the way to the water and cut to three blocks under the sea level where it runs, over
@@ -180,11 +183,11 @@ blocks high, the same for a seed, with red sand on the low ground between them.
 
 A swamp's grass is two greens laid out by a noise and its leaves an olive, the badlands' grass and
 leaves a dusty yellow, a cherry grove's grass and leaves a light green, and a dark forest's grass
-halfway to a dark olive, each as Minecraft colors them, blended into the climate's colors as far as
-a place is the biome, so they too change smoothly across its edge. The numbers, the climate's
-ranges, the colors and how many trees stand in a chunk, are read from Minecraft's and from those of
-Terralith, the biome overhaul of the owner's modpack, as a model and not a copy, since its license
-forbids handing its files out. `voxel.biome` finds the nearest place of a biome.
+halfway to a dark olive, each as Minecraft colors them, blended with the biomes around as the
+others' are. The numbers, the climate's ranges, the colors and how many trees stand in a chunk, are
+read from Minecraft's and from those of Terralith, the biome overhaul of the owner's modpack, as a
+model and not a copy, since its license forbids handing its files out. `voxel.biome` finds the
+nearest place of a biome.
 
 ## Plants, woods and colors
 

@@ -5,39 +5,21 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `815e4ca`, item 57, the plants offset in their block, and nothing else, carrying the
-review's file: each plant's walls offset by the place's hash as the source offsets them, up to a
-quarter block sideways in sixteen steps and the short grass and the fern sinking up to a fifth, the
-twelve flowers and the tall grass sideways alone, the saplings, the mushrooms, the dead bush and the
-wheat in place, the petals a carpet; a wall turned to run from its lower end along its axis with its
-corners numbered from the lower left, each carrying its place on the texture in sixteenths in the
-overlay's free bits, the vertex stage reading them into the stream's coordinate for the plant faces
-and the fragment taking that where a block face takes its world position, so the texture stays whole
-on an offset wall and the light stays snapped to the block's pixels; tests of the offsets within a
-quarter, sunk only for the grass and never past a fifth, the same at a place and over 100 distinct
-among 256, the kinds by block, and an offset grass's walls a block wide with their corners' places
-read back; a row of poppies no longer straight and the meadow scattered with whole textures; 206
-tests, the strict build clean, the play script clean. Read at 07:44 on 2026-10-21. The build run of
-`7039d5a` ended green at 07:58, its play job in 46 minutes 4 seconds under the 60 minute limit and
-past the 40 that turns the walk to render distance 2, so the four heads, `fc38219`, `bc02459`,
-`d32ee21` and `815e4ca`, were pushed at 08:00. Item 58's reading so far, uncommitted: the warm sun
-by the shader's numbers lifts a cobblestone's sunlit face from 150, 151 and 151 to 165, 151 and 140
-against the modpack's 146, 112 and 94, the shaded face 49, 70 and 93 against 45, 43 and 53, the
-modpack's shade-to-sun ratio 0.38 against the game's 0.45; the ambient's share cannot be set alone,
-since the environment map's intensity darkens the drawn sky too, which is the engine's item 81; the
-grade fitted by numbers is nearest Reinhard's at an exposure of 1.05 within 0.023 from 0.05 to 4,
-and the owner, shown three grades beside the modpack's picture, chose Reinhard graded. Shortly
-before 08:01 the owner said the game's grass is teal where the modpack's is green, item 59, the
-biomes' colors from the source's fixed values. Next the walk at render distance 2, small, then item
-59, then item 58's parts, then item 39, then the pictures taken again, then 26 and the items in
-order; items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+Reviewed up to `be968a2`, the scripted run's walk at a render distance of two columns with the
+land's edge read at four once its columns are meshed, so lavapipe generates fewer columns, and
+nothing else, carrying the review's file, read from the commit at 08:10 on 2026-10-21 before the
+coder's word on it, the walk's time to read from its run against the 46 minutes before. Not pushed:
+the build run of `815e4ca` is still running, and the head is pushed when it ends. Next item 59, the
+biomes' colors from the source's fixed values, then item 58's parts, then item 39, then the pictures
+taken again, then 26 and the items in order; items 55, 38's second part and 54 when their packages
+come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `815e4ca` came, item 57, the plants offset in their block, and nothing else, carrying the
+review's file. Pushed at 08:00 with `d32ee21`, `bc02459` and `fc38219`, the build run of `7039d5a`
+having ended green at 07:58 with the play job in 46 minutes.
 
 Before it, `d32ee21` came, item 56, more plants from the source's and the overhaul's counts, and
 nothing else, carrying the review's file.
-
-Before it, `bc02459` came, item 55's capture for the engine's entry, after `fc38219`, the README's
-animation at two seconds a picture, and nothing else, the first carrying the review's file.
 
 ## Now
 
@@ -1179,7 +1161,8 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     with the horizon's reading at 4 alone once this run reports the walk's time; a program that
     never reaches a stop still fails within the limit. Mended at `cc46f25` on 2026-10-21. Settles on
     the build run of `8261308` with its play job green and its time read. Settled on that run on
-    2026-10-21, the play job green in 24 minutes 30 seconds.
+    2026-10-21, the play job green in 24 minutes 30 seconds. The walk went to render distance 2 at
+    `be968a2` on 2026-10-21 after the run of `7039d5a` took 46 minutes.
 
 ## Decisions
 

@@ -150,32 +150,16 @@ public sealed class Overworld : IWorldGenerator
             }
     }
 
-    // A place's biome and its grass's and leaves' colors, the climate's blended toward a swamp's,
-    // the badlands' and a cherry grove's own as far as the place is one, so the colors change smoothly across an edge
-    // where the biome changes at once, and a dark forest's and a swamp's grass changed as theirs are.
+    // A place's biome and its grass's and leaves' colors, each biome's own blended by how far the
+    // place is that biome, so the colors change smoothly across an edge where the biome changes at
+    // once, the swamp's grass in the source's two greens by a noise.
     private void Paint(ChunkColumn column, int x, int z, int wx, int wz, Land land)
     {
         var at = z * Section.Size + x;
         column.Biome[at] = land.Biome.Id;
-        var grass = Climate.Grass(land.Temperature, land.Humidity);
-        var foliage = Climate.Foliage(land.Temperature, land.Humidity);
-        // The swamp's grass in the source's two greens by a noise, its leaves its own olive.
         var mottled = _mottle.At(wx / 44f, wz / 44f) < -0.1f ? new Color(76, 118, 60) : new Color(106, 112, 57);
-        grass = Mix(grass, mottled, land.Swamp);
-        foliage = Mix(foliage, Biomes.Swamp.FoliageColor!.Value, land.Swamp);
-        grass = Mix(grass, Biomes.Badlands.GrassColor!.Value, land.Badlands);
-        foliage = Mix(foliage, Biomes.Badlands.FoliageColor!.Value, land.Badlands);
-        var cherry = Climate.Cherry(land.Temperature, land.Humidity) * Climate.Raised(land.Height, MountainsFrom);
-        grass = Mix(grass, Biomes.CherryGrove.GrassColor!.Value, cherry);
-        foliage = Mix(foliage, Biomes.CherryGrove.FoliageColor!.Value, cherry);
-        // A dark forest's grass halfway to a dark olive, as the source darkens it.
-        if (land.Biome.Shade == GrassShade.DarkForest) grass = Mix(grass, new Color(40, 52, 10), 0.5f);
-        column.GrassTint[at] = grass;
-        column.FoliageTint[at] = foliage;
+        (column.GrassTint[at], column.FoliageTint[at]) = Climate.Colors(land.Temperature, land.Humidity, land.Height, MountainsFrom, mottled);
     }
-
-    private static Color Mix(Color from, Color to, float share) => share <= 0 ? from : new Color(
-        (byte)(from.R + (to.R - from.R) * share), (byte)(from.G + (to.G - from.G) * share), (byte)(from.B + (to.B - from.B) * share));
 
     /// <summary>
     /// The ground at a world column, with its height, biome and climate, and its top block and the

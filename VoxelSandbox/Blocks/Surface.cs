@@ -24,7 +24,7 @@ public sealed record Surface(int Id, string Name, Color Color, float Roughness, 
     };
 
     /// <summary>The surface's color as it looks in the plains, which the hotbar shows.</summary>
-    public Color Plain => Under(Climate.Grass(Climate.PlainsTemperature, Climate.PlainsHumidity), Climate.Foliage(Climate.PlainsTemperature, Climate.PlainsHumidity));
+    public Color Plain => Under(Biomes.Plains.GrassColor, Biomes.Plains.FoliageColor);
 
     private static Color Multiply(Color a, Color b) => new((byte)(a.R * b.R / 255), (byte)(a.G * b.G / 255), (byte)(a.B * b.B / 255));
 
