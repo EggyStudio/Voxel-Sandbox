@@ -36,8 +36,12 @@ application data folder elsewhere, in a folder named by its kind and seed, `over
 `flat-7`, unless `--world` names it. Its mode, inventory, health and food are saved with it. It is
 saved every 30 seconds, on opening another world and on quitting, and opened where it was left.
 `--transient` keeps nothing on disk, as a test run scripted through `./e3d` should, so it leaves the
-saves as they were. The builds made in the engine's repository saved under `3DEngine.Game/saves` in
-the same folder, and a world moved from there into `VoxelSandbox/saves` opens where it was left.
+saves as they were and takes no screenshot. Screenshots go in a `screenshots` folder beside the
+saves, made the first time F2 is pressed, each named by its time as `2026-10-21_03.45.12.png`, with
+`_2` after it where two fall in one second. The engine's package opens its performance window with
+F2 as well, so the game keeps that window out of sight until the package gives it a key of its own.
+The builds made in the engine's repository saved under `3DEngine.Game/saves` in the same folder, and
+a world moved from there into `VoxelSandbox/saves` opens where it was left.
 
 `./e3d` controls the running game from a terminal through the engine's command line, run out of
 the engine's checkout that `ENGINE_CHECKOUT` names, or the folder above this repository
@@ -82,6 +86,7 @@ with its history.
 | 1 to 9, wheel | Choose a slot of the hotbar |
 | E | In creative every item, to put any of them in the chosen slot, in survival and adventure the inventory, and in spectator nothing |
 | Q | Throw one of the chosen slot's items, or with Left Control its stack |
+| F2 | Saves a screenshot of the frame as a PNG in the `screenshots` folder beside the saves, named by the time, as Minecraft's does, and says so at the lower left |
 | F3 | The settings window, with what the frame holds and costs, the light, the sky and the world, opened as F3 is let go |
 | F3 with F4 | The mode switcher, F4 stepping through creative, survival, adventure and spectator while F3 is held, and the mode chosen played as F3 is let go |
 | F3 with T | Reads the resource packs again from their files, as Minecraft's does |

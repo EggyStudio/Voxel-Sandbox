@@ -5,25 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `056bb7b`, item 24's third commit, the setting, the list and the reload, and nothing
-else, carrying the review's file: a resourcepacks folder beside the saves, the list in
-`resourcepacks.txt` with a pack a line, a name in the folder or a whole path, the first over the
-rest, a Resource Packs screen in the options, `voxel.packs` and `voxel.reload`, F3 with T reloading,
-`--pack` for one run, a transient run reading and writing no list so the scripted run and the
-captures draw the same on every machine; 158 tests, the strict build clean, the play script clean,
-the screen, the commands and the toggles checked in a transient run. Read at 03:29 on 2026-10-21 and
-pushed at 03:29; the build run of `2839dba` had ended green at 03:26. Shortly before 03:29 the owner
-asked to include the three packs as defaults shipped in the repository, which the coder refused
-since all three are all rights reserved, and the owner chose the fetch on start the coder offered,
-Decision 18 and item 24's fourth commit. Next the windows' titles off as a small commit, then the
-fetch, then the items in order; item 38's second part when the package brings the call and the glow
-lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `e14134d`, item 24's fourth commit, the fetch of the three packs at first start,
+after `c5df182`, the windows' titles off, and nothing else, each carrying the review's file. The
+titles: Crafting, Furnace, the Inventory label and Items gone, with a pack and without. The fetch,
+in the shape Decision 18 set: a manifest in the resources with each pack's file, title, Modrinth
+project and version, file URL, size and sha512, the owner's own files found by their sha1 through
+Modrinth's version file endpoint, Bare Bones 1.2.8, Recolourful 1.1.2 and the capitalized font 2.2;
+the fetch on a task, a file already there with the right size and bytes kept, a file written to a
+part file and moved into place only after its hash checks, the user agent naming the game and its
+repository, no JSON serializer so the native build keeps it; the fetch started when no pack is given
+on the command line, the run is not transient and no list exists, polled on the main thread, the
+three turned on over the rest when done, which writes the list, a failure leaving no list so the
+next start tries again, a stop saving the list as it is; the Resource Packs screen saying what is
+fetched and offering to stop or to fetch the defaults, a pack's absence worked out as the fetch's
+state changes; the README naming the three with their makers, all rights reserved and the fetch. 160
+tests, the manifest, the hashes and a fetch through a stand-in handler keeping, taking, refusing and
+naming as it should; the strict build clean, the play script clean with every scripted run transient
+so CI fetches nothing; the real fetch 3 files in 6 seconds with the hashes matching, and a real
+first start in a scratch data folder playing with the game's own art and then with the three packs.
+Read at 03:36 on 2026-10-21 and both pushed at 03:40, their build run green at 03:49; the build run
+of `056bb7b` had ended green at 03:40. Item 24 is done. Next item 40, the F2 screenshot the owner
+asked for shortly before 03:42, small, then item 25, the biomes, the blocks and the trees, then the
+items in order with item 39 after; item 38's second part when the package brings the call and the
+glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `056bb7b` came, item 24's third commit, the setting, the list and the reload, and nothing
+else, carrying the review's file. Pushed at 03:29, its build run green at 03:40.
 
 Before it, `2839dba` came, item 24's second commit, the windows, the HUD and the font from a pack,
 and nothing else, carrying the review's file. Pushed at 03:18, its build run green at 03:26.
-
-Before it, `193da5e` came, item 24's first commit, the pack loader and the atlas, and nothing else,
-carrying the review's file. Pushed at 03:09, its build run green at 03:17.
 
 ## Now
 
@@ -504,6 +514,21 @@ carrying the review's file. Pushed at 03:09, its build run green at 03:17.
     the furnace's front on its front, and an animated tile's frame at a known time. After item 24.
     Two commits, the cutout and the faces, then the animation.
 
+40. **F2 takes a screenshot, as the source does (Decision 19).** The owner wrote shortly before
+    03:42 on 2026-10-21 that, as in Minecraft, a screenshot is to be taken in the game with F2, the
+    same for BevyCSharp, the captures put in the root or a subfolder. F2 writes the frame as a PNG
+    into a `screenshots` folder beside the saves and the resourcepacks folder, made on first use,
+    the file named by the time as the source names its own, `2026-10-21_03.45.12.png` and a count
+    where two fall in one second, through the engine's capture, without the HUD's own message in the
+    picture; a line on the HUD says the file was saved, as the source's chat does, and the README's
+    controls gain the row; a transient run writes nowhere. When the engine's package brings its own
+    F2 of item 73, the game takes that key and keeps its folder and its message. Tests: the name
+    from a time and the count for a second, and the press through the command line leaving a file of
+    the window's size in a scratch data folder. One commit, small, before item 25. The engine's
+    performance window moves from F2 to F3 with its item 73, which is the game's own F3; when that
+    package comes, the game turns the engine's window key off or gives it a free key through the
+    engine's call, its own F3 window keeping the developer's parts.
+
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
     there, and the small panel of boxes with icons is missing. The game has creative and survival;
@@ -590,7 +615,8 @@ carrying the review's file. Pushed at 03:09, its build run green at 03:17.
     game fetches them at first start and names the three and their terms, the Resource Packs screen
     shows the fetch's state with a switch to stop it, and the request carries a user agent naming
     the game as Modrinth's API asks. Tests: the manifest's hashes read and a file of the wrong hash
-    refused, with the fetch itself skipped in the suite and in CI.
+    refused, with the fetch itself skipped in the suite and in CI. Done at `e14134d` on 2026-10-21
+    with the fourth commit, after `c5df182` took the windows' titles off, as the head says.
 
 25. **More biomes, more blocks and more trees.** The owner's word, three times. The climate has
     eight biomes, the features three trees and the cactus, and the blocks about 140 ids: biomes gain
@@ -1014,6 +1040,12 @@ No verdict is open.
     start is not held, the README says it, the Resource Packs screen shows it with a switch to stop
     it, and the request names the game in its user agent as Modrinth's API asks. Item 24's fourth
     commit.
+
+19. **A screenshot on F2.** The owner wrote shortly before 03:42 on 2026-10-21 that, as in
+    Minecraft, a screenshot is to be taken in the game with F2, the same for BevyCSharp, the
+    captures put in the root or a subfolder. So item 40, a screenshots folder beside the saves with
+    the source's names and the HUD's line, and the engines' items 73 and 47 giving every program the
+    key.
 
 ## Replies
 

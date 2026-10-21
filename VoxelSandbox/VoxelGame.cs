@@ -229,6 +229,22 @@ public sealed class VoxelGame : IDisposable
 
     public bool HudHidden { get; set; }
 
+    /// <summary>Where F2 writes its screenshots.</summary>
+    public Screenshots Shots { get; } = Screenshots.Default;
+
+    // The line on the HUD saying where the last screenshot went and how long it has shown, and
+    // whether it was said this frame, which the picture is of, so the line shows from the next.
+    private (string Text, float Age)? _said;
+    private bool _saidFresh;
+
+    // F2 writes the frame as a screenshot, as Minecraft's does, but in a transient run, which
+    // writes nowhere, and says so on the HUD.
+    private void Screenshot()
+    {
+        _said = (_transient ? "Screenshots are not kept in a transient run" : $"Saved screenshot as {Shots.Take()}", 0);
+        _saidFresh = true;
+    }
+
     /// <summary>Whether the world fades into the sky's color toward the render distance, as Minecraft's fog hides where the world ends.</summary>
     public bool Fog { get; set; } = true;
 
@@ -575,6 +591,8 @@ public sealed class VoxelGame : IDisposable
             _switched = false;
         }
         if (IsKeyPressed(Key.F1)) HudHidden = !HudHidden;
+        if (IsKeyPressed(Key.F2)) Screenshot();
+        if (_said is var (said, age)) _said = age + GetFrameTime() < Hud.SaidSeconds ? (said, age + GetFrameTime()) : null;
         if (IsKeyPressed(Key.G)) Light.NextQuality();
     }
 
@@ -819,8 +837,16 @@ public sealed class VoxelGame : IDisposable
             if (Mode.Touches()) Hud.DrawHotbar(Hotbar, Mode.Lives());
             if (Mode.Lives()) Hud.DrawVitals(Vitals, Fade);
             if (!Settings.Open) Hud.DrawHelp(Light.Quality, Mode);
+            if (_said is var (said, age) && !_saidFresh) Hud.DrawSaid(said, age, Mode.Lives());
         }
+        _saidFresh = false;
         Switcher.Draw();
+        // The engine's performance window opens with F2, which the game takes for its screenshots,
+        // so the window is kept far out of sight, what it shows drawn there, until the engine's
+        // package gives it a key of its own.
+        ImGui.SetNextWindowPos(new Vector2(-10000, -10000), ImGuiCond.Always);
+        ImGui.Begin("Performance", ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoNav);
+        ImGui.End();
         Settings.Draw(this);
         if (Mode.Lives() && Vitals.Dead) DrawDeath();
         if (InventoryOpen && !(AtFurnace is var (fx, fy, fz) ? InventoryWindow.DrawFurnace(Inventory, Furnaces.At(fx, fy, fz))

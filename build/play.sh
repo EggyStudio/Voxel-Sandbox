@@ -6,9 +6,10 @@
 # the full moon and the stars over the flat land from two places and headings, the sun and its glow
 # at noon and at dusk, a pillar's shadow under the morning sun, and the window of every item's
 # icon, then swims the player out of a pool onto its bank and reads a white sheep's wool in the
-# shade. It fails where the game does not open or answer, the player did not move or did not climb
-# out onto the bank, the wool in shade is not a gray, or the layer reported an error, and says why
-# in an error annotation, so the run's page names it.
+# shade. A second run that keeps its files, in a data folder of its own, then takes a screenshot
+# with F2. It fails where the game does not open or answer, the player did not move or did not climb
+# out onto the bank, the wool in shade is not a gray, the layer reported an error, or F2 left no
+# screenshot of the window's size, and says why in an error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -28,6 +29,10 @@ log=""
 # takes the stop meant for this one. Before the open has answered, the stop goes by the game's name.
 export E3D_NAME=VoxelSandbox
 pid=""
+kept=""
+# The kept run's data folder, under which the game keeps its saves, its packs' list and its
+# screenshots and e3d its sessions, so it leaves the machine's own alone.
+data=$(mktemp -d)
 # The script's own output, which an error is written to, so one said inside $(ask ...) reaches the
 # page and not the variable.
 exec 3>&1
@@ -38,7 +43,9 @@ fail() {
   echo "::error title=Voxel Sandbox through e3d::$1.${ending:+ Its log ends with $ending.}" >&3
   exit 1
 }
-trap 'if [ -n "$pid" ]; then ./e3d stop --session "$pid" --quiet; else ./e3d stop --quiet; fi > /dev/null 2>&1 || true' EXIT
+trap 'if [ -n "$pid" ]; then ./e3d stop --session "$pid" --quiet; else ./e3d stop --quiet; fi > /dev/null 2>&1 || true
+  [ -n "$kept" ] && XDG_DATA_HOME="$data" ./e3d stop --session "$kept" --quiet > /dev/null 2>&1 || true
+  rm -rf "$data"' EXIT
 # A command e3d refuses fails with its code and sentence, which it writes to standard error.
 cmd() { ./e3d command "$@" --quiet --timeout 600 --session "$pid" 2> "$said" || fail "./e3d command $* ended with $?, $(head -n 1 "$said")"; }
 ask() {
@@ -192,4 +199,25 @@ printf '%s\n' "$channels" | awk 'NF == 3 { lo = $1; hi = $1; for (i = 2; i <= 3;
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
 if grep -F 'Validation Error' "$log"; then fail "the validation layer reported an error"; fi
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, climbed out of a pool onto its bank, saw a sheep's wool in shade gray and drew with no validation error"
+
+# F2 in a run that keeps its files writes the frame as a PNG into the screenshots folder beside the
+# saves, named by the time. The list of packs is made empty first, so the run fetches none.
+mkdir -p "$data/VoxelSandbox"
+: > "$data/VoxelSandbox/resourcepacks.txt"
+keep() { XDG_DATA_HOME="$data" ./e3d "$@"; }
+keep open "$program" --offscreen --flat --world shot --json > captures/opened-kept.json || fail "the run that keeps its files did not open"
+kept=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' captures/opened-kept.json)
+[ -n "$kept" ] || fail "e3d opened the run that keeps its files and did not say its process"
+keep command frames.wait 30 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command frames.wait ended with $?, $(head -n 1 "$said")"
+keep command input.key F2 1 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command input.key F2 ended with $?, $(head -n 1 "$said")"
+keep command frames.wait 5 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command frames.wait ended with $?, $(head -n 1 "$said")"
+keep stop --session "$kept" --quiet > /dev/null 2> "$said" || fail "./e3d stop of the run that keeps its files ended with $?, $(head -n 1 "$said")"
+kept=""
+shots=("$data"/VoxelSandbox/screenshots/*.png)
+[ -f "${shots[0]}" ] || fail "F2 wrote no screenshot into the screenshots folder"
+name=$(basename "${shots[0]}")
+[[ "$name" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}\.[0-9]{2}\.[0-9]{2}\.png$ ]] || fail "the screenshot is named $name, where a name by the time as Minecraft's is asked"
+size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
+[ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
+
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, drew with no validation error and wrote $name on F2"

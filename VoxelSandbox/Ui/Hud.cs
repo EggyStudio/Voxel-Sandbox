@@ -108,6 +108,22 @@ public static class Hud
         }
     }
 
+    /// <summary>Seconds a line the game says stays on the HUD, its last fading out.</summary>
+    public const float SaidSeconds = 6;
+
+    /// <summary>
+    /// A line the game says, as a screenshot's name, at the lower left over a dark band, as
+    /// Minecraft's chat shows it, above the hearts and food where they show, fading over its last second.
+    /// </summary>
+    public static void DrawSaid(string text, float age, bool vitals)
+    {
+        var s = Gui.Scale;
+        var shown = Math.Clamp(SaidSeconds - age, 0, 1);
+        int x = 2 * s, y = GetScreenHeight() - (vitals ? 60 : 48) * s;
+        DrawRectangle(x, y - s, Gui.TextWidth(text) + 4 * s, Gui.LineHeight, new Color(0, 0, 0, (byte)(128 * shown)));
+        Gui.Text(text, x + 2 * s, y, new Color(255, 255, 255, (byte)(255 * shown)));
+    }
+
     /// <summary>A bar under the crosshair, filling as the food held is eaten.</summary>
     public static void DrawEating(float progress)
     {
