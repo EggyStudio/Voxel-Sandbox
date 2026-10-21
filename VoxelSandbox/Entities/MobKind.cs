@@ -321,8 +321,9 @@ public static class MobKinds
                 { Pose = new Vector3(0.75f, 0, 0) },
             new(Swing.Head, At(Vector3.Zero),
             [
-                Mc(Vector3.Zero, -4, -10, -4, 8, 10, 8, skin), Mc(new Vector3(0, -2, 0), -1, -1, -6, 2, 4, 2, nose), B(-4, 30, -4.05f, 4, 31, -4, brow),
-                .. Eyes(1, 29, -4, eye, White),
+                // The brow over the eyes, both a pixel lower than the source's, nearer the nose.
+                Mc(Vector3.Zero, -4, -10, -4, 8, 10, 8, skin), Mc(new Vector3(0, -2, 0), -1, -1, -6, 2, 4, 2, nose), B(-4, 29, -4.05f, 4, 30, -4, brow),
+                .. Eyes(1, 28, -4, eye, White),
             ]),
         ];
         // A robe of the plains, the desert, the taiga and the snow, as Minecraft's villagers wear by biome.
@@ -334,7 +335,7 @@ public static class MobKinds
 
     private static MobKind MakeZombie()
     {
-        Color skin = new(86, 138, 70), shirt = new(52, 150, 158), pants = new(60, 58, 138), eye = new(24, 44, 22);
+        Color skin = new(86, 138, 70), shirt = new(52, 150, 158), pants = new(60, 58, 138), eye = new(24, 44, 22), nose = new(60, 104, 50);
         Vector3 leftLeg = new(1.9f, 12, 0), rightLeg = new(-1.9f, 12, 0), leftArm = new(5, 2, 0), rightArm = new(-5, 2, 0);
         ModelPart[] parts =
         [
@@ -343,7 +344,10 @@ public static class MobKinds
             new(Swing.None, Vector3.Zero, [Mc(Vector3.Zero, -4, 0, -2, 8, 12, 4, shirt)]),
             new(Swing.ArmA, At(leftArm), [Mc(leftArm, -1, -2, -2, 4, 12, 4, skin), Mc(leftArm, -1, -2, -2, 4, 6, 4, shirt, grow: 0.05f)]),
             new(Swing.ArmB, At(rightArm), [Mc(rightArm, -3, -2, -2, 4, 12, 4, skin), Mc(rightArm, -3, -2, -2, 4, 6, 4, shirt, grow: 0.05f)]),
-            new(Swing.Head, At(Vector3.Zero), [Mc(Vector3.Zero, -4, -8, -4, 8, 8, 8, skin), .. Eyes(1, 28, -4, eye), B(-2, 25, -4.05f, 2, 26, -4, eye)]),
+            // The face as the source's default zombie has it, its eyes two dark lines two pixels
+            // wide in the fifth row from the top, a nose a shade darker below between them and no mouth.
+            new(Swing.Head, At(Vector3.Zero),
+                [Mc(Vector3.Zero, -4, -8, -4, 8, 8, 8, skin), B(1, 27, -4.05f, 3, 28, -4, eye), B(-3, 27, -4.05f, -1, 28, -4, eye), B(-1, 26, -4.05f, 1, 27, -4, nose)]),
         ];
         return new MobKind("zombie", 0.3f, 1.95f, 1.0f, 20, [skin], parts)
         {

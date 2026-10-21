@@ -5,30 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `92112c5`, item 61, the mobs' bands, and nothing else, carrying the review's file:
-mob.slang takes the light a face turned up has a sixteenth of a block out from each face along its
-own normal, the reason in its comment; the play script spawns a creeper on the flat world at noon,
-confirms it stands at 6.5, 4.0 and 9.5 so bare ground cannot pass, and reads 61 points down the
-sunlit front of its body asking no neighboring change over 2 levels, a constant 159.1 with a largest
-step of 0.0 against the old shader's 145.3, 149.9 and 154.5 alternating with a step of 9.7; the
-sheep's shaded wool reads 169.5, 172.0 and 173.0 where the morning read 163.8, 166.3 and 167.3, its
-floor light no longer cut by the face's own shadow, the README's figure 170, 172 and 173 and its mob
-paragraph saying the sixteenth and why; mobs/daylight.webp and the nine pair sheets taken again
-against the 26.3 client, the bands gone in each; the strict build clean, 215 tests, the play script
-clean with the pool at 0.058. Read at 09:41 on 2026-10-21. Not pushed: the build run 39562169517 of
-`8f2a2c8` is still running, and the two heads are pushed when it ends. Shortly before 09:50 the
-owner wrote of the darkening at a height on the mobs' faces and of the zombie's and villager's own
-faces, items 63 and 64 and Decision 31, written at 09:56. Next items 63 and 64, then 62, then item
-39's cutout leaves, doors and glass, then its animated textures, then the pictures taken again at 40
-degrees, then 26 and the items in order; items 55, 38's second part and 54 when their packages come;
-the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `e6a2c55`, item 63, the mobs' faces lit evenly, and nothing else, carrying the
+review's file with items 63 and 64 and Decision 31: mob.slang sees the turned-up light from straight
+above, the reason in its comment; the play script spawns a zombie at noon, confirms where it stands
+and reads 33 points down a column 3.5 pixels from the face's middle from the zombie's own height,
+the eye at 5.72 inside the face's 5.5 to 6.0, the column clear of the eyes and mouth today and of
+the eyes and nose after item 64, asking no step over 2 levels, 0.2 and 0.1 in the play run against
+the committed shader's 10.4; the sheep's shaded wool reads 192.0, 194.0 and 195.0 where it read
+169.5, 172.0 and 173.0, part of its side lying above the eye, the README's figure following and its
+mob paragraph saying why, the check's range of 120 to 200 holding with 5 to spare; the mob pictures
+not taken again here, item 64 taking the zombie's and villager's sheets and the daylight row and
+item 62 all of them; the strict build clean, 215 tests, the play script clean. Read at 10:01 on
+2026-10-21. Not pushed: the build run 39562169517 of `8f2a2c8` is still running, and the three heads
+are pushed when it ends. Next item 64, then 62, then item 39's cutout leaves, doors and glass, then
+its animated textures, then the pictures taken again at 40 degrees, then 26 and the items in order;
+items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and build
+folders wait on the owner's word.
+
+Before it, `92112c5` came, item 61, the mobs' bands, and nothing else, carrying the review's file.
+Read at 09:41, held for the build run of `8f2a2c8`.
 
 Before it, `9a13c54` came, item 60, the lamps' light smooth, and nothing else, carrying the review's
 file with item 62 and Decision 30. Read at 09:33, held for the build run of `8f2a2c8`.
-
-Before it, `8f2a2c8` came, item 39's first part, the lanterns' and torches' pieces, and nothing
-else, carrying the review's file with items 60 and 61. Read at 09:16, pushed at 09:28 after the
-build run of `b56fa0b` ended green.
 
 ## Now
 
@@ -948,7 +946,8 @@ build run of `b56fa0b` ended green.
     mob.slang, the turned-up light's view direction straight down from above, the face reading an
     even 150.3 to 150.7 from the same eye height; a play-script check reading down a zombie's face
     at noon from its own height asking no step over 2 levels outside the mouth's rows, which fails
-    today with a step of 15.6. One commit, small, before item 64.
+    today with a step of 15.6. One commit, small, before item 64. Done at `e6a2c55` on 2026-10-21,
+    as the head says.
 
 64. **The zombie's own face is the source's archetype and the villager's eyes sit lower (Decision
     31).** The owner wrote shortly before 09:50 on 2026-10-21, relayed verbatim, "And change the
