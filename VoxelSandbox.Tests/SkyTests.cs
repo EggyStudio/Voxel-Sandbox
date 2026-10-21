@@ -210,6 +210,26 @@ public class SkyTests
     }
 
     [Fact]
+    public void The_Sun_Lights_Warm_White_At_Noon_And_Orange_Low_As_The_Modpacks_Shader_Colors_It()
+    {
+        var noon = Sky.SunLight(1);
+        Assert.Equal(1.33f, noon.X, 3);
+        Assert.Equal(1.045f, noon.Y, 3);
+        Assert.Equal(0.76f, noon.Z, 3);
+        // Warmer the lower it stands, red over green over blue, its blue falling away fastest.
+        var low = Sky.SunLight(0.05f);
+        Assert.True(low.X > low.Y && low.Y > low.Z);
+        Assert.True(low.Z / low.X < noon.Z / noon.X && low.Y / low.X < noon.Y / noon.X);
+        float last = 1;
+        for (float height = 0.05f; height <= 1; height += 0.05f)
+        {
+            var light = Sky.SunLight(height);
+            Assert.True(light.Z / light.X >= last - 1e-4f || height <= 0.05f, $"the light cools as the sun sinks at {height}");
+            last = light.Z / light.X;
+        }
+    }
+
+    [Fact]
     public void The_Haze_Dome_Lies_Beyond_The_Sun_The_Moon_And_The_Stars()
     {
         Assert.True(HazeDome.Radius > Sky.StarDistance && Sky.StarDistance > Sky.Distance);

@@ -762,14 +762,18 @@ about 8.6 degrees, and the moon's 10 to 100, about 5.7 degrees. Where a resource
 sun and moon, under `environment/celestial` as Minecraft reads them now or `environment/sun` and the
 sheet `environment/moon_phases` as it read them before, those are drawn in their place. The sky
 turns with the hour about the axis from north to south, the sun rising in the east at 6, passing
-over the south at noon and setting in the west at 18, and the moon stands opposite it. Its 3,000
-stars are squares of 0.28 degrees, most faint and a few bright, in a cool white, as the modpack's
-shader, Aurora's Shaders after Complementary, draws its own, each as bright as 40 times the square
-of how far the product of three noises passes 0.7. They keep their places on the turning sky, fade
-in as the day fades, thin out over the lowest 20 degrees above the horizon and are gone beside the
-sun and the moon. The moon goes through Minecraft's eight phases, a phase a day from the full moon
-of the first night, and changes while it is down. `voxel.time` sets the hour and `voxel.day` the
-count of days, which a save keeps, and the land and the clouds hide the sun, the moon and the stars.
+over the south at noon and setting in the west at 18, and the moon stands opposite it. The sun
+lights the world in the colors of the modpack's shader, read as numbers, a warm white at noon, (0.7,
+0.55, 0.4) times 1.9 in linear light, turning orange toward the horizon, (0.64, 0.45, 0.3) to the
+power of 1.5 and the share short of noon, times 5, mixed by the square root of the sun's height, and
+as bright at noon as a white sun of the same luminance. Its 3,000 stars are squares of 0.28 degrees,
+most faint and a few bright, in a cool white, as the modpack's shader, Aurora's Shaders after
+Complementary, draws its own, each as bright as 40 times the square of how far the product of three
+noises passes 0.7. They keep their places on the turning sky, fade in as the day fades, thin out
+over the lowest 20 degrees above the horizon and are gone beside the sun and the moon. The moon goes
+through Minecraft's eight phases, a phase a day from the full moon of the first night, and changes
+while it is down. `voxel.time` sets the hour and `voxel.day` the count of days, which a save keeps,
+and the land and the clouds hide the sun, the moon and the stars.
 
 ## Clouds
 

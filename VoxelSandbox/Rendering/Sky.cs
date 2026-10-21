@@ -69,7 +69,17 @@ public sealed class Sky : IDisposable
 
     private static readonly Vector3 NightZenith = new(6, 9, 22), DayZenith = new(78, 134, 222);
     private static readonly Vector3 NightHorizon = new(18, 24, 44), DayHorizon = new(178, 208, 240), DuskHorizon = new(238, 150, 96);
-    private static readonly Vector3 Noon = new(255, 244, 228), LowSun = new(255, 160, 90), Moonlight = new(150, 170, 230);
+    private static readonly Vector3 Moonlight = new(150, 170, 230);
+
+    // The sunlight of the modpack's shader, Aurora's Shaders after Complementary, read as numbers, in
+    // linear light (0.7, 0.55, 0.4) times 1.9 at noon, a warm white, and toward the horizon
+    // (0.64, 0.45, 0.3) to the power of 1.5 and the share short of noon, times 5, an orange, mixed by
+    // the square root of the sun's height, the shader's noon factor.
+    private static readonly Vector3 NoonLight = new Vector3(0.7f, 0.55f, 0.4f) * 1.9f, LowLight = new(0.64f, 0.45f, 0.3f);
+
+    // How strong the sun is for each unit of the shader's light, so its noon is as bright as the
+    // game's sun was before it took the shader's color, a white of 2.2 whose luminance was 0.915.
+    private const float SunStrength = 2.2f * 0.915f / 1.085f;
 
     /// <summary>
     /// Each star's way on the sky as it stands at 6, when the sun rises, the half of its square's
@@ -388,9 +398,12 @@ public sealed class Sky : IDisposable
         // from one to the other, so the shadows do not jump with it.
         if (toSun.Y > -0.05f)
         {
-            var low = 1 - SmoothStep(0, 0.35f, toSun.Y);
+            // The shader's light by the sun's height, its hue as the color and its largest part as
+            // the strength, so the hue never clips.
+            var light = SunLight(toSun.Y);
+            var most = MathF.Max(light.X, MathF.Max(light.Y, light.Z));
             SetLightDirection(_light, -toSun);
-            SetLightColor(_light, ColorOf(Vector3.Lerp(Noon, LowSun, low)), 2.2f * SmoothStep(-0.05f, 0.1f, toSun.Y));
+            SetLightColor(_light, ColorOf(Encode(light / most) * 255), SunStrength * most * SmoothStep(-0.05f, 0.1f, toSun.Y));
         }
         else
         {
@@ -435,6 +448,22 @@ public sealed class Sky : IDisposable
                 _pixels[at + 3] = 255;
             }
         }
+    }
+
+    /// <summary>The sun's light in linear light at a height, the sine of its angle over the horizon, as the modpack's shader colors it.</summary>
+    public static Vector3 SunLight(float height)
+    {
+        var noon = MathF.Sqrt(MathF.Max(height, 0));
+        var power = 1.5f + (1 - noon);
+        var low = new Vector3(MathF.Pow(LowLight.X, power), MathF.Pow(LowLight.Y, power), MathF.Pow(LowLight.Z, power)) * 5;
+        return Vector3.Lerp(low, NoonLight, noon);
+    }
+
+    // Linear light to sRGB levels from 0 to 1.
+    private static Vector3 Encode(Vector3 linear)
+    {
+        static float One(float c) => c <= 0.0031308f ? 12.92f * c : 1.055f * MathF.Pow(c, 1 / 2.4f) - 0.055f;
+        return new Vector3(One(linear.X), One(linear.Y), One(linear.Z));
     }
 
     private static float HoursApart(float a, float b)
