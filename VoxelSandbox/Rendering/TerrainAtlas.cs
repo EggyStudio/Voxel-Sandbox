@@ -22,6 +22,14 @@ namespace VoxelSandbox;
 /// takes the game's own mask of <see cref="PlantArt"/>, white where the plant is, tinted by its own
 /// color as the white tile is.
 /// </para>
+/// <para>
+/// A surface the table gives the game's own looks (<see cref="GroundArt"/>), as the grass's top,
+/// holds a tile for each look at each of its quarter turns, and a layer of decor over it as its
+/// overlay, which stays untinted where the tile under it takes the climate's color, as a flower on
+/// the grass does. A block's place picks its look by a hash, the looks weighed as the game weighs
+/// them, so the same block shows the same look every time it is meshed. A pack gives the tile under
+/// the looks and nothing of how they are chosen, the packs being pictures alone.
+/// </para>
 /// </remarks>
 public sealed class TerrainAtlas
 {
@@ -44,10 +52,13 @@ public sealed class TerrainAtlas
     private readonly List<byte[]> _pictures;
     // Each tile's average color decoded from sRGB, weighed by alpha, and how much of it is covered.
     private readonly List<(float R, float G, float B, float Covered)> _averages;
+    // Each surface's own looks, their tiles as Paint packs them and their weights, or null for a
+    // surface that has none.
+    private readonly (uint Tiles, int Weight)[]?[] _variants;
 
-    private TerrainAtlas(int pixels, int[] tile, int[] overlay, Color?[] tint, bool[] own, List<byte[]> pictures)
+    private TerrainAtlas(int pixels, int[] tile, int[] overlay, Color?[] tint, bool[] own, (uint, int)[]?[] variants, List<byte[]> pictures)
     {
-        (Pixels, _tile, _overlay, _tint, _own, _pictures) = (pixels, tile, overlay, tint, own, pictures);
+        (Pixels, _tile, _overlay, _tint, _own, _variants, _pictures) = (pixels, tile, overlay, tint, own, variants, pictures);
         _averages = [.. pictures.Select(Average)];
         Rows = (pictures.Count + Columns - 1) / Columns;
     }
@@ -75,16 +86,19 @@ public sealed class TerrainAtlas
     {
         var count = Surfaces.All.Count;
         var (tile, overlay, tint, own) = (new int[count], new int[count], new Color?[count], new bool[count]);
+        var variants = new (uint, int)[]?[count];
         var found = new List<Image> { new(Enumerable.Repeat((byte)255, 4).ToArray(), 1, 1) };
         var numbers = new Dictionary<string, int>(StringComparer.Ordinal);
         var masks = new Dictionary<byte[], int>(ReferenceEqualityComparer.Instance);
 
-        int Number(string name)
+        // A texture's tile, turned by so many quarter turns, each turned texture a tile of its own.
+        int Number(string name, int turns = 0)
         {
-            if (numbers.TryGetValue(name, out var number)) return number;
-            if (found.Count >= MostTiles || packs.Texture(name) is not { } image) return numbers[name] = 0;
-            found.Add(image);
-            return numbers[name] = found.Count - 1;
+            var key = turns == 0 ? name : $"{name}@{turns}";
+            if (numbers.TryGetValue(key, out var number)) return number;
+            if (found.Count >= MostTiles || packs.Texture(name) is not { } image) return numbers[key] = 0;
+            found.Add(Turned(image, turns));
+            return numbers[key] = found.Count - 1;
         }
 
         for (int surface = 0; surface < count; surface++)
@@ -94,6 +108,9 @@ public sealed class TerrainAtlas
                 tint[surface] = look.Tint;
                 if (look.Overlay is { } over) overlay[surface] = Number(over);
             }
+            // The grass's top takes the game's own looks, over its pack's tile or over the white one.
+            if (PackTextures.Of(surface) is { Looks: true } grassy && found.Count + 4 * GroundArt.Looks.Count < MostTiles)
+                variants[surface] = OwnLooks(found, tile[surface], grassy.Texture, Number);
             // A plant no pack has takes the game's own mask, each mask one tile however many plants share it.
             else if (PlantArt.Mask(surface) is { } mask && found.Count < MostTiles)
             {
@@ -107,7 +124,55 @@ public sealed class TerrainAtlas
         }
 
         var pixels = (int)System.Numerics.BitOperations.RoundUpToPowerOf2((uint)Math.Clamp(found.Skip(1).Select(i => i.Width).DefaultIfEmpty(1).Max(), 1, MostPixels));
-        return new TerrainAtlas(pixels, tile, overlay, tint, own, [.. found.Select(i => Resized(i, pixels))]);
+        return new TerrainAtlas(pixels, tile, overlay, tint, own, variants, [.. found.Select(i => Resized(i, pixels))]);
+    }
+
+    // The game's own looks of the grass's top, the grass's tile kept as it lies, since a pack draws
+    // its grass's streaks one way, and each patch of clover and each layer of decor at four quarter
+    // turns over it, a clover's patch darkening the grass's tile where it lies and a layer of decor
+    // laid over the grass's tile. The plain grass with no pack keeps the white tile.
+    private static (uint, int)[] OwnLooks(List<Image> found, int tile, string texture, Func<string, int, int> number)
+    {
+        var picked = new List<(uint, int)>();
+        var white = new Image(Enumerable.Repeat((byte)255, GroundArt.Size * GroundArt.Size * 4).ToArray(), GroundArt.Size, GroundArt.Size);
+        int Add(Image image)
+        {
+            found.Add(image);
+            return found.Count - 1;
+        }
+        var plain = tile == 0 ? 0 : number(texture, 0);
+        foreach (var (darkened, decor, weight) in GroundArt.Looks)
+        {
+            if (darkened is null && decor is null)
+            {
+                picked.Add(((uint)plain, 4 * weight));
+                continue;
+            }
+            for (int turns = 0; turns < 4; turns++)
+            {
+                var under = darkened is null ? plain : Add(GroundArt.Darken(tile == 0 ? white : found[tile], GroundArt.Turned(darkened, turns)));
+                var layered = decor is null ? 0 : Add(Turned(new Image(decor, GroundArt.Size, GroundArt.Size), turns));
+                picked.Add(((uint)under | (uint)layered << 9 | (layered != 0 ? 1u << 19 : 0), weight));
+            }
+        }
+        return [.. picked];
+    }
+
+    // A square image turned by so many quarter turns clockwise about the upright.
+    private static Image Turned(Image image, int turns)
+    {
+        if (turns == 0 || image.Width != image.Height) return image;
+        var n = image.Width;
+        var pixels = image.Data;
+        for (int turn = 0; turn < turns; turn++)
+        {
+            var turned = new byte[pixels.Length];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                    Array.Copy(pixels, (y * n + x) * 4, turned, (x * n + n - 1 - y) * 4, 4);
+            pixels = turned;
+        }
+        return new Image(pixels, n, n);
     }
 
     // An image sampled to so many pixels square by its nearest pixel, so a smaller tile's pixels
@@ -143,9 +208,12 @@ public sealed class TerrainAtlas
 
     /// <summary>
     /// How a face of a surface is drawn under the climate's colors at its place, the tiles packed as
-    /// the terrain shader reads them, the tile in the low 9 bits, the overlay's in the next 9 and
-    /// whether the tile under the overlay is left untinted in the bit above, the color the vertex
-    /// carries, and the face's average color as the scene's distance field reads it, all sRGB.
+    /// the terrain shader reads them, the tile in the low 9 bits, the overlay's in the next 9,
+    /// whether the tile under the overlay is left untinted in the bit above and whether the overlay
+    /// is left untinted, as a look's decor is, in the bit above that, the color the vertex carries,
+    /// and the face's average color as the scene's distance field reads it, all sRGB. A block's
+    /// <paramref name="place"/>, a hash of where it stands, picks one of the surface's looks where
+    /// its packs list them, and the surface's own tile is taken where none is given.
     /// </summary>
     /// <remarks>
     /// A surface with no texture carries its own color under the climate's, as it did before packs
@@ -153,23 +221,50 @@ public sealed class TerrainAtlas
     /// climate's for a surface the climate tints, or white, opaque, since a see-through texture's
     /// alpha is its own, and under an overlay the grass color the overlay takes.
     /// </remarks>
-    public (uint Tiles, Color Tint, Color Albedo) Paint(int surface, Color grass, Color foliage)
+    public (uint Tiles, Color Tint, Color Albedo) Paint(int surface, Color grass, Color foliage, uint? place = null)
     {
         var look = Surfaces.All[surface];
         var tile = _tile[surface];
+        if (place is { } at && _variants[surface] is { } looks)
+        {
+            // A look over the white tile, as the game's own over no pack, is tinted by the surface's own color.
+            var tint = tile == 0 ? look.Under(grass, foliage) : _tint[surface] ?? look.Tint switch { SurfaceTint.Grass => grass, SurfaceTint.Foliage => foliage, _ => Color.White };
+            var (tiles, _) = Pick(looks, at);
+            var (under, over) = ((int)(tiles & 511), (int)(tiles >> 9 & 511));
+            var (ur, ug, ub, _) = _averages[under];
+            if (over == 0) return (tiles, tint with { A = 255 }, Encode(ur * Linear(tint.R), ug * Linear(tint.G), ub * Linear(tint.B)));
+            // The decor over the look keeps its own colors, the tile under it the climate's.
+            var (dr, dg, db, decorated) = _averages[over];
+            return (tiles, tint with { A = 255 },
+                Encode(Mix(ur * Linear(tint.R), dr, decorated), Mix(ug * Linear(tint.G), dg, decorated), Mix(ub * Linear(tint.B), db, decorated)));
+        }
         if (tile == 0 || _own[surface])
         {
             var own = look.Under(grass, foliage);
             return ((uint)tile, own, own);
         }
-        var tint = _tint[surface] ?? look.Tint switch { SurfaceTint.Grass => grass, SurfaceTint.Foliage => foliage, _ => Color.White };
+        var tinted = _tint[surface] ?? look.Tint switch { SurfaceTint.Grass => grass, SurfaceTint.Foliage => foliage, _ => Color.White };
         var (r, g, b, _) = _averages[tile];
         var overlay = _overlay[surface];
         if (overlay == 0)
-            return ((uint)tile, tint with { A = 255 }, Encode(r * Linear(tint.R), g * Linear(tint.G), b * Linear(tint.B)));
+            return ((uint)tile, tinted with { A = 255 }, Encode(r * Linear(tinted.R), g * Linear(tinted.G), b * Linear(tinted.B)));
         var (or, og, ob, covered) = _averages[overlay];
         return ((uint)tile | (uint)overlay << 9 | 1u << 18, grass with { A = 255 },
             Encode(Mix(r, or * Linear(grass.R), covered), Mix(g, og * Linear(grass.G), covered), Mix(b, ob * Linear(grass.B), covered)));
+    }
+
+    /// <summary>A surface's own looks, their tiles packed as <see cref="Paint"/> packs them and their weights, none for a surface that has none.</summary>
+    public IReadOnlyList<(uint Tiles, int Weight)> Variants(int surface) => _variants[surface] ?? [];
+
+    // A look by a block's place, each looked at as often as its weight against the rest.
+    private static (uint Tiles, int Weight) Pick((uint Tiles, int Weight)[] looks, uint place)
+    {
+        var total = 0;
+        foreach (var (_, weight) in looks) total += weight;
+        var pick = (int)(place % (uint)total);
+        foreach (var look in looks)
+            if ((pick -= look.Weight) < 0) return look;
+        return looks[^1];
     }
 
     /// <summary>

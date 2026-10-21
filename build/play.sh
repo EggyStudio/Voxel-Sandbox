@@ -226,6 +226,16 @@ cmd voxel.tp "$bx" "$((by + 3))" "$((bz + 6))"
 cmd voxel.look 0 -20
 cmd frames.wait 90
 capture biomes/meadow.png
+# The meadow again under Bare Bones where the machine has fetched it, the game's own looks of the
+# grass's top, its blossoms, clover and pebbles, laid over the pack's grass, a machine without it, as
+# the build workflow's, passing it by. A transient run's list of packs is its own and saved nowhere.
+fetched="${XDG_DATA_HOME:-$HOME/.local/share}/VoxelSandbox/resourcepacks"
+if [ -f "$fetched/Bare Bones 1.21.zip" ]; then
+  cmd voxel.packs "$fetched/Bare Bones 1.21.zip"
+  cmd frames.wait 90
+  capture biomes/meadow-pack.png
+  cmd voxel.packs none
+fi
 
 # From high over the land, the drawn land's edge meets the dome under the horizon in the haze's color
 # with no step, read up the window's middle column: the land's last pixel and the one above it alike,

@@ -310,6 +310,77 @@ public sealed class PackTests : IDisposable
     }
 
     [Fact]
+    public void A_Blocks_Place_Picks_Its_Look_The_Same_Every_Time_Over_A_Packs_Grass()
+    {
+        using var packs = new ResourcePacks([Folder("grass", ("block/grass_block_top", Plain(new Color(150, 150, 150))))]);
+        var atlas = TerrainAtlas.Build(packs);
+        var green = new Color(90, 180, 60);
+        var looks = atlas.Variants(Surfaces.Grass);
+        // The plain grass once, as it lies, and every other look at four quarter turns.
+        Assert.Equal(1 + 4 * (GroundArt.Looks.Count - 1), looks.Count);
+        for (int x = 0; x < 32; x++)
+        {
+            var place = PlaceHash.Of(x, 3, 70);
+            var (tiles, tint, _) = atlas.Paint(Surfaces.Grass, green, green, place);
+            Assert.Equal(tiles, atlas.Paint(Surfaces.Grass, green, green, place).Tiles);
+            // Over a pack's gray grass the climate's color, as the plain grass takes it.
+            Assert.Equal(green, tint);
+            Assert.NotEqual(0u, tiles & 511);
+        }
+        // The pack's grass is never turned, the plain look its own tile and every turned look over it untouched.
+        Assert.Equal((uint)atlas.Tile(Surfaces.Grass), looks[0].Tiles);
+        Assert.All(looks.Where(l => (l.Tiles >> 19 & 1) == 1), l => Assert.Equal((uint)atlas.Tile(Surfaces.Grass), l.Tiles & 511));
+        // With no place, the surface's own tile, as an icon draws it.
+        Assert.Equal((uint)atlas.Tile(Surfaces.Grass), atlas.Paint(Surfaces.Grass, green, green).Tiles);
+    }
+
+    [Fact]
+    public void With_No_Pack_The_Grass_Takes_The_Games_Own_Looks_Mostly_Plain_The_Clover_Tinted_And_The_Decor_Not()
+    {
+        var atlas = TerrainAtlas.None;
+        var looks = atlas.Variants(Surfaces.Grass);
+        // The plain grass once, as it lies, and every other look at four quarter turns.
+        Assert.Equal(1 + 4 * (GroundArt.Looks.Count - 1), looks.Count);
+        var green = new Color(90, 180, 60);
+        var own = Surfaces.All[Surfaces.Grass].Under(green, green) with { A = 255 };
+        int plain = 0, decorated = 0;
+        for (int x = 0; x < 64; x++)
+            for (int z = 0; z < 64; z++)
+            {
+                var (tiles, tint, _) = atlas.Paint(Surfaces.Grass, green, green, PlaceHash.Of(x, z, 71));
+                // Every look is tinted by the grass's own color, as the plain grass is, the decor kept apart.
+                Assert.Equal(own, tint);
+                if (tiles == 0) plain++;
+                if ((tiles >> 19 & 1) == 1) decorated++;
+            }
+        Assert.InRange(plain / (64f * 64), 0.76f, 0.87f);
+        Assert.InRange(decorated / (64f * 64), 0.02f, 0.08f);
+
+        // A clover's tile is the white one darkened where its leaves lie, and a blossom's decor is clear
+        // but for its petals, which keep their colors.
+        var image = new Image(atlas.Image(), atlas.Width, atlas.Height);
+        Color Pixel(uint tile, int x, int y) => At(image, (int)(tile % TerrainAtlas.Columns) * 2 * atlas.Pixels + atlas.Pixels / 2 + x * atlas.Pixels / 16,
+            (int)(tile / TerrainAtlas.Columns) * 2 * atlas.Pixels + atlas.Pixels / 2 + y * atlas.Pixels / 16);
+        var clover = looks.First(l => (l.Tiles & 511) != 0 && (l.Tiles >> 9 & 511) == 0).Tiles & 511;
+        var cells = Enumerable.Range(0, 256).Select(i => Pixel(clover, i % 16, i / 16)).ToList();
+        Assert.Contains(cells, c => c.R < 200);
+        Assert.Contains(cells, c => c == Color.White);
+        var flower = looks.First(l => (l.Tiles >> 19 & 1) == 1).Tiles >> 9 & 511;
+        var petals = Enumerable.Range(0, 256).Select(i => Pixel(flower, i % 16, i / 16)).ToList();
+        Assert.Contains(petals, c => c.A == 0);
+        Assert.Contains(petals, c => c.A == 255);
+    }
+
+    [Fact]
+    public void A_Corner_Keeps_A_Looks_Untinted_Decor_Through_Its_Packed_Bytes()
+    {
+        var tiles = 5u | 9u << 9 | 1u << 19;
+        var (first, _) = SectionMesher.Pack(2, 1, 0.5f, Color.White, tiles);
+        Assert.Equal(tiles, SectionMesher.TilesOf(first));
+        Assert.Equal((2, 1), (SectionMesher.Unpack(first, 0).Face, SectionMesher.Unpack(first, 0).Corner));
+    }
+
+    [Fact]
     public void The_Mesher_Writes_Each_Faces_Tile_And_The_Field_Reads_Its_Textures_Average()
     {
         using var packs = new ResourcePacks([Folder("stone", ("block/stone", Plain(new Color(100, 100, 100))))]);

@@ -5,33 +5,33 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `c54f362`, item 25's third commit, the trees, and nothing else, carrying the review's
-file: nine trees from the source's numbers, the jungle tree and the mega jungle tree with its 2 by 2
-trunk and branches, the jungle bush, the acacia bending to one side with its flat crown, the dark
-oak with its 2 by 2 trunk and cap, the big oak with branches leaning out to balls of leaves, the
-giant mushrooms with the brown cap flat and the red a dome, and the cherry forking into two branches
-under wide pink crowns with hanging leaves and a lantern under one crown in three lighting the grove
-at night; the mushroom blocks and stem; the trees a thousand by biome; leaves passing light at one
-less a block as the source's do, which the jungle's floor needed, the crowns thinned to the source's
-layers; the cherry's hanging leaves drawing the same random numbers across the columns they cross;
-194 tests, eleven of trees, each tree at four hashes through the columns' clips within its reach,
-lanterns under a share of the cherries, sky light under three layers of leaves; the tunnel test's
-search widened since the big oaks cover the mouths; the play script clean; captures of the jungle
-from the air and its floor, the dark forest's canopy with red caps, the savanna, the cherry grove by
-day and its lanterns at night; the strict build clean; saplings that grow, vines and cocoa left as
-the README says. Read at 04:38 on 2026-10-21 and both pushed at 04:41; the build run of `a6ec820`
-ended green at 04:39, its play job in 37 minutes 17 seconds of its 40 minute limit, the walk over
-the eight biomes on lavapipe, so the limit is raised with its reason in item 44's commit before the
-walk grows, and the walk's time read. Item 25 is done. Next item 44, the dome under the horizon,
-then item 41, then item 39, then the items in order; item 38's second part when the package brings
-the call and the glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on the
-owner's word.
+Reviewed up to `cc46f25`, item 44, the dome under the horizon, and nothing else, carrying the
+review's file: rings from six degrees above the horizon, clear, through three and one and a half to
+the horizon and down to the pole, opaque, 48 around at a radius of 2,400, past the haze's end at the
+farthest render distance and short of the sun, each triangle facing the eye; drawn about the eye
+through the terrain shader with a blend material casting no shadow, beyond the fog's end so the
+shader outputs the fog's color itself through the same light, exposure and tonemap as the land's
+fogged edge, the water's blue under water, item 43's tint following with nothing more, no dome with
+the fog off; `voxel.edge` finding where the drawn land ends up a column of the last frame and giving
+the land's last pixel, the one above and the largest step within 16, reading on seed 1 the same
+color above and below and a step of 0; the play script checking it after the meadow; the play job's
+limit raised to 60 minutes with its reason; 195 tests, the strict build clean, the play script
+clean. The walk's 37 minutes are lavapipe drawing, the script taking 70 seconds on the machine's
+GPU; the coder's way to shorten it without losing a biome, the walk at render distance 2 with the
+edge's reading at 4 alone, is taken once the run under the 60 minute limit reports the walk's time.
+Read at 04:45 on 2026-10-21. Not pushed: the build run of `c54f362` is still running under the old
+limit, and the head is pushed when it ends. Shortly before 05:00 the owner turned item 41 to the
+game's own ground looks in its style, the pack out of the manifest. Shortly before 05:04 the owner
+set the rule that packs give pictures alone and every rule is the game's own, Decision 22, with
+words in items 30, 34 and 41. Next item 41, then item 39, then the items in order; item 38's second
+part when the package brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `c54f362` came, item 25's third commit, the nine trees with the cherry's lanterns, and
+nothing else, carrying the review's file. Pushed at 04:41 with `723e28c`.
 
 Before it, `723e28c` came, item 25's second commit, the seventy blocks, the plants as planes and the
 ores by depth, and nothing else, carrying the review's file.
-
-Before it, `a6ec820` came, item 25's first commit, the biomes, and nothing else, carrying the
-review's file. Pushed at 04:02, its build run green at 04:39, the play job in 37 minutes.
 
 ## Now
 
@@ -548,7 +548,20 @@ review's file. Pushed at 04:02, its build run green at 04:39, the play job in 37
     its short and tall grass stay as blocks. Tests: a block state file of two weighted variants
     parsed to its tiles, the pick by position stable and within the weights over a field, and a
     capture of a meadow with the pack where the machine has it, skipped where not. After item 25 and
-    before item 39. One commit.
+    before item 39. One commit. Changed shortly before 05:00 on 2026-10-21 by the owner's word on
+    seeing the pack over Bare Bones, that it looks good but changes the way Bare Bones' grass top
+    looks and the style does not fit, so it is to be done natively in the game's own style: Simple
+    Grass Flowers leaves the manifest and the defaults are the three again; the game's own ground
+    looks give the grass top its variants wherever no pack's block state lists any, flat little
+    blossoms in a few colors, patches of clover darkened from the grass under them and tinted by the
+    climate, and pebbles, each turned four ways and weighed near the pack's, about four in five
+    plain, a twelfth clover and a few in a hundred flowers or stones, drawn as the game's own pixels
+    in its flat style and lying over Bare Bones' grass top and the game's own alike; the block state
+    reader stays, so a pack that lists looks still takes their place; the tests the own looks'
+    weights over a field, the clover tinted and the decor untinted, and the plain look leaving the
+    grass as it was. One commit as before. Under Decision 22 the block state reader goes too, the
+    grass top taking the game's own looks alone over a pack's grass tile, the README saying a pack
+    gives the pictures alone.
 
 42. **Water that mirrors the sky and the shore, with the bed seen through it (Decision 21).** The
     look the owner aims at shows calm water mirroring the sky and the shore and clear pools in
@@ -589,7 +602,8 @@ review's file. Pushed at 04:02, its build run green at 04:39, the play job in 37
     so the edge fades into the color it meets, the image's darker lower half kept for the lighting
     alone; the dome's color following the haze's by the hour when item 43 gives the haze its tint.
     Tests: a capture's pixels read across the land's edge at the horizon with no step over a pixel,
-    and the dome's color equal to the haze's. One commit, small, after item 25.
+    and the dome's color equal to the haze's. One commit, small, after item 25. Done at `cc46f25` on
+    2026-10-21, as the head says.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -795,7 +809,9 @@ review's file. Pushed at 04:02, its build run green at 04:39, the play job in 37
     parsed to the counts and evaluated at two values, the expression language's functions each on a
     value, and a capture of a villager and a cow from the owner's packs beside the game's own in the
     record, read from the packs where the machine has them and skipped where it has not. After item
-    24. Two commits, the models and the textures, then the animations.
+    24. Two commits, the models and the textures, then the animations. Under Decision 22 the reader
+    takes a model's geometry and its texture as assets and none of its animation expressions, the
+    mobs animated by the game's own gait of item 18 on the pack's boxes; two commits become one.
 
 31. **Structures as the source's, more kinds and the modpack's taste (Decision 15).** The world has
     igloos, desert pyramids, dungeons and villages; it gains mineshafts with their corridors, rails,
@@ -847,7 +863,9 @@ review's file. Pushed at 04:02, its build run green at 04:39, the play job in 37
     blocks. Without a pack, the game's own blocks stay as they are. After item 24. Tests: the
     properties parsed to their methods and tiles, the full method's tile chosen for each of a set of
     neighbor cases, a random method stable by position, and a capture of a glass wall from a pack
-    where the machine has one, skipped where not. One commit.
+    where the machine has one, skipped where not. One commit. Under Decision 22 the properties are
+    read as a picture's metadata, the tiles and the method's name, and the methods are the game's
+    own.
 
 35. **A zoom key (Decision 15).** C held narrows the field of view to a quarter of the setting over
     a tenth of a second and widens it back on release, the mouse's sensitivity scaled with it so the
@@ -1121,7 +1139,11 @@ No verdict is open.
     adds variations of the ground beside the grass and flowers the game lacks. Its page allows
     modpacks with credit, so it joins the manifest as a fourth default pack fetched from its maker's
     page and credited, and the game reads a pack's block state variants for the surfaces its table
-    names, picked per block by position as the source does; item 41, after item 25.
+    names, picked per block by position as the source does; item 41, after item 25. Shortly before
+    05:00 the owner saw the pack over Bare Bones and said it looks good but changes the way Bare
+    Bones' grass top looks and the style does not fit, recommending it be done natively in the style
+    of the game, which looks very good; so the pack leaves the manifest, the game draws its own
+    ground looks in its flat style, and the block state reader stays for packs that list looks.
 
 21. **The look the game aims at is the owner's modpack's gallery.** The owner wrote shortly before
     03:57 on 2026-10-21, during item 25's biome commit, that visually they aim at their modpack,
@@ -1140,6 +1162,22 @@ No verdict is open.
     haze as item 43; the nether stays out until the owner names it. Each item that carries a part of
     the look puts its capture beside the modpack's picture in the record, so the owner judges the
     distance.
+
+22. **Packs give pictures alone, and every rule is the game's own.** The owner wrote shortly before
+    05:04 on 2026-10-21, during item 41, that the game has only visual resource packs, that Simple
+    Grass Flowers tried to implement logic, which is not to be done, the Shine mods too, and that
+    logic is implemented while textures and assets with licenses are pulled and used. So a pack
+    gives its pictures and what says how a picture is cut, sliced or stepped, its textures, sprites
+    and font and their metadata, each under its license; the game reads nothing of a pack's block
+    states, models or rules that decide how a block is drawn or chosen, and every behavior is
+    written natively; mods are references for what to build and are never implemented from their
+    code or their data rules. Item 41 drops its block state reader and keeps the game's own ground
+    looks; item 30 reads a pack's entity textures and its models' geometry, the boxes, as assets and
+    animates the mobs natively with the game's own gait, taking none of a pack's animation
+    expressions; item 39's animated textures stepped by their metadata's frame time are a picture's
+    own timing and stay; item 34's connected textures take the tiles and the method a pack's
+    properties name, as metadata of a picture, with the methods written natively, which the owner
+    says otherwise if they read it as a rule; item 28 was already what Shine shows done natively.
 
 ## Replies
 

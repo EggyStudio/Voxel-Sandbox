@@ -41,6 +41,8 @@ public sealed class SectionMesher
     private readonly byte[] _light = new byte[P * P * P];
     private readonly Section?[] _around = new Section?[27];
     private ChunkColumn _column = null!;
+    // The section's lowest corner in the world, so a block's place picks its look from a pack's block state.
+    private (int X, int Y, int Z) _origin;
 
     /// <summary>The textures of the packs loaded, or none, whose tiles each face is drawn with.</summary>
     public TerrainAtlas Atlas { get; set; } = TerrainAtlas.None;
@@ -101,26 +103,28 @@ public sealed class SectionMesher
     }
 
     /// <summary>
-    /// A corner's eight bytes as two uints. The first holds the face it lies on, 0 to 5 in the
+    /// A corner's eight bytes as two uints. The first holds the face it lies on, 0 to 7 in the
     /// order of <c>Normals</c>, at its low 3 bits, which of the face's four corners it is at the
-    /// next 2, its shade from 0 to 255 at the 8 above, and its tiles in the 19 bits from bit 13,
-    /// the surface's tile, its overlay's and whether the tile under the overlay is left untinted,
-    /// and the second the color it carries, red, green and blue a byte each from the lowest, and
-    /// its alpha in the highest byte. The color is sRGB, as a vertex color is, and the shade
-    /// multiplies it in that space.
+    /// next 2, its shade from 0 to 127 at the 7 above, whether its overlay is left untinted at bit
+    /// 12, and its tiles in the 19 bits from bit 13, the surface's tile, its overlay's and whether
+    /// the tile under the overlay is left untinted, and the second the color it carries, red, green
+    /// and blue a byte each from the lowest, and its alpha in the highest byte. The color is sRGB,
+    /// as a vertex color is, and the shade multiplies it in that space. A shade of 128 levels holds
+    /// the light's sixteen levels and the corners' four darkenings with room to spare.
     /// </summary>
     public static (uint First, uint Second) Pack(int face, int corner, float shade, Color tint, uint tiles = 0)
     {
-        var level = (uint)Math.Clamp(MathF.Round(shade * 255), 0, 255);
-        return ((uint)face | (uint)corner << 3 | level << 5 | tiles << 13, tint.R | (uint)tint.G << 8 | (uint)tint.B << 16 | (uint)tint.A << 24);
+        var level = (uint)Math.Clamp(MathF.Round(shade * 127), 0, 127);
+        return ((uint)face | (uint)corner << 3 | level << 5 | (tiles >> 19 & 1) << 12 | (tiles & 0x7FFFF) << 13,
+            tint.R | (uint)tint.G << 8 | (uint)tint.B << 16 | (uint)tint.A << 24);
     }
 
     /// <summary>A corner's tiles read back from the first of its uints, as <see cref="TerrainAtlas.Paint"/> packs them.</summary>
-    public static uint TilesOf(uint first) => first >> 13;
+    public static uint TilesOf(uint first) => first >> 13 | (first >> 12 & 1) << 19;
 
     /// <summary>A corner's eight bytes read back, as the terrain shader reads them.</summary>
     public static (int Face, int Corner, float Shade, Color Tint) Unpack(uint first, uint second) =>
-        ((int)(first & 7), (int)(first >> 3 & 3), (first >> 5 & 255) / 255f,
+        ((int)(first & 7), (int)(first >> 3 & 3), (first >> 5 & 127) / 127f,
             new Color((byte)second, (byte)(second >> 8), (byte)(second >> 16), (byte)(second >> 24)));
 
     /// <summary>The outward normal of a face by its number, as the terrain shader's table holds it.</summary>
@@ -207,6 +211,7 @@ public sealed class SectionMesher
         SeeThrough.Clear();
         Cutout.Clear();
         Emitters.Clear();
+        _origin = (key.X * Section.Size, key.Y * Section.Size, key.Z * Section.Size);
 
         for (int dz = -1; dz <= 1; dz++)
             for (int dx = -1; dx <= 1; dx++)
@@ -279,7 +284,8 @@ public sealed class SectionMesher
     {
         // A tinted surface takes its column's grass or foliage color at the block's place.
         var place = (int)block.Z * Section.Size + (int)block.X;
-        var (tiles, color, albedo) = Atlas.Paint(surface, _column.GrassTint[place], _column.FoliageTint[place]);
+        var spot = PlaceHash.Of(_origin.X + (int)block.X, _origin.Z + (int)block.Z, _origin.Y + (int)block.Y);
+        var (tiles, color, albedo) = Atlas.Paint(surface, _column.GrassTint[place], _column.FoliageTint[place], spot);
         var faces = Surfaces.All[surface].Color.A < 255 ? SeeThrough : Solid;
         var first = (uint)faces.Count;
         var front = at + Steps[face];

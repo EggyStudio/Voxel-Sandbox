@@ -22,11 +22,17 @@ public static class PackTextures
     /// tinted by where Minecraft tints it by one of its own, as its water and its birch and spruce
     /// leaves are.
     /// </summary>
-    public readonly record struct Look(string Texture, string? Overlay = null, Color? Tint = null);
+    /// <remarks>
+    /// Where <paramref name="Looks"/> is set, the game's own looks of <see cref="GroundArt"/> lie over
+    /// the texture, each picked by the block's place. A pack gives pictures alone, and the game
+    /// reads nothing of a pack's block states or models, which hold how a block is drawn and
+    /// chosen, since how the game draws and chooses is its own.
+    /// </remarks>
+    public readonly record struct Look(string Texture, string? Overlay = null, Color? Tint = null, bool Looks = false);
 
     private static readonly Dictionary<int, Look> _surfaces = new()
     {
-        [Surfaces.Grass] = new("block/grass_block_top"),
+        [Surfaces.Grass] = new("block/grass_block_top", Looks: true),
         [Surfaces.GrassSide] = new("block/grass_block_side", "block/grass_block_side_overlay"),
         [Surfaces.Dirt] = new("block/dirt"),
         [Surfaces.Stone] = new("block/stone"),

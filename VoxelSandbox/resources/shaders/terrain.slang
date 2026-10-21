@@ -26,7 +26,8 @@ struct TerrainOutput
 {
     ModelStreamsOutput streams;
     // The face, the surface's tile, its overlay's tile, and 1 where the tile under the overlay is
-    // left untinted, the same over the face.
+    // left untinted, as the grass block's side is, or 2 where the overlay is, as a look's decor of
+    // flowers on the grass is, the same over the face.
     nointerpolation uint4 surface : TEXCOORD4;
 };
 
@@ -38,19 +39,20 @@ static const float3 Normals[8] = {
 };
 
 // The packed bytes as SectionMesher.Pack writes them. The first uint holds the face at its low 3
-// bits, the corner at the next 2, the shade from 0 to 255 at the 8 above, the tile at the 9 above
-// that, the overlay's tile at the next 9 and the untinted flag at the top bit, and the second the
-// color's red, green and blue a byte each from the lowest and its alpha in the highest. The shade
-// alone rides in the second texture coordinate, for the untinted tile under an overlay.
+// bits, the corner at the next 2, the shade from 0 to 127 at the 7 above, the overlay's untinted
+// flag at bit 12, the tile at the 9 above that, the overlay's tile at the next 9 and the base's
+// untinted flag at the top bit, and the second the color's red, green and blue a byte each from the
+// lowest and its alpha in the highest. The shade alone rides in the second texture coordinate, for
+// a tile or an overlay left untinted.
 [shader("vertex")]
 TerrainOutput vertexMain(float3 position : POSITION, uint2 packed : CUSTOM0, ModelInstance instance)
 {
     uint face = packed.x & 7;
-    float shade = float((packed.x >> 5) & 255) / 255.0;
+    float shade = float((packed.x >> 5) & 127) / 127.0;
     float4 tint = float4(float(packed.y & 255), float((packed.y >> 8) & 255), float((packed.y >> 16) & 255), float(packed.y >> 24)) / 255.0;
     TerrainOutput output;
     output.streams = transformModelVertex(position, Normals[face], float2(0, 0), float4(tint.rgb * shade, tint.a), float2(shade, 0), instance);
-    output.surface = uint4(face, (packed.x >> 13) & 511, (packed.x >> 22) & 511, packed.x >> 31);
+    output.surface = uint4(face, (packed.x >> 13) & 511, (packed.x >> 22) & 511, (packed.x >> 31) | ((packed.x >> 12) & 1) << 1);
     return output;
 }
 
@@ -112,10 +114,15 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
 
     float4 tile = tileColor(surface.y, place, level);
     float3 tinted = tile.rgb * streams.vertexColor.rgb;
-    if (surface.w != 0)
+    if (surface.w == 1)
     {
         float4 over = tileColor(surface.z, place, level);
         tinted = lerp(tile.rgb * srgbToLinear(float3(streams.uv2.x)), over.rgb * streams.vertexColor.rgb, over.a);
+    }
+    else if (surface.w == 2)
+    {
+        float4 over = tileColor(surface.z, place, level);
+        tinted = lerp(tinted, over.rgb * srgbToLinear(float3(streams.uv2.x)), over.a);
     }
     float4 color = alphaTested(materialColor(streams.base) * float4(tinted, tile.a * streams.vertexColor.a), streams.base);
     ModelVertexOutput at = streams.base;

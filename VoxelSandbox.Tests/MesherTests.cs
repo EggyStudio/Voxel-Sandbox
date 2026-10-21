@@ -142,7 +142,8 @@ public class MesherTests
             Assert.True(mesher.Mesh(world, new SectionKey(0, 1, 0)));
             var faces = mesher.Solid;
             var closed = Enumerable.Range(0, faces.Count).Single(i => faces.Unpack(i).Face == 2 && faces.Positions[i] == new System.Numerics.Vector3(9, 5, 9));
-            Assert.Equal(shade, faces.Unpack(closed).Shade, 2);
+            // Within half a step of the 128 levels a corner's shade is packed in.
+            Assert.InRange(faces.Unpack(closed).Shade, shade - 0.5f / 127, shade + 0.5f / 127);
         }
     }
 
@@ -153,7 +154,7 @@ public class MesherTests
         var (face, corner, shade, tint) = SectionMesher.Unpack(first, second);
 
         Assert.Equal((4, 3), (face, corner));
-        Assert.Equal(128 / 255f, shade, 4);
+        Assert.Equal(64 / 127f, shade, 4);
         Assert.Equal(new Color(200, 100, 50, 168), tint);
     }
 

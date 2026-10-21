@@ -560,7 +560,16 @@ climate's color over their gray textures, birch and spruce leaves and water a co
 Minecraft gives them, and the grass block's side its overlay tinted over the dirt under it. The
 scene's distance field reads each face as its texture's average under its tint, so the light a wall
 gives back takes its texture's color. An emissive block's cube is drawn with its texture, and an
-item's icon is the pack's texture for it, or a block's cube with its faces' textures.
+item's icon is the pack's texture for it, or a block's cube with its faces' textures. The grass's
+top shows looks of the game's own in its flat style, little blossoms of four colors, patches of
+clover a shade darker than the grass under them and so tinted by the climate as it is, and pebbles,
+laid over a pack's grass or the game's own at four quarter turns, the grass's own tile keeping the
+way it lies, since a pack draws its grass's streaks one way, and about four blocks in five plain, a
+twelfth clover and a few in a hundred flowers or stones, as the looks of the grass in the owner's
+modpack are weighed. A hash of the block's place picks one, so the same block shows the same look
+every time. A pack gives the pictures alone, its textures, its sprites and its font, and the game
+reads nothing of its block states or models, which hold how the source draws and chooses its blocks,
+since how the game draws and chooses is its own.
 
 The interface takes a pack's pictures where Minecraft reads them, the hotbar, its frame, the hearts,
 the food, the bubbles of breath and the crosshair under `gui/sprites/hud`, the buttons and sliders
