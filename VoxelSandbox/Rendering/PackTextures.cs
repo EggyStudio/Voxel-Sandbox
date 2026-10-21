@@ -250,23 +250,36 @@ public static class PackTextures
     /// <summary>A surface's texture, or null where the table gives it none.</summary>
     public static Look? Of(int surface) => _surfaces.TryGetValue(surface, out var look) ? look : null;
 
-    // Each kind's picture under entity, the newer name first where Minecraft renamed it as it gave
-    // the kind variants by climate, a pack made for an older version holding the older. The sheep
-    // and the villager are drawn in their own colors, since the sheep's wool and the villager's
-    // clothes are pictures of their own laid over theirs.
-    private static readonly Dictionary<string, string[]> _mobs = new()
+    // Each kind's pictures under entity, its body's and, for the sheep, its wool's, each by the names
+    // a pack may give it, the newest first. Minecraft 26 names a kind's picture by its climate after
+    // its kind, as pig_temperate, the versions before it before its kind, as temperate_pig, and a
+    // pack made before the climates names it by its kind alone, as Bare Bones' 1.21 does.
+    private static readonly Dictionary<string, string[][]> _mobs = new()
     {
-        ["pig"] = ["entity/pig/temperate_pig", "entity/pig/pig"],
-        ["cow"] = ["entity/cow/temperate_cow", "entity/cow/cow"],
-        ["chicken"] = ["entity/chicken/temperate_chicken", "entity/chicken"],
-        ["zombie"] = ["entity/zombie/zombie"],
-        ["skeleton"] = ["entity/skeleton/skeleton"],
-        ["creeper"] = ["entity/creeper/creeper"],
-        ["spider"] = ["entity/spider/spider"],
+        ["pig"] = [["entity/pig/pig_temperate", "entity/pig/temperate_pig", "entity/pig/pig"]],
+        ["cow"] = [["entity/cow/cow_temperate", "entity/cow/temperate_cow", "entity/cow/cow"]],
+        ["sheep"] = [["entity/sheep/sheep"], ["entity/sheep/sheep_wool", "entity/sheep/sheep_fur"]],
+        ["chicken"] = [["entity/chicken/chicken_temperate", "entity/chicken/temperate_chicken", "entity/chicken"]],
+        ["villager"] = [["entity/villager/villager"]],
+        ["zombie"] = [["entity/zombie/zombie"]],
+        ["skeleton"] = [["entity/skeleton/skeleton"]],
+        ["creeper"] = [["entity/creeper/creeper"]],
+        ["spider"] = [["entity/spider/spider"]],
     };
 
-    /// <summary>The names a kind of mob's picture may have in a pack, the first a pack has taken, or none for a kind drawn in the game's own colors.</summary>
-    public static IReadOnlyList<string> OfMob(string kind) => _mobs.GetValueOrDefault(kind) ?? [];
+    // A villager's clothes by its variant, the biome its robe is of, as MobKinds orders the robes.
+    private static readonly string[] _villagerTypes = ["plains", "desert", "taiga", "snow"];
+
+    /// <summary>
+    /// The names each of a kind of mob's pictures may have in a pack, its body's first and then its
+    /// wool's for the sheep, the first name a pack has taken for each, or none for a kind drawn in
+    /// the game's own colors.
+    /// </summary>
+    public static IReadOnlyList<IReadOnlyList<string>> OfMob(string kind) => _mobs.GetValueOrDefault(kind) ?? [];
+
+    /// <summary>The picture laid over a kind's body's picture for a variant, a villager's clothes of its biome, or null where none is.</summary>
+    public static string? OverMob(string kind, int variant) =>
+        kind == "villager" && variant < _villagerTypes.Length ? $"entity/villager/type/{_villagerTypes[variant]}" : null;
 
     /// <summary>
     /// The texture an item's icon is drawn from, its key's under <c>item</c> for an item that places

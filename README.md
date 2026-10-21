@@ -350,8 +350,11 @@ long house, and one keeps each forge and each farm.
 ## Animals and villagers
 
 <table><tr>
+<td><img src=".github/assets/mobs/daylight.webp" width="400" height="225" alt="The nine mobs standing in a row in daylight in the game's own colors"></td>
+<td><img src=".github/assets/mobs/daylight-pack.webp" width="400" height="225" alt="The nine mobs in the same row wearing Bare Bones' pictures"></td>
+</tr><tr>
 <td><img src=".github/assets/world/plains-village.webp" width="400" height="225" alt="A plains village of seed 1 by its river, two sheep, a cow, a pig and a villager in the meadow before it"></td>
-<td><img src=".github/assets/mobs/daylight.webp" width="400" height="225" alt="The nine mobs standing in a row in daylight"></td>
+<td></td>
 </tr></table>
 
 Pigs, cows, sheep and chickens graze the plains, the forests and the taiga, and sheep the mountains,
@@ -380,9 +383,12 @@ Each piece of a mob, its head, body, legs and a chicken's wings, is a few boxes,
 vertices drawn instanced for every mob of its kind, its legs swinging about their hips as it walks.
 The boxes, their pivots and each kind's width and height are Minecraft's, taken as numbers from its
 model definitions and its mobs' sizes as of 26.3, the villager drawn at the 0.9375 its layer is, and
-their colors, faces and markings are the game's own. With a pack loaded, each kind but the sheep and
-the villager wears the pack's picture of it, under `entity` by Minecraft's name, the newer name of
-the pig, the cow and the chicken first. Each of the source's cuboids takes its part of the picture
+their colors, faces and markings are the game's own. With a pack loaded, each kind wears the pack's
+picture of it, under `entity` by Minecraft's name, the newest of the names the pig's, the cow's and
+the chicken's have had first. A villager's clothes of its biome, Minecraft's picture of its type,
+are laid over its body's picture where they are not clear, as Minecraft cuts its layers out, into
+one picture a biome, and a sheep's wool is a picture of its own on the wool's cuboids, grown about
+the body's, tinted by its color. Each of the source's cuboids takes its part of the picture
 from the offset its model definition gives it, read as numbers by `build/MobLayers.java` as the
 boxes were, and unwrapped as Minecraft unwraps a box, the top and the bottom side by side and the
 four sides below them, a mirrored cuboid's turned over. The game's own eyes and markings are left
@@ -413,7 +419,9 @@ side face takes no bands of its own shadow, as `build/play.sh` reads down a cree
 and seen from straight above, since the engine lights a face turned from the eye as its back, so a
 face above the eye's height is as bright as one below it, as the script reads down a zombie's face.
 A white sheep's side in the shade at noon so reads 192, 194 and 195, a gray as Minecraft's does,
-where it read 119, 161 and 178, the blue of the sky its light's rays met. The nine stand in a row in daylight in `.github/assets/mobs/daylight.webp`.
+where it read 119, 161 and 178, the blue of the sky its light's rays met. The nine stand in a row in
+daylight in `.github/assets/mobs/daylight.webp`, and wearing the default packs' pictures in
+`daylight-pack.webp` beside it.
 They cast shadows and hold no light for others, their materials' `BouncesLight` off, which leaves
 them out of the scene's distance field, so a pig's pink does not reach the grass.
 

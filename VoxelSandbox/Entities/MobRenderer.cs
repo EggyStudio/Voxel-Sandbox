@@ -28,17 +28,20 @@ public sealed class MobRenderer : IDisposable
 {
     private const float Distance = 64;
 
-    private sealed class Slot(ModelMesh mesh, (ModelMaterial Plain, ModelMaterial Hurt, ModelMaterial Flash) materials)
+    // A piece of a kind in a variant, its layers each a mesh and the materials it is drawn with
+    // plain, hurt and flashing, a layer a picture, as a sheep's body and its wool are.
+    private sealed class Slot(IReadOnlyList<(ModelMesh Mesh, Materials Materials)> layers)
     {
-        public readonly ModelMesh Mesh = mesh;
-        public readonly (ModelMaterial Plain, ModelMaterial Hurt, ModelMaterial Flash) Materials = materials;
+        public readonly IReadOnlyList<(ModelMesh Mesh, Materials Materials)> Layers = layers;
         public readonly List<Matrix4x4> Plain = [], Hurt = [], Flash = [];
     }
+
+    private readonly record struct Materials(ModelMaterial Plain, ModelMaterial Hurt, ModelMaterial Flash);
 
     // The game's mob shader, which takes the color out of the light from all around a mob and
     // floors each face's light at Minecraft's flat shade of its top's (resources/shaders/mob.slang).
     private readonly Shader _shader;
-    private readonly (ModelMaterial Plain, ModelMaterial Hurt, ModelMaterial Flash) _own;
+    private readonly Materials _own;
     private readonly List<Slot> _slots = [];
     // The kinds' pictures from the packs loaded, which their materials draw with.
     private readonly List<Texture2D> _pictures = [];
@@ -52,43 +55,55 @@ public sealed class MobRenderer : IDisposable
         SetShaderKeepsPositions(_shader, true);
         var skin = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.85f, BouncesLight = false, Shader = _shader };
         // A mob hit is drawn red, and a creeper's flash as its fuse burns white and a little emissive.
-        _own = (skin, skin with { Color = new Color(255, 96, 96) }, skin with { Emissive = Color.White, EmissiveIntensity = 0.6f });
+        _own = new Materials(skin, skin with { Color = new Color(255, 96, 96) }, skin with { Emissive = Color.White, EmissiveIntensity = 0.6f });
         Use(ResourcePacks.None);
     }
 
     /// <summary>
-    /// Draws each kind with its picture from the packs loaded, laid on the source's cuboids as the
-    /// source lays it, and in the game's own colors a kind whose picture no pack gives or whose
-    /// picture is not of the size its cuboids are laid on.
+    /// Draws each kind with its pictures from the packs loaded, laid on the source's cuboids as the
+    /// source lays them, and in the game's own colors a kind one of whose pictures no pack gives or
+    /// is not of the size its cuboids are laid on.
     /// </summary>
     /// <remarks>
     /// A kind's picture is drawn cut out where it is clear, and a cuboid whose faces it leaves clear
     /// throughout, as most packs leave a zombie's hat, is left out of the mesh. A box of the game's
     /// own drawn with the picture, the skeleton's bow, takes a row of white laid below the picture,
-    /// tinted by its color.
+    /// tinted by its color. A villager's clothes of its biome are laid over its body's picture where
+    /// they are not clear, as Minecraft draws the layer of its type over the villager cut out, into
+    /// one picture a biome, rather than drawn as a second layer on the same cuboids, whose faces
+    /// would meet the first's at the same depth. A sheep's wool is a picture of its own on cuboids
+    /// of its own, grown about the body's, tinted by the sheep's color.
     /// </remarks>
     public void Use(ResourcePacks packs)
     {
         Forget();
+        var textures = new Dictionary<byte[], Materials>(ReferenceEqualityComparer.Instance);
         foreach (var kind in MobKinds.All)
         {
             _byKind[kind.Id] = new Slot[kind.Parts.Length][];
-            var picture = PackTextures.OfMob(kind.Name).Select(packs.Texture).FirstOrDefault(p => p is { } image && Fits(image, kind.PictureSize));
-            if (picture is { } image)
+            var names = PackTextures.OfMob(kind.Name);
+            Image?[] found = [.. names.Select(list => list.Select(packs.Texture).FirstOrDefault(p => p is { } image && Fits(image, kind.PictureSize)))];
+            if (names.Count > 0 && found.All(p => p is not null))
             {
-                var texture = LoadTextureFromImage(Whitened(image, kind.PictureSize));
-                SetTextureFilter(texture, TextureFilter.Point);
-                _pictures.Add(texture);
-                var materials = (_own.Plain with { Texture = texture, AlphaMode = MaterialAlphaMode.Mask },
-                    _own.Hurt with { Texture = texture, AlphaMode = MaterialAlphaMode.Mask }, _own.Flash with { Texture = texture, AlphaMode = MaterialAlphaMode.Mask });
+                // Each variant's pictures, its body's with any clothes over it.
+                var pictures = Enumerable.Range(0, kind.Variants.Length).Select(v => found.Select((p, i) =>
+                    i == 0 && PackTextures.OverMob(kind.Name, v) is { } over && packs.Texture(over) is { } clothes && Fits(clothes, kind.PictureSize) ? Over(p!.Value, clothes) : p!.Value).ToArray()).ToArray();
+                var varies = pictures.Any(v => !ReferenceEquals(v[0].Data, pictures[0][0].Data));
                 for (int p = 0; p < kind.Parts.Length; p++)
-                    _byKind[kind.Id][p] = [Add(new Slot(Pictured(kind.Parts[p], image, kind.PictureSize), materials))];
+                {
+                    var part = kind.Parts[p];
+                    var count = varies || part.Boxes.Any(b => b.Source is { Tinted: true }) ? kind.Variants.Length : 1;
+                    _byKind[kind.Id][p] = [.. Enumerable.Range(0, count).Select(v => Add(new Slot([.. Enumerable.Range(0, found.Length)
+                        .Select(i => (Boxes: PicturedBoxes(part, pictures[v][i], kind.PictureSize, i, kind.Variants[v]), Picture: pictures[v][i]))
+                        .Where(layer => layer.Boxes.Vertices.Count > 0)
+                        .Select(layer => (layer.Boxes.Upload(), MaterialsOf(layer.Picture, kind.PictureSize)))])))];
+                }
                 continue;
             }
             for (int p = 0; p < kind.Parts.Length; p++)
             {
                 var part = kind.Parts[p];
-                _byKind[kind.Id][p] = [.. Enumerable.Range(0, part.Varies ? kind.Variants.Length : 1).Select(v => Add(new Slot(Build(part, kind.Variants[v]), _own)))];
+                _byKind[kind.Id][p] = [.. Enumerable.Range(0, part.Varies ? kind.Variants.Length : 1).Select(v => Add(new Slot([(Build(part, kind.Variants[v]), _own)])))];
             }
         }
 
@@ -97,12 +112,41 @@ public sealed class MobRenderer : IDisposable
             _slots.Add(slot);
             return slot;
         }
+
+        // A picture's materials, its texture made once however many pieces it is laid on.
+        Materials MaterialsOf(Image picture, Vector2 size)
+        {
+            if (textures.TryGetValue(picture.Data, out var materials)) return materials;
+            var texture = LoadTextureFromImage(Whitened(picture, size));
+            SetTextureFilter(texture, TextureFilter.Point);
+            _pictures.Add(texture);
+            return textures[picture.Data] = new Materials(_own.Plain with { Texture = texture, AlphaMode = MaterialAlphaMode.Mask },
+                _own.Hurt with { Texture = texture, AlphaMode = MaterialAlphaMode.Mask }, _own.Flash with { Texture = texture, AlphaMode = MaterialAlphaMode.Mask });
+        }
+    }
+
+    /// <summary>
+    /// A picture with another laid over it, the upper's pixels kept where they are not clear, a
+    /// tenth of full alpha or more, as Minecraft cuts out a mob's layers, and the lower's elsewhere,
+    /// the upper scaled to the lower's pixels where a pack draws them at another scale.
+    /// </summary>
+    public static Image Over(Image lower, Image upper)
+    {
+        var data = (byte[])lower.Data.Clone();
+        for (int y = 0; y < lower.Height; y++)
+            for (int x = 0; x < lower.Width; x++)
+            {
+                var from = (y * upper.Height / lower.Height * upper.Width + x * upper.Width / lower.Width) * 4;
+                if (upper.Data[from + 3] >= 26) Array.Copy(upper.Data, from, data, (y * lower.Width + x) * 4, 4);
+            }
+        return new Image(data, lower.Width, lower.Height);
     }
 
     // Lets go of the slots' meshes and the pictures.
     private void Forget()
     {
-        foreach (var slot in _slots) UnloadMesh(slot.Mesh);
+        foreach (var slot in _slots)
+            foreach (var (mesh, _) in slot.Layers) UnloadMesh(mesh);
         foreach (var texture in _pictures) UnloadTexture(texture);
         _slots.Clear();
         _pictures.Clear();
@@ -142,15 +186,13 @@ public sealed class MobRenderer : IDisposable
         return new Image(data, picture.Width, picture.Height + scale);
     }
 
-    // A piece's boxes drawn with its kind's picture, uploaded as one mesh.
-    private static ModelMesh Pictured(ModelPart part, Image picture, Vector2 size) => PicturedBoxes(part, picture, size).Upload();
-
     /// <summary>
-    /// A piece's boxes drawn with its kind's picture in blocks, each of the source's cuboids laid with
-    /// its part of the picture, one whose faces the picture leaves clear left out, and each box of
-    /// the game's own drawn with the picture laid on the white row below it.
+    /// A piece's boxes drawn with one of its kind's pictures in blocks, each of the source's cuboids
+    /// laid with that picture laid with its part of it, one whose faces the picture leaves clear left
+    /// out, a tinted one in the variant's color, and with the body's picture each box of the game's
+    /// own drawn with the picture, laid on the white row below it.
     /// </summary>
-    public static BoxMesh PicturedBoxes(ModelPart part, Image picture, Vector2 size)
+    public static BoxMesh PicturedBoxes(ModelPart part, Image picture, Vector2 size, int index = 0, Color variant = default)
     {
         var mesh = new BoxMesh();
         var scale = picture.Width / size.X;
@@ -162,15 +204,16 @@ public sealed class MobRenderer : IDisposable
             if (box.Drawn == VoxelSandbox.Drawn.Own) continue;
             if (box.Source is not { } cuboid)
             {
-                mesh.Add(box.Min / 16, box.Max / 16, box.Color ?? Color.White, new Vector2(0.5f, size.Y + 0.5f) * through);
+                if (index == 0) mesh.Add(box.Min / 16, box.Max / 16, box.Color ?? Color.White, new Vector2(0.5f, size.Y + 0.5f) * through);
                 continue;
             }
+            if (cuboid.Picture != index) continue;
             var faces = cuboid.Faces();
             if (faces.All(face => Clear(picture, face, scale))) continue;
             foreach (var face in faces)
             {
                 for (int i = 0; i < 4; i++) (corners[i], places[i]) = (face[i].Position / 16, face[i].Texel * through);
-                mesh.AddFace(corners, places, Color.White);
+                mesh.AddFace(corners, places, cuboid.Tinted ? variant : Color.White);
             }
         }
         return mesh;
@@ -223,20 +266,23 @@ public sealed class MobRenderer : IDisposable
         var draws = 0;
         foreach (var slot in _slots)
         {
-            if (slot.Plain.Count > 0)
+            foreach (var (mesh, materials) in slot.Layers)
             {
-                DrawMeshInstanced(slot.Mesh, slot.Materials.Plain, CollectionsMarshal.AsSpan(slot.Plain));
-                draws++;
-            }
-            if (slot.Hurt.Count > 0)
-            {
-                DrawMeshInstanced(slot.Mesh, slot.Materials.Hurt, CollectionsMarshal.AsSpan(slot.Hurt));
-                draws++;
-            }
-            if (slot.Flash.Count > 0)
-            {
-                DrawMeshInstanced(slot.Mesh, slot.Materials.Flash, CollectionsMarshal.AsSpan(slot.Flash));
-                draws++;
+                if (slot.Plain.Count > 0)
+                {
+                    DrawMeshInstanced(mesh, materials.Plain, CollectionsMarshal.AsSpan(slot.Plain));
+                    draws++;
+                }
+                if (slot.Hurt.Count > 0)
+                {
+                    DrawMeshInstanced(mesh, materials.Hurt, CollectionsMarshal.AsSpan(slot.Hurt));
+                    draws++;
+                }
+                if (slot.Flash.Count > 0)
+                {
+                    DrawMeshInstanced(mesh, materials.Flash, CollectionsMarshal.AsSpan(slot.Flash));
+                    draws++;
+                }
             }
         }
         (Draws, Drawn) = (draws, drawn);

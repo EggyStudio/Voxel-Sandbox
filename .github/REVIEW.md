@@ -5,30 +5,39 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `69ecb49`, item 64, the zombie's and villager's own faces, and nothing else, carrying
-the review's file: the game's own zombie takes the source's default face, read from the 26.3
-client's picture and Bare Bones' as reference in the scratchpad alone, the mouth gone, the eyes two
-dark lines two pixels wide in the fifth row from the top at 1 to 3 on either side of the middle, a
-nose in a darker green two pixels wide in the row below between them; the villager's brow and eyes
-move down a pixel together so no row of skin opens between them, their rows having matched the
-source's, which the comment says; the play script's zombie face column at 3.5 pixels from the middle
-stays clear of the new eyes and still reads 0.1; the two pair sheets and the daylight row taken
-again; the strict build clean, 215 tests, the play script clean. Read at 10:07 on 2026-10-21. The
-build run 39562169517 of `8f2a2c8` ended green, the three test jobs within a minute and the play job
-in 36 minutes 49 seconds, so the held heads were pushed at 10:06; this commit was made in that
-minute and went out in the same push, read at once after, the only commit pushed before its reading.
-Shortly before 10:15 the owner wrote of a mod replacing the creeper's skin for Bare Bones, item 65
-and Decision 32, written at 10:16. Next item 62, then 65, then item 39's cutout leaves, doors and
-glass, then its animated textures, then the pictures taken again at 40 degrees, then 26 and the
-items in order; items 55, 38's second part and 54 when their packages come; the AGENTS.md rows for
-the Ui and build folders wait on the owner's word.
+Reviewed up to `e4b850f`, item 62's first part, the mobs wearing the pack's pictures, and nothing
+else, carrying the review's file with item 65 and Decision 32: each cuboid carries its pivot, box,
+growth, offset and mirror as the source's model definitions give them, read as numbers by
+build/MobLayers.java printing each cuboid's texture offset and mirror flag and each layer's picture
+size, its six faces built as the source's cube builds them with the mirror's swap of x and each face
+counterclockwise from outside; every box of the eight kinds takes its offset, mirrored where the
+dump says, the hats, the villager's body under its robe, the skeleton's body and the chicken's leg
+drawn with a picture alone, the skeleton's bow the game's own in both modes; the renderer takes each
+kind's names from the pack, the newer temperate names first, the picture fitting the layer's size or
+a whole multiple, a white row below it for the bow, point filtering, one mesh a part with the own
+markings left out and a cuboid left out where every face's part of the picture is clear, the
+villager and the sheep keeping their own colors until the second part's layers; the sun's shadow
+takes cut-out cuboids whole until the engine's item 79 reaches the package, which the README says.
+Five new tests, 220 in all, the zombie head's faces at their places, the mirrored arm's front, every
+cuboid of every kind on its picture facing outward, the textured boxes leaving the eyes, nose and
+clear hat out, the bow at the white row; the play script writing a folder pack with a creeper
+picture red on the head's front and blue elsewhere, loading it, spawning a creeper and reading the
+new `voxel.pixel` command, 255, 0, 0 on the face and 0, 0, 255 on the body, on every machine; the
+strict build clean, the play script clean. Read at 10:21 on 2026-10-21. Not pushed: the build run
+39566771329 of `69ecb49` is still running, and the head is pushed when it ends. The pictures with
+the pack come with the second part, a daylight row in Bare Bones beside the own one. Next item 62's
+second part, the villager's base with its biome type and profession layers and the sheep with its
+fur tinted, then 65, then item 39's cutout leaves, doors and glass, then its animated textures, then
+the pictures taken again at 40 degrees, then 26 and the items in order; items 55, 38's second part
+and 54 when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's
+word.
+
+Before it, `69ecb49` came, item 64, the zombie's and villager's own faces, and nothing else,
+carrying the review's file. Read at 10:07, pushed at 10:06 with the three before it.
 
 Before it, `e6a2c55` came, item 63, the mobs' faces lit evenly, and nothing else, carrying the
 review's file with items 63 and 64 and Decision 31. Read at 10:01, pushed at 10:06 with `9a13c54`
 and `92112c5` after the build run of `8f2a2c8` ended green.
-
-Before it, `92112c5` came, item 61, the mobs' bands, and nothing else, carrying the review's file.
-Read at 09:41, held for the build run of `8f2a2c8`.
 
 ## Now
 
@@ -933,7 +942,10 @@ Read at 09:41, held for the build run of `8f2a2c8`.
     color; each mob's own colors kept with no pack. Tests: a cuboid's face coordinates against the
     source's numbers, a face's pixels read in a capture, and mobs/daylight.webp and the pair sheets
     taken again. Two commits, the unwrap with the shader and the material, then the villager's
-    layers and the sheep's fur. After items 60 and 61 and before item 39's remaining parts.
+    layers and the sheep's fur. After items 60 and 61 and before item 39's remaining parts. First
+    commit done at `e4b850f` on 2026-10-21, eight kinds wearing the pictures, as the head says; the
+    villager's layers and the sheep's fur follow, with the daylight row in Bare Bones beside the own
+    one.
 
 63. **A mob's face is lit evenly from top to bottom, the turned-up light seen from straight above.**
     The owner wrote shortly before 09:50 on 2026-10-21 of item 61's noon picture, relayed verbatim,

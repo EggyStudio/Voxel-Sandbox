@@ -94,6 +94,36 @@ public class MobPictureTests
     }
 
     [Fact]
+    public void A_Villagers_Clothes_Lie_Over_Its_Body_Where_They_Are_Not_Clear()
+    {
+        // Two pixels, the clothes clear over the first and covering the second.
+        var body = new Image([10, 20, 30, 255, 10, 20, 30, 255], 2, 1);
+        var clothes = new Image([200, 0, 0, 0, 0, 200, 0, 255], 2, 1);
+        Assert.Equal(new byte[] { 10, 20, 30, 255, 0, 200, 0, 255 }, MobRenderer.Over(body, clothes).Data);
+        Assert.Equal("entity/villager/type/snow", PackTextures.OverMob("villager", 3));
+        Assert.Null(PackTextures.OverMob("zombie", 0));
+    }
+
+    [Fact]
+    public void A_Sheeps_Wool_Is_Its_Own_Picture_Tinted_By_Its_Color()
+    {
+        var sheep = MobKinds.Sheep;
+        var covered = new Image(Enumerable.Repeat((byte)255, 64 * 32 * 4).ToArray(), 64, 32);
+        var head = Part(sheep, Swing.Head);
+        var pink = sheep.Variants[5];
+        // The body's picture lays the head alone, its eyes the game's own and left out, and the wool's
+        // picture the wool's head in the sheep's color.
+        var skin = MobRenderer.PicturedBoxes(head, covered, sheep.PictureSize, 0, pink);
+        var wool = MobRenderer.PicturedBoxes(head, covered, sheep.PictureSize, 1, pink);
+        Assert.Equal(6 * 4, skin.Vertices.Count);
+        Assert.Equal(6 * 4, wool.Vertices.Count);
+        Assert.True(wool.Vertices.Max(v => v.Position.Y) > skin.Vertices.Max(v => v.Position.Y));
+        Assert.All(wool.Colors, c => Assert.Equal(pink, c));
+        Assert.All(skin.Colors, c => Assert.Equal(Color.White, c));
+        Assert.Equal(2, PackTextures.OfMob("sheep").Count);
+    }
+
+    [Fact]
     public void The_Skeletons_Bow_Takes_The_White_Row_Below_The_Picture()
     {
         var size = MobKinds.Skeleton.PictureSize;

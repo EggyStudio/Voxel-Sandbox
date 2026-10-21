@@ -27,7 +27,11 @@ public sealed class BoxMesh
 
     /// <summary>The vertices added, each face's four in turn.</summary>
     public IReadOnlyList<ModelVertex> Vertices => _vertices;
+
     private readonly List<Color> _colors = [];
+
+    /// <summary>Each vertex's color, as <see cref="Vertices"/> holds them.</summary>
+    public IReadOnlyList<Color> Colors => _colors;
     private readonly List<uint> _indices = [];
 
     /// <summary>Adds a box between two corners in one color, its corners at one place on the texture where one is given.</summary>

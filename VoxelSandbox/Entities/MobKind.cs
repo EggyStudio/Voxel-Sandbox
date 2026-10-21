@@ -26,9 +26,11 @@ public enum Drawn
 /// A cuboid as Minecraft's model definitions give it, its part's pivot, its corner and size in
 /// pixels from the pivot with y down and x mirrored, grown on every side, lying a quarter turn about
 /// x where a four-legged body does, and the offset of its faces on its mob's picture in pixels, the
-/// picture mirrored across it where <see cref="Mirror"/> is set.
+/// picture mirrored across it where <see cref="Mirror"/> is set. <see cref="Picture"/> says which of
+/// its mob's pictures it is laid with, 0 for the body's and 1 for a sheep's wool's, and
+/// <see cref="Tinted"/> whether the picture is tinted by the mob's own color, as the wool's is.
 /// </summary>
-public readonly record struct Cuboid(Vector3 Pivot, Vector3 From, Vector3 Size, float Grow, bool Lying, Vector2 Offset, bool Mirror)
+public readonly record struct Cuboid(Vector3 Pivot, Vector3 From, Vector3 Size, float Grow, bool Lying, Vector2 Offset, bool Mirror, int Picture = 0, bool Tinted = false)
 {
     /// <summary>A point of the cuboid in Minecraft's space from its pivot, placed in the game's model space in sixteenths.</summary>
     public Vector3 Place(Vector3 point)
@@ -272,9 +274,9 @@ public static class MobKinds
     // faces on its mob's picture and whether the picture is mirrored across it, it is the source's
     // cuboid and takes a pack's picture, and drawn with the picture alone where it is the pack's.
     private static ModelBox Mc(Vector3 pivot, float x, float y, float z, float w, float h, float d, Color? color, float grow = 0, bool lying = false,
-        (float U, float V)? uv = null, bool mirror = false, bool pack = false)
+        (float U, float V)? uv = null, bool mirror = false, bool pack = false, int picture = 0, bool tinted = false)
     {
-        var cuboid = new Cuboid(pivot, new Vector3(x, y, z), new Vector3(w, h, d), grow, lying, uv is { } at ? new Vector2(at.U, at.V) : default, mirror);
+        var cuboid = new Cuboid(pivot, new Vector3(x, y, z), new Vector3(w, h, d), grow, lying, uv is { } at ? new Vector2(at.U, at.V) : default, mirror, picture, tinted);
         Vector3 a = cuboid.Place(new Vector3(x - grow, y - grow, z - grow)), b = cuboid.Place(new Vector3(x + w + grow, y + h + grow, z + d + grow));
         return new ModelBox(Vector3.Min(a, b), Vector3.Max(a, b), color, uv is null ? null : cuboid, uv is null ? Drawn.Own : pack ? Drawn.Pack : Drawn.Both);
     }
@@ -357,12 +359,22 @@ public static class MobKinds
         Vector3 body = new(0, 5, 2), head = new(0, 6, -8);
         // The wool is Minecraft's fur layer over the sheep, the head's and the legs' grown about
         // their cuboids and the body's in place of it, since the game's sheep are never shorn and
-        // the body beneath the wool would not show.
+        // the body beneath the wool would not show. With a pack the wool is its own picture tinted
+        // by the sheep's color, over the body's picture on the source's cuboids beneath it.
         ModelPart[] parts =
         [
-            new(Swing.None, Vector3.Zero, [Mc(body, -4, -10, -7, 8, 16, 6, null, grow: 1.75f, lying: true)]),
-            new(Swing.Head, At(head), [Mc(head, -3, -4, -6, 6, 6, 8, skin), Mc(head, -3, -4, -4, 6, 6, 6, null, grow: 0.6f), .. Eyes(1, 19, -14, Black)]),
-            .. Legs(3, 12, 7, -5, leg => [Mc(leg, -2, 0, -2, 4, 12, 4, skin), Mc(leg, -2, 0, -2, 4, 6, 4, null, grow: 0.5f)]),
+            new(Swing.None, Vector3.Zero,
+            [
+                Mc(body, -4, -10, -7, 8, 16, 6, null, grow: 1.75f, lying: true, uv: (28, 8), picture: 1, tinted: true),
+                Mc(body, -4, -10, -7, 8, 16, 6, skin, lying: true, uv: (28, 8), pack: true),
+            ]),
+            new(Swing.Head, At(head),
+            [
+                Mc(head, -3, -4, -6, 6, 6, 8, skin, uv: (0, 0)), Mc(head, -3, -4, -4, 6, 6, 6, null, grow: 0.6f, uv: (0, 0), picture: 1, tinted: true),
+                .. Eyes(1, 19, -14, Black),
+            ]),
+            .. Legs(3, 12, 7, -5, leg =>
+                [Mc(leg, -2, 0, -2, 4, 12, 4, skin, uv: (0, 16), mirror: leg.X < 0), Mc(leg, -2, 0, -2, 4, 6, 4, null, grow: 0.5f, uv: (0, 16), picture: 1, tinted: true)]),
         ];
         // White, light gray, gray, black, brown and pink wool, as often as Minecraft's sheep are born each.
         Color[] wool = [new(233, 236, 236), new(142, 142, 135), new(63, 68, 72), new(24, 24, 30), new(114, 71, 40), new(237, 141, 172)];

@@ -10,7 +10,9 @@ on this machine by build/MobLayers.java, is drawn through the same camera, stand
 stride by Minecraft's own walk, and its outline is laid over the game's capture in red, with the
 outline filled beneath it. Each kind's three pairs are written to .github/assets/mobs/<kind>.webp,
 and the nine standing in a row in daylight to .github/assets/mobs/daylight.webp, so a model's or
-its light's change is shown again by running this.
+its light's change is shown again by running this. Where build/pictures.sh has fetched the default
+packs into captures/packs, the row is taken again wearing their pictures, to
+.github/assets/mobs/daylight-pack.webp.
 
 The client is the version MINECRAFT_VERSION names, 26.3 unless set, in the launcher folder
 MINECRAFT_DIR names, or else the first of ~/.minecraft, ~/.minecraftx and the folders the launcher
@@ -33,6 +35,9 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = Path(__file__).resolve().parent.parent
 PROGRAM = ROOT / "VoxelSandbox/bin/Debug/net10.0/VoxelSandbox"
 CAPTURES = ROOT / "captures/mob-pairs"
+# The default packs build/pictures.sh fetches and checks, in the order packs.json names them, the
+# first over the rest, those it has fetched.
+PACKS = [p for p in (ROOT / "captures/packs" / pack["file"] for pack in json.loads((ROOT / "VoxelSandbox/resources/packs.json").read_text())["packs"]) if p.is_file()]
 OUT = ROOT / ".github/assets/mobs"
 
 # The camera every capture and outline is seen through, the mob's feet at MOB.
@@ -170,11 +175,14 @@ def capture(kinds):
             e3d("command", "frames.wait", "3", *session)
             e3d("shot", str(CAPTURES / f"{kind}-walk.png"), *session)
         daylight(session)
+        if PACKS:
+            e3d("command", "voxel.packs", "; ".join(str(p) for p in PACKS), *session)
+            daylight(session, "daylight-pack")
     finally:
         subprocess.run(["./e3d", "stop", *session, "--quiet"], cwd=ROOT, capture_output=True)
 
 
-def daylight(session):
+def daylight(session, name="daylight"):
     """The nine in a row facing south, two and a half blocks apart, seen at noon from the south and a
     little above through the game's own field of view, held still from before the first is placed
     so none turns or walks off home."""
@@ -186,7 +194,7 @@ def daylight(session):
             e3d("command", *command, *session)
     for command in (["voxel.tp", "10.5", "4", "7"], ["voxel.look", "0", "-10"], ["frames.wait", "60"]):
         e3d("command", *command, *session)
-    e3d("shot", str(CAPTURES / "daylight.png"), *session)
+    e3d("shot", str(CAPTURES / f"{name}.png"), *session)
 
 
 def mul(a, b):
@@ -325,6 +333,11 @@ def main():
         pairs(layers, kind, description.get("id", os.environ.get("MINECRAFT_VERSION", "26.3")))
     Image.open(CAPTURES / "daylight.png").convert("RGB").save(OUT / "daylight.webp", quality=88)
     print(f"the nine: {(OUT / 'daylight.webp').relative_to(ROOT)}")
+    if PACKS:
+        Image.open(CAPTURES / "daylight-pack.png").convert("RGB").save(OUT / "daylight-pack.webp", quality=88)
+        print(f"the nine with the packs: {(OUT / 'daylight-pack.webp').relative_to(ROOT)}")
+    else:
+        print("the nine with the packs: none, since captures/packs holds none of the default packs, which build/pictures.sh fetches")
 
 
 main()
