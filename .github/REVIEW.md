@@ -5,36 +5,27 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `6845654`, item 53, the bloom at a tenth, read from the commit at 06:28 on
-2026-10-21, after `f7bcf26`, item 52, the stars as the modpack's shader draws them, and nothing
-else, each carrying the review's file. Item 52: 3,000 squares of 0.28 degrees spread evenly over the
-turning sky, each drawn until its three noises' product passes 0.7, the light the excess squared in
-a cool white taken to sRGB, faded over the lowest 20 degrees and hidden near the sun and the moon,
-the cross, the star texture and the comparison switch gone, the test of the count, the size, the
-spread on each side of the three axes, the middle star faint and the brightest bright and cool; 203
-tests, the strict build clean, the play script clean. Read at 06:26 on 2026-10-21. The build run of
-`f7df279` ended green at 06:26, its play job in 33 minutes 50 seconds of the 60 minute limit, up
-from 24, so the five heads, `0c93d3e`, `e4483af`, `a96cea5`, `f7bcf26` and `6845654`, were pushed at
-06:28, their build run green at 07:02 with the play job in 33 minutes 54 seconds; the walk goes to
-render distance 2 once a run passes 40. Shortly before 06:26 the owner said twice to capture with
-the resource packs for the README, which the script does, the previews without them having been for
-composition, and that there is too much bloom, choosing 0.1 of four shown, item 53. Item 46's script
-is written, its views the badlands, the swamp, the savanna, the snowy taiga, the cherry grove from
-under its crowns, the jungle over its canopy, a meadow, a plains ravine, the desert village by its
-pyramid, the snowy village by day and at night, the plains village by its river with mobs and again
-with every pack off, a sunrise over the sea and a midnight sky, a room of oak planks lit by a
-lantern and torches, and the interface's seven shots, each view checking the eye and climbing to
-eight blocks, the GIF ten of them at four frames a second. Shortly before 07:06 the owner set the
-engines' F1 and F3 keys, Decision 26 and item 54 for when the package comes. Next item 46's first
-full run and commit, then item 39, then the items in order; item 38's second part when the package
-brings the call and the glow lights' bound; the AGENTS.md rows for the Ui and build folders wait on
-the owner's word.
+Reviewed up to `7039d5a`, item 46, the README's pictures, and nothing else, carrying the review's
+file and the capture the engine's entry of the blotches links: the README opening on an animation of
+ten views at 250 ms, 1.45 MB as a GIF, and 24 pictures in its sections, the world's views and the
+windows, all with the three packs on in the manifest's order and credited, the old village and hills
+pictures removed, every view checking the eye before its capture and climbing out of a block, the
+script fetching the packs by the manifest with the hashes checked, the final run about 13 minutes on
+the machine's GPU; 203 tests, the strict build clean, the play script clean. Read at 07:12 on
+2026-10-21 and pushed at 07:12; the build run of `6845654` had ended green at 07:02. Shortly before
+07:12 the owner, seeing the pictures, said there is way too little vegetation and that the plants
+are to cast shadows, which fit being pixelated, items 55 and 56. Next item 55, the plants' shadows,
+then 56, more plants, then item 39, then 26 and the items in order; items 38's second part and 54
+when the package comes; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
 
-Before it, `f7bcf26` came, item 52, the stars as the modpack's shader draws them, and nothing else,
-carrying the review's file.
+Before it, `6845654` came, item 53, the bloom at a tenth, after `f7bcf26`, item 52, the stars as the
+modpack's shader draws them, `a96cea5`, item 50, `e4483af`, item 51, and `0c93d3e`, item 48, and
+nothing else, each carrying the review's file. The five pushed at 06:28, their build run green at
+07:02, the play job in 33 minutes 54 seconds.
 
-Before it, `a96cea5` came, item 50, the block's side over the window while the eye is inside a
-block, and nothing else, carrying the review's file.
+Before it, `f7df279` came, items 47 and 49, the dome beyond the bodies and the sun and the moon in
+the source's look, and nothing else, carrying the review's file. Pushed at 05:52, its build run
+green at 06:26.
 
 ## Now
 
@@ -656,7 +647,8 @@ block, and nothing else, carrying the review's file.
     game's own art and with the packs, so the look with no pack stays shown; the Resource Packs
     screen is left out since a transient run lists no packs and prints the machine's folder; a
     `voxel.scale` command sets the interface's scale for the scripted shots, the windows taken at 2
-    and cut out at 800 by 450 with no resampling. One commit, after item 45 and before item 39.
+    and cut out at 800 by 450 with no resampling. One commit, after item 45 and before item 39. Done
+    at `7039d5a` on 2026-10-21, as the head says, the GIF at 1.45 MB.
 
 47. **The haze dome no longer cuts the sun, the moon and their glows (Decision 25).** The owner
     asked shortly before 05:40 on 2026-10-21 whether the far plane or the skybox cut the sun's and
@@ -782,6 +774,32 @@ block, and nothing else, carrying the review's file.
     hidden off screen since item 40 is no longer needed. Tests: F1 leaving the frame without the HUD
     read from its pixels, and the game's sections in the overlay's text. One commit, when the
     package comes.
+
+55. **The plants cast shadows, cut by their texture (Decision 27).** The owner wrote shortly before
+    07:12 on 2026-10-21, seeing the README's pictures, that the grass blades and the plants are to
+    cast shadows too, fitting as they are pixelated. The cutout mesh casts no shadow today, so the
+    grass, the flowers and the wheat throw none. With it casting, the sun's shadow map must cut each
+    blade by its texture's alpha, or a blade casts a whole quad's shadow; read first whether the
+    engine's shadow pass draws a mask material through the program's own shader, which samples the
+    atlas, or through its own depth shader without it, and where it cannot cut them, ask the engine
+    in its ASKS.md with the reading and keep the plants shadowless until the package. The shadow's
+    pixels step with the sun's map, which the owner reads as fitting the look; the plants stay out
+    of the scene's field, so the global illumination is untouched. Tests: a blade's shadow on the
+    ground read from a capture's pixels as narrower than its quad, and a capture of a meadow at a
+    low sun in the record. One commit, small, or the ask.
+
+56. **More plants, the source's counts read and the modpack's look matched (Decision 27).** The
+    owner wrote shortly before 07:12 on 2026-10-21 that there is way too little vegetation. The
+    grasses stand at 140 a thousand places in the plains, 180 in the savanna, 80 in the jungle, 60
+    in the birch forest, 50 in the forest, 40 in the swamp and the cherry grove, 20 in the dark
+    forest and 10 in the mountains, the ferns 40 in the taiga and the jungle, the flowers 14 in the
+    plains and 8 in the woods. Read first the source's own counts for 26.3, its placed features'
+    grass, tall grass and flower tries a chunk, from the client's data as the mobs' boxes were read;
+    measure the game's and the source's covered share of a chunk's grass top; and raise the game's
+    toward the modpack's look, the biome overhaul's numbers read as numbers, each biome's grasses,
+    tall grass, ferns and flowers. A test counting short grass, ferns and flowers in a 12 by 12
+    columns plains of seed 1 against the new share, and the meadow's capture taken again beside the
+    modpack's picture. One commit, after item 55.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1423,6 +1441,13 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     border, text on a transparent backing, and the order as the reviewer sees fit. The engines take
     them as their items 78 and 49, and the game takes them as item 54 when the package comes, its
     developer's parts as overlay sections and its F3 chords kept.
+
+27. **More vegetation, and the plants cast shadows.** The owner wrote shortly before 07:12 on
+    2026-10-21, seeing the README's pictures, that there is way too little vegetation and that the
+    plants are to cast shadows too, the grass blades and such, which fit as they are pixelated. So
+    item 55, the plants' shadows cut by their texture or an ask of the engine, first since it is
+    small, and item 56, more plants from the source's counts and the modpack's look; item 39's
+    lantern part waits behind them.
 
 ## Replies
 

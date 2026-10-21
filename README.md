@@ -1,6 +1,6 @@
 # Voxel Sandbox
 
-<img src=".github/assets/head.gif" width="800" height="450" alt="Ten views of seed 1 a quarter of a second each, a desert village by its pyramid, the badlands, a cherry grove, a plains village by its river, a swamp, the jungle, a snowy village by day and by night, a room lit by a lantern and torches, and the sun rising over the sea">
+<img src=".github/assets/head.gif" width="800" height="450" alt="Ten views of seed 1 two seconds each, a desert village by its pyramid, the badlands, a cherry grove, a plains village by its river, a swamp, the jungle, a snowy village by day and by night, a room lit by a lantern and torches, and the sun rising over the sea">
 
 A voxel game written in C# on [3DEngine](https://github.com/EggyStudio/3DEngine) through its
 package on nuget.org, set in an endless generated world whose blocks are placed and broken, with its

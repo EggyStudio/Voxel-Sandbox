@@ -8,14 +8,14 @@
 # every column in reach is meshed. A view of the world is taken with the HUD hidden and encoded at
 # 800 by 450 by the engine checkout's build/webp.sh. A view of the interface is drawn at 2 of the
 # screen's pixels to each of its own and cut out at 800 by 450 around what it shows, so its pixels
-# keep their edges. The animation at the README's head is ten of the views, a quarter of a second
-# each, as a GIF with a palette of its own for each frame, which every viewer of a README plays.
+# keep their edges. The animation at the README's head is ten of the views, two seconds each, as a
+# GIF with a palette of its own for each frame, which every viewer of a README plays.
 #
 #   build/pictures.sh
 #
 # It writes, under .github/assets,
 #
-#   head.gif                   ten of the views below, a quarter of a second each
+#   head.gif                   ten of the views below, two seconds each
 #   world/<view>.webp          the views of the world, of its biomes, plants, trees, water, lamps,
 #                              caves and sky, and one view with no pack beside the same with them
 #   interface/<view>.webp      the HUD, the options, the inventory, a crafting table, a furnace, the
@@ -270,10 +270,11 @@ cmd input.key F4 1
 window switcher center
 wait
 
-# The animation at the README's head, ten of the views a quarter of a second each, every frame with
-# a palette of its own, dithered by error diffusion, which keeps the haze's gradients smooth.
+# The animation at the README's head, ten of the views two seconds each, time to look at each,
+# every frame with a palette of its own, dithered by error diffusion, which keeps the haze's
+# gradients smooth.
 frames=(desert-village badlands cherry-grove plains-village swamp jungle snowy-village village-night room sunrise)
 for i in "${!frames[@]}"; do magick "captures/${frames[$i]}.png" -resize 800x450 "captures/head/$(printf '%02d' "$i").png"; done
-ffmpeg -loglevel error -y -framerate 4 -i captures/head/%02d.png \
+ffmpeg -loglevel error -y -framerate 0.5 -i captures/head/%02d.png \
   -vf "split[a][b];[a]palettegen=stats_mode=single[p];[b][p]paletteuse=new=1:dither=sierra2_4a" -loop 0 .github/assets/head.gif
 echo "took .github/assets/head.gif"
