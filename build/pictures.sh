@@ -66,11 +66,12 @@ cmd voxel.hud off
 cmd voxel.fly on
 cmd voxel.scale 2
 
-# Puts the player at a place and waits until every column in reach of it is generated and meshed.
+# Puts the player at a place and waits until the world stands and every column in reach of the
+# place is generated and meshed.
 go() {
   cmd voxel.tp "$1" "$2" "$3"
   for i in $(seq 1 600); do
-    ./e3d command voxel.state --timeout 600 --session "$pid" | grep -q " 0 generating, 0 sections to mesh" && break
+    ./e3d command voxel.state --timeout 600 --session "$pid" | grep -v "^loading " | grep -q " 0 generating, 0 sections to mesh" && break
     cmd frames.wait 10
   done
 }

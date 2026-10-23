@@ -74,8 +74,9 @@ runs six hours on a hang. By review.
 
 ## 7 Working
 
-**N 7.1 Commits stay local, and the owner pushes.** The owner decides what is published and when.
-By review.
+**N 7.1 Commits are made on `main`, and the reviewing session pushes them once the previous build
+run of the repository has ended.** The owner gave the pushes to the reviewing session on 2026-10-19,
+so a coder never pushes and no run is cancelled midway by a push. By review.
 
 **N 7.2 A commit is one finished batch, and its message has the form COMMITS.md gives.** By review.
 
@@ -84,6 +85,21 @@ writes Replies alone.** By review.
 
 **N 7.4 AGENTS.md changes on the owner's word, apart from a row of its table of areas that N 1.5
 asks for.** By review.
+
+**N 7.5 A branch is named for its work, never `claude/` nor a random string, and exists only while a
+second session writes to the repository.** A session with `main` to itself commits on `main`. A
+second writer, a cloud session among them, works on a branch such as `modeling`; the local session
+cherry-picks its commits onto `main` with the repository's author and without a trailer, and the
+reviewing session deletes the branch once its commits are on `main`. The owner asked for it on
+2026-10-23. By review.
+
+**N 7.6 Every commit's author and committer are the owner's identity, on every branch.** A session
+sets `user.name` and `user.email` to the owner's before its first commit, a cloud session among
+them, and a commit with any other identity is pushed nowhere; one that was is rewritten before it
+goes anywhere, and a branch that carried one is deleted with its workflow runs. The owner asked for
+it on 2026-10-23, having seen the cloud sessions' branches name another author as their sole
+contributor. By review, the reviewing session reading the author of every commit it pushes or has
+cherry-picked.
 
 ## Conformance
 
@@ -105,6 +121,8 @@ asks for.** By review.
 | N 7.2 | to check at the first commit |
 | N 7.3 | kept |
 | N 7.4 | kept |
+| N 7.5 | kept |
+| N 7.6 | kept |
 
 ## How the norm changes
 

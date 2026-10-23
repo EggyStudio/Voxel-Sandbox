@@ -27,7 +27,7 @@ public static class GameCommands
         var target = game.TargetMob is { } mob ? $"looking at {mob.Kind.Name} {mob.Id}"
             : game.Target is { } hit ? $"looking at {Blocks.Get(game.World.GetBlock(hit.X, hit.Y, hit.Z)).Key} at {hit.X}, {hit.Y}, {hit.Z}"
             : "looking at nothing within reach";
-        return $"feet at {at.X:0.00}, {at.Y:0.00}, {at.Z:0.00} in {game.World.BiomeAt((int)MathF.Floor(at.X), (int)MathF.Floor(at.Z))?.Name ?? "nowhere loaded"}, facing {player.Heading:0} and pitched {player.Pitch * 180 / MathF.PI:0}, "
+        return (game.Loading ? $"loading {game.WorldName}, {game.LoadingShare():0%} done; " : "") + $"feet at {at.X:0.00}, {at.Y:0.00}, {at.Z:0.00} in {game.World.BiomeAt((int)MathF.Floor(at.X), (int)MathF.Floor(at.Z))?.Name ?? "nowhere loaded"}, facing {player.Heading:0} and pitched {player.Pitch * 180 / MathF.PI:0}, "
             + $"{(player.Flying ? "flying" : player.Body.OnGround ? "on the ground" : "in the air")}{EyeInside(game)}, {target}; "
             + $"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count} sections to mesh; "
             + $"{renderer.Sections} sections, {renderer.Draws} draws, {renderer.Triangles} triangles, {renderer.Lamps} lamps, {renderer.Culled} culled; "
@@ -402,6 +402,14 @@ public static class GameCommands
         if (Game is not { } game) return "no world is loaded";
         (game.Mobs.Still, game.Clouds.Held) = (on, on);
         return on ? "the mobs stand still and the clouds hold" : "the mobs move and the clouds drift";
+    }
+
+    [Command("voxel.loading", "Keeps the loading screen up over a world that has loaded, so its pixels are read, or lets it go: voxel.loading <hold>")]
+    internal static string HoldLoading(bool hold)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        game.HoldLoading = hold;
+        return hold ? "the loading screen is held" : game.Loading ? "the loading screen goes once the world stands" : "the world is shown";
     }
 
     [Command("voxel.kill", "Takes away the loaded mobs of a kind, or all of them: voxel.kill <kind|all>")]

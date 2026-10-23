@@ -128,7 +128,8 @@ and `voxel.place` act as the mouse buttons do, `voxel.time`, `voxel.day` and `vo
 sky, `voxel.clouds` shows or hides the clouds and places their drift, `voxel.distance` the render
 distance, `voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the
 shaded corners on or off, `voxel.corners` sets how far the corners darken, `voxel.world` saves the
-world and opens or begins another of a kind and seed, `voxel.save` saves at once, and `voxel.blocks`
+world and opens or begins another of a kind and seed, `voxel.loading` holds its loading screen up
+for a capture, `voxel.save` saves at once, and `voxel.blocks`
 lists the blocks by number and name. `voxel.mobs` counts the mobs and lists the nearest,
 `voxel.spawn` places one where the crosshair rests, `voxel.attack` hits the one it rests on as the
 left button does, `voxel.still` stops them where they stand and holds the clouds for a capture, and
@@ -526,6 +527,13 @@ options out, the render distance, the field of view, the mouse's sensitivity, th
 automatic or 1 to 4, whether full rows of the HUD fade, how far corners darken, the quality of
 global illumination, and the resource packs. The settings window F3 opens is the engine's ImGui, a
 tool for the developer.
+
+A world opens behind a loading screen, dark gray with the world's name over a bar of how far its
+loading has come, and under it, while the default packs are fetched, a line and a bar of their own.
+Half the bar is the columns within two of the player's generated and half the sections of the
+player's column and its neighbors meshed, the columns asked for only within three meanwhile, so the
+nearest come first. The player is held and the world's time still until those sections stand, and
+then the world is shown, a new world's player set on the highest block at the origin.
 
 ## Tools and crafting
 

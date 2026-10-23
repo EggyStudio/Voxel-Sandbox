@@ -56,6 +56,14 @@ ask() {
   answer=$(./e3d command "$@" --timeout 600 --session "$pid" 2> "$said") || fail "./e3d command $* ended with $?, $(head -n 1 "$said")"
   printf '%s\n' "$answer"
 }
+# Waits until the world opened stands, its loading screen gone.
+stood() {
+  for i in $(seq 1 600); do
+    ask voxel.state | grep -q "^loading " || return 0
+    cmd frames.wait 10
+  done
+  fail "the world did not stand within 6000 frames, $(ask voxel.state)"
+}
 # The player's feet from voxel.state, which begins "feet at x, y, z".
 feet() { printf '%s\n' "$1" | sed -nE 's/^feet at (-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+) .*/\1 \2 \3/p'; }
 
@@ -77,6 +85,7 @@ fi
 log=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{log} // ""' "$opened")
 pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' "$opened")
 [ -n "$pid" ] || fail "e3d opened the game and did not say its process"
+stood
 
 # The room is closed, so at night the lamp is its only light, and the player stands at its south
 # wall facing the lamp.
@@ -441,7 +450,30 @@ cmd voxel.packs none
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
 # from above, at a render distance of two columns, so lavapipe generates few at each.
 cmd voxel.hud on
+# The overworld opens behind its loading screen, held up here to be read, the window's corner the
+# screen's dark gray while the state says it loads, and once it is let go and the world stands the
+# player is set over the origin, and from above the trees there the corner is the sky's.
+cmd voxel.loading on
 cmd voxel.world overworld 1
+cmd frames.wait 2
+state=$(ask voxel.state)
+[[ "$state" == "loading overworld-1, "* ]] || fail "the overworld opened with no loading screen, $state"
+screen=$(ask voxel.color 1220 16 40 24)
+echo "$screen"
+[[ "$screen" == "red 24.0, green 24.0, blue 28.0 "* ]] || fail "the loading screen's corner is not its dark gray, $screen"
+cmd voxel.loading off
+stood
+state=$(ask voxel.state)
+[[ "$state" == "feet at 0.50, "*", 0.50 in "* ]] || fail "the new overworld's player was not set over the origin, $state"
+cmd voxel.fly on
+cmd voxel.tp 0.5 110 0.5
+cmd voxel.time 10
+cmd voxel.look 0 10
+cmd frames.wait 2
+sky=$(ask voxel.color 1220 16 40 24)
+echo "$sky"
+printf '%s\n' "$sky" | sed -nE 's/^red ([0-9.]+), green ([0-9.]+), blue ([0-9.]+) .*/\3/p' | awk '{ exit !($1 > 100) }' \
+  || fail "the world shown after its loading has no sky in the window's corner, $sky"
 cmd voxel.distance 2
 cmd voxel.fly on
 cmd voxel.time 10

@@ -5,25 +5,23 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `10cf3f3`, item 86, reflections off, and nothing else, carrying the review's file:
-the see-through material's roughness goes from 0.08 to 1, since the package has no reflection
-switch, the traced gloss fading to nothing with roughness while the tint and the alpha stay; the
-test reads the water where a red wall's mirror image would lie, red 134 against green 132 before and
-123 against 139 after, the check asking red at least 8 under green, a faint lavender staying from
-the wall's indirect light, which is global illumination and no reflection; 233 tests, the strict
-build and the play script clean. Read at 20:09 on 2026-10-23. Not pushed: the build run 39996906286
-of `22616f4` is still running, and the four heads are pushed when it ends. Next 82, 84, 77, 76 and
-83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees,
-then 26 and the items in order; item 55 once the engine's pack run of `d3473746` lands, items 38's
-second part and 54 when theirs come; the AGENTS.md rows for the Ui and build folders wait on the
-owner's word.
+Reviewed up to `f9ab3bb`, item 82, no plant over a carved cave, and nothing else, carrying the
+review's file: after a column's structures are built, a plant at its ground's height plus one whose
+block below no longer collides is taken out, covering a tunnel mouth carved under a plant and the
+ravines built as structures after the plants; no departures; the test scans 11 by 11 columns about
+seed 1's first ravine and found 4 floating plants before the fix; 234 tests, the strict build and
+the play script clean. Read at 20:14 on 2026-10-23. Not pushed: the build run 39996906286 of
+`22616f4` is still running, and the five heads are pushed when it ends. Next 84, 77, 76 and 83, then
+67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26
+and the items in order; item 55 once the engine's pack run of `d3473746` lands, items 38's second
+part and 54 when theirs come; the AGENTS.md rows for the Ui and build folders wait on the owner's
+word.
+
+Before it, `10cf3f3` came, item 86, reflections off, and nothing else, carrying the review's file.
+Read at 20:09 on 2026-10-23, held for the build run of `22616f4`.
 
 Before it, `fd276d3` came, item 71, the stars, and nothing else, carrying the review's file. Read at
 20:04 on 2026-10-23, held for the build run of `22616f4`.
-
-Before it, `6454b80` came, item 87, the plant masks only where no pack gives the picture, and
-nothing else, carrying the review's file. Read at 19:56 on 2026-10-23, held for the build run of
-`22616f4`.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -307,7 +305,7 @@ full.
     34) that grass is placed in the air where a cave was carved at a later stage. The mend: the
     carving before the decoration in the chunk's stages, as the source orders them, or every plant
     placed re-checked for the block under it after carving; a test of a carved chunk holding no
-    plant over air. One commit, small.
+    plant over air. One commit, small. Done at `f9ab3bb` on 2026-10-23, as the head says.
 
 83. **Glass without the diagonal streaks, its borders connecting across neighbors.** The owner wrote
     on 2026-10-23 (Decision 34) to make the glass not have the diagonal streaks and to connect the
@@ -953,6 +951,12 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
 36. **Glass and water reflect nothing for the present.** The owner wrote on 2026-10-23 that the
     reflections on glass and water show the scene field, which clashes with the voxel art style, and
     should remain non-reflective for the present, item 86; reflections return on their word.
+
+37. **Branches are named for their work, never claude/ or a random string, and work stays on main
+    where one session writes.** The owner wrote on 2026-10-23 not to create branches named claude or
+    the like nor with random characters, but to work on main, or, where several sessions on one
+    repository make a branch necessary, on a branch with a descriptive name; N 7.5 holds it, and
+    COMMITS.md says it.
 
 ## Replies
 

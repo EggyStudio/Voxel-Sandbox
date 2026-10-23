@@ -5,9 +5,15 @@ How work is committed in this repository, by hand or by an agent working through
 ## When
 
 Each logical batch of work is committed on its own once it is finished, its tests pass and its
-documentation says what it does. Commits are made on `main` and kept local. The owner pushes
-`main` from their own tools, so a session never pushes (NORM.md, N 7.1). The `legacy` branch holds
-the game this repository held before, and nothing is committed to it.
+documentation says what it does. Commits are made on `main` and kept local until the reviewing
+session pushes them once the previous build run has ended, so a working session never pushes and
+no run is cancelled midway by a push (NORM.md, N 7.1). The `legacy` branch holds the game this
+repository held before, and nothing is committed to it.
+
+A branch exists only while a second session writes to the repository, and it is named for its
+work, such as `modeling`, never under `claude/` nor with a random string (NORM.md, N 7.5). Its
+commits are cherry-picked onto `main` as they are, with the author reset to the repository's and
+no trailer added, and the branch is deleted once they are on `main`.
 
 A batch is one thing somebody would want to read, revert or cherry-pick alone, such as a fix, a
 feature with its tests and its docs, or a refactor. Work that is still half done stays uncommitted

@@ -276,6 +276,7 @@ public sealed class VoxelGame : IDisposable
     private void Open(string kind, int seed, string? name)
     {
         Save = _transient ? null : new WorldSave(Path.Combine(WorldSave.Root, name ?? $"{kind}-{seed}"));
+        WorldName = Save?.Name ?? $"{kind}-{seed}";
         var info = Save?.ReadInfo();
         var generator = (info is null ? null : Generators.Create(info.Kind, info.Seed)) ?? Generators.Create(kind, seed) ?? new Overworld(seed);
         Renderer.Clear();
@@ -299,25 +300,83 @@ public sealed class VoxelGame : IDisposable
         Streamer = new ChunkStreamer(World, Renderer, Mobs, Save);
         Clouds.Follow(generator.Seed);
         _sinceSave = 0;
+        Loading = true;
 
         if (info is null)
         {
-            // A new world's player stands on the highest block at the origin.
-            Streamer.LoadNow(Vector3.Zero, 2);
+            // A new world's player waits over the origin, and stands on its highest block once the
+            // columns there have loaded.
             Player.Flying = false;
-            Player.Teleport(new Vector3(0.5f, World.Top(0, 0) + 1, 0.5f));
+            Player.Teleport(new Vector3(0.5f, ChunkColumn.Height, 0.5f));
+            (_landing, _loadTeleports) = (true, Player.Teleports);
             return;
         }
-        var at = new Vector3(info.X, info.Y, info.Z);
-        Streamer.LoadNow(at, 2);
-        Player.Teleport(at);
+        _landing = false;
+        Player.Teleport(new Vector3(info.X, info.Y, info.Z));
         (Player.Heading, Player.Pitch, Player.Flying, Sky.Hour, Sky.Day) = (info.Heading, info.Pitch * MathF.PI / 180, info.Flying, info.Hour, info.Day);
+    }
+
+    /// <summary>The name of the world loaded, its save's folder or, for a transient one, its kind and seed.</summary>
+    public string WorldName { get; private set; } = "";
+
+    /// <summary>
+    /// Whether the world opened is still loading behind its screen, until the player's column and its
+    /// neighbors are generated and meshed, the player held and the world's time still meanwhile.
+    /// </summary>
+    public bool Loading { get; private set; }
+
+    /// <summary>Keeps the loading screen up over a world that has loaded, so a check reads its pixels, until it is let go.</summary>
+    public bool HoldLoading { get; set; }
+
+    // Whether a new world's player is still to be set on the highest block at the origin, and the
+    // count of teleports then, which a command that moves the player during the loading passes.
+    private bool _landing;
+    private int _loadTeleports;
+
+    /// <summary>
+    /// How far the world's loading has come, from 0 to 1, half for the columns within two of the
+    /// player's generated and half for the sections of the player's column and its neighbors meshed.
+    /// </summary>
+    /// <remarks>
+    /// A section is meshed with the columns around it, so one is counted as standing only once all the
+    /// columns within two are in, the last of which marks it to be meshed again if it was passed by.
+    /// </remarks>
+    public float LoadingShare()
+    {
+        var at = Player.Body.Position;
+        int cx = VoxelWorld.ColumnOf((int)MathF.Floor(at.X)), cz = VoxelWorld.ColumnOf((int)MathF.Floor(at.Z));
+        int made = 0, standing = 0;
+        for (int z = cz - 2; z <= cz + 2; z++)
+            for (int x = cx - 2; x <= cx + 2; x++)
+                if (World.HasColumn(x, z)) made++;
+        if (made == 25)
+            for (int z = cz - 1; z <= cz + 1; z++)
+                for (int x = cx - 1; x <= cx + 1; x++)
+                    for (int y = 0; y < ChunkColumn.SectionCount; y++)
+                    {
+                        var key = new SectionKey(x, y, z);
+                        if (!World.Loaded.Contains(key) && !World.Reshaded.Contains(key) && !World.Edited.Contains(key)) standing++;
+                    }
+        return (made / 25f + standing / (9f * ChunkColumn.SectionCount)) / 2;
+    }
+
+    // A loading frame, the columns asked for only within three of the player's, so the nearest are
+    // generated and meshed first, and the world shown once the player's column and its neighbors stand.
+    private void Stand()
+    {
+        Streamer.Update(Player.Body.Position, 1);
+        Renderer.Update(World, Player.Eye, MeshBudgetMs);
+        if (HoldLoading || LoadingShare() < 1) return;
+        Loading = false;
+        if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(new Vector3(0.5f, World.Top(0, 0) + 1, 0.5f));
+        _landing = false;
     }
 
     /// <summary>Keeps every loaded column the player changed and the player's place, and writes them, unless the world is transient.</summary>
     public void SaveWorld()
     {
-        if (Save is null) return;
+        // A new world left before its player stood in it has nothing to keep.
+        if (Save is null || Loading && _landing) return;
         foreach (var column in World.Columns)
             if (column.Changed) Save.Keep(column);
         Save.Flush();
@@ -337,6 +396,11 @@ public sealed class VoxelGame : IDisposable
         {
             NextWorld = null;
             SwitchWorld(next.Kind, next.Seed);
+        }
+        if (Loading)
+        {
+            Stand();
+            return;
         }
         if (Flicker is { } run && !run.Step(this)) Flicker = null;
         // A long frame, as when the window is dragged, is taken as a short one, so the player does
@@ -802,6 +866,11 @@ public sealed class VoxelGame : IDisposable
 
     public void Draw()
     {
+        if (Loading)
+        {
+            DrawLoading();
+            return;
+        }
         // The haze begins two thirds of the way to the render distance and covers the world at it,
         // and under water it is the water's blue and covers it within 16 blocks.
         var reach = RenderDistance * Section.Size;
@@ -872,6 +941,37 @@ public sealed class VoxelGame : IDisposable
         // A button that shut the menu gives the cursor back to the game.
         if (menu != Menu.None && Menus.Open == Menu.None) Capture(!Settings.Open);
         EndDrawing();
+    }
+
+    /// <summary>The loading screen's background, dark as Minecraft's is.</summary>
+    public static readonly Color LoadingBackground = new(24, 24, 28);
+
+    // The screen a world loads behind, its name over a bar of how far its loading has come, and the
+    // default packs' fetch under it with a bar of its own while it runs.
+    private void DrawLoading()
+    {
+        BeginDrawing();
+        ClearBackground(LoadingBackground);
+        int width = GetScreenWidth(), middle = GetScreenHeight() / 2, line = Gui.LineHeight;
+        var title = $"Loading {WorldName}";
+        Gui.Text(title, (width - Gui.TextWidth(title)) / 2, middle - 3 * line, Color.White);
+        Bar(middle, LoadingShare());
+        if (Defaults.State == FetchState.Fetching && Defaults.Packs.Count > 0)
+        {
+            var fetch = $"Fetching the default packs, {Defaults.Fetched} of {Defaults.Packs.Count}";
+            Gui.Text(fetch, (width - Gui.TextWidth(fetch)) / 2, middle + 3 * line, new Color(170, 170, 170));
+            Bar(middle + 5 * line, Defaults.Fetched / (float)Defaults.Packs.Count);
+        }
+        EndDrawing();
+
+        // A bar across the middle of the window, outlined in white and filled in green to a share.
+        static void Bar(int y, float share)
+        {
+            int scale = Gui.Scale, length = Math.Min(GetScreenWidth() - 32, 200 * scale), x = (GetScreenWidth() - length) / 2;
+            DrawRectangle(x - scale, y - scale, length + 2 * scale, 4 * scale + 2 * scale, Color.White);
+            DrawRectangle(x, y, length, 4 * scale, LoadingBackground);
+            DrawRectangle(x, y, (int)(length * Math.Clamp(share, 0, 1)), 4 * scale, new Color(128, 255, 128));
+        }
     }
 
     // Each arrow a thin shaft along its flight, or along its last flight once stuck, with grey fletching at its tail.
