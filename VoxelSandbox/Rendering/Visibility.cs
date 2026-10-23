@@ -10,8 +10,10 @@ namespace VoxelSandbox;
 /// </summary>
 /// <remarks>
 /// <para>
-/// A cell is open where its block is not opaque, as air, water, glass, torches and slabs are. A section's joins are worked out again the first time they are asked
-/// after a block in it changes. The faces are numbered +x, -x, +y, -y, +z and -z, each the one before
+/// A cell is open where its block hides nothing behind it, as air, water, glass, torches, slabs and
+/// leaves cut out where a pack's texture is clear do. A section's joins are worked out again the
+/// first time they are asked after a block in it changes or under another atlas, whose packs may
+/// cut out other blocks. The faces are numbered +x, -x, +y, -y, +z and -z, each the one before
 /// its opposite.
 /// </para>
 /// <para>
@@ -33,20 +35,24 @@ public sealed class Visibility
     /// <summary>Whether the last flood left anything out, false where the eye stood outside the world's heights.</summary>
     public bool Culled { get; private set; }
 
-    /// <summary>Which pairs of a section's faces its open cells join, a bit for each ordered pair, the bit of faces a and b at a times 6 plus b.</summary>
-    public static ulong Joins(Section section)
+    /// <summary>
+    /// Which pairs of a section's faces its open cells join, a bit for each ordered pair, the bit of
+    /// faces a and b at a times 6 plus b, under the atlas whose packs cut some blocks out, or none.
+    /// </summary>
+    public static ulong Joins(Section section, TerrainAtlas? atlas = null)
     {
-        if (section.Visibility.Version == section.Version) return section.Visibility.Joins;
-        var joins = Work(section);
-        section.Visibility = (joins, section.Version);
+        atlas ??= TerrainAtlas.None;
+        if (section.Visibility.Version == section.Version && section.Visibility.Marks == atlas.Serial) return section.Visibility.Joins;
+        var joins = Work(section, atlas);
+        section.Visibility = (joins, section.Version, atlas.Serial);
         return joins;
     }
 
     // The faces of a section that the run of open cells holding a cell reaches, every face where
     // the cell is not open, as for an eye inside a block.
-    private static int FacesFrom(Section section, int cell)
+    private static int FacesFrom(Section section, int cell, TerrainAtlas atlas)
     {
-        if (Blocks.IsOpaque((BlockId)section.Blocks[cell])) return 63;
+        if (atlas.Hides((BlockId)section.Blocks[cell])) return 63;
         var seen = new bool[Section.Volume];
         var stack = new int[Section.Volume];
         int faces = 0, top = 0;
@@ -60,7 +66,7 @@ public sealed class Visibility
             foreach (var (step, edge) in (ReadOnlySpan<(int, bool)>)[(1, x < Section.Mask), (-1, x > 0), (256, y < Section.Mask), (-256, y > 0), (16, z < Section.Mask), (-16, z > 0)])
             {
                 var n = i + step;
-                if (!edge || seen[n] || Blocks.IsOpaque((BlockId)section.Blocks[n])) continue;
+                if (!edge || seen[n] || atlas.Hides((BlockId)section.Blocks[n])) continue;
                 seen[n] = true;
                 stack[top++] = n;
             }
@@ -68,13 +74,13 @@ public sealed class Visibility
         return faces;
     }
 
-    private static ulong Work(Section section)
+    private static ulong Work(Section section, TerrainAtlas atlas)
     {
         const ulong all = (1UL << 36) - 1;
         if (section.Filled == 0) return all;
         var open = new bool[Section.Volume];
         var any = false;
-        for (int i = 0; i < Section.Volume; i++) any |= open[i] = !Blocks.IsOpaque((BlockId)section.Blocks[i]);
+        for (int i = 0; i < Section.Volume; i++) any |= open[i] = !atlas.Hides((BlockId)section.Blocks[i]);
         if (!any) return 0;
 
         ulong joins = 0;
@@ -114,8 +120,9 @@ public sealed class Visibility
     /// Floods from the section holding the eye through the sections of the loaded columns within a
     /// render distance of it, as <see cref="Seen"/> then holds.
     /// </summary>
-    public void Flood(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance)
+    public void Flood(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance, TerrainAtlas? atlas = null)
     {
+        atlas ??= TerrainAtlas.None;
         _seen.Clear();
         _queue.Clear();
         var start = new SectionKey((int)MathF.Floor(eye.X) >> Section.Shift, (int)MathF.Floor(eye.Y) >> Section.Shift, (int)MathF.Floor(eye.Z) >> Section.Shift);
@@ -125,12 +132,12 @@ public sealed class Visibility
         _seen.Add(start);
         _queue.Enqueue((start, -1, 0));
         var exits = world.TryGetColumn(start.X, start.Z, out var home)
-            ? FacesFrom(home.Sections[start.Y], Section.Index((int)MathF.Floor(eye.X) & Section.Mask, (int)MathF.Floor(eye.Y) & Section.Mask, (int)MathF.Floor(eye.Z) & Section.Mask))
+            ? FacesFrom(home.Sections[start.Y], Section.Index((int)MathF.Floor(eye.X) & Section.Mask, (int)MathF.Floor(eye.Y) & Section.Mask, (int)MathF.Floor(eye.Z) & Section.Mask), atlas)
             : 63;
         while (_queue.TryDequeue(out var at))
         {
             if (!world.TryGetColumn(at.Key.X, at.Key.Z, out var column)) continue;
-            var joins = Joins(column.Sections[at.Key.Y]);
+            var joins = Joins(column.Sections[at.Key.Y], atlas);
             for (int d = 0; d < 6; d++)
             {
                 // Never back the way any step of the flood went, and out only through a face the cells

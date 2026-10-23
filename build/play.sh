@@ -264,23 +264,35 @@ largest=$(printf '%s\n' "$face" | sed -nE 's/^from [0-9.]+ to [0-9.]+, largest s
 [ -n "$largest" ] || fail "voxel.line read no line down the zombie's face, saying $face"
 awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the zombie's face steps in light at the eye's height, $face"
 
-# A zombie wears a pack's picture of it laid as the source lays it. The pack, a folder of one
-# picture written here as a PNG with perl's own zlib, half as tall as the zombie's layout as an older
-# pack's is, is red where the source lays the head's front, clear where it lays the hat's layer, so
-# the hat is left out, and blue everywhere else, so the head's front reads red and the body's blue.
-picture="$data/picture-pack/assets/minecraft/textures/entity/zombie"
-mkdir -p "$picture"
-printf '{"pack":{"pack_format":34,"description":"A zombie picture red on its face"}}' > "$data/picture-pack/pack.mcmeta"
-perl -MCompress::Zlib -e '
-  my ($w, $h, $raw) = (64, 32, "");
-  for my $y (0 .. $h - 1) {
-    $raw .= "\0";
-    $raw .= ($_ >= 8 && $_ < 16 && $y >= 8 && $y < 16) ? "\xff\x00\x00\xff" : ($_ >= 32 && $y < 16) ? "\x00\x00\x00\x00" : "\x00\x00\xff\xff" for 0 .. $w - 1;
-  }
-  sub chunk { my ($type, $data) = @_; pack("N", length $data) . $type . $data . pack("N", crc32($type . $data)) }
-  binmode STDOUT;
-  print "\x89PNG\r\n\x1a\n", chunk("IHDR", pack("NNCCCCC", $w, $h, 8, 6, 0, 0, 0)), chunk("IDAT", compress($raw)), chunk("IEND", "");
-' > "$picture/zombie.png"
+# A zombie wears a pack's picture of it laid as the source lays it, glass is cut out where its
+# picture is clear, and a lit furnace shows its top's picture above and glows at its front. The
+# pack, a folder of pictures written here as PNGs with perl's own zlib, holds the zombie's, half as
+# tall as its layout as an older pack's is, red where the source lays the head's front, clear where
+# it lays the hat's layer, so the hat is left out, and blue elsewhere; glass's, a gray frame about a
+# clear middle; and the lit furnace's front in red and the furnace's top in blue.
+textures="$data/picture-pack/assets/minecraft/textures"
+mkdir -p "$textures/entity/zombie" "$textures/block"
+printf '{"pack":{"pack_format":34,"description":"Pictures in plain colors for the play script"}}' > "$data/picture-pack/pack.mcmeta"
+picture() {
+  perl -MCompress::Zlib -e '
+    my ($w, $h, $rule) = @ARGV;
+    my %rules = (
+      zombie => sub { my ($x, $y) = @_; $x >= 8 && $x < 16 && $y >= 8 && $y < 16 ? "\xff\x00\x00\xff" : $x >= 32 && $y < 16 ? "\x00\x00\x00\x00" : "\x00\x00\xff\xff" },
+      glass => sub { my ($x, $y) = @_; $x >= 4 && $x < 12 && $y >= 4 && $y < 12 ? "\x00\x00\x00\x00" : "\xc8\xc8\xc8\xff" },
+      red => sub { "\xff\x00\x00\xff" },
+      blue => sub { "\x00\x00\xff\xff" },
+    );
+    my $raw = "";
+    for my $y (0 .. $h - 1) { $raw .= "\0"; $raw .= $rules{$rule}->($_, $y) for 0 .. $w - 1; }
+    sub chunk { my ($type, $data) = @_; pack("N", length $data) . $type . $data . pack("N", crc32($type . $data)) }
+    binmode STDOUT;
+    print "\x89PNG\r\n\x1a\n", chunk("IHDR", pack("NNCCCCC", $w, $h, 8, 6, 0, 0, 0)), chunk("IDAT", compress($raw)), chunk("IEND", "");
+  ' "$@"
+}
+picture 64 32 zombie > "$textures/entity/zombie/zombie.png"
+picture 16 16 glass > "$textures/block/glass.png"
+picture 16 16 red > "$textures/block/furnace_front_on.png"
+picture 16 16 blue > "$textures/block/furnace_top.png"
 pack="$data/picture-pack"
 if command -v cygpath > /dev/null; then pack=$(cygpath -m "$pack"); fi
 cmd voxel.packs "$pack"
@@ -302,6 +314,33 @@ read -r br bg bb <<< "$(printf '%s\n' "$body" | sed -nE 's/^red ([0-9]+), green 
 [ -n "$fb" ] && [ -n "$bb" ] || fail "voxel.pixel read no zombie, saying $front and $body"
 [ "$fr" -gt $((2 * fb)) ] && [ "$fr" -gt $((2 * fg)) ] || fail "the zombie's face does not wear the picture's red, $front"
 [ "$bb" -gt $((2 * br)) ] || fail "the zombie's body does not wear the picture's blue, $body"
+# A pane of glass before a wall of red concrete shows the wall through its clear middle and its gray
+# frame around it, and a lit furnace beside it its blue top above its red front.
+# The eye stands level with the glass, straight before it, so the line through its middle meets the
+# wall and no other face of it.
+cmd voxel.fill 19 5 0 22 8 0 red_concrete
+cmd voxel.set 20 6 2 glass
+cmd voxel.set 21 4 2 lit_furnace
+cmd voxel.tp 20.5 4.88 5.5
+cmd voxel.look 0 -15
+cmd frames.wait 30
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+middle=$(ask voxel.pixel 20.5 6.5 3.001)
+frame=$(ask voxel.pixel 20.9 6.5 3.001)
+side=$(ask voxel.pixel 21.5 4.5 3.001)
+top=$(ask voxel.pixel 21.5 5.001 2.5)
+echo "glass's middle $middle, its frame $frame, the lit furnace's front $side, its top $top"
+channels() { printf '%s\n' "$1" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p'; }
+read -r mr mg mb <<< "$(channels "$middle")"
+read -r gr gg gb <<< "$(channels "$frame")"
+read -r sr sg sb <<< "$(channels "$side")"
+read -r tr tg tb <<< "$(channels "$top")"
+[ -n "$mb" ] && [ -n "$gb" ] && [ -n "$sb" ] && [ -n "$tb" ] || fail "voxel.pixel read no glass or furnace, saying $middle, $frame, $side and $top"
+[ "$mr" -gt $((2 * mg)) ] && [ "$mr" -gt $((2 * mb)) ] || fail "the glass's clear middle does not show the red wall behind it, $middle"
+[ $((gr > gb ? gr - gb : gb - gr)) -le 40 ] && [ "$gr" -gt 60 ] || fail "the glass's frame does not show its gray, $frame"
+[ "$sr" -gt $((2 * sb)) ] || fail "the lit furnace's front does not wear the picture's red, $side"
+[ "$tb" -gt $((2 * tr)) ] || fail "the lit furnace's top does not wear the furnace's top's blue, $top"
 cmd voxel.packs none
 
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
@@ -392,4 +431,4 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a zombie wear a pack's picture, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, drew with no validation error and wrote $name on F2"

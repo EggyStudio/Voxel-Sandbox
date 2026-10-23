@@ -5,27 +5,36 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `d2bc3f0`, item 62's mend, the half-height fit, and nothing else, carrying the
-review's file: the fit, public, takes the layout's height or half of it at a whole scale, the
-coordinates run over the picture's own rows and the white row, a cuboid wholly below the picture is
-left out; one new test of three checks, a 64 by 32 cow picture fitting the 64 by 64 layout and a 64
-by 48 one refused, the cow's head part laying the head and two horns in 72 vertices without the
-muzzle, the front's upper left at 6/64 and 6/33, 223 tests in all; the pig and the cow wearing Bare
-Bones' pictures, mobs/daylight-pack.webp taken again with the own pictures restored, the README
-saying which pictures fit; the strict build clean, the play script clean. Read at 10:38 on
-2026-10-21. Not pushed: the build run 39566771329 of `69ecb49` is still running, and the three heads
-are pushed when it ends. Shortly before 10:38 the owner wrote that they do not like the creeper's
-picture in Bare Bones and to keep the vanilla, item 66 and Decision 33. Next item 66, then 65, then
-item 39's cutout leaves, doors and glass, then its animated textures, then the pictures taken again
-at 40 degrees, then 26 and the items in order; items 55, 38's second part and 54 when their packages
-come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `f45b75e`, item 66, the creeper's own colors under every pack, and nothing else,
+carrying the review's file with item 66 and Decision 33: the creeper out of the pack table with the
+reason in its comment, drawn after the source's own creeper which the repository cannot hold where
+Bare Bones' is a style of its own; the play script's picture check writing a zombie picture 64 by 32
+on the zombie's 64 by 64 layout, so it tries the half-height fit too, red on the head's front, clear
+where the source lays the hat so the grown hat is left out, blue elsewhere, the face read at 5.75
+and the body at 5.125 as 255, 0, 0 and 0, 0, 255; the README saying the creeper keeps its colors and
+why and describing the test picture; mobs/daylight-pack.webp taken again with the creeper in its own
+green, the own pictures restored; the strict build clean, 223 tests, the play script clean. Read at
+10:42 on 2026-10-21. The build run 39566771329 of `69ecb49` ended green, the three test jobs within
+two minutes and the play job in 38 minutes 47 seconds, so the four heads from `e4b850f` were pushed
+at 10:47; their build run 39572003683 ended green, the play job in 45 minutes 12 seconds, read at
+19:05 on 2026-10-23, the sessions having stood idle since 2026-10-21. The engine's 5.2.213 is on the
+feed from `ec87f64b`, carrying its items 67 to 73 and the pool's mend, and a pack run for its items
+79 and 80 started on 2026-10-23. At 10:45 item 65's check found the pack changes nothing the game
+shows, its differences being eyes moved onto animated pieces the game does not draw, so item 65 is
+dropped and Decision 32 withdrawn, nothing committed. On 2026-10-23 the owner wrote a list of what
+they saw playing, items 67 to 86 and Decisions 34 to 36, written at 19:10. Next item 39's cutout
+leaves, doors and glass and its animated textures, in hand, then 70, 85, 71, 86, 82, 84, 77, 76 and
+83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees,
+then 26 and the items in order; item 55 once the engine's pack run of `d3473746` lands, items 38's
+second part and 54 when theirs come; the AGENTS.md rows for the Ui and build folders wait on the
+owner's word.
+
+Before it, `d2bc3f0` came, item 62's mend, the half-height fit, and nothing else, carrying the
+review's file. Read at 10:38, pushed at 10:47 after the build run of `69ecb49` ended green.
 
 Before it, `9ce44d7` came, item 62's second part, the villager's layers and the sheep's wool, and
-nothing else, carrying the review's file. Read at 10:30, held for the build run of `69ecb49`.
-
-Before it, `e4b850f` came, item 62's first part, the mobs wearing the pack's pictures, and nothing
-else, carrying the review's file with item 65 and Decision 32. Read at 10:21, held for the build run
-of `69ecb49`.
+nothing else, carrying the review's file. Read at 10:30, pushed at 10:47 after the build run of
+`69ecb49` ended green.
 
 ## Now
 
@@ -994,7 +1003,18 @@ of `69ecb49`.
     1.9.2 is the release whose creeper and cow are byte for byte the owner's 1.9 beta, its pig and
     cow 64 by 32 as Bare Bones 1.21's, its sheep, chicken, villager, creeper and spider covering
     every face the cuboids read as Bare Bones' do, and it has no zombie or skeleton, which stay on
-    Bare Bones'; after item 62's mend of the half-height fit.
+    Bare Bones'; after item 62's mend of the half-height fit. Dropped at 10:45 on the check: the
+    release 1.9.2, whose creeper and cow are byte for byte the owner's beta, compared pixel by pixel
+    with Bare Bones 1.21 over every face the cuboids read gives the chicken and the spider alike on
+    every face, and differs on the pig's, cow's, sheep's and villager's head fronts and the
+    villager's nose alone, the differences being the eyes, which Fresh Animations takes off the face
+    onto pieces of its animated model elsewhere on the picture, and a clear hole where the cow's and
+    sheep's muzzles meet the face; captures of the six with and without the pack show the villagers
+    and the pig without eyes and the rest unchanged, the creeper keeping its own colors by item 66
+    and the zombie and skeleton absent from the release. So by the item's rule four kinds stay on
+    Bare Bones' and two take pictures identical to Bare Bones' on every face read, the pack changing
+    nothing the game shows at the cost of a fourth fetch, and nothing is committed, the working
+    tree's edits reverted with the fetched copy kept outside git.
 
 66. **The creeper keeps the game's own vanilla-style art with any pack (Decision 33).** The owner
     wrote shortly before 10:38 on 2026-10-21, relayed verbatim, "I dont like the creeper texture in
@@ -1004,7 +1024,189 @@ of `69ecb49`.
     are loaded; the play script's picture check moves to the zombie, whose head at 0, 0 and body at
     16, 16 take the same offsets on one 64 by 32 picture that the half-height rule lays on its
     layout; the README's sentence on which kinds wear pictures, and mobs/daylight-pack.webp taken
-    again. One commit, small, before item 65, whose layout check then leaves the creeper out.
+    again. One commit, small, before item 65, whose layout check then leaves the creeper out. Done
+    at `f45b75e` on 2026-10-21, as the head says.
+
+67. **The inventory screens take no player key, draw a dragged stack every frame, and dropped items
+    wear the pack's pictures.** The owner wrote on 2026-10-23 (Decision 34) that in the crafting HUD
+    Ctrl crouches though a screen is open, that a stack held by the left button or dragged with Ctrl
+    is not shown moving until the button is released, and that dropped items are not textured with
+    the resource pack. The mend in three parts: while a screen is open no key of the player's acts,
+    crouch, jump, sprint and the hotbar among them, as the source's screens take the keyboard; a
+    stack picked up or dragged is drawn under the pointer every frame the button is held, the slots
+    it passes marked as the source marks them; and a dropped item in the world wears the pack's
+    picture of its block or item as the blocks do, the game's own art without a pack. Tests: a key
+    pressed with a screen open moving nothing, the dragged stack's place read from the frame
+    mid-drag, and a dropped item's pixel with the test pack. One or two commits.
+
+68. **Breaking a block shows the cracks, throws particles of its side texture, and keeps its
+    progress across jumps.** The owner wrote on 2026-10-23 (Decision 34) that breaking shows no
+    texture for breaking, asking for it with Bare Bones loaded and the game's own behavior without,
+    that breaking should throw the side texture as particles dropping as the source does, and that a
+    block out of reach hit between jumps should keep its breaking state so it breaks over several
+    jumps as the source lets it. The mend: the ten destroy stages drawn over the block being broken,
+    the pack's destroy_stage pictures with a pack and the game's own set without; particles cut from
+    the block's side texture thrown at a hit and at the break, falling and fading as the source's
+    do; and the progress on a block kept while the button stays held and the same block is aimed
+    again within the source's delay, so a block above reach breaks over a few jumps. Tests: the
+    stage picture on the block at a known progress, the particles' count and fall, and the progress
+    kept across a lost and regained aim. Two commits, the cracks and the particles, then the
+    progress.
+
+69. **Felling a tree takes its logs and leaves, some logs falling, and gravity blocks fall (Decision
+    35).** The owner wrote on 2026-10-23 (Decision 34) that trees should break all wood and break
+    leaves with a particle effect dropping the leaves, with some wooden blocks dropping down still,
+    and in that regard sand and the like dropping. The mend: breaking a log the trunk stands on
+    fells the tree, its logs breaking from the cut upward with their drops, its leaves decaying over
+    a few seconds with leaf particles and the source's drops, and a share of the logs falling as
+    blocks that land and settle; sand, red sand, gravel and concrete powder fall as blocks when
+    unsupported, as the source's gravity blocks do, landing as blocks or breaking on a non-solid as
+    the source has it, the owner's cobble read as that list unless they say otherwise. Tests: a
+    tree's logs and leaves gone after the cut with the drops counted, a falling log landing, and a
+    sand column falling onto a floor. Two commits, the gravity blocks, then the felling.
+
+70. **The land's light is the same above the eye's height as below it.** The owner wrote on
+    2026-10-23 (Decision 34) of a visual fault with the height, the land lighter below a line and
+    darker above, related to the horizon, the top of it taking the dirt texture's color with the
+    grass about orange or more teal, nearly black at points and flickering as the owner moves, which
+    the owner read as the same fault the mobs had from the lips up. The cause is read as item 63's:
+    the engine's model pass turns a normal that points away from the eye over, so a sample the
+    terrain shader takes with a turned-up normal above the eye is lit as a face turned down, and the
+    overlay's choice of the grass top's color over the dirt side may ride on the same normal. The
+    mend: every sample the terrain and plant shaders take with a normal of their own sees it from
+    straight above or along the face as item 63's does, and the overlay's color is chosen by the
+    face's own side; a play-script check reading a grass wall's side from the player's height across
+    the eye's line for no step over 2 levels, and the plains village picture taken again. One
+    commit, small, first of the owner's list; the engine's item 82 removes the trap.
+
+71. **The stars are points of light with no dark backing, faded by the sky's light.** The owner
+    wrote on 2026-10-23 (Decision 34) that the stars are visible at dusk and dawn with half of them
+    black, and at night some black or dark. The cause to read: a star drawn as a quad whose dark
+    corners or backing write over the sky, or blended with the wrong operator. The mend: stars drawn
+    additive or with an alpha that is zero off the point, their brightness scaled by the sky's
+    darkness so none shows by day and all show at night; a test reading the sky around a star for no
+    pixel darker than the sky at dusk. One commit, small.
+
+72. **Fire, a block that burns, animated and emissive (Decision 34).** The owner wrote on 2026-10-23
+    (Decision 34) that fire is missing and could show the radiance cascades. The mend: a fire block
+    kind with the source's animated picture through item 39's frames, emissive into the field so the
+    cascades carry its light, lit on a flammable block's top by a flint and steel item and by TNT's
+    blast, burning out in the source's time where nothing feeds it and spreading to a flammable
+    neighbor at the source's chance within a small radius, so a house burns and a stone floor does
+    not; a test of a fire placed on planks spreading and one on stone dying, and a night capture of
+    a fire lighting a room. One commit, after item 73.
+
+73. **TNT and the creeper's blast.** The owner wrote on 2026-10-23 (Decision 34) asking for TNT and
+    the creeper's explosion. The mend: a TNT block primed by a hit with flint and steel or by a
+    neighboring blast, flashing white over its fuse of four seconds as the source's does, then
+    exploding with the source's ray-cast destruction at power 4, blocks in the blast dropping at the
+    source's chance, the player knocked back and hurt by distance; the creeper swelling and hissing
+    for a second and a half within reach of the player and exploding at power 3, as the source's
+    does, with smoke and flash particles; the blast's light a flash the cascades carry for a frame
+    or two. Tests: a TNT's crater's counts, the creeper's swell and blast on the flat world, and a
+    capture. Two commits, TNT, then the creeper.
+
+74. **A held light lights the ground around the player.** The owner wrote on 2026-10-23 (Decision
+    34) that holding a light should dynamically illuminate the area around. The mend: a torch,
+    lantern, glowstone or other emissive block held in hand gives a point light at the player with
+    the block's color and reach, following the player each frame, and the field taking it so the
+    cascades carry it; the same for a dropped one lying in the world; a test reading the floor's
+    light at night with a torch in hand against none. One commit, small, after item 75.
+
+75. **The player's hand and held item in view.** The owner wrote on 2026-10-23 (Decision 34) that
+    the player's hand and the items should be displayed in view. The mend: a first-person arm and
+    the held item drawn in the camera's frame as the source draws them, a block as a cube, an item
+    as its picture extruded, swinging on a hit or a use and bobbing with the walk, drawn after the
+    world with its own depth so it never cuts into walls, hidden with the HUD under F1; a test
+    reading the hand's pixels at a known view and a capture. One commit.
+
+76. **The stepped shadows move in whole steps as the day passes.** The owner wrote on 2026-10-23
+    (Decision 34) that when timing the day the pixelated shadows flicker, unable to choose between
+    staying and moving to their next place. The cause: the sun's direction moves every frame, so a
+    shadow edge near a step's boundary falls on either side from frame to frame, the engine's texel
+    snapping holding the map against the camera's motion and not against the light's. The mend: the
+    shadow's sun direction steps on a coarse clock, every few game minutes, while the sky's sun
+    moves smoothly, so an edge jumps a step at once and stands still between, the step chosen so no
+    jump is longer than a step at the shadow's reach; a test reading a shadow edge still across the
+    frames between two steps. One commit, small.
+
+77. **The distance fog takes the sky's color at the ray's height, so a mountain's top is not the
+    horizon's color.** The owner wrote on 2026-10-23 (Decision 34) that with the chunk-distance fog
+    on mountains the color is the horizon's applied to blocks near the sky, asking for a
+    height-based color or the modpack's way. The mend: the fog's color for a pixel is the sky drawn
+    behind it, read along the view ray's elevation from the sky's gradient, so a block high against
+    the sky fades into that sky's blue and one at the horizon into the horizon's haze, as the
+    modpack's shader does; the haze of item 58 keeping its share. A test reading a far block high in
+    view against the sky's pixel beside it. One commit, small.
+
+78. **Grass as the source places it, with the two-block grass.** The owner wrote on 2026-10-23
+    (Decision 34) that there is far too much grass, asking for the source's balance, and that the
+    source had two-block-high grass. The mend: the plains', forests' and other biomes' grass and
+    flowers placed by the source's patch features at the source's counts and chances, read as
+    numbers from its worldgen data, rather than by the game's density, and tall grass as a two-block
+    plant with its two pictures; a test of a plains chunk's grass count within the source's range
+    and the tall grass standing on two blocks; the plains village picture taken again. One commit.
+
+79. **Swimming as the source has it, no launch out of the water.** The owner wrote on 2026-10-23
+    (Decision 34) that the player should not jump out of the water automatically or with such force,
+    asking for the source's way, where jumping in water lifts the player to a high point, lets them
+    sink and rise again, and lets them climb out at the high point. The mend: the source's water
+    movement, a swim-up impulse on jump held, gravity and drag in water as the source's numbers give
+    them, the bob at the surface, and the step out onto a block at the surface's high point, no
+    launch; a test of the player's height over time in deep water with jump held, bobbing within the
+    source's band, and the climb out at a bank. One commit.
+
+80. **Villages spaced as the source spaces them.** The owner wrote on 2026-10-23 (Decision 34) that
+    there are too many villages too near. The mend: villages placed by the source's structure set
+    rules, a spacing of 34 chunks with a separation of 8 and the salt's random grid, so two villages
+    never stand within eight chunks and most are a few hundred blocks apart; a test counting
+    villages over a 64-chunk square within the source's bound. One commit, small.
+
+81. **Biomes placed by the source's climate, so a badlands does not border a forest.** The owner
+    wrote on 2026-10-23 (Decision 34) that a mesa biome stands right next to green land, asking
+    whether that fits the source's logic and whether temperature, weirdness and the other values are
+    accounted for as the source does. The reading first: the game's biome choice against the
+    source's multi-noise, temperature, humidity, continentalness, erosion, depth and weirdness with
+    the source's parameter table, said in the commit; then the mend, the source's table taken as
+    numbers so badlands sit in hot dry land beside savanna and desert with the source's transitions,
+    or, where the game keeps its own climate, a border rule keeping badlands off forests. A test of
+    a map's biome pairs holding no pair the source never makes. One commit.
+
+82. **No plant stands in the air where a cave was carved.** The owner wrote on 2026-10-23 (Decision
+    34) that grass is placed in the air where a cave was carved at a later stage. The mend: the
+    carving before the decoration in the chunk's stages, as the source orders them, or every plant
+    placed re-checked for the block under it after carving; a test of a carved chunk holding no
+    plant over air. One commit, small.
+
+83. **Glass without the diagonal streaks, its borders connecting across neighbors.** The owner wrote
+    on 2026-10-23 (Decision 34) to make the glass not have the diagonal streaks and to connect the
+    borders so the middle of two glass blocks carries no border, as connected glass has it. The
+    mend: the game's own glass picture redrawn without the streaks, and glass faces drawn with
+    connected borders, a face's edge border left out where the neighbor along that edge is glass of
+    the same kind, as the modpack's connected textures do, the pack's border pieces read where the
+    pack gives them and the game's own otherwise; a test of two glass blocks side by side showing
+    one border around both. One commit.
+
+84. **A loading screen while the world generates.** The owner wrote on 2026-10-23 (Decision 34) that
+    the beginning should show a loading screen for the world generation, the window being blank
+    while the world loads in for a second. The mend: a screen with the world's name, a progress bar
+    over the sections generated and meshed around the player and the pack's fetch, shown until the
+    player's column and its neighbors stand, then the world shown; a test reading the screen's
+    pixels in the first frames and the world's after. One commit, small.
+
+85. **No line on a grass plant's top.** The owner wrote on 2026-10-23 (Decision 34) that a thin line
+    of the grass plane's pixels shows on the top of it, a faint cross at the top of some. The cause
+    to read: the crossed quads reaching a texel beyond their picture in the atlas or the atlas's
+    padding, so the row above bleeds in. The mend: the quads' coordinates inset by half a texel or
+    the atlas padded with each tile's edge; a test reading the pixels above a grass plant's picture
+    for the sky alone. One commit, small.
+
+86. **Glass and water reflect nothing for the present (Decision 36).** The owner wrote on 2026-10-23
+    (Decision 34) that the reflections on glass and water show the scene field, clashing with the
+    game's voxel style, and should stay non-reflective for the time being. The mend: the glass's and
+    water's materials set with no reflection, the water keeping its tint and transparency, the
+    field's reflection left off until the owner asks; a test reading a water pixel for the sky's
+    color alone. One commit, small.
 
 19. **Four game modes and the switcher, F3 with F4 opening the row of icons in boxes, F4 stepping,
     spectator among them.** The owner's word: F3 with F4 does not switch modes, spectator is not
@@ -1699,13 +1901,36 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     highest of the three mob packs in the modpack's order, under the Unlicense on Modrinth, so it is
     fetched as the others are under Decision 18 and listed above Bare Bones, item 65, its pictures
     laid on the source's cuboids as Bare Bones' are and its animated models, which need Entity Model
-    Features, not drawn.
+    Features, not drawn. Checked at 10:45 and withdrawn: the pack's pictures differ from Bare Bones'
+    only where Fresh Animations moves the eyes onto its animated model's pieces, which the game does
+    not draw, so the pack is not a default pack and the mobs stay on Bare Bones', item 65 dropped.
 
 33. **The creeper keeps the vanilla look, the game's own art, under every pack.** The owner wrote
     shortly before 10:38 on 2026-10-21 that they do not like the creeper's picture in Bare Bones and
     to keep the vanilla; the game cannot carry the source's picture, so its own creeper, drawn in
     the source's style, stays whatever packs are loaded and no pack's creeper picture is read, item
     66, item 65's pack included.
+
+34. **The owner's observations of 2026-10-23 and their order.** Having played the game, the owner
+    wrote on 2026-10-23 a list of what they saw, written as items 67 to 86: the inventory screens'
+    keys, drag and dropped items, the breaking's cracks, particles and kept progress, trees felled
+    and gravity blocks falling, the land's light above the eye's height, the stars' dark backing,
+    fire, TNT and the creeper's blast, a held light, the hand in view, the shadows' flicker with the
+    day, the fog's color by height, the grass's balance and the tall grass, swimming, villages'
+    spacing, the biomes' climate, plants over carved caves, connected glass, a loading screen, the
+    grass plant's top line, and reflections off. The order the reviewer set: item 39's parts in hand
+    first, then the visual faults, 70, 85, 71, 86, 82, 84, 77, 76 and 83, then the play, 67, 68, 79,
+    78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again, then the items that waited.
+
+35. **Trees fell as one and gravity blocks fall.** The owner wrote on 2026-10-23 that trees should
+    break all wood and break their leaves with a particle effect, some wooden blocks dropping down
+    still, and sand and the like dropping, so the game fells a tree from its cut log with its leaves
+    decaying and a share of its logs falling as blocks, beyond the source's rule, and sand, red
+    sand, gravel and concrete powder fall unsupported as the source's gravity blocks do, item 69.
+
+36. **Glass and water reflect nothing for the present.** The owner wrote on 2026-10-23 that the
+    reflections on glass and water show the scene field, which clashes with the voxel art style, and
+    should remain non-reflective for the present, item 86; reflections return on their word.
 
 ## Replies
 

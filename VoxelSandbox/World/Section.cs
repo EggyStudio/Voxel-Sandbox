@@ -19,8 +19,12 @@ public sealed class Section
     /// <summary>A count of its block changes, which the faces its open cells join are worked out again by.</summary>
     public int Version { get; private set; }
 
-    /// <summary>Which pairs of its faces its open cells join, and the <see cref="Version"/> they were worked out at, which <see cref="Visibility"/> keeps.</summary>
-    internal (ulong Joins, int Version) Visibility = (0, -1);
+    /// <summary>
+    /// Which pairs of its faces its open cells join, the <see cref="Version"/> they were worked out at
+    /// and the <see cref="TerrainAtlas.Serial"/> of the atlas they were worked out under, whose packs
+    /// cut some blocks out, which <see cref="Visibility"/> keeps.
+    /// </summary>
+    internal (ulong Joins, int Version, int Marks) Visibility = (0, -1, -1);
 
     public static int Index(int x, int y, int z) => (y << 8) | (z << 4) | x;
 

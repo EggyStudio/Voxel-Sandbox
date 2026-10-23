@@ -266,8 +266,11 @@ public sealed record BlockInfo(BlockId Id, string Key, string Name, int Top, int
     /// <summary>The boxes that stop the player, the whole cell for a solid block, a solid shape's own, and none for air, water and the rest.</summary>
     public IReadOnlyList<Box> Boxes { get; } = Kind is BlockKind.Opaque or BlockKind.Glass ? [Box.Cell] : Shape?.Collision ?? [];
 
-    /// <summary>Whether it is emissive, as its top's surface is, which a block smaller than its cell takes from its emissive piece.</summary>
-    public bool Emits => Surfaces.All[Top].Emits;
+    /// <summary>Whether it is emissive, as one of its faces' surfaces is, which a block smaller than its cell takes from its emissive piece.</summary>
+    public bool Emits => Surfaces.All[Top].Emits || Surfaces.All[Side].Emits || Surfaces.All[Bottom].Emits;
+
+    /// <summary>The surface of its faces that is emissive, its top's where all are, its sides' where they alone are, as a lit furnace's front is.</summary>
+    public int Lit => Surfaces.All[Top].Emits ? Top : Surfaces.All[Side].Emits ? Side : Bottom;
 
     /// <summary>The block a player holds to place it, and picks from it, which is itself but for a block placed in more than one way.</summary>
     public BlockId Item => HeldAs ?? Id;
@@ -279,7 +282,8 @@ public sealed record BlockInfo(BlockId Id, string Key, string Name, int Top, int
     /// </summary>
     public (Matrix4x4 Local, int Surface)[] Glows { get; } = Shape is { } shape
         ? [.. shape.Pieces.Where(p => p.Glows).Select(p => (Matrix4x4.CreateScale(p.To - p.From) * Matrix4x4.CreateTranslation((p.From + p.To) / 2), p.Surface))]
-        : Surfaces.All[Top].Emits ? [(Matrix4x4.CreateTranslation(new Vector3(0.5f)), Top)] : [];
+        : Surfaces.All[Top].Emits || Surfaces.All[Side].Emits || Surfaces.All[Bottom].Emits
+            ? [(Matrix4x4.CreateTranslation(new Vector3(0.5f)), Surfaces.All[Top].Emits ? Top : Surfaces.All[Side].Emits ? Side : Bottom)] : [];
 
     /// <summary>The color its item takes, its top's as it looks in the plains, which the item's cube on the ground shows.</summary>
     public Color Swatch => Surfaces.All[Top].Plain;
@@ -456,7 +460,7 @@ public static class Blocks
             Same(BlockId.IronOre, "iron_ore", "Iron Ore", Surfaces.IronOre),
             new(BlockId.Furnace, "furnace", "Furnace", Surfaces.FurnaceTop, Surfaces.FurnaceSide, Surfaces.FurnaceTop),
             // A furnace alight is emissive as a whole block, as magma is, and lights the blocks around it to 13.
-            Same(BlockId.FurnaceLit, "lit_furnace", "Furnace", Surfaces.FurnaceLit, light: 13) with { HeldAs = BlockId.Furnace },
+            new(BlockId.FurnaceLit, "lit_furnace", "Furnace", Surfaces.FurnaceTop, Surfaces.FurnaceLit, Surfaces.FurnaceTop, Light: 13, HeldAs: BlockId.Furnace),
             Same(BlockId.RedSand, "red_sand", "Red Sand", Surfaces.RedSand),
             Same(BlockId.Terracotta, "terracotta", "Terracotta", Surfaces.Terracotta),
             Same(BlockId.WhiteTerracotta, "white_terracotta", "White Terracotta", Surfaces.WhiteTerracotta),

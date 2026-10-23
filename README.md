@@ -680,7 +680,19 @@ bright pixels, so the iron around the glass shows as iron. Grass and oak leaves 
 climate's color over their gray textures, birch and spruce leaves and water a color of their own as
 Minecraft gives them, and the grass block's side its overlay tinted over the dirt under it. The
 scene's distance field reads each face as its texture's average under its tint, so the light a wall
-gives back takes its texture's color. An emissive block's cube is drawn with its texture, and an
+gives back takes its texture's color. A face whose texture is clear in some pixels and wholly
+covered in the rest is cut out where it is clear, as Minecraft cuts out its glass, a door's window
+and its leaves, the shader dropping those pixels. Glass goes in a mesh of each section that casts
+no shadow, as the see-through faces cast none, and a door's window and a pack's leaves in one that
+casts the whole face's, since the engine's shadow pass reads no texture through the game's shader.
+Leaves cut out hide nothing behind them, so they keep their faces against each other and the faces
+beside them, as Minecraft draws its leaves, and the sections seen through them are drawn. Bare
+Bones' leaves are covered in every pixel and so stay whole. A texture partly clear, as ice's is,
+blends as before, and the cactus, whose texture is clear at its edges for Minecraft's model of
+sides a pixel in from its cell's, stays whole, since on the game's whole cube those edges would
+show through at its corners. An emissive block's cube is drawn with its texture, and one whose
+faces differ, the lit furnace, with its top's, its sides' and its bottom's laid side by side, so it
+shows the furnace's top above its front, its front alone emissive where its pixels are bright. An
 item's icon is the pack's texture for it, or a block's cube with its faces' textures. The grass's
 top shows looks of the game's own in its flat style, little blossoms of four colors, patches of
 clover a shade darker than the grass under them and so tinted by the climate as it is, and pebbles,
@@ -877,8 +889,8 @@ take no haze.
 ## What is not here yet
 
 A pack's animated textures, which show their first frame, its block models and its connected
-textures. Leaves seen through, which are solid, so the clear pixels of a pack's leaves, a door's
-window or a cactus's edge show the color the pixel holds. Slabs and stairs that keep light out, as
+textures. The cactus's model of Minecraft's, its sides a pixel in from its cell's, so a pack's clear
+edges of it show the color the pixel holds. Slabs and stairs that keep light out, as
 Minecraft's do. Greedy meshing. Saplings that grow, and vines and cocoa on the jungle's trees.
 Structures read from files rather than built in code. Villagers that trade, sleep in beds or work
 their farms, and animals that breed or follow food. A bed to set where the player respawns, spiders

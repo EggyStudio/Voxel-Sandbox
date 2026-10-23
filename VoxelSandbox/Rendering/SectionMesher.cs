@@ -172,8 +172,17 @@ public sealed class SectionMesher
     /// <summary>The last section's faces of see-through blocks, glass, ice and water, each vertex's alpha its surface's.</summary>
     public Faces SeeThrough { get; } = new();
 
-    /// <summary>The last section's faces of plants, which a pack's texture cuts out where it is clear.</summary>
+    /// <summary>
+    /// The last section's faces cut out where a pack's texture is clear that cast no shadow, a plant's
+    /// and glass's, whose shadow the engine would draw as a whole face.
+    /// </summary>
     public Faces Cutout { get; } = new();
+
+    /// <summary>
+    /// The last section's faces cut out where a pack's texture is clear that cast a shadow, a door's
+    /// window and the leaves of a pack whose leaves are clear between them.
+    /// </summary>
+    public Faces SolidCutout { get; } = new();
 
     /// <summary>The emissive blocks of the last section, by their index in it.</summary>
     public List<(int Index, BlockId Block)> Emitters { get; } = [];
@@ -239,13 +248,14 @@ public sealed class SectionMesher
         return 1 - 0.98f * dark * dark * dark * dark;
     }
 
-    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/>, <see cref="Cutout"/> and <see cref="Emitters"/>.</summary>
+    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/>, <see cref="Cutout"/>, <see cref="SolidCutout"/> and <see cref="Emitters"/>.</summary>
     /// <returns>False when one of the eight columns around it is not loaded, so its edges cannot be told yet, and nothing is meshed.</returns>
     public bool Mesh(VoxelWorld world, SectionKey key)
     {
         Solid.Clear();
         SeeThrough.Clear();
         Cutout.Clear();
+        SolidCutout.Clear();
         Emitters.Clear();
         _origin = (key.X * Section.Size, key.Y * Section.Size, key.Z * Section.Size);
 
@@ -295,34 +305,42 @@ public sealed class SectionMesher
                             if (bottom >= top) continue;
                         }
                         else if (!Shows(block, info.Kind, neighbor)) continue;
-                        Add(face == 2 ? info.Top : face == 3 ? info.Bottom : info.Side, face, at, new Vector3(x, y, z), bottom, top);
+                        Add(face == 2 ? info.Top : face == 3 ? info.Bottom : info.Side, info.Kind == BlockKind.Glass || Atlas.CutOut(block), info.Kind, face, at, new Vector3(x, y, z), bottom, top);
                     }
                 }
         return true;
     }
 
-    // Whether a block's face shows beside a neighbor. An opaque block shows a face to anything that is
-    // not opaque, and a see-through block to anything that is neither opaque nor of its own kind, so
-    // two panes of glass or two blocks of water meet with no face between them. An opaque block keeps
-    // its face against a lamp too, hidden behind the lamp's cube, so the mesh stays closed around
-    // the lamp, since the scene's distance field reads a cell whose nearest point lies on an edge no
-    // other triangle of its mesh shares as open, and would read the stone beside a lamp as the air in
-    // front of the lamp's faces.
-    private static bool Shows(BlockId block, BlockKind kind, BlockId neighbor)
+    // Whether a block's face shows beside a neighbor. An opaque block shows a face to anything that
+    // does not hide it, and a see-through block to anything that neither hides it nor is of its own
+    // kind, so two panes of glass or two blocks of water meet with no face between them. A block cut
+    // out where a pack's texture is clear hides nothing, so its neighbors and its own kind beside it
+    // keep their faces, as Minecraft draws its leaves. An opaque block keeps its face against a lamp
+    // too, hidden behind the lamp's cube, so the mesh stays closed around the lamp, since the scene's
+    // distance field reads a cell whose nearest point lies on an edge no other triangle of its mesh
+    // shares as open, and would read the stone beside a lamp as the air in front of the lamp's faces.
+    private bool Shows(BlockId block, BlockKind kind, BlockId neighbor)
     {
-        if (Blocks.IsOpaque(neighbor)) return kind == BlockKind.Opaque && Blocks.IsLamp(neighbor);
+        if (Atlas.Hides(neighbor)) return kind == BlockKind.Opaque && Blocks.IsLamp(neighbor);
         return kind == BlockKind.Opaque || neighbor != block;
     }
 
+    // The faces a face of a surface goes with, cut out where a pack's texture is clear and the block
+    // may be cut out, casting a shadow for an opaque block's and a smaller block's and none for
+    // glass's, or else see-through where the surface's own color is, and solid.
+    private Faces FacesOf(int surface, bool cuttable, BlockKind kind) =>
+        cuttable && Atlas.Cuts(surface) ? kind == BlockKind.Glass ? Cutout : SolidCutout
+            : Surfaces.All[surface].Color.A < 255 ? SeeThrough : Solid;
+
     // A face of a block, its corners on the cell's floor raised to bottom and those on its ceiling
     // lowered to top, for water and for a side shown only above the water beside it.
-    private void Add(int surface, int face, int at, Vector3 block, float bottom, float top)
+    private void Add(int surface, bool cuttable, BlockKind kind, int face, int at, Vector3 block, float bottom, float top)
     {
         // A tinted surface takes its column's grass or foliage color at the block's place.
         var place = (int)block.Z * Section.Size + (int)block.X;
         var spot = PlaceHash.Of(_origin.X + (int)block.X, _origin.Z + (int)block.Z, _origin.Y + (int)block.Y);
         var (tiles, color, albedo) = Atlas.Paint(surface, _column.GrassTint[place], _column.FoliageTint[place], spot);
-        var faces = Surfaces.All[surface].Color.A < 255 ? SeeThrough : Solid;
+        var faces = FacesOf(surface, cuttable, kind);
         var first = (uint)faces.Count;
         var front = at + Steps[face];
         Span<int> occlusion = stackalloc int[4];
@@ -386,7 +404,7 @@ public sealed class SectionMesher
         foreach (var piece in shape.Pieces)
         {
             if (piece.Glows) continue;
-            var faces = shape.Cutout || piece.Plane ? Cutout : Solid;
+            var faces = shape.Cutout || piece.Plane ? Cutout : FacesOf(piece.Surface, true, BlockKind.Shaped);
             var (tiles, color, albedo) = Atlas.Paint(piece.Surface, _column.GrassTint[place], _column.FoliageTint[place]);
             if (piece.Plane)
             {
@@ -398,7 +416,7 @@ public sealed class SectionMesher
             {
                 var axis = face / 2;
                 var onSide = face % 2 == 0 ? Component(piece.To, axis) >= 1 : Component(piece.From, axis) <= 0;
-                if (onSide && (axis == 1 || piece.Lean == Vector3.Zero) && Blocks.IsOpaque((BlockId)_blocks[at + Steps[face]])) continue;
+                if (onSide && (axis == 1 || piece.Lean == Vector3.Zero) && Atlas.Hides((BlockId)_blocks[at + Steps[face]])) continue;
 
                 // A leaning face keeps the normal of the face it leans from, the terrain shader holding
                 // six, which a wall torch's stick, leaning by 23 degrees, shows little of.

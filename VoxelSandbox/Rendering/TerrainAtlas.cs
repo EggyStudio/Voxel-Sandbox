@@ -52,6 +52,11 @@ public sealed class TerrainAtlas
     private readonly List<byte[]> _pictures;
     // Each tile's average color decoded from sRGB, weighed by alpha, and how much of it is covered.
     private readonly List<(float R, float G, float B, float Covered)> _averages;
+    // Whether each tile is clear in some pixels and wholly covered in the rest.
+    private readonly bool[] _cuts;
+    // Whether each block is a whole opaque block cut out where a pack's texture is clear.
+    private readonly bool[] _cutOut;
+    private static int _made;
     // Each surface's own looks, their tiles as Paint packs them and their weights, or null for a
     // surface that has none.
     private readonly (uint Tiles, int Weight)[]?[] _variants;
@@ -60,6 +65,12 @@ public sealed class TerrainAtlas
     {
         (Pixels, _tile, _overlay, _tint, _own, _variants, _pictures) = (pixels, tile, overlay, tint, own, variants, pictures);
         _averages = [.. pictures.Select(Average)];
+        _cuts = [.. pictures.Select(p => Enumerable.Range(0, p.Length / 4).Any(i => p[i * 4 + 3] == 0) && Enumerable.Range(0, p.Length / 4).All(i => p[i * 4 + 3] is 0 or 255))];
+        // The cactus's texture is clear at its edges for the source's model, its sides standing a
+        // pixel in from its cell's, which on the game's whole cube would show through at its corners.
+        _cutOut = [.. Blocks.All.Select(b => b.Kind == BlockKind.Opaque && b.Shape is null && !b.Emits && b.Id != BlockId.Cactus
+            && (Cuts(b.Top) || Cuts(b.Side) || Cuts(b.Bottom)))];
+        Serial = Interlocked.Increment(ref _made);
         Rows = (pictures.Count + Columns - 1) / Columns;
     }
 
@@ -202,6 +213,31 @@ public sealed class TerrainAtlas
 
     /// <summary>The surface's tile, or 0 where no pack gives it a texture.</summary>
     public int Tile(int surface) => _tile[surface];
+
+    /// <summary>
+    /// Whether a surface's faces are cut out where a pack's texture is clear, which they are where
+    /// the texture is clear in some pixels and wholly covered in the rest, as a pack's glass, a door's
+    /// window and some packs' leaves are, and not where it is partly clear, as ice is, which blends.
+    /// The game's own masks of its plants are cut out by their own meshes, not by this.
+    /// </summary>
+    public bool Cuts(int surface) => _tile[surface] != 0 && !_own[surface] && _cuts[_tile[surface]];
+
+    /// <summary>A number no other atlas made has, which a section's visibility worked out under it is kept by.</summary>
+    public int Serial { get; }
+
+    /// <summary>
+    /// Whether a whole opaque block's faces are cut out where a pack's texture is clear, any of its
+    /// faces' surfaces <see cref="Cuts"/>, as some packs' leaves are, but for the cactus, whose
+    /// texture is clear at its edges for the source's smaller model.
+    /// </summary>
+    public bool CutOut(BlockId block) => _cutOut[(int)block];
+
+    /// <summary>
+    /// Whether a block hides the faces beside it and the cells behind it from the eye, which an
+    /// opaque block does but for one cut out where a pack's texture is clear, which shows what lies
+    /// behind it and so keeps its own faces against its kind, as Minecraft draws its leaves.
+    /// </summary>
+    public bool Hides(BlockId block) => Blocks.IsOpaque(block) && !_cutOut[(int)block];
 
     /// <summary>The tile of the overlay over the surface's, or 0 for none.</summary>
     public int Overlay(int surface) => _overlay[surface];

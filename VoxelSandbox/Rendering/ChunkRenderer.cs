@@ -78,7 +78,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         public readonly Matrix4x4 Transform = transform;
         public readonly Vector3 Middle = middle;
-        public readonly Part Solid = new(), SeeThrough = new(), Cutout = new();
+        public readonly Part Solid = new(), SeeThrough = new(), Cutout = new(), SolidCutout = new();
         public readonly List<(int Surface, Matrix4x4 At)> Emitters = [];
     }
 
@@ -87,11 +87,14 @@ public sealed class ChunkRenderer : IDisposable
     // makes the draw blend, which the vertices' alpha alone does not. The see-through faces cast no
     // shadow, which keeps them out of the scene's distance field too, since the field holds a
     // see-through mesh as solid and a window of glass would then shut out the indirect light
-    // through it. A section's plants are a third mesh, cut out where a pack's texture is clear, kept
-    // apart so the solid faces keep the depth test that runs before their pixels are lit, and casting
-    // no shadow, so the scene's distance field holds no grass. All three are drawn through the game's
-    // terrain shader, the engine's light with a haze.
-    private readonly ModelMaterial _terrain, _clear, _cutout, _haze;
+    // through it. A section's plants and glass a pack cuts out are a third mesh, cut out where the
+    // pack's texture is clear, kept apart so the solid faces keep the depth test that runs before
+    // their pixels are lit, and casting no shadow, so the scene's distance field holds no grass and
+    // no window, and the engine's shadow pass, which reads no texture through the game's shader,
+    // draws no whole face of them. The faces a pack cuts out that still cast a shadow, a door's
+    // window and a pack's leaves clear between them, are a fourth, their shadow the whole face's.
+    // All four are drawn through the game's terrain shader, the engine's light with a haze.
+    private readonly ModelMaterial _terrain, _clear, _cutout, _solidCutout, _haze;
     // The dome under the horizon in the haze's color, drawn while there is a haze to meet it.
     private readonly ModelMesh _dome;
     private float _fogEnd = float.MaxValue;
@@ -124,11 +127,13 @@ public sealed class ChunkRenderer : IDisposable
         (_fogColor, _fogStart, _fogEndAt) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
         _atmosphere = GetShaderLocation(_shader, "atmosphere");
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
-        _lampCubes = [.. LampParts.Select(parts => parts is { } shown ? LampCube(shown) : _cube)];
+        _lampCubes = [.. Surfaces.All.Select(s => LampParts[s.Id] is { } shown ? LampCube(shown, new Vector2(16))
+            : LampFaces[s.Id] is not null ? LampCube(new Parts(new Vector4(16, 0, 32, 16), new Vector4(0, 0, 16, 16), new Vector4(32, 0, 48, 16)), new Vector2(48, 16)) : _cube)];
         Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
         _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 0.08f, CastsShadows = false, Shader = _shader };
         _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, CastsShadows = false, Shader = _shader };
+        _solidCutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, Shader = _shader };
         _haze = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Blend, CastsShadows = false, Shader = _shader };
         var dome = HazeDome.Build();
         _dome = UploadMesh([.. dome.Positions], [.. dome.Indices], MeshStream.From(MeshStreamFormat.UInt2, dome.Packed.ToArray().AsSpan()), null);
@@ -170,9 +175,12 @@ public sealed class ChunkRenderer : IDisposable
             SetShaderValue(_shader, _atlasLayout, new Vector4(TerrainAtlas.Columns, value.Rows, value.Pixels, 0));
             foreach (var texture in _lampTextures.Concat(_lampEmission))
                 if (texture.IsValid) UnloadTexture(texture);
-            _lampTextures = [.. Surfaces.All.Select(s => s.Emits && value.Picture(s.Id) is { } picture ? LoadTextureFromImage(picture) : default)];
-            _lampEmission = [.. Surfaces.All.Select(s => s.Emits && LampParts[s.Id] is not null && value.Picture(s.Id) is { } picture
-                ? LoadTextureFromImage(EmissionMap(picture, s)) : default)];
+            _lampTextures = [.. Surfaces.All.Select(s => !s.Emits ? default
+                : LampFaces[s.Id] is { } faces ? LoadTextureFromImage(Strip(value, faces, s, glow: false))
+                : value.Picture(s.Id) is { } picture ? LoadTextureFromImage(picture) : default)];
+            _lampEmission = [.. Surfaces.All.Select(s => !s.Emits ? default
+                : LampFaces[s.Id] is { } faces ? LoadTextureFromImage(Strip(value, faces, s, glow: true))
+                : LampParts[s.Id] is not null && value.Picture(s.Id) is { } picture ? LoadTextureFromImage(EmissionMap(picture, s)) : default)];
             foreach (var texture in _lampTextures.Concat(_lampEmission))
                 if (texture.IsValid) SetTextureFilter(texture, TextureFilter.Point);
             BuildLamps();
@@ -252,8 +260,46 @@ public sealed class ChunkRenderer : IDisposable
     private static readonly Parts?[] LampParts = [.. Surfaces.All.Select(s =>
         Blocks.All.SelectMany(b => b.Shape?.Pieces ?? []).FirstOrDefault(p => p.Glows && p.Surface == s.Id).Parts)];
 
-    // A cube a unit across about its middle, each face showing its part of the texture.
-    private static ModelMesh LampCube(Parts parts)
+    // Each emissive surface's whole lamp whose faces show more than one surface, its top's, its
+    // sides' and its bottom's, as a lit furnace's do, or null for one showing the one on every face.
+    private static readonly (int Top, int Side, int Bottom)?[] LampFaces = [.. Surfaces.All.Select(s =>
+        Blocks.All.FirstOrDefault(b => b.Shape is null && b.Emits && b.Lit == s.Id && !(b.Top == b.Side && b.Side == b.Bottom)) is { } lamp
+            ? ((int, int, int)?)(lamp.Top, lamp.Side, lamp.Bottom) : null)];
+
+    /// <summary>
+    /// A lamp's faces' pictures side by side, its top's, its sides' and its bottom's, each a pack's
+    /// texture or a tile of the surface's own color, or with <paramref name="glow"/> the map of their
+    /// emission, an emissive surface's picture's bright pixels as <see cref="EmissionMap"/> lights them
+    /// or its own color's whole, and nothing of the rest, so a lit furnace's top shows the furnace's
+    /// and its front alone glows.
+    /// </summary>
+    public static Image Strip(TerrainAtlas atlas, (int Top, int Side, int Bottom) faces, Surface lit, bool glow)
+    {
+        var size = atlas.Pixels;
+        var data = new byte[3 * size * size * 4];
+        int[] surfaces = [faces.Top, faces.Side, faces.Bottom];
+        for (int tile = 0; tile < 3; tile++)
+        {
+            var surface = Surfaces.All[surfaces[tile]];
+            var picture = atlas.Picture(surface.Id);
+            byte[] pixels = glow
+                ? !surface.Emits ? new byte[size * size * 4] : picture is { } shown ? EmissionMap(shown, lit).Data : Filled(Color.White)
+                : picture is { } own ? own.Data : Filled(surface.Color);
+            for (int y = 0; y < size; y++)
+                Array.Copy(pixels, y * size * 4, data, (y * 3 * size + tile * size) * 4, size * 4);
+        }
+        return new Image(data, 3 * size, size);
+
+        byte[] Filled(Color color)
+        {
+            var pixels = new byte[size * size * 4];
+            for (int i = 0; i < pixels.Length; i += 4) (pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]) = (color.R, color.G, color.B, 255);
+            return pixels;
+        }
+    }
+
+    // A cube a unit across about its middle, each face showing its part of a texture of a size in pixels.
+    private static ModelMesh LampCube(Parts parts, Vector2 size)
     {
         var (vertices, indices) = (new ModelVertex[24], new uint[36]);
         for (int face = 0; face < 6; face++)
@@ -261,7 +307,7 @@ public sealed class ChunkRenderer : IDisposable
             for (int i = 0; i < 4; i++)
             {
                 var corner = SectionMesher.Corner(face, i);
-                vertices[face * 4 + i] = new ModelVertex(corner - new Vector3(0.5f), SectionMesher.Normal(face), SectionMesher.Place(parts, face, corner) / 16);
+                vertices[face * 4 + i] = new ModelVertex(corner - new Vector3(0.5f), SectionMesher.Normal(face), SectionMesher.Place(parts, face, corner) / size);
             }
             var first = (uint)face * 4;
             ((ReadOnlySpan<uint>)[first, first + 1, first + 2, first, first + 2, first + 3]).CopyTo(indices.AsSpan(face * 6));
@@ -339,7 +385,7 @@ public sealed class ChunkRenderer : IDisposable
         }
         if (!_mesher.Mesh(world, key)) return false;
 
-        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.Emitters.Count == 0)
+        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.SolidCutout.Count == 0 && _mesher.Emitters.Count == 0)
         {
             Forget(key);
             return true;
@@ -350,6 +396,7 @@ public sealed class ChunkRenderer : IDisposable
         entry.Solid.Take(_mesher.Solid);
         entry.SeeThrough.Take(_mesher.SeeThrough);
         entry.Cutout.Take(_mesher.Cutout);
+        entry.SolidCutout.Take(_mesher.SolidCutout);
 
         entry.Emitters.Clear();
         foreach (var (index, block) in _mesher.Emitters)
@@ -366,6 +413,7 @@ public sealed class ChunkRenderer : IDisposable
         entry.Solid.Forget();
         entry.SeeThrough.Forget();
         entry.Cutout.Forget();
+        entry.SolidCutout.Forget();
     }
 
     /// <summary>Lets go of the meshes of a column's sections, as it unloads.</summary>
@@ -389,7 +437,7 @@ public sealed class ChunkRenderer : IDisposable
         int cx = (int)MathF.Floor(eye.X) >> Section.Shift, cz = (int)MathF.Floor(eye.Z) >> Section.Shift;
         var reach = renderDistance * renderDistance + renderDistance;
         int draws = 0, triangles = 0, lamps = 0, culled = 0;
-        if (Cull) _visibility.Flood(world, eye, renderDistance);
+        if (Cull) _visibility.Flood(world, eye, renderDistance, Atlas);
         foreach (var list in _emitterDraws) list.Clear();
         _seeThrough.Clear();
 
@@ -414,6 +462,12 @@ public sealed class ChunkRenderer : IDisposable
                 DrawMesh(entry.Cutout.Mesh, _cutout, entry.Transform);
                 draws++;
                 triangles += entry.Cutout.Mesh.TriangleCount;
+            }
+            if (entry.SolidCutout.Mesh.IsValid)
+            {
+                DrawMesh(entry.SolidCutout.Mesh, _solidCutout, entry.Transform);
+                draws++;
+                triangles += entry.SolidCutout.Mesh.TriangleCount;
             }
             if (entry.SeeThrough.Mesh.IsValid) _seeThrough.Add((Vector3.DistanceSquared(entry.Middle, eye), entry));
         }
