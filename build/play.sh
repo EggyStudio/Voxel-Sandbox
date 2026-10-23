@@ -284,6 +284,24 @@ lg=$(printf '%s\n' "$low" | sed -nE 's/^red [0-9]+, green ([0-9]+), .*/\1/p')
 [ -n "$hg" ] && [ -n "$lg" ] || fail "voxel.pixel read no sapling, saying $high and $low"
 [ $((5 * hg)) -ge $((4 * lg)) ] || fail "a plant above the eye's height is lit darker than one below it, $high against $low"
 
+# A tall grass on a pillar clear of the rooms built above, seen from below against the sky, shows
+# the sky alone in its top row, which its picture leaves clear, read at sixteen points along one of
+# its walls a fiftieth under its top, where a place a hair under 0 wrapped to the picture's bottom
+# row of blades.
+cmd voxel.fill 30 4 20 30 5 20 stone
+cmd voxel.set 30 6 20 tall_grass
+cmd voxel.tp 30.5 4.98 21.8
+cmd voxel.look 0 12
+cmd frames.wait 20
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+for i in $(seq 0 15); do
+  top=$(ask voxel.pixel "$(echo "30.05 + $i * 0.06" | bc -l)" 6.98 "$(echo "20.05 + $i * 0.06" | bc -l)")
+  read -r tr tg tb <<< "$(printf '%s\n' "$top" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p')"
+  [ -n "$tb" ] || fail "voxel.pixel read nothing at the tall grass's top, saying $top"
+  [ "$tb" -gt "$tg" ] || fail "the tall grass's clear top row shows more than the sky, $top"
+done
+
 # A zombie wears a pack's picture of it laid as the source lays it, glass is cut out where its
 # picture is clear, and a lit furnace shows its top's picture above and glows at its front. The
 # pack, a folder of pictures written here as PNGs with perl's own zlib, holds the zombie's, half as
@@ -473,4 +491,4 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, drew with no validation error and wrote $name on F2"

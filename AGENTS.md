@@ -35,6 +35,7 @@ before scripting a session.
 | [README.md](README.md) | What the game does, its controls and commands, how it is drawn and what it costs |
 | [.github/E3D.md](.github/E3D.md) | Controlling the running game through `./e3d`, with the workflow, every command and the failure modes |
 | [.github/REVIEW.md](.github/REVIEW.md) | Direction from the reviewing session, which comes before any other order of work |
+| [.github/REVIEW-ARCHIVE.md](.github/REVIEW-ARCHIVE.md) | What REVIEW.md no longer carries, the items done and the verdicts settled, each under its number |
 | [.github/NORM.md](.github/NORM.md) | The numbered rules the game keeps, each with what checks it |
 | [.github/STYLE.md](.github/STYLE.md) | Rules for every comment, message and Markdown file |
 | [.github/COMMITS.md](.github/COMMITS.md) | How and when work is committed |

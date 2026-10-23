@@ -178,7 +178,9 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     uint4 surface = input.surface;
     // The mip level from how many of a tile's pixels a pixel of the screen spans, worked out before
     // any fragment is dropped.
-    float2 place = surface.w == 3 ? min(streams.base.uv, float2(0.99999)) : across(streams.base.world, surface.x);
+    // A carried place is kept within its tile at both ends, since a place a hair under 0 at a face's
+    // edge would wrap to the tile's far side, as the bottom row of a plant's picture onto its top.
+    float2 place = surface.w == 3 ? clamp(streams.base.uv, float2(0.0), float2(0.99999)) : across(streams.base.world, surface.x);
     float pixels = max(atlasLayout.z, 1.0);
     float2 texels = place * pixels;
     float spans = max(length(ddx(texels)), length(ddy(texels)));
