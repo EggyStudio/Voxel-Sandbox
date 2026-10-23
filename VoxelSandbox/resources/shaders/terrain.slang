@@ -197,7 +197,13 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
         tinted = lerp(tinted, over.rgb * srgbToLinear(float3(streams.uv2.x)), over.a);
     }
     float4 color = alphaTested(materialColor(streams.base) * float4(tinted, tile.a * streams.vertexColor.a), streams.base);
-    float3 shown = litStepped(color.rgb, streams.base);
+    // A plant's wall is lit as if it faced up and seen from straight above, since the engine lights a
+    // face turned from the eye as its back, turned over, and a wall above the eye's height facing up
+    // would take the light of one facing down, nearly black at noon.
+    ModelVertexOutput lighting = streams.base;
+    if (surface.x >= 6)
+        lighting.toEye = float3(0.0, length(streams.base.toEye), 0.0);
+    float3 shown = litStepped(color.rgb, lighting);
     // The land's edge fades into the haze, and the atmosphere hazes it from near on as the modpack's
     // shader's does, its share growing as one less e to the minus the cube of the distance.
     float distance = length(streams.base.toEye);

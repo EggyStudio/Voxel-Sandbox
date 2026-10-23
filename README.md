@@ -210,13 +210,15 @@ holds for its blocks. A flower and tall grass stand off their cell's middle by u
 block either way across, and short grass and a fern sink by up to a fifth as well, by a hash of the
 place, in the sixteen steps Minecraft offsets them by, while a sapling, a mushroom and a dead bush
 stand at the middle, as there. A plant is two flat walls crossed from corner to corner of its cell,
-drawn from both sides and lit as if they faced up, as Minecraft lights its plants with no shade by
-the way they face, and its walls are a mesh of their own in each section, cut out where their
-texture is clear and casting no shadow, so the scene's distance field holds no grass. A pack's
-texture lies across each wall from its own corners, so it stays whole wherever the wall stands, and
-where no pack has one the game's own pixels stand in, blades of grass, a flower's stem and its
-petals, a sapling's crown and a mushroom's cap, white masks tinted by each plant's own color. A
-plant breaks at once and falls when the block under it is broken.
+drawn from both sides and lit as if they faced up and were seen from straight above, as Minecraft
+lights its plants with no shade by the way they face, since the engine lights a face turned from the
+eye as its back, and a plant above the eye's height would take the light of a face turned down, as
+`build/play.sh` reads on a sapling over a pillar. Its walls are a mesh of their own in each section,
+cut out where their texture is clear and casting no shadow, so the scene's distance field holds no
+grass. A pack's texture lies across each wall from its own corners, so it stays whole wherever the
+wall stands, and where no pack has one the game's own pixels stand in, blades of grass, a flower's
+stem and its petals, a sapling's crown and a mushroom's cap, white masks tinted by each plant's own
+color. A plant breaks at once and falls when the block under it is broken.
 
 The jungle, the savanna's acacia, the dark oak and the cherry each have their log, their leaves and
 their planks, and each wood its sapling, which leaves drop one time in twenty. The cherry's leaves

@@ -5,35 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `b1cba53`, item 39's cutout part, and nothing else, carrying the review's file with
-items 67 to 86: the atlas marks a pack tile clear in some pixels and covered in the rest as cut out,
-ice blending as before and the game's own plant masks not counted, marks the whole opaque blocks and
-answers which hide, under a serial so the marks are no global state; the cactus never cut out, its
-texture's clear edges being for the source's model whose sides stand a pixel in, that model named
-under what is not here yet; the mesher sending cut-out glass to the plants' mesh, which casts no
-shadow, and a cut-out leaf or a door's window to a new SolidCutout mesh, masked with shadows,
-culling against what hides so cut-out leaves keep their faces against each other and their
-neighbors, the visibility flood treating cut-out blocks as open and a section's saved joins carrying
-the atlas's serial so a pack change works them out again; Bare Bones' seven leaves having no clear
-pixels and staying whole, so with the default packs only glass, the door's window and the lanterns'
-and torches' pieces take the masked meshes; the lit furnace's faces top, lit front and top, its lamp
-cube on a three-tile strip and its emission map lighting the bright pixels of the emissive face
-alone. Six new tests, 229 in all; the play script's written pack gaining a framed glass, a red lit
-front and a blue top, the glass's middle showing the red wall behind it at 175, 30 and 29, the frame
-gray at 194, 192 and 185, the front 255, 0, 0 and the top 60, 41, 255; the README describing the
-cut-out faces and the furnace; the strict build clean, the play script clean. Read and pushed at
-19:13 on 2026-10-23, the build run of `f45b75e` having ended green. Next item 39's animated
-textures, then 70, 85, 71, 86, 82, 84, 77, 76 and 83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72
-and 73, then the pictures taken again at 40 degrees, then 26 and the items in order; item 55 once
-the engine's pack run of `d3473746` lands, items 38's second part and 54 when theirs come; the
-AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `710fe0d`, item 39's animation part, and nothing else, carrying the review's file:
+the pack reader gives an animated texture's frames in its metadata's order each with its ticks,
+indices past the strip dropped, fewer than two distinct frames counted still and interpolated frames
+stepped; the atlas lays the steps in consecutive tiles in steps of the frames' greatest common tick,
+a longer frame repeated, holding up to sixteen animations, its step rule mirrored by the terrain
+shader, which holds the sixteen in a uniform array and the game's ticks set each draw from the time
+times twenty, stepping the tile before sampling with the mesher writing the first tile as before; an
+animated lamp keeps its first frame's texture and steps per-frame emission maps, since the field
+keys a draw by its color and a changed color would send the lamp back to its stamped frames without
+light, so magma and the sea lantern take the emission map's bright-pixel glow when a pack animates
+them, the sea lantern showing its frame lines over a bright face, a stone room's floor reading 105,
+81 and 63 in each of eight reads while the frames stepped. Three new tests, 232 in all, the order
+and ticks from a strip's metadata, the atlas's four steps of two ticks for frames of 2, 2 and 4 with
+the green at tick 5 and the red at 9, and a still texture; the play script's written pack gaining a
+water of a white and a black frame at a frametime of 10, a pool read eight times 0.3 seconds apart
+giving greens of 19 and 176 in turn with a spread of 40 asked; the README describing it and its list
+of what is not here losing the animated textures; the strict build clean, the play script clean.
+Read at 19:22 on 2026-10-23. Not pushed: the build run 39993371124 of `b1cba53` is still running,
+and the head is pushed when it ends. Next 70, 85, 71, 86, 82, 84, 77, 76 and 83, then 67, 68, 79,
+78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the
+items in order; item 55 once the engine's pack run of `d3473746` lands, items 38's second part and
+54 when theirs come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `b1cba53` came, item 39's cutout part, and nothing else, carrying the review's file with
+items 67 to 86. Read and pushed at 19:13 on 2026-10-23.
 
 Before it, `f45b75e` came, item 66, the creeper's own colors under every pack, and nothing else,
 carrying the review's file. Read at 10:42 on 2026-10-21 and pushed at 10:47 with the three before
 it, their build run green with the play job at 45 minutes 12 seconds.
-
-Before it, `d2bc3f0` came, item 62's mend, the half-height fit, and nothing else, carrying the
-review's file. Read at 10:38, pushed at 10:47 after the build run of `69ecb49` ended green.
 
 ## Now
 
@@ -522,6 +522,7 @@ review's file. Read at 10:38, pushed at 10:47 after the build run of `69ecb49` e
     done at `8f2a2c8` on 2026-10-21, the lanterns' and torches' pieces, as the head says; the cutout
     and the faces, then the animation follow after items 60 and 61. Second commit done at `b1cba53`
     on 2026-10-23, the cutout and the furnace's faces, as the head says; the animation follows.
+    Third commit done at `710fe0d` on 2026-10-23, the animation; item 39 done.
 
 40. **F2 takes a screenshot, as the source does (Decision 19).** The owner wrote shortly before
     03:42 on 2026-10-21 that, as in Minecraft, a screenshot is to be taken in the game with F2, the
