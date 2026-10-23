@@ -233,6 +233,15 @@ public sealed class Overworld : IWorldGenerator
         PlaceFeatures(clip, columnX, columnZ);
         PlacePlants(clip, grounds);
         foreach (var structure in Structures.All) structure.BuildIn(clip, this);
+        // A plant whose ground a tunnel's mouth carved away, or a ravine built after the plants, is
+        // taken out, so none stands in the air.
+        for (int z = 0; z < Section.Size; z++)
+            for (int x = 0; x < Section.Size; x++)
+            {
+                var y = grounds[z * Section.Size + x].Height + 1;
+                if (y < ChunkColumn.Height && BlockGroups.Plants.Contains(column.Get(x, y, z)) && !Blocks.Collides(column.Get(x, y - 1, z)))
+                    column.Set(x, y, z, BlockId.Air);
+            }
         Herds.Place(column, Seed);
         return column;
     }

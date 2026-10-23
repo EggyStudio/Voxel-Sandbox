@@ -178,4 +178,26 @@ public class GenerationTests
             }
         Assert.True(mouths > 0, "no tunnel near the origin opens to the sky");
     }
+
+    [Fact]
+    public void No_Plant_Stands_Over_Ground_A_Cave_Or_A_Ravine_Carved_Away()
+    {
+        // The land of seed 1 for a hundred and sixty blocks each way about a ravine's start, its plants
+        // each standing on a block a body stands on.
+        var land = new Overworld(1);
+        var start = Structures.Find("ravine")!.StartsIn(-512, -512, 512, 512, land).First();
+        int cx = start.X >> Section.Shift, cz = start.Z >> Section.Shift;
+        var floating = new List<string>();
+        for (int dz = -5; dz <= 5; dz++)
+            for (int dx = -5; dx <= 5; dx++)
+            {
+                var column = land.Generate(cx + dx, cz + dz);
+                for (int z = 0; z < Section.Size; z++)
+                    for (int x = 0; x < Section.Size; x++)
+                        for (int y = 1; y < ChunkColumn.Height; y++)
+                            if (BlockGroups.Plants.Contains(column.Get(x, y, z)) && !VoxelSandbox.Blocks.Collides(column.Get(x, y - 1, z)))
+                                floating.Add($"{column.Get(x, y, z)} at {(cx + dx) * Section.Size + x}, {y}, {(cz + dz) * Section.Size + z}");
+            }
+        Assert.Empty(floating);
+    }
 }

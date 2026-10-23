@@ -5,26 +5,25 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `fd276d3`, item 71, the stars, and nothing else, carrying the review's file: the
-stars were alpha-blended with dim colors and stood dark against the dawn and dusk sky, and are drawn
-additive with no depth write, their alpha by the night's share as before; the test counts dark spots
-with a new `voxel.spots` command, pixels darker or lighter than all four neighbors three pixels
-away, rather than reading around one star, at dawn looking east 20 degrees up 272 dark spots before
-and 1 after with the stars lit at about 1,230 pixels, the play check allowing 20 dark and asking 100
-lit, the run reading 3 and 1,191; 233 tests, the strict build and the play script clean. Read at
-20:04 on 2026-10-23. Not pushed: the build run 39996906286 of `22616f4` is still running, and the
-three heads are pushed when it ends. Next 86, 82, 84, 77, 76 and 83, then 67, 68, 79, 78, 80, 81,
-69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order;
-item 55 once the engine's pack run of `d3473746` lands, items 38's second part and 54 when theirs
-come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `10cf3f3`, item 86, reflections off, and nothing else, carrying the review's file:
+the see-through material's roughness goes from 0.08 to 1, since the package has no reflection
+switch, the traced gloss fading to nothing with roughness while the tint and the alpha stay; the
+test reads the water where a red wall's mirror image would lie, red 134 against green 132 before and
+123 against 139 after, the check asking red at least 8 under green, a faint lavender staying from
+the wall's indirect light, which is global illumination and no reflection; 233 tests, the strict
+build and the play script clean. Read at 20:09 on 2026-10-23. Not pushed: the build run 39996906286
+of `22616f4` is still running, and the four heads are pushed when it ends. Next 82, 84, 77, 76 and
+83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees,
+then 26 and the items in order; item 55 once the engine's pack run of `d3473746` lands, items 38's
+second part and 54 when theirs come; the AGENTS.md rows for the Ui and build folders wait on the
+owner's word.
+
+Before it, `fd276d3` came, item 71, the stars, and nothing else, carrying the review's file. Read at
+20:04 on 2026-10-23, held for the build run of `22616f4`.
 
 Before it, `6454b80` came, item 87, the plant masks only where no pack gives the picture, and
 nothing else, carrying the review's file. Read at 19:56 on 2026-10-23, held for the build run of
 `22616f4`.
-
-Before it, `2f9ed14` came, item 85, the grass plant's top line, and nothing else, carrying the
-review's file, the archive and AGENTS.md's archive row. Read at 19:50 on 2026-10-23, held for the
-build run of `22616f4`.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -339,7 +338,8 @@ full.
     game's voxel style, and should stay non-reflective for the time being. The mend: the glass's and
     water's materials set with no reflection, the water keeping its tint and transparency, the
     field's reflection left off until the owner asks; a test reading a water pixel for the sky's
-    color alone. One commit, small.
+    color alone. One commit, small. Done at `10cf3f3` on 2026-10-23, by roughness since the package
+    has no switch, as the head says.
 
 87. **The game's own plant masks show only where no pack gives the plant's picture.** Found by the
     coder on 2026-10-23 under item 85: TerrainAtlas.Build lays the game's own plant masks over every
