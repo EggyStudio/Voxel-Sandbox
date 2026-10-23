@@ -886,10 +886,13 @@ the sun.
 The sections are drawn through a shader of the game's own,
 `VoxelSandbox/resources/shaders/terrain.slang`, which takes the model pass's light, the sun, the
 shadows, global illumination and the sky, over each vertex's color as the engine's shader for
-colored meshes does, and fades the result into the sky's color at the horizon from two thirds of the
-render distance to the render distance, as Minecraft's fog hides where the world ends. Nearer, the
-atmosphere hazes the land as the owner's modpack's shader does with the owner's settings, toward the
-same color by a share that grows as one less e to the minus half a millionth of the cube of the
+colored meshes does, and fades the result from two thirds of the render distance to the render
+distance into the sky drawn behind each point, read along the ray from the eye from the sky's image
+as the engine's sky shader reads it, under the share of the dome's band below, as Minecraft's fog
+hides where the world ends and as the owner's modpack's shader colors its fog by the way the eye
+looks. So a mountain's top high against the sky fades into the sky's blue and the land at the
+horizon into the horizon's haze. Nearer, the atmosphere hazes the land as the modpack's shader does
+with the owner's settings, toward the same color by a share that grows as one less e to the minus half a millionth of the cube of the
 distance in blocks, as much slower as the render distance is past twelve columns, to 0.23 at most,
 its fog's strength of 0.95 less the 0.25 it keeps in clear weather, held to 0.325 of that under its
 altitude of 300, so about a tenth of the land's color at 100 blocks and a fifth at 150. Under water

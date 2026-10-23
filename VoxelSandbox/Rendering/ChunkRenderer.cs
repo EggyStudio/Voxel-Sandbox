@@ -154,14 +154,15 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>
     /// Sets the haze the sections fade into, its color and the distances in blocks it starts at and
     /// covers by, and the atmosphere's haze nearer than that, its most and how fast it grows, none
-    /// where the most is 0.
+    /// where the most is 0. Where the sky is behind, each point fades into the sky drawn behind it
+    /// under the haze dome's band, and the color is the dome's, otherwise each fades into the color.
     /// </summary>
-    public void Fog(Color color, float start, float end, float atmosphere = 0, float growth = 0)
+    public void Fog(Color color, float start, float end, float atmosphere = 0, float growth = 0, bool sky = false)
     {
         SetShaderValue(_shader, _fogColor, new Vector4(color.R, color.G, color.B, 255) / 255);
         SetShaderValue(_shader, _fogStart, start);
         SetShaderValue(_shader, _fogEndAt, end);
-        SetShaderValue(_shader, _atmosphere, new Vector4(atmosphere, growth, 0, 0));
+        SetShaderValue(_shader, _atmosphere, new Vector4(atmosphere, growth, sky ? 1 : 0, HazeDome.Radius / 2));
         _fogEnd = end;
     }
 

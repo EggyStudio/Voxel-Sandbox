@@ -446,6 +446,26 @@ printf '%s\n' $greens | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { 
   || fail "the water's texture does not step through its frames, its green reading$greens"
 cmd voxel.packs none
 
+# A far pillar high against the sky fades into the sky drawn behind it rather than the horizon's
+# color, read at a height of 60 on its face and on the sky four blocks east of it, the two within a
+# few levels and both the sky's deep blue, far from the horizon's paler color.
+cmd voxel.distance 6
+cmd voxel.hud off
+cmd voxel.time 12
+cmd voxel.fill -1 4 -90 1 80 -88 stone
+cmd voxel.fly on
+cmd voxel.tp 0.5 5 0.5
+cmd voxel.look 0 30
+cmd frames.wait 200
+pillar=$(ask voxel.pixel 0.5 60 -87.9)
+beside=$(ask voxel.pixel 4.5 60 -87.9)
+echo "the far pillar $pillar, the sky beside it $beside"
+read -r pr pg pb <<< "$(channels "$pillar")"
+read -r sr sg sb <<< "$(channels "$beside")"
+[ -n "$pb" ] && [ -n "$sb" ] || fail "voxel.pixel read no far pillar or sky, saying $pillar and $beside"
+awk -v p="$pr $pg $pb" -v s="$sr $sg $sb" 'BEGIN { split(p, a); split(s, b); for (i = 1; i <= 3; i++) if (a[i] - b[i] > 4 || b[i] - a[i] > 4) exit 1; exit !(a[3] - a[1] > 100) }' \
+  || fail "the far pillar high against the sky is not the sky's color beside it, $pillar against $beside"
+
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
 # from above, at a render distance of two columns, so lavapipe generates few at each.

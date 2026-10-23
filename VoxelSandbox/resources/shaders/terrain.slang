@@ -7,7 +7,7 @@
 // one, and tinted by the carried color, a surface no pack gives a texture having the white tile and
 // its own color. The model pass's own light falls over that color, as the engine draws a mesh with
 // colors at its vertices, the sun's shadow taken at the middle of the step of a grid each point lies
-// in, so the sun's shadows step along it, then a haze toward the color of the sky at the horizon as
+// in, so the sun's shadows step along it, then a haze toward the color of the sky behind the point as
 // the distance from the eye grows, as Minecraft's fog hides where the world ends.
 import modelpass;
 // The sun's light and its shadow, which modelpass keeps to itself.
@@ -17,8 +17,34 @@ import lights;
 uniform float4 fogColor;
 uniform float fogStart;
 uniform float fogEnd;
-// The atmosphere's haze, the most of it and how fast it grows with distance, none under water.
+// The atmosphere's haze, the most of it and how fast it grows with distance, none under water, 1
+// where the haze takes the sky's color behind each point and 0 where it is the haze's color alone,
+// and the distance past which a point is the haze dome's.
 uniform float4 atmosphere;
+
+// How much of the haze the dome shows at a height above the horizon in degrees, between the rings of
+// HazeDome.Shown as its faces blend it.
+float domeShown(float degrees)
+{
+    if (degrees >= 6.0) return 0.0;
+    if (degrees >= 3.0) return lerp(0.35, 0.0, (degrees - 3.0) / 3.0);
+    if (degrees >= 1.5) return lerp(0.75, 0.35, (degrees - 1.5) / 1.5);
+    if (degrees >= 0.0) return lerp(1.0, 0.75, degrees / 1.5);
+    return 1.0;
+}
+
+// The color a point fades into, the sky drawn behind it as the engine's sky shader draws it along the
+// ray from the eye, under the share of the haze dome's band at the ray's height, so a block high
+// against the sky fades into the sky's blue and one at the horizon into the horizon's haze, as the
+// modpack's shader fades its land. Under water, and on the dome itself, whose band is blended over
+// the sky, it is the haze's color alone.
+float3 hazeColor(float3 toEye, float distance)
+{
+    if (atmosphere.z == 0.0 || distance > atmosphere.w) return fogColor.rgb;
+    float3 way = -toEye / distance;
+    float3 sky = toDisplay(skyMap.SampleLevel(lightLinear, way, 0).rgb * lighting.environment.x);
+    return lerp(sky, fogColor.rgb, domeShown(degrees(asin(clamp(way.y, -1.0, 1.0)))));
+}
 
 // The atlas of the packs' tiles, each twice its size in a cell of its own holding it two by two,
 // its cells across and down, a tile's pixels across and how many of the table below hold an
@@ -211,5 +237,5 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     float distance = length(streams.base.toEye);
     float aerial = atmosphere.x * (1.0 - exp(-distance * distance * distance * 1e-6 * atmosphere.y));
     float haze = 1.0 - (1.0 - smoothstep(fogStart, fogEnd, distance)) * (1.0 - aerial);
-    return float4(lerp(shown, fogColor.rgb, haze), color.a);
+    return float4(lerp(shown, hazeColor(streams.base.toEye, distance), haze), color.a);
 }

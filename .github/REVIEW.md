@@ -5,23 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `f9ab3bb`, item 82, no plant over a carved cave, and nothing else, carrying the
-review's file: after a column's structures are built, a plant at its ground's height plus one whose
-block below no longer collides is taken out, covering a tunnel mouth carved under a plant and the
-ravines built as structures after the plants; no departures; the test scans 11 by 11 columns about
-seed 1's first ravine and found 4 floating plants before the fix; 234 tests, the strict build and
-the play script clean. Read at 20:14 on 2026-10-23. Not pushed: the build run 39996906286 of
-`22616f4` is still running, and the five heads are pushed when it ends. Next 84, 77, 76 and 83, then
-67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26
-and the items in order; item 55 once the engine's pack run of `d3473746` lands, items 38's second
-part and 54 when theirs come; the AGENTS.md rows for the Ui and build folders wait on the owner's
-word.
+Reviewed up to `a9b0fcf`, item 84, the loading screen, with COMMITS.md's pushes and branch rule, and
+nothing else, carrying the review's files and NORM.md: a screen with the world's name and a bar of
+its columns generated and its sections meshed, shown until the player's column and its neighbors
+stand, the pack fetch with its own line and bar while it runs and the screen not waiting for it,
+only columns within three of the player asked for while a world loads, a new world's player landing
+at the origin's top once the world stands; a play-script check through `voxel.loading on` reading
+the screen's corner at 24, 24 and 28 and then the sky; play.sh and pictures.sh waiting for the world
+to stand after an open; COMMITS.md saying the reviewing session pushes once the previous build run
+has ended and a branch exists only for a second writer, named for its work, its commits
+cherry-picked with the author reset; AGENTS.md's line that the owner pushes raised with the owner by
+the coder; 234 tests, the strict build and the play script clean. Read at 20:29 on 2026-10-23. Not
+pushed: the build run 39996906286 of `22616f4` is still running, and the six heads are pushed when
+it ends. Next 77, 76 and 83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures
+taken again at 40 degrees, then 26 and the items in order; item 55 once the engine's pack run of
+`d3473746` lands, items 38's second part and 54 when theirs come; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `f9ab3bb` came, item 82, no plant over a carved cave, and nothing else, carrying the
+review's file. Read at 20:14 on 2026-10-23, held for the build run of `22616f4`.
 
 Before it, `10cf3f3` came, item 86, reflections off, and nothing else, carrying the review's file.
 Read at 20:09 on 2026-10-23, held for the build run of `22616f4`.
-
-Before it, `fd276d3` came, item 71, the stars, and nothing else, carrying the review's file. Read at
-20:04 on 2026-10-23, held for the build run of `22616f4`.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -321,7 +326,8 @@ full.
     while the world loads in for a second. The mend: a screen with the world's name, a progress bar
     over the sections generated and meshed around the player and the pack's fetch, shown until the
     player's column and its neighbors stand, then the world shown; a test reading the screen's
-    pixels in the first frames and the world's after. One commit, small.
+    pixels in the first frames and the world's after. One commit, small. Done at `a9b0fcf` on
+    2026-10-23, the departures in the head.
 
 85. **No line on a grass plant's top.** The owner wrote on 2026-10-23 (Decision 34) that a thin line
     of the grass plane's pixels shows on the top of it, a faint cross at the top of some. The cause

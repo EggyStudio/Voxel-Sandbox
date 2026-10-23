@@ -13,7 +13,9 @@ repository held before, and nothing is committed to it.
 A branch exists only while a second session writes to the repository, and it is named for its
 work, such as `modeling`, never under `claude/` nor with a random string (NORM.md, N 7.5). Its
 commits are cherry-picked onto `main` as they are, with the author reset to the repository's and
-no trailer added, and the branch is deleted once they are on `main`.
+no trailer added, and the branch is deleted once they are on `main`. Every commit's author and
+committer are the owner's identity, which a session sets as `user.name` and `user.email` before its
+first commit (NORM.md, N 7.6).
 
 A batch is one thing somebody would want to read, revert or cherry-pick alone, such as a fix, a
 feature with its tests and its docs, or a refactor. Work that is still half done stays uncommitted

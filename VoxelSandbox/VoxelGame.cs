@@ -872,7 +872,9 @@ public sealed class VoxelGame : IDisposable
             return;
         }
         // The haze begins two thirds of the way to the render distance and covers the world at it,
-        // and under water it is the water's blue and covers it within 16 blocks.
+        // each point fading into the sky drawn behind it, so a mountain's top high against the sky
+        // fades into the sky's blue, and under water it is the water's blue and covers it within 16
+        // blocks.
         var reach = RenderDistance * Section.Size;
         if (Player.EyeInWater) Renderer.Fog(new Color(24, 52, 120), 2, 16);
         // Over that the atmosphere hazes the land as the modpack's shader does with its owner's
@@ -880,7 +882,7 @@ public sealed class VoxelGame : IDisposable
         // 0.325 of that under its altitude of 300, which lies over the whole world, so a share of
         // 0.23 at most, growing half as fast as at its distance setting of 100, and as much slower
         // as the render distance is past twelve columns.
-        else if (Fog) Renderer.Fog(Sky.Horizon, reach * 0.65f, reach * 0.95f, (0.95f - 0.25f) * 0.325f, 0.5f * MathF.Min(1, 192 / reach));
+        else if (Fog) Renderer.Fog(Sky.Horizon, reach * 0.65f, reach * 0.95f, (0.95f - 0.25f) * 0.325f, 0.5f * MathF.Min(1, 192 / reach), sky: true);
         else Renderer.Fog(Sky.Horizon, float.MaxValue, float.MaxValue);
 
         BeginDrawing();
