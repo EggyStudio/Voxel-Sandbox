@@ -484,6 +484,15 @@ public static class GameCommands
         return Measurements.Ring(LoadImageFromScreen(), game.Player.Camera, new System.Numerics.Vector3(x, y, z), radius, Math.Clamp(samples, 8, 720));
     }
 
+    [Command("voxel.spots", "How many pixels of a rectangle of the last frame stand darker, and how many lighter, than all four neighbors three pixels away by more than so many levels: voxel.spots <x> <y> <width> <height> <levels>")]
+    internal static string Spots(int x, int y, int width, int height, float levels)
+    {
+        if (Game is null) return "no world is loaded";
+        if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
+        var (darker, lighter, read) = Measurements.Spots(LoadImageFromScreen(), x, y, width, height, levels);
+        return $"{darker} darker, {lighter} lighter of {read} at {x}, {y}";
+    }
+
     [Command("voxel.pixel", "The last frame's color in sRGB levels at the pixel a point in the world lies on: voxel.pixel <x> <y> <z>")]
     internal static string Pixel(float x, float y, float z)
     {

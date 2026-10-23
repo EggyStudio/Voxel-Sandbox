@@ -834,8 +834,10 @@ the day's light is gone, a violet blue, and the moon lights the world in the sha
 (0.15, 0.14, 0.20), as bright as before. Its 3,000 stars are squares of 0.28 degrees, most faint and
 a few bright, in a cool white, as the modpack's shader, Aurora's Shaders after Complementary, draws
 its own, each as bright as 40 times the square of how far the product of three noises passes 0.7.
-They keep their places on the turning sky, fade in as the day fades, thin out over the lowest 20
-degrees above the horizon and are gone beside the sun and the moon. The moon goes through
+They are added to the sky, as the sun and the moon are, so a faint star brightens the sky behind it
+and darkens none of it at dawn and dusk, which `voxel.spots` counts. They keep their places on the
+turning sky, fade in as the day fades, thin out over the lowest 20 degrees above the horizon and are
+gone beside the sun and the moon. The moon goes through
 Minecraft's eight phases, a phase a day from the full moon of the first night, and changes while it
 is down. `voxel.time` sets the hour and `voxel.day` the count of days, which a save keeps, and the
 land and the clouds hide the sun, the moon and the stars.

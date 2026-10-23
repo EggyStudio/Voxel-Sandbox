@@ -224,8 +224,13 @@ public sealed class Sky : IDisposable
         rlPushMatrix();
         rlTranslatef(eye.X, eye.Y, eye.Z);
         rlRotatef(TurnDegrees(Hour), 0, 0, 1);
+        // The stars are added to the sky and write no depth, as the sun and the moon are, so a dim star,
+        // whose color is a dark gray, only brightens the sky behind it, where blended over it at dawn
+        // and dusk it stood darker than the sky, a black spot.
         if (night > 0.01f)
         {
+            BeginBlendMode(BlendMode.Additive);
+            rlDisableDepthMask();
             rlBegin(RlDrawMode.Quads);
             foreach (var (way, right, up, color) in Stars)
             {
@@ -238,6 +243,8 @@ public sealed class Sky : IDisposable
                 Corners(way * StarDistance, right, up, Vector4.Zero);
             }
             rlEnd();
+            rlEnableDepthMask();
+            EndBlendMode();
         }
 
         // The moon and then the sun, each added to the sky and writing no depth, as Minecraft adds

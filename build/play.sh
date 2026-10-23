@@ -144,6 +144,24 @@ cmd voxel.look 40 35
 cmd frames.wait 2
 capture sky2.png
 
+# At dawn the stars brighten the sky and darken none of it. Read low in the east over a band of the
+# window with the clouds hidden, no more than 20 pixels stand darker than all four of their neighbors
+# three pixels away by 8 levels, where stars blended over the sky stood as 272 dark spots, and at
+# least 100 stand lighter, the stars still shown.
+cmd voxel.clouds off
+cmd voxel.tp 0.5 10 0.5
+cmd voxel.time 5.8
+cmd voxel.look 90 20
+cmd frames.wait 10
+ask voxel.spots 1 1 1 1 1 > /dev/null
+cmd frames.wait 2
+spots=$(ask voxel.spots 40 20 1200 300 8)
+echo "the dawn sky's spots, $spots"
+read -r darker lighter <<< "$(printf '%s\n' "$spots" | sed -nE 's/^([0-9]+) darker, ([0-9]+) lighter.*/\1 \2/p')"
+[ -n "$lighter" ] || fail "voxel.spots read nothing of the dawn sky, saying $spots"
+[ "$darker" -le 20 ] && [ "$lighter" -ge 100 ] || fail "the stars at dawn darken the sky or do not show, $spots"
+cmd voxel.clouds on
+
 # The sun high in the south at noon and low in the west at dusk, its glow's rings stepping along
 # the sun's pixels, the sky's gradient around them smooth. The clouds are left out at noon, where
 # the one drifting over the sun at that hour would hide it.
@@ -491,4 +509,4 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, drew with no validation error and wrote $name on F2"

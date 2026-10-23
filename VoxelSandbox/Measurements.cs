@@ -184,6 +184,26 @@ public static class Measurements
             $"radius {radius}: mean {mean:0.00}, low {low:0.00}, high {high:0.00}, swing {(high - low) / mean:0.000} of the mean, {peaks} peaks; by angle {list}");
     }
 
+    /// <summary>
+    /// How many pixels of a rectangle of the picture stand darker than all four of their neighbors
+    /// three pixels away, by more than so many levels of luminance, and how many stand lighter, as a
+    /// star's few pixels do against the sky, out of the pixels read.
+    /// </summary>
+    public static (int Darker, int Lighter, int Read) Spots(Image image, int x, int y, int width, int height, double levels)
+    {
+        int darker = 0, lighter = 0, read = 0;
+        for (int py = Math.Max(3, y); py < Math.Min(image.Height - 3, y + height); py++)
+            for (int px = Math.Max(3, x); px < Math.Min(image.Width - 3, x + width); px++)
+            {
+                var at = Luminance(image, px, py, 0);
+                double left = Luminance(image, px - 3, py, 0), right = Luminance(image, px + 3, py, 0), up = Luminance(image, px, py - 3, 0), down = Luminance(image, px, py + 3, 0);
+                if (at < Math.Min(Math.Min(left, right), Math.Min(up, down)) - levels) darker++;
+                if (at > Math.Max(Math.Max(left, right), Math.Max(up, down)) + levels) lighter++;
+                read++;
+            }
+        return (darker, lighter, read);
+    }
+
     /// <summary>The picture's color in sRGB levels at the pixel a point in the world lies on, or why none is read.</summary>
     public static string Pixel(Image image, Camera3D camera, Vector3 point)
     {

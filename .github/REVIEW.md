@@ -5,24 +5,23 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `2f9ed14`, item 85, the grass plant's top line, and nothing else, carrying the
-review's file, the archive and AGENTS.md's archive row: the fault did not reproduce on demand, one
-close capture showing a faint dotted cross and a second none, so the mend is the item's in shader
-form, a carried place clamped at 0 as well as under 1 so a wall whose top lies at its picture's top
-cannot wrap to the bottom row, the play check reading the tall grass's clear top row as sky at 16
-points; 232 tests, the strict build and the play script clean. Read at 19:50 on 2026-10-23. Not
-pushed: the build run 39996906286 of `22616f4` is still running, and the head is pushed when it
-ends. The coder found that the game's own plant masks are laid over every pack's plant pictures,
-item 87, written at 19:50. Next 87, then 71, 86, 82, 84, 77, 76 and 83, then 67, 68, 79, 78, 80, 81,
-69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order;
-item 55 once the engine's pack run of `d3473746` lands, items 38's second part and 54 when theirs
-come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `6454b80`, item 87, the game's own plant masks only where no pack gives the picture,
+and nothing else, carrying the review's file: the one condition, a test of a pack's grass picture
+against a fern the pack leaves out on the game's mask, and both plains village pictures taken again
+showing Bare Bones' grass tufts and wheat; no departures; 233 tests, the strict build and the play
+script clean. Read at 19:56 on 2026-10-23. Not pushed: the build run 39996906286 of `22616f4` is
+still running, and the two heads are pushed when it ends. Next 71, 86, 82, 84, 77, 76 and 83, then
+67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26
+and the items in order; item 55 once the engine's pack run of `d3473746` lands, items 38's second
+part and 54 when theirs come; the AGENTS.md rows for the Ui and build folders wait on the owner's
+word.
+
+Before it, `2f9ed14` came, item 85, the grass plant's top line, and nothing else, carrying the
+review's file, the archive and AGENTS.md's archive row. Read at 19:50 on 2026-10-23, held for the
+build run of `22616f4`.
 
 Before it, `22616f4` came, item 70, the plants lit the same above the eye's height, and nothing
 else, carrying the review's file. Read at 19:31 on 2026-10-23 and pushed at 19:39 with `710fe0d`.
-
-Before it, `710fe0d` came, item 39's animation part, and nothing else, carrying the review's file.
-Read at 19:22 on 2026-10-23, pushed at 19:39 with `22616f4`.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -345,7 +344,7 @@ full.
     sapling shows the game's own masks. The mend: the one condition, the masks laid where no pack
     gave the tile alone, and a test of a plant with a pack tile keeping the pack's pixels and one
     without taking the mask; the plains village picture taken again if it changes. One commit,
-    small, before item 71.
+    small, before item 71. Done at `6454b80` on 2026-10-23, as the head says.
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's
