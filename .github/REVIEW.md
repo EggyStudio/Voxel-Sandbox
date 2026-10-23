@@ -5,28 +5,32 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `a9b0fcf`, item 84, the loading screen, with COMMITS.md's pushes and branch rule, and
-nothing else, carrying the review's files and NORM.md: a screen with the world's name and a bar of
-its columns generated and its sections meshed, shown until the player's column and its neighbors
-stand, the pack fetch with its own line and bar while it runs and the screen not waiting for it,
-only columns within three of the player asked for while a world loads, a new world's player landing
-at the origin's top once the world stands; a play-script check through `voxel.loading on` reading
-the screen's corner at 24, 24 and 28 and then the sky; play.sh and pictures.sh waiting for the world
-to stand after an open; COMMITS.md saying the reviewing session pushes once the previous build run
-has ended and a branch exists only for a second writer, named for its work, its commits
-cherry-picked with the author reset; AGENTS.md's line that the owner pushes raised with the owner by
-the coder; 234 tests, the strict build and the play script clean. Read at 20:29 on 2026-10-23. Not
-pushed: the build run 39996906286 of `22616f4` is still running, and the six heads are pushed when
-it ends. Next 77, 76 and 83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures
-taken again at 40 degrees, then 26 and the items in order; item 55 once the engine's pack run of
-`d3473746` lands, items 38's second part and 54 when theirs come; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+Reviewed up to `532e45c`, item 77, the fog's color by height, with COMMITS.md's N 7.6 sentence, and
+nothing else, carrying the review's files: the terrain shader reads the sky map along the view ray
+as the engine's sky shader does, so the fog matches the sky's pixels exactly, the haze dome's band
+laid over it in the shader, the dome itself and the fog under water keeping the plain haze color,
+item 58's aerial haze keeping its share and fading toward the same color; the play-script check on a
+stone pillar 88 blocks north at a render distance of 6 reading its face at height 60 and the sky
+beside it both 67, 153 and 223 against the horizon's 175, 199 and 218, the edge check still at a
+step of 0; 234 tests, the strict build and the play script clean. Read at 20:37 on 2026-10-23. The
+build run 40004618511 of `a9b0fcf` ended green, the play job in 55 minutes 17 seconds against its
+limit of 60, so item 88 comes first; the head was pushed at 21:34, and its own build run 40012481229
+ended green with the play job at 57 minutes 38 seconds, read at 22:32, within three minutes of the
+limit. At 21:09 the engine's pack run pushed 5.2.215 with its items 79, the masked shadow, and 80,
+the tonemap curve, listed on the feed at 21:10. Next 88, the play job's time, then 55 and item 58's
+curve on 5.2.215, then 76 and 83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the
+pictures taken again at 40 degrees, then 26 and the items in order; item 55 once the engine's pack
+run of `d3473746` lands, items 38's second part and 54 when theirs come; the AGENTS.md rows for the
+Ui and build folders wait on the owner's word.
+
+Before it, `a9b0fcf` came, item 84, the loading screen, with COMMITS.md's pushes and branch rule,
+and nothing else, carrying the review's files and NORM.md. Read at 20:29 on 2026-10-23, pushed at
+20:36 with the five before it after the build run of `22616f4` ended green, its play job at 53
+minutes 16 seconds. Its build run ended green with the play job at 55 minutes 17 seconds.
 
 Before it, `f9ab3bb` came, item 82, no plant over a carved cave, and nothing else, carrying the
-review's file. Read at 20:14 on 2026-10-23, held for the build run of `22616f4`.
-
-Before it, `10cf3f3` came, item 86, reflections off, and nothing else, carrying the review's file.
-Read at 20:09 on 2026-10-23, held for the build run of `22616f4`.
+review's file. Read at 20:14 on 2026-10-23, pushed at 20:36 after the build run of `22616f4` ended
+green.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -156,7 +160,8 @@ full.
     low sun in the record. One commit, small, or the ask. Read at `bc02459` on 2026-10-21: the
     shadow pass does not cut a masked surface drawn through a program's shader, so the entry is in
     the engine's ASKS.md as its item 79 and the game takes the shadows when the package brings the
-    cut; the capture committed.
+    cut; the capture committed. The engine's item 79 is in 5.2.215, pushed to the feed at 21:04 on
+    2026-10-23; this item follows item 88 once the feed lists it.
 
 67. **The inventory screens take no player key, draw a dragged stack every frame, and dropped items
     wear the pack's pictures.** The owner wrote on 2026-10-23 (Decision 34) that in the crafting HUD
@@ -271,7 +276,8 @@ full.
     behind it, read along the view ray's elevation from the sky's gradient, so a block high against
     the sky fades into that sky's blue and one at the horizon into the horizon's haze, as the
     modpack's shader does; the haze of item 58 keeping its share. A test reading a far block high in
-    view against the sky's pixel beside it. One commit, small.
+    view against the sky's pixel beside it. One commit, small. Done at `532e45c` on 2026-10-23, in
+    the shader from the sky map, as the head says.
 
 78. **Grass as the source places it, with the two-block grass.** The owner wrote on 2026-10-23
     (Decision 34) that there is far too much grass, asking for the source's balance, and that the
@@ -353,6 +359,17 @@ full.
     gave the tile alone, and a test of a plant with a pack tile keeping the pack's pixels and one
     without taking the mask; the plains village picture taken again if it changes. One commit,
     small, before item 71. Done at `6454b80` on 2026-10-23, as the head says.
+
+88. **The play job comes back under 40 minutes.** On the build run 39996906286 of `22616f4` on
+    2026-10-23 the play job took 53 minutes 16 seconds against its limit of 60, where the walk at a
+    render distance of 2 alone took 24 minutes 39 seconds on the run before; the checks of items 60
+    to 87, each opening the world, waiting frames and reading pixels, grew it by half an hour on
+    lavapipe, and the next few items add theirs. The mend: the play script's log timed check by
+    check from the run's log, the costs named in the commit, and the job brought under 40 minutes by
+    sharing one open world among the checks that can share it, waiting the frames a check needs and
+    no more, and reading at the render distance each check needs; the limit stays at 60 as Decision
+    7 set it. One commit, before item 77. The run of `532e45c` took 57 minutes 38 seconds, within
+    three minutes of the limit, so this item goes out before any check is added.
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's

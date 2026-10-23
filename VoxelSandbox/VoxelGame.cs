@@ -13,6 +13,11 @@ public sealed class VoxelGame : IDisposable
     private const float Repeat = 0.25f;
     private const double MeshBudgetMs = 4;
 
+    // The time a frame gives meshing, 4 ms or a tenth of the frame before, whichever is more, so a
+    // slow frame, as on a device that draws on the processor, meshes in proportion and the land in
+    // reach stands in a few frames rather than hundreds.
+    private static double MeshBudget() => Math.Max(MeshBudgetMs, GetFrameTime() * 100);
+
     // The changed columns and the player are saved this often, beside a save on leaving a world.
     private const float SaveSeconds = 30;
 
@@ -365,7 +370,7 @@ public sealed class VoxelGame : IDisposable
     private void Stand()
     {
         Streamer.Update(Player.Body.Position, 1);
-        Renderer.Update(World, Player.Eye, MeshBudgetMs);
+        Renderer.Update(World, Player.Eye, MeshBudget());
         if (HoldLoading || LoadingShare() < 1) return;
         Loading = false;
         if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(new Vector3(0.5f, World.Top(0, 0) + 1, 0.5f));
@@ -463,7 +468,7 @@ public sealed class VoxelGame : IDisposable
         World.Fluids.Update(seconds);
         Clouds.Update(seconds);
         Streamer.Update(Player.Body.Position, RenderDistance);
-        Renderer.Update(World, Player.Eye, MeshBudgetMs);
+        Renderer.Update(World, Player.Eye, MeshBudget());
     }
 
     // The vitals' frame in survival, reckoned afresh after a teleport, and on death the inventory

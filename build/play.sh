@@ -56,6 +56,15 @@ ask() {
   answer=$(./e3d command "$@" --timeout 600 --session "$pid" 2> "$said") || fail "./e3d command $* ended with $?, $(head -n 1 "$said")"
   printf '%s\n' "$answer"
 }
+# Each check's cost in seconds, written as the next begins and at the end, so the run's log names
+# what each costs.
+checking="the open"
+since=$SECONDS
+check() {
+  echo "took $((SECONDS - since)) s, $checking, at $SECONDS s"
+  checking=$1
+  since=$SECONDS
+}
 # Waits until the world opened stands, its loading screen gone.
 stood() {
   for i in $(seq 1 600); do
@@ -63,6 +72,14 @@ stood() {
     cmd frames.wait 10
   done
   fail "the world did not stand within 6000 frames, $(ask voxel.state)"
+}
+# Waits until every column in reach is generated and meshed.
+meshed() {
+  for i in $(seq 1 600); do
+    ask voxel.state | grep -q " 0 generating, 0 sections to mesh" && return 0
+    cmd frames.wait 5
+  done
+  fail "the land in reach was not generated and meshed within 3000 frames, $(ask voxel.state)"
 }
 # The player's feet from voxel.state, which begins "feet at x, y, z".
 feet() { printf '%s\n' "$1" | sed -nE 's/^feet at (-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+) .*/\1 \2 \3/p'; }
@@ -85,8 +102,15 @@ fi
 log=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{log} // ""' "$opened")
 pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' "$opened")
 [ -n "$pid" ] || fail "e3d opened the game and did not say its process"
+# The flat world's checks read what stands within a few blocks of the player, so it is drawn at four
+# columns, where the default of twelve would stream and draw about 650 columns on lavapipe. A check
+# that reads light waits 20 or 30 frames, since lavapipe settles the lantern's pool in 14 and the
+# sheep's wool, the creeper's front and the pool's water in 12, and one that captures the land waits
+# for the land in reach to be meshed and 10 frames more.
+cmd voxel.distance 4
 stood
 
+check "the lamp's room"
 # The room is closed, so at night the lamp is its only light, and the player stands at its south
 # wall facing the lamp.
 cmd voxel.room 10 4 -22 22 11 -10 stone
@@ -94,8 +118,9 @@ cmd voxel.set 16 5 -16 glowstone
 cmd voxel.tp 16.5 5 -11.8
 cmd voxel.look 0 -20
 cmd voxel.time 23
-cmd frames.wait 120
+cmd frames.wait 30
 
+check "the walk to the lamp"
 # The room as the lamp lights it, before the walk takes the player up to the lamp. The capture's
 # path is whole, since the game writes it from its own folder, and on Windows the form the game
 # reads.
@@ -117,6 +142,7 @@ to=$(feet "$after")
 distance=$(printf '%s %s\n' "$from" "$to" | awk '{ printf "%.2f", sqrt(($4 - $1) ^ 2 + ($5 - $2) ^ 2 + ($6 - $3) ^ 2) }')
 awk -v d="$distance" 'BEGIN { exit !(d > 0.5) }' || fail "the player did not walk toward the lamp, from $from to $to"
 
+check "the lantern's pool"
 # A lantern's light on the floor of white concrete in a closed room at night falls smoothly across
 # the block before its glass, the sun's shadow alone taken on the grid of eight steps a block. Read
 # along a line through the middles of a column of steps, no change between neighboring points is over
@@ -128,7 +154,7 @@ cmd voxel.room 50 4 -24 58 9 -12 white_concrete
 cmd voxel.set 54 5 -20 lantern
 cmd voxel.tp 54.5 6.2 -16.5
 cmd voxel.look 0 -40
-cmd frames.wait 120
+cmd frames.wait 30
 ask voxel.line 1 1 1 1 1 1 2 > /dev/null
 cmd frames.wait 2
 pool=$(ask voxel.line 54.5625 5.001 -19.25 54.5625 5.001 -18.25 33)
@@ -138,6 +164,7 @@ read -r first last share <<< "$(printf '%s\n' "$pool" | sed -nE 's/^from ([0-9.]
 awk -v a="$first" -v b="$last" -v s="$share" 'BEGIN { exit !(a - b >= 40 && s <= 0.1) }' || fail "the lantern's light steps across the floor or does not fall, $pool"
 cmd voxel.hud on
 
+check "the night sky"
 # The night sky from the roof, the full moon of the first night ahead in the east-northeast and
 # the stars around it, then from three blocks to the northwest looking further north and higher.
 # The moon, its glow and the stars are quads fixed on the sky, so the second capture shows each at
@@ -153,6 +180,7 @@ cmd voxel.look 40 35
 cmd frames.wait 2
 capture sky2.png
 
+check "the stars at dawn"
 # At dawn the stars brighten the sky and darken none of it. Read low in the east over a band of the
 # window with the clouds hidden, no more than 20 pixels stand darker than all four of their neighbors
 # three pixels away by 8 levels, where stars blended over the sky stood as 272 dark spots, and at
@@ -171,6 +199,7 @@ read -r darker lighter <<< "$(printf '%s\n' "$spots" | sed -nE 's/^([0-9]+) dark
 [ "$darker" -le 20 ] && [ "$lighter" -ge 100 ] || fail "the stars at dawn darken the sky or do not show, $spots"
 cmd voxel.clouds on
 
+check "the sun's glow"
 # The sun high in the south at noon and low in the west at dusk, its glow's rings stepping along
 # the sun's pixels, the sky's gradient around them smooth. The clouds are left out at noon, where
 # the one drifting over the sun at that hour would hide it.
@@ -185,6 +214,7 @@ cmd voxel.look 270 5
 cmd frames.wait 2
 capture dusk.png
 
+check "the pillar's shadow"
 # A pillar of stone west of the room and its shadow on the grass under the sun of 8.30, the
 # shadow's edges running slantwise and stepping along the pixels of the blocks they cross, seen from
 # the air to the southeast. The mobs are taken away first, so none wanders into the shadow.
@@ -197,12 +227,14 @@ cmd voxel.look 305 -35
 cmd frames.wait 2
 capture shadow.png
 
+check "the creative window"
 # The window E opens in creative mode, every item's icon in it and the hotbar's below.
 cmd input.key E 1
 cmd frames.wait 2
 capture inventory.png
 cmd input.key E 1
 
+check "the swim to the bank"
 # A pool of water four blocks deep east of the room, with a bank on its east side a block above the
 # water's top cell, and the player in the water facing the bank. W alone takes the player to the
 # bank, up its side and onto it, as walking into a shore does. The walk ends on the bank whether a
@@ -222,6 +254,7 @@ landed=$(feet "$shore")
 printf '%s\n' "$shore" | grep -q "on the ground" && printf '%s\n' "$landed" | awk '{ exit !($1 > 36 && $2 == 10) }' \
   || fail "the player did not climb out of the water onto the bank, whose top is at 10, and stands at $landed"
 
+check "the sheep's wool"
 # A white sheep south of the spawn at noon, held, its side in the shade seen from two blocks east at
 # its middle's height. The game's mob shader takes the color out of the light from all around it,
 # so its wool reads a gray near 150 on all three channels where the sky's blue reached it before.
@@ -237,7 +270,7 @@ cmd voxel.still on
 cmd voxel.hud off
 cmd voxel.tp 2.5 3.1 9.5
 cmd voxel.look 270 0
-cmd frames.wait 60
+cmd frames.wait 20
 ask voxel.color 1 1 1 1 > /dev/null
 cmd frames.wait 2
 wool=$(ask voxel.color 600 320 80 60)
@@ -246,6 +279,7 @@ channels=$(printf '%s\n' "$wool" | sed -nE 's/^red ([0-9.]+), green ([0-9.]+), b
 printf '%s\n' "$channels" | awk 'NF == 3 { lo = $1; hi = $1; for (i = 2; i <= 3; i++) { if ($i < lo) lo = $i; if ($i > hi) hi = $i } exit !(lo >= 120 && hi <= 200 && hi - lo <= 20) } NF != 3 { exit 1 }' \
   || fail "the sheep's wool in shade reads $wool, where a gray between 120 and 200 with its channels within 20 of each other is asked"
 
+check "the creeper's front"
 # A creeper's front at noon, turned from the sun, shows no bands of its own shadow. Read down the
 # sunlit part of its body's plain green from a block and a half, no two neighboring points are more
 # than 2 levels apart, where the floor of its light looked up with the sun's shadow on the face itself
@@ -260,7 +294,7 @@ mobs=$(ask voxel.mobs 1)
 [[ "$mobs" == *"creeper "*" at 6.5, 4.0, 9.5,"* ]] || fail "the creeper does not stand at 6.5, 4.0, 9.5, $mobs"
 cmd voxel.tp 6.5 4 11.0
 cmd voxel.look 0 -25
-cmd frames.wait 60
+cmd frames.wait 20
 ask voxel.line 1 1 1 1 1 1 2 > /dev/null
 cmd frames.wait 2
 front=$(ask voxel.line 6.5 4.71875 9.635 6.5 4.40625 9.635 61)
@@ -269,6 +303,7 @@ largest=$(printf '%s\n' "$front" | sed -nE 's/^from [0-9.]+ to [0-9.]+, largest 
 [ -n "$largest" ] || fail "voxel.line read no line down the creeper's front, saying $front"
 awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the creeper's front shows bands at noon, $front"
 
+check "the zombie's face"
 # A zombie's face at noon, seen from its own height, is as bright above the eye's height as below
 # it. Read down a column of the face clear of its features, no two neighboring points are more than 2
 # levels apart, where the light of a face turned up, which floors the face's, taken as the eye saw it
@@ -282,7 +317,7 @@ mobs=$(ask voxel.mobs 1)
 [[ "$mobs" == *"zombie "*" at 6.5, 4.0, 9.5,"* ]] || fail "the zombie does not stand at 6.5, 4.0, 9.5, $mobs"
 cmd voxel.tp 6.5 4.1 11.6
 cmd voxel.look 0 -5
-cmd frames.wait 60
+cmd frames.wait 20
 ask voxel.line 1 1 1 1 1 1 2 > /dev/null
 cmd frames.wait 2
 face=$(ask voxel.line 6.71875 5.96875 9.765 6.71875 5.53125 9.765 33)
@@ -291,6 +326,7 @@ largest=$(printf '%s\n' "$face" | sed -nE 's/^from [0-9.]+ to [0-9.]+, largest s
 [ -n "$largest" ] || fail "voxel.line read no line down the zombie's face, saying $face"
 awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the zombie's face steps in light at the eye's height, $face"
 
+check "the high sapling"
 # A sapling on a pillar above the eye's height is lit as one on the ground below it, read at the
 # middle of each one's crown, where its crossed walls are covered. Its green is at least four fifths
 # of the lower's, where a plant's wall seen from below was lit as one facing down, at half of it.
@@ -300,7 +336,7 @@ cmd voxel.set 9 7 0 oak_sapling
 cmd voxel.set 9 4 3 oak_sapling
 cmd voxel.tp 9.5 4 9.5
 cmd voxel.look 0 0
-cmd frames.wait 30
+cmd frames.wait 20
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 high=$(ask voxel.pixel 9.5 7.53 0.5)
@@ -311,6 +347,7 @@ lg=$(printf '%s\n' "$low" | sed -nE 's/^red [0-9]+, green ([0-9]+), .*/\1/p')
 [ -n "$hg" ] && [ -n "$lg" ] || fail "voxel.pixel read no sapling, saying $high and $low"
 [ $((5 * hg)) -ge $((4 * lg)) ] || fail "a plant above the eye's height is lit darker than one below it, $high against $low"
 
+check "the tall grass"
 # A tall grass on a pillar clear of the rooms built above, seen from below against the sky, shows
 # the sky alone in its top row, which its picture leaves clear, read at sixteen points along one of
 # its walls a fiftieth under its top, where a place a hair under 0 wrapped to the picture's bottom
@@ -329,6 +366,7 @@ for i in $(seq 0 15); do
   [ "$tb" -gt "$tg" ] || fail "the tall grass's clear top row shows more than the sky, $top"
 done
 
+check "the pool's reflection"
 # A pool beside a wall of red concrete at noon reflects nothing of the wall. Read on the water where
 # the wall's mirror image would lie, its red stays at least 8 levels under its green, where the
 # glossy water reflecting the wall through the scene's distance field read red 134 to green 132.
@@ -336,7 +374,7 @@ cmd voxel.fill 60 3 30 66 3 36 water
 cmd voxel.fill 60 4 29 66 8 29 red_concrete
 cmd voxel.tp 63.5 4 40
 cmd voxel.look 0 -8
-cmd frames.wait 120
+cmd frames.wait 30
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 mirror=$(ask voxel.pixel 63.5 3.876 33.5)
@@ -345,13 +383,15 @@ read -r wr wg wb <<< "$(printf '%s\n' "$mirror" | sed -nE 's/^red ([0-9]+), gree
 [ -n "$wb" ] || fail "voxel.pixel read no water, saying $mirror"
 [ $((wr + 8)) -le "$wg" ] || fail "the water reflects the red wall beside it, $mirror"
 
+check "the pack's pictures"
 # A zombie wears a pack's picture of it laid as the source lays it, glass is cut out where its
 # picture is clear, and a lit furnace shows its top's picture above and glows at its front. The
 # pack, a folder of pictures written here as PNGs with perl's own zlib, holds the zombie's, half as
 # tall as its layout as an older pack's is, red where the source lays the head's front, clear where
 # it lays the hat's layer, so the hat is left out, and blue elsewhere; glass's, a gray frame about a
 # clear middle; the lit furnace's front in red and the furnace's top in blue; and water's, two
-# frames played half a second each, white and black.
+# frames played a tick each, white and black, so readings a whole number of slow frames apart, as on
+# lavapipe at about two seconds a frame, fall on either rather than each on the same half second.
 textures="$data/picture-pack/assets/minecraft/textures"
 mkdir -p "$textures/entity/zombie" "$textures/block"
 printf '{"pack":{"pack_format":34,"description":"Pictures in plain colors for the play script"}}' > "$data/picture-pack/pack.mcmeta"
@@ -377,7 +417,7 @@ picture 16 16 glass > "$textures/block/glass.png"
 picture 16 16 red > "$textures/block/furnace_front_on.png"
 picture 16 16 blue > "$textures/block/furnace_top.png"
 picture 16 32 halves > "$textures/block/water_still.png"
-printf '{"animation":{"frametime":10}}' > "$textures/block/water_still.png.mcmeta"
+printf '{"animation":{"frametime":1}}' > "$textures/block/water_still.png.mcmeta"
 pack="$data/picture-pack"
 if command -v cygpath > /dev/null; then pack=$(cygpath -m "$pack"); fi
 cmd voxel.packs "$pack"
@@ -388,7 +428,7 @@ cmd frames.wait 2
 cmd voxel.spawn zombie 0
 cmd voxel.tp 6.5 4 11.5
 cmd voxel.look 0 -8
-cmd frames.wait 30
+cmd frames.wait 20
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 front=$(ask voxel.pixel 6.5 5.75 9.76)
@@ -408,7 +448,7 @@ cmd voxel.set 20 6 2 glass
 cmd voxel.set 21 4 2 lit_furnace
 cmd voxel.tp 20.5 4.88 5.5
 cmd voxel.look 0 -15
-cmd frames.wait 30
+cmd frames.wait 20
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 middle=$(ask voxel.pixel 20.5 6.5 3.001)
@@ -446,19 +486,21 @@ printf '%s\n' $greens | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { 
   || fail "the water's texture does not step through its frames, its green reading$greens"
 cmd voxel.packs none
 
+check "the far pillar"
 # A far pillar high against the sky fades into the sky drawn behind it rather than the horizon's
 # color, read at a height of 60 on its face and on the sky four blocks east of it, the two within a
-# few levels and both the sky's deep blue, far from the horizon's paler color.
-cmd voxel.distance 6
+# few levels and both the sky's deep blue, far from the horizon's paler color. It stands 59 blocks
+# out, inside the four columns drawn and past the haze's end at 61.
 cmd voxel.hud off
 cmd voxel.time 12
-cmd voxel.fill -1 4 -90 1 80 -88 stone
+cmd voxel.fill -1 4 -61 1 80 -59 stone
 cmd voxel.fly on
 cmd voxel.tp 0.5 5 0.5
 cmd voxel.look 0 30
-cmd frames.wait 200
-pillar=$(ask voxel.pixel 0.5 60 -87.9)
-beside=$(ask voxel.pixel 4.5 60 -87.9)
+meshed
+cmd frames.wait 10
+pillar=$(ask voxel.pixel 0.5 60 -58.9)
+beside=$(ask voxel.pixel 4.5 60 -58.9)
 echo "the far pillar $pillar, the sky beside it $beside"
 read -r pr pg pb <<< "$(channels "$pillar")"
 read -r sr sg sb <<< "$(channels "$beside")"
@@ -466,10 +508,13 @@ read -r sr sg sb <<< "$(channels "$beside")"
 awk -v p="$pr $pg $pb" -v s="$sr $sg $sb" 'BEGIN { split(p, a); split(s, b); for (i = 1; i <= 3; i++) if (a[i] - b[i] > 4 || b[i] - a[i] > 4) exit 1; exit !(a[3] - a[1] > 100) }' \
   || fail "the far pillar high against the sky is not the sky's color beside it, $pillar against $beside"
 
+check "the overworld's loading"
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
-# from above, at a render distance of two columns, so lavapipe generates few at each.
+# from above, at a render distance of two columns, so lavapipe generates few at each, set before the
+# world opens so no more are asked for meanwhile.
 cmd voxel.hud on
+cmd voxel.distance 2
 # The overworld opens behind its loading screen, held up here to be read, the window's corner the
 # screen's dark gray while the state says it loads, and once it is let go and the world stands the
 # player is set over the origin, and from above the trees there the corner is the sky's.
@@ -494,28 +539,31 @@ sky=$(ask voxel.color 1220 16 40 24)
 echo "$sky"
 printf '%s\n' "$sky" | sed -nE 's/^red ([0-9.]+), green ([0-9.]+), blue ([0-9.]+) .*/\3/p' | awk '{ exit !($1 > 100) }' \
   || fail "the world shown after its loading has no sky in the window's corner, $sky"
-cmd voxel.distance 2
 cmd voxel.fly on
 cmd voxel.time 10
 mkdir -p captures/biomes
 for biome in swamp savanna jungle dark_forest badlands beach river cherry_grove; do
+  check "the $biome"
   found=$(ask voxel.biome "$biome")
   read -r bx by bz <<< "$(printf '%s\n' "$found" | sed -nE 's/.* is at (-?[0-9]+), (-?[0-9]+), (-?[0-9]+),.*/\1 \2 \3/p')"
   [ -n "$bz" ] || fail "voxel.biome found no $biome, saying $found"
   cmd voxel.tp "$bx" "$((by + 24))" "$bz"
   cmd voxel.look 0 -45
-  cmd frames.wait 90
+  meshed
+  cmd frames.wait 10
   state=$(ask voxel.state)
   [[ "$state" == *" in ${biome//_/ }, facing"* ]] || fail "the player over the $biome found at $bx, $bz stands in another biome, $state"
   capture "biomes/$biome.png"
 done
+check "the meadow"
 # A meadow of the plains up close, its grass and flowers cut out of their crossed walls.
 found=$(ask voxel.biome plains)
 read -r bx by bz <<< "$(printf '%s\n' "$found" | sed -nE 's/.* is at (-?[0-9]+), (-?[0-9]+), (-?[0-9]+),.*/\1 \2 \3/p')"
 [ -n "$bz" ] || fail "voxel.biome found no plains, saying $found"
 cmd voxel.tp "$bx" "$((by + 3))" "$((bz + 6))"
 cmd voxel.look 0 -20
-cmd frames.wait 90
+meshed
+cmd frames.wait 10
 capture biomes/meadow.png
 # The meadow again under Bare Bones where the machine has fetched it, the game's own looks of the
 # grass's top, its blossoms, clover and pebbles, laid over the pack's grass, a machine without it, as
@@ -523,23 +571,22 @@ capture biomes/meadow.png
 fetched="${XDG_DATA_HOME:-$HOME/.local/share}/VoxelSandbox/resourcepacks"
 if [ -f "$fetched/Bare Bones 1.21.zip" ]; then
   cmd voxel.packs "$fetched/Bare Bones 1.21.zip"
-  cmd frames.wait 90
+  meshed
+  cmd frames.wait 10
   capture biomes/meadow-pack.png
   cmd voxel.packs none
 fi
 
+check "the land's edge"
 # From high over the land, the drawn land's edge meets the dome under the horizon in the haze's color
 # with no step, read up the window's middle column: the land's last pixel and the one above it alike,
 # and no two neighbors within 16 of the edge more than a few levels apart. It is read at four
 # columns, the land within them generated and meshed first, so the edge lies past the haze's start.
 cmd voxel.distance 4
 cmd voxel.tp "$bx" 120 "$bz"
-for i in $(seq 1 600); do
-  ask voxel.state | grep -q " 0 generating, 0 sections to mesh" && break
-  cmd frames.wait 10
-done
+meshed
 cmd voxel.look 0 -20
-cmd frames.wait 60
+cmd frames.wait 10
 ask voxel.edge 640 > /dev/null
 cmd frames.wait 2
 edge=$(ask voxel.edge 640)
@@ -557,6 +604,7 @@ done
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
 if grep -F 'Validation Error' "$log"; then fail "the validation layer reported an error"; fi
 
+check "the screenshot"
 # F2 in a run that keeps its files writes the frame as a PNG into the screenshots folder beside the
 # saves, named by the time. The list of packs is made empty first, so the run fetches none.
 mkdir -p "$data/VoxelSandbox"
@@ -577,4 +625,5 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
+check ""
 echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, drew with no validation error and wrote $name on F2"
