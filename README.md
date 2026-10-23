@@ -233,7 +233,9 @@ of the land is on seed 1. The player swims in it, sinking slowly, rising while S
 the head and shoulders are out and moving at a little over half speed, climbs out by walking into
 a bank a block above the water, and sees through a blue tint while the eye is under it. Glass,
 ice and water are drawn see-through, a second mesh of each section drawn after the opaque ones and
-farthest first, each vertex's alpha its surface's. They cast no shadow, which keeps them out of the
+farthest first, each vertex's alpha its surface's, and rough, so they reflect nothing, since the
+land the scene's distance field traces in a reflection is drawn in its coarse cells, which clash
+with the blocks' pixels. They cast no shadow, which keeps them out of the
 scene's distance field as well, since the field holds a see-through mesh as solid, so the sun's
 light and indirect light come through a window of glass as through an opening, and a room lit
 through a skylight reads the same with glass in it as without. Glass lets the light levels through,

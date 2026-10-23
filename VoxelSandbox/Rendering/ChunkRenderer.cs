@@ -137,7 +137,9 @@ public sealed class ChunkRenderer : IDisposable
             : LampFaces[s.Id] is not null ? LampCube(new Parts(new Vector4(16, 0, 32, 16), new Vector4(0, 0, 16, 16), new Vector4(32, 0, 48, 16)), new Vector2(48, 16)) : _cube)];
         Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
-        _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 0.08f, CastsShadows = false, Shader = _shader };
+        // Glass, ice and water are rough, so they reflect neither the land the scene's distance field
+        // traces nor the sky, which in the field's coarse cells clashes with the blocks' pixels.
+        _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 1, CastsShadows = false, Shader = _shader };
         _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, CastsShadows = false, Shader = _shader };
         _solidCutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, Shader = _shader };
         _haze = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Blend, CastsShadows = false, Shader = _shader };

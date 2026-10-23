@@ -320,6 +320,22 @@ for i in $(seq 0 15); do
   [ "$tb" -gt "$tg" ] || fail "the tall grass's clear top row shows more than the sky, $top"
 done
 
+# A pool beside a wall of red concrete at noon reflects nothing of the wall. Read on the water where
+# the wall's mirror image would lie, its red stays at least 8 levels under its green, where the
+# glossy water reflecting the wall through the scene's distance field read red 134 to green 132.
+cmd voxel.fill 60 3 30 66 3 36 water
+cmd voxel.fill 60 4 29 66 8 29 red_concrete
+cmd voxel.tp 63.5 4 40
+cmd voxel.look 0 -8
+cmd frames.wait 120
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+mirror=$(ask voxel.pixel 63.5 3.876 33.5)
+echo "the water where the wall would mirror, $mirror"
+read -r wr wg wb <<< "$(printf '%s\n' "$mirror" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p')"
+[ -n "$wb" ] || fail "voxel.pixel read no water, saying $mirror"
+[ $((wr + 8)) -le "$wg" ] || fail "the water reflects the red wall beside it, $mirror"
+
 # A zombie wears a pack's picture of it laid as the source lays it, glass is cut out where its
 # picture is clear, and a lit furnace shows its top's picture above and glows at its front. The
 # pack, a folder of pictures written here as PNGs with perl's own zlib, holds the zombie's, half as
@@ -509,4 +525,4 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, drew with no validation error and wrote $name on F2"

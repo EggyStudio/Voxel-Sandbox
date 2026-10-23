@@ -5,23 +5,26 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `6454b80`, item 87, the game's own plant masks only where no pack gives the picture,
-and nothing else, carrying the review's file: the one condition, a test of a pack's grass picture
-against a fern the pack leaves out on the game's mask, and both plains village pictures taken again
-showing Bare Bones' grass tufts and wheat; no departures; 233 tests, the strict build and the play
-script clean. Read at 19:56 on 2026-10-23. Not pushed: the build run 39996906286 of `22616f4` is
-still running, and the two heads are pushed when it ends. Next 71, 86, 82, 84, 77, 76 and 83, then
-67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26
-and the items in order; item 55 once the engine's pack run of `d3473746` lands, items 38's second
-part and 54 when theirs come; the AGENTS.md rows for the Ui and build folders wait on the owner's
-word.
+Reviewed up to `fd276d3`, item 71, the stars, and nothing else, carrying the review's file: the
+stars were alpha-blended with dim colors and stood dark against the dawn and dusk sky, and are drawn
+additive with no depth write, their alpha by the night's share as before; the test counts dark spots
+with a new `voxel.spots` command, pixels darker or lighter than all four neighbors three pixels
+away, rather than reading around one star, at dawn looking east 20 degrees up 272 dark spots before
+and 1 after with the stars lit at about 1,230 pixels, the play check allowing 20 dark and asking 100
+lit, the run reading 3 and 1,191; 233 tests, the strict build and the play script clean. Read at
+20:04 on 2026-10-23. Not pushed: the build run 39996906286 of `22616f4` is still running, and the
+three heads are pushed when it ends. Next 86, 82, 84, 77, 76 and 83, then 67, 68, 79, 78, 80, 81,
+69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order;
+item 55 once the engine's pack run of `d3473746` lands, items 38's second part and 54 when theirs
+come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `6454b80` came, item 87, the plant masks only where no pack gives the picture, and
+nothing else, carrying the review's file. Read at 19:56 on 2026-10-23, held for the build run of
+`22616f4`.
 
 Before it, `2f9ed14` came, item 85, the grass plant's top line, and nothing else, carrying the
 review's file, the archive and AGENTS.md's archive row. Read at 19:50 on 2026-10-23, held for the
 build run of `22616f4`.
-
-Before it, `22616f4` came, item 70, the plants lit the same above the eye's height, and nothing
-else, carrying the review's file. Read at 19:31 on 2026-10-23 and pushed at 19:39 with `710fe0d`.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -213,7 +216,8 @@ full.
     corners or backing write over the sky, or blended with the wrong operator. The mend: stars drawn
     additive or with an alpha that is zero off the point, their brightness scaled by the sky's
     darkness so none shows by day and all show at night; a test reading the sky around a star for no
-    pixel darker than the sky at dusk. One commit, small.
+    pixel darker than the sky at dusk. One commit, small. Done at `fd276d3` on 2026-10-23, additive
+    stars, as the head says.
 
 72. **Fire, a block that burns, animated and emissive (Decision 34).** The owner wrote on 2026-10-23
     (Decision 34) that fire is missing and could show the radiance cascades. The mend: a fire block
