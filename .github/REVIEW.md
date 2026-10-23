@@ -5,29 +5,24 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `22616f4`, item 70, the plants lit the same above the eye's height, and nothing else,
-carrying the review's file: the land's own faces never turn from the eye, so the faulty samples were
-the plants', whose crossed walls carry the up normal and above the eye are turned over by the
-engine's surfaceNormal, short grass above the eye reading 38, 95 and 0 against 162, 188 and 72 below
-at noon on the flat world; the terrain shader lights a wall through a copy of the vertex output
-whose view direction is straight up at the same length, the haze keeping the real distance, the same
-grass then 148, 173 and 69 above; the overlay's grass-over-dirt choice rides on the packed flags and
-is untouched; the play check reading two oak saplings' crowns, one on a pillar above the eye and one
-below, the upper's green at least four fifths of the lower's, 183 against 182; plains-village.webp
-and its own-art twin taken again, carrying everything since; the README's plants paragraph saying
-why. 232 tests, the strict build and the play script clean. Read at 19:31 on 2026-10-23, the commit
-amended once before it was sent for a colon joint in a comment, unpushed. The build run 39993371124
-of `b1cba53` ended green, the play job in 24 minutes 39 seconds, so the two heads were pushed at
-19:39. Next 85, 71, 86, 82, 84, 77, 76 and 83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73,
-then the pictures taken again at 40 degrees, then 26 and the items in order; item 55 once the
-engine's pack run of `d3473746` lands, items 38's second part and 54 when theirs come; the AGENTS.md
-rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `2f9ed14`, item 85, the grass plant's top line, and nothing else, carrying the
+review's file, the archive and AGENTS.md's archive row: the fault did not reproduce on demand, one
+close capture showing a faint dotted cross and a second none, so the mend is the item's in shader
+form, a carried place clamped at 0 as well as under 1 so a wall whose top lies at its picture's top
+cannot wrap to the bottom row, the play check reading the tall grass's clear top row as sky at 16
+points; 232 tests, the strict build and the play script clean. Read at 19:50 on 2026-10-23. Not
+pushed: the build run 39996906286 of `22616f4` is still running, and the head is pushed when it
+ends. The coder found that the game's own plant masks are laid over every pack's plant pictures,
+item 87, written at 19:50. Next 87, then 71, 86, 82, 84, 77, 76 and 83, then 67, 68, 79, 78, 80, 81,
+69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order;
+item 55 once the engine's pack run of `d3473746` lands, items 38's second part and 54 when theirs
+come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `22616f4` came, item 70, the plants lit the same above the eye's height, and nothing
+else, carrying the review's file. Read at 19:31 on 2026-10-23 and pushed at 19:39 with `710fe0d`.
 
 Before it, `710fe0d` came, item 39's animation part, and nothing else, carrying the review's file.
 Read at 19:22 on 2026-10-23, pushed at 19:39 with `22616f4`.
-
-Before it, `b1cba53` came, item 39's cutout part, and nothing else, carrying the review's file with
-items 67 to 86. Read and pushed at 19:13 on 2026-10-23.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -333,7 +328,8 @@ full.
     to read: the crossed quads reaching a texel beyond their picture in the atlas or the atlas's
     padding, so the row above bleeds in. The mend: the quads' coordinates inset by half a texel or
     the atlas padded with each tile's edge; a test reading the pixels above a grass plant's picture
-    for the sky alone. One commit, small.
+    for the sky alone. One commit, small. Done at `2f9ed14` on 2026-10-23, in shader form, as the
+    head says.
 
 86. **Glass and water reflect nothing for the present (Decision 36).** The owner wrote on 2026-10-23
     (Decision 34) that the reflections on glass and water show the scene field, clashing with the
@@ -341,6 +337,15 @@ full.
     water's materials set with no reflection, the water keeping its tint and transparency, the
     field's reflection left off until the owner asks; a test reading a water pixel for the sky's
     color alone. One commit, small.
+
+87. **The game's own plant masks show only where no pack gives the plant's picture.** Found by the
+    coder on 2026-10-23 under item 85: TerrainAtlas.Build lays the game's own plant masks over every
+    pack's plant pictures, the branch after the grass looks checking nothing of whether a pack gave
+    the tile though its comment says a plant no pack has, so with Bare Bones every grass, flower and
+    sapling shows the game's own masks. The mend: the one condition, the masks laid where no pack
+    gave the tile alone, and a test of a plant with a pack tile keeping the pack's pixels and one
+    without taking the mask; the plains village picture taken again if it changes. One commit,
+    small, before item 71.
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's

@@ -142,7 +142,7 @@ public sealed class TerrainAtlas
             if (PackTextures.Of(surface) is { Looks: true } grassy && found.Count + 4 * GroundArt.Looks.Count < MostTiles)
                 variants[surface] = OwnLooks(found, tile[surface], grassy.Texture, Number);
             // A plant no pack has takes the game's own mask, each mask one tile however many plants share it.
-            else if (PlantArt.Mask(surface) is { } mask && found.Count < MostTiles)
+            else if (tile[surface] == 0 && PlantArt.Mask(surface) is { } mask && found.Count < MostTiles)
             {
                 if (!masks.TryGetValue(mask, out var number))
                 {

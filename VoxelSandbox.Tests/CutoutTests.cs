@@ -52,6 +52,17 @@ public sealed class CutoutTests : IDisposable
     }
 
     [Fact]
+    public void A_Plant_A_Pack_Gives_A_Picture_Wears_It_And_One_It_Does_Not_The_Games_Own_Mask()
+    {
+        var atlas = Atlas(("block/short_grass", Framed()));
+        // The pack's picture, its average its own, and the fern, which the pack leaves out, the game's mask.
+        Assert.NotNull(atlas.Average(Surfaces.ShortGrass));
+        Assert.True(atlas.Cuts(Surfaces.ShortGrass));
+        Assert.Null(atlas.Average(Surfaces.Fern));
+        Assert.NotEqual(0, atlas.Tile(Surfaces.Fern));
+    }
+
+    [Fact]
     public void Leaves_A_Pack_Cuts_Out_Keep_Their_Faces_Against_Each_Other_And_Hide_Nothing()
     {
         var world = Floor();
