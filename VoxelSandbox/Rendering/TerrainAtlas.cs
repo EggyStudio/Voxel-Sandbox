@@ -42,6 +42,9 @@ public sealed class TerrainAtlas
     /// <summary>The most tiles the shader's nine bits of a tile's number reach, tile 0 among them.</summary>
     public const int MostTiles = 512;
 
+    /// <summary>The most animated textures the atlas steps, as many as the terrain shader's table holds.</summary>
+    public const int MostAnimations = 16;
+
     /// <summary>The atlas of no pack, its one white tile for every surface.</summary>
     public static readonly TerrainAtlas None = Build(ResourcePacks.None);
 
@@ -61,9 +64,10 @@ public sealed class TerrainAtlas
     // surface that has none.
     private readonly (uint Tiles, int Weight)[]?[] _variants;
 
-    private TerrainAtlas(int pixels, int[] tile, int[] overlay, Color?[] tint, bool[] own, (uint, int)[]?[] variants, List<byte[]> pictures)
+    private TerrainAtlas(int pixels, int[] tile, int[] overlay, Color?[] tint, bool[] own, (uint, int)[]?[] variants, List<byte[]> pictures,
+        List<(int First, int Count, int Ticks)> animations)
     {
-        (Pixels, _tile, _overlay, _tint, _own, _variants, _pictures) = (pixels, tile, overlay, tint, own, variants, pictures);
+        (Pixels, _tile, _overlay, _tint, _own, _variants, _pictures, Animations) = (pixels, tile, overlay, tint, own, variants, pictures, animations);
         _averages = [.. pictures.Select(Average)];
         _cuts = [.. pictures.Select(p => Enumerable.Range(0, p.Length / 4).Any(i => p[i * 4 + 3] == 0) && Enumerable.Range(0, p.Length / 4).All(i => p[i * 4 + 3] is 0 or 255))];
         // The cactus's texture is clear at its edges for the source's model, its sides standing a
@@ -101,16 +105,31 @@ public sealed class TerrainAtlas
         var found = new List<Image> { new(Enumerable.Repeat((byte)255, 4).ToArray(), 1, 1) };
         var numbers = new Dictionary<string, int>(StringComparer.Ordinal);
         var masks = new Dictionary<byte[], int>(ReferenceEqualityComparer.Instance);
+        var animations = new List<(int First, int Count, int Ticks)>();
 
         // A texture's tile, turned by so many quarter turns, each turned texture a tile of its own.
+        // An animated one lays its steps in tiles one after another from its first, each step held
+        // the frames' shortest time, as long as there is room for them, and its first alone after.
         int Number(string name, int turns = 0)
         {
             var key = turns == 0 ? name : $"{name}@{turns}";
             if (numbers.TryGetValue(key, out var number)) return number;
             if (found.Count >= MostTiles || packs.Texture(name) is not { } image) return numbers[key] = 0;
+            if (turns == 0 && animations.Count < MostAnimations && packs.Animation(name) is { } animation)
+            {
+                var step = animation.Ticks.Aggregate(Gcd);
+                Image[] steps = [.. animation.Frames.SelectMany((frame, i) => Enumerable.Repeat(frame, animation.Ticks[i] / step))];
+                if (found.Count + steps.Length <= MostTiles)
+                {
+                    animations.Add((found.Count, steps.Length, step));
+                    found.AddRange(steps);
+                    return numbers[key] = found.Count - steps.Length;
+                }
+            }
             found.Add(Turned(image, turns));
             return numbers[key] = found.Count - 1;
         }
+        static int Gcd(int a, int b) => b == 0 ? a : Gcd(b, a % b);
 
         for (int surface = 0; surface < count; surface++)
         {
@@ -135,7 +154,7 @@ public sealed class TerrainAtlas
         }
 
         var pixels = (int)System.Numerics.BitOperations.RoundUpToPowerOf2((uint)Math.Clamp(found.Skip(1).Select(i => i.Width).DefaultIfEmpty(1).Max(), 1, MostPixels));
-        return new TerrainAtlas(pixels, tile, overlay, tint, own, variants, [.. found.Select(i => Resized(i, pixels))]);
+        return new TerrainAtlas(pixels, tile, overlay, tint, own, variants, [.. found.Select(i => Resized(i, pixels))], animations);
     }
 
     // The game's own looks of the grass's top, the grass's tile kept as it lies, since a pack draws
@@ -221,6 +240,28 @@ public sealed class TerrainAtlas
     /// The game's own masks of its plants are cut out by their own meshes, not by this.
     /// </summary>
     public bool Cuts(int surface) => _tile[surface] != 0 && !_own[surface] && _cuts[_tile[surface]];
+
+    /// <summary>
+    /// The animated textures' tiles, each its first, which a face carries, how many tiles its steps
+    /// take, laid one after another in the order its metadata plays its frames, and the game ticks
+    /// each step is held, a frame held longer than the shortest taking a step for each of its share.
+    /// </summary>
+    public IReadOnlyList<(int First, int Count, int Ticks)> Animations { get; }
+
+    /// <summary>The step of an animation of so many steps each held so many ticks, at a time in game ticks, as the terrain shader steps a tile.</summary>
+    public static int Step(int count, int ticks, double now) => (int)(Math.Floor(now / ticks) % count);
+
+    /// <summary>
+    /// A surface's texture's steps as pictures, for an emissive block's cube, and the ticks each is
+    /// held, or null where its texture is not animated.
+    /// </summary>
+    public (Image[] Steps, int Ticks)? Animated(int surface)
+    {
+        foreach (var (first, count, ticks) in Animations)
+            if (first == _tile[surface])
+                return ([.. Enumerable.Range(first, count).Select(tile => new Image(_pictures[tile], Pixels, Pixels))], ticks);
+        return null;
+    }
 
     /// <summary>A number no other atlas made has, which a section's visibility worked out under it is kept by.</summary>
     public int Serial { get; }

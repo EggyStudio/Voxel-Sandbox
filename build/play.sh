@@ -269,7 +269,8 @@ awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the zombie's face steps 
 # pack, a folder of pictures written here as PNGs with perl's own zlib, holds the zombie's, half as
 # tall as its layout as an older pack's is, red where the source lays the head's front, clear where
 # it lays the hat's layer, so the hat is left out, and blue elsewhere; glass's, a gray frame about a
-# clear middle; and the lit furnace's front in red and the furnace's top in blue.
+# clear middle; the lit furnace's front in red and the furnace's top in blue; and water's, two
+# frames played half a second each, white and black.
 textures="$data/picture-pack/assets/minecraft/textures"
 mkdir -p "$textures/entity/zombie" "$textures/block"
 printf '{"pack":{"pack_format":34,"description":"Pictures in plain colors for the play script"}}' > "$data/picture-pack/pack.mcmeta"
@@ -281,6 +282,7 @@ picture() {
       glass => sub { my ($x, $y) = @_; $x >= 4 && $x < 12 && $y >= 4 && $y < 12 ? "\x00\x00\x00\x00" : "\xc8\xc8\xc8\xff" },
       red => sub { "\xff\x00\x00\xff" },
       blue => sub { "\x00\x00\xff\xff" },
+      halves => sub { my ($x, $y) = @_; $y < 16 ? "\xff\xff\xff\xff" : "\x00\x00\x00\xff" },
     );
     my $raw = "";
     for my $y (0 .. $h - 1) { $raw .= "\0"; $raw .= $rules{$rule}->($_, $y) for 0 .. $w - 1; }
@@ -293,6 +295,8 @@ picture 64 32 zombie > "$textures/entity/zombie/zombie.png"
 picture 16 16 glass > "$textures/block/glass.png"
 picture 16 16 red > "$textures/block/furnace_front_on.png"
 picture 16 16 blue > "$textures/block/furnace_top.png"
+picture 16 32 halves > "$textures/block/water_still.png"
+printf '{"animation":{"frametime":10}}' > "$textures/block/water_still.png.mcmeta"
 pack="$data/picture-pack"
 if command -v cygpath > /dev/null; then pack=$(cygpath -m "$pack"); fi
 cmd voxel.packs "$pack"
@@ -341,6 +345,24 @@ read -r tr tg tb <<< "$(channels "$top")"
 [ $((gr > gb ? gr - gb : gb - gr)) -le 40 ] && [ "$gr" -gt 60 ] || fail "the glass's frame does not show its gray, $frame"
 [ "$sr" -gt $((2 * sb)) ] || fail "the lit furnace's front does not wear the picture's red, $side"
 [ "$tb" -gt $((2 * tr)) ] || fail "the lit furnace's top does not wear the furnace's top's blue, $top"
+# A pool of water a block across shows the written water's frames in turn, read eight times three
+# tenths of a second apart, at least once white under the water's tint and once black.
+cmd voxel.set 26 3 2 water
+cmd voxel.tp 26.5 5 4.5
+cmd voxel.look 0 -50
+cmd frames.wait 10
+greens=""
+for i in $(seq 1 8); do
+  sleep 0.3
+  cmd frames.wait 1
+  pool=$(ask voxel.pixel 26.5 3.876 2.5)
+  read -r wr wg wb <<< "$(channels "$pool")"
+  [ -n "$wb" ] || fail "voxel.pixel read no water, saying $pool"
+  greens="$greens $wg"
+done
+echo "the water's green over the frames:$greens"
+printf '%s\n' $greens | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low >= 40) }' \
+  || fail "the water's texture does not step through its frames, its green reading$greens"
 cmd voxel.packs none
 
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
@@ -431,4 +453,4 @@ name=$(basename "${shots[0]}")
 size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $head, 24; print join " ", unpack "NN", substr $head, 16, 8' "${shots[0]}")
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, drew with no validation error and wrote $name on F2"

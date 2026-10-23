@@ -21,10 +21,30 @@ uniform float fogEnd;
 uniform float4 atmosphere;
 
 // The atlas of the packs' tiles, each twice its size in a cell of its own holding it two by two,
-// and its cells across and down and a tile's pixels across. The engine hands a shader's own texture
-// over as the bytes it holds, so a tile's color is decoded from sRGB here.
+// its cells across and down, a tile's pixels across and how many of the table below hold an
+// animated texture. The engine hands a shader's own texture over as the bytes it holds, so a tile's
+// color is decoded from sRGB here.
 Sampler2D atlas;
 uniform float4 atlasLayout;
+
+// The atlas's animated textures, each its first tile, which a face carries, how many tiles its
+// steps take one after another, and the game ticks each is held, and the game ticks now, a
+// twentieth of a second each, as Minecraft steps its textures.
+uniform float4 animations[16];
+uniform float ticks;
+
+// A tile stepped to the frame its animation shows now, as TerrainAtlas.Step steps it.
+uint stepped(uint tile)
+{
+    int count = int(atlasLayout.w);
+    for (int i = 0; i < count; i++)
+    {
+        float4 animation = animations[i];
+        if (float(tile) == animation.x)
+            return tile + uint(fmod(floor(ticks / animation.z), animation.y));
+    }
+    return tile;
+}
 
 struct TerrainOutput
 {
@@ -93,6 +113,7 @@ float2 across(float3 world, uint face)
 // whose layout was never set, as the clouds' is, reads its one white cell.
 float4 tileColor(uint tile, float2 place, float level)
 {
+    tile = stepped(tile);
     float2 cells = max(atlasLayout.xy, float2(1.0));
     uint columns = uint(cells.x);
     float2 cell = float2(float(tile % columns), float(tile / columns));

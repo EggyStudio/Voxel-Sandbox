@@ -692,8 +692,16 @@ blends as before, and the cactus, whose texture is clear at its edges for Minecr
 sides a pixel in from its cell's, stays whole, since on the game's whole cube those edges would
 show through at its corners. An emissive block's cube is drawn with its texture, and one whose
 faces differ, the lit furnace, with its top's, its sides' and its bottom's laid side by side, so it
-shows the furnace's top above its front, its front alone emissive where its pixels are bright. An
-item's icon is the pack's texture for it, or a block's cube with its faces' textures. The grass's
+shows the furnace's top above its front, its front alone emissive where its pixels are bright. A
+pack's animated texture, a strip of frames its metadata plays in an order and for times of its own,
+has its frames laid in the atlas one after another, each held the shortest frame's time and a
+longer frame for as many steps as it lasts, a face carrying the first and the terrain shader
+stepping it by the game's ticks, twenty a second, as Minecraft steps them, up to 16 such textures.
+An animated lamp's cube keeps its first frame's texture, whose average the scene's distance field
+reads as its color, since a draw whose color changes is stamped again without its light for frames,
+and steps the map of its emission, which shows most of what the face shows, so a lantern's flame
+flickers and the light it casts holds still. `build/play.sh` writes water of a white and a black
+frame and reads both in turn. An item's icon is the pack's texture for it, or a block's cube with its faces' textures. The grass's
 top shows looks of the game's own in its flat style, little blossoms of four colors, patches of
 clover a shade darker than the grass under them and so tinted by the climate as it is, and pebbles,
 laid over a pack's grass or the game's own at four quarter turns, the grass's own tile keeping the
@@ -888,8 +896,7 @@ take no haze.
 
 ## What is not here yet
 
-A pack's animated textures, which show their first frame, its block models and its connected
-textures. The cactus's model of Minecraft's, its sides a pixel in from its cell's, so a pack's clear
+A pack's block models and its connected textures. The cactus's model of Minecraft's, its sides a pixel in from its cell's, so a pack's clear
 edges of it show the color the pixel holds. Slabs and stairs that keep light out, as
 Minecraft's do. Greedy meshing. Saplings that grow, and vines and cocoa on the jungle's trees.
 Structures read from files rather than built in code. Villagers that trade, sleep in beds or work

@@ -99,7 +99,7 @@ public sealed class ChunkRenderer : IDisposable
     private readonly ModelMesh _dome;
     private float _fogEnd = float.MaxValue;
     private readonly Shader _shader;
-    private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _atlas, _atlasLayout;
+    private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _atlas, _atlasLayout, _animations, _ticks;
     private Texture2D _atlasTexture;
     // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with its
     // own texture where a pack has one, which the scene's distance field reads its average of, and
@@ -115,6 +115,11 @@ public sealed class ChunkRenderer : IDisposable
     private readonly List<SectionKey> _queue = [];
     private readonly List<(float Distance, SectionMeshes Entry)> _seeThrough = [];
     private ModelMaterial[] _lamps = [];
+    // Each animated emissive surface's steps, its texture's steps and the ticks each is held, the
+    // maps of their emission and its material with each.
+    private (Image[] Steps, int Ticks)?[] _lampAnimations = [];
+    private Texture2D[][] _lampStepEmission = [];
+    private ModelMaterial[]?[] _lampSteps = [];
     private float _glowScale = 1;
 
     public ChunkRenderer()
@@ -127,6 +132,7 @@ public sealed class ChunkRenderer : IDisposable
         (_fogColor, _fogStart, _fogEndAt) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
         _atmosphere = GetShaderLocation(_shader, "atmosphere");
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
+        (_animations, _ticks) = (GetShaderLocation(_shader, "animations"), GetShaderLocation(_shader, "ticks"));
         _lampCubes = [.. Surfaces.All.Select(s => LampParts[s.Id] is { } shown ? LampCube(shown, new Vector2(16))
             : LampFaces[s.Id] is not null ? LampCube(new Parts(new Vector4(16, 0, 32, 16), new Vector4(0, 0, 16, 16), new Vector4(32, 0, 48, 16)), new Vector2(48, 16)) : _cube)];
         Atlas = TerrainAtlas.None;
@@ -172,8 +178,11 @@ public sealed class ChunkRenderer : IDisposable
             GenTextureMipmaps(ref _atlasTexture);
             SetTextureFilter(_atlasTexture, TextureFilter.Point);
             SetShaderValueTexture(_shader, _atlas, _atlasTexture);
-            SetShaderValue(_shader, _atlasLayout, new Vector4(TerrainAtlas.Columns, value.Rows, value.Pixels, 0));
-            foreach (var texture in _lampTextures.Concat(_lampEmission))
+            SetShaderValue(_shader, _atlasLayout, new Vector4(TerrainAtlas.Columns, value.Rows, value.Pixels, value.Animations.Count));
+            var table = new Vector4[TerrainAtlas.MostAnimations];
+            for (int i = 0; i < value.Animations.Count; i++) table[i] = new Vector4(value.Animations[i].First, value.Animations[i].Count, value.Animations[i].Ticks, 0);
+            SetShaderValueV<Vector4>(_shader, _animations, table);
+            foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
                 if (texture.IsValid) UnloadTexture(texture);
             _lampTextures = [.. Surfaces.All.Select(s => !s.Emits ? default
                 : LampFaces[s.Id] is { } faces ? LoadTextureFromImage(Strip(value, faces, s, glow: false))
@@ -181,7 +190,14 @@ public sealed class ChunkRenderer : IDisposable
             _lampEmission = [.. Surfaces.All.Select(s => !s.Emits ? default
                 : LampFaces[s.Id] is { } faces ? LoadTextureFromImage(Strip(value, faces, s, glow: true))
                 : LampParts[s.Id] is not null && value.Picture(s.Id) is { } picture ? LoadTextureFromImage(EmissionMap(picture, s)) : default)];
-            foreach (var texture in _lampTextures.Concat(_lampEmission))
+            // An animated lamp keeps its first frame's texture, which the scene's distance field reads
+            // the average of as its color, since a draw whose color changes is no longer the same and
+            // is stamped again without its light for frames, and steps its emission map instead, which
+            // the field does not read and which shows most of what a lamp's face shows.
+            _lampAnimations = [.. Surfaces.All.Select(s => s.Emits && LampFaces[s.Id] is null ? value.Animated(s.Id) : null)];
+            _lampStepEmission = [.. Surfaces.All.Select(s => _lampAnimations[s.Id] is { } animation
+                ? animation.Steps.Select(step => LoadTextureFromImage(EmissionMap(step, s))).ToArray() : [])];
+            foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
                 if (texture.IsValid) SetTextureFilter(texture, TextureFilter.Point);
             BuildLamps();
         }
@@ -249,10 +265,13 @@ public sealed class ChunkRenderer : IDisposable
     }
 
     // Each surface's material for the cubes of its emissive blocks, white under a pack's texture.
-    private void BuildLamps() =>
+    private void BuildLamps()
+    {
         _lamps = [.. Surfaces.All.Select(s => _lampTextures[s.Id].IsValid
             ? s.Material(_glowScale) with { Color = Color.White, Texture = _lampTextures[s.Id], EmissiveMap = _lampEmission[s.Id] }
             : s.Material(_glowScale))];
+        _lampSteps = [.. Surfaces.All.Select(s => _lampStepEmission[s.Id].Length == 0 ? null : _lampStepEmission[s.Id].Select(map => _lamps[s.Id] with { EmissiveMap = map }).ToArray())];
+    }
 
     // The parts of its texture each emissive surface's cube shows, as the source's model gives a
     // lantern's glass and a torch's flame theirs, or null for a cube showing its whole texture on each
@@ -434,6 +453,9 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     public void Draw(VoxelWorld world, Vector3 eye, int renderDistance)
     {
+        // The game ticks the animated textures step by, a twentieth of a second each, as Minecraft steps them.
+        var ticks = GetTime() * 20;
+        SetShaderValue(_shader, _ticks, (float)ticks);
         int cx = (int)MathF.Floor(eye.X) >> Section.Shift, cz = (int)MathF.Floor(eye.Z) >> Section.Shift;
         var reach = renderDistance * renderDistance + renderDistance;
         int draws = 0, triangles = 0, lamps = 0, culled = 0;
@@ -486,7 +508,8 @@ public sealed class ChunkRenderer : IDisposable
         {
             var list = _emitterDraws[surface];
             if (list.Count == 0) continue;
-            DrawMeshInstanced(_lampCubes[surface], _lamps[surface], CollectionsMarshal.AsSpan(list));
+            var material = _lampSteps[surface] is { } steps ? steps[TerrainAtlas.Step(steps.Length, _lampAnimations[surface]!.Value.Ticks, ticks)] : _lamps[surface];
+            DrawMeshInstanced(_lampCubes[surface], material, CollectionsMarshal.AsSpan(list));
             draws++;
             triangles += _lampCubes[surface].TriangleCount * list.Count;
             lamps += list.Count;
@@ -509,7 +532,7 @@ public sealed class ChunkRenderer : IDisposable
         UnloadMesh(_dome);
         UnloadShader(_shader);
         if (_atlasTexture.IsValid) UnloadTexture(_atlasTexture);
-        foreach (var texture in _lampTextures.Concat(_lampEmission))
+        foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
             if (texture.IsValid) UnloadTexture(texture);
     }
 }

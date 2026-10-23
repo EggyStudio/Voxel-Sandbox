@@ -14,7 +14,8 @@ namespace VoxelSandbox;
 /// A pack's files are listed once as it loads, a zip's entries and a folder's files under
 /// <c>assets/minecraft</c>, and read when asked for. A texture is decoded from its PNG to RGBA with
 /// the <c>.mcmeta</c> beside it in the same pack, and an animated one, which its metadata says is a
-/// strip of frames one above another as Minecraft draws water and lanterns, gives its first frame.
+/// strip of frames one above another as Minecraft draws water and lanterns, gives its first frame as
+/// its picture and its frames in the order they play through <see cref="Animation"/>.
 /// </remarks>
 public sealed class ResourcePacks : IDisposable
 {
@@ -105,6 +106,45 @@ public sealed class ResourcePacks : IDisposable
         var frame = new byte[width * height * 4];
         for (int y = 0; y < height; y++) Array.Copy(image.Data, y * image.Width * 4, frame, y * width * 4, width * 4);
         return (new Image(frame, width, height), meta);
+    }
+
+    /// <summary>
+    /// An animated texture's frames in the order its metadata plays them, each with the game ticks,
+    /// a twentieth of a second each, it is held for, its own time or the metadata's frame time, or 1
+    /// where neither is given, or null for a texture no pack has or that has no two frames to play.
+    /// A frame's index past the strip's frames is left out, and frames that the metadata blends one
+    /// into the next are stepped.
+    /// </summary>
+    public (Image[] Frames, int[] Ticks)? Animation(string name)
+    {
+        var path = $"textures/{name}.png";
+        if (Find(path) is not { } pack || Read(pack, path) is not { } png) return null;
+        if (Meta(Read(pack, path + ".mcmeta")) is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return null;
+        var image = LoadImageFromMemory(".png", png);
+        if (image.Data is null || image.Width <= 0) return null;
+        int width = Number(animation, "width") ?? image.Width, height = Number(animation, "height") ?? width;
+        if (width > image.Width || height > image.Height) return null;
+        var count = image.Height / height;
+        var time = Number(animation, "frametime") ?? 1;
+        var order = new List<(int Index, int Ticks)>();
+        if (animation.TryGetProperty("frames", out var frames) && frames.ValueKind == JsonValueKind.Array)
+            foreach (var frame in frames.EnumerateArray())
+            {
+                if (frame.ValueKind == JsonValueKind.Number && frame.TryGetInt32(out var index)) order.Add((index, time));
+                else if (frame.ValueKind == JsonValueKind.Object && frame.TryGetProperty("index", out var at) && at.TryGetInt32(out index))
+                    order.Add((index, Number(frame, "time") ?? time));
+            }
+        else
+            order.AddRange(Enumerable.Range(0, count).Select(i => (i, time)));
+        order.RemoveAll(f => f.Index < 0 || f.Index >= count);
+        if (order.Select(f => f.Index).Distinct().Count() < 2) return null;
+        Image Frame(int index)
+        {
+            var pixels = new byte[width * height * 4];
+            for (int y = 0; y < height; y++) Array.Copy(image.Data, ((index * height + y) * image.Width) * 4, pixels, y * width * 4, width * 4);
+            return new Image(pixels, width, height);
+        }
+        return ([.. order.Select(f => Frame(f.Index))], [.. order.Select(f => f.Ticks)]);
     }
 
     private static int? Number(JsonElement element, string name) =>

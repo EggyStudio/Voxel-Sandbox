@@ -5,36 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `f45b75e`, item 66, the creeper's own colors under every pack, and nothing else,
-carrying the review's file with item 66 and Decision 33: the creeper out of the pack table with the
-reason in its comment, drawn after the source's own creeper which the repository cannot hold where
-Bare Bones' is a style of its own; the play script's picture check writing a zombie picture 64 by 32
-on the zombie's 64 by 64 layout, so it tries the half-height fit too, red on the head's front, clear
-where the source lays the hat so the grown hat is left out, blue elsewhere, the face read at 5.75
-and the body at 5.125 as 255, 0, 0 and 0, 0, 255; the README saying the creeper keeps its colors and
-why and describing the test picture; mobs/daylight-pack.webp taken again with the creeper in its own
-green, the own pictures restored; the strict build clean, 223 tests, the play script clean. Read at
-10:42 on 2026-10-21. The build run 39566771329 of `69ecb49` ended green, the three test jobs within
-two minutes and the play job in 38 minutes 47 seconds, so the four heads from `e4b850f` were pushed
-at 10:47; their build run 39572003683 ended green, the play job in 45 minutes 12 seconds, read at
-19:05 on 2026-10-23, the sessions having stood idle since 2026-10-21. The engine's 5.2.213 is on the
-feed from `ec87f64b`, carrying its items 67 to 73 and the pool's mend, and a pack run for its items
-79 and 80 started on 2026-10-23. At 10:45 item 65's check found the pack changes nothing the game
-shows, its differences being eyes moved onto animated pieces the game does not draw, so item 65 is
-dropped and Decision 32 withdrawn, nothing committed. On 2026-10-23 the owner wrote a list of what
-they saw playing, items 67 to 86 and Decisions 34 to 36, written at 19:10. Next item 39's cutout
-leaves, doors and glass and its animated textures, in hand, then 70, 85, 71, 86, 82, 84, 77, 76 and
-83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees,
-then 26 and the items in order; item 55 once the engine's pack run of `d3473746` lands, items 38's
-second part and 54 when theirs come; the AGENTS.md rows for the Ui and build folders wait on the
-owner's word.
+Reviewed up to `b1cba53`, item 39's cutout part, and nothing else, carrying the review's file with
+items 67 to 86: the atlas marks a pack tile clear in some pixels and covered in the rest as cut out,
+ice blending as before and the game's own plant masks not counted, marks the whole opaque blocks and
+answers which hide, under a serial so the marks are no global state; the cactus never cut out, its
+texture's clear edges being for the source's model whose sides stand a pixel in, that model named
+under what is not here yet; the mesher sending cut-out glass to the plants' mesh, which casts no
+shadow, and a cut-out leaf or a door's window to a new SolidCutout mesh, masked with shadows,
+culling against what hides so cut-out leaves keep their faces against each other and their
+neighbors, the visibility flood treating cut-out blocks as open and a section's saved joins carrying
+the atlas's serial so a pack change works them out again; Bare Bones' seven leaves having no clear
+pixels and staying whole, so with the default packs only glass, the door's window and the lanterns'
+and torches' pieces take the masked meshes; the lit furnace's faces top, lit front and top, its lamp
+cube on a three-tile strip and its emission map lighting the bright pixels of the emissive face
+alone. Six new tests, 229 in all; the play script's written pack gaining a framed glass, a red lit
+front and a blue top, the glass's middle showing the red wall behind it at 175, 30 and 29, the frame
+gray at 194, 192 and 185, the front 255, 0, 0 and the top 60, 41, 255; the README describing the
+cut-out faces and the furnace; the strict build clean, the play script clean. Read and pushed at
+19:13 on 2026-10-23, the build run of `f45b75e` having ended green. Next item 39's animated
+textures, then 70, 85, 71, 86, 82, 84, 77, 76 and 83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72
+and 73, then the pictures taken again at 40 degrees, then 26 and the items in order; item 55 once
+the engine's pack run of `d3473746` lands, items 38's second part and 54 when theirs come; the
+AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `f45b75e` came, item 66, the creeper's own colors under every pack, and nothing else,
+carrying the review's file. Read at 10:42 on 2026-10-21 and pushed at 10:47 with the three before
+it, their build run green with the play job at 45 minutes 12 seconds.
 
 Before it, `d2bc3f0` came, item 62's mend, the half-height fit, and nothing else, carrying the
 review's file. Read at 10:38, pushed at 10:47 after the build run of `69ecb49` ended green.
-
-Before it, `9ce44d7` came, item 62's second part, the villager's layers and the sheep's wool, and
-nothing else, carrying the review's file. Read at 10:30, pushed at 10:47 after the build run of
-`69ecb49` ended green.
 
 ## Now
 
@@ -521,7 +520,8 @@ nothing else, carrying the review's file. Read at 10:30, pushed at 10:47 after t
     read as numbers as the mobs' boxes were, and the torches' flames and sticks the torch texture
     the same way, each piece keeping its color where no pack has one. After item 46. First commit
     done at `8f2a2c8` on 2026-10-21, the lanterns' and torches' pieces, as the head says; the cutout
-    and the faces, then the animation follow after items 60 and 61.
+    and the faces, then the animation follow after items 60 and 61. Second commit done at `b1cba53`
+    on 2026-10-23, the cutout and the furnace's faces, as the head says; the animation follows.
 
 40. **F2 takes a screenshot, as the source does (Decision 19).** The owner wrote shortly before
     03:42 on 2026-10-21 that, as in Minecraft, a screenshot is to be taken in the game with F2, the
