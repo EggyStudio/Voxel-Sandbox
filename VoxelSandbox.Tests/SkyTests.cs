@@ -15,6 +15,22 @@ public class SkyTests
     }
 
     [Fact]
+    public void The_Light_Stands_Still_Within_A_Step_And_A_Step_Moves_A_Far_Shadow_Less_Than_A_Shadow_Step()
+    {
+        // The hours of one step light from the same place, a 36th of an hour about the step's own.
+        Assert.Equal(8.5f, Sky.LightHour(8.49f));
+        Assert.Equal(8.5f, Sky.LightHour(8.51f));
+        Assert.Equal(8.5f + 1f / 36, Sky.LightHour(8.52f), 5);
+        for (float hour = 0; hour < 24; hour += 0.25f)
+        {
+            var from = Sky.SunToward(Sky.LightHour(hour));
+            var to = Sky.SunToward(Sky.LightHour(hour + 1f / 36));
+            // The edge of a shadow 16 blocks from what casts it moves under an eighth of a block.
+            Assert.True(16 * MathF.Acos(Math.Clamp(Vector3.Dot(from, to), -1, 1)) < 1f / 8);
+        }
+    }
+
+    [Fact]
     public void The_Moon_Is_Full_On_The_First_Night_Goes_Through_Eight_Phases_And_Changes_While_It_Is_Down()
     {
         Assert.Equal(0, Sky.MoonPhase(0, 20));

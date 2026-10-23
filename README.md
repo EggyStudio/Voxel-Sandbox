@@ -881,6 +881,13 @@ through the scene's distance field, is left out where the shadow map holds a poi
 lies beside a shadow's edge, and kept past the map's reach, where the land has no other shadow of
 the sun.
 
+As the day passes the light stands at the nearest of 36 steps an hour while the sun drawn on the
+sky moves smoothly, so a shadow stands still between steps and jumps at once to its next place,
+where the light turning every frame laid an edge near a step's boundary on either side from frame
+to frame. A step turns the light by a 36th of the sky's 15 degrees an hour, so the edge of a shadow
+16 blocks from what casts it jumps 0.12 of a block, under one step of the grid, and
+`build/play.sh` reads across a pillar's shadow at two hours of one step and finds it the same.
+
 ## Fog
 
 The sections are drawn through a shader of the game's own,

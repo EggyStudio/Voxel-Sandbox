@@ -226,6 +226,32 @@ cmd voxel.tp 6 9 -1
 cmd voxel.look 305 -35
 cmd frames.wait 2
 capture shadow.png
+# The shadow stands still as the day passes within one of the light's steps, a 36th of an hour, read
+# across it 3 blocks west of the pillar at 8.49 and at 8.51, two hours of the step about 8.5, each
+# point within a level of the other, where the light turning with the hour moved its edges and its
+# light every frame. The shadow is first found across the line, so a line laid where none falls does
+# not pass.
+cmd voxel.hud off
+cmd voxel.time 8.49
+cmd frames.wait 20
+ask voxel.line 1 1 1 1 1 1 2 > /dev/null
+cmd frames.wait 2
+before=$(ask voxel.line -2 4.001 -11.5 -2 4.001 -8 57)
+cmd voxel.time 8.51
+cmd frames.wait 6
+ask voxel.line 1 1 1 1 1 1 2 > /dev/null
+cmd frames.wait 2
+after=$(ask voxel.line -2 4.001 -11.5 -2 4.001 -8 57)
+echo "the pillar's shadow at 8.49 ${before%%; by place*}, at 8.51 ${after%%; by place*}"
+printf '%s\n%s\n' "${before#*by place }" "${after#*by place }" | awk '
+  NR == 1 { n = split($0, a, " ") }
+  NR == 2 { m = split($0, b, " ") }
+  END {
+    lo = a[1]; hi = a[1]
+    for (i = 1; i <= n; i++) { if (a[i] < lo) lo = a[i]; if (a[i] > hi) hi = a[i]; d = a[i] - b[i]; if (d > 1 || d < -1) exit 1 }
+    exit !(n == 57 && m == 57 && lo < hi / 2)
+  }' || fail "the pillar's shadow is not across the line or moved within one of the light's steps, at 8.49 $before, at 8.51 $after"
+cmd voxel.hud on
 
 check "the creative window"
 # The window E opens in creative mode, every item's icon in it and the hotbar's below.

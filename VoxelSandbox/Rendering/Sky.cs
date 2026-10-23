@@ -45,6 +45,14 @@ public sealed class Sky : IDisposable
     private const int Height = 128;
     private const float RepaintHours = 0.05f;
 
+    // The light's own hour steps this many times an hour while the sun drawn on the sky moves
+    // smoothly, so a shadow stands still between steps and jumps at once to its next place, where the
+    // light turning every frame laid an edge near a step's boundary on either side from frame to
+    // frame. A step turns the light by a 36th of the sky's 15 degrees an hour, so the edge of a
+    // shadow 16 blocks from what casts it jumps 0.12 of a block, under one of the eight steps a block
+    // the terrain's shader takes the shadow on.
+    private const int LightStepsAnHour = 36;
+
     /// <summary>How far out the sun and the moon are drawn.</summary>
     public const float Distance = 3000;
 
@@ -402,32 +410,38 @@ public sealed class Sky : IDisposable
         return stars;
     }
 
+    /// <summary>The hour the sun's or the moon's light stands at for an hour of the day, the nearest of the light's steps to it.</summary>
+    public static float LightHour(float hour) => MathF.Round(hour * LightStepsAnHour) / LightStepsAnHour;
+
     private void Apply()
     {
-        if (Hour == _litHour) return;
-        _litHour = Hour;
-        var toSun = SunToward(Hour);
+        var lightHour = LightHour(Hour);
+        if (lightHour != _litHour)
+        {
+            _litHour = lightHour;
+            var toLight = SunToward(lightHour);
 
-        // The sun by day and the moon opposite it by night, each fading out where the light turns
-        // from one to the other, so the shadows do not jump with it.
-        if (toSun.Y > -0.05f)
-        {
-            // The shader's light by the sun's height, its hue as the color and its largest part as
-            // the strength, so the hue never clips.
-            var light = SunLight(toSun.Y);
-            var most = MathF.Max(light.X, MathF.Max(light.Y, light.Z));
-            SetLightDirection(_light, -toSun);
-            SetLightColor(_light, ColorOf(Encode(light / most) * 255), SunStrength * most * SmoothStep(-0.05f, 0.1f, toSun.Y));
-        }
-        else
-        {
-            SetLightDirection(_light, toSun);
-            SetLightColor(_light, ColorOf(Encode(Moonlight) * 255), MoonStrength * SmoothStep(0.05f, 0.2f, -toSun.Y));
+            // The sun by day and the moon opposite it by night, each fading out where the light turns
+            // from one to the other, so the shadows do not jump with it.
+            if (toLight.Y > -0.05f)
+            {
+                // The shader's light by the sun's height, its hue as the color and its largest part as
+                // the strength, so the hue never clips.
+                var light = SunLight(toLight.Y);
+                var most = MathF.Max(light.X, MathF.Max(light.Y, light.Z));
+                SetLightDirection(_light, -toLight);
+                SetLightColor(_light, ColorOf(Encode(light / most) * 255), SunStrength * most * SmoothStep(-0.05f, 0.1f, toLight.Y));
+            }
+            else
+            {
+                SetLightDirection(_light, toLight);
+                SetLightColor(_light, ColorOf(Encode(Moonlight) * 255), MoonStrength * SmoothStep(0.05f, 0.2f, -toLight.Y));
+            }
         }
 
         if (!float.IsNaN(_paintedHour) && HoursApart(Hour, _paintedHour) < RepaintHours) return;
         _paintedHour = Hour;
-        Paint(toSun);
+        Paint(SunToward(Hour));
         SetEnvironmentMap(new Image(_pixels, Width, Height));
     }
 

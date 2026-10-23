@@ -5,32 +5,32 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `532e45c`, item 77, the fog's color by height, with COMMITS.md's N 7.6 sentence, and
-nothing else, carrying the review's files: the terrain shader reads the sky map along the view ray
-as the engine's sky shader does, so the fog matches the sky's pixels exactly, the haze dome's band
-laid over it in the shader, the dome itself and the fog under water keeping the plain haze color,
-item 58's aerial haze keeping its share and fading toward the same color; the play-script check on a
-stone pillar 88 blocks north at a render distance of 6 reading its face at height 60 and the sky
-beside it both 67, 153 and 223 against the horizon's 175, 199 and 218, the edge check still at a
-step of 0; 234 tests, the strict build and the play script clean. Read at 20:37 on 2026-10-23. The
-build run 40004618511 of `a9b0fcf` ended green, the play job in 55 minutes 17 seconds against its
-limit of 60, so item 88 comes first; the head was pushed at 21:34, and its own build run 40012481229
-ended green with the play job at 57 minutes 38 seconds, read at 22:32, within three minutes of the
-limit. At 21:09 the engine's pack run pushed 5.2.215 with its items 79, the masked shadow, and 80,
-the tonemap curve, listed on the feed at 21:10. Next 88, the play job's time, then 55 and item 58's
-curve on 5.2.215, then 76 and 83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the
-pictures taken again at 40 degrees, then 26 and the items in order; item 55 once the engine's pack
-run of `d3473746` lands, items 38's second part and 54 when theirs come; the AGENTS.md rows for the
-Ui and build folders wait on the owner's word.
+Reviewed up to `b730088`, item 88, the play job's time, and nothing else, carrying the review's
+file: the play script logs each check's cost, the flat world is drawn at four columns where it was
+twelve with the far pillar moved to 59 blocks inside them, meshing takes the greater of 4 ms and a
+tenth of the previous frame so a slow frame meshes about 200 ms of sections, the waits come from a
+lavapipe measurement, the lantern's pool settling in 14 frames and the wool, the creeper's front and
+the pool's water in 12, so 120 frames became 30 and 60 became 20 and each capture waits for the
+meshing plus 10, the test pack's water playing a frame a tick since its ten ticks aliased with the
+readings; the worlds were one each already. On four cores of lavapipe with the layer the script
+passes in 38 minutes 15 seconds, 18.2 of them the flat checks, 13.7 the eight biomes and 4.6 the
+meadow with the pack picture CI skips, so CI should come in near 37, the margin under 40 two to
+three minutes; two open points, meshed() not waiting for sections reshaded by a pack switch, and the
+lantern's pool once reading 21.8 to 0.2 at four columns in one run of four, the cause unknown; 234
+tests, the strict build clean, play.sh clean on the GPU in 130 seconds and on lavapipe. Pushed at
+00:54 on 2026-10-24, no run in flight, its play job's time the proof. Next 55 and item 58's curve on
+5.2.215, then 76 and 83, then 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken
+again at 40 degrees, then 26 and the items in order; item 55 once the engine's pack run of
+`d3473746` lands, items 38's second part and 54 when theirs come; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `532e45c` came, item 77, the fog's color by height, and nothing else. Pushed at 21:34 on
+2026-10-23, its build run green with the play job at 57 minutes 38 seconds.
 
 Before it, `a9b0fcf` came, item 84, the loading screen, with COMMITS.md's pushes and branch rule,
 and nothing else, carrying the review's files and NORM.md. Read at 20:29 on 2026-10-23, pushed at
 20:36 with the five before it after the build run of `22616f4` ended green, its play job at 53
 minutes 16 seconds. Its build run ended green with the play job at 55 minutes 17 seconds.
-
-Before it, `f9ab3bb` came, item 82, no plant over a carved cave, and nothing else, carrying the
-review's file. Read at 20:14 on 2026-10-23, pushed at 20:36 after the build run of `22616f4` ended
-green.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -369,7 +369,9 @@ full.
     sharing one open world among the checks that can share it, waiting the frames a check needs and
     no more, and reading at the render distance each check needs; the limit stays at 60 as Decision
     7 set it. One commit, before item 77. The run of `532e45c` took 57 minutes 38 seconds, within
-    three minutes of the limit, so this item goes out before any check is added.
+    three minutes of the limit, so this item goes out before any check is added. Done at `b730088`
+    on 2026-10-24, pushed at 00:54, the departures and the two open points in the head; settles on
+    its play job's time.
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's
