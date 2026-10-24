@@ -253,6 +253,7 @@ public sealed class Overworld : IWorldGenerator
             }
 
         Ores.Place(column, Seed);
+        LushCaves.Decorate(column, Seed, [.. grounds.Select(g => g.Height)], _climate.Humidity);
         var clip = new ColumnClip(column);
         PlaceFeatures(clip, columnX, columnZ);
         PlacePatches(clip, grounds, columnX, columnZ);

@@ -203,7 +203,8 @@ public class GenerationTests
     public void No_Plant_Stands_Over_Ground_A_Cave_Or_A_Ravine_Carved_Away()
     {
         // The land of seed 1 for a hundred and sixty blocks each way about a ravine's start, its plants
-        // each standing on a block a body stands on.
+        // each standing on a block a body stands on, but the upper half of tall grass on its lower
+        // half, and its cave vines each hanging from a whole block or another vine.
         var land = new Overworld(1);
         var start = Structures.Find("ravine")!.StartsIn(-512, -512, 512, 512, land).First();
         int cx = start.X >> Section.Shift, cz = start.Z >> Section.Shift;
@@ -215,7 +216,9 @@ public class GenerationTests
                 for (int z = 0; z < Section.Size; z++)
                     for (int x = 0; x < Section.Size; x++)
                         for (int y = 1; y < ChunkColumn.Ceiling; y++)
-                            if (BlockGroups.Plants.Contains(column.Get(x, y, z)) && !VoxelSandbox.Blocks.Collides(column.Get(x, y - 1, z)))
+                            if (BlockGroups.Plants.Contains(column.Get(x, y, z)) && !(VoxelSandbox.Blocks.Get(column.Get(x, y, z)).Shape!.Facing == Facing.Down
+                                    ? VoxelSandbox.Blocks.Holds(column.Get(x, y + 1, z), Facing.Down)
+                                    : VoxelSandbox.Blocks.Collides(column.Get(x, y - 1, z)) || column.Get(x, y, z) == BlockId.TallGrassTop && column.Get(x, y - 1, z) == BlockId.TallGrass))
                                 floating.Add($"{column.Get(x, y, z)} at {(cx + dx) * Section.Size + x}, {y}, {(cz + dz) * Section.Size + z}");
             }
         Assert.Empty(floating);

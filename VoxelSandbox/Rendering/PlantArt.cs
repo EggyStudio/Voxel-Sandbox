@@ -77,6 +77,13 @@ public static class PlantArt
         // Petals scattered over the ground in clusters of two by two, laid on the carpet's top.
         masks[Surfaces.PinkPetals] = Paint((x, y) => Hash(x / 2 + y / 2 * 8, 4) % 3 == 0);
 
+        // Cave vines in two strands winding down the tile, leaves out from them every few rows, and
+        // with glow berries round berries hung among them.
+        bool Strands(int x, int y) => x == 4 + (int)MathF.Round(MathF.Sin(y * 0.7f) * 1.5f) || x == 11 + (int)MathF.Round(MathF.Sin(y * 0.7f + 2) * 1.5f)
+            || y % 4 == 1 && x is 2 or 3 or 12 or 13;
+        masks[Surfaces.CaveVines] = Paint(Strands);
+        masks[Surfaces.CaveVinesLit] = Paint((x, y) => Strands(x, y) || (x - 7.5f) * (x - 7.5f) + (y - 5.5f) * (y - 5.5f) <= 3 || (x - 8.5f) * (x - 8.5f) + (y - 11.5f) * (y - 11.5f) <= 3);
+
         // Wheat in stalks, every other column, with ears at their tops.
         masks[Surfaces.Wheat] = Paint((x, y) => x % 3 != 2 && y >= 2 + Hash(x, 5) % 3);
 

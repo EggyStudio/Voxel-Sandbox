@@ -5,31 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `d8a05a1`, item 27's part A, the caves and the ores as the source's, with the
-README's reflow, after `3a99729`, the pictures with far land, and `ba60ae4`, item 90, and nothing
-else, carrying the review's file: the source's noise ported with its gradients, octave sums and the
-second sum at 1.0181, seeded by the world seed and the noise's name, the cheese, entrance,
-spaghetti, roughness, pillar and noodle density functions with their constants on the source's cells
-of 4 by 8 by 4 with interpolation, the ores by the source's placed features with eight deepslate
-ores dropping what their stone ores drop; departures, each noise scaled by the older published rule
-since the newer data's amplitude gave a spread of 0.14 against 0.36, the terrain density the caves
-read stood in by the depth under the ground's top times 0.156 so a straddling cell stays shut,
-entrances alone reaching the top ten blocks and never under water or on village ground, the old
-tunnels and caverns gone; a column generating in 11 to 16 ms against 24 to 29, air 0.4 to 8 percent
-across the depth bands; four cave tests, 272 passing, the strict build clean, play.sh 147 s on the
-GPU. Read at 09:27 on 2026-10-24, its report arriving as the push went: pushed at 09:26 with the two
-after the build run of `a528c79` ended green, its play job 35.5 minutes, five under item 88's 40 and
-climbing since the taller world; its own run green at 09:50 with the play job at 18.3 minutes, the
-caves' faster generation giving back what far land took. Next item 27's part B, the aquifers and the
-lush caves, then 42, 43 and 70, then 28 to 36 in order; items 38's second part and 54 when their
-packages come, and the deep caves' sky light under 27 with the engine's next package; the AGENTS.md
-rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `9cb81ad`, item 27's part B, the aquifers with lava, and nothing else, carrying the
+review's file and play.sh's far land cut: the source's noise-based aquifer with its cells of 16 by
+12 by 16, the nearest three cells' similarity, the barrier pressure, the floodedness and the
+randomized levels, lava at and under its level where the lava noise says and everywhere under minus
+54; departures, the ground's top sampled at the chunks' middles at the source's offsets and cached
+per column, no deep dark exception, no fluid updates at generation since no water lies over air, and
+lava still, unbreakable and without an item, swum in at a loss of 4 a half second; lava a fluid
+block of light 15 in a sixth per-section mesh drawn with its emission so the field takes its light
+from one draw a section, a pack's lava at twice its color; over 121 columns every cave under minus
+54 is lava, water 0.2 to 1.7 percent of the deep bands against 5 to 6 air, none over air, a column
+17.5 to 18.4 ms against 15 to 16.2; three tests, 275 passing, the strict build clean, play.sh 134 s
+on the GPU, the capture lava-lake.webp in. Read at 09:53 on 2026-10-24 and pushed at once, the run
+of `d8a05a1` having ended green; its run watched, its play job the far land cut's proof. The owner's
+words of 10:11 come first: item 91, the screen probes off by default, then 92, far land removed,
+then 93, the frame's cost read and brought down; then item 27's part C, the lush caves, then 42, 43
+and 70, then 28 to 36 in order; items 38's second part and 54 when their packages come, and the deep
+caves' sky light under 27 with the engine's next package; the AGENTS.md rows for the Ui and build
+folders wait on the owner's word.
+
+Before it, `d8a05a1` came, item 27's part A, pushed at 09:26 on 2026-10-24 with `3a99729` and
+`ba60ae4`, its run green, the play job 18.3 minutes.
 
 Before it, `3a99729` and `ba60ae4` came, the pictures with far land and item 90, pushed at 09:26 on
 2026-10-24 with the head, their run green, the play job 18.3 minutes.
-
-Before it, `a528c79` came, item 26's fourth part with the devlog's move, pushed at 08:48 on
-2026-10-24, its run green, the play job 35.5 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -162,7 +161,11 @@ full.
     the reload, which the engine's rule leaves to the program; the engine's performance window
     hidden off screen since item 40 is no longer needed. Tests: F1 leaving the frame without the HUD
     read from its pixels, and the game's sections in the overlay's text. One commit, when the
-    package comes.
+    package comes. From the engine on 2026-10-24: the package after 5.2.215 has no
+    SetProfileWindowKey, F3 showing the debug overlay in its place through SetDebugOverlayKey(Key),
+    Key.Null turning it off, and SetUiHiddenKey(Key) beside it for F1, so the game's
+    SetProfileWindowKey(Key.Null) of item 55 becomes SetDebugOverlayKey(Key.Null) when that package
+    comes, and SetUiHiddenKey(Key.Null) where it keeps F1.
 
 55. **The plants cast shadows, cut by their texture (Decision 27).** The owner wrote shortly before
     07:12 on 2026-10-21, seeing the README's pictures, that the grass blades and the plants are to
@@ -386,6 +389,37 @@ full.
     commits, before the items in order. Done at `ba60ae4` on 2026-10-24, the flood kept until its
     key changes, the numbers in the head; the GPU at 14.5 ms is the engine's bound, no item.
 
+91. **The screen probes stay off by default (Decision 42).** The owner played on 2026-10-24 and saw
+    black spreading across the screen in places, gone with the screen probes off, and the light
+    spotty, noisy and unstable on movement; the black is the engine's item 90, a glow light's
+    non-number the probes' history keeps, mended in the engine's tree and in the package after
+    5.2.215, and the spots, the noise and the shift are the engine's sixth term, the probes' own,
+    read under its item 71 and left as a limit. So the game calls
+    SetGlobalIlluminationScreenProbes(false) at its start and keeps its setting for turning them on,
+    with the capture of a view with the probes off; the play check that reads the light holds as it
+    stands or moves to the probes off. One commit, small, first.
+
+92. **Far land goes (Decision 41).** The owner played on 2026-10-24 and found the far land looking
+    bad, and said to remove it. FarLand, its rings, tiles and skirts, FarCache and the far folder of
+    the save, the generator's Surface where the far land alone read it, voxel.far, the settings
+    slider, the play check of the far land and the README's words and costs table go, the taller
+    world and the sections by reach of item 26's first two parts staying; the haze ends at the near
+    land as before item 26's third part; the README's world pictures taken again through pictures.sh
+    without far land. One commit, after item 91.
+
+93. **The frame's cost on the development machine with the taller world, read and brought down.**
+    The owner played on 2026-10-24 and found the performance bad. Read first at the owner's
+    settings, the render distance of 12, High and the three packs, at the cherry grove and the
+    plains village with the engine's profile: the GPU's passes, the scene pass, the window depth,
+    the shadows, the global illumination and the rest, and the main thread's parts, with the deep
+    sections' share, the aquifers' and the caves' meshing, the screen probes off; say the numbers
+    and what each would give back. Then the mends by the reading, in order of what they give for
+    what they cost, each a commit with its before and after: the sun's cascades' count and the
+    shadow distance, the deep sections drawn only where a cave opens to the eye's reach, the meshing
+    of sections the eye cannot see held back, and whatever else the reading names; the frame held
+    under 16.7 ms at 12 on the 4070 as item 90's draw test holds the draws. After item 92, before
+    item 27's part C.
+
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
     two noises are both near zero, caverns where a third is high below a depth, and ravines; it
@@ -400,7 +434,8 @@ full.
     engine's field reaches 64 up from the eye and a ray leaving it counts as sky; the engine's item
     72 gives the field a far cascade a ray reads before the sky, in the package after 5.2.215, so
     this item takes it when that package comes and reads the cave again. Part A at `d8a05a1` on
-    2026-10-24, the caves and the ores, the departures in the head.
+    2026-10-24, the caves and the ores, the departures in the head. Part B at `9cb81ad`, the
+    aquifers with lava, the departures in the head; the lush caves part C.
 
 28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
     emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the
@@ -997,5 +1032,16 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     the render distance stays at 12 since the owner set it, and the frame there, over 16.7 ms from
     the taller world's draws on the main thread, is item 90's to bring back rather than the
     distance's to give up; near 8 with far 32 holds 60 at 1 GB where a machine needs it.
+
+41. **Far land goes.** The owner played the game at about 10:11 on 2026-10-24 and wrote that the far
+    lands look bad, remove them; so item 26's third and fourth parts go as item 92, the taller world
+    and the sections by reach staying, and Decision 40's far land at 32 stands no more.
+
+42. **The screen probes are off by default.** The owner, playing at about 10:11 on 2026-10-24, saw
+    black spreading across the screen that goes with the screen probes off, and the light spotty,
+    noisy and unstable on movement; the black is the engine's item 90 and the rest the engine's
+    sixth term, the probes' own, so the game leaves the screen probes off by default as item 91, the
+    setting kept, and the owner's eye judges them again when the engine's package with item 90
+    comes.
 
 ## Replies

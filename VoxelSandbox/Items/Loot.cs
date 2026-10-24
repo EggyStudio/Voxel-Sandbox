@@ -19,7 +19,7 @@ public static class Loot
     /// two of its mushroom, leaves their sapling one
     /// time in twenty and an oak's or a dark oak's an apple one in two hundred, the grasses a seed of
     /// wheat one time in eight, a dead bush up to two sticks, glass and ice nothing, wheat its wheat
-    /// and a few seeds, any other block the item that places it, and a block that asks for a pickaxe
+    /// and a few seeds, cave vines their glow berries where they bear them, any other block the item that places it, and a block that asks for a pickaxe
     /// broken without one nothing, as Minecraft's do.
     /// </summary>
     public static IEnumerable<(Item Item, int Count)> Of(BlockId block, Random random, Item? held = null)
@@ -33,6 +33,8 @@ public static class Loot
             yield break;
         }
         if (BlockGroups.Glass.Contains(item)) yield break;
+        // Cave vines without berries give nothing, and with them the berries, the vines' item.
+        if (block == BlockId.CaveVines) yield break;
         // An ore in deepslate drops what its ore in stone does, or itself where that drops itself.
         switch (Ores.Plain(item))
         {
@@ -196,6 +198,7 @@ public static class Loot
         BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
         BlockId.OakLeaves or BlockId.BirchLeaves or BlockId.SpruceLeaves or BlockId.Snow => 0.2f,
         BlockId.Glass or BlockId.Glowstone or BlockId.SeaLantern => 0.3f,
+        BlockId.MossBlock => 0.1f,
         BlockId.Cactus => 0.4f,
         BlockId.Dirt or BlockId.Sand or BlockId.Ice or BlockId.Magma or BlockId.HayBale => 0.5f,
         BlockId.Grass or BlockId.Gravel or BlockId.Farmland => 0.6f,

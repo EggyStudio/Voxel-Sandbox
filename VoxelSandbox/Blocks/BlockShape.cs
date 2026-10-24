@@ -388,6 +388,18 @@ public sealed class BlockShape
     private static Piece Wall(float x0, float y0, float z0, float x1, float y1, float z1, int surface) =>
         new(new Vector3(x0, y0, z0) / 16, new Vector3(x1, y1, z1) / 16, surface, Plane: true);
 
+    /// <summary>
+    /// Cave vines, two flat walls crossed from corner to corner of the cell as a plant's are, which
+    /// hang from the block over them and fall when it is broken, and with glow berries their light, a
+    /// box inside them that the scene's distance field alone sees, as a fire's is.
+    /// </summary>
+    public static BlockShape Vines(int surface, int light = -1)
+    {
+        List<Piece> pieces = [Wall(0, 0, 0, 16, 16, 16, surface), Wall(0, 0, 16, 16, 16, 0, surface)];
+        if (light >= 0) pieces.Add(Px(5, 3, 5, 11, 13, 11, light));
+        return new BlockShape(Facing.Down, [.. pieces], cutout: true);
+    }
+
     /// <summary>A carpet of petals a sixteenth high over the ground, as the cherry grove's pink petals lie, cut out where its texture is clear.</summary>
     public static BlockShape Carpet(int surface) => new(Facing.Up, [Px(0, 0, 0, 16, 1, 16, surface)], cutout: true);
 

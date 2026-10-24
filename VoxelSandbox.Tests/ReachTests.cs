@@ -90,7 +90,9 @@ public sealed class ReachTests
         world.Add(first);
         var packed = first.Sections.Count(s => s.Packed);
         Assert.True(packed > 0);
-        world.Add(Made(1, 0));
+        // The column west of it holds no light near their edge, where the one east has glow berries
+        // whose light rightly reaches into the first and opens the section it lights.
+        world.Add(Made(-1, 0));
         Assert.Equal(packed, first.Sections.Count(s => s.Packed));
     }
 

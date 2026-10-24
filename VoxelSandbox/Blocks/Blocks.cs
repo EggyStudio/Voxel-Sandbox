@@ -245,6 +245,10 @@ public enum BlockId : ushort
     DeepslateDiamondOre,
     DeepslateEmeraldOre,
     Lava,
+    MossBlock,
+    MossCarpet,
+    CaveVines,
+    CaveVinesLit,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -584,6 +588,14 @@ public static class Blocks
             // Lava is no item, as fire is none, since a bucket would carry it, and it cannot be broken or
             // aimed at, as water cannot.
             Same(BlockId.Lava, "lava", "Lava", Surfaces.Lava, breakable: false, light: 15, kind: BlockKind.Water) with { HeldAs = BlockId.Air },
+            Same(BlockId.MossBlock, "moss_block", "Moss Block", Surfaces.Moss),
+            Plant(BlockId.MossCarpet, "moss_carpet", "Moss Carpet", BlockShape.Carpet(Surfaces.Moss), Surfaces.Moss),
+            // Cave vines are placed with glow berries, as the source's are, and those with berries
+            // light the cave around them to 14 and give their berries when broken. Their faces take
+            // their hidden light's surface, which makes them emissive.
+            Plant(BlockId.CaveVines, "cave_vines", "Cave Vines", BlockShape.Vines(Surfaces.CaveVines), Surfaces.CaveVines),
+            new(BlockId.CaveVinesLit, "cave_vines_lit", "Cave Vines", Surfaces.GlowBerryLight, Surfaces.GlowBerryLight, Surfaces.GlowBerryLight, Light: 14,
+                Kind: BlockKind.Shaped, Shape: BlockShape.Vines(Surfaces.CaveVinesLit, Surfaces.GlowBerryLight), HeldAs: BlockId.CaveVines),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");
@@ -610,8 +622,10 @@ public static class Blocks
     private static BlockId[,,] Variants()
     {
         var variants = new BlockId[_all.Length, 6, 2];
+        // Cave vines with glow berries are the vines grown rather than a way of placing them, so the
+        // berries place the vines without.
         foreach (var block in _all)
-            if (block.Shape is { Open: false } shape) variants[(int)block.Item, (int)shape.Facing, shape.Upper ? 1 : 0] = block.Id;
+            if (block.Shape is { Open: false } shape && block.Id != BlockId.CaveVinesLit) variants[(int)block.Item, (int)shape.Facing, shape.Upper ? 1 : 0] = block.Id;
         return variants;
     }
 
@@ -731,8 +745,9 @@ public static class Blocks
     /// <summary>Whether a block smaller than its cell can stand on, hang from or be fixed to a block, which it can on any whole block but water.</summary>
     public static bool IsSturdy(BlockId id) => _collides[(int)id];
 
-    /// <summary>Whether a block smaller than its cell facing a way holds to a block, a whole one or the top of a fence, as a lantern stands on a lamp post.</summary>
-    public static bool Holds(BlockId support, Facing facing) => IsSturdy(support) || facing == Facing.Up && support == BlockId.OakFence;
+    /// <summary>Whether a block smaller than its cell facing a way holds to a block, a whole one, the top of a fence, as a lantern stands on a lamp post, or cave vines over cave vines.</summary>
+    public static bool Holds(BlockId support, Facing facing) =>
+        IsSturdy(support) || facing == Facing.Up && support == BlockId.OakFence || facing == Facing.Down && support is BlockId.CaveVines or BlockId.CaveVinesLit;
 
     /// <summary>The block an item places facing a way, in the upper half where asked, or air where it is not placed that way.</summary>
     public static BlockId Variant(BlockId item, Facing facing, bool upper = false) => _variants[(int)item, (int)facing, upper ? 1 : 0];

@@ -95,9 +95,15 @@ public static class Items
             // A block placed in more than one way is one item, the block held to place it, and the
             // water that flows from a source is none.
             if (block.Id == BlockId.Air || block.Item != block.Id) continue;
-            // The crop's item plants it, as Minecraft's seeds do, its wheat being an item of its own.
-            var name = block.Id == BlockId.Wheat ? "Wheat Seeds" : block.Name;
-            var item = new Item(block.Key, name, block.Swatch, block.Id) { Id = all.Count };
+            // The crop's item plants it, as Minecraft's seeds do, its wheat being an item of its own,
+            // and glow berries, eaten as the source's are, hang cave vines.
+            var (name, food, saturation) = block.Id switch
+            {
+                BlockId.Wheat => ("Wheat Seeds", 0, 0f),
+                BlockId.CaveVines => ("Glow Berries", 2, 0.4f),
+                _ => (block.Name, 0, 0f),
+            };
+            var item = new Item(block.Key, name, block.Swatch, block.Id) { Id = all.Count, Food = food, Saturation = saturation };
             all.Add(item);
             _byBlock[(int)block.Id] = item;
         }

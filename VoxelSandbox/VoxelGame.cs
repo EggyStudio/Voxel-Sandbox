@@ -823,7 +823,9 @@ public sealed class VoxelGame : IDisposable
     private bool Eat(float seconds)
     {
         var opens = Target is { } hit && World.GetBlock(hit.X, hit.Y, hit.Z) is var block && (block == BlockId.CraftingTable || Furnaces.IsFurnace(block) || Blocks.Get(block).Toggled is not null);
-        if (!IsMouseButtonDown(MouseButton.Right) || opens || Hotbar.Current is not { Item.Food: > 0 } food || Vitals.Food >= Vitals.Most)
+        // Glow berries aimed at a block's underside hang their vines there rather than being eaten, as the source's do.
+        var hangs = Target is { NormalY: < 0 } && Hotbar.Current is { Item.Block: BlockId.CaveVines };
+        if (!IsMouseButtonDown(MouseButton.Right) || opens || hangs || Hotbar.Current is not { Item.Food: > 0 } food || Vitals.Food >= Vitals.Most)
         {
             Eating = 0;
             return false;

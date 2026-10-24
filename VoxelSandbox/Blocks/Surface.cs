@@ -293,6 +293,14 @@ public static class Surfaces
     // block is a lamp's cube apart, as orange as the source's still lava is and as bright over a
     // cave as glowstone.
     public static readonly int Lava = Add("lava", new Color(207, 92, 20), emissive: new Color(255, 120, 30), glow: 4);
+    // The lush caves' moss, on their floors and roofs and as a carpet, their cave vines, and those
+    // with glow berries, whose light is a box inside them that the scene's distance field alone
+    // sees, as a fire's is, as strong as a fire's for its smaller box and pale, so the leaves around
+    // keep their green as the source's lush caves show them under its uncolored light.
+    public static readonly int Moss = Add("moss", new Color(89, 109, 45));
+    public static readonly int CaveVines = Add("cave vines", new Color(92, 120, 46));
+    public static readonly int CaveVinesLit = Add("cave vines with glow berries", new Color(150, 130, 60));
+    public static readonly int GlowBerryLight = Add("glow berry light", new Color(255, 210, 140), emissive: new Color(255, 205, 140), glow: 6, unseen: true);
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

@@ -320,6 +320,8 @@ down.
 <table><tr>
 <td><img src=".github/assets/world/ravine.webp" width="400" height="225" alt="A ravine cutting the plains of seed 1 at noon, magma on its floor"></td>
 <td><img src=".github/assets/world/lava-lake.webp" width="400" height="225" alt="A lake of lava under -54 far under a forest of seed 1, lighting the deepslate of its cave"></td>
+</tr><tr>
+<td><img src=".github/assets/world/lush-cave.webp" width="400" height="225" alt="A lush cave of seed 1 under a swamp, moss and grass about a clear pool in its rim of clay and cave vines with glow berries over it"></td>
 </tr></table>
 
 The world stands on Minecraft's floor of bedrock at -64, whole there and thinning out over the five
@@ -350,6 +352,18 @@ its full light, and its faces' emission lights the cave through global illuminat
 section's lava where a lamp's cube for each block would be thousands. The player swims through lava
 as through water, losing 4 of health every half second. A column with its aquifers is generated in
 about 17 ms against 15 to 16 without them.
+
+Under the wettest ground, where the climate's humidity is 0.75 or more, about the wettest 7 percent
+of the land as Minecraft's are, the caves from 26 to 115 blocks down are its lush caves. Moss covers
+four in five blocks of their floors and roofs, three in five of the floor's moss bear short grass, a
+moss carpet or tall grass, and one roof block in seven has cave vines hanging from it, most 1 to 7
+blocks long, a fifth of their blocks bearing glow berries, which light the cave around them to 14
+and through global illumination, by a pale light so the leaves keep their green. Each column tries
+three clear pools in its floors, discs of a radius of 2 or 3 blocks whose ground turns to clay three
+or four blocks down and whose top turns to water wherever the blocks beside hold it in. Vines fall
+when the block they hang from is broken and give their glow berries where they bear them, and glow
+berries are eaten or hang a vine where they are aimed at a block's underside. Minecraft's azaleas,
+spore blossoms and dripleaves are not here yet.
 
 A ravine cuts the ground open along a swaying line about 48 blocks long, up to seven wide at its
 middle and narrowing to its ends, its floor up to 30 blocks down with a few emissive magma blocks on
@@ -686,8 +700,8 @@ that exhaustion take a point of the saturation food leaves, or of the food once 
 18 food or more the player heals a point every four seconds, with none starves a point every four
 seconds down to one, and with six or less cannot sprint. Holding the right button with food eats it
 over a second and a half while the player is hungry. Raw porkchop or beef feeds three points, raw
-mutton or chicken two, an apple four and bread, three wheat in a row, five. Oak leaves drop an apple
-once in two hundred.
+mutton or chicken two, an apple four and bread, three wheat in a row, five, and glow berries two. Oak
+leaves drop an apple once in two hundred.
 
 A fall of more than three blocks takes a point for each block past three, a fifth of that onto a hay
 bale and none into water. Under water the player holds fifteen seconds of breath, shown as bubbles
