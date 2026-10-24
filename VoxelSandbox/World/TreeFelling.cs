@@ -2,8 +2,9 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// A tree felled where the log its trunk stands on is broken, its logs breaking from the lowest
-/// upward a block a tick, a share of them falling as blocks, and then its leaves decaying within
-/// two seconds, as the source's leaves do once no log stands within six leaves of them.
+/// upward a block a tick, a share of them falling as blocks, and its leaves decaying over a second
+/// from the tick its first log goes, as the source's leaves do once no log stands within six leaves
+/// of them.
 /// </summary>
 /// <remarks>
 /// The logs of a tree are those joined to the cut through any of the 26 blocks about each, edge or
@@ -11,18 +12,22 @@ namespace VoxelSandbox;
 /// join its trunk, so a tree whose branches touch another's fells with it whole, where taking only
 /// the logs at the cut's height and above left the other's trunk under its hanging leaves when it
 /// stood lower. They fell only where leaves touch them, so a wall of logs a house or a village
-/// stands on keeps its logs. Once the last of them has gone, every leaf within seven blocks of where
-/// they stood is read for its way to a log through leaves, and those with none within six steps
-/// decay, each at a time of its own from one second to two, so the leaves of a tree beside it stay.
+/// stands on keeps its logs. As the tree is felled, every leaf within seven blocks of its logs is
+/// read for its way through leaves to a log that is not the tree's, and those with none within six
+/// steps decay one after another, in an order of their own, over the second from the tick the first
+/// log goes, so the crown and the falling logs are in the air together and the leaves of a tree
+/// beside it stay.
 /// </remarks>
 public sealed class TreeFelling(int seed = 1)
 {
     private const float Tick = 0.05f;
     private const int Reach = 12, MostLogs = 256, LeafReach = 6;
+    // The seconds the crown's leaves take to go, one after another.
+    private const float CrownSeconds = 1;
 
-    private enum Step { Log, Leaves, Leaf }
+    private enum Step { Log, Leaf }
 
-    private readonly List<(float At, Step Step, int X, int Y, int Z, int X1, int Y1, int Z1)> _steps = [];
+    private readonly List<(float At, Step Step, int X, int Y, int Z)> _steps = [];
     private readonly Random _random = new(seed);
     private float _time;
 
@@ -60,20 +65,19 @@ public sealed class TreeFelling(int seed = 1)
             || Blocks.IsLeaves(world.GetBlock(at.X, at.Y + 1, at.Z)) || Blocks.IsLeaves(world.GetBlock(at.X, at.Y - 1, at.Z))
             || Blocks.IsLeaves(world.GetBlock(at.X, at.Y, at.Z + 1)) || Blocks.IsLeaves(world.GetBlock(at.X, at.Y, at.Z - 1));
         if (!Leafy((x, y, z)) && !logs.Exists(Leafy)) return;
-        if (logs.Count == 0)
-        {
-            _steps.Add((_time, Step.Leaves, x - LeafReach - 1, y, z - LeafReach - 1, x + LeafReach + 1, y + LeafReach + 1, z + LeafReach + 1));
-            return;
-        }
-        int x0 = x, y0 = logs.Min(l => Math.Min(l.Y, y)), y1 = y, z0 = z, x1 = x, z1 = z;
+        int x0 = x, y0 = logs.Count == 0 ? y : logs.Min(l => Math.Min(l.Y, y)), y1 = y, z0 = z, x1 = x, z1 = z;
         foreach (var (lx, ly, lz) in logs)
         {
-            _steps.Add((_time + (ly - y0 + 1) * Tick, Step.Log, lx, ly, lz, 0, 0, 0));
+            _steps.Add((_time + (ly - y0 + 1) * Tick, Step.Log, lx, ly, lz));
             (x0, x1, z0, z1, y1) = (Math.Min(x0, lx), Math.Max(x1, lx), Math.Min(z0, lz), Math.Max(z1, lz), Math.Max(y1, ly));
         }
-        // The leaves are read in the tick the last log goes, after it, since the steps of a tick are
-        // taken in the order they were added.
-        _steps.Add((_time + (y1 - y0 + 1) * Tick, Step.Leaves, x0 - LeafReach - 1, y0, z0 - LeafReach - 1, x1 + LeafReach + 1, y1 + LeafReach + 1, z1 + LeafReach + 1));
+        // The crown is read now, the tree's logs counted as gone, and its leaves go from the tick the
+        // first log does, after it, since the steps of a tick are taken in the order they were added.
+        var crown = Loose(world, x0 - LeafReach - 1, y0, z0 - LeafReach - 1, x1 + LeafReach + 1, y1 + LeafReach + 1, z1 + LeafReach + 1, [.. logs]);
+        _random.Shuffle(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(crown));
+        var start = _time + (logs.Count == 0 ? 0 : Tick);
+        for (int i = 0; i < crown.Count; i++)
+            _steps.Add((start + i * CrownSeconds / crown.Count, Step.Leaf, crown[i].X, crown[i].Y, crown[i].Z));
     }
 
     /// <summary>Goes on by so many seconds, taking each log and leaf whose time has come.</summary>
@@ -96,24 +100,21 @@ public sealed class TreeFelling(int seed = 1)
                     world.SetBlock(step.X, step.Y, step.Z, BlockId.Air);
                     Broken.Add((step.X, step.Y, step.Z, block));
                     break;
-                case Step.Leaves:
-                    foreach (var (lx, ly, lz) in Loose(world, step.X, step.Y, step.Z, step.X1, step.Y1, step.Z1))
-                        _steps.Add((_time + 1 + _random.NextSingle(), Step.Leaf, lx, ly, lz, 0, 0, 0));
-                    break;
             }
         }
     }
 
     // The leaves within a box with no log six leaves or fewer away through leaves, read from every
-    // log in the box and a band around it outward, as the source keeps each leaf's distance to a log.
-    private static List<(int X, int Y, int Z)> Loose(VoxelWorld world, int x0, int y0, int z0, int x1, int y1, int z1)
+    // log in the box and a band around it outward but those felled, as the source keeps each leaf's
+    // distance to a log.
+    private static List<(int X, int Y, int Z)> Loose(VoxelWorld world, int x0, int y0, int z0, int x1, int y1, int z1, HashSet<(int X, int Y, int Z)> felled)
     {
         var near = new HashSet<(int, int, int)>();
         var front = new Queue<((int X, int Y, int Z) At, int Steps)>();
         for (int y = y0 - LeafReach; y <= y1 + LeafReach; y++)
             for (int z = z0 - LeafReach; z <= z1 + LeafReach; z++)
                 for (int x = x0 - LeafReach; x <= x1 + LeafReach; x++)
-                    if (BlockGroups.Logs.Contains(world.GetBlock(x, y, z))) front.Enqueue(((x, y, z), 0));
+                    if (BlockGroups.Logs.Contains(world.GetBlock(x, y, z)) && !felled.Contains((x, y, z))) front.Enqueue(((x, y, z), 0));
         ReadOnlySpan<(int, int, int)> ways = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)];
         while (front.Count > 0)
         {

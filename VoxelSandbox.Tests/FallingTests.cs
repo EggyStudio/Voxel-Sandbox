@@ -115,7 +115,7 @@ public sealed class FallingTests
     }
 
     [Fact]
-    public void Felling_Takes_A_Lower_Tree_Whose_Branch_Touches_Whole_And_The_Last_Leaf_Goes_Within_Two_Seconds()
+    public void Felling_Takes_A_Lower_Tree_Whose_Branch_Touches_Whole_Its_Crown_Going_From_The_Tick_Its_First_Log_Does()
     {
         // An oak, and a tree beside it in a pit a block lower, its trunk from 3 to 6 and its branch
         // reaching across through the oak's leaves to touch the oak's trunk, a leaf over its top.
@@ -127,14 +127,21 @@ public sealed class FallingTests
         var felling = new TreeFelling();
         world.SetBlock(4, 4, 4, BlockId.Air);
         felling.Fell(world, 4, 4, 4);
-        float time = 0, lastLog = 0, lastLeaf = 0;
+        float time = 0, firstLog = -1, firstLeaf = -1, lastLeaf = 0;
         for (int i = 0; i < 4 * 60; i++)
         {
             felling.Update(world, 1 / 60f);
             time += 1 / 60f;
             foreach (var (_, _, _, block) in felling.Broken.Concat(felling.Dropped))
-                if (BlockGroups.Logs.Contains(block)) lastLog = time;
-                else lastLeaf = time;
+                if (BlockGroups.Logs.Contains(block))
+                {
+                    if (firstLog < 0) firstLog = time;
+                }
+                else
+                {
+                    if (firstLeaf < 0) firstLeaf = time;
+                    lastLeaf = time;
+                }
             felling.Broken.Clear();
             felling.Dropped.Clear();
         }
@@ -147,6 +154,9 @@ public sealed class FallingTests
                     Assert.False(BlockGroups.Logs.Contains(world.GetBlock(x, y, z)), $"a log stays at {x}, {y}, {z}");
                     Assert.False(Blocks.IsLeaves(world.GetBlock(x, y, z)), $"a leaf stays at {x}, {y}, {z}");
                 }
-        Assert.InRange(lastLeaf - lastLog, 1, 2);
+        // The first leaf goes in the frame the first log does, and the crown within the second after.
+        Assert.True(firstLog > 0);
+        Assert.Equal(firstLog, firstLeaf);
+        Assert.InRange(lastLeaf - firstLog, 0.5f, 1);
     }
 }

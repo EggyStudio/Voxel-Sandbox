@@ -1282,6 +1282,17 @@ before a batch.
     before item 94. Done at `02abb9d` on 2026-10-24, the source's model with its two departures in
     the head.
 
+110. **The bits of a tinted block carry the biome's tint.** The owner wrote at 13:31 on 2026-10-24
+    that the color of the particles for grass and dirt is not adjusted to the temperature of the
+    biome, breaking grass in the savanna dropping pure green bits and not the savanna's color. The
+    bits cut from a block's picture take the tint the block is drawn with at its place, the grass
+    block's top and its side's overlay, the short grass, the ferns and the tall plants by the
+    biome's grass color, the leaves by its foliage color, the untinted blocks as they are, dirt
+    among them; a test breaking a grass block in the savanna and in the plains reading the bits'
+    colors as the blocks' tops read there, within a few levels, and a capture of each. One commit,
+    small, after item 109 and before item 94. Done at `2a399af` on 2026-10-24, each bit carrying its
+    climate, the test on the savanna against the plains.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
