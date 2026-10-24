@@ -5,21 +5,24 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `b032e76`, item 78, the grass as the source places it with the two-block grass, and
-nothing else, carrying the review's file: the patches' counts, thresholds, rarities, tries and
-spreads from the source's own placed feature files, laid out per chunk and its eight neighbors so
-patches spill across chunk edges, the per-place rolls gone; on seed 1's plains short grass covers
-21.8 of a hundred grass tops against 86 before and the source's 25.6 on level land, tall grass 0.96
-and flowers 0.35; the tall grass a top block held as the plant, both halves going when either
-breaks; departures, the forest's two-block flowers and the large fern, bush, leaf litter, firefly
-and dry grass patches left out since the game has no two-block flowers, said in the README, patch
-kinds no near biome grows skipped so a column costs 9.4 ms against 13.0 replaying every neighbor, at
-the price of a third biome's spill at a border, and the play check reading the upper half;
-plains-village.webp taken again; 249 tests, the strict build clean, play.sh clean on the GPU,
-lavapipe not run. Read at 03:51 on 2026-10-24. Not pushed, the build run of `526f20b` running;
-pushed when it ends. Next 80, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40
-degrees, then 26 and the items in order; items 38's second part and 54 when their packages come; the
-AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `9b25aa3`, item 80, villages spaced as the source spaces them, after `b032e76`, item
+78, the grass as the source places it with the two-block grass, and nothing else, carrying the
+review's file. Item 80: the source's spacing of 34 chunks and separation of 8 from its villages
+structure set, a structure's cell size and its start at a chunk corner among the first 26 chunks
+each way, every square a candidate and the biome and level-ground checks deciding; the departure the
+game's own hash in place of the source's salted random, so the grid is the source's and the
+positions are not; a test of 2 to 9 starts in a 64-chunk square, every pair 8 chunks apart at least;
+250 tests. Item 78: the patches' counts and thresholds from the source's placement files, laid out
+per chunk and its eight neighbors; short grass on seed 1's plains 21.8 of a hundred grass tops
+against 86 before and the source's 25.6, the tall grass a top block held as the plant; departures,
+the forest's two-block flowers and small patch kinds left out since the game has no two-block
+flowers, patch kinds no near biome grows skipped so a column costs 9.4 ms against 13.0; 249 tests.
+Both the strict build clean and play.sh clean on the GPU, lavapipe not run. Read at 03:51 and 03:57
+on 2026-10-24. Not pushed, the build run of `526f20b` running; the two go when it ends. The README's
+village views point where no village stands any more, taken up under item 46. Next 81, 78, 80, 81,
+69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order;
+items 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and build
+folders wait on the owner's word.
 
 Before it, `526f20b` came, item 79, pushed at 03:50 on 2026-10-24, its run in flight.
 
@@ -115,7 +118,13 @@ full.
     one run covering the plants, the lantern and the cutout. The owner said shortly before 08:16
     that for screenshots they zoom with alt to about 40 degrees of field of view and the cinematic
     captures should too, so the retake takes the world's views at 40 degrees through a `voxel.fov`
-    command, each view's place moved back to frame the same subject.
+    command, each view's place moved back to frame the same subject. From item 80 at 03:5x on
+    2026-10-24: seed 1's villages stand elsewhere, so the plains village views at 15.4, 700.6 and
+    the snowy and night views at 454.4, 77.4 point at empty land, the desert view at 720.4, minus
+    697.6 still at its village's edge; the retake moves the plains views to a village of seed 1,
+    576, minus 432 the nearest, and the snowy one to another seed or a village found with
+    voxel.find, none standing within 1,600 blocks on seed 1; the plains-village.webp of `b032e76`
+    shows a village that no longer stands there until then.
 
 54. **The game takes the engine's F1 and F3, its HUD in the hidden scope and its developer's parts
     as overlay sections (Decision 26).** The owner asked shortly before 07:05 on 2026-10-21 for F1
@@ -270,7 +279,8 @@ full.
     there are too many villages too near. The mend: villages placed by the source's structure set
     rules, a spacing of 34 chunks with a separation of 8 and the salt's random grid, so two villages
     never stand within eight chunks and most are a few hundred blocks apart; a test counting
-    villages over a 64-chunk square within the source's bound. One commit, small.
+    villages over a 64-chunk square within the source's bound. One commit, small. Done at `9b25aa3`
+    on 2026-10-24, the game's own hash in place of the source's salted random.
 
 81. **Biomes placed by the source's climate, so a badlands does not border a forest.** The owner
     wrote on 2026-10-23 (Decision 34) that a mesa biome stands right next to green land, asking

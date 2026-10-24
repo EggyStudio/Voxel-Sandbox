@@ -128,7 +128,9 @@ public sealed class Climate(int seed)
     /// </summary>
     public static Biome Choose(float temperature, float humidity, int height, int mountainsFrom)
     {
-        if (height >= mountainsFrom) return Biomes.Mountains;
+        // High ground where it is hot and dry is the badlands, as the source's hot peaks are, never
+        // mountains of stone and spruces on a mesa's edge.
+        if (height >= mountainsFrom) return temperature > 0.7f && humidity < 0.4f ? Biomes.Badlands : Biomes.Mountains;
         if (temperature < 0.3f)
             return humidity > 0.4f ? (temperature < 0.18f ? Biomes.SnowyTaiga : Biomes.Taiga) : Biomes.SnowyPlains;
         if (Badlands(temperature, humidity) > 0.5f) return Biomes.Badlands;

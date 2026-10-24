@@ -165,14 +165,19 @@ forest where it is wettest, taiga of spruce, snowy taiga and snowy plains where 
 desert of sand over sandstone with cacti where it is hot and dry, the badlands inside it where it is
 hottest and driest, the savanna beside it, the jungle where it is hot and wet, a swamp where it is
 warm and wettest, a cherry grove on raised ground where it is cool and wet, and bare stone mountains
-wherever the ground rises past 82 blocks, snow above 92. Grass and oak leaves are gray surfaces
-tinted by each biome's own color, the one Minecraft's colormaps give at that biome's fixed
-temperature and downfall, the plains' grass (145, 189, 89), the forest's (121, 192, 90), the taiga's
-(134, 183, 131) and the jungle's (89, 201, 60), and a place takes each biome's color as far as it is
-that biome, its choice made soft over about twenty blocks about each of its bounds, so the colors
-change smoothly across a biome's edge while the biome itself changes at once. Birch and spruce
-leaves keep a color of their own. A hot, dry climate also flattens the land, so a desert lies flat
-and the hills sink as they near it.
+wherever the ground rises past 82 blocks, snow above 92, but where it is hot and dry, whose high
+ground is the badlands, as the source's hot peaks are, so a mesa's top stands in no mountain of
+stone and spruces and the badlands meet only the desert, the savanna, a river or a beach. Minecraft
+chooses its biomes from six noises, temperature, humidity, continentalness, erosion, weirdness and
+depth, against a table of their bands, where the game takes two of them and the ground's height, its
+basins and its rivers standing in for the rest. Grass and oak leaves are gray surfaces tinted by
+each biome's own color, the one Minecraft's colormaps give at that biome's fixed temperature and
+downfall, the plains' grass (145, 189, 89), the forest's (121, 192, 90), the taiga's (134, 183, 131)
+and the jungle's (89, 201, 60), and a place takes each biome's color as far as it is that biome, its
+choice made soft over about twenty blocks about each of its bounds, so the colors change smoothly
+across a biome's edge while the biome itself changes at once. Birch and spruce leaves keep a color
+of their own. A hot, dry climate also flattens the land, so a desert lies flat and the hills sink as
+they near it.
 
 The land shapes some of them. A river winds where a noise is near zero, in a valley that sinks the
 land most of the way to the water and cut to three blocks under the sea level where it runs, over

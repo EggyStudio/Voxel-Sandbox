@@ -29,6 +29,30 @@ public class BiomeTests
         Assert.Equal(biome, Climate.Choose(temperature, humidity, 60, 82).Name);
 
     [Fact]
+    public void No_Two_Biomes_Meet_That_The_Source_Never_Puts_Side_By_Side()
+    {
+        // The badlands lie in the source's hot band where it is dry, its high ground badlands too, so
+        // they meet the desert, the savanna, a river or a beach and nothing green, and nothing of the
+        // hot band meets the snow, a band of temperature or two lying between them.
+        var land = new Overworld(1);
+        Biome[] hot = [Biomes.Desert, Biomes.Badlands, Biomes.Savanna, Biomes.Jungle], snowy = [Biomes.SnowyPlains, Biomes.SnowyTaiga];
+        Biome[] besideBadlands = [Biomes.Badlands, Biomes.Desert, Biomes.Savanna, Biomes.River, Biomes.Beach];
+        var seen = new HashSet<(Biome, Biome)>();
+        const int step = 16;
+        for (int z = -4096; z < 4096; z += step)
+            for (int x = -4096; x < 4096; x += step)
+            {
+                var here = land.Ground(x, z).Biome;
+                foreach (var there in new[] { land.Ground(x - step, z).Biome, land.Ground(x, z - step).Biome })
+                    if (there != here) seen.Add((here, there));
+            }
+        Assert.Contains((Biomes.Badlands, Biomes.Desert), seen.Select(p => p.Item1 == Biomes.Badlands ? p : (p.Item2, p.Item1)));
+        Assert.All(seen.Where(p => p.Item1 == Biomes.Badlands || p.Item2 == Biomes.Badlands),
+            p => Assert.Contains(p.Item1 == Biomes.Badlands ? p.Item2 : p.Item1, besideBadlands));
+        Assert.DoesNotContain(seen, p => hot.Contains(p.Item1) && snowy.Contains(p.Item2) || snowy.Contains(p.Item1) && hot.Contains(p.Item2));
+    }
+
+    [Fact]
     public void A_Cherry_Grove_Stands_On_Raised_Ground_Where_Low_Ground_Of_Its_Climate_Is_Forest() =>
         Assert.Equal(("cherry grove", "birch forest"), (Climate.Choose(0.44f, 0.6f, 72, 82).Name, Climate.Choose(0.44f, 0.6f, 58, 82).Name));
 
