@@ -138,8 +138,11 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The stacks of items lying in the world.</summary>
     public ItemDrops Drops { get; } = new();
 
-    /// <summary>The sand and gravel falling where nothing held them up.</summary>
+    /// <summary>The sand and gravel falling where nothing held them up, and a felled tree's logs.</summary>
     public FallingBlocks Falling { get; } = new();
+
+    /// <summary>The trees being felled, their logs breaking and their leaves decaying.</summary>
+    public TreeFelling Felling { get; } = new();
 
     /// <summary>The arrows skeletons have loosed.</summary>
     public Arrows Arrows { get; } = new();
@@ -489,6 +492,19 @@ public sealed class VoxelGame : IDisposable
         Falling.Update(World, seconds);
         foreach (var (x, y, z, block) in Falling.Broken) Drops.Pop(Items.Of(block), 1, x, y, z);
         Falling.Broken.Clear();
+        // A felled tree's logs and leaves throw a few bits each, many breaking at once, and drop what
+        // the source drops in survival, and a share of its logs falls as blocks.
+        Felling.Update(World, seconds);
+        foreach (var (x, y, z, block) in Felling.Broken)
+        {
+            Bits.Break(block, x, y, z, count: 8);
+            if (Mode.Lives())
+                foreach (var (item, count) in Loot.Of(block, _random))
+                    Drops.Pop(item, count, x, y, z);
+        }
+        Felling.Broken.Clear();
+        foreach (var (x, y, z, block) in Felling.Dropped) Falling.Drop(block, x, y, z);
+        Felling.Dropped.Clear();
 
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
@@ -844,6 +860,8 @@ public sealed class VoxelGame : IDisposable
         var block = World.GetBlock(hit.X, hit.Y, hit.Z);
         if (!Blocks.Get(block).Breakable || !World.SetBlock(hit.X, hit.Y, hit.Z, BlockId.Air)) return false;
         Bits.Break(block, hit.X, hit.Y, hit.Z);
+        // The log a trunk stands on fells its tree.
+        if (BlockGroups.Logs.Contains(block) && !BlockGroups.Logs.Contains(World.GetBlock(hit.X, hit.Y - 1, hit.Z))) Felling.Fell(World, hit.X, hit.Y, hit.Z);
         if (Mode != GameMode.Survival) return true;
         Vitals.Exhaust(0.005f);
         var held = Hotbar.Current?.Item;

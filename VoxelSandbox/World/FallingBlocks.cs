@@ -65,6 +65,9 @@ public sealed class FallingBlocks
         _all.RemoveAll(landed.Contains);
     }
 
+    /// <summary>Lets a block fall from its cell, as a felled tree's log does.</summary>
+    public void Drop(BlockId block, int x, int y, int z) => _all.Add(new Falling(block, new System.Numerics.Vector3(x + 0.5f, y, z + 0.5f)));
+
     /// <summary>Lets go of every falling block, as a world closes.</summary>
     public void Clear() => _all.Clear();
 }

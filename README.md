@@ -493,7 +493,11 @@ block it held to drops too, and placing a block uses one up. Sand, red sand and 
 water or a plant that gives way fall as Minecraft's gravity blocks do, faster by 0.04 of a block a
 tick each tick and keeping 0.98 of their speed, a column of them block by block as each under it
 goes, and stand where they land, or break into their item over a block that keeps its place, as a
-torch or a slab in their cell.
+torch or a slab in their cell. Breaking the log a tree's trunk stands on fells the tree, its logs
+joined to the cut breaking from it upward a block a tick with their drops and a few bits each, one
+in four falling as a block that lands, and then its leaves decaying over half a second to four with
+bits and the source's drops, those with no log within six leaves of them, as the source's leaves
+decay, so the leaves of a tree beside it stay, and a wall of logs no leaf touches fells nothing.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival and adventure, where a left click takes up a stack, puts it down, joins it to a stack of

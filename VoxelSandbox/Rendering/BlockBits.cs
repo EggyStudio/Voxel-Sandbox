@@ -68,10 +68,23 @@ public sealed class BlockBits : IDisposable
         _terrain = terrain;
     }
 
-    /// <summary>Throws the bits of a block broken at a place, outward from its middle.</summary>
-    public void Break(BlockId block, int x, int y, int z)
+    /// <summary>
+    /// Throws the bits of a block broken at a place, outward from its middle, all 64 of a block the
+    /// player breaks, or fewer at places of the grid taken at random, as the logs and leaves of a
+    /// felled tree throw, many going at once.
+    /// </summary>
+    public void Break(BlockId block, int x, int y, int z, int count = BreakCount)
     {
         var surface = Blocks.Get(block).Side;
+        if (count < BreakCount)
+        {
+            for (int n = 0; n < count; n++)
+            {
+                var within = new Vector3((_random.Next(4) + 0.5f) / 4, (_random.Next(4) + 0.5f) / 4, (_random.Next(4) + 0.5f) / 4);
+                Throw(surface, new Vector3(x, y, z) + within, within - new Vector3(0.5f), power: 1, scale: 1);
+            }
+            return;
+        }
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
                 for (int k = 0; k < 4; k++)
