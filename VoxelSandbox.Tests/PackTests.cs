@@ -169,6 +169,50 @@ public sealed class PackTests : IDisposable
     }
 
     [Fact]
+    public void The_Bits_Of_A_Grass_Block_Broken_In_The_Savanna_And_The_Plains_Take_Its_Tops_Color_There()
+    {
+        // The grass block's top gray, and its side brown under an overlay of the same gray across its
+        // upper half, so the bits cut from the side's upper quarters show the overlay as the top shows.
+        var gray = new Color(180, 180, 180);
+        var overlay = Plain(new Color(0, 0, 0, 0), 16, 16);
+        for (int i = 0; i < 16 * 8; i++) (overlay.Data[i * 4], overlay.Data[i * 4 + 1], overlay.Data[i * 4 + 2], overlay.Data[i * 4 + 3]) = (gray.R, gray.G, gray.B, 255);
+        using var packs = new ResourcePacks([Folder("climate", ("block/grass_block_top", Plain(gray, 16, 16)),
+            ("block/grass_block_side", Plain(new Color(120, 80, 50), 16, 16)), ("block/grass_block_side_overlay", overlay))]);
+        var atlas = TerrainAtlas.Build(packs);
+
+        // Places well inside seed 1's plains and savanna, as BiomeTests reads them.
+        var land = new Overworld(1);
+        var world = new VoxelWorld(land);
+        var tops = new List<Color>();
+        foreach (var (x, z, biome) in new[] { (-288, 64, Biomes.Plains), (352, -448, Biomes.Savanna) })
+        {
+            var column = land.Generate(x >> 4, z >> 4);
+            Lighting.Compute(column);
+            world.Add(column);
+            Assert.Equal(biome, world.BiomeAt(x, z));
+            var y = land.At(x, z).Height;
+            Assert.Equal(BlockId.Grass, world.GetBlock(x, y, z));
+
+            var bits = new BlockBits();
+            bits.Break(BlockId.Grass, x, y, z, climate: world.TintsAt(x, z));
+            var climate = world.TintsAt(x, z);
+            var top = atlas.Texel(Surfaces.Grass, 0.5f, 0.5f, climate.Grass, climate.Foliage)!.Value;
+            var upper = bits.All.Where(b => b.Piece < 2).ToArray();
+            Assert.NotEmpty(upper);
+            foreach (var bit in upper)
+            {
+                var picture = BlockBits.Picture(atlas, bit.Surface, bit.Piece, bit.Climate);
+                for (int i = 0; i < picture.Width * picture.Height; i++)
+                    foreach (var (seen, wanted) in new[] { (picture.Data[i * 4], top.R), (picture.Data[i * 4 + 1], top.G), (picture.Data[i * 4 + 2], top.B) })
+                        Assert.InRange(seen, wanted - 3, wanted + 3);
+            }
+            tops.Add(top);
+        }
+        // The savanna's grass is its own yellower color, not the plains' green.
+        Assert.True(tops[1].R - tops[0].R > 20, $"the plains' top {tops[0]} and the savanna's {tops[1]}");
+    }
+
+    [Fact]
     public void Every_Tile_Is_Drawn_At_The_Largest_Size_Two_By_Two_In_Its_Cell()
     {
         // A tile of four pixels of four colors, and one of 32, larger than the game's own masks of 16.

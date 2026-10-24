@@ -518,7 +518,7 @@ public sealed class VoxelGame : IDisposable
         Felling.Update(World, seconds);
         foreach (var (x, y, z, block) in Felling.Broken)
         {
-            Bits.Break(block, x, y, z, count: 8);
+            Bits.Break(block, x, y, z, count: 8, climate: World.TintsAt(x, z));
             if (Mode.Lives())
                 foreach (var (item, count) in Loot.Of(block, _random))
                     Drops.Pop(item, count, x, y, z);
@@ -841,7 +841,7 @@ public sealed class VoxelGame : IDisposable
         if (Target is { } hit)
         {
             time = Loot.BreakSeconds(World.GetBlock(hit.X, hit.Y, hit.Z), Hotbar.Current?.Item);
-            Bits.Hit(World.GetBlock(hit.X, hit.Y, hit.Z), hit, seconds);
+            Bits.Hit(World.GetBlock(hit.X, hit.Y, hit.Z), hit, seconds, World.TintsAt(hit.X, hit.Z));
             Hand.Swing();
         }
         if (!_breaking.Step(Target is { } at ? (at.X, at.Y, at.Z) : null, seconds, time)) return;
@@ -927,7 +927,7 @@ public sealed class VoxelGame : IDisposable
         if (!Mode.Builds() || Target is not { } hit) return false;
         var block = World.GetBlock(hit.X, hit.Y, hit.Z);
         if (!Blocks.Get(block).Breakable || !World.SetBlock(hit.X, hit.Y, hit.Z, BlockId.Air)) return false;
-        Bits.Break(block, hit.X, hit.Y, hit.Z);
+        Bits.Break(block, hit.X, hit.Y, hit.Z, climate: World.TintsAt(hit.X, hit.Z));
         // The log a trunk stands on fells its tree.
         if (BlockGroups.Logs.Contains(block) && !BlockGroups.Logs.Contains(World.GetBlock(hit.X, hit.Y - 1, hit.Z))) Felling.Fell(World, hit.X, hit.Y, hit.Z);
         if (Mode != GameMode.Survival) return true;

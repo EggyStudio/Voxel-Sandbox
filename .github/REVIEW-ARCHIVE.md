@@ -1267,6 +1267,21 @@ before a batch.
     1.05 ms of the scene pass against 0.4 at 1920 by 1080, reverted uncommitted, its play check on a
     cloud's underside red besides.
 
+109. **The cactus is the source's model, its sides a pixel in and their clear edges cut out so the
+    thorns stick out.** The owner wrote at 13:31 on 2026-10-24 that the cactus needs to be one pixel
+    thinner, white showing in its corners, and at 13:46 that the thorns are on the white border, so
+    the faces go a pixel in and the white is cut out as alpha so the thorns at the edges stick out.
+    The game draws the cactus as a whole cube whose texture's clear edges show the color the pixel
+    holds, the TODO line on the source's model open. The cactus becomes the source's model, each
+    side face standing a pixel in from its side of the cell and spanning the cell's full width, the
+    clear pixels cut out as the plants' are so the thorns on the picture's edge columns stick out
+    past the face beside them, the top and the bottom on the inset square, the top at the height the
+    source's model gives it, the bottom on the ground, with the picture's rows and columns as the
+    source maps them; its collision box the source's; a capture of a cactus up close against the
+    before, and the mesher's test of the cactus's faces. One commit, small, after item 108 and
+    before item 94. Done at `02abb9d` on 2026-10-24, the source's model with its two departures in
+    the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

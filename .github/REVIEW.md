@@ -5,49 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `f480dbf`, item 117, the sky's floor in the terrain shader, its plants and the bits,
-read at 14:33 on 2026-10-24, carrying the review's files. Each corner carries its sky level in the
-second uint's alpha byte from 240 up, an alpha below 240 kept as it is with no level, which only
-untextured glass, water, ice, the clouds and the dome's rings have; the floor is the albedo times
-the environment's irradiance at the face's normal times environment.x and the screen's occlusion, on
-the source's curve f over 4 minus 3f taken halfway to linear, level 0 giving 0 and 13 reading 0.80
-of 15, taken as a maximum with the engine's light before toDisplay; the bits carry their cell's sky
-level in their material's otherwise unread OcclusionStrength. Departures, the floor fades out from
-level 14 to 15, since unfaded the whole sky at 15 lifted the engine's shade beside a wall on open
-ground from green 55 to 67, and the play check builds its own canopy on the flat world, jungle
-leaves two deep over grass at sky 13 against grass in a stone wall's shade at 15, each at least 0.72
-of the other's luminance, three source levels. At 1280 by 720 the floor reads 42.4 where 20.2 stood,
-the shade 42.2 and the sunlit ground 172.9 unchanged; the rain forest's whole frame at noon 4.0 to
-21.2 in mean luma and at midnight 0.1 either way, differing by no more than a level anywhere; the
-plains village differs by 8 or more in 2,776 pixels, all on the ground under the bush's leaves, open
-ground, cast shadows and sunlit faces unchanged; the bits under a leaf roof 18, 34, 49 to 31, 61,
-102. The held item and dropped stacks draw through the engine's shader and take no floor; house
-interiors and cave mouths take it at their levels as the source lights them. The capture shows the
-rain forest's floor lit at noon where it was near black, midnight and the plains the same. 278
-tests, play.sh 178 s on the GPU. Both pushed at 14:33 on 2026-10-24 after the run of `e82d965` went
-green; their run green at 14:55, the play job 22.0 minutes. After `aaeaa2a`, item 107, read at 14:02
-on 2026-10-24, carrying the review's files. Light falling straight down through a canopy under the
-open sky loses one level entering the first leaf and one more entering the second and nothing for
-the layers under, keeping the rest to the floor, leaves still taking a level each sideways and up;
-Lighting.Into gains `open`, nothing but sky and leaves over the cell, the column pass goes through
-leaves and queues the cells under a canopy for the sideways spread, without which 201 plains cells
-by a branch log went darker, and the engine scans up for `open` only for downward light at 13 or
-more. Five leaves deep reads 14 at the top leaf and 13 under the second and at the floor, one deep
-14, a hole cut through the five 15 and refilled 13, TreeTests' three layers 13 where 6 to 12 stood;
-the other biomes' columns with no leaf above identical in the desert, the badlands, the plains, the
-jungle and the cherry grove and the savanna moved by 2 over 757,000 cells, under leaves the jungle
-plus 7.7 percent, the cherry grove plus 18, the plains plus 1.3 and the savanna plus 3.5, no plains
-cell darker; the rain forest's floor at noon 11 to 13 and 9 to 13. The capture shows next to no
-change, since the levels only darken a face where the light is low and a corner at level 9 and up
-keeps 0.975 of its color; the dark floor is the engine's light, the canopy shadowing the sun and the
-field holding the leaves solid so the sky's indirect light does not reach the floor, these packs'
-leaves not cut out. 276 tests, play.sh 166 s on the GPU.
+Reviewed up to `02abb9d`, item 109, the cactus as the source's model, pushed at 15:01 on 2026-10-24
+after the run of `f480dbf` went green, the run watched, carrying the review's files. A Piece gains
+Faces, a bit a face, all six by default; BlockShape.Cactus is the top and the bottom (cactus_bottom,
+a new surface) across the whole cell and the four side faces at a sixteenth and fifteen sixteenths
+spanning the cell, the cactus Shaped so it hides no face beside it, its collision box 1, 0, 1 to 15,
+15, 15 and its outline to 15, 16, 15 in sixteenths, the source's. Departures, the top and the bottom
+span the whole cell as the source's first element does rather than the inset square, the pack's
+cactus_top clear on its border but for the thorns at its corners and edges, so the inset square
+shows with the border thorns kept; every face shows its whole picture as a part so its corners carry
+their places and the shadow pass cuts its shadow where the picture is clear, without which the top's
+overhang cast a dark band down the sides under every seam at noon. A new BlockShape.Whole flag keeps
+the cactus's item, on the ground, in the hand and as an icon, the whole cube of its pictures, the
+drop's bottom wearing cactus_bottom. The mesher's test reads a cactus on stone as the up face across
+the cell and the four sides at their sixteenths with no bottom, and its box the source's; 279 tests,
+play.sh 177 s on the GPU; the capture at 1.6 blocks off shows the white corners gone and the thorns
+standing out. The README's cutout paragraph describes the model and its box.
+
+Before it, `f480dbf` came, items 107 and 117 with `aaeaa2a`, pushed at 14:33 on 2026-10-24, its run
+green, the play job 22.0 minutes.
 
 Before it, `e82d965` came, item 106 with `ccf6fcf`, item 98 reworked, and `4a2cd7b`, item 93's
 fourth mend, pushed at 13:55 on 2026-10-24, its run green, the play job 37.4 minutes.
-
-Before it, `08d0943` came, item 103 and item 93's second and third mends with `89d8caa` and
-`3236b56`, pushed at 13:12 on 2026-10-24, its run green, the play job 37.8 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -656,20 +635,6 @@ full.
     from the caller; the game's `litStepped` then hands the step's read in and reads the shadow
     once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
     again. One commit, small, with the package carrying the engine's item 99.
-
-109. **The cactus is the source's model, its sides a pixel in and their clear edges cut out so the
-    thorns stick out.** The owner wrote at 13:31 on 2026-10-24 that the cactus needs to be one pixel
-    thinner, white showing in its corners, and at 13:46 that the thorns are on the white border, so
-    the faces go a pixel in and the white is cut out as alpha so the thorns at the edges stick out.
-    The game draws the cactus as a whole cube whose texture's clear edges show the color the pixel
-    holds, the TODO line on the source's model open. The cactus becomes the source's model, each
-    side face standing a pixel in from its side of the cell and spanning the cell's full width, the
-    clear pixels cut out as the plants' are so the thorns on the picture's edge columns stick out
-    past the face beside them, the top and the bottom on the inset square, the top at the height the
-    source's model gives it, the bottom on the ground, with the picture's rows and columns as the
-    source maps them; its collision box the source's; a capture of a cactus up close against the
-    before, and the mesher's test of the cactus's faces. One commit, small, after item 108 and
-    before item 94.
 
 110. **The bits of a tinted block carry the biome's tint.** The owner wrote at 13:31 on 2026-10-24
     that the color of the particles for grass and dirt is not adjusted to the temperature of the

@@ -533,8 +533,10 @@ own cracks branching out from its middle where no pack has them, and throwing a 
 picture from the face hit each tick, and then drops what it leaves. The progress is kept while the
 button stays held and the aim is lost for up to a second, as over a jump, so a block above reach
 breaks over a few jumps, and begins again on another block. A block broken in any mode throws 64
-bits, each a quarter of its side's picture, which fall, land and are gone within two seconds, as
-Minecraft's do, each lit as its face toward the eye takes the light at its middle, which its body
+bits, each a quarter of its side's picture tinted by the climate's grass and leaves where it stood,
+as its faces are, so a grass block broken in the savanna throws the savanna's grass and leaves in a
+jungle the jungle's, which fall, land and are gone within two seconds, as Minecraft's do, each lit
+as its face toward the eye takes the light at its middle, which its body
 keeps in the open, so one clipped into a wall takes no light through it. Grass, farmland and a path
 drop their dirt, stone its cobblestone, coal ore its coal, diamond and emerald ore their gem, lapis
 ore four to nine lapis and redstone ore four or five redstone, wheat its wheat and seeds, the

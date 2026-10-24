@@ -1,3 +1,5 @@
+using Engine;
+
 namespace VoxelSandbox;
 
 /// <summary>The loaded columns of an endless world, read and changed by world position, with their light.</summary>
@@ -267,6 +269,14 @@ public sealed class VoxelWorld
         _columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column)
             ? Biomes.All[column.Biome[(z & Section.Mask) * Section.Size + (x & Section.Mask)]]
             : null;
+
+    /// <summary>The grass's and the leaves' colors at a world column, as its faces are tinted there, or the plains' where it is not loaded.</summary>
+    public (Color Grass, Color Foliage) TintsAt(int x, int z)
+    {
+        if (!_columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column)) return (Biomes.Plains.GrassColor, Biomes.Plains.FoliageColor);
+        var at = (z & Section.Mask) * Section.Size + (x & Section.Mask);
+        return (column.GrassTint[at], column.FoliageTint[at]);
+    }
 
     /// <summary>The height of the highest block that is not air at a world column, or one under the world's bottom where it is all air or not loaded.</summary>
     public int Top(int x, int z) =>
