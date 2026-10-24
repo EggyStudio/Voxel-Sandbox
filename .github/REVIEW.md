@@ -5,40 +5,31 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `4b398bd`, item 43's rest, the haze by height and toward dawn and the sun's color,
-read at 22:42 on 2026-10-24, carrying the review's files and the devlog's captures. terrain.slang
-takes the aerial growth by the density along the ray from the eye through a hazeHeight uniform of
-base, scale and an on flag, the density whole at and under the sea's level of 48 and falling by e
-over each 40 blocks above, the mean along the ray in closed form, a peak 80 over the sea seen from
-the sea holding 0.38 to 0.48 of the haze, Haze.cs holding the formula for the tests; Haze.Dawn
-multiplies the growth by 2.5 at 6:15 falling to 1 by 9 and before 4, the evening as at noon; Haze by
-Height and Morning Haze stand under Sky and Visuals on by default, in the README's table and walked
-by play. HazeTests read nearer clearer, the whole density at and under the sea, the peak's share,
-higher eyes clearer and never past the most, the dawn factor at six hours, and the sun's color at
-12, 9, 7 and 6.2 with blue to red falling, noon's 0.5 to 0.7, near sunrise under 0.4 and 7 and 17
-mirroring; the village at 6:15, 12 and 17:30 before and after, dawn visibly hazier and the island
-fading more, noon and dusk differing little on land near the sea's level. The penumbra waits on the
-engine's item 111 and the saturation default on the owner's word. 297 tests, play.sh 325 s on the
-GPU. Both pushed at 22:42 on 2026-10-24 after the run of `2926dda` went green; their run green at
-23:28, the play job 45.6 minutes. After `8bcbfde`, item 70 as a reading, read at 22:25 on
-2026-10-24, carrying the review's files, the village capture taken again and the devlog's pair. The
-land's own faces show no fault across the eye's height, a wall of grass blocks 6.5 blocks off with
-the eye at 5.62 reading the same dirt texel from y5 to y10 at 186 to 192 red at noon with the packs
-and 194 to 200 at 17, 179 to 185 and 187 to 193 without, green following with no step at the line,
-the slow rise the floor's shade fading, and bands of the whole wall 30 rows each 115 to 120 down to
-the foot's 106, a dirt wall the same, which agrees with `22616f4` that the land's faces are never
-turned and the plants' mend there holds; play.sh gains the grass wall check, five texels from the
-eye's line up read as luminance, failing on a neighbor step over 2 levels, 125.6 to 128.1 without
-packs; plains-village.webp is taken again through pictures.sh's own steps with today's shadows and
-river. A dirt texel at noon reads 186, 104, 0, the blue crushed to 0 by the grading and the warm
-light, which may be the orange the owner described, read under item 43. 294 tests, play.sh 288 s on
-the GPU.
+Reviewed up to `9d4b295`, item 42's second commit, the depth, the edge and the sky, pushed at 23:52
+on 2026-10-24 after the run of `4b398bd` went green, the run watched, carrying the review's files
+and the devlog's captures. The water's faces are a mesh of their own, SectionMesher.Water, drawn
+with a material whose alpha of 253 marks water to the terrain shader; each top corner carries the
+water's depth in the overlay's nine bits, which water never uses, the mean of the four columns about
+the corner down to the first block that is not water to 15 blocks, the shader zeroing the overlay
+for water, since a mesh uploaded from positions and a stream gives its colors to the light field
+alone and a shader reading COLOR0 reads white, as the engine documents; the shader darkens and
+clears the water by depth over the view's slope, its alpha from a floor of 0.4 or less toward the
+shore up to 1 for deep water so the bank has no hard line and a small pool keeps its texture; the
+sky is the haze's color along the reflected view by Schlick's fresnel, scaled by the sky reaching
+the water so cave pools mirror none; the fragment's local lighting is renamed facing. play.sh reads
+a red-lined pool while flying, one block deep red 156 against green 109, five deep 63 against 99,
+and the far end 36 lighter than the near seen low, where the old build reads 16 over and 23 lighter;
+the red wall's pool takes a white concrete bed since clear shallow water shows the dirt's red, and
+the water animation's swing is 43 against 40 asked; the mesher's corner depths tested at 48 inside,
+24 at an edge and 12 at a corner; captures of the sea by the island at noon and 17, the lush cave's
+pools and the stepped pool seen low. The mirror is the engine's item 112, its entry in the engine's
+tree. 298 tests, play.sh 301 s on the GPU.
+
+Before it, `4b398bd` came, items 70 and 43 with `8bcbfde`, pushed at 22:42 on 2026-10-24, its run
+green, the play job 45.6 minutes.
 
 Before it, `2926dda` came, item 96's second commit, the states, pushed at 22:15 on 2026-10-24, its
 run green, the play job 25.2 minutes.
-
-Before it, `e77030b` came, item 96's first commit, pushed at 21:47 on 2026-10-24, its run green, the
-play job 24.0 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -90,7 +81,8 @@ full.
     texture, and the cheap part built first as this item's second commit, the sky's color in a
     fresnel by the view's angle from the environment map, the bed seen through the water darkened
     with depth, the edge and the view from under, with the shore's mirror when the engine's plane
-    lands.
+    lands. The second commit at `9d4b295` on 2026-10-24, the depth, the edge and the sky's fresnel,
+    the water a mesh of its own; the shore's mirror with the package carrying the engine's item 112.
 
 44. **The clouds cover the area about the player and do not reach the horizon.** The owner wrote to
     the game's session at about 15:00 on 2026-10-24, on item 108's try, not to stretch the clouds so

@@ -82,11 +82,17 @@ public sealed class FirstPersonController
     /// <summary>Radians turned for each pixel the mouse moves.</summary>
     public float Sensitivity { get; set; } = 0.0025f;
 
+    /// <summary>The zoom its key gives, which narrows the view and the mouse's turn alike.</summary>
+    public Zoom Zoom { get; } = new();
+
+    /// <summary>Radians turned for each pixel the mouse moves as the view stands now, narrowed with the zoom so the aim holds.</summary>
+    public float Turn => Sensitivity * Zoom.Share;
+
     public Vector3 Eye => Body.Position + new Vector3(0, _eyes, 0);
 
     public Vector3 Look => new(-MathF.Sin(Yaw) * MathF.Cos(Pitch), MathF.Sin(Pitch), -MathF.Cos(Yaw) * MathF.Cos(Pitch));
 
-    public Camera3D Camera => new(Eye, Eye + Look, Vector3.UnitY, _fov);
+    public Camera3D Camera => new(Eye, Eye + Look, Vector3.UnitY, _fov * Zoom.Share);
 
     /// <summary>The way the player faces in degrees from north, clockwise, as a compass reads it.</summary>
     public float Heading
@@ -103,11 +109,13 @@ public sealed class FirstPersonController
     /// </summary>
     public void Update(VoxelWorld world, float seconds, Input input, bool look, bool move)
     {
+        // The zoom's key and the wheel while it is held act only while the mouse turns the view.
+        Zoom.Update(seconds, look && input.KeyDown(Zoom.Key), look ? GetMouseWheelMove() : 0);
         if (look)
         {
             var mouse = input.MouseDelta;
-            Yaw -= mouse.X * Sensitivity;
-            Pitch = Math.Clamp(Pitch - mouse.Y * Sensitivity, -1.55f, 1.55f);
+            Yaw -= mouse.X * Turn;
+            Pitch = Math.Clamp(Pitch - mouse.Y * Turn, -1.55f, 1.55f);
         }
 
         var controls = new Controls();

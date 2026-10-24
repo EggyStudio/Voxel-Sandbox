@@ -104,6 +104,7 @@ with its history.
 | F3 with F4 | The mode switcher, F4 stepping through creative, survival, adventure and spectator while F3 is held, and the mode chosen played as F3 is let go |
 | F3 with T | Reads the resource packs again from their files, as Minecraft's does |
 | G | The next quality of global illumination, Off after High |
+| C, held | Zoom, the view narrowed to a quarter over a tenth of a second and the mouse's turn with it, the wheel narrowing it further to a tenth, the key set in the options |
 | F1 | Hide the crosshair, the hotbar and the outline |
 | Escape | Shut the window open, go back a menu, or open the menu, which holds the world still |
 
@@ -672,12 +673,13 @@ follows the pointer.
 Escape opens the game's menu over the darkened world, which holds the world still while it is open,
 as Minecraft's does when played alone, with Back to Game, the options, Save the World, and Save and
 Quit. The options are in two columns of buttons and sliders as Minecraft lays its options out, the
-field of view, the mouse's sensitivity, the interface's scale, automatic or 1 to 4, and whether full
-rows of the HUD fade, with a button to each screen of settings by its area, Video Settings, Render
-Settings, Post Processing, Sky and Visuals and Resource Packs. A setting's slider moves by its step,
-a button steps through its choices, each takes effect at once, and Done goes back a screen. The
-window F3 opens is the engine's ImGui, a tool for the developer, with what the frame holds and
-costs, the toggles of debugging and the world's kind, seed and mode.
+field of view, the mouse's sensitivity, the interface's scale, automatic or 1 to 4, whether full
+rows of the HUD fade, and the zoom's key, C, V, Z, X, R or Left Alt, with a button to each screen of
+settings by its area, Video Settings, Render Settings, Post Processing, Sky and Visuals and Resource
+Packs. A setting's slider moves by its step, a button steps through its choices, each takes effect
+at once, and Done goes back a screen. The window F3 opens is the engine's ImGui, a tool for the
+developer, with what the frame holds and costs, the toggles of debugging and the world's kind, seed
+and mode.
 
 | Screen | Setting | Reach | Starts at |
 |---|---|---|---|

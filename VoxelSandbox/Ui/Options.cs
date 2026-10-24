@@ -118,6 +118,9 @@ public sealed record SkyColor(string Name, Func<Vector3> Get, Action<Vector3> Se
 /// </remarks>
 public sealed class OptionScreens
 {
+    // The keys the zoom may take, none of them the game's for anything else.
+    private static readonly Key[] ZoomKeys = [Key.C, Key.V, Key.Z, Key.X, Key.R, Key.LeftAlt];
+
     // The names of the moon's phases in the order the sky counts them.
     private static readonly string[] Phases =
         ["Full", "Waning Gibbous", "Last Quarter", "Waning Crescent", "New", "Waxing Crescent", "First Quarter", "Waxing Gibbous"];
@@ -135,6 +138,7 @@ public sealed class OptionScreens
             new("Sensitivity", () => player.Sensitivity / 0.0025f * 100, v => player.Sensitivity = v / 100 * 0.0025f) { Low = 10, High = 200, Step = 1, Format = Option.Percent },
             new("GUI Scale", () => Gui.Chosen, v => Gui.Chosen = (int)v) { Choices = ["Auto", "1", "2", "3", "4"] },
             Option.Toggle("Fading HUD", () => game.Fade.Enabled, on => game.Fade.Enabled = on),
+            new("Zoom Key", () => Array.IndexOf(ZoomKeys, player.Zoom.Key), v => player.Zoom.Key = ZoomKeys[(int)v]) { Choices = [.. ZoomKeys.Select(k => k.ToString())] },
         ], []);
 
         var video = VideoSettings = new VideoSettings();

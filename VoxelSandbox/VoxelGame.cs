@@ -537,7 +537,8 @@ public sealed class VoxelGame : IDisposable
         // jumping, crouching and sprinting nor the hotbar's number keys, which a window of slots
         // takes to swap a slot.
         var screen = InventoryOpen || Menus.Open != Menu.None;
-        Hotbar.Update(keys && !screen, _captured);
+        // The wheel zooms while the zoom's key is held, and steps the hotbar otherwise.
+        Hotbar.Update(keys && !screen, _captured && !IsKeyDown(Player.Zoom.Key));
         Hotbar.Follow(seconds);
         var alive = _alive = !Mode.Lives() || !Vitals.Dead;
         Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
