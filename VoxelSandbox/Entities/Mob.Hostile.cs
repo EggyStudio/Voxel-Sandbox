@@ -75,7 +75,9 @@ public sealed partial class Mob
                 Fuse = distance > FuseLeave ? -1 : Fuse + seconds;
                 if (Fuse < FuseTime) return (Vector3.Zero, false);
                 events.Add(new MobBlast(this, Body.Position + new Vector3(0, Kind.Height / 2, 0), 3));
-                (Exploded, Health, Dying) = (true, 0, DeathTime);
+                Exploded = true;
+                ref var life = ref Life;
+                (life.Health, life.Dying) = (0, MobLife.DeathTime);
                 return (Vector3.Zero, false);
             }
             if (distance < FuseReach && Sees(world, eye, prey.Eye))

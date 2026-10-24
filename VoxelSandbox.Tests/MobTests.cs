@@ -34,9 +34,14 @@ public sealed class MobTests : IDisposable
 
     private static MobRecord At(MobKind kind, float x, float y, float z, Vector3? home = null) => new(kind, 0, new Vector3(x, y, z), 0, kind.Health, home);
 
+    // Thinks, moves and ages a mob a frame at a time, as the frame's behaviors do.
     private static void Run(Mob mob, VoxelWorld world, float hour, float seconds)
     {
-        for (float t = 0; t < seconds; t += 1 / 30f) mob.Update(world, new Vector3(100, 100, 100), hour, 1 / 30f);
+        for (float t = 0; t < seconds; t += 1 / 30f)
+        {
+            mob.Update(world, new Vector3(100, 100, 100), hour, 1 / 30f);
+            MobLife.Age(mob.Ecs, 1 / 30f);
+        }
     }
 
     [Fact]

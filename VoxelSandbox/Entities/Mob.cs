@@ -1,4 +1,5 @@
 using System.Numerics;
+using Engine;
 
 namespace VoxelSandbox;
 
@@ -8,6 +9,70 @@ namespace VoxelSandbox;
 /// or null for a mob that wanders anywhere.
 /// </summary>
 public readonly record struct MobRecord(MobKind Kind, byte Variant, Vector3 Position, float Yaw, int Health, Vector3? Home);
+
+/// <summary>
+/// A mob's life, its health, the red a hit leaves on it and how long it has lain dying, a component
+/// of the mob's entity whose behavior ages it in the engine's frame.
+/// </summary>
+/// <remarks>
+/// A hit while the mob is still red does nothing, as in Minecraft, and a mob is taken away once it
+/// has lain dying for a second. The aging also takes its world and its seconds as arguments, so a
+/// test ages the mobs of an ECS world of its own as the frame ages the game's.
+/// </remarks>
+[Behavior]
+public partial struct MobLife
+{
+    /// <summary>Seconds a hit reddens a mob for, and how long it has lain dying when it is taken away.</summary>
+    public const float Unhurt = 0.5f, DeathTime = 1;
+
+    public int Health;
+
+    /// <summary>Seconds left of the red a hit leaves on it, during which another hit does nothing.</summary>
+    public float Hurt;
+
+    /// <summary>Seconds since it died, as it falls over, or less than zero while it lives.</summary>
+    public float Dying;
+
+    /// <summary>Whether it has fallen over for long enough to be taken away.</summary>
+    public readonly bool Gone => Dying >= DeathTime;
+
+    [OnUpdate]
+    public static void Age(BehaviorContext ctx)
+    {
+        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds > 0 && !step.MobsStill) Age(ctx.Ecs, step.Seconds);
+    }
+
+    /// <summary>Fades every mob's red and counts its time dying by so many seconds.</summary>
+    public static void Age(EcsWorld ecs, float seconds)
+    {
+        foreach (var (id, _) in ecs.Query<MobLife>())
+        {
+            ref var life = ref ecs.GetRef<MobLife>(id);
+            life.Hurt = MathF.Max(0, life.Hurt - seconds);
+            if (life.Dying >= 0) life.Dying += seconds;
+        }
+    }
+
+    /// <summary>Takes a hit's damage and reddens, falling over where the health is gone, unless still red or dying.</summary>
+    /// <returns>Whether it took the hit.</returns>
+    public bool Hit(int damage)
+    {
+        if (Hurt > 0 || Dying >= 0) return false;
+        Health -= damage;
+        Hurt = Unhurt;
+        if (Health <= 0) Dying = 0;
+        return true;
+    }
+
+    /// <summary>Takes some health with no wait, as burning does, reddening for a moment.</summary>
+    public void Harm(int damage)
+    {
+        if (Dying >= 0) return;
+        Health -= damage;
+        Hurt = MathF.Max(Hurt, 0.25f);
+        if (Health <= 0) Dying = 0;
+    }
+}
 
 /// <summary>
 /// A mob in the world, with its body, which falls, swims and is stopped by the blocks as the
@@ -27,11 +92,16 @@ public readonly record struct MobRecord(MobKind Kind, byte Variant, Vector3 Posi
 /// The yaw is a turn about the vertical as the player's is, 0 facing north and growing to the left,
 /// so a model built facing north is turned by it alone.
 /// </para>
+/// <para>
+/// A mob is an entity of an ECS world, the game's or one of its own where none is given, as in a
+/// test, with itself, its body and its <see cref="MobLife"/> as components, and it reads its health
+/// from its life there.
+/// </para>
 /// </remarks>
 public sealed partial class Mob
 {
     private const float Gravity = 32, FallLimit = 78, JumpSpeed = 9;
-    private const float Wander = 10, HomeReach = 20, Panicking = 5, Unhurt = 0.5f, DeathTime = 1;
+    private const float Wander = 10, HomeReach = 20, Panicking = 5;
     private const float Watch = 6;
 
     private readonly Random _random;
@@ -42,15 +112,19 @@ public sealed partial class Mob
     private bool _goingHome, _swimming;
     private Step? _openedDoor;
 
-    public Mob(int id, MobRecord record, int seed)
+    public Mob(int id, MobRecord record, int seed, EcsWorld? ecs = null)
     {
         Id = id;
         Kind = record.Kind;
         Variant = record.Variant;
         Body = new Body(record.Kind.HalfWidth, record.Kind.Height) { Position = record.Position };
         Yaw = HeadYaw = record.Yaw;
-        Health = record.Health;
         Home = record.Home;
+        Ecs = ecs ?? new EcsWorld();
+        Entity = Ecs.Spawn();
+        Ecs.Add(Entity, this);
+        Ecs.Add(Entity, Body);
+        Ecs.Add(Entity, new MobLife { Health = record.Health, Dying = -1 });
         _random = new Random(seed);
         _wait = 1 + (float)_random.NextDouble() * 6;
         _lastPlace = record.Position;
@@ -74,18 +148,26 @@ public sealed partial class Mob
     /// <summary>The head's tilt, positive looking up.</summary>
     public float HeadPitch { get; private set; }
 
-    public int Health { get; private set; }
+    /// <summary>The ECS world it is an entity of, and its entity there.</summary>
+    public EcsWorld Ecs { get; }
+
+    public int Entity { get; }
+
+    // Its life as its entity holds it, read and written in place.
+    private ref MobLife Life => ref Ecs.GetRef<MobLife>(Entity);
+
+    public int Health => Life.Health;
 
     public Vector3? Home { get; }
 
-    /// <summary>Seconds left of the red a hit leaves on it, during which another hit does nothing.</summary>
-    public float Hurt { get; private set; }
+    /// <inheritdoc cref="MobLife.Hurt"/>
+    public float Hurt => Life.Hurt;
 
-    /// <summary>Seconds since it died, as it falls over, or less than zero while it lives.</summary>
-    public float Dying { get; private set; } = -1;
+    /// <inheritdoc cref="MobLife.Dying"/>
+    public float Dying => Life.Dying;
 
-    /// <summary>Whether it has fallen over for long enough to be taken away.</summary>
-    public bool Gone => Dying >= DeathTime;
+    /// <inheritdoc cref="MobLife.Gone"/>
+    public bool Gone => Life.Gone;
 
     /// <summary>How far its legs swing, from 0 standing to 1 at five blocks a second, and where in their swing they are, as <see cref="Gait.Step"/> moves them.</summary>
     public float Stride { get; private set; }
@@ -113,16 +195,15 @@ public sealed partial class Mob
     /// </summary>
     public bool Hit(Vector3 from, int damage)
     {
-        if (Hurt > 0 || Dying >= 0) return false;
-        Health -= damage;
-        Hurt = Unhurt;
+        ref var life = ref Life;
+        if (!life.Hit(damage)) return false;
         var away = Body.Position - from;
         away.Y = 0;
         away = away.LengthSquared() > 1e-6f ? Vector3.Normalize(away) : new Vector3(MathF.Sin(Yaw), 0, MathF.Cos(Yaw));
         Body.Velocity = new Vector3(away.X * 7, 6, away.Z * 7);
-        if (Health <= 0) Dying = 0;
+        if (life.Dying >= 0) return true;
         // A hostile mob hit turns on the player wherever it is, where a passive one runs.
-        else if (Kind.Hostile) _angry = true;
+        if (Kind.Hostile) _angry = true;
         else
         {
             _panic = Panicking;
@@ -132,13 +213,7 @@ public sealed partial class Mob
     }
 
     /// <summary>Takes some health with neither a knock nor a run, as burning does, reddening for a moment.</summary>
-    public void Harm(int damage)
-    {
-        if (Dying >= 0) return;
-        Health -= damage;
-        Hurt = MathF.Max(Hurt, 0.25f);
-        if (Health <= 0) Dying = 0;
-    }
+    public void Harm(int damage) => Life.Harm(damage);
 
     /// <summary>Thinks and moves for a frame of so many seconds, with the player's eye and the hour of the day, hunting no one.</summary>
     public void Update(VoxelWorld world, Vector3 playerEye, float hour, float seconds) => Update(world, null, playerEye, hour, seconds, []);
@@ -149,13 +224,12 @@ public sealed partial class Mob
     /// </summary>
     public void Update(VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events)
     {
-        Hurt = MathF.Max(0, Hurt - seconds);
         var middle = Body.Position + new Vector3(0, Kind.Height * 0.5f, 0);
         _swimming = Blocks.IsWater(world.GetBlock((int)MathF.Floor(middle.X), (int)MathF.Floor(middle.Y), (int)MathF.Floor(middle.Z)));
         var wish = Vector3.Zero;
         var jump = false;
-        if (Dying >= 0) Dying += seconds;
-        else
+        // A mob lying dying thinks no more, and its life's behavior counts its time.
+        if (Dying < 0)
         {
             if (Kind.Burns) Burn(world, hour, seconds);
             (wish, jump) = Kind.Hostile && Hunts(world, target) is { } prey ? Hunt(world, prey, seconds, events) : Think(world, playerEye, hour, seconds);
@@ -332,7 +406,7 @@ public sealed partial class Mob
     private void Move(VoxelWorld world, Vector3 wish, bool jump, float seconds)
     {
         var swimming = _swimming;
-        var grip = 1 - MathF.Exp(-(Body.OnGround && Hurt < Unhurt - 0.15f ? 12 : swimming ? 4 : 1.5f) * seconds);
+        var grip = 1 - MathF.Exp(-(Body.OnGround && Hurt < MobLife.Unhurt - 0.15f ? 12 : swimming ? 4 : 1.5f) * seconds);
         Body.Velocity.X += (wish.X - Body.Velocity.X) * grip;
         Body.Velocity.Z += (wish.Z - Body.Velocity.Z) * grip;
         if (swimming)

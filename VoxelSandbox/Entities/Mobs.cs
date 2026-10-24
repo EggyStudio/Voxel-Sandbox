@@ -7,9 +7,9 @@ namespace VoxelSandbox;
 public readonly record struct MobDied(Mob Mob);
 
 /// <summary>
-/// The behaviors of the mobs, each an entity of the engine's ECS with its <see cref="Mob"/> and the
-/// mob's <see cref="Body"/>, which think and move them, push them apart and take away the dead in
-/// the engine's frame.
+/// The behaviors of the mobs, each an entity of the engine's ECS with its <see cref="Mob"/>, the
+/// mob's <see cref="Body"/> and its <see cref="MobLife"/>, which think and move them, push them
+/// apart and take away the dead in the engine's frame.
 /// </summary>
 /// <remarks>
 /// They read the voxel world, the player, the hour and the seconds from the game's
@@ -81,8 +81,8 @@ public partial struct MobMind
     public static List<Mob> Vanish(EcsWorld ecs)
     {
         var gone = new List<(int Id, Mob Mob)>();
-        foreach (var (id, mob) in ecs.Query<Mob>())
-            if (mob.Gone) gone.Add((id, mob));
+        foreach (var (id, mob, life) in ecs.Query<Mob, MobLife>())
+            if (life.Gone) gone.Add((id, mob));
         foreach (var (id, _) in gone) ecs.Despawn(id);
         return [.. gone.Select(g => g.Mob)];
     }
@@ -178,11 +178,7 @@ public sealed class Mobs
     /// <summary>Puts a mob into the world, a number of its own given.</summary>
     public Mob Add(MobRecord record)
     {
-        var mob = new Mob(_nextId++, record, _random.Next());
-        var id = _ecs.Spawn();
-        _ecs.Add(id, mob);
-        _ecs.Add(id, mob.Body);
-        return mob;
+        return new Mob(_nextId++, record, _random.Next(), _ecs);
     }
 
     /// <summary>Brings back a column's kept mobs as it loads, or places those its generator gave it the first time.</summary>

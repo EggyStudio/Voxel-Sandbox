@@ -804,8 +804,8 @@ Four tries a second look between 24 and 64 blocks from the player for a pack of 
 kind, zombies four times in ten, skeletons three, and spiders and creepers one and a half each,
 while fewer than 30 are about. One more than 128 blocks off is gone at once and one more than 32 off
 now and then, and a column that unloads does not keep them, nor does the save. Every mob, hostile or
-not, is an entity of the engine's ECS, its mob and its body, which behaviors of their own think and
-move, push apart and take away when dead in the engine's frame.
+not, is an entity of the engine's ECS, its mob, its body and its life, which behaviors of their own
+think and move, push apart, age and take away when dead in the engine's frame.
 
 A hostile mob that sees the player within its range, 24 blocks for a zombie and 16 for the rest,
 hunts the player along a way found through the blocks, and keeps on within twice that, as does one

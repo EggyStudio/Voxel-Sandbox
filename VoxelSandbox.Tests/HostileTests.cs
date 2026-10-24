@@ -17,7 +17,10 @@ public class HostileTests
     {
         var events = new List<MobEvent>();
         for (float t = 0; t < seconds; t += Step)
+        {
             mob.Update(world, new MobTarget(player, player.Position + new Vector3(0, 1.62f, 0)), player.Position, hour, Step, events);
+            MobLife.Age(mob.Ecs, Step);
+        }
         return events;
     }
 
