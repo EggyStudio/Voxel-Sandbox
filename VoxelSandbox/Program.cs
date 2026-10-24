@@ -26,10 +26,12 @@ SetConfigFlags(ConfigFlags.WindowResizable);
 InitWindow(1280, 720, "Voxel Sandbox");
 // Escape frees the cursor, as it opens Minecraft's menu, rather than closing the window.
 SetExitKey(Key.Null);
-// F2 and F3 are the game's own, its screenshot and its debug screen as Minecraft's, so the engine's
-// screenshot and performance window on them are turned off.
+// F1, F2 and F3 are the game's own, its HUD's hiding, its screenshot and its debug screen as
+// Minecraft's, so the engine's hiding of the interface, its screenshot and its debug overlay on them
+// are turned off.
+SetUiHiddenKey(Key.Null);
 SetScreenshotKey(Key.Null);
-SetProfileWindowKey(Key.Null);
+SetDebugOverlayKey(Key.Null);
 
 using (var game = new VoxelGame(flat ? "flat" : "overworld", seed, name, transient, packs))
 {

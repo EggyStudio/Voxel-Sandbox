@@ -5,51 +5,40 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `cce1536`, item 116, the held axe's blade facing ahead, read at 16:30 on 2026-10-24,
-carrying the review's files. HandRenderer.Turn keeps the quarter turn of plus 90 and for a tool
-turns the picture first by a half about its handle's diagonal, x, y, z to y, x, minus z, so the
-handle stays where the quarter turn puts it and the axe's blade comes ahead, the pickaxe, the shovel
-and the sword lying alike on both sides of the handle and looking the same, flat items that are not
-tools keeping the plain turn; the game has no hoe. Departure, the source's handheld model says a
-turn of minus 90, which put every tool at the right edge leaning at the eye where the game's plus 90
-gives the source's look, the part of the source's chain that flips the sign not found. ItemTests
-reads a point at the axe's blade at least 0.05 ahead of the handle's end with the tool's turn and
-the handle's end and grip where a plain picture has them; 284 tests, play.sh 192 s on the GPU; the
-capture shows the four tools before and after. Held until the run of `65eec11` ends, then pushed.
-After `65eec11`, item 115, a wall torch's wood leaning up to its lit head, read at 16:17 on
-2026-10-24, carrying REVIEW.md. In the pack's torch picture rows 6 and 7 of columns 7 and 8 are the
-lit head and rows 8 to 15 the wood, so the split moves from row 9 to row 8, the stick's sides
-showing rows 8 to 16 and the head's rows 6 to 8; the wall torch's stick runs from 3 to 11 with its
-three-pixel lean, about 20.6 degrees against the source's 22.5, and its head stands from 11 to 13 at
-the stick's leaned top, the standing torch split the same way, the stick 0 to 8 and the head 8 to
-10. Departure, the emissive head is two pixels a side where it was two by three by two, a 64th of a
-block's surface instead of a 48th, the flame's glow 187 where 140 stood and the soul flame's 93
-where 70, so a torch's light stays as it was. ModelPartsTests reads the sides' rows, the stick's top
-meeting the head's foot within 1e-4 for the four facings and the lit pieces' parts; 283 tests,
-play.sh 189 s on the GPU, the held torch's ring 61.5 to 61.8; the capture shows the lean running up
-to the head where a row of wood stood upright under it. Both pushed at 16:27 on 2026-10-24 after the
-run of `031d169` went green; the run watched. After `3869d0c`, item 114's first part, rivers running
-between slopes, read at 16:08 on 2026-10-24, carrying the review's files. In Overworld.Shape the
-valley's edge in the river noise widens with the drop above the water, 0.03 plus the larger of 0.08
-and the drop times 0.006, and a new bank lowers the valley floor to a block over the water over a
-band whose outer edge is the smaller of the valley's edge and 0.032 plus the drop times 0.006, a
-block down for about two across, fading by the fourth power of the depth below as the ground rises;
-the channel's cut is unchanged so the rivers keep their width, 64,325 river columns in the
-2,048-block square against 64,071. Departures, the bank stands above the channel rather than the
-channel widened, which widened the rivers by 45 percent, and the fade is the fourth power since the
-plain depth added steps of three or more where a river climbs into hills. Steps of two or more and
-of three or more between neighboring columns, the spawn's 512-block square 1,458 and 40 to 460 and
-6, the plains village 116 and 0 to 1 and 0, the 2,048-block square 6,026 and 357 to 3,058 and 339,
-the rest mostly the badlands' mesas and rivers fading into hills; GenerationTests holds the two
-squares at most 500 and 10 and 10 and 0; 283 tests, play.sh 230 s on the GPU; the capture shows a
-sloping bank with sand by the water where a steep green wall stood. The hills' amplitude, the item's
-second part, waits on the owner's word.
+Reviewed up to `9a3d746`, item 118, a held tool's pixels meeting with no crack, read at 17:08 on
+2026-10-24, carrying the review's files. The cracks were where the front and the back met the sides,
+the front and the back each one quad of the whole picture alpha-tested on a nearest-sampled texture
+while the sides were geometry at the pixels' edges, so the front's cut edge, where the interpolated
+coordinate crosses a texel boundary, never fell on the sides' edges, dotted sky lines moving with
+the subpixel view and hard steps no multisampling smooths. DropRenderer.Extrude gives each shown
+pixel its own front, back and needed sides, every corner from one grid of the pixels' corners so
+meeting faces share them bit for bit, every face sampling its pixel's middle, the drops on the
+ground the same mesh; departure, runs of pixels are not merged into one face, since the long edge
+would meet the sides' shorter edges at T-junctions. Measured as pixels nearer the sky than both
+neighbors along a row or column over the window's lower right at 1280 by 720, the iron pickaxe 225
+to 27 and the wooden pickaxe at 70 degrees 224 to 22, the same on lavapipe, the rest the item's own
+one-pixel slivers of a lit face; ItemTests reads the extruded mesh of a ragged picture with a hole
+closed, every edge held by two faces or four at a corner touch, Measurements.Gaps counts a synthetic
+crack, voxel.gaps is new and the play check reads the wooden pickaxe against the noon sky at most
+60, 13 this run; 286 tests, play.sh 192 s on the GPU; the capture at four times shows the lines
+gone. Both pushed at 17:08 on 2026-10-24 after the run of `65eec11` went green; the run watched.
+After `cce1536`, item 116, the held axe's blade facing ahead, read at 16:30 on 2026-10-24, carrying
+the review's files. HandRenderer.Turn keeps the quarter turn of plus 90 and for a tool turns the
+picture first by a half about its handle's diagonal, x, y, z to y, x, minus z, so the handle stays
+where the quarter turn puts it and the axe's blade comes ahead, the pickaxe, the shovel and the
+sword lying alike on both sides of the handle and looking the same, flat items that are not tools
+keeping the plain turn; the game has no hoe. Departure, the source's handheld model says a turn of
+minus 90, which put every tool at the right edge leaning at the eye where the game's plus 90 gives
+the source's look, the part of the source's chain that flips the sign not found. ItemTests reads a
+point at the axe's blade at least 0.05 ahead of the handle's end with the tool's turn and the
+handle's end and grip where a plain picture has them; 284 tests, play.sh 192 s on the GPU; the
+capture shows the four tools before and after.
+
+Before it, `65eec11` came, items 114's first part and 115 with `3869d0c`, pushed at 16:27 on
+2026-10-24, its run green, the play job 40.1 minutes.
 
 Before it, `031d169` came, items 110 to 113 with `fd17371`, `f00f649` and `2a399af`, pushed at 15:44
 on 2026-10-24, its run green, the play job 40.5 minutes.
-
-Before it, `02abb9d` came, item 109, the cactus, pushed at 15:01 on 2026-10-24, its run green, the
-play job 39.8 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -659,45 +648,24 @@ full.
     once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
     again. One commit, small, with the package carrying the engine's item 99.
 
-118. **A held tool's pixels meet with no gap along its borders.** The owner wrote at 16:39 on
-    2026-10-24 that the held tool items show a pixel gap everywhere around the borders,
-    stair-stepped aliasing. The held picture is a block of pixel cubes cut from the item's picture,
-    and along its outline a gap shows between the border pixels and the body, or the background
-    through the border's edge. Read first where the gap is, in a capture of a held tool at four
-    times the size against the picture's pixels, whether the cutout's alpha test drops the border
-    texels where the filter blends them with the clear ones beside, the cubes' faces standing a half
-    texel off their pixels, the atlas's padding, or the depth of the side faces against the front;
-    then the mend at the cause, the picture sampled nearest with the texel's own color at every cube
-    and the cubes meeting edge to edge; a test reading a held tool's capture for no background pixel
-    inside its outline, and the capture before and after. The owner added at 16:40 that the tool
-    jiggles as the camera moves, which closes and opens the gaps at different places, so the gaps
-    move with the subpixel position, as cracks do between faces whose shared edges are not the same
-    floating-point vertices, each cube's corners worked out on their own, or as a front face and its
-    side faces fight in depth along their edge; the reading takes this first, and the mend then has
-    every cube take its corners from one grid of vertices indexed by the pixel's corner so neighbors
-    share them bit for bit, the front faces merged along runs of pixels, and the item drawn without
-    sway for the capture to tell the sway from the cracks. One commit, first, before item 94's
-    pieces.
-
 119. **The terrain's faces meet with no crack, so no light shines through a dark cave's walls in
     pixel-wide lines.** The owner wrote at 16:41 on 2026-10-24 that blocks show the same pixel-wide
     gap as the held tools, and that it is the complaint from the black cave, the one-pixel
     stair-stepped lines of light where light shines through, read at 11:0x as item 83's missing mend
     in the engine. The owner added at 16:42 that the gap is not everywhere but on a lot of edges,
-    which fits cracks where quads of different sizes abut and not a seam at every block. The terrain
-    is greedily meshed, so a quad's corner lies on the edge of a larger quad beside it, a
-    T-junction, and after the projection's rounding the two edges differ by less than a pixel, which
-    the rasterizer leaves as a crack that moves with the camera and through which a lit face behind
-    a dark wall shows. Read first in a dark cave at a fixed view with the sun's shadow off and with
-    it on, and with the camera moved by a fraction of a pixel, whether the lines are cracks of the
-    mesh, which stay with the shadow off and move with the camera, or the shadow map's, which go
-    with the shadow off, saying which with a capture; then the mend for the cracks, the mesher
-    splitting a quad where a neighbor's corner lies on its edge so no T-junction remains, or the
-    merge bounded so abutting quads share their corners, whichever costs less in triangles at the
-    cherry grove, said in the commit with the draw counts before and after; a mesher test over a
-    sample section reading no vertex on the inside of another face's edge, and the cave capture
-    before and after. The shadow map's share, where the reading finds one, goes to the engine's
-    ASKS.md. One commit, after item 118 and before item 94's pieces.
+    which fits cracks where quads of different sizes abut and not a seam at every block. The game's
+    mesher is not greedy, each block face its own quad with corners on the block grid, so the lines
+    are not T-junction cracks of merged quads; the cause is read, the faces' shared corners not the
+    same values, a face's edge against a neighbor's at a different depth, or the shadow map's. Read
+    first on 5.2.281 under item 27, since the engine's item 83 mend was for these lines, in a dark
+    cave at a fixed view with the sun's shadow off and with it on, and with the camera moved by a
+    fraction of a pixel, whether the lines are cracks of the mesh, which stay with the shadow off
+    and move with the camera, or the shadow map's, which go with the shadow off, saying which with a
+    capture; then the mend for the cracks, at the cause the reading finds, said in the commit with
+    the draw counts before and after where the mesh changes; a mesher test over a sample section
+    reading no vertex on the inside of another face's edge, and the cave capture before and after.
+    The shadow map's share, where the reading finds one, goes to the engine's ASKS.md. One commit,
+    after item 27's package pin and before item 120.
 
 120. **The selected item's name over the hotbar fades away.** The owner wrote at 16:44 on 2026-10-24
     that selecting an item from the hotbar shows its name, which should fade away and not stick

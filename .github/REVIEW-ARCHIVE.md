@@ -1344,6 +1344,27 @@ before a batch.
     tool's picture turned by a half about its handle's diagonal before the quarter turn, the
     departure on the source's sign in the head.
 
+118. **A held tool's pixels meet with no gap along its borders.** The owner wrote at 16:39 on
+    2026-10-24 that the held tool items show a pixel gap everywhere around the borders,
+    stair-stepped aliasing. The held picture is a block of pixel cubes cut from the item's picture,
+    and along its outline a gap shows between the border pixels and the body, or the background
+    through the border's edge. Read first where the gap is, in a capture of a held tool at four
+    times the size against the picture's pixels, whether the cutout's alpha test drops the border
+    texels where the filter blends them with the clear ones beside, the cubes' faces standing a half
+    texel off their pixels, the atlas's padding, or the depth of the side faces against the front;
+    then the mend at the cause, the picture sampled nearest with the texel's own color at every cube
+    and the cubes meeting edge to edge; a test reading a held tool's capture for no background pixel
+    inside its outline, and the capture before and after. The owner added at 16:40 that the tool
+    jiggles as the camera moves, which closes and opens the gaps at different places, so the gaps
+    move with the subpixel position, as cracks do between faces whose shared edges are not the same
+    floating-point vertices, each cube's corners worked out on their own, or as a front face and its
+    side faces fight in depth along their edge; the reading takes this first, and the mend then has
+    every cube take its corners from one grid of vertices indexed by the pixel's corner so neighbors
+    share them bit for bit, the front faces merged along runs of pixels, and the item drawn without
+    sway for the capture to tell the sway from the cracks. One commit, first, before item 94's
+    pieces. Done at `9a3d746` on 2026-10-24, each pixel its own faces from one grid of corners, the
+    cracks read as the front's cut edge against the sides' geometry, the departure in the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
