@@ -100,7 +100,7 @@ with its history.
 | E | In creative every item, to put any of them in the chosen slot, in survival and adventure the inventory, and in spectator nothing |
 | Q | Throw one of the chosen slot's items, or with Left Control its stack |
 | F2 | Saves a screenshot of the frame as a PNG in the `screenshots` folder beside the saves, named by the time, as Minecraft's does, and says so at the lower left |
-| F3 | The settings window, with what the frame holds and costs, the light, the sky and the world, opened as F3 is let go |
+| F3 | The F3 window, with what the frame holds and costs, the toggles of debugging and the world's kind, seed and mode, opened as F3 is let go |
 | F3 with F4 | The mode switcher, F4 stepping through creative, survival, adventure and spectator while F3 is held, and the mode chosen played as F3 is let go |
 | F3 with T | Reads the resource packs again from their files, as Minecraft's does |
 | G | The next quality of global illumination, Off after High |
@@ -522,7 +522,7 @@ them out of the scene's distance field, so a pig's pink does not reach the grass
 </tr></table>
 
 A world plays in creative mode, as a test of the light needs, in survival, in adventure or in
-spectator, which the switcher, `voxel.mode` and the settings window choose and the save keeps. F3
+spectator, which the switcher, `voxel.mode` and the F3 window choose and the save keeps. F3
 held with F4 opens the switcher over the middle of the window, the four modes' icons in boxes under
 the chosen mode's name, as Minecraft's is, creative's grass block and survival's iron sword from the
 items and adventure's map and spectator's eye drawn for it. It opens on the mode played before the
@@ -655,8 +655,9 @@ Quit. The options are in two columns of buttons and sliders as Minecraft lays it
 field of view, the mouse's sensitivity, the interface's scale, automatic or 1 to 4, and whether full
 rows of the HUD fade, with a button to each screen of settings by its area, Render Settings, Post
 Processing, Sky and Visuals and Resource Packs. A setting's slider moves by its step, a button steps
-through its choices, each takes effect at once, and Done goes back a screen. The settings window F3
-opens is the engine's ImGui, a tool for the developer.
+through its choices, each takes effect at once, and Done goes back a screen. The window F3 opens is
+the engine's ImGui, a tool for the developer, with what the frame holds and costs, the toggles of
+debugging and the world's kind, seed and mode.
 
 | Screen | Setting | Reach | Starts at |
 |---|---|---|---|
@@ -978,7 +979,7 @@ what is behind it is set or taken, since over 24 sections a column it walks thou
 ms of each frame at seed 1's cherry grove at 12 columns. A section the flood leaves out is not
 meshed until a flood reaches it, so the stone under the land within reach is meshed only where a
 cave opens to it, which in a flight east over seed 1's cherry grove held about 4,400 sections and
-took the game's update from 1.3 ms a frame to 0.7 or 0.9. `voxel.cull` and the settings window turn
+took the game's update from 1.3 ms a frame to 0.7 or 0.9. `voxel.cull` and the F3 window turn
 it off. Sections are not culled to the view's frustum, because a mesh left out of a frame leaves the
 field, and the indirect light it reflected or blocked goes with it until the field settles again,
 where the land the flood leaves out lies behind walls the field holds, so a cave lit by a glowstone
@@ -1012,9 +1013,10 @@ field, and the field and the ray-traced scene take the new colors in the frame a
 indirect light off a section a lamp has lit since takes its new light. Each quad is split along the
 diagonal its occlusion favors, so a shaded corner darkens one triangle softly. A corner where blocks
 meet keeps 0.8, 0.62 or 0.45 of its color for one, two or three of its cells closed, both its sides
-closed counted as three, as Minecraft's does, and the corner shade's strength, from 0 to 1 in the
-settings window and through `voxel.corners`, takes each level that far from 1, half by default, so a
-corner where three cells close keeps 0.725 of its color, the sections shaded again when it changes.
+closed counted as three, as Minecraft's does, and the corner shade's strength, from 0 to 1, 0 to
+100% on the Render Settings screen and through `voxel.corners`, takes each level that far from 1,
+half by default, so a corner where three cells close keeps 0.725 of its color, the sections shaded
+again when it changes.
 
 Each corner also carries its sky level to the terrain shader, which keeps a face's light no less
 than the sky's light from all around at the hour, as the engine lights an open face by the
@@ -1027,14 +1029,14 @@ the field's shade beside a wall, and at night the sky's light is next to nothing
 by day under leaves, in a cave's mouth and inside a house by its windows, as the source's levels
 light them. The plants and a broken block's bits take the same floor at their cells' levels.
 
-The settings window turns the light levels and the shaded corners off, each on its own, to see
+The F3 window turns the light levels and the shaded corners off, each on its own, to see
 global illumination alone, and opens the engine's windows of what global illumination holds, of the
 frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
 depth of field, motion blur and bloom, each set at once as it is changed. Global illumination leaves
 out the engine's screen probes, so every face reads the light of its cascades through the scene
 alone, smoother and coarser, since the screen's probes spotted the light and moved it as the eye
-moved, and a non-number one of them kept spread black across the frame; the settings window turns
-them on.
+moved, and a non-number one of them kept spread black across the frame; the Render Settings
+screen turns them on.
 
 The frame is tonemapped by the curve of the owner's modpack's shader with the owner's settings, its
 exposure 0.9, white curve 1.3, lower curve 1.05 and upper 1.0, which the engine's `SetTonemapCurve`
@@ -1173,8 +1175,8 @@ a line six degrees up, where its band begins clear. They are drawn over it inste
 moon as a grid of a quad to each pixel of their pictures, and each corner takes the share of the
 haze left clear at its height, so a low sun dims into the haze as the dome blended over it would
 show it. `voxel.edge` reads where the drawn land ends up a column of pixels and how it meets what
-lies above it. The settings window turns the fog off, and the dome with it. The lamps' cubes are
-drawn with the engine's own shader and take no haze.
+lies above it. The Sky and Visuals screen turns the fog off, and the dome with it. The lamps' cubes
+are drawn with the engine's own shader and take no haze.
 
 ## What is not here yet
 
@@ -1187,19 +1189,19 @@ the player respawns, spiders that climb walls, and a bow and armor for the playe
 ## What it costs
 
 Every section within the render distance that the eye can see is drawn each frame, so the render
-distance sets most of the frame's cost. It is 12 columns by default, 192 blocks, and from 2 to 16 in
-the settings window, whose first lines give the frame's time, draws and triangles, and through
-`voxel.distance`, and a save keeps no distance of its own. The sections are drawn through the
-terrain's own shader, which keeps the positions their meshes hold, and the game marks it so with
-`SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and each of the
-sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the shadows
-take about the same from 8 columns to 16. Over seed 1's spawn at noon, from 100 blocks up looking
-north, at 1280 by 720 offscreen on the development machine's RTX 4070 Laptop GPU with the three
-default packs, the frame keeps 60 a second at 8 columns and loses it at 12, where the main thread
-bounds it, the game's update and drawing with the engine's render work, while the GPU's work stays
-at 14 to 15 ms. The frame's time, the GPU's and the CPU's passes' in milliseconds and the memory the
-game holds, one session each, the frame's time varying by up to 6 ms between sessions at 12 columns
-and the GPU's by under 0.5:
+distance sets most of the frame's cost. It is 12 columns by default, 192 blocks, and from 2 to 16 on
+the Render Settings screen and through `voxel.distance`, the F3 window's first lines giving the
+frame's time, draws and triangles, and a save keeps no distance of its own. The sections are drawn
+through the terrain's own shader, which keeps the positions their meshes hold, and the game marks it
+so with `SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and
+each of the sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the
+shadows take about the same from 8 columns to 16. Over seed 1's spawn at noon, from 100 blocks up
+looking north, at 1280 by 720 offscreen on the development machine's RTX 4070 Laptop GPU with the
+three default packs, the frame keeps 60 a second at 8 columns and loses it at 12, where the main
+thread bounds it, the game's update and drawing with the engine's render work, while the GPU's work
+stays at 14 to 15 ms. The frame's time, the GPU's and the CPU's passes' in milliseconds and the
+memory the game holds, one session each, the frame's time varying by up to 6 ms between sessions at
+12 columns and the GPU's by under 0.5:
 
 | columns | frame | GPU | CPU's passes | memory |
 |---|---|---|---|---|

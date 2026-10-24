@@ -5,31 +5,49 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `e643539`, item 125, the loading screen pure black, read at 19:13 on 2026-10-24,
-carrying the pair and its caption line, the review's files and the regenerated DEVLOG.md.
-LoadingBackground is 0, 0, 0, the bar's empty part with it, the title white and the bar green in its
-white outline, the play check reading the corner black and the README's paragraph following; 288
-tests, play.sh 280 s on the GPU. The four pushed at 19:14 on 2026-10-24 after the run of `4142a32`
-went green; the run watched. After `3d70b20`, item 27's pin of 5.2.283, read at 19:06 on 2026-10-24,
-carrying REVIEW.md and NORM.md. The grove at 1920 by 1080 at High, read back to back twice each, the
-frame 22.1 and 19.0 ms where 5.2.281 read 34.5 and 33.4, the scene pass 12.8 and 10.5 where 24.3,
-the shadows, the global illumination and the window depth unchanged at about 4.5 to 5.3, 2.4 to 3.0
-and 1.4 to 1.6, the two pictures matching but for 324 pixels at a fuzz of 3 percent; the cave as on
-5.2.281, the tops at 45 blocks 35, 29, 20 with the shadows at 150 and 0 at 1, the 90-block tops 19,
-20, 22 at High, so item 123 stands; the desert village 0 black pixels in the three readings.
-captions.md has a line a picture, two of the 24 pure black and removed, held-light-cave and
-item-98-tunnel, and item-27-grove-283 added as the pin's pair; the three ECS gaps stand in the
-engine's ASKS.md uncommitted. 288 tests, play.sh 280 s on the GPU. After `5113176`, item 94's first
-piece, the drops as entities, read at 18:53 on 2026-10-24, carrying the review's files and, under N
-4.8, the day's 24 pictures from 11:45 on under .github/devlog, 1.5 MB. Each stack is an entity with
-an ItemDrop behavior struct and the Body, reading the world, the player and the inventory from a
-GameStep resource, the systems Fall in PreUpdate, PickUp in Update and Gather in PostUpdate, all
-static on the main thread, each with a twin taking the EcsWorld for the tests; a dirt stack broken
-in survival was picked up as before. The ECS gave sparse-set storage, ref access through GetRef,
-Query over pairs, resources and the stage attributes, and lacked three things that go to the engine,
-a public way to run behaviors in a test since App.AddPlugin and Frame are internal in the package, a
-Query past three components, and a reference-type field in a behavior, which E3D006 forbids, so the
-stack keeps an ItemId; 288 tests, play.sh 307 s on the GPU. The owner wrote two words to the game's
+Reviewed up to `a82e342`, item 124's first commit, the screens, read at 19:34 on 2026-10-24,
+carrying the review's files and the devlog's sheet of the six screens. Options holds the field of
+view, the sensitivity, the GUI scale and the fading HUD with buttons to Render Settings, Post
+Processing, Sky and Visuals and Resource Packs; Render Settings holds nine, the render distance, the
+quality, the screen probes, the shadow distance, the corner shade, the emission, the field's
+cascades, cell and cascades a frame; Post Processing fourteen, bloom, occlusion, auto exposure,
+exposure, contrast, saturation, the engine's twelve tonemaps, the curve's four numbers, vignette,
+FXAA and motion blur; Sky and Visuals eight, the time, the daylight cycle, the day's length, the
+moon's phase, the sun's and the moon's strength, the clouds and the fog, with Sky Colors, nine
+colors that were constants in Sky.cs and live in a SkyColors class, each with R, G and B sliders, a
+swatch and Reset, and a Reset All, a change repainting and relighting the sky at once; the values
+read from the engine's getters where it has them, and voxel.options lists or sets any setting by
+screen and name. Departure, a test cannot build VoxelGame without the engine's app, the first ECS
+entry's gap, so the unit tests cover the option model and the 27 color channels against SkyColors
+and play.sh walks the 31 settings live, each set to mid-reach or the next choice, read back and set
+back, about 15 s on the GPU; no setting is saved yet, item 127. 292 tests, play.sh 305 s on the GPU.
+The owner wrote to the game's session at about 19:2x that video settings are needed too, for the
+resolution and the window mode, item 126. Held until the run of `e643539` ends, then pushed. After
+`e643539`, item 125, the loading screen pure black, read at 19:13 on 2026-10-24, carrying the pair
+and its caption line, the review's files and the regenerated DEVLOG.md. LoadingBackground is 0, 0,
+0, the bar's empty part with it, the title white and the bar green in its white outline, the play
+check reading the corner black and the README's paragraph following; 288 tests, play.sh 280 s on the
+GPU. The four pushed at 19:14 on 2026-10-24 after the run of `4142a32` went green; the run watched.
+After `3d70b20`, item 27's pin of 5.2.283, read at 19:06 on 2026-10-24, carrying REVIEW.md and
+NORM.md. The grove at 1920 by 1080 at High, read back to back twice each, the frame 22.1 and 19.0 ms
+where 5.2.281 read 34.5 and 33.4, the scene pass 12.8 and 10.5 where 24.3, the shadows, the global
+illumination and the window depth unchanged at about 4.5 to 5.3, 2.4 to 3.0 and 1.4 to 1.6, the two
+pictures matching but for 324 pixels at a fuzz of 3 percent; the cave as on 5.2.281, the tops at 45
+blocks 35, 29, 20 with the shadows at 150 and 0 at 1, the 90-block tops 19, 20, 22 at High, so item
+123 stands; the desert village 0 black pixels in the three readings. captions.md has a line a
+picture, two of the 24 pure black and removed, held-light-cave and item-98-tunnel, and
+item-27-grove-283 added as the pin's pair; the three ECS gaps stand in the engine's ASKS.md
+uncommitted. 288 tests, play.sh 280 s on the GPU. After `5113176`, item 94's first piece, the drops
+as entities, read at 18:53 on 2026-10-24, carrying the review's files and, under N 4.8, the day's 24
+pictures from 11:45 on under .github/devlog, 1.5 MB. Each stack is an entity with an ItemDrop
+behavior struct and the Body, reading the world, the player and the inventory from a GameStep
+resource, the systems Fall in PreUpdate, PickUp in Update and Gather in PostUpdate, all static on
+the main thread, each with a twin taking the EcsWorld for the tests; a dirt stack broken in survival
+was picked up as before. The ECS gave sparse-set storage, ref access through GetRef, Query over
+pairs, resources and the stage attributes, and lacked three things that go to the engine, a public
+way to run behaviors in a test since App.AddPlugin and Frame are internal in the package, a Query
+past three components, and a reference-type field in a behavior, which E3D006 forbids, so the stack
+keeps an ItemId; 288 tests, play.sh 307 s on the GPU. The owner wrote two words to the game's
 session at about 18:5x, taken as items 124 and 125. After `e04a1a5`, item 122, the loading screen in
 the source's red, read at 18:44 on 2026-10-24, carrying the review's files. At HEAD the one screen
 shown while a world loads was dark gray, VoxelGame.LoadingBackground at 24, 24, 28, cleared by
@@ -692,7 +710,27 @@ full.
     present, the whole of F3 the information screen on a later word; the settings in the source's
     style of buttons and sliders, read for their reach and their defaults and said in the README; a
     test walking each screen's settings and reading them applied, and captures of each screen. Two
-    commits, the screens and the moves, after item 125 and before item 94's arrows.
+    commits, the screens and the moves, after item 125 and before item 94's arrows. The screens at
+    `a82e342` on 2026-10-24, the departure on the test in the head; the moves out of F3 next.
+
+126. **A Video Settings screen holds the resolution, the window mode, the frame limit and VSync.**
+    The owner wrote to the game's session at about 19:2x on 2026-10-24 that video settings are
+    needed too, for the resolution and the window mode. The screen, beside the others under Options,
+    holds the resolution from the monitor's modes through GetMonitorModes, the window mode as
+    windowed, fullscreen or borderless through the engine's SetWindowFullscreenMode and
+    ToggleBorderlessWindowed, the frame limit through SetTargetFPS, and VSync where the engine
+    exposes it or an ASKS.md entry where it does not; each applied at once and read back,
+    voxel.options covering them, the README's table gaining the rows; play.sh walks them where the
+    runner allows, the window mode left out offscreen. One commit, after item 124's second commit
+    and before item 127.
+
+127. **The settings are kept across runs.** From item 124's first commit on 2026-10-24, no setting
+    is saved, the game having had no options file. The settings of every screen are written to an
+    options file in the save root as the source's options.txt is, one line a setting by screen and
+    name as voxel.options names them, written on a change and read at start before the world opens,
+    a missing or malformed line taking the default; a test writing, reading back and ignoring a bad
+    line, and the play check reading a setting after a restart. One commit, small, after item 126
+    and before item 94's arrows.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the

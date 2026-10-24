@@ -6,12 +6,13 @@ using static Engine.E3D;
 namespace VoxelSandbox;
 
 /// <summary>
-/// An ImGui window of what the frame holds and costs, and of the light, the sky and the world to
-/// change while playing, with the engine's own window of global illumination beside it.
+/// An ImGui window of what the frame holds and costs, the toggles of debugging and the world's kind,
+/// seed and mode, with the engine's own windows of global illumination, the frame's profile and the
+/// effects over the frame beside it.
 /// </summary>
+/// <remarks>The settings a player changes are on the options' screens, which <see cref="OptionScreens"/> holds.</remarks>
 public sealed class SettingsWindow
 {
-    private static readonly string[] Qualities = Enum.GetNames<GlobalIllumination>();
     private static readonly string[] Worlds = Generators.Kinds;
     private static readonly string[] Modes = Enum.GetNames<GameMode>();
 
@@ -45,8 +46,7 @@ public sealed class SettingsWindow
         if (ImGui.Begin("Voxel", ref open))
         {
             Stats(game);
-            if (ImGui.CollapsingHeader("Light", ImGuiTreeNodeFlags.DefaultOpen)) Light(game);
-            if (ImGui.CollapsingHeader("Sky", ImGuiTreeNodeFlags.DefaultOpen)) Sky(game.Sky);
+            if (ImGui.CollapsingHeader("Debugging", ImGuiTreeNodeFlags.DefaultOpen)) Debugging(game);
             if (ImGui.CollapsingHeader("World", ImGuiTreeNodeFlags.DefaultOpen)) World(game);
         }
         ImGui.End();
@@ -65,7 +65,8 @@ public sealed class SettingsWindow
         var renderer = game.Renderer;
         ImGui.TextUnformatted($"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count} sections to mesh");
         ImGui.TextUnformatted($"{renderer.Sections} sections drawn as a mesh each, {renderer.Lamps} lamps");
-        ImGui.TextUnformatted($"{renderer.Draws} draws of {renderer.Triangles:N0} triangles");
+        ImGui.TextUnformatted($"{renderer.Draws} draws of {renderer.Triangles:N0} triangles, {game.Clouds.Faces} faces of clouds");
+        ImGui.TextUnformatted($"Hour {game.Sky.Hour:0.00} of day {game.Sky.Day}{(game.Sky.Cycle ? ", going on" : ", held")}");
         if (game.Mode.Lives())
             ImGui.TextUnformatted($"Health {game.Vitals.Health}, food {game.Vitals.Food}, saturation {game.Vitals.Saturation:0.0}, exhaustion {game.Vitals.Exhaustion:0.00}");
         ImGui.TextUnformatted($"{game.Mobs.All.Count} mobs loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws, {game.Mobs.Kept} kept by columns not loaded");
@@ -78,23 +79,8 @@ public sealed class SettingsWindow
         return $"sky {sky}, blocks {block}";
     }
 
-    private void Light(VoxelGame game)
+    private void Debugging(VoxelGame game)
     {
-        var light = game.Light;
-        var quality = (int)light.Quality;
-        if (ImGui.Combo("Global illumination", ref quality, Qualities, Qualities.Length))
-        {
-            light.Quality = (GlobalIllumination)quality;
-            SetGlobalIllumination(light.Quality);
-        }
-        if (ImGui.Checkbox("Screen probes", ref light.ScreenProbes)) SetGlobalIlluminationScreenProbes(light.ScreenProbes);
-
-        var field = false;
-        field |= ImGui.SliderInt("Field cascades", ref light.Cascades, 1, 8);
-        field |= ImGui.SliderFloat("Field cell", ref light.CellSize, 0.125f, 1, "%.3f");
-        field |= ImGui.SliderInt("Cascades built a frame", ref light.Budget, 1, 8);
-        if (field) light.ApplyField();
-
         // Each changes every section's colors, which are written again a few sections a frame.
         var levels = game.Renderer.LightLevels;
         if (ImGui.Checkbox("Light levels", ref levels))
@@ -109,21 +95,10 @@ public sealed class SettingsWindow
             game.Renderer.CornerShade = corners;
             game.World.ReshadeAll();
         }
-        // The sections are shaded again once the slider is let go, rather than each frame it moves.
-        var strength = game.Renderer.CornerStrength;
-        if (ImGui.SliderFloat("Corner shade", ref strength, 0, 1)) game.Renderer.CornerStrength = strength;
-        if (ImGui.IsItemDeactivatedAfterEdit()) game.World.ReshadeAll();
-
-        var glow = game.Renderer.GlowScale;
-        if (ImGui.SliderFloat("Emission", ref glow, 0, 4)) game.Renderer.GlowScale = glow;
-        // Read back from the engine, so these show what the window of the effects over the frame set.
-        (light.Bloom, light.AutoExposure) = (GetBloom().Intensity, GetAutoExposure().Enabled);
-        if (!light.AutoExposure) light.Exposure = GetExposure();
-        if (ImGui.SliderFloat("Bloom", ref light.Bloom, 0, 2)) SetBloom(light.Bloom);
-        if (ImGui.SliderFloat("Ambient occlusion", ref light.Occlusion, 0, 1)) SetAmbientOcclusion(light.Occlusion);
-        var exposure = ImGui.Checkbox("Exposure follows the scene", ref light.AutoExposure);
-        if (!light.AutoExposure) exposure |= ImGui.SliderFloat("Exposure", ref light.Exposure, 0.1f, 4);
-        if (exposure) light.ApplyExposure();
+        var cull = game.Renderer.Cull;
+        if (ImGui.Checkbox($"Leave unseen sections undrawn, {game.Renderer.Culled} now###cull", ref cull)) game.Renderer.Cull = cull;
+        var still = game.Mobs.Still;
+        if (ImGui.Checkbox("Mobs stand still", ref still)) game.Mobs.Still = still;
 
         var bounce = BounceWindow;
         if (ImGui.Checkbox("Global illumination window", ref bounce)) BounceWindow = bounce;
@@ -134,32 +109,10 @@ public sealed class SettingsWindow
         if (ImGui.Checkbox("The effects over the frame", ref effects)) PostProcessWindow = effects;
     }
 
-    private static void Sky(Sky sky)
-    {
-        var hour = sky.Hour;
-        if (ImGui.SliderFloat("Hour", ref hour, 0, 24, "%.2f")) sky.Hour = hour % 24;
-        var day = sky.Day;
-        if (ImGui.InputInt("Day", ref day)) sky.Day = Math.Max(0, day);
-        var cycle = sky.Cycle;
-        if (ImGui.Checkbox("The day goes on", ref cycle)) sky.Cycle = cycle;
-        var minutes = sky.DayMinutes;
-        if (ImGui.SliderFloat("Minutes a day", ref minutes, 1, 60)) sky.DayMinutes = minutes;
-    }
-
     private void World(VoxelGame game)
     {
-        var fog = game.Fog;
-        if (ImGui.Checkbox("Fog toward the render distance", ref fog)) game.Fog = fog;
-        var clouds = game.Clouds.Shown;
-        if (ImGui.Checkbox($"Clouds, {game.Clouds.Faces} faces###clouds", ref clouds)) game.Clouds.Shown = clouds;
-        var distance = game.RenderDistance;
-        if (ImGui.SliderInt("Render distance", ref distance, 2, 16)) game.RenderDistance = distance;
         var mode = (int)game.Mode;
         if (ImGui.Combo("Mode", ref mode, Modes, Modes.Length)) game.Mode = (GameMode)mode;
-        var still = game.Mobs.Still;
-        if (ImGui.Checkbox("Mobs stand still", ref still)) game.Mobs.Still = still;
-        var cull = game.Renderer.Cull;
-        if (ImGui.Checkbox($"Leave unseen sections undrawn, {game.Renderer.Culled} now###cull", ref cull)) game.Renderer.Cull = cull;
         ImGui.TextUnformatted(game.Save is { } save ? $"Saved in {save.Folder} every 30 seconds" : "Transient, not saved");
         if (game.Save is not null && ImGui.Button("Save now")) game.SaveWorld();
         ImGui.Combo("Kind", ref _worldType, Worlds, Worlds.Length);
