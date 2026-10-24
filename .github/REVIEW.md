@@ -5,21 +5,23 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `1dce7b7`, item 75, the player's hand and held item in view, and nothing else,
-carrying the review's file: HandRenderer draws the empty right arm or the held item in the main pass
-near the eye, the source's view-space poses scaled by a quarter about the eye so nothing within the
-player's box cuts in, the held block its drop cube turned 45 degrees and an item its picture with
-the generated display's turns, the arm from the player skin's faces or the game's own, the source's
-swing over six ticks and its bob on the hand alone, hidden under F1, in spectator and when dead, lit
-at the eye and casting no shadow; flat items extruded a pixel deep as the source builds them;
-departures, the hand in the world pass rather than a second view with its own depth, to spare the
-model pass's lighting twice on lavapipe, the difference a ceiling 0.18 over the eye, and the turns'
-sign mended by captures, which says the model's front faces the other way from the source's; the
-play check reading the held stone and the grass in the window's lower right; 254 tests, the strict
-build clean, play.sh clean on the GPU. Read at 04:28 on 2026-10-24. Not pushed, the build run of
-`45b4b93` running; pushed when it ends. Next 74, 78, 80, 81, 69, 75, 74, 72 and 73, then the
-pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part and 54
-when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `adefc9d`, the empty hand showing nothing by the owner's word, Decision 38, the arm
+mesh and the skin gone, after `1dce7b7`, item 75, the player's hand and held item in view, and
+nothing else, carrying the review's file. Item 75: HandRenderer draws the empty right arm or the
+held item in the main pass near the eye, the source's view-space poses scaled by a quarter about the
+eye so nothing within the player's box cuts in, the held block its drop cube turned 45 degrees and
+an item its picture with the generated display's turns, the arm from the player skin's faces or the
+game's own, the source's swing over six ticks and its bob on the hand alone, hidden under F1, in
+spectator and when dead, lit at the eye and casting no shadow; flat items extruded a pixel deep as
+the source builds them; departures, the hand in the world pass rather than a second view with its
+own depth, to spare the model pass's lighting twice on lavapipe, the difference a ceiling 0.18 over
+the eye, and the turns' sign mended by captures, which says the model's front faces the other way
+from the source's; the play check reading the held stone and the grass in the window's lower right;
+254 tests, the strict build clean, play.sh clean on the GPU. Read at 04:28 on 2026-10-24. Read at
+04:28 and 04:33. Not pushed, the build run of `45b4b93` running; the two go when it ends. Next 74,
+78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the
+items in order; items 38's second part and 54 when their packages come; the AGENTS.md rows for the
+Ui and build folders wait on the owner's word.
 
 Before it, `45b4b93` came, item 69's felling, with `cc4f29a`, `8da806a`, `9b25aa3` and `b032e76`,
 items 69, 81, 80 and 78, pushed at 04:23 on 2026-10-24, their run in flight.
@@ -254,8 +256,8 @@ full.
     as its picture extruded, swinging on a hit or a use and bobbing with the walk, drawn after the
     world with its own depth so it never cuts into walls, hidden with the HUD under F1; a test
     reading the hand's pixels at a known view and a capture. One commit. Done at `1dce7b7` on
-    2026-10-24, the departures in the head. The empty arm goes by the owner's word, Decision 38, in
-    a commit on top.
+    2026-10-24, the departures in the head. The empty arm goes by the owner's word, Decision 38, at
+    `adefc9d`.
 
 78. **Grass as the source places it, with the two-block grass.** The owner wrote on 2026-10-23
     (Decision 34) that there is far too much grass, asking for the source's balance, and that the

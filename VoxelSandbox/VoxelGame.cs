@@ -164,6 +164,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>What the player holds, drawn before the eye.</summary>
     public HandRenderer Hand { get; } = new();
 
+    /// <summary>The light a torch or a lantern throws in the hand or on the ground.</summary>
+    public HeldLights Lights { get; } = new();
+
     public Inventory Inventory { get; } = new();
 
     /// <summary>The player's health, food and breath, which change in survival alone.</summary>
@@ -511,6 +514,11 @@ public sealed class VoxelGame : IDisposable
         Felling.Broken.Clear();
         foreach (var (x, y, z, block) in Felling.Dropped) Falling.Drop(block, x, y, z);
         Felling.Dropped.Clear();
+        // The hand a third of a block ahead of the eye, to its right and below it.
+        var ahead = Player.Look;
+        var side = Vector3.Normalize(Vector3.Cross(ahead, Vector3.UnitY));
+        var hand = Player.Eye + 0.3f * (ahead + side - Vector3.Cross(side, ahead));
+        Lights.Update(hand, Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye);
 
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
@@ -1090,6 +1098,7 @@ public sealed class VoxelGame : IDisposable
         MobRenderer.Dispose();
         DropRenderer.Dispose();
         Bits.Dispose();
+        Lights.Dispose();
         Cracks.Dispose();
         Clouds.Dispose();
         Sky.Dispose();

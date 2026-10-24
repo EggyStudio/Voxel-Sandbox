@@ -179,6 +179,22 @@ cmd voxel.tp 13.5 12 -19
 cmd voxel.look 40 35
 cmd frames.wait 2
 capture sky2.png
+# A torch in the hand lights the roof about the player at night, read a block and a half ahead with
+# stone in the hand, the moon alone lighting it, and with a torch.
+cmd voxel.look 0 -60
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+dark=$(ask voxel.pixel 13.5 12.001 -20.5)
+cmd voxel.select torch
+cmd frames.wait 10
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+lit=$(ask voxel.pixel 13.5 12.001 -20.5)
+cmd voxel.select stone
+echo "the roof by moonlight $dark, by a torch in the hand $lit"
+read -r dr _ <<< "$(printf '%s\n' "$dark" | sed -nE 's/^red ([0-9]+), .*/\1/p')"
+read -r lr _ <<< "$(printf '%s\n' "$lit" | sed -nE 's/^red ([0-9]+), .*/\1/p')"
+[ -n "$dr" ] && [ -n "$lr" ] && [ "$lr" -gt $((dr + 30)) ] || fail "a torch in the hand does not light the roof about the player, $dark against $lit"
 
 check "the stars at dawn"
 # At dawn the stars brighten the sky and darken none of it. Read low in the east over a band of the
