@@ -824,7 +824,7 @@ check "the overworld's loading"
 cmd voxel.hud on
 cmd voxel.distance 2
 # The overworld opens behind its loading screen, held up here to be read, the window's corner the
-# screen's dark gray while the state says it loads, and once it is let go and the world stands the
+# screen's red while the state says it loads, and once it is let go and the world stands the
 # player is set over the origin, and from above the trees there the corner is the sky's.
 cmd voxel.loading on
 cmd voxel.world overworld 1
@@ -833,7 +833,7 @@ state=$(ask voxel.state)
 [[ "$state" == "loading overworld-1, "* ]] || fail "the overworld opened with no loading screen, $state"
 screen=$(ask voxel.color 1220 16 40 24)
 echo "$screen"
-[[ "$screen" == "red 24.0, green 24.0, blue 28.0 "* ]] || fail "the loading screen's corner is not its dark gray, $screen"
+[[ "$screen" == "red 239.0, green 50.0, blue 61.0 "* ]] || fail "the loading screen's corner is not its red, $screen"
 cmd voxel.loading off
 stood
 state=$(ask voxel.state)

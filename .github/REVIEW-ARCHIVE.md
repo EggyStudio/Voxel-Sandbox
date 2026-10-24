@@ -1395,6 +1395,23 @@ before a batch.
     hold. One commit, small, after item 119 and before item 94's pieces. Done at `7ece2c1` on
     2026-10-24, held 1.5 s and faded over 0.5 as the source's.
 
+121. **A shadow darkens the ground and keeps its warmth, the sky's blue out of it.** The owner wrote
+    at 18:09 on 2026-10-24, with a capture of the plains village from above, that the shadow of the
+    near tree is very blue while the far shadows, faded by the cascades, read as a darkening that
+    keeps the warmer colors, which is easier on the eyes in the warm setting, and asked whether that
+    look can be had everywhere, assuming the blue is the ambient color the cascades take from the
+    sky. Read first what lights a shadow at noon, the environment's irradiance the game feeds the
+    engine for the hour and the probes' share of sky, each read alone on the village's tree, with
+    the numbers; then the mend, the light the game feeds for the shadows drawn toward neutral at the
+    hour's brightness, the dome's blue untouched, so a shadow is the ground darker with its own
+    color, as the source's are, and the probes' sky share following it where the engine takes it
+    from the same color, or an ASKS.md entry where the engine's sky share has no such control; the
+    night's moonlight kept as it is; captures of the village's tree at noon, the cherry grove and
+    the rain forest's floor before and after, and the play checks' readings held within their
+    bounds. One commit, first, before item 94's pieces. Done at `4142a32` on 2026-10-24, the
+    environment's light drawn toward white by day through SetEnvironmentLight, the owner finding the
+    after images nice, the departure on the sky's reflections in the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
