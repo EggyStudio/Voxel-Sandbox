@@ -120,7 +120,6 @@ public sealed class VoxelGame : IDisposable
         DropRenderer.Use(terrain);
         Bits.Use(terrain);
         Cracks.Use(packs);
-        Hand.Use(packs);
         PackGui.Use(packs);
         InWall.Use(packs);
         Sky.Use(packs);
@@ -162,7 +161,7 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The cracks drawn over the block being broken.</summary>
     public Cracks Cracks { get; } = new();
 
-    /// <summary>The player's arm and what it holds, drawn before the eye.</summary>
+    /// <summary>What the player holds, drawn before the eye.</summary>
     public HandRenderer Hand { get; } = new();
 
     public Inventory Inventory { get; } = new();
@@ -1091,7 +1090,6 @@ public sealed class VoxelGame : IDisposable
         MobRenderer.Dispose();
         DropRenderer.Dispose();
         Bits.Dispose();
-        Hand.Dispose();
         Cracks.Dispose();
         Clouds.Dispose();
         Sky.Dispose();

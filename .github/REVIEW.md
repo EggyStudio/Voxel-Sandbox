@@ -5,46 +5,27 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `45b4b93`, item 69's felling, after `cc4f29a`, its gravity blocks, `8da806a`, item
-81, `9b25aa3`, item 80, and `b032e76`, item 78, and nothing else, carrying the review's file. Item
-69: sand, red sand and gravel come loose block by block when the cell below gives way to the
-source's replaceable list and fall with the source's 0.04 a tick, a landed block set where its floor
-cell gives way and broken into its item on a torch or a slab; felling runs when the broken log has
-none below, flood-filling joined logs at the cut's height and above within 12 blocks up to 256, only
-where leaves touch them so log walls stay, the logs breaking upward a tick a block, one in four
-falling as a block, then the leaves with no log within six steps decaying each at its own time over
-0.5 to 4 s; departures, felling in creative too with drops in survival alone, 8 bits a leaf or log
-since a crown breaks many at once, no concrete powder in the game; the second commit an amend of an
-unpushed one whose README lines a chained edit had dropped; six tests; 254 tests. Item 81: the mesas
-lifted hot dry land past the mountains' height, where Climate.Choose gave stone with spruces, so
-badlands met mountains 1,518 times over 12,000 blocks square on seed 1; one line in Choose gives
-badlands at that height where the temperature is over 0.7 and the humidity under 0.4, as the
-source's hot band has no stony or snowy peaks, and afterwards badlands meet desert, river and beach
-alone and no hot biome meets a snowy one; the departure the game's two-noise climate kept and the
-choice mended rather than the source's six-noise table taken; a test over 8,192 square of the pairs
-the source never puts side by side; 251 tests. Item 80: the source's spacing of 34 chunks and
-separation of 8 from its villages structure set, a structure's cell size and its start at a chunk
-corner among the first 26 chunks each way, every square a candidate and the biome and level-ground
-checks deciding; the departure the game's own hash in place of the source's salted random, so the
-grid is the source's and the positions are not; a test of 2 to 9 starts in a 64-chunk square, every
-pair 8 chunks apart at least; 250 tests. Item 78: the patches' counts and thresholds from the
-source's placement files, laid out per chunk and its eight neighbors; short grass on seed 1's plains
-21.8 of a hundred grass tops against 86 before and the source's 25.6, the tall grass a top block
-held as the plant; departures, the forest's two-block flowers and small patch kinds left out since
-the game has no two-block flowers, patch kinds no near biome grows skipped so a column costs 9.4 ms
-against 13.0; 249 tests. The strict build clean and play.sh clean on the GPU for each, lavapipe not
-run. Read at 03:51, 03:57, 04:02 and 04:16 on 2026-10-24. Pushed at 04:23 after the build run of
-`526f20b` ended green, its play job 31.9 minutes; the run watched. The README's village views and
-the badlands picture are taken up under item 46. Next 75, 78, 80, 81, 69, 75, 74, 72 and 73, then
-the pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part and
-54 when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's
-word.
+Reviewed up to `1dce7b7`, item 75, the player's hand and held item in view, and nothing else,
+carrying the review's file: HandRenderer draws the empty right arm or the held item in the main pass
+near the eye, the source's view-space poses scaled by a quarter about the eye so nothing within the
+player's box cuts in, the held block its drop cube turned 45 degrees and an item its picture with
+the generated display's turns, the arm from the player skin's faces or the game's own, the source's
+swing over six ticks and its bob on the hand alone, hidden under F1, in spectator and when dead, lit
+at the eye and casting no shadow; flat items extruded a pixel deep as the source builds them;
+departures, the hand in the world pass rather than a second view with its own depth, to spare the
+model pass's lighting twice on lavapipe, the difference a ceiling 0.18 over the eye, and the turns'
+sign mended by captures, which says the model's front faces the other way from the source's; the
+play check reading the held stone and the grass in the window's lower right; 254 tests, the strict
+build clean, play.sh clean on the GPU. Read at 04:28 on 2026-10-24. Not pushed, the build run of
+`45b4b93` running; pushed when it ends. Next 74, 78, 80, 81, 69, 75, 74, 72 and 73, then the
+pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part and 54
+when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `45b4b93` came, item 69's felling, with `cc4f29a`, `8da806a`, `9b25aa3` and `b032e76`,
+items 69, 81, 80 and 78, pushed at 04:23 on 2026-10-24, their run in flight.
 
 Before it, `526f20b` came, item 79, pushed at 03:50 on 2026-10-24, its run green, the play job 31.9
 minutes.
-
-Before it, `7da1d96` and `8bc0796` came, item 68, pushed at 03:22 on 2026-10-24, its run green, the
-play job 23.1 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -272,7 +253,9 @@ full.
     the held item drawn in the camera's frame as the source draws them, a block as a cube, an item
     as its picture extruded, swinging on a hit or a use and bobbing with the walk, drawn after the
     world with its own depth so it never cuts into walls, hidden with the HUD under F1; a test
-    reading the hand's pixels at a known view and a capture. One commit.
+    reading the hand's pixels at a known view and a capture. One commit. Done at `1dce7b7` on
+    2026-10-24, the departures in the head. The empty arm goes by the owner's word, Decision 38, in
+    a commit on top.
 
 78. **Grass as the source places it, with the two-block grass.** The owner wrote on 2026-10-23
     (Decision 34) that there is far too much grass, asking for the source's balance, and that the
@@ -929,5 +912,10 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     the like nor with random characters, but to work on main, or, where several sessions on one
     repository make a branch necessary, on a branch with a descriptive name; N 7.5 holds it, and
     COMMITS.md says it.
+
+38. **The empty hand shows no arm.** The owner wrote to the game's session at about 04:30 on
+    2026-10-24, on item 75's hand in view, that nothing is drawn when the hand holds nothing, so the
+    arm mesh and the skin go in a commit of its own on top of `1dce7b7`; the held item stays as item
+    75 has it.
 
 ## Replies

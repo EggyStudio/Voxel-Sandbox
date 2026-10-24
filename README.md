@@ -497,15 +497,14 @@ torch or a slab in their cell. Breaking the log a tree's trunk stands on fells t
 joined to the cut breaking from it upward a block a tick with their drops and a few bits each, one
 in four falling as a block that lands, and then its leaves decaying over half a second to four with
 bits and the source's drops, those with no log within six leaves of them, as the source's leaves
-decay, so the leaves of a tree beside it stay, and a wall of logs no leaf touches fells nothing. The
-player's right arm stands at the window's lower right as the source draws it, its sleeve and hand
-from the packs' Steve or the game's own, and when the hand holds something, the block's cube turned
-by 45 degrees or the item's picture a pixel deep, as the source's item models make it, in the
-source's places for the right hand, swinging on a hit, a break or a use and bobbing with the walk.
-They are posed as the source poses them about a block before the eye and drawn at a quarter of that
-size toward it, which shows them the same and keeps them inside the player's own box, so no wall the
-player stands against cuts into them, and they are hidden with the HUD. A stack on the ground of an
-item drawn flat is its picture a pixel deep too.
+decay, so the leaves of a tree beside it stay, and a wall of logs no leaf touches fells nothing.
+What the player's right hand holds stands at the window's lower right as the source draws it, the
+block's cube turned by 45 degrees or the item's picture a pixel deep, as the source's item models
+make it, in the source's places for the right hand, swinging on a hit, a break or a use and bobbing
+with the walk, and an empty hand shows nothing. It is posed as the source poses it about a block
+before the eye and drawn at a quarter of that size toward it, which shows it the same and keeps it
+inside the player's own box, so no wall the player stands against cuts into it, and it is hidden
+with the HUD. A stack on the ground of an item drawn flat is its picture a pixel deep too.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival and adventure, where a left click takes up a stack, puts it down, joins it to a stack of
