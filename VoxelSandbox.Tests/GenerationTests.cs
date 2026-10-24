@@ -84,6 +84,33 @@ public class GenerationTests
     }
 
     [Fact]
+    public void The_Land_Steps_Two_Blocks_Or_More_Here_And_There_And_A_River_Runs_Between_Slopes()
+    {
+        // The steps of two blocks or more and of three or more between neighboring columns, over 512
+        // blocks square about seed 1's spawn, a forest with a river through a hill, and about its
+        // plains village by a river, where a river's valley floor fell to the water as a wall, 1458
+        // and 40 at the spawn and 116 and none at the village.
+        var land = new Overworld(1);
+        foreach (var (x0, z0, two, three) in new[] { (0, 0, 500, 10), (550, -356, 10, 0) })
+        {
+            const int R = 256;
+            var heights = new int[2 * R + 1, 2 * R + 1];
+            for (int z = -R; z <= R; z++)
+                for (int x = -R; x <= R; x++)
+                    heights[x + R, z + R] = land.At(x0 + x, z0 + z).Height;
+            var (steps, high) = (0, 0);
+            for (int z = 0; z < 2 * R; z++)
+                for (int x = 0; x < 2 * R; x++)
+                {
+                    var step = Math.Max(Math.Abs(heights[x, z] - heights[x + 1, z]), Math.Abs(heights[x, z] - heights[x, z + 1]));
+                    if (step >= 2) steps++;
+                    if (step >= 3) high++;
+                }
+            Assert.True(steps <= two && high <= three, $"about {x0}, {z0}, {steps} steps of two or more and {high} of three or more");
+        }
+    }
+
+    [Fact]
     public void Desert_Pyramids_Stand_As_The_Source_Spaces_Them_One_To_A_Square_Of_32_Chunks()
     {
         // A square of 512 chunks about the origin reaches into 17 by 17 of the source's squares of 32

@@ -185,7 +185,10 @@ they near it.
 The land shapes some of them. A river winds where a noise is near zero, in a valley that sinks the
 land most of the way to the water and cut to three blocks under the sea level where it runs, over
 sand with patches of clay, fading out on high ground as Minecraft's rivers keep out of its
-mountains. A beach of sand over sandstone lies along the sea where the basins sink the land, from a
+mountains. The valley widens with the depth it sinks, and its floor falls to the water as a bank
+about a block down for two across, so a river on high ground runs between slopes rather than walls,
+and steps of two blocks or more between neighbors are few, 460 over 512 blocks square about seed
+1's spawn and one about its plains village. A beach of sand over sandstone lies along the sea where the basins sink the land, from a
 block under the water to two over it, but where it is cold. A swamp sinks its land to a block or two
 about the sea level, so pools stand among its grass, over dirt and clay. The badlands rise in mesas
 whose flat tops climb in steps of five, their terracotta bare in bands of seven colors one to three

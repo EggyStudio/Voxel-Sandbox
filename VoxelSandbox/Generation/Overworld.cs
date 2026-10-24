@@ -20,6 +20,9 @@ public sealed class Overworld : IWorldGenerator
     private const int SnowLine = 92;
     // Ground this high is mountains, bare stone, whatever the climate.
     private const int MountainsFrom = 82;
+    // How much wider in the rivers' noise a valley and a river's bank stand for each block of drop
+    // they make, about two blocks across for each block down.
+    private const float BankWidth = 0.006f;
     private const int SandBelow = 50;
     // Badlands ground this high is a mesa, its terracotta bare.
     private const int Mesas = SeaLevel + 14;
@@ -120,10 +123,21 @@ public sealed class Overworld : IWorldGenerator
         // A river winds where a noise is near zero, in a valley that sinks the land around it most
         // of the way to the water, and cut down to three blocks under the sea level where it
         // runs, both fading out on high ground, as the source's rivers do not climb its mountains.
+        // The valley widens with the depth it sinks, and its floor falls to a block over the water
+        // as a bank whose band widens with the drop, about a block down for two across, so a river
+        // on high ground runs between slopes rather than under a wall cut down from the valley's
+        // floor. The bank fades out sooner than the valley as the ground rises, where a river
+        // climbing into hills would end against a steeper wall.
         var winding = MathF.Abs(_rivers.Fractal(x / 420f, z / 420f, 2));
         var below = SmoothStep(MountainsFrom, MountainsFrom - 16, height);
-        var valley = SmoothStep(0.11f, 0.03f, winding) * below;
+        var valleyEdge = 0.03f + Math.Max(0.08f, (height - SeaLevel - 1) * BankWidth);
+        var valley = SmoothStep(valleyEdge, 0.03f, winding) * below;
         if (height > SeaLevel + 1) height -= (height - (SeaLevel + 1)) * valley * 0.85f;
+        if (height > SeaLevel + 1)
+        {
+            var bank = SmoothStep(Math.Min(valleyEdge, 0.032f + (height - SeaLevel - 1) * BankWidth), 0.032f, winding) * below * below * below * below;
+            height -= (height - (SeaLevel + 1)) * bank;
+        }
         var river = SmoothStep(0.032f, 0.01f, winding) * below;
         if (height > SeaLevel - 3) height -= (height - (SeaLevel - 3)) * river;
 

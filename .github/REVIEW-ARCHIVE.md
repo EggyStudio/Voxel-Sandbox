@@ -1313,6 +1313,15 @@ before a batch.
     before item 94. Done at `fd17371` on 2026-10-24, one use a dropped log and none a falling one,
     the felling stopping with the axe, the departure in the head.
 
+113. **Pyramids are as rare as the source's.** The owner wrote at 13:36 on 2026-10-24 that there are
+    far too many pyramids. The desert pyramid is placed at the source's spacing, one at most in each
+    region of 32 columns a side with a separation of 8, the region's one place drawn from the seed,
+    and only where the desert holds it, so a desert of the owner's size shows one or none where it
+    shows several; a test counting the pyramids over a seeded span of desert against the source's
+    bound, and the README's line on the structures saying the rarity. One commit, small, after item
+    112 and before item 94. Done at `031d169` on 2026-10-24, 6 pyramids on seed 1's 8,192-block
+    square where 128 stood.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
