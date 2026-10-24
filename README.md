@@ -557,7 +557,10 @@ with their drops and a few bits each, one in four falling as a block that lands,
 decaying one after another over the second from the tick the first log goes, so the crown and the
 falling logs are in the air together, with bits and the source's drops, those with no log of
 another tree within six leaves of them, as the source's leaves decay, so the leaves of a tree beside
-it stay, and a wall of logs no leaf touches fells nothing. What the player's right hand
+it stay, and a wall of logs no leaf touches fells nothing. An axe in survival takes a use for each
+log the felling drops as an item, none for one that falls as a block, so a tree of eight logs of
+which three drop as items takes three besides the cut's own, and an axe that runs out mid-tree
+leaves the logs still to go standing, with the leaves about them. What the player's right hand
 holds stands at the window's lower right as the source draws it, the block's cube turned by 45
 degrees or the item's picture a pixel deep, as the source's item models make it, in the source's
 places for the right hand, swinging on a hit, a break or a use and bobbing with the walk, and an

@@ -1293,6 +1293,15 @@ before a batch.
     small, after item 109 and before item 94. Done at `2a399af` on 2026-10-24, each bit carrying its
     climate, the test on the savanna against the plains.
 
+111. **A felled tree's crown drops as its logs fall, not after they land.** The owner wrote at 13:33
+    on 2026-10-24 that breaking a tree with the axe drops the logs first and the leaves only once
+    the logs have fallen, and that both should happen at the same time. Felling starts the crown's
+    decay and the leaves' drop in the same tick as the logs begin to fall, the crown's pace of item
+    100 kept, so the leaves and the logs are in the air together; the felling test reads the first
+    leaf gone within the tick of the first log's fall, and a capture of a felled tree in the air.
+    One commit, small, after item 110 and before item 94. Done at `f00f649` on 2026-10-24, the crown
+    read at once and its leaves going from the first log's tick.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

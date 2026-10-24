@@ -114,6 +114,61 @@ public sealed class FallingTests
         Assert.All(Enumerable.Range(5, 3), y => Assert.Equal(BlockId.OakLog, world.GetBlock(24, y, 4)));
     }
 
+    // Runs a felling three seconds a frame at a time, counting the logs it drops as items and those
+    // it lets fall as blocks.
+    private static (int Items, int Falling) Felled(TreeFelling felling, VoxelWorld world)
+    {
+        var (items, falling) = (0, 0);
+        for (int i = 0; i < 3 * 60; i++)
+        {
+            felling.Update(world, 1 / 60f);
+            items += felling.Broken.Count(b => BlockGroups.Logs.Contains(b.Block));
+            falling += felling.Dropped.Count;
+            felling.Broken.Clear();
+            felling.Dropped.Clear();
+        }
+        return (items, falling);
+    }
+
+    [Fact]
+    public void Felling_With_An_Axe_Takes_A_Use_For_Each_Log_Dropped_As_An_Item_And_One_Run_Out_Leaves_The_Rest_Standing()
+    {
+        // The oak's four logs over the cut at its foot, felled with uses to spare, of which the seed's
+        // share falls as blocks, one, and the three dropped as items take one use each.
+        var world = Floor();
+        Oak(world, 4, 4);
+        var felling = new TreeFelling();
+        world.SetBlock(4, 4, 4, BlockId.Air);
+        felling.Fell(world, 4, 4, 4, uses: 100);
+        var (items, falling) = Felled(felling, world);
+        Assert.Equal((3, 1), (items, falling));
+        Assert.Equal(3, felling.Worn);
+
+        // With one use left the first log dropped as an item takes it, and the logs over it stand,
+        // with the leaves about them.
+        world = Floor();
+        Oak(world, 4, 4);
+        felling = new TreeFelling();
+        world.SetBlock(4, 4, 4, BlockId.Air);
+        felling.Fell(world, 4, 4, 4, uses: 1);
+        (items, _) = Felled(felling, world);
+        Assert.Equal(1, items);
+        Assert.Equal(1, felling.Worn);
+        Assert.False(felling.Busy);
+        Assert.Equal(BlockId.OakLog, world.GetBlock(4, 8, 4));
+        Assert.Equal(BlockId.OakLeaves, world.GetBlock(5, 8, 4));
+        Assert.Equal(BlockId.OakLeaves, world.GetBlock(4, 9, 4));
+
+        // An axe whose last use was the cut fells nothing.
+        world = Floor();
+        Oak(world, 4, 4);
+        felling = new TreeFelling();
+        world.SetBlock(4, 4, 4, BlockId.Air);
+        felling.Fell(world, 4, 4, 4, uses: 0);
+        Assert.False(felling.Busy);
+        Assert.All(Enumerable.Range(5, 4), y => Assert.Equal(BlockId.OakLog, world.GetBlock(4, y, 4)));
+    }
+
     [Fact]
     public void Felling_Takes_A_Lower_Tree_Whose_Branch_Touches_Whole_Its_Crown_Going_From_The_Tick_Its_First_Log_Does()
     {

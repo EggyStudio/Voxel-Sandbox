@@ -516,6 +516,11 @@ public sealed class VoxelGame : IDisposable
         // A felled tree's logs and leaves throw a few bits each, many breaking at once, and drop what
         // the source drops in survival, and a share of its logs falls as blocks.
         Felling.Update(World, seconds);
+        if (Felling.Worn > 0)
+        {
+            Wear(Felling.Worn, _fellingAxe);
+            Felling.Worn = 0;
+        }
         foreach (var (x, y, z, block) in Felling.Broken)
         {
             Bits.Break(block, x, y, z, count: 8, climate: World.TintsAt(x, z));
@@ -909,12 +914,17 @@ public sealed class VoxelGame : IDisposable
         return true;
     }
 
-    // Wears the chosen slot's tool by some uses, taking it away once they are all worn.
-    private void Wear(int uses)
+    // Wears the tool in a slot, the chosen one's unless another is given, by some uses, taking it
+    // away once they are all worn.
+    private void Wear(int uses, int? slot = null)
     {
-        if (Hotbar.Current is not { Item.Durability: > 0 } stack) return;
-        Inventory.Slots[Hotbar.Selected] = stack.Wear + uses >= stack.Item.Durability ? null : stack with { Wear = stack.Wear + uses };
+        var at = slot ?? Hotbar.Selected;
+        if (Inventory.Slots[at] is not { Item.Durability: > 0 } stack) return;
+        Inventory.Slots[at] = stack.Wear + uses >= stack.Item.Durability ? null : stack with { Wear = stack.Wear + uses };
     }
+
+    // The slot of the axe the last tree was felled with, which the logs it drops as items wear.
+    private int _fellingAxe;
 
     /// <summary>
     /// Breaks the block the crosshair rests on at once, unless it cannot be broken or the mode breaks
@@ -928,8 +938,15 @@ public sealed class VoxelGame : IDisposable
         var block = World.GetBlock(hit.X, hit.Y, hit.Z);
         if (!Blocks.Get(block).Breakable || !World.SetBlock(hit.X, hit.Y, hit.Z, BlockId.Air)) return false;
         Bits.Break(block, hit.X, hit.Y, hit.Z, climate: World.TintsAt(hit.X, hit.Z));
-        // The log a trunk stands on fells its tree.
-        if (BlockGroups.Logs.Contains(block) && !BlockGroups.Logs.Contains(World.GetBlock(hit.X, hit.Y - 1, hit.Z))) Felling.Fell(World, hit.X, hit.Y, hit.Z);
+        // The log a trunk stands on fells its tree, an axe in survival by the uses it has left after
+        // the cut's own.
+        if (BlockGroups.Logs.Contains(block) && !BlockGroups.Logs.Contains(World.GetBlock(hit.X, hit.Y - 1, hit.Z)))
+        {
+            int? uses = null;
+            if (Mode == GameMode.Survival && Hotbar.Current is { Item: { Tool: ToolKind.Axe, Durability: > 0 } axe } stack)
+                (uses, _fellingAxe) = (axe.Durability - stack.Wear - 1, Hotbar.Selected);
+            Felling.Fell(World, hit.X, hit.Y, hit.Z, uses);
+        }
         if (Mode != GameMode.Survival) return true;
         Vitals.Exhaust(0.005f);
         var held = Hotbar.Current?.Item;

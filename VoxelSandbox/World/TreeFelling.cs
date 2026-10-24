@@ -16,7 +16,9 @@ namespace VoxelSandbox;
 /// read for its way through leaves to a log that is not the tree's, and those with none within six
 /// steps decay one after another, in an order of their own, over the second from the tick the first
 /// log goes, so the crown and the falling logs are in the air together and the leaves of a tree
-/// beside it stay.
+/// beside it stay. An axe fells a tree by its uses, one for each log that drops as an item and none
+/// for one that falls as a block, and one that runs out leaves the logs still to go standing, and
+/// of the crown only the leaves loose of them decay.
 /// </remarks>
 public sealed class TreeFelling(int seed = 1)
 {
@@ -27,7 +29,16 @@ public sealed class TreeFelling(int seed = 1)
 
     private enum Step { Log, Leaf }
 
-    private readonly List<(float At, Step Step, int X, int Y, int Z)> _steps = [];
+    // A tree being felled, the uses left of the axe that fells it, null where none are counted, the
+    // box its crown is read in, and once the axe has run out the leaves loose of the logs left.
+    private sealed class Tree(int? uses, (int X0, int Y0, int Z0, int X1, int Y1, int Z1) box)
+    {
+        public int? Uses = uses;
+        public readonly (int X0, int Y0, int Z0, int X1, int Y1, int Z1) Box = box;
+        public HashSet<(int X, int Y, int Z)>? Loose;
+    }
+
+    private readonly List<(float At, Step Step, int X, int Y, int Z, Tree Tree)> _steps = [];
     private readonly Random _random = new(seed);
     private float _time;
 
@@ -40,9 +51,16 @@ public sealed class TreeFelling(int seed = 1)
     /// <summary>Whether a felling is still under way.</summary>
     public bool Busy => _steps.Count > 0;
 
-    /// <summary>Fells the tree whose trunk stood on the log broken at a place, where the block under it was no log.</summary>
-    public void Fell(VoxelWorld world, int x, int y, int z)
+    /// <summary>The uses the logs dropped as items have taken of the axes felling them, for the game to wear the axe by and clear.</summary>
+    public int Worn { get; set; }
+
+    /// <summary>
+    /// Fells the tree whose trunk stood on the log broken at a place, where the block under it was no
+    /// log, with an axe of so many uses left, or with no uses counted where none is given.
+    /// </summary>
+    public void Fell(VoxelWorld world, int x, int y, int z, int? uses = null)
     {
+        if (uses <= 0) return;
         var logs = new List<(int X, int Y, int Z)>();
         var seen = new HashSet<(int, int, int)> { (x, y, z) };
         var queue = new Queue<(int X, int Y, int Z)>([(x, y, z)]);
@@ -67,17 +85,17 @@ public sealed class TreeFelling(int seed = 1)
         if (!Leafy((x, y, z)) && !logs.Exists(Leafy)) return;
         int x0 = x, y0 = logs.Count == 0 ? y : logs.Min(l => Math.Min(l.Y, y)), y1 = y, z0 = z, x1 = x, z1 = z;
         foreach (var (lx, ly, lz) in logs)
-        {
-            _steps.Add((_time + (ly - y0 + 1) * Tick, Step.Log, lx, ly, lz));
             (x0, x1, z0, z1, y1) = (Math.Min(x0, lx), Math.Max(x1, lx), Math.Min(z0, lz), Math.Max(z1, lz), Math.Max(y1, ly));
-        }
+        var tree = new Tree(uses, (x0 - LeafReach - 1, y0, z0 - LeafReach - 1, x1 + LeafReach + 1, y1 + LeafReach + 1, z1 + LeafReach + 1));
+        foreach (var (lx, ly, lz) in logs) _steps.Add((_time + (ly - y0 + 1) * Tick, Step.Log, lx, ly, lz, tree));
         // The crown is read now, the tree's logs counted as gone, and its leaves go from the tick the
         // first log does, after it, since the steps of a tick are taken in the order they were added.
-        var crown = Loose(world, x0 - LeafReach - 1, y0, z0 - LeafReach - 1, x1 + LeafReach + 1, y1 + LeafReach + 1, z1 + LeafReach + 1, [.. logs]);
+        var (bx0, by0, bz0, bx1, by1, bz1) = tree.Box;
+        var crown = Loose(world, bx0, by0, bz0, bx1, by1, bz1, [.. logs]);
         _random.Shuffle(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(crown));
         var start = _time + (logs.Count == 0 ? 0 : Tick);
         for (int i = 0; i < crown.Count; i++)
-            _steps.Add((start + i * CrownSeconds / crown.Count, Step.Leaf, crown[i].X, crown[i].Y, crown[i].Z));
+            _steps.Add((start + i * CrownSeconds / crown.Count, Step.Leaf, crown[i].X, crown[i].Y, crown[i].Z, tree));
     }
 
     /// <summary>Goes on by so many seconds, taking each log and leaf whose time has come.</summary>
@@ -92,11 +110,25 @@ public sealed class TreeFelling(int seed = 1)
             var block = world.GetBlock(step.X, step.Y, step.Z);
             switch (step.Step)
             {
-                case Step.Log when BlockGroups.Logs.Contains(block):
+                case Step.Log when BlockGroups.Logs.Contains(block) && step.Tree.Uses is not 0:
                     world.SetBlock(step.X, step.Y, step.Z, BlockId.Air);
-                    (_random.Next(4) == 0 ? Dropped : Broken).Add((step.X, step.Y, step.Z, block));
+                    if (_random.Next(4) == 0)
+                    {
+                        Dropped.Add((step.X, step.Y, step.Z, block));
+                        break;
+                    }
+                    Broken.Add((step.X, step.Y, step.Z, block));
+                    if (step.Tree.Uses is not { } left) break;
+                    Worn++;
+                    // The axe's last use leaves the logs still to go standing, and of the crown the
+                    // leaves loose of them alone decay.
+                    if ((step.Tree.Uses = left - 1) == 0)
+                    {
+                        var (x0, y0, z0, x1, y1, z1) = step.Tree.Box;
+                        step.Tree.Loose = [.. Loose(world, x0, y0, z0, x1, y1, z1, [])];
+                    }
                     break;
-                case Step.Leaf when Blocks.IsLeaves(block):
+                case Step.Leaf when Blocks.IsLeaves(block) && step.Tree.Loose?.Contains((step.X, step.Y, step.Z)) != false:
                     world.SetBlock(step.X, step.Y, step.Z, BlockId.Air);
                     Broken.Add((step.X, step.Y, step.Z, block));
                     break;
