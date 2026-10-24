@@ -25,6 +25,9 @@ public sealed record Biome(string Name, BlockId Top, BlockId Under, BlockId Deep
 
     /// <summary>Whether its grass lies in patches of two greens a noise lays out, as Minecraft's swamp mottles its grass.</summary>
     public bool Mottled { get; init; }
+
+    /// <summary>The source's patches of grass and flowers that grow in it, which the overworld lays out after the trees.</summary>
+    public PlantPatch[] Patches { get; init; } = [];
 }
 
 /// <summary>Every biome, by its id.</summary>
@@ -34,58 +37,47 @@ public static class Biomes
     private static readonly IFeature BigOak = new BigOakTree(), SmallJungle = new JungleTree(), MegaJungle = new MegaJungleTree(), Bush = new JungleBush(),
         Acacia = new AcaciaTree(), DarkOak = new DarkOakTree(), BrownMushroom = new GiantMushroom(false), RedMushroom = new GiantMushroom(true), Cherry = new CherryTree();
 
-    // The plants of the ground, each a few kinds by weight, as the source's patches of grass and its
-    // flowers of each biome are. How many cover a thousand places of open grass is the share the
-    // source's patches cover, 32 tries spread about seven blocks around each patch, read from its
-    // placed features and the biome overhaul's of the owner's modpack, which more than double the
-    // source's grass on the plains: about 86 places in a hundred of short grass and 11 of tall grass
-    // on its plains, 90 on the savanna, 94 in the jungle, 82 in the dark forest, 46 in the cherry
-    // grove with as many of pink petals, 44 in the swamp and 20 in the forests.
+    // The grass and the flowers grow in the source's own patches (PlantPatch), and the mushrooms of
+    // the ground and the dead bushes on a roll of their own at each place, a few kinds by weight.
     private static IFeature On(BlockId ground, params (BlockId, int)[] kinds) => new PlantFeature(kinds, ground);
-    private static readonly IFeature Grasses = On(BlockId.Grass, (BlockId.ShortGrass, 6), (BlockId.TallGrass, 1));
-    private static readonly IFeature Ferns = On(BlockId.Grass, (BlockId.Fern, 3), (BlockId.ShortGrass, 1));
-    private static readonly IFeature Meadow = On(BlockId.Grass, (BlockId.Dandelion, 4), (BlockId.Poppy, 4), (BlockId.OxeyeDaisy, 2), (BlockId.AzureBluet, 2),
-        (BlockId.Cornflower, 2), (BlockId.RedTulip, 1), (BlockId.OrangeTulip, 1), (BlockId.WhiteTulip, 1), (BlockId.PinkTulip, 1));
-    private static readonly IFeature Woodland = On(BlockId.Grass, (BlockId.LilyOfTheValley, 2), (BlockId.Dandelion, 3), (BlockId.Poppy, 3), (BlockId.Allium, 1));
-    private static readonly IFeature Warm = On(BlockId.Grass, (BlockId.Dandelion, 2), (BlockId.Poppy, 2), (BlockId.OrangeTulip, 1));
     private static readonly IFeature Mushrooms = On(BlockId.Grass, (BlockId.BrownMushroom, 2), (BlockId.RedMushroom, 1));
-    private static readonly IFeature Orchids = On(BlockId.Grass, (BlockId.BlueOrchid, 1));
-    private static readonly IFeature Petals = On(BlockId.Grass, (BlockId.PinkPetals, 1));
-    private static readonly IFeature Blossoms = On(BlockId.Grass, (BlockId.Allium, 1), (BlockId.PinkTulip, 2));
     private static readonly IFeature DeadBushes = new PlantFeature([(BlockId.DeadBush, 1)], BlockId.Sand, BlockId.RedSand, BlockId.Terracotta,
         BlockId.WhiteTerracotta, BlockId.OrangeTerracotta, BlockId.YellowTerracotta, BlockId.RedTerracotta, BlockId.BrownTerracotta, BlockId.LightGrayTerracotta);
     private static readonly MobKind[] Farm = [MobKinds.Pig, MobKinds.Cow, MobKinds.Sheep, MobKinds.Chicken];
 
-    public static readonly Biome Plains = new("plains", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 2), (BigOak, 1), (Grasses, 820), (Meadow, 30)]) { GrassColor = new Color(145, 189, 89), FoliageColor = new Color(119, 171, 47), Id = 0, Animals = Farm };
-    public static readonly Biome Forest = new("forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 26), (BigOak, 4), (Birch, 8), (Grasses, 250), (Woodland, 60), (Mushrooms, 4)]) { GrassColor = new Color(121, 192, 90), FoliageColor = new Color(89, 174, 48), Id = 1, Animals = Farm };
-    public static readonly Biome BirchForest = new("birch forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Birch, 34), (Grasses, 250), (Woodland, 50)]) { GrassColor = new Color(136, 187, 103), FoliageColor = new Color(107, 169, 65), Id = 2, Animals = Farm };
-    public static readonly Biome Taiga = new("taiga", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Spruce, 28), (Ferns, 250), (Mushrooms, 4)]) { GrassColor = new Color(134, 183, 131), FoliageColor = new Color(104, 164, 100), Id = 3, Animals = Farm };
-    public static readonly Biome SnowyTaiga = new("snowy taiga", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 22)]) { GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 4 };
-    public static readonly Biome SnowyPlains = new("snowy plains", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 2)]) { GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 5 };
-    public static readonly Biome Desert = new("desert", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, [(Cactus, 6), (DeadBushes, 4)]) { GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 6 };
-    public static readonly Biome Mountains = new("mountains", BlockId.Stone, BlockId.Stone, BlockId.Air, [(Spruce, 3), (Grasses, 60)]) { GrassColor = new Color(138, 182, 137), FoliageColor = new Color(109, 163, 107), Id = 7, Animals = [MobKinds.Sheep] };
+    public static readonly Biome Plains = new("plains", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 2), (BigOak, 1)]) { Patches = [PlantPatch.TallGrass2, PlantPatch.FlowerPlains, PlantPatch.GrassPlain], GrassColor = new Color(145, 189, 89), FoliageColor = new Color(119, 171, 47), Id = 0, Animals = Farm };
+    public static readonly Biome Forest = new("forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 26), (BigOak, 4), (Birch, 8), (Mushrooms, 4)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassForest], GrassColor = new Color(121, 192, 90), FoliageColor = new Color(89, 174, 48), Id = 1, Animals = Farm };
+    public static readonly Biome BirchForest = new("birch forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Birch, 34)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassForest], GrassColor = new Color(136, 187, 103), FoliageColor = new Color(107, 169, 65), Id = 2, Animals = Farm };
+    public static readonly Biome Taiga = new("taiga", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Spruce, 28), (Mushrooms, 4)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassTaiga2], GrassColor = new Color(134, 183, 131), FoliageColor = new Color(104, 164, 100), Id = 3, Animals = Farm };
+    public static readonly Biome SnowyTaiga = new("snowy taiga", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 22)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassTaiga2], GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 4 };
+    public static readonly Biome SnowyPlains = new("snowy plains", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 2)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 5 };
+    public static readonly Biome Desert = new("desert", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, [(Cactus, 6), (DeadBushes, 4)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 6 };
+    public static readonly Biome Mountains = new("mountains", BlockId.Stone, BlockId.Stone, BlockId.Air, [(Spruce, 3)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(138, 182, 137), FoliageColor = new Color(109, 163, 107), Id = 7, Animals = [MobKinds.Sheep] };
 
     // The seven of the source's biomes after them, their colors and how often their trees stand read
     // from Minecraft's numbers and the biome overhaul's, a tree a column in a chunk being four in a
     // thousand, fewer where a tree's crown is wide, since the game's trees grow into each other
     // where the source's leave out one that has no room.
-    public static readonly Biome Swamp = new("swamp", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 14), (Grasses, 450), (Orchids, 12), (Mushrooms, 4)])
+    public static readonly Biome Swamp = new("swamp", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 14), (Mushrooms, 4)])
     {
+        Patches = [PlantPatch.FlowerSwamp, PlantPatch.GrassNormal],
         Id = 8, GrassColor = new Color(106, 112, 57), FoliageColor = new Color(106, 112, 57), Mottled = true,
     };
-    public static readonly Biome Savanna = new("savanna", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Acacia, 4), (Grasses, 800), (Warm, 5)]) { GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 9, Animals = [MobKinds.Cow, MobKinds.Sheep] };
-    public static readonly Biome Jungle = new("jungle", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(MegaJungle, 8), (SmallJungle, 30), (Bush, 30), (Grasses, 600), (Ferns, 250), (Warm, 4)]) { GrassColor = new Color(89, 201, 60), FoliageColor = new Color(48, 187, 11), Id = 10, Animals = [MobKinds.Chicken, MobKinds.Pig] };
-    public static readonly Biome DarkForest = new("dark forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(DarkOak, 40), (BrownMushroom, 3), (RedMushroom, 3), (Oak, 6), (Birch, 4), (Mushrooms, 12), (Grasses, 600), (Woodland, 4)]) { GrassColor = new Color(80, 122, 50), FoliageColor = new Color(89, 174, 48), Id = 11, Animals = Farm };
+    public static readonly Biome Savanna = new("savanna", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Acacia, 4)]) { Patches = [PlantPatch.TallGrass, PlantPatch.FlowerWarm, PlantPatch.GrassSavanna], GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 9, Animals = [MobKinds.Cow, MobKinds.Sheep] };
+    public static readonly Biome Jungle = new("jungle", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(MegaJungle, 8), (SmallJungle, 30), (Bush, 30)]) { Patches = [PlantPatch.FlowerWarm, PlantPatch.GrassJungle], GrassColor = new Color(89, 201, 60), FoliageColor = new Color(48, 187, 11), Id = 10, Animals = [MobKinds.Chicken, MobKinds.Pig] };
+    public static readonly Biome DarkForest = new("dark forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(DarkOak, 40), (BrownMushroom, 3), (RedMushroom, 3), (Oak, 6), (Birch, 4), (Mushrooms, 12)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassForest], GrassColor = new Color(80, 122, 50), FoliageColor = new Color(89, 174, 48), Id = 11, Animals = Farm };
     public static readonly Biome Badlands = new("badlands", BlockId.RedSand, BlockId.RedSand, BlockId.Terracotta, [(Cactus, 3), (DeadBushes, 10)])
     {
+        Patches = [PlantPatch.GrassBadlands],
         Id = 12, GrassColor = new Color(144, 129, 77), FoliageColor = new Color(158, 129, 77),
     };
-    public static readonly Biome Beach = new("beach", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, []) { GrassColor = new Color(145, 189, 89), FoliageColor = new Color(119, 171, 47), Id = 13 };
-    public static readonly Biome River = new("river", BlockId.Sand, BlockId.Sand, BlockId.Air, []) { GrassColor = new Color(142, 185, 113), FoliageColor = new Color(113, 167, 77), Id = 14 };
+    public static readonly Biome Beach = new("beach", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, []) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(145, 189, 89), FoliageColor = new Color(119, 171, 47), Id = 13 };
+    public static readonly Biome River = new("river", BlockId.Sand, BlockId.Sand, BlockId.Air, []) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(142, 185, 113), FoliageColor = new Color(113, 167, 77), Id = 14 };
     // The cherry grove on raised ground where it is cool and wet, its grass and leaves a light green
     // of their own, as the gallery of the owner's modpack shows it.
-    public static readonly Biome CherryGrove = new("cherry grove", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Cherry, 14), (Petals, 450), (Grasses, 420), (Blossoms, 6)])
+    public static readonly Biome CherryGrove = new("cherry grove", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Cherry, 14)])
     {
+        Patches = [PlantPatch.TallGrass2, PlantPatch.GrassPlain, PlantPatch.FlowerCherry],
         Id = 15, GrassColor = new Color(182, 219, 97), FoliageColor = new Color(182, 219, 97), Animals = [MobKinds.Pig, MobKinds.Sheep],
     };
 

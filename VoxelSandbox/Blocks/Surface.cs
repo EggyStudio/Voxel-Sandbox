@@ -212,6 +212,7 @@ public static class Surfaces
     public static readonly int PinkPetals = Add("pink petals", new Color(240, 170, 200));
     public static readonly int ShortGrass = Add("short grass", new Color(150, 150, 150), tint: SurfaceTint.Grass);
     public static readonly int TallGrass = Add("tall grass", new Color(150, 150, 150), tint: SurfaceTint.Grass);
+    public static readonly int TallGrassBottom = Add("tall grass's lower half", new Color(150, 150, 150), tint: SurfaceTint.Grass);
     public static readonly int Fern = Add("fern", new Color(140, 140, 140), tint: SurfaceTint.Grass);
     public static readonly int DeadBush = Add("dead bush", new Color(140, 100, 50));
     public static readonly int BrownMushroomStem = Add("brown mushroom stem", new Color(220, 210, 190));

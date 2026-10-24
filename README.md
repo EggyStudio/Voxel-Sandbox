@@ -198,29 +198,36 @@ nearest place of a biome.
 <td><img src=".github/assets/world/cherry-grove.webp" width="400" height="225" alt="A cherry grove of seed 1 from under the edge of its pink crowns, a lantern hanging from one"></td>
 </tr></table>
 
-The ground grows Minecraft's plants by biome, short and tall grass and ferns, dandelions, poppies,
-cornflowers, oxeye daisies, azure bluets and tulips in the plains, lilies of the valley and alliums
-in the forests, blue orchids in the swamp, brown and red mushrooms under the trees, pink petals
-under the cherry grove and dead bushes on the sand, as thick as the source's patches with the biome
-overhaul of the owner's modpack cover their ground, read from their placed features, grass on about
-82 of a hundred of the plains' grass tops, a ninth of it tall, and flowers on 3, grass on 79 in the
-savanna, 60 in the dark forest, 55 in the jungle among its trees, 45 in the swamp and 25 in the
-forests with flowers on 6, ferns on 25 in the taiga, and grass and pink petals on 41 and 45 in the
-cherry grove. The plants take a roll of their own at each place of their own column, after the
-trees, so a meadow nearly covered stands no fewer trees, and they read the ground the column already
-holds for its blocks. A flower and tall grass stand off their cell's middle by up to a quarter of a
-block either way across, and short grass and a fern sink by up to a fifth as well, by a hash of the
-place, in the sixteen steps Minecraft offsets them by, while a sapling, a mushroom and a dead bush
-stand at the middle, as there. A plant is two flat walls crossed from corner to corner of its cell,
-drawn from both sides and lit as if they faced up and were seen from straight above, as Minecraft
-lights its plants with no shade by the way they face, since the engine lights a face turned from the
-eye as its back, and a plant above the eye's height would take the light of a face turned down, as
-`build/play.sh` reads on a sapling over a pillar. Its walls are a mesh of their own in each section,
-cut out where their texture is clear and casting the shadow of what the texture keeps, while global
-illumination holds none of them, so the scene's distance field holds no grass. A pack's texture lies across each wall from its own corners, so it stays whole wherever the
-wall stands, and where no pack has one the game's own pixels stand in, blades of grass, a flower's
-stem and its petals, a sapling's crown and a mushroom's cap, white masks tinted by each plant's own
-color. A plant breaks at once and falls when the block under it is broken.
+The ground grows Minecraft's plants by biome, short grass, tall grass two blocks high and ferns,
+dandelions, poppies, cornflowers, oxeye daisies, azure bluets and tulips in the plains, blue orchids
+in the swamp, brown and red mushrooms under the trees, pink petals under the cherry grove and dead
+bushes on the sand. The grass and the flowers grow in the source's own patches, read from its placed
+features. A chunk holds so many patches of a kind, ten of short grass on the plains and five where
+the source's noise is low, two in the forests, five in the swamp, twenty in the savanna, twenty-five
+in the jungle and one of ferns and grass in the taiga, and rare ones of tall grass and of flowers,
+and each patch makes 32 tries, 96 for tall grass and pink petals and 64 for flowers, spread up to
+seven blocks across and three up or down, so on level land most miss the ground. Grass so covers
+about 22 of a hundred of the grass tops of seed 1's plains, tall grass 1 and flowers a third of one,
+where the source's arithmetic gives 26, 2 and 1 on level land. A patch spreads across a chunk's
+edge, each column laying out the patches of its own chunk and of the eight around it and keeping the
+tries that land in it, and the mushrooms take a roll of their own at each place after the trees. The
+source's flowers of the forests, lilacs, rose bushes, peonies and lilies of the valley in a patch
+one chunk in 35, are not laid out, since the game has no flower two blocks high. Tall grass breaks
+whole, either half taking the other with it, and is placed whole where the air over it is free. A
+flower and tall grass stand off their cell's middle by up to a quarter of a block either way across,
+and short grass and a fern sink by up to a fifth as well, by a hash of the place, in the sixteen
+steps Minecraft offsets them by, while a sapling, a mushroom and a dead bush stand at the middle, as
+there. A plant is two flat walls crossed from corner to corner of its cell, drawn from both sides
+and lit as if they faced up and were seen from straight above, as Minecraft lights its plants with
+no shade by the way they face, since the engine lights a face turned from the eye as its back, and a
+plant above the eye's height would take the light of a face turned down, as `build/play.sh` reads on
+a sapling over a pillar. Its walls are a mesh of their own in each section, cut out where their
+texture is clear and casting the shadow of what the texture keeps, while global illumination holds
+none of them, so the scene's distance field holds no grass. A pack's texture lies across each wall
+from its own corners, so it stays whole wherever the wall stands, and where no pack has one the
+game's own pixels stand in, blades of grass, a flower's stem and its petals, a sapling's crown and a
+mushroom's cap, white masks tinted by each plant's own color. A plant breaks at once and falls when
+the block under it is broken.
 
 The jungle, the savanna's acacia, the dark oak and the cherry each have their log, their leaves and
 their planks, and each wood its sapling, which leaves drop one time in twenty. The cherry's leaves

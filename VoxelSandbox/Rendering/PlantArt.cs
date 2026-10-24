@@ -43,7 +43,10 @@ public static class PlantArt
             return leaflets && y == Size - high / 2 && x % 4 == 1;
         });
         masks[Surfaces.ShortGrass] = Blades(4, 8, 1);
-        masks[Surfaces.TallGrass] = Blades(9, 7, 2);
+        // Tall grass's blades rise the whole of its lower half and on into its upper, where each
+        // ends at its own height.
+        masks[Surfaces.TallGrass] = Blades(4, 10, 2);
+        masks[Surfaces.TallGrassBottom] = Paint((x, y) => (x + Hash(x / 4, 3)) % 2 == 0);
         masks[Surfaces.Fern] = Blades(5, 8, 3, leaflets: true);
 
         // A flower's stem up its middle with a leaf to one side, below the rows of its petals, a

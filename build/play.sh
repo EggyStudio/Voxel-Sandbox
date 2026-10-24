@@ -391,19 +391,23 @@ lg=$(printf '%s\n' "$low" | sed -nE 's/^red [0-9]+, green ([0-9]+), .*/\1/p')
 [ $((5 * hg)) -ge $((4 * lg)) ] || fail "a plant above the eye's height is lit darker than one below it, $high against $low"
 
 check "the tall grass"
-# A tall grass on a pillar clear of the rooms built above, seen from below against the sky, shows
-# the sky alone in its top row, which its picture leaves clear, read at sixteen points along one of
-# its walls a fiftieth under its top, where a place a hair under 0 wrapped to the picture's bottom
-# row of blades.
+# A tall grass two blocks high on a pillar clear of the rooms built above, seen from a little below
+# against the sky, shows the sky alone in its upper half's top row, which its picture leaves clear,
+# read at sixteen points along one of its walls a fiftieth under its top, where a place a hair under
+# 0 wrapped to the picture's bottom row of blades. The eye flies a third of a block under that row,
+# so the way to it passes over the blades of the other wall and the sky behind is the deep blue
+# over the horizon's haze.
 cmd voxel.fill 30 4 20 30 5 20 stone
 cmd voxel.set 30 6 20 tall_grass
-cmd voxel.tp 30.5 4.98 21.8
+cmd voxel.set 30 7 20 tall_grass_top
+cmd voxel.fly on
+cmd voxel.tp 30.5 6 21.8
 cmd voxel.look 0 12
 cmd frames.wait 20
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 for i in $(seq 0 15); do
-  top=$(ask voxel.pixel "$(echo "30.05 + $i * 0.06" | bc -l)" 6.98 "$(echo "20.05 + $i * 0.06" | bc -l)")
+  top=$(ask voxel.pixel "$(echo "30.05 + $i * 0.06" | bc -l)" 7.98 "$(echo "20.05 + $i * 0.06" | bc -l)")
   read -r tr tg tb <<< "$(printf '%s\n' "$top" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p')"
   [ -n "$tb" ] || fail "voxel.pixel read nothing at the tall grass's top, saying $top"
   [ "$tb" -gt "$tg" ] || fail "the tall grass's clear top row shows more than the sky, $top"

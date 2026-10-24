@@ -231,6 +231,7 @@ public enum BlockId : ushort
     BrownMushroomBlock,
     RedMushroomBlock,
     MushroomStem,
+    TallGrassTop,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -503,7 +504,9 @@ public static class Blocks
             Plant(BlockId.LilyOfTheValley, "lily_of_the_valley", "Lily of the Valley", BlockShape.Plant(Surfaces.LilyOfTheValleyStem, 11, Surfaces.LilyOfTheValley, 6, PlantOffset.Across), Surfaces.LilyOfTheValley),
             Plant(BlockId.PinkPetals, "pink_petals", "Pink Petals", BlockShape.Carpet(Surfaces.PinkPetals), Surfaces.PinkPetals),
             Plant(BlockId.ShortGrass, "short_grass", "Short Grass", BlockShape.Plant(Surfaces.ShortGrass, 12, offset: PlantOffset.AcrossAndDown), Surfaces.ShortGrass),
-            Plant(BlockId.TallGrass, "tall_grass", "Tall Grass", BlockShape.Plant(Surfaces.TallGrass, 16, offset: PlantOffset.Across), Surfaces.TallGrass),
+            // Tall grass stands two blocks high as the source's does, its lower half's picture under
+            // its upper's, which ends in tips.
+            Plant(BlockId.TallGrass, "tall_grass", "Tall Grass", BlockShape.Plant(Surfaces.TallGrassBottom, 16, offset: PlantOffset.Across), Surfaces.TallGrass),
             Plant(BlockId.Fern, "fern", "Fern", BlockShape.Plant(Surfaces.Fern, 13, offset: PlantOffset.AcrossAndDown), Surfaces.Fern),
             Plant(BlockId.DeadBush, "dead_bush", "Dead Bush", BlockShape.Plant(Surfaces.DeadBush, 13), Surfaces.DeadBush),
             Plant(BlockId.BrownMushroom, "brown_mushroom", "Brown Mushroom", BlockShape.Plant(Surfaces.BrownMushroomStem, 7, Surfaces.BrownMushroom, 3), Surfaces.BrownMushroom),
@@ -543,6 +546,7 @@ public static class Blocks
             Same(BlockId.BrownMushroomBlock, "brown_mushroom_block", "Brown Mushroom Block", Surfaces.BrownMushroomCap),
             Same(BlockId.RedMushroomBlock, "red_mushroom_block", "Red Mushroom Block", Surfaces.RedMushroomCap),
             Same(BlockId.MushroomStem, "mushroom_stem", "Mushroom Stem", Surfaces.MushroomStem),
+            Plant(BlockId.TallGrassTop, "tall_grass_top", "Tall Grass", BlockShape.Plant(Surfaces.TallGrass, 16, offset: PlantOffset.Across), Surfaces.TallGrass) with { HeldAs = BlockId.TallGrass },
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");

@@ -135,6 +135,10 @@ public sealed class VoxelWorld
 
         Fluids.Around(x, y, z);
 
+        // Tall grass's other half goes with it, as a door's does.
+        if (was == BlockId.TallGrass && GetBlock(x, y + 1, z) == BlockId.TallGrassTop) SetBlock(x, y + 1, z, BlockId.Air);
+        if (was == BlockId.TallGrassTop && GetBlock(x, y - 1, z) == BlockId.TallGrass) SetBlock(x, y - 1, z, BlockId.Air);
+
         // A door's other half goes with it, unless the door is only opened or shut.
         if (Blocks.Get(was) is { Toggled: not null, Shape: { } half } && Blocks.Get(block).Toggled is null)
         {

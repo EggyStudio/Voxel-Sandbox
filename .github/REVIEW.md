@@ -5,27 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `7da1d96`, item 68's second commit, the breaking progress kept a second while the
-button stays held and the aim is lost, after `8bc0796`, the cracks and the bits, and nothing else,
-carrying the review's file: ten crack stages from the pack's destroy pictures or the game's own
-branching from the middle, drawn as a blended cube a hair over the block and shown with the HUD
-hidden as part of the block, the darkening cube gone; bits cut from the side's picture as instanced
-masked billboards with the source's particle numbers, one a tick from the face hit and 64 at the
-break, colliding through Body.Move so they rest on blocks; departures, the game's own bits in place
-of the engine's GPU particles since those are neither countable nor landing on blocks, the bits
-vanishing at their life's end as the source's do, the grace a second where vanilla resets on a miss,
-the owner's word kept, and the tests unit tests with no pixel check of a stage since breaking needs
-a held button through frames, a capture of both crack sets sent to the owner; 243 tests, the strict
-build clean, play.sh clean on the GPU and unchanged. Read at 03:03 on 2026-10-24. Pushed at 03:22
-after the build run of `073d84b` ended green, its play job 31.2 minutes; the run watched. Next 79,
-78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the
-items in order; items 38's second part and 54 when their packages come; the AGENTS.md rows for the
-Ui and build folders wait on the owner's word.
+Reviewed up to `526f20b`, item 79, swimming as the source has it, and nothing else, carrying the
+review's file: the vertical motion in water and above it until the player stands runs the source's
+ticks exactly, Space adding 0.04 a tick or a jump of 0.42 in shallow water, the speed kept at 0.8
+less 0.005, gravity 0.08 and drag 0.98 above, the body moved at each tick's speed between tick
+boundaries so every frame length gives one path, the step out at 0.3 where the raised box fits free
+of water as the source's isFree asks; holding Space bobs the feet 0.73 under to 0.25 over against
+the source's 0.74 and 0.28; departures, a bank a block above the water's top block cannot be reached
+under the source's rules, the feet at most 0.53 over the surface, so the play check's bank stands
+level with the water's top and the earlier climb from `5cd1521` is gone, said in the README, a
+climbable one-block bank the owner's to choose as a departure from the source; five tests at two
+frame lengths; 248 tests, the strict build clean, play.sh clean on the GPU, the swim check 179 s on
+lavapipe against 131. Read at 03:28 on 2026-10-24. Pushed at 03:50 after the build run of `7da1d96`
+ended green, its play job 23.1 minutes; the run watched. Next 78, 78, 80, 81, 69, 75, 74, 72 and 73,
+then the pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part
+and 54 when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's
+word.
+
+Before it, `7da1d96` and `8bc0796` came, item 68, pushed at 03:22 on 2026-10-24, its run green, the
+play job 23.1 minutes.
 
 Before it, `073d84b` came, item 67, pushed at 02:49 on 2026-10-24 with `dd64fd0` and `2b265f3`, its
 run green, the play job 31.2 minutes.
-
-Before it, `dd64fd0` came, item 83, read at 02:37 on 2026-10-24, pushed at 02:49 with the head.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -263,7 +264,8 @@ full.
     movement, a swim-up impulse on jump held, gravity and drag in water as the source's numbers give
     them, the bob at the surface, and the step out onto a block at the surface's high point, no
     launch; a test of the player's height over time in deep water with jump held, bobbing within the
-    source's band, and the climb out at a bank. One commit.
+    source's band, and the climb out at a bank. One commit. Done at `526f20b` on 2026-10-24, the
+    departures in the head; a one-block bank climbable is the owner's to choose.
 
 80. **Villages spaced as the source spaces them.** The owner wrote on 2026-10-23 (Decision 34) that
     there are too many villages too near. The mend: villages placed by the source's structure set

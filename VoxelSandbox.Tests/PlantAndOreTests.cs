@@ -132,12 +132,12 @@ public class PlantAndOreTests
     }
 
     [Fact]
-    public void A_Plains_Field_Is_Mostly_Covered_With_Grass_A_Few_In_A_Hundred_With_Flowers()
+    public void A_Plains_Field_Has_The_Sources_Grass_Its_Tall_Grass_Two_Blocks_High_And_A_Few_Flowers()
     {
         // Seed 1's plains about -288, 64, twelve columns by twelve, the grass tops of the plains alone.
         var land = new Overworld(1);
         BlockId[] flowers = [BlockId.Dandelion, BlockId.Poppy, BlockId.OxeyeDaisy, BlockId.AzureBluet, BlockId.Cornflower, BlockId.RedTulip, BlockId.OrangeTulip, BlockId.WhiteTulip, BlockId.PinkTulip];
-        int tops = 0, grass = 0, tall = 0, flowered = 0;
+        int tops = 0, grass = 0, tall = 0, flowered = 0, halves = 0;
         for (int cz = -2; cz < 10; cz++)
             for (int cx = -24; cx < -12; cx++)
             {
@@ -150,16 +150,40 @@ public class PlantAndOreTests
                         tops++;
                         var above = column.Get(x, height + 1, z);
                         if (above == BlockId.ShortGrass) grass++;
-                        else if (above == BlockId.TallGrass) tall++;
+                        else if (above == BlockId.TallGrass)
+                        {
+                            tall++;
+                            if (column.Get(x, height + 2, z) != BlockId.TallGrassTop) halves++;
+                        }
                         else if (Array.IndexOf(flowers, above) >= 0) flowered++;
                     }
             }
         Assert.True(tops > 10000, $"{tops} grass tops of the plains");
-        // About as the source's plains with the biome overhaul's patches cover them, 86 in a hundred
-        // short grass and 11 tall, a few in a hundred of flowers among them.
-        Assert.InRange((grass + tall) / (double)tops, 0.72, 0.86);
-        Assert.InRange(tall / (double)(grass + tall), 0.10, 0.18);
-        Assert.InRange(flowered / (double)tops, 0.02, 0.04);
+        // The source's plains hold ten patches of short grass a chunk, five where its noise is low,
+        // of 32 tries each, a quarter of which find the ground on level land, so about 26 grass tops
+        // in a hundred bear short grass there, 2 tall grass and 1 a flower, and fewer on these
+        // plains, where hills turn tries away and the noise is low in places.
+        Assert.InRange(grass / (double)tops, 0.16, 0.30);
+        Assert.InRange(tall / (double)tops, 0.002, 0.03);
+        Assert.InRange(flowered / (double)tops, 0.0005, 0.015);
+        // Every tall grass stands on two blocks, its top over its lower half.
+        Assert.Equal(0, halves);
+    }
+
+    [Fact]
+    public void Breaking_Either_Half_Of_Tall_Grass_Takes_Both_And_Its_Top_Is_No_Item_Of_Its_Own()
+    {
+        var world = Laid.World(c => Laid.Fill(c, 0, 3, BlockId.Dirt));
+        foreach (var broken in new[] { 4, 5 })
+        {
+            world.SetBlock(2, 4, 2, BlockId.TallGrass);
+            world.SetBlock(2, 5, 2, BlockId.TallGrassTop);
+            world.SetBlock(2, broken, 2, BlockId.Air);
+            Assert.Equal(BlockId.Air, world.GetBlock(2, 4, 2));
+            Assert.Equal(BlockId.Air, world.GetBlock(2, 5, 2));
+        }
+        Assert.Equal(BlockId.TallGrass, Blocks.Get(BlockId.TallGrassTop).Item);
+        Assert.DoesNotContain(Items.All, i => i.Block == BlockId.TallGrassTop);
     }
 
     [Fact]

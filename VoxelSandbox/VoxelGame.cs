@@ -889,6 +889,13 @@ public sealed class VoxelGame : IDisposable
         // A whole block goes into air or water, the water giving way to it, and a smaller one into air.
         else if (there != BlockId.Air && !Blocks.IsWater(there) || Blocks.Get(placed).Shape is not null && there != BlockId.Air) return BlockId.Air;
         if (Player.Body.Overlaps(x, y, z, Blocks.Get(placed).Boxes) || Mobs.Overlaps(x, y, z, Blocks.Get(placed).Boxes)) return BlockId.Air;
+        // Tall grass stands two blocks high, its upper half in the air over it.
+        if (placed == BlockId.TallGrass)
+        {
+            if (World.GetBlock(x, y + 1, z) != BlockId.Air || !World.SetBlock(x, y, z, placed)) return BlockId.Air;
+            World.SetBlock(x, y + 1, z, BlockId.TallGrassTop);
+            return placed;
+        }
         return World.SetBlock(x, y, z, placed) ? placed : BlockId.Air;
     }
 

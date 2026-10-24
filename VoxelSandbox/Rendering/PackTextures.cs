@@ -158,8 +158,8 @@ public static class PackTextures
         [Surfaces.LilyOfTheValley] = new("block/lily_of_the_valley"),
         [Surfaces.PinkPetals] = new("block/pink_petals"),
         [Surfaces.ShortGrass] = new("block/short_grass"),
-        // The game's tall grass is one block high, so it takes the top of the source's, which ends in tips.
         [Surfaces.TallGrass] = new("block/tall_grass_top"),
+        [Surfaces.TallGrassBottom] = new("block/tall_grass_bottom"),
         [Surfaces.Fern] = new("block/fern"),
         [Surfaces.DeadBush] = new("block/dead_bush"),
         [Surfaces.BrownMushroomStem] = new("block/brown_mushroom"),

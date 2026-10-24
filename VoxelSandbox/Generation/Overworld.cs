@@ -231,6 +231,7 @@ public sealed class Overworld : IWorldGenerator
         Ores.Place(column, Seed);
         var clip = new ColumnClip(column);
         PlaceFeatures(clip, columnX, columnZ);
+        PlacePatches(clip, grounds, columnX, columnZ);
         PlacePlants(clip, grounds);
         foreach (var structure in Structures.All) structure.BuildIn(clip, this);
         // A plant whose ground a tunnel's mouth carved away, or a ravine built after the plants, is
@@ -241,6 +242,11 @@ public sealed class Overworld : IWorldGenerator
                 var y = grounds[z * Section.Size + x].Height + 1;
                 if (y < ChunkColumn.Height && BlockGroups.Plants.Contains(column.Get(x, y, z)) && !Blocks.Collides(column.Get(x, y - 1, z)))
                     column.Set(x, y, z, BlockId.Air);
+                // Tall grass stands whole or not at all, where a structure took one of its halves.
+                if (y + 1 >= ChunkColumn.Height) continue;
+                var (lower, upper) = (column.Get(x, y, z) == BlockId.TallGrass, column.Get(x, y + 1, z) == BlockId.TallGrassTop);
+                if (lower && !upper) column.Set(x, y, z, BlockId.Air);
+                if (upper && !lower) column.Set(x, y + 1, z, BlockId.Air);
             }
         Herds.Place(column, Seed);
         return column;
@@ -284,6 +290,66 @@ public sealed class Overworld : IWorldGenerator
                         }
                     }
     }
+
+    // The source's patches of grass and flowers that start in this column's chunk and in the eight
+    // around it, each patch kind in turn as the source's biomes list them, so a patch spreads across
+    // a chunk's edge as the source's do while this column keeps the tries that land in it. A chunk's
+    // patches of a kind are laid out by a random of their own and each patch's tries by another, so
+    // every column lays out a patch the same, and one that cannot reach this column or stands in a
+    // biome that does not grow it is passed over. A kind no biome near the column grows, those of its
+    // own places and of eight places four blocks past its edges and corners, is passed over without
+    // reading the ground under each patch, which the patches of the chunks around would cost the
+    // column's generation nearly half again. A try places its plant where it finds air over grass at the
+    // ground's own height, so on level land a try that rises or falls misses, as the source's do, and
+    // tall grass where the air over that is free too.
+    private void PlacePatches(ColumnClip clip, (int Height, Biome Biome, BlockId Top)[] grounds, int columnX, int columnZ)
+    {
+        var near = new HashSet<Biome>(grounds.Select(g => g.Biome));
+        for (int dz = -1; dz <= 1; dz++)
+            for (int dx = -1; dx <= 1; dx++)
+                if (dx != 0 || dz != 0) near.Add(Ground(clip.MinX + 8 + dx * 12, clip.MinZ + 8 + dz * 12).Biome);
+        for (int kind = 0; kind < PlantPatch.All.Length; kind++)
+        {
+            var patch = PlantPatch.All[kind];
+            if (!near.Any(b => Array.Exists(b.Patches, p => ReferenceEquals(p, patch)))) continue;
+            for (int cz = columnZ - 1; cz <= columnZ + 1; cz++)
+                for (int cx = columnX - 1; cx <= columnX + 1; cx++)
+                {
+                    var random = new Random((int)PlaceHash.Of(cx, cz, Seed ^ (kind + 1) * 0x3C6EF372));
+                    var count = patch.PatchesAt(cx * Section.Size, cz * Section.Size);
+                    for (int i = 0; i < count; i++)
+                    {
+                        int ox = cx * Section.Size + random.Next(Section.Size), oz = cz * Section.Size + random.Next(Section.Size);
+                        if (patch.Rarity > 1 && random.Next(patch.Rarity) != 0) continue;
+                        if (ox + patch.Spread < clip.MinX || ox - patch.Spread > clip.MinX + Section.Mask
+                            || oz + patch.Spread < clip.MinZ || oz - patch.Spread > clip.MinZ + Section.Mask) continue;
+                        var (height, biome) = cx == columnX && cz == columnZ
+                            ? (grounds[(oz - clip.MinZ) * Section.Size + ox - clip.MinX].Height, grounds[(oz - clip.MinZ) * Section.Size + ox - clip.MinX].Biome)
+                            : Ground(ox, oz) is var (h, b, _, _, _, _) ? (h, b) : default;
+                        if (!Array.Exists(biome.Patches, p => ReferenceEquals(p, patch))) continue;
+                        var tries = new Random((int)PlaceHash.Of(ox, oz, Seed ^ (kind + 1) * 0x2545F491 ^ i));
+                        for (int t = 0; t < patch.Tries; t++)
+                        {
+                            int x = ox + Spread(tries, patch.Spread), y = height + 1 + Spread(tries, patch.Rise), z = oz + Spread(tries, patch.Spread);
+                            var plant = patch.Pick(tries, x, z);
+                            if (x < clip.MinX || x > clip.MinX + Section.Mask || z < clip.MinZ || z > clip.MinZ + Section.Mask) continue;
+                            var ground = grounds[(z - clip.MinZ) * Section.Size + x - clip.MinX];
+                            if (y != ground.Height + 1 || y + 1 >= ChunkColumn.Height || ground.Top != BlockId.Grass || clip.Get(x, y, z) != BlockId.Air) continue;
+                            if (plant == BlockId.TallGrass)
+                            {
+                                if (clip.Get(x, y + 1, z) != BlockId.Air) continue;
+                                clip.Set(x, y + 1, z, BlockId.TallGrassTop);
+                            }
+                            clip.Set(x, y, z, plant);
+                        }
+                    }
+                }
+        }
+    }
+
+    // A try's way across, along or up from its patch's middle, the sum of two whole numbers from 0 to
+    // the spread less the spread, as the source's trapezoid of no plateau gives it.
+    private static int Spread(Random random, int spread) => random.Next(spread + 1) + random.Next(spread + 1) - spread;
 
     // The plants and the other features that keep to their place, on a roll of their own at each place
     // of this column alone, on the ground it read for its blocks, after the trees, so a plant takes the
