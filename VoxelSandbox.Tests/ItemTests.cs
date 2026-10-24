@@ -188,4 +188,57 @@ public sealed class ItemTests : IDisposable
         Assert.True(Vector3.Distance(end, At(0.65f, 0.35f, tool: false)) < 1e-5f && Vector3.Distance(grip, At(0.15f, 0.85f, tool: false)) < 1e-5f);
         Assert.True(end.Z < grip.Z, $"the handle's end at {end}, its grip at {grip}");
     }
+
+    [Fact]
+    public void A_Pictures_Pixel_Cubes_Close_Up_Every_Edge_Held_By_Faces_At_The_Same_Two_Corners()
+    {
+        // A picture of 16 pixels square with a ragged round outline, a hole in its middle and a pixel
+        // of its own apart, shown where its alpha is half or more.
+        const int n = 16;
+        var icon = new byte[n * n * 4];
+        for (int y = 0; y < n; y++)
+            for (int x = 0; x < n; x++)
+            {
+                var shown = (x - 8) * (x - 8) + (y - 7) * (y - 7) < 30 + (x * 7 + y * 3) % 9 && !(x == 8 && y == 7) || (x, y) == (1, 14);
+                icon[(y * n + x) * 4 + 3] = (byte)(shown ? 255 : 0);
+            }
+        var mesh = new BoxMesh();
+        DropRenderer.Extrude(mesh, icon, n, 0.15f);
+
+        // Each edge of every face is held by faces that name the same two corners, two of them, or
+        // four where two pixels touch at a corner alone, so the faces close up with no crack between.
+        var edges = new Dictionary<(Vector3, Vector3), int>();
+        var corners = mesh.Vertices;
+        for (int face = 0; face < corners.Count; face += 4)
+            for (int i = 0; i < 4; i++)
+            {
+                Vector3 a = corners[face + i].Position, b = corners[face + (i + 1) % 4].Position;
+                var key = (a.X, a.Y, a.Z).CompareTo((b.X, b.Y, b.Z)) < 0 ? (a, b) : (b, a);
+                edges[key] = edges.GetValueOrDefault(key) + 1;
+            }
+        Assert.NotEmpty(edges);
+        Assert.All(edges, e => Assert.True(e.Value is 2 or 4, $"the edge from {e.Key.Item1} to {e.Key.Item2} is held by {e.Value} faces"));
+    }
+
+    [Fact]
+    public void A_Crack_Of_Sky_Through_A_Held_Things_Faces_Counts_As_Gaps_And_Whole_Faces_Count_None()
+    {
+        // A sky's blue picture with a dark square, and the same square with a line of the sky's blue
+        // through it a pixel wide, eight pixels long, as a crack lets the sky through.
+        const int size = 40;
+        Engine.Image Picture(bool crack)
+        {
+            var data = new byte[size * size * 4];
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    var dark = x is >= 10 and < 30 && y is >= 10 and < 30 && !(crack && x == 20 && y is >= 14 and < 22);
+                    (data[(y * size + x) * 4], data[(y * size + x) * 4 + 1], data[(y * size + x) * 4 + 2], data[(y * size + x) * 4 + 3]) =
+                        dark ? ((byte)30, (byte)35, (byte)40, (byte)255) : ((byte)70, (byte)150, (byte)230, (byte)255);
+                }
+            return new Engine.Image(data, size, size);
+        }
+        Assert.Empty(Measurements.Gaps(Picture(crack: false), 5, 5, 30, 30)!);
+        Assert.Equal(8, Measurements.Gaps(Picture(crack: true), 5, 5, 30, 30)!.Count);
+    }
 }

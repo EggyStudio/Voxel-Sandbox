@@ -742,6 +742,28 @@ echo "the ground's light about a held torch from four headings:$samples"
 printf '%s\n' $samples | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low <= 3) }' \
   || fail "a held torch's light on the ground turns with the view, reading$samples"
 
+check "the held pickaxe"
+# A wooden pickaxe held against the sky at noon, the player standing still and looking up to the
+# south over none of the script's builds, lets no sky through between its faces, every pixel's faces
+# taking their corners from one grid so faces that meet share them, where a front and a back of the
+# whole picture cut out where it is clear met the pixels' sides a little off their edges and the sky
+# showed through between them. Its corner of the window holds at most 60 pixels nearer the sky than
+# both neighbors, its own slivers of a lit face a pixel wide reading 22 of them, where the cracks
+# made 224, on the GPU and on lavapipe alike.
+cmd voxel.time 12
+cmd voxel.kill all
+cmd voxel.hud on
+cmd voxel.select wooden_pickaxe
+cmd voxel.tp 0.5 4 0.5
+cmd voxel.look 180 70
+cmd frames.wait 20
+ask voxel.gaps 940 330 339 389 > /dev/null
+cmd frames.wait 2
+gaps=$(ask voxel.gaps 940 330 339 389)
+echo "a held wooden pickaxe against the sky, $gaps"
+count=$(printf '%s\n' "$gaps" | sed -nE 's/^([0-9]+) gaps .*/\1/p')
+[ -n "$count" ] && [ "$count" -le 60 ] || fail "a held pickaxe lets the sky through between its faces, $gaps"
+
 check "the jungle's floor"
 # The grass under a canopy of jungle leaves two deep at noon, at the sky level of 13 the leaves leave
 # it, read from straight above against the grass in the shade of a wall on open ground, at sky level

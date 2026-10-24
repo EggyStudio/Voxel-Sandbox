@@ -5,7 +5,18 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `65eec11`, item 115, a wall torch's wood leaning up to its lit head, read at 16:17 on
+Reviewed up to `cce1536`, item 116, the held axe's blade facing ahead, read at 16:30 on 2026-10-24,
+carrying the review's files. HandRenderer.Turn keeps the quarter turn of plus 90 and for a tool
+turns the picture first by a half about its handle's diagonal, x, y, z to y, x, minus z, so the
+handle stays where the quarter turn puts it and the axe's blade comes ahead, the pickaxe, the shovel
+and the sword lying alike on both sides of the handle and looking the same, flat items that are not
+tools keeping the plain turn; the game has no hoe. Departure, the source's handheld model says a
+turn of minus 90, which put every tool at the right edge leaning at the eye where the game's plus 90
+gives the source's look, the part of the source's chain that flips the sign not found. ItemTests
+reads a point at the axe's blade at least 0.05 ahead of the handle's end with the tool's turn and
+the handle's end and grip where a plain picture has them; 284 tests, play.sh 192 s on the GPU; the
+capture shows the four tools before and after. Held until the run of `65eec11` ends, then pushed.
+After `65eec11`, item 115, a wall torch's wood leaning up to its lit head, read at 16:17 on
 2026-10-24, carrying REVIEW.md. In the pack's torch picture rows 6 and 7 of columns 7 and 8 are the
 lit head and rows 8 to 15 the wood, so the split moves from row 9 to row 8, the stick's sides
 showing rows 8 to 16 and the head's rows 6 to 8; the wall torch's stick runs from 3 to 11 with its
@@ -648,6 +659,54 @@ full.
     once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
     again. One commit, small, with the package carrying the engine's item 99.
 
+118. **A held tool's pixels meet with no gap along its borders.** The owner wrote at 16:39 on
+    2026-10-24 that the held tool items show a pixel gap everywhere around the borders,
+    stair-stepped aliasing. The held picture is a block of pixel cubes cut from the item's picture,
+    and along its outline a gap shows between the border pixels and the body, or the background
+    through the border's edge. Read first where the gap is, in a capture of a held tool at four
+    times the size against the picture's pixels, whether the cutout's alpha test drops the border
+    texels where the filter blends them with the clear ones beside, the cubes' faces standing a half
+    texel off their pixels, the atlas's padding, or the depth of the side faces against the front;
+    then the mend at the cause, the picture sampled nearest with the texel's own color at every cube
+    and the cubes meeting edge to edge; a test reading a held tool's capture for no background pixel
+    inside its outline, and the capture before and after. The owner added at 16:40 that the tool
+    jiggles as the camera moves, which closes and opens the gaps at different places, so the gaps
+    move with the subpixel position, as cracks do between faces whose shared edges are not the same
+    floating-point vertices, each cube's corners worked out on their own, or as a front face and its
+    side faces fight in depth along their edge; the reading takes this first, and the mend then has
+    every cube take its corners from one grid of vertices indexed by the pixel's corner so neighbors
+    share them bit for bit, the front faces merged along runs of pixels, and the item drawn without
+    sway for the capture to tell the sway from the cracks. One commit, first, before item 94's
+    pieces.
+
+119. **The terrain's faces meet with no crack, so no light shines through a dark cave's walls in
+    pixel-wide lines.** The owner wrote at 16:41 on 2026-10-24 that blocks show the same pixel-wide
+    gap as the held tools, and that it is the complaint from the black cave, the one-pixel
+    stair-stepped lines of light where light shines through, read at 11:0x as item 83's missing mend
+    in the engine. The owner added at 16:42 that the gap is not everywhere but on a lot of edges,
+    which fits cracks where quads of different sizes abut and not a seam at every block. The terrain
+    is greedily meshed, so a quad's corner lies on the edge of a larger quad beside it, a
+    T-junction, and after the projection's rounding the two edges differ by less than a pixel, which
+    the rasterizer leaves as a crack that moves with the camera and through which a lit face behind
+    a dark wall shows. Read first in a dark cave at a fixed view with the sun's shadow off and with
+    it on, and with the camera moved by a fraction of a pixel, whether the lines are cracks of the
+    mesh, which stay with the shadow off and move with the camera, or the shadow map's, which go
+    with the shadow off, saying which with a capture; then the mend for the cracks, the mesher
+    splitting a quad where a neighbor's corner lies on its edge so no T-junction remains, or the
+    merge bounded so abutting quads share their corners, whichever costs less in triangles at the
+    cherry grove, said in the commit with the draw counts before and after; a mesher test over a
+    sample section reading no vertex on the inside of another face's edge, and the cave capture
+    before and after. The shadow map's share, where the reading finds one, goes to the engine's
+    ASKS.md. One commit, after item 118 and before item 94's pieces.
+
+120. **The selected item's name over the hotbar fades away.** The owner wrote at 16:44 on 2026-10-24
+    that selecting an item from the hotbar shows its name, which should fade away and not stick
+    forever. The name shows when the selection changes and fades out as the source's does, held
+    about a second and a half and faded over about half a second, shown again on the next change,
+    and the HUD's own fade of full rows unchanged; a test reading the name's alpha over the frames
+    after a selection, full, then gone, and the play check's HUD capture read for no name after the
+    hold. One commit, small, after item 119 and before item 94's pieces.
+
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
     generator carves them; their count falls to what the source's land shows, a cliff here and there
@@ -669,15 +728,6 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
-
-116. **A held axe faces the right way, its blade forward.** The owner wrote at 13:44 on 2026-10-24
-    that the axe is backwards when held. The held tools are the source's item pictures stood up in
-    the hand, and the axe's blade points back toward the player where the source holds it forward;
-    the tool's picture in the hand is turned as the source's first-person item display turns it, the
-    blade and the pick's head forward and the handle toward the eye, read for the pickaxe, the
-    shovel, the hoe and the sword as well so each matches the source; a capture of each tool held
-    before and after, and the test of the held item's placement reading the axe's blade ahead of its
-    handle. One commit, small, after item 115 and before item 94.
 
 ## Verdicts
 

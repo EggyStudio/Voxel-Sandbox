@@ -1333,6 +1333,17 @@ before a batch.
     small, after item 114 and before item 94. Done at `65eec11` on 2026-10-24, the split at row 8,
     the head's glow scaled so the light stays.
 
+116. **A held axe faces the right way, its blade forward.** The owner wrote at 13:44 on 2026-10-24
+    that the axe is backwards when held. The held tools are the source's item pictures stood up in
+    the hand, and the axe's blade points back toward the player where the source holds it forward;
+    the tool's picture in the hand is turned as the source's first-person item display turns it, the
+    blade and the pick's head forward and the handle toward the eye, read for the pickaxe, the
+    shovel, the hoe and the sword as well so each matches the source; a capture of each tool held
+    before and after, and the test of the held item's placement reading the axe's blade ahead of its
+    handle. One commit, small, after item 115 and before item 94. Done at `cce1536` on 2026-10-24, a
+    tool's picture turned by a half about its handle's diagonal before the quarter turn, the
+    departure on the source's sign in the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

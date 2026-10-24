@@ -145,6 +145,38 @@ public static class Measurements
     }
 
     /// <summary>
+    /// The pixels of a rectangle of a picture that let the background through between pixels of
+    /// something before it, as a crack between faces does, each nearer the background's color than
+    /// both its neighbors along its row or its column by 40 levels, its three channels together, with
+    /// both neighbors more than 90 levels from it, the background taken at each row from the column
+    /// left of the rectangle. A crack's pixel is the background blended into its faces by the
+    /// multisampling, and a sliver of a lit face a pixel wide between two darker ones reads as one too.
+    /// </summary>
+    /// <returns>The gaps' places, or null where the rectangle or its background column is off the picture.</returns>
+    public static List<(int X, int Y)>? Gaps(Image image, int x, int y, int width, int height)
+    {
+        if (x < 1 || y < 1 || x + width >= image.Width || y + height >= image.Height) return null;
+        int Off(int px, int py)
+        {
+            int at = (py * image.Width + px) * 4, ground = (py * image.Width + x - 1) * 4;
+            return Math.Abs(image.Data[at] - image.Data[ground]) + Math.Abs(image.Data[at + 1] - image.Data[ground + 1]) + Math.Abs(image.Data[at + 2] - image.Data[ground + 2]);
+        }
+        var gaps = new List<(int, int)>();
+        for (int py = y; py < y + height; py++)
+            for (int px = x; px < x + width; px++)
+            {
+                var here = Off(px, py);
+                bool Between(int dx, int dy)
+                {
+                    int a = Off(px - dx, py - dy), b = Off(px + dx, py + dy);
+                    return a > 90 && b > 90 && here < Math.Min(a, b) - 40;
+                }
+                if (Between(1, 0) || Between(0, 1)) gaps.Add((px, py));
+            }
+        return gaps;
+    }
+
+    /// <summary>
     /// The picture's luminance at points around a circle on a horizontal plane, by angle from +x
     /// toward +z, and how far it swings, given as its mean, its lowest and highest, the swing over
     /// the mean, and how many peaks stand above their neighbors.

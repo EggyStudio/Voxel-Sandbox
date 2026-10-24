@@ -566,6 +566,16 @@ public static class GameCommands
             : $"no pixel of {width} by {height} at {x}, {y} is on the window";
     }
 
+    [Command("voxel.gaps", "Pixels of the last frame in a rectangle of the window nearer the background's color than both neighbors along a row or a column, as a crack between faces lets the sky through, the background taken at each row from the column left of the rectangle: voxel.gaps <x> <y> <width> <height>")]
+    internal static string Gaps(int x, int y, int width, int height)
+    {
+        if (Game is null) return "no world is loaded";
+        if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
+        return Measurements.Gaps(LoadImageFromScreen(), x, y, width, height) is { } gaps
+            ? $"{gaps.Count} gaps in {width} by {height} at {x}, {y}" + (gaps.Count > 0 ? $", the first at {gaps[0].X}, {gaps[0].Y}" : "")
+            : $"{width} by {height} at {x}, {y} with the column left of it is not all on the window";
+    }
+
     [Command("voxel.edge", "Where the drawn land ends up a column of the last frame's pixels, the land's last pixel's color and the one above's, and the largest step between neighboring pixels within 16 of it, in sRGB levels: voxel.edge <x>")]
     internal static string Edge(int x)
     {

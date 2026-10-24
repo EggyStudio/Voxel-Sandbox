@@ -10,8 +10,9 @@ namespace VoxelSandbox;
 /// A block's stack is a cube a quarter of a block a side wearing its top's, sides' and bottom's
 /// pictures as the packs give the terrain them, tinted as in the plains as the block's icon is, or in
 /// their colors where no pack gives one, and an item whose icon is flat, the pack's picture of it or
-/// the game's own drawing, that picture a pixel deep as Minecraft's item models make it, cut out where
-/// it is clear. A block of a shape of its own that no pack draws flat stays a small box of its color,
+/// the game's own drawing, that picture a pixel deep as Minecraft's item models make it, a cube for
+/// each pixel shown whose faces meet at shared corners (<see cref="Extrude"/>). A block of a shape of
+/// its own that no pack draws flat stays a small box of its color,
 /// but for one whose item is its whole cube, as the cactus's is, which wears its pictures as a block's.
 /// They cast no shadow, which keeps them out of the scene's distance field as well, where each, moving
 /// every frame, would be stamped as a box.
@@ -106,17 +107,32 @@ public sealed class DropRenderer : IDisposable
         return (mesh, _materials[item.Id] ?? _material, Icons.IsFlat(item));
     }
 
-    // A picture square as Minecraft's item models make one, its front and its back the whole picture
-    // cut out where it is clear, a pixel deep, and a side along each edge between a pixel shown and
-    // one clear or the picture's edge, each side the color of its pixel, so the picture has the
-    // thickness of a pixel seen from any side.
-    private static void Extrude(BoxMesh mesh, byte[] icon, int n, float half)
+    /// <summary>
+    /// Adds a picture of <paramref name="n"/> pixels square, <paramref name="half"/> across from its
+    /// middle to each side, as Minecraft's item models make one, a pixel deep, each pixel shown a cube
+    /// of its own with its front, its back and a side along each edge between it and a pixel clear or
+    /// the picture's edge.
+    /// </summary>
+    /// <remarks>
+    /// Every corner is taken from one grid of the pixels' corners, so faces that meet share their
+    /// corners bit for bit and the rasterizer leaves no crack between them as the view moves, where a
+    /// front and a back of the whole picture cut out where it is clear met the sides a little off
+    /// their edges and the sky showed through along the outline. Each face shows its pixel's middle on
+    /// the picture, so its color is the pixel's own at any size. A run of pixels is not joined into
+    /// one face, since its long edge would meet the shorter edges of the sides along it at corners it
+    /// does not hold, which crack as edges of different corners do.
+    /// </remarks>
+    public static void Extrude(BoxMesh mesh, byte[] icon, int n, float half)
     {
         float pixel = 2 * half / n, deep = pixel / 2;
-        mesh.AddFace([new(-half, -half, deep), new(half, -half, deep), new(half, half, deep), new(-half, half, deep)],
-            [new(0, 1), new(1, 1), new(1, 0), new(0, 0)], Color.White);
-        mesh.AddFace([new(-half, -half, -deep), new(-half, half, -deep), new(half, half, -deep), new(half, -half, -deep)],
-            [new(0, 1), new(0, 0), new(1, 0), new(1, 1)], Color.White);
+        var front = new Vector3[n + 1, n + 1];
+        var back = new Vector3[n + 1, n + 1];
+        for (int y = 0; y <= n; y++)
+            for (int x = 0; x <= n; x++)
+            {
+                float across = -half + x * pixel, up = half - y * pixel;
+                (front[x, y], back[x, y]) = (new Vector3(across, up, deep), new Vector3(across, up, -deep));
+            }
         bool Shown(int x, int y) => x >= 0 && y >= 0 && x < n && y < n && icon[(y * n + x) * 4 + 3] >= 128;
         for (int y = 0; y < n; y++)
             for (int x = 0; x < n; x++)
@@ -124,11 +140,12 @@ public sealed class DropRenderer : IDisposable
                 if (!Shown(x, y)) continue;
                 var middle = new Vector2((x + 0.5f) / n, (y + 0.5f) / n);
                 ReadOnlySpan<Vector2> places = [middle, middle, middle, middle];
-                float x0 = -half + x * pixel, x1 = x0 + pixel, y1 = half - y * pixel, y0 = y1 - pixel;
-                if (!Shown(x - 1, y)) mesh.AddFace([new(x0, y0, -deep), new(x0, y0, deep), new(x0, y1, deep), new(x0, y1, -deep)], places, Color.White);
-                if (!Shown(x + 1, y)) mesh.AddFace([new(x1, y0, -deep), new(x1, y1, -deep), new(x1, y1, deep), new(x1, y0, deep)], places, Color.White);
-                if (!Shown(x, y - 1)) mesh.AddFace([new(x0, y1, -deep), new(x0, y1, deep), new(x1, y1, deep), new(x1, y1, -deep)], places, Color.White);
-                if (!Shown(x, y + 1)) mesh.AddFace([new(x0, y0, -deep), new(x1, y0, -deep), new(x1, y0, deep), new(x0, y0, deep)], places, Color.White);
+                mesh.AddFace([front[x, y + 1], front[x + 1, y + 1], front[x + 1, y], front[x, y]], places, Color.White);
+                mesh.AddFace([back[x, y + 1], back[x, y], back[x + 1, y], back[x + 1, y + 1]], places, Color.White);
+                if (!Shown(x - 1, y)) mesh.AddFace([back[x, y + 1], front[x, y + 1], front[x, y], back[x, y]], places, Color.White);
+                if (!Shown(x + 1, y)) mesh.AddFace([back[x + 1, y + 1], back[x + 1, y], front[x + 1, y], front[x + 1, y + 1]], places, Color.White);
+                if (!Shown(x, y - 1)) mesh.AddFace([back[x, y], front[x, y], front[x + 1, y], back[x + 1, y]], places, Color.White);
+                if (!Shown(x, y + 1)) mesh.AddFace([back[x, y + 1], back[x + 1, y + 1], front[x + 1, y + 1], front[x, y + 1]], places, Color.White);
             }
     }
 
