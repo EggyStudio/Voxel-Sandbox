@@ -5,24 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `d2f8b0b`, item 26's first part, the taller world, and nothing else, carrying the
-review's file: a column from minus 64 to 320 in sections numbered minus 4 to 19, every bound through
-ChunkColumn's three readers, the mountains' clamp at 308, bedrock whole at the floor thinning to
-none five blocks up and deepslate under 0 thinning to none at 8 by the source's gradient rule,
-cobbled deepslate as its drop making tools and a furnace, an old eight-section save told by its
-length and laid at 0 to 127 over generated deep stone and kept again whole, mobs spawning in the
-deep caves; the departure the tunnels and caverns running to the bedrock unchanged until item 27.
-Costs read again, a column generating in 24 to 29 ms against 9 to 11 with the caverns' noise at 104
-layers against 40, lighting in 5.6 to 7 against 1.2 to 1.8, 300 KB against 100, meshing 16 ms
-against 7, the cherry grove view 5,064 sections and 1.47 million triangles over 703 columns; two
-tests, 263 passing, the strict build clean, play.sh clean on the GPU in 154 s against about 140.
-Read at 07:28 on 2026-10-24. Not pushed, the build run of `5556519` running; pushed when it ends.
-Next item 26's second part, sections by distance in three dimensions, then its far levels, then 78,
-80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in
-order; items 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+Reviewed up to `1b53cee`, item 26's second part, sections by reach, after `d2f8b0b`, its first, the
+taller world, and nothing else, carrying the review's file. Part 2: a section of open air sharing
+one pair of arrays until written, a column's sections from under its floor up meshed and kept
+wherever it is and its deep ones meshed within the render distance in three dimensions, the rest
+parked, deep sections past the distance plus two packed in memory by Brotli at about 50 microseconds
+and unpacked on first read, the light's join skipping packed sections; 665 columns at 12 holding 69
+MB against 187 unshared, 3,817 deep sections packing to 25 MB from 230 up; departures, packed in
+memory rather than written to disk, unchanged columns made again from the seed, and nothing packing
+at 12 with the eye at the ground since the deepest section lies within the kept reach; five tests,
+268 passing, play.sh 143 s on the GPU. Part 1: a column from minus 64 to 320 in sections numbered
+minus 4 to 19, every bound through ChunkColumn's three readers, the mountains' clamp at 308, bedrock
+whole at the floor thinning to none five blocks up and deepslate under 0 thinning to none at 8 by
+the source's gradient rule, cobbled deepslate as its drop making tools and a furnace, an old
+eight-section save told by its length and laid at 0 to 127 over generated deep stone and kept again
+whole, mobs spawning in the deep caves; the departure the tunnels and caverns running to the bedrock
+unchanged until item 27. Costs read again, a column generating in 24 to 29 ms against 9 to 11 with
+the caverns' noise at 104 layers against 40, lighting in 5.6 to 7 against 1.2 to 1.8, 300 KB against
+100, meshing 16 ms against 7, the cherry grove view 5,064 sections and 1.47 million triangles over
+703 columns; two tests, 263 passing, the strict build clean, play.sh clean on the GPU in 154 s
+against about 140. Read at 07:28 and 07:42 on 2026-10-24. Pushed at 07:42 after the build run of
+`5556519` ended green, its play job 32.7 minutes; the run watched, its play job read against item
+88's 40 with the taller world. Next item 26's far levels, then 78, 80, 81, 69, 75, 74, 72 and 73,
+then the pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part
+and 54 when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's
+word.
 
-Before it, `5556519` came, item 46's retake, pushed at 07:07 on 2026-10-24, its run in flight.
+Before it, `5556519` came, item 46's retake, pushed at 07:07 on 2026-10-24, its run green, the play
+job 32.7 minutes.
 
 Before it, `cfdc298` came, item 89, pushed at 06:20 on 2026-10-24, its run green, the play job 32.3
 minutes.
@@ -358,7 +368,7 @@ full.
     plants or mobs, the surface sampled to 64 columns in under a second on the workers. Four commits
     as said. Deepslate comes with part 1 as the source lays it below 0, its ores and caves with item
     27; the far reach in columns and the rings by doubling as read. Part 1 at `d2f8b0b` on
-    2026-10-24, the costs in the head.
+    2026-10-24, the costs in the head. Part 2 at `1b53cee`, the numbers in the head.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
@@ -368,7 +378,12 @@ full.
     and aquifers setting water and lava levels in caves by depth, with the deep sections item 26
     gives them, and a cave's lighting from the sky above through its openings. After item 26. Two
     commits, the caves, then the aquifers. The lush caves of the source, moss, glow berries hanging
-    from the roof and vines over clear pools, join the kinds (Decision 21).
+    from the roof and vines over clear pools, join the kinds (Decision 21). Found by item 26's
+    second part on 2026-10-24: a cave at minus 36 under ground at 64 takes the sky's light through
+    global illumination, its floor reading 13 to 26 at noon against 0 to 11 at midnight, since the
+    engine's field reaches 64 up from the eye and a ray leaving it counts as sky; the engine's item
+    72 gives the field a far cascade a ray reads before the sky, in the package after 5.2.215, so
+    this item takes it when that package comes and reads the cave again.
 
 28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
     emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the

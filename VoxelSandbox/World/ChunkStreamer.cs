@@ -13,11 +13,11 @@ namespace VoxelSandbox;
 /// blocks and light, and unloaded three further, so walking back and forth over a boundary does
 /// not load and unload the same columns each time. A column the player changed is read from the
 /// save rather than generated, and kept by the save as it unloads. The mobs standing in a column
-/// come and go with it. A column's deep sections out of the eye's reach are packed by the worker
+/// come and go with it, and the surface of each that unloads is recorded for the far land. A column's deep sections out of the eye's reach are packed by the worker
 /// that makes it, and the loaded columns' again, a few a frame, each time the eye enters another
 /// section, as <see cref="Reach"/> has it.
 /// </remarks>
-public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, WorldSave? save)
+public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, WorldSave? save, FarCache? seen = null)
 {
     private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column)> _done = new();
     private readonly HashSet<(int X, int Z)> _pending = [];
@@ -152,7 +152,11 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         }
         foreach (var (x, z) in _leaving)
         {
-            if (save is not null && world.TryGetColumn(x, z, out var column) && column.Changed) save.Keep(column);
+            if (world.TryGetColumn(x, z, out var column))
+            {
+                seen?.Record(column);
+                if (save is not null && column.Changed) save.Keep(column);
+            }
             mobs.Leaving(x, z);
             world.Remove(x, z);
             renderer.ForgetColumn(x, z);

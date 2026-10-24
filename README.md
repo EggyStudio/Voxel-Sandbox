@@ -127,7 +127,7 @@ and the light, and the block the eye is inside where it is in one. `voxel.fill`,
 `voxel.set` change blocks, `voxel.tp`, `voxel.look` and `voxel.fly` move the player, `voxel.break`
 and `voxel.place` act as the mouse buttons do, `voxel.time`, `voxel.day` and `voxel.cycle` set the
 sky, `voxel.clouds` shows or hides the clouds and places their drift, `voxel.distance` the render
-distance, `voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the
+distance, `voxel.far` how far the far land reaches, `voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the
 shaded corners on or off, `voxel.corners` sets how far the corners darken, `voxel.world` saves the
 world and opens or begins another of a kind and seed, `voxel.loading` holds its loading screen up
 for a capture, `voxel.save` saves at once, and `voxel.blocks`
@@ -1077,6 +1077,18 @@ blocks, are meshed and drawn wherever the column is, and its deep sections only 
 distance of the eye in all three dimensions. Those two sections past that are packed, compressed
 until something reads them, so from 230 blocks over seed 1's spawn 3,817 sections pack and the
 columns hold 25 MB. A column takes 24 to 29 ms to generate on a worker and 6 to 7 ms to light.
+
+Past the render distance far land reaches as many columns as `voxel.far` and the settings window
+set, none by default, up to 64, drawn coarser by distance in rings, each twice as far out as the one
+before and of cells twice as wide, 2 blocks across out to twice the render distance, 4 out to four
+times and 8 past that. Each cell is a box of its size at its own
+place, its top the highest the column's surface holds over it rounded down to its width, so far
+land keeps its size and steps in cubes of the merged size, colored by its highest block's texture's
+average under its biome's tint, lit with no shaded corners and casting no shadow. The surface of each column the
+player has seen is kept as it unloads and with the save, so far land shows what stood there when
+it was last seen, the trees and the player's buildings among it. A ring's tiles of 32 by 32 cells
+draw only the columns within the ring, so the rings and the near land meet with no gap and no
+overlap, and the haze reaches to the far land's edge.
 
 Flying east over land the stream has not loaded, the game meshes the sections and joins the columns
 that come into reach on the main thread, and the frame keeps 60 a second at no distance. In three
