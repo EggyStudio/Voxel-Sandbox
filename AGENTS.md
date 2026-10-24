@@ -39,6 +39,7 @@ before scripting a session.
 | [.github/NORM.md](.github/NORM.md) | The numbered rules the game keeps, each with what checks it |
 | [.github/STYLE.md](.github/STYLE.md) | Rules for every comment, message and Markdown file |
 | [.github/COMMITS.md](.github/COMMITS.md) | How and when work is committed |
+| [.github/devlog/README.md](.github/devlog/README.md) | What landed by day, with the pictures taken on the way |
 | The engine's [.github/ASKS.md](https://github.com/EggyStudio/3DEngine/blob/main/.github/ASKS.md) | What the games built on the engine ask of it, this game's entries under its own heading |
 
 ## Building and testing
@@ -93,11 +94,12 @@ release of the zips.
   edited from here.
 - Prose in this repository follows `.github/STYLE.md`, which governs comments, XML documentation,
   messages and Markdown. Read it before writing any of them.
-- Each finished batch of work is committed on `main` locally and never pushed, since the owner
-  pushes `main` from their own tools, with a message whose subject is three invisible marks and
-  whose description is one plain sentence. Before each commit, `.github/STYLE.md` is read and
-  applied to what is staged, the message included. `.github/COMMITS.md` has the exact form, that
-  pass, and how to split a batch that shares a file with another.
+- Each finished batch of work is committed on `main` locally and never pushed from here, since the
+  reviewing session pushes `main` once the previous build run has ended, with a message whose
+  subject is three invisible marks and whose description is one plain sentence. Before each commit,
+  `.github/STYLE.md` is read and applied to what is staged, the message included.
+  `.github/COMMITS.md` has the exact form, that pass, and how to split a batch that shares a file
+  with another.
 - `.github/REVIEW.md` is read before a batch is started and before each commit. A second session
   writes it after reading the code and the history, and its Now list comes before any other order
   of work. Only its Replies section is edited here, for an item that is disputed, blocked or done,

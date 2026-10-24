@@ -5,23 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `adefc9d`, the empty hand showing nothing by the owner's word, Decision 38, the arm
-mesh and the skin gone, after `1dce7b7`, item 75, the player's hand and held item in view, and
-nothing else, carrying the review's file. Item 75: HandRenderer draws the empty right arm or the
-held item in the main pass near the eye, the source's view-space poses scaled by a quarter about the
-eye so nothing within the player's box cuts in, the held block its drop cube turned 45 degrees and
-an item its picture with the generated display's turns, the arm from the player skin's faces or the
-game's own, the source's swing over six ticks and its bob on the hand alone, hidden under F1, in
-spectator and when dead, lit at the eye and casting no shadow; flat items extruded a pixel deep as
-the source builds them; departures, the hand in the world pass rather than a second view with its
-own depth, to spare the model pass's lighting twice on lavapipe, the difference a ceiling 0.18 over
-the eye, and the turns' sign mended by captures, which says the model's front faces the other way
-from the source's; the play check reading the held stone and the grass in the window's lower right;
-254 tests, the strict build clean, play.sh clean on the GPU. Read at 04:28 on 2026-10-24. Read at
-04:28 and 04:33. Not pushed, the build run of `45b4b93` running; the two go when it ends. Next 74,
-78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the
-items in order; items 38's second part and 54 when their packages come; the AGENTS.md rows for the
-Ui and build folders wait on the owner's word.
+Reviewed up to `2aea2bf`, item 74, a held light lighting the ground around the player, after
+`adefc9d`, the empty hand showing nothing by the owner's word, Decision 38, and `1dce7b7`, item 75,
+the player's hand and held item in view, and nothing else, carrying the review's file. Item 75:
+HandRenderer draws the empty right arm or the held item in the main pass near the eye, the source's
+view-space poses scaled by a quarter about the eye so nothing within the player's box cuts in, the
+held block its drop cube turned 45 degrees and an item its picture with the generated display's
+turns, the arm from the player skin's faces or the game's own, the source's swing over six ticks and
+its bob on the hand alone, hidden under F1, in spectator and when dead, lit at the eye and casting
+no shadow; flat items extruded a pixel deep as the source builds them; departures, the hand in the
+world pass rather than a second view with its own depth, to spare the model pass's lighting twice on
+lavapipe, the difference a ceiling 0.18 over the eye, and the turns' sign mended by captures, which
+says the model's front faces the other way from the source's; the play check reading the held stone
+and the grass in the window's lower right; 254 tests, the strict build clean, play.sh clean on the
+GPU. Read at 04:28 on 2026-10-24. Item 74: one engine point light at the hand for a held block that
+gives light and one at each of the nearest three dropped light stacks, four at most, the block's
+emissive color, an intensity of 3 times the level over 15 after a calibration against a set torch at
+night, a range of the level, casting shadows so no room is lit through a wall, made again when the
+block changes; the cascades carrying it since the GI shader takes the lamps at each hit; the play
+check reading the lamp room's roof by moonlight and with a torch selected, red over 30 brighter; 254
+tests, the strict build clean, play.sh clean on the GPU. Read at 04:28, 04:33 and 04:39. Not pushed,
+the build run of `45b4b93` running; the three go when it ends. Next 72, 78, 80, 81, 69, 75, 74, 72
+and 73, then the pictures taken again at 40 degrees, then 26 and the items in order; items 38's
+second part and 54 when their packages come; the AGENTS.md rows for the Ui and build folders wait on
+the owner's word.
 
 Before it, `45b4b93` came, item 69's felling, with `cc4f29a`, `8da806a`, `9b25aa3` and `b032e76`,
 items 69, 81, 80 and 78, pushed at 04:23 on 2026-10-24, their run in flight.
@@ -248,7 +255,8 @@ full.
     lantern, glowstone or other emissive block held in hand gives a point light at the player with
     the block's color and reach, following the player each frame, and the field taking it so the
     cascades carry it; the same for a dropped one lying in the world; a test reading the floor's
-    light at night with a torch in hand against none. One commit, small, after item 75.
+    light at night with a torch in hand against none. One commit, small, after item 75. Done at
+    `2aea2bf` on 2026-10-24, the light casting shadows, the departures in the head.
 
 75. **The player's hand and held item in view.** The owner wrote on 2026-10-23 (Decision 34) that
     the player's hand and the items should be displayed in view. The mend: a first-person arm and

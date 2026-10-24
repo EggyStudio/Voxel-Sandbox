@@ -1,0 +1,273 @@
+# Voxel-Sandbox devlog
+
+What landed in Voxel-Sandbox, by day and newest first, with the pictures taken on the way: the
+captures the repository keeps under `.github/assets`, and the pictures made while an item was built,
+kept here as WebP files named by their day. A line under Done names the item of REVIEW.md or
+REVIEW-ARCHIVE.md and the commit that closed it.
+
+## 2026-10-24
+
+![](../assets/world/plant-shadows.webp)
+The plants cast the shadows of their blades and flowers on the 3DEngine 5.2.215 package, the terrain
+shader cutting each wall's shadow by its picture while glass a pack cuts out still casts none, the
+engine's own F2 and F3 are turned off since the game takes those keys, and the play script reads
+across a poppy's shadow. (`d7c4892`)
+
+![](2026-10-24-curve-choice.webp)
+The plains village under the modpack's own tonemap curve at three saturations, beside today's
+Reinhard look and the modpack.
+
+![](2026-10-24-glass-joined.webp)
+Glass under Bare Bones, the streaks gone, where panes of the same glass join into one frame, with a
+corner kept inside the L at the right end.
+
+![](2026-10-24-breaking-pair.webp)
+Breaking stone in survival: Bare Bones' destroy stage on the left, the game's own cracks with no
+pack on the right, with the bits cut from the stone's side.
+
+![](2026-10-24-hand-three.webp)
+The hand in view under Bare Bones: holding stone, holding a stick (a pixel deep), and the empty arm
+wearing Steve's sleeve.
+
+Done:
+
+- Item 55 at `d7c4892`. The plants cast shadows, cut by their texture (Decision 27).
+- Item 67 at `073d84b`. The inventory screens take no player key, draw a dragged stack every frame,
+  and dropped items wear the pack's pictures.
+- Item 68 at `8bc0796`. Breaking a block shows the cracks, throws particles of its side texture, and
+  keeps its progress across jumps.
+- Item 69 at `cc4f29a`. Felling a tree takes its logs and leaves, some logs falling, and gravity
+  blocks fall (Decision 35).
+- Item 74 at `2aea2bf`. A held light lights the ground around the player.
+- Item 75 at `1dce7b7`. The player's hand and held item in view.
+- Item 76 at `7a0d61d`. The stepped shadows move in whole steps as the day passes.
+- Item 78 at `b032e76`. Grass as the source places it, with the two-block grass.
+- Item 79 at `526f20b`. Swimming as the source has it, no launch out of the water.
+- Item 80 at `9b25aa3`. Villages spaced as the source spaces them.
+- Item 81 at `8da806a`. Biomes placed by the source's climate, so a badlands does not border a
+  forest.
+- Item 83 at `dd64fd0`. Glass without the diagonal streaks, its borders connecting across neighbors.
+- Item 88 at `b730088`. The play job comes back under 40 minutes.
+
+## 2026-10-23
+
+Done:
+
+- Item 39 at `710fe0d`. Cutout textures, a texture a face for the lamp's kind, and animated
+  textures.
+- Item 70 at `22616f4`. The land's light is the same above the eye's height as below it.
+- Item 71 at `fd276d3`. The stars are points of light with no dark backing, faded by the sky's
+  light.
+- Item 77 at `532e45c`. The distance fog takes the sky's color at the ray's height, so a mountain's
+  top is not the horizon's color.
+- Item 82 at `f9ab3bb`. No plant stands in the air where a cave was carved.
+- Item 84 at `a9b0fcf`. A loading screen while the world generates.
+- Item 85 at `2f9ed14`. No line on a grass plant's top.
+- Item 86 at `10cf3f3`. Glass and water reflect nothing for the present (Decision 36).
+- Item 87 at `6454b80`. The game's own plant masks show only where no pack gives the plant's
+  picture.
+
+## 2026-10-21
+
+![](../assets/mobs/daylight-pack.webp)
+With a pack loaded, the villager wears its body's picture with the clothes of its biome laid over it
+where they are not clear and the sheep its body's picture under its wool's tinted by its color, the
+pig's, cow's and chicken's pictures are found by the names Minecraft 26 gives them, and the daylight
+row is taken again wearing the default packs. (`9ce44d7`)
+
+![](../assets/gi/plant-shadows.webp)
+A capture of the plants' shadows drawn as whole quads, which the engine's ask on masked surfaces
+drawn through a program's shader links. (`bc02459`)
+
+![](../assets/gi/blotches.webp)
+![](../assets/interface/crafting.webp)
+![](../assets/interface/creative.webp)
+![](../assets/interface/furnace.webp)
+![](../assets/interface/hud.webp)
+![](../assets/interface/inventory.webp)
+![](../assets/interface/options.webp)
+![](../assets/interface/switcher.webp)
+![](../assets/world/badlands.webp)
+![](../assets/world/cherry-grove.webp)
+![](../assets/world/desert-village.webp)
+![](../assets/world/jungle.webp)
+![](../assets/world/meadow.webp)
+![](../assets/world/night.webp)
+![](../assets/world/plains-village-own.webp)
+![](../assets/world/plains-village.webp)
+![](../assets/world/ravine.webp)
+![](../assets/world/room.webp)
+![](../assets/world/savanna.webp)
+![](../assets/world/snowy-taiga.webp)
+![](../assets/world/snowy-village.webp)
+![](../assets/world/sunrise.webp)
+![](../assets/world/swamp.webp)
+![](../assets/world/village-night.webp)
+The README opens on an animated GIF of ten views of seed 1 and shows the biomes, plants, villages,
+lamps, sky and interface in its sections, all taken with the three default packs by
+build/pictures.sh, which fetches them, sets the windows at a scale of 2 through voxel.scale and
+raises the eye out of any block voxel.state finds it in. (`7039d5a`)
+
+![](../assets/mobs/daylight.webp)
+The mobs are drawn through a shader of the game's own that takes the color out of the light from all
+around them and floors each face at Minecraft's flat shade of its top's light, so a white sheep's
+side in the shade reads gray, with the scripted run reading it, the nine in daylight and the pairs
+drawn again. (`e3d9a74`)
+
+![](../assets/gi/forty.webp)
+![](../assets/gi/leak.webp)
+![](../assets/gi/penumbra.webp)
+The captures of the faults global illumination shows at 28eb41c, a light block's light leaking
+through the edge where two blocks meet, the zig-zag edges of its light and of a lamp's shadow, and
+forty glowstones with the screen's probes and without, for the engine's entry that links them.
+(`404ab74`)
+
+![](../assets/mobs/chicken.webp)
+![](../assets/mobs/cow.webp)
+![](../assets/mobs/creeper.webp)
+![](../assets/mobs/pig.webp)
+![](../assets/mobs/sheep.webp)
+![](../assets/mobs/skeleton.webp)
+![](../assets/mobs/spider.webp)
+![](../assets/mobs/villager.webp)
+![](../assets/mobs/zombie.webp)
+The villager is drawn at the 0.9375 that Minecraft's layer gives it and the cow has the nose and
+horns of Minecraft 26.3, with each mob beside Minecraft's outline through the same camera, standing
+and mid-stride, in the assets. (`7fe7639`)
+
+![](2026-10-21-windows-sheet2.webp)
+![](2026-10-21-menus-sheet.webp)
+![](2026-10-21-hud-sheet.webp)
+The new interface: the inventory, furnace and creative windows; the Escape menu and options; the HUD
+with its hearts fading when full and returning after a hit.
+
+![](2026-10-21-packs-interface.webp)
+With --pack Bare Bones, Recolorful Containers and qrafty's font: Bare Bones' HUD and buttons,
+Recolorful's inventory and furnace, and the pack's font.
+
+![](2026-10-21-own-art.webp)
+The game's own art with no pack. The planks in this sheet are the first try; they became boards
+after.
+
+![](2026-10-21-rows2.webp)
+Plants as flat crossed planes, lit as brightly as the ground: the game's own art on the left, Bare
+Bones on the right.
+
+![](2026-10-21-trees-sheet.webp)
+Acacias in the savanna, the cherry grove's pink crowns, the dark forest with giant mushrooms, and
+the jungle floor under its canopy, all with Bare Bones.
+
+![](2026-10-21-edges.webp)
+Render distance 4, from high, from low and at night: the land fades into a dome of the haze's color
+below the horizon, with no dark band.
+
+Done:
+
+- Item 17 at `5cd1521`. Out of the water onto the shore, swimming while any of the body is in it.
+- Item 18 at `28eb41c`. The mobs' proportions toward the source's, the villager first, with some
+  character kept.
+- Item 19 at `d9c2f8d`. Four game modes and the switcher, F3 with F4 opening the row of icons in
+  boxes, F4 stepping, spectator among them.
+- Item 20 at `9bd58e3`. The inventory's quick moves as the source has them.
+- Item 21 at `baf26b9`. Stairs join at corners, place by the hit, and the aim picks the shape and
+  not its cell.
+- Item 22 at `bf13ff6`. The baked ambient occlusion has a strength.
+- Item 23 at `8722725`. The interface drawn as the game's own, in the source's style, ImGui kept for
+  the debug windows.
+- Item 24 at `e14134d`. Texture packs read from the player's own resource packs, shipping no one's
+  textures.
+- Item 25 at `a6ec820`. More biomes, more blocks and more trees.
+- Item 37 at `e3d9a74`. A mob's faces away from the sun read blue-grey, lit by the sky alone.
+- Item 38 at `404ab74`. The screen probes off by default, and the cascades' faults given to the
+  engine with repros (Decision 16).
+- Item 40 at `5064479`. F2 takes a screenshot, as the source does (Decision 19).
+- Item 41 at `236763d`. A pack's blockstate variants give a surface several tiles picked per block
+  by its position, and Simple Grass Flowers is a fourth default pack (Decision 20).
+- Item 44 at `cc46f25`. The land's fading edge meets a sky of the haze's color below the horizon.
+- Item 45 at `8261308`. The look without a pack takes Bare Bones' colors (Decision 23).
+- Item 46 at `7039d5a`. The README's pictures taken again, an animation at its head and pictures in
+  its parts (Decision 24).
+- Item 47 at `f7df279`. The haze dome no longer cuts the sun, the moon and their glows (Decision
+  25).
+- Item 48 at `0c93d3e`. No tunnel mouth and no ravine under a village (Decision 25).
+- Item 49 at `f7df279`. The sun and the moon in the source's default look, square with a dithered
+  glow, and a pack's own where it has one (Decision 25).
+- Item 50 at `a96cea5`. The block's texture over the whole window while the eye is inside a block,
+  as the source draws it (Decision 25).
+- Item 51 at `e4483af`. The sun's and the moon's glow smooth as Bare Bones' is, in the game's own
+  art too (Decision 25).
+- Item 52 at `f7bcf26`. The stars as plain squares, the game's layout and the source's compared for
+  the choice (Decision 25).
+- Item 53 at `6845654`. The bloom at a tenth (Decision 25).
+- Item 56 at `d32ee21`. More plants, the source's counts read and the modpack's look matched
+  (Decision 27).
+- Item 57 at `815e4ca`. The plants stand offset in their block as the source places them (Decision
+  27).
+- Item 58 at `b56fa0b`. The light and the grade after the modpack's shader settings as chosen, read
+  as numbers (Decision 28).
+- Item 59 at `fa7fba0`. Each biome's grass and foliage color from the source's fixed values, not a
+  blend of the game's own climate (Decision 28).
+- Item 60 at `9a13c54`. The lamps' light falls off smoothly, the eight-a-block grid taking the sun's
+  light and shadow alone.
+- Item 61 at `92112c5`. A mob's side faces take no bands from their own shadow at noon.
+- Item 62 at `9ce44d7`. Every mob wears the pack's entity picture (Decision 30).
+- Item 63 at `e6a2c55`. A mob's face is lit evenly from top to bottom, the turned-up light seen from
+  straight above.
+- Item 64 at `69ecb49`. The zombie's own face is the source's archetype and the villager's eyes sit
+  lower (Decision 31).
+- Item 66 at `f45b75e`. The creeper keeps the game's own vanilla-style art with any pack (Decision
+  33).
+
+## 2026-10-20
+
+![](2026-10-20-all-mobs.webp)
+![](2026-10-20-villager.webp)
+Each mob in the game with Minecraft 26.3's outline in red, standing and mid-stride, through the same
+camera. The villager at full size second.
+
+![](2026-10-20-all-after.webp)
+After the walk fix: each mob in the game with Minecraft 26.3's outline in red, standing and mid-
+stride.
+
+Done:
+
+- Item 10 at `35696e2`. Some of the animals' feet do not show (Decision 6).
+- Item 15 at `cc334ab`. The section's mesh keeps the stone's faces against a lamp block, so the
+  scene field reads the stone as solid.
+- Item 16 at `435b2de`. The terrain's shaders are marked as keeping their positions, and the render
+  distance rises to what the frame then affords (items 12 and 36 of the engine).
+
+## 2026-10-19
+
+Done:
+
+- Item 6 at `6d71cd1`. The sun, the moon and the stars fixed on the sky's sphere with textures, the
+  moon with phases, the glow around the sun and the moon as particles parented to them (Decisions 6
+  and 7).
+- Item 9 at `1477e82`. The icons of the block and item types are made anew (Decision 6).
+- Item 11 at `569b5fb`. The README's picture shows the world's life, structures, a village and
+  animals, and not terrain alone (Decision 6).
+- Item 12 at `9158df8`. The render distance is read and set by what the frame affords (Decision 6).
+- Item 13 at `a31d456`. The mobs' models take the other game's sizes and boxes (Decision 8), the
+  textures the game's own.
+- Item 14 at `bde1fc1`. The game's tonemapping is the engine's somewhat boring curve (Decision 9).
+
+## 2026-10-18
+
+Done:
+
+- Item 7 at `4fc4809`. The sun's shadows are pixelated (Decision 6).
+- Item 8 at `344ef5b`. The sun's surround in the sky is pixelated and the rest of the sky stays
+  smooth (Decision 6).
+
+## 2026-10-17
+
+Done:
+
+- Item 1 at `c08d259`. The replacement, one commit (Decision 1).
+- Item 2 at `e0f4e66`. The names, one commit after item 1.
+- Item 3 at `105bdd1`. The first pack run's proof, its known failure mended at `105bdd1`; done on
+  the pack run of 2026-10-17.
+- Item 4 at `b87e386`. The register: STYLE.md's rule and the sweep (Decision 5).
+- Item 5 at `4358f3b`. The register widens to likenesses and figures of speech (Decision 5),
+  README.md:3 and AGENTS.md:3 and 5.
