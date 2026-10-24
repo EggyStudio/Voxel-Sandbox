@@ -16,14 +16,26 @@ public sealed class FirstPersonController
     private const float JumpSpeed = 9;
     private const float Walk = 4.3f, Sprint = 5.6f, Sneak = 1.3f, Fly = 10.9f, FlySprint = 21.6f, FlyVertical = 7.5f;
     private const float StandingEyes = 1.62f, SneakingEyes = 1.27f;
-    // In water the body sinks slowly, rises while Space is held and moves at a little over half speed.
-    private const float SwimGravity = 6, SinkLimit = 3, SwimUp = 3.9f, SwimSpeed = 0.6f;
-    // Space lifts the body only while the water stands this far above its feet, as Minecraft's
-    // swimmer floats with its head and shoulders out, and in shallower water on the ground it jumps.
-    private const float Wade = 0.4f;
+    // In water the body moves at a little over half speed.
+    private const float SwimSpeed = 0.6f;
+    // Minecraft's water, by its tick of a twentieth of a second, where Space lifts by 0.04 a tick
+    // before the tick's move, the speed keeps 0.8 of itself after it and falls by 0.005, out of the
+    // water it falls by 0.08 and keeps 0.98, a jump from the bottom leaves at 0.42, and a body pushing
+    // into a block with room for it raised 0.6 out of the water rises at 0.3 a tick to step out.
+    private const float WaterTick = 0.05f, SwimLift = 0.04f, WaterKeep = 0.8f, WaterFall = 0.005f, AirFall = 0.08f, AirKeep = 0.98f;
+    private const float TickJump = 0.42f, StepOut = 0.3f, StepRoom = 0.6f;
+    // Standing on the bottom in water no deeper than this over its feet, Space jumps rather than
+    // lifts, at most every half second, as Minecraft's threshold and its ten ticks between jumps have it.
+    private const float Wade = 0.4f, JumpDelay = 0.5f;
     private const float DoubleTap = 0.3f;
 
     private double _lastSpace = double.NegativeInfinity;
+    private float _jumpWait;
+    // The body in water or bobbing out of it moves by Minecraft's ticks, which hold its speed in
+    // blocks a tick carried from one tick to the next, the speed it moves at over the tick under
+    // way, and the time left of that tick.
+    private bool _bobbing;
+    private float _tickVelocity, _tickSpeed, _tickLeft;
     // Whether the body climbs out of water, from its first push against a block's side in the water
     // until it stands or stops pushing.
     private bool _climbing;
@@ -97,15 +109,11 @@ public sealed class FirstPersonController
             Pitch = Math.Clamp(Pitch - mouse.Y * Sensitivity, -1.55f, 1.55f);
         }
 
-        float forward = 0, side = 0;
-        bool up = false, down = false, sprintKey = false;
+        var controls = new Controls();
         if (move)
         {
-            forward = (IsKeyDown(Key.W) ? 1 : 0) - (IsKeyDown(Key.S) ? 1 : 0);
-            side = (IsKeyDown(Key.D) ? 1 : 0) - (IsKeyDown(Key.A) ? 1 : 0);
-            up = IsKeyDown(Key.Space);
-            down = IsKeyDown(Key.LeftShift);
-            sprintKey = IsKeyDown(Key.LeftControl);
+            controls = new Controls((IsKeyDown(Key.W) ? 1 : 0) - (IsKeyDown(Key.S) ? 1 : 0), (IsKeyDown(Key.D) ? 1 : 0) - (IsKeyDown(Key.A) ? 1 : 0),
+                IsKeyDown(Key.Space), IsKeyDown(Key.LeftShift), IsKeyDown(Key.LeftControl));
             if (IsKeyPressed(Key.Space))
             {
                 // Two presses of Space in quick succession start or stop flying, as in creative mode.
@@ -118,6 +126,16 @@ public sealed class FirstPersonController
                 else _lastSpace = GetTime();
             }
         }
+        Step(world, seconds, controls);
+    }
+
+    /// <summary>What the keys ask of the body for a frame, ahead and to the right from -1 to 1, and whether Space, Left Shift and Left Control are held.</summary>
+    public readonly record struct Controls(float Forward = 0, float Side = 0, bool Up = false, bool Down = false, bool Sprint = false);
+
+    /// <summary>Moves the body for a frame of so many seconds as the controls ask, as <see cref="Update"/> does from the keys.</summary>
+    public void Step(VoxelWorld world, float seconds, Controls controls)
+    {
+        var (forward, side, up, down, sprintKey) = (controls.Forward, controls.Side, controls.Up, controls.Down, controls.Sprint);
         if (forward <= 0) Sprinting = false;
         else if (sprintKey && MaySprint) Sprinting = true;
         if (!MaySprint) Sprinting = false;
@@ -138,19 +156,25 @@ public sealed class FirstPersonController
         Body.Velocity.Z += (wish.Z * speed - Body.Velocity.Z) * grip;
         if (Flying)
             Body.Velocity.Y += (((up ? 1 : 0) - (down ? 1 : 0)) * FlyVertical - Body.Velocity.Y) * grip;
-        else if (Swimming)
+        else if (Swimming || _bobbing && !Body.OnGround)
         {
-            Body.Velocity.Y = up && depth > Wade ? SwimUp : MathF.Max(Body.Velocity.Y - SwimGravity * seconds, -SinkLimit);
-            if (up && depth <= Wade && Body.OnGround) Body.Velocity.Y = JumpSpeed;
-            // Pushing against a block's side with the space above free, the body climbs it as fast
-            // as a jump rises, and leaving the water it climbs onto the bank it pushes against as onto
-            // a stair, so the shore a block above the water is reached by walking into it at any
-            // frame's length, as Minecraft's swimmer climbs out.
-            if (wish != Vector3.Zero && !Body.Fits(world, Body.Position + wish * 0.05f) && Body.Fits(world, Body.Position + new Vector3(0, 0.6f, 0)))
+            // The body rises and falls by Minecraft's ticks in the water and above it until it stands
+            // again, moving over each tick at the speed the tick's start gives, so its bob at the top
+            // reaches the source's height whatever a frame's length, a swimmer holding Space coming up
+            // until its feet leave the water, going on a little and falling back, sinking under the
+            // surface and rising again.
+            if (!_bobbing) (_tickVelocity, _tickLeft) = (Body.Velocity.Y * WaterTick, 0);
+            _bobbing = true;
+            _jumpWait -= seconds;
+            var rise = 0f;
+            for (var left = seconds; left > 0;)
             {
-                Body.Velocity.Y = MathF.Max(Body.Velocity.Y, JumpSpeed);
-                _climbing = true;
+                if (_tickLeft <= 0) SwimTick(world, Body.Position + new Vector3(0, rise, 0), wish, up);
+                var part = MathF.Min(left, _tickLeft);
+                rise += _tickSpeed * part;
+                (_tickLeft, left) = (_tickLeft - part, left - part);
             }
+            Body.Velocity.Y = seconds > 0 ? rise / seconds : _tickSpeed;
         }
         else
         {
@@ -159,9 +183,14 @@ public sealed class FirstPersonController
         }
 
         if (Flying || Body.OnGround || wish == Vector3.Zero) _climbing = false;
+        var stopped = Body.Velocity.Y == 0;
         if (Spectating) Body.Position += Body.Velocity * seconds;
         else Body.Move(world, Body.Velocity * seconds, keepToEdges: Sneaking && Body.OnGround, climbing: _climbing);
         if (Flying && Body.OnGround && down && !Spectating) Flying = false;
+        // A tick's rise or fall that a block stopped carries no speed on, and a body that stands or
+        // flies again leaves the ticks for the frame's own time.
+        if (_bobbing && !stopped && Body.Velocity.Y == 0) (_tickVelocity, _tickSpeed) = (0, 0);
+        if (Flying || Body.OnGround && !Swimming) _bobbing = false;
 
         _eyes += ((Sneaking ? SneakingEyes : StandingEyes) - _eyes) * (1 - MathF.Exp(-20 * seconds));
         var eye = Eye;
@@ -170,11 +199,42 @@ public sealed class FirstPersonController
         _fov += (widened - _fov) * (1 - MathF.Exp(-10 * seconds));
     }
 
+    // One of Minecraft's ticks of a body in water or bobbing above it, from where the tick finds the
+    // feet. In water it takes a jump from the bottom where the water stands no deeper than Wade over
+    // them, or else Space's lift before the move and the drag and fall after it, and pushing into a
+    // block with room for the body raised out of the water, the step out. Above the water it takes
+    // the fall and the drag of the air.
+    private void SwimTick(VoxelWorld world, Vector3 feet, Vector3 wish, bool up)
+    {
+        var depth = WaterDepth(world, feet);
+        float moving;
+        if (depth > 0)
+        {
+            var wading = Body.OnGround && depth <= Wade;
+            if (up && wading && _jumpWait <= 0) (_tickVelocity, _jumpWait) = (TickJump, JumpDelay);
+            moving = _tickVelocity + (up && !wading ? SwimLift : 0);
+            _tickVelocity = moving * WaterKeep - WaterFall;
+            var raised = feet + wish * 0.05f + new Vector3(0, StepRoom + MathF.Max(0, moving), 0);
+            if (wish != Vector3.Zero && !Body.Fits(world, feet + wish * 0.05f) && Body.Fits(world, raised) && WaterDepth(world, raised) <= 0)
+            {
+                _tickVelocity = StepOut;
+                _climbing = true;
+            }
+        }
+        else
+        {
+            moving = _tickVelocity;
+            _tickVelocity = (_tickVelocity - AirFall) * AirKeep;
+        }
+        (_tickSpeed, _tickLeft) = (moving / WaterTick, WaterTick);
+    }
+
     /// <summary>Puts the player's feet at a place, still.</summary>
     public void Teleport(Vector3 feet)
     {
         Body.Position = feet;
         Body.Velocity = Vector3.Zero;
+        (_bobbing, _tickVelocity, _tickSpeed, _tickLeft) = (false, 0, 0, 0);
         Teleports++;
     }
 

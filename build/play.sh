@@ -275,24 +275,27 @@ after=$(feet "$(ask voxel.state)")
 cmd input.key E 1
 
 check "the swim to the bank"
-# A pool of water four blocks deep east of the room, with a bank on its east side a block above the
-# water's top cell, and the player in the water facing the bank. W alone takes the player to the
-# bank, up its side and onto it, as walking into a shore does. The walk ends on the bank whether a
-# frame takes a sixtieth of a second or the twentieth the game counts at most, as on lavapipe, and
-# the bank ends at x 47, inside the columns lavapipe has loaded by then.
+# A pool of water four blocks deep east of the room, with a bank on its east side level with the
+# water's top block, and the player in the water at its top facing the bank. W with Space held swims
+# the player up to the top and steps it out onto the bank, as Minecraft's swimmer steps out, and it
+# stands there once a jump Space made on the bank has come down. The step out ends on the bank
+# whether a frame takes a sixtieth of a second or the twentieth the game counts at most, as on
+# lavapipe, and the bank ends at x 47, inside the columns lavapipe has loaded by then.
 cmd voxel.fill 30 4 -20 47 8 -14 stone
 cmd voxel.fill 31 5 -19 35 8 -15 water
-cmd voxel.fill 36 9 -20 47 9 -14 stone
 cmd voxel.fly off
-cmd voxel.tp 35.2 6 -17.5
+cmd voxel.tp 35.2 8 -17.5
 cmd voxel.look 90 0
 cmd frames.wait 10
-cmd input.key W 60
+cmd input.key Space 50 &
+cmd input.key W 50
+wait
+cmd frames.wait 40
 shore=$(ask voxel.state)
 echo "$shore"
 landed=$(feet "$shore")
-printf '%s\n' "$shore" | grep -q "on the ground" && printf '%s\n' "$landed" | awk '{ exit !($1 > 36 && $2 == 10) }' \
-  || fail "the player did not climb out of the water onto the bank, whose top is at 10, and stands at $landed"
+printf '%s\n' "$shore" | grep -q "on the ground" && printf '%s\n' "$landed" | awk '{ exit !($1 > 36 && $2 >= 9 && $2 < 9.05) }' \
+  || fail "the player did not step out of the water onto the bank, whose top is at 9, and stands at $landed"
 
 check "the sheep's wool"
 # A white sheep south of the spawn at noon, held, its side in the shade seen from two blocks east at

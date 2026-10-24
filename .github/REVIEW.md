@@ -5,15 +5,25 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `8bc0796`, item 68, the breaking block's cracks and particles, and nothing else,
-carrying the review's file, read at 03:01 on 2026-10-24 from the log before the coder's report,
-whose departures and counts follow here. Not pushed, the build run of `073d84b` running; pushed when
-it ends. Next 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees,
-then 26 and the items in order; items 38's second part and 54 when their packages come; the
-AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `7da1d96`, item 68's second commit, the breaking progress kept a second while the
+button stays held and the aim is lost, after `8bc0796`, the cracks and the bits, and nothing else,
+carrying the review's file: ten crack stages from the pack's destroy pictures or the game's own
+branching from the middle, drawn as a blended cube a hair over the block and shown with the HUD
+hidden as part of the block, the darkening cube gone; bits cut from the side's picture as instanced
+masked billboards with the source's particle numbers, one a tick from the face hit and 64 at the
+break, colliding through Body.Move so they rest on blocks; departures, the game's own bits in place
+of the engine's GPU particles since those are neither countable nor landing on blocks, the bits
+vanishing at their life's end as the source's do, the grace a second where vanilla resets on a miss,
+the owner's word kept, and the tests unit tests with no pixel check of a stage since breaking needs
+a held button through frames, a capture of both crack sets sent to the owner; 243 tests, the strict
+build clean, play.sh clean on the GPU and unchanged. Read at 03:03 on 2026-10-24. Pushed at 03:22
+after the build run of `073d84b` ended green, its play job 31.2 minutes; the run watched. Next 79,
+78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the
+items in order; items 38's second part and 54 when their packages come; the AGENTS.md rows for the
+Ui and build folders wait on the owner's word.
 
 Before it, `073d84b` came, item 67, pushed at 02:49 on 2026-10-24 with `dd64fd0` and `2b265f3`, its
-run in flight.
+run green, the play job 31.2 minutes.
 
 Before it, `dd64fd0` came, item 83, read at 02:37 on 2026-10-24, pushed at 02:49 with the head.
 
@@ -175,7 +185,7 @@ full.
     again within the source's delay, so a block above reach breaks over a few jumps. Tests: the
     stage picture on the block at a known progress, the particles' count and fall, and the progress
     kept across a lost and regained aim. Two commits, the cracks and the particles, then the
-    progress.
+    progress. Done at `8bc0796` and `7da1d96` on 2026-10-24, the departures in the head.
 
 69. **Felling a tree takes its logs and leaves, some logs falling, and gravity blocks fall (Decision
     35).** The owner wrote on 2026-10-23 (Decision 34) that trees should break all wood and break

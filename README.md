@@ -231,18 +231,23 @@ colors.
 
 Wide basins sink the land under the sea level of 48, where water stands over a floor of sand near
 the shore and gravel deeper, its top frozen to ice where the climate is cold, as about a fourteenth
-of the land is on seed 1. The player swims in it, sinking slowly, rising while Space is held until
-the head and shoulders are out and moving at a little over half speed, climbs out by walking into
-a bank a block above the water, and sees through a blue tint while the eye is under it. Glass,
-ice and water are drawn see-through, a second mesh of each section drawn after the opaque ones and
-farthest first, each vertex's alpha its surface's, and rough, so they reflect nothing, since the
-land the scene's distance field traces in a reflection is drawn in its coarse cells, which clash
-with the blocks' pixels. They cast no shadow, which keeps them out of the
-scene's distance field as well, since the field holds a see-through mesh as solid, so the sun's
-light and indirect light come through a window of glass as through an opening, and a room lit
-through a skylight reads the same with glass in it as without. Glass lets the light levels through,
-and water takes a level more for each block of it, so the sky fades with depth and a lake's floor
-darkens as it deepens.
+of the land is on seed 1. The player swims in it by Minecraft's ticks, its numbers taken from the
+source, sinking at half a block a second, rising while Space is held, and at the top bobbing as
+Minecraft's swimmer does, its feet coming out of the water up to 0.28 over the surface and falling
+back to 0.74 under it before it rises again, a jump from the bottom only where the water is no
+deeper than 0.4 over the feet, and moving at a little over half speed. Pushing into a block with
+room for the body raised 0.6 out of the water, as a bank level with the water's top block is from
+the top of the bob, the player rises at 0.3 of a block a tick and steps out onto it, and a bank a
+block higher is out of reach, as in Minecraft. It sees through a blue tint while the eye is under
+the water. Glass, ice and water are drawn see-through, a second mesh of each section drawn after the
+opaque ones and farthest first, each vertex's alpha its surface's, and rough, so they reflect
+nothing, since the land the scene's distance field traces in a reflection is drawn in its coarse
+cells, which clash with the blocks' pixels. They cast no shadow, which keeps them out of the scene's
+distance field as well, since the field holds a see-through mesh as solid, so the sun's light and
+indirect light come through a window of glass as through an opening, and a room lit through a
+skylight reads the same with glass in it as without. Glass lets the light levels through, and water
+takes a level more for each block of it, so the sky fades with depth and a lake's floor darkens as
+it deepens.
 
 Water flows as Minecraft's does, a block every quarter second. It falls into the air under it, and
 where it stands on ground or on a source it spreads sideways, a level further from its source for
