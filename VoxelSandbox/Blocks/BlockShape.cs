@@ -270,9 +270,10 @@ public sealed class BlockShape
 
     // The source's torch is one box from the foot up 10 sixteenths, its sides showing the torch's
     // texture from row 6 down to 16, its top rows 6 and 7 and its bottom rows 13 and 14, here cut into
-    // the stick's 7 and the flame's 3, each showing its share of the rows.
-    private static readonly Parts StickParts = Shows(7, 9, 9, 16, 7, 6, 9, 8, 7, 13, 9, 15);
-    private static readonly Parts FlameParts = Shows(7, 6, 9, 9, 7, 6, 9, 8, 7, 13, 9, 15);
+    // the stick's 8 rows of wood and the head's 2 lit rows above them, each showing its share, so the
+    // head that glows and stands upright holds nothing of the wood.
+    private static readonly Parts StickParts = Shows(7, 8, 9, 16, 7, 6, 9, 8, 7, 13, 9, 15);
+    private static readonly Parts FlameParts = Shows(7, 6, 9, 8, 7, 6, 9, 8, 7, 13, 9, 15);
 
     /// <summary>
     /// A cactus as the source's model draws it, its top and bottom across the whole cell, each side
@@ -298,17 +299,18 @@ public sealed class BlockShape
     /// <summary>A torch standing on the block below, a stick with a flame at its top, showing the parts of the torch's texture the source's model gives.</summary>
     public static BlockShape Torch(int flame, int stick) => new(Facing.Up,
     [
-        Px(7, 0, 7, 9, 7, 9, stick, parts: StickParts),
-        Px(7, 7, 7, 9, 10, 9, flame, parts: FlameParts),
+        Px(7, 0, 7, 9, 8, 9, stick, parts: StickParts),
+        Px(7, 8, 7, 9, 10, 9, flame, parts: FlameParts),
     ]);
 
     /// <summary>
-    /// A torch fixed to the wall behind it, its stick leaning out from the wall's face by about 23
-    /// degrees as Minecraft's does, and its flame upright at the stick's top.
+    /// A torch fixed to the wall behind it, its stick of wood leaning out from the wall's face by
+    /// three pixels over its eight, about the 22.5 degrees Minecraft's leans, up to the foot of its lit
+    /// head, which stands upright on the stick's top.
     /// </summary>
     public static BlockShape WallTorch(Facing facing, int flame, int stick) => new(facing, Yawed(facing,
-        Px(7, 3, 14, 9, 10, 16, stick, new Vector3(0, 0, -3), StickParts),
-        Px(7, 10, 11, 9, 13, 13, flame, parts: FlameParts)));
+        Px(7, 3, 14, 9, 11, 16, stick, new Vector3(0, 0, -3), StickParts),
+        Px(7, 11, 11, 9, 13, 13, flame, parts: FlameParts)));
 
     // The source's lantern shows its texture's rows 2 to 8 on its glass's sides and rows 9 to 14 on
     // its top and bottom, its cap's sides rows 0 and 1 and its top and bottom rows 10 to 13, and its

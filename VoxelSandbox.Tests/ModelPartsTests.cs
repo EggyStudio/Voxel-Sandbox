@@ -57,9 +57,18 @@ public class ModelPartsTests
             Assert.True(mesher.Mesh(world, new SectionKey(0, 1, 0)));
             var stick = Placed(mesher.Solid).ToList();
             Assert.Equal(6 * 4, stick.Count);
-            // Columns 7 and 8, its sides rows 9 to 15, its top rows 6 and 7 and its bottom rows 13 and 14.
+            // Columns 7 and 8, its sides the wood's rows 8 to 15, its top rows 6 and 7 and its bottom
+            // rows 13 and 14.
             Assert.All(stick, c => Assert.Contains(c.Place.X, new[] { 7f, 9f }));
-            Assert.All(stick.Where(c => c.Face is not 2 and not 3), c => Assert.Contains(c.Place.Y, new[] { 9f, 16f }));
+            Assert.All(stick.Where(c => c.Face is not 2 and not 3), c => Assert.Contains(c.Place.Y, new[] { 8f, 16f }));
+            // The stick's lean reaches the lit head's foot, its top's middle the middle of the head's bottom.
+            var faces = mesher.Solid;
+            var top = Enumerable.Range(0, faces.Count).Where(i => faces.Unpack(i).Face == 2).Select(i => faces.Positions[i]).ToList();
+            Assert.Equal(4, top.Count);
+            var head = Assert.Single(Blocks.Get(torch).Glows).Local;
+            var foot = new Vector3(8, 4, 8) + head.Translation - new Vector3(0, head.M22 / 2, 0);
+            var middle = top.Aggregate(Vector3.Add) / 4;
+            Assert.True(Vector3.Distance(foot, middle) < 1e-4f, $"the stick's top at {middle}, the head's foot at {foot}");
             Assert.All(stick.Where(c => c.Face == 2), c => Assert.Contains(c.Place.Y, new[] { 6f, 8f }));
             Assert.All(stick.Where(c => c.Face == 3), c => Assert.Contains(c.Place.Y, new[] { 13f, 15f }));
         }
@@ -85,7 +94,7 @@ public class ModelPartsTests
         var lit = Blocks.All.SelectMany(b => b.Shape?.Pieces ?? []).Where(p => p.Glows).GroupBy(p => p.Surface);
         foreach (var surface in lit) Assert.Single(surface.Select(p => p.Parts).Distinct());
         Assert.Equal(new Vector4(0, 2, 6, 9), Blocks.Get(BlockId.SoulHangingLantern).Shape!.Pieces.Single(p => p.Glows).Parts!.Value.Sides);
-        Assert.Equal(new Vector4(7, 6, 9, 9), Blocks.Get(BlockId.WallTorchEast).Shape!.Pieces.Single(p => p.Glows).Parts!.Value.Sides);
+        Assert.Equal(new Vector4(7, 6, 9, 8), Blocks.Get(BlockId.WallTorchEast).Shape!.Pieces.Single(p => p.Glows).Parts!.Value.Sides);
     }
 
     [Fact]

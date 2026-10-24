@@ -144,13 +144,13 @@ public static class Surfaces
     public static readonly int FurnaceSide = Add("furnace side", new Color(110, 110, 110));
     public static readonly int FurnaceTop = Add("furnace top", new Color(107, 107, 107));
     public static readonly int FurnaceLit = Add("lit furnace", new Color(147, 134, 113), emissive: new Color(255, 140, 50), glow: 1.2f);
-    // A small light's emissive intensity is its light over its surface, so a torch's flame, a 48th
+    // A small light's emissive intensity is its light over its surface, so a torch's flame, a 64th
     // of a block's surface, is far brighter than glowstone to light a room nearly as well, as a
     // torch's level of 14 nearly matches glowstone's 15. Each is set so a closed room's floor takes
     // about three quarters of glowstone's light from a torch or an end rod, nine tenths from a
     // lantern, and two fifths from the soul fire's blue, whose level is 10.
-    public static readonly int Flame = Add("flame", new Color(255, 214, 130), emissive: new Color(255, 180, 90), glow: 140);
-    public static readonly int SoulFlame = Add("soul flame", new Color(140, 236, 245), emissive: new Color(80, 220, 255), glow: 70);
+    public static readonly int Flame = Add("flame", new Color(255, 214, 130), emissive: new Color(255, 180, 90), glow: 187);
+    public static readonly int SoulFlame = Add("soul flame", new Color(140, 236, 245), emissive: new Color(80, 220, 255), glow: 93);
     public static readonly int LanternGlass = Add("lantern glass", new Color(250, 205, 125), emissive: new Color(255, 175, 85), glow: 25);
     public static readonly int SoulLanternGlass = Add("soul lantern glass", new Color(130, 225, 235), emissive: new Color(70, 210, 255), glow: 12);
     public static readonly int EndRod = Add("end rod", new Color(245, 242, 235), emissive: new Color(255, 248, 240), glow: 17);

@@ -283,7 +283,8 @@ stands as it was until then.
 
 A torch, a lantern, an end rod, and the soul torch and soul lantern of blue fire are smaller than a
 block, each a few boxes as Minecraft's models are. A torch placed on a wall's side leans out from
-it, a lantern placed under a block hangs from it, and an end rod points away from the face it is
+it, its wood up to its lit head, which alone stands upright and shows the picture's two lit rows,
+a lantern placed under a block hangs from it, and an end rod points away from the face it is
 placed on, and each falls when the block it holds to is broken. Light passes through them, the
 player through a torch, and the crosshair meets each of their pieces, as it meets a slab's, stairs'
 and a fence's, so a ray through a stair's open quarter or between a fence's rails reaches the block
@@ -292,7 +293,7 @@ with the crease under the step. The emissive piece, a torch's flame, a lantern's
 is a lamp's cube scaled to it, so global illumination carries it as a small light by its box, and
 the other pieces are faces of the section's mesh.
 
-A small light's emissive intensity is its light over its surface, so a torch's flame, a 48th of a
+A small light's emissive intensity is its light over its surface, so a torch's flame, a 64th of a
 block's surface, is far brighter than glowstone. Each is set so a closed room's floor takes about
 three quarters of glowstone's light from a torch or an end rod, nine tenths from a lantern and two
 fifths from the soul fire. A flame a quarter of a block from a wall lights a bright round pool on

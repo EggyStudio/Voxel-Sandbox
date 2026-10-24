@@ -5,48 +5,63 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `031d169`, item 113, the pyramids as rare as the source's, read at 15:30 on
-2026-10-24, carrying the review's files. DesertPyramid follows the village's pattern, a cell of 32
-chunks, a chance of 100 and the start at a chunk among the first 24 each way so two stand at least 8
-chunks apart, the desert check kept; on seed 1's square from minus 4,096 to 4,095 there were 128
-pyramids and there are 6, none within 1,024 blocks of the desert at 704, minus 704 where 7 stood.
-GenerationTests reads no pyramid within 1,024 of that desert, 1 to 289 in the square, each at a
-chunk's corner in the desert and any two at least 8 chunks apart; 282 tests, play.sh 175 s on the
-GPU; the README's structures paragraph says the rarity. The four pushed at 15:44 on 2026-10-24 after
-the run of `02abb9d` went green; the run watched. After `fd17371`, item 112, felling wearing the axe
-by the logs it drops as items, read at 15:24 on 2026-10-24, carrying the review's files.
-TreeFelling.Fell takes the axe's uses left after the cut's own, or none counted, each felling a Tree
-carrying its Uses and its crown's box; a log dropping as an item takes one use and adds to Worn, a
-falling log none; the use bringing Uses to 0 leaves the later logs standing, the crown read again
-with those logs counted so only the leaves loose of them still decay, and an axe whose last use was
-the cut fells nothing. In survival the game passes the axe's durability less its wear less the cut's
-use and wears the slot by Felling.Worn each frame. Departure, once the axe runs out every log still
-to go stays standing, those that would have fallen as blocks included, the felling stopping with the
-axe. FallingTests fells the oak's four logs over the cut with 100 uses, 3 items and 1 falling log
-with Worn 3, with 1 use one item log and the log at y 8 standing with its leaves kept and nothing
-pending, with 0 nothing; 281 tests, play.sh 176 s on the GPU; the README's felling paragraph gives
-the wear and the eight-log example. After `f00f649`, item 111, a felled tree's crown going with its
-logs, read at 15:19 on 2026-10-24, carrying the review's files. TreeFelling.Fell reads the crown at
-once, Loose seeding its search from every log in the box but the tree's own felled logs, taken as
-gone; the loose leaves are shuffled and scheduled from the tick the first log goes, spaced evenly
-over CrownSeconds of 1, the first leaf in that tick after the first log, item 100's spread kept; the
-Leaves step and the step tuple's box fields gone. FallingTests' second felling test records the
-first log, the first leaf and the last leaf, the first leaf in the same frame as the first log and
-the last 0.5 to 1 s after, the trees beside and the lower branch-joined tree holding as before; 280
-tests, play.sh 182 s on the GPU; the capture shows the crown mostly gone with its bits in the air
-where it hung whole. After `2a399af`, item 110, the bits taking the biome's tint, read at 15:12 on
-2026-10-24, carrying the review's files. VoxelWorld.TintsAt gives a column's grass and foliage
-colors, the plains' where it is not loaded; BlockBits.Break and Hit take a climate, the plains' by
-default, and the game passes the block's for the player's breaks, the hits and the felled trees'
-logs and leaves; each bit carries its climate and its picture is keyed by the surface, the piece and
-the tint Paint gives the surface there, so untinted blocks share one picture, a bit with no pack
-picture taking the surface's own color in that climate, and the pictures past 256 no bit wears let
-go with their materials; BlockBits.Picture public and static for a test without a GPU. The test in
-PackTests breaks a grass block at seed 1's plains and savanna under a pack with a gray top and a
-brown side under a gray overlay, the bits from the side's upper quarters within three levels of the
-top's color there and the savanna's top more than 20 redder than the plains'; 280 tests, play.sh 184
-s on the GPU, the tunnel's bits 19 to 20. The capture shows the savanna's bits yellow where they
-were the plains' green, the plains unchanged.
+Reviewed up to `3869d0c`, item 114's first part, rivers running between slopes, read at 16:08 on
+2026-10-24, carrying the review's files. In Overworld.Shape the valley's edge in the river noise
+widens with the drop above the water, 0.03 plus the larger of 0.08 and the drop times 0.006, and a
+new bank lowers the valley floor to a block over the water over a band whose outer edge is the
+smaller of the valley's edge and 0.032 plus the drop times 0.006, a block down for about two across,
+fading by the fourth power of the depth below as the ground rises; the channel's cut is unchanged so
+the rivers keep their width, 64,325 river columns in the 2,048-block square against 64,071.
+Departures, the bank stands above the channel rather than the channel widened, which widened the
+rivers by 45 percent, and the fade is the fourth power since the plain depth added steps of three or
+more where a river climbs into hills. Steps of two or more and of three or more between neighboring
+columns, the spawn's 512-block square 1,458 and 40 to 460 and 6, the plains village 116 and 0 to 1
+and 0, the 2,048-block square 6,026 and 357 to 3,058 and 339, the rest mostly the badlands' mesas
+and rivers fading into hills; GenerationTests holds the two squares at most 500 and 10 and 10 and 0;
+283 tests, play.sh 230 s on the GPU; the capture shows a sloping bank with sand by the water where a
+steep green wall stood. The hills' amplitude, the item's second part, waits on the owner's word.
+Held until the run of `031d169` ends, then pushed. After `031d169`, item 113, the pyramids as rare
+as the source's, read at 15:30 on 2026-10-24, carrying the review's files. DesertPyramid follows the
+village's pattern, a cell of 32 chunks, a chance of 100 and the start at a chunk among the first 24
+each way so two stand at least 8 chunks apart, the desert check kept; on seed 1's square from minus
+4,096 to 4,095 there were 128 pyramids and there are 6, none within 1,024 blocks of the desert at
+704, minus 704 where 7 stood. GenerationTests reads no pyramid within 1,024 of that desert, 1 to 289
+in the square, each at a chunk's corner in the desert and any two at least 8 chunks apart; 282
+tests, play.sh 175 s on the GPU; the README's structures paragraph says the rarity. The four pushed
+at 15:44 on 2026-10-24 after the run of `02abb9d` went green; the run watched. After `fd17371`, item
+112, felling wearing the axe by the logs it drops as items, read at 15:24 on 2026-10-24, carrying
+the review's files. TreeFelling.Fell takes the axe's uses left after the cut's own, or none counted,
+each felling a Tree carrying its Uses and its crown's box; a log dropping as an item takes one use
+and adds to Worn, a falling log none; the use bringing Uses to 0 leaves the later logs standing, the
+crown read again with those logs counted so only the leaves loose of them still decay, and an axe
+whose last use was the cut fells nothing. In survival the game passes the axe's durability less its
+wear less the cut's use and wears the slot by Felling.Worn each frame. Departure, once the axe runs
+out every log still to go stays standing, those that would have fallen as blocks included, the
+felling stopping with the axe. FallingTests fells the oak's four logs over the cut with 100 uses, 3
+items and 1 falling log with Worn 3, with 1 use one item log and the log at y 8 standing with its
+leaves kept and nothing pending, with 0 nothing; 281 tests, play.sh 176 s on the GPU; the README's
+felling paragraph gives the wear and the eight-log example. After `f00f649`, item 111, a felled
+tree's crown going with its logs, read at 15:19 on 2026-10-24, carrying the review's files.
+TreeFelling.Fell reads the crown at once, Loose seeding its search from every log in the box but the
+tree's own felled logs, taken as gone; the loose leaves are shuffled and scheduled from the tick the
+first log goes, spaced evenly over CrownSeconds of 1, the first leaf in that tick after the first
+log, item 100's spread kept; the Leaves step and the step tuple's box fields gone. FallingTests'
+second felling test records the first log, the first leaf and the last leaf, the first leaf in the
+same frame as the first log and the last 0.5 to 1 s after, the trees beside and the lower
+branch-joined tree holding as before; 280 tests, play.sh 182 s on the GPU; the capture shows the
+crown mostly gone with its bits in the air where it hung whole. After `2a399af`, item 110, the bits
+taking the biome's tint, read at 15:12 on 2026-10-24, carrying the review's files.
+VoxelWorld.TintsAt gives a column's grass and foliage colors, the plains' where it is not loaded;
+BlockBits.Break and Hit take a climate, the plains' by default, and the game passes the block's for
+the player's breaks, the hits and the felled trees' logs and leaves; each bit carries its climate
+and its picture is keyed by the surface, the piece and the tint Paint gives the surface there, so
+untinted blocks share one picture, a bit with no pack picture taking the surface's own color in that
+climate, and the pictures past 256 no bit wears let go with their materials; BlockBits.Picture
+public and static for a test without a GPU. The test in PackTests breaks a grass block at seed 1's
+plains and savanna under a pack with a gray top and a brown side under a gray overlay, the bits from
+the side's upper quarters within three levels of the top's color there and the savanna's top more
+than 20 redder than the plains'; 280 tests, play.sh 184 s on the GPU, the tunnel's bits 19 to 20.
+The capture shows the savanna's bits yellow where they were the plains' green, the plains unchanged.
 
 Before it, `02abb9d` came, item 109, the cactus, pushed at 15:01 on 2026-10-24, its run green, the
 play job 39.8 minutes.
@@ -680,7 +695,9 @@ full.
     more away from a river. The call, the river channel's band widened with the drop it cuts so its
     banks fall at about a block per two blocks, in one commit with the counts before and after; the
     hills' amplitude on the plains and the forests halved only on the owner's word, since it moves
-    the land everywhere, asked.
+    the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
+    per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
+    where 116; the second part on the owner's word.
 
 115. **A wall torch's wood leans up to its head's foot, and the lit head alone stands straight.**
     The owner wrote at 13:41 on 2026-10-24 that the torch on a wall goes straight a pixel too early,
