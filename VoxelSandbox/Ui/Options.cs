@@ -265,7 +265,16 @@ public sealed class OptionScreens
             Option.Toggle("Fog", () => game.Fog, on => game.Fog = on),
             Option.Toggle("Haze by Height", () => game.HazeByHeight, on => game.HazeByHeight = on),
             Option.Toggle("Morning Haze", () => game.MorningHaze, on => game.MorningHaze = on),
-        ], [("Sky Colors...", Menu.SkyColors)]);
+        ], [("Sky Colors...", Menu.SkyColors), ("Particles...", Menu.Particles)]);
+
+        var particles = game.Particles;
+        Particles = new("Particles",
+        [
+            Density("Rain Splashes", () => particles.SplashDensity, v => particles.SplashDensity = v),
+            Density("Falling Leaves", () => particles.LeafDensity, v => particles.LeafDensity = v),
+            Density("Cave Dust", () => particles.DustDensity, v => particles.DustDensity = v),
+            Density("Wakes", () => particles.WakeDensity, v => particles.WakeDensity = v),
+        ], []);
 
         Colors = SkyColorsOf(colors);
         SkyColors = colors;
@@ -284,12 +293,15 @@ public sealed class OptionScreens
 
     public OptionScreen SkyAndVisuals { get; }
 
+    /// <summary>How thick each kind of the world's small moving things is, from none to twice its own.</summary>
+    public OptionScreen Particles { get; }
+
     /// <summary>The sky's colors, each set on a screen of its own.</summary>
     public IReadOnlyList<SkyColor> Colors { get; }
 
     public SkyColors SkyColors { get; }
 
-    /// <summary>The screens of settings by the name a command and the options file give each, general, video, render, post, sky and colors, the last every channel of every color.</summary>
+    /// <summary>The screens of settings by the name a command and the options file give each, general, video, render, post, sky, particles and colors, the last every channel of every color.</summary>
     public IEnumerable<(string Name, IReadOnlyList<Option> Options)> All()
     {
         yield return ("general", General.Options);
@@ -297,10 +309,15 @@ public sealed class OptionScreens
         yield return ("render", Render.Options);
         yield return ("post", PostProcessing.Options);
         yield return ("sky", SkyAndVisuals.Options);
+        yield return ("particles", Particles.Options);
         yield return ("colors", ChannelsOf(Colors, SkyColors));
     }
 
     /// <summary>Every channel of every color, each named by its color and its channel.</summary>
+    // A density from none to twice its own, shown as a share.
+    private static Option Density(string name, Func<float> get, Action<float> set) =>
+        new(name, () => get() * 100, v => set(v / 100)) { High = 200, Step = 10, Format = Option.Percent };
+
     public static IReadOnlyList<Option> ChannelsOf(IReadOnlyList<SkyColor> colors, SkyColors sky) =>
     [
         .. colors.SelectMany(color => color.Channels(sky).Select(channel =>

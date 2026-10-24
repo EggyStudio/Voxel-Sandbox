@@ -238,6 +238,8 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The rain and the snow drawn about the eye while the weather turns.</summary>
     public PrecipitationRenderer Precipitation { get; } = new();
 
+    public AmbientParticles Particles { get; } = new();
+
     /// <summary>The snow the weather lays on the tops while it snows and melts once it clears.</summary>
     public SnowCover Snow { get; } = new();
 
@@ -629,6 +631,9 @@ public sealed class VoxelGame : IDisposable
         // Snow settles while the weather has more than half turned, and melts once it has cleared.
         Snow.Update(World, Player.Eye, _overcast >= 0.5f, _overcast <= 0.01f, seconds, _random);
         Sky.Overcast = _overcast;
+        // The splashes fall as far as the weather has turned, and the wakes follow the bodies in the
+        // water, the player's while it is seen.
+        Particles.Update(World, Player.Eye, _overcast, seconds, Mobs.All.Select(m => m.Body).Prepend(Player.Body).Skip(Mode == GameMode.Spectator ? 1 : 0));
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
         Clouds.Update(seconds);
@@ -1152,6 +1157,7 @@ public sealed class VoxelGame : IDisposable
             DrawSphere(blast.At, blast.Power * (0.4f + blast.Age), new Color(255, 236, 200, (byte)(220 * Math.Clamp(1 - blast.Age / Blast.Seconds, 0, 1))));
         Lap("draw.things");
         Precipitation.Draw(World, Player.Eye, _overcast, GetTime());
+        Particles.Draw();
         Clouds.Draw(Player.Eye, RenderDistance, Sky.Horizon);
         Lap("draw.clouds");
         // The cracks are the block's own, shown with the interface hidden as the source shows them,
@@ -1285,6 +1291,7 @@ public sealed class VoxelGame : IDisposable
         Cracks.Dispose();
         Clouds.Dispose();
         Precipitation.Dispose();
+        Particles.Dispose();
         Sky.Dispose();
         Packs.Dispose();
     }

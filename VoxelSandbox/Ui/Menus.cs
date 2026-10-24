@@ -15,6 +15,7 @@ public enum Menu
     PostProcessing,
     SkyAndVisuals,
     SkyColors,
+    Particles,
     SkyColor,
 }
 
@@ -90,7 +91,7 @@ public sealed class Menus
         {
             Menu.Packs or Menu.Video or Menu.Render or Menu.PostProcessing or Menu.SkyAndVisuals => Menu.Options,
             Menu.SkyColor => Menu.SkyColors,
-            Menu.SkyColors => Menu.SkyAndVisuals,
+            Menu.SkyColors or Menu.Particles => Menu.SkyAndVisuals,
             Menu.Options => Menu.Pause,
             _ => Menu.None,
         };
@@ -141,6 +142,9 @@ public sealed class Menus
                 return;
             case Menu.SkyColors:
                 DrawSkyColors(screens, s, height);
+                return;
+            case Menu.Particles:
+                DrawScreen(screens.Particles, s, height);
                 return;
             case Menu.SkyColor:
                 DrawSkyColor(screens, s, height);

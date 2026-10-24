@@ -237,6 +237,21 @@ columns within 48 blocks of the eye are tried a second at random, as the source 
 a column near the eye is tried about once in two minutes and the snow comes and goes over minutes.
 The layer is walked on and goes with the block under it.
 
+Small things move about the world as the modpack's particles do. The rain splashes sixty times a
+second on the blocks within eight of the eye where it falls, three drops leaping from each, and
+spreads in rings where it meets water, flat on its top. Leaves fall four a second from the lowest of
+a column's top leaves within sixteen blocks where three blocks of air lie under them, turning twice
+as they fall over six seconds. Dust drifts about the eye in a cave, under the sea's level where
+little of the sky's light reaches, twelve motes a second, with green spores where moss grows near
+and embers rising where lava does, and the player and the mobs moving through water's top throw forty drops a second. The Particles
+screen sets each from none to twice as thick. The engine steps, sorts and draws each of its
+emitters whole every frame, holding particles or not, so an emitter is made as a burst needs one and
+let go once its particles have died, eleven at most and none on a clear day in the open with no trees
+near, and none of them meets the scene, which would cost a pass drawing the window's depth. Each
+lives no longer than it takes to reach the ground instead. The profile's `particles.*` values count
+what each kind keeps alive, the emitters held and the budget, the most the emitters and the rings
+may hold together, 816.
+
 ## Plants, woods and colors
 
 <table><tr>
@@ -739,6 +754,7 @@ and mode.
 | | Weather, whether it turns | Off, On | On |
 | | Clouds and Fog | Off, On | On |
 | | Haze by Height, the haze thinning over land high above the sea, and Morning Haze, the haze thickening about sunrise | Off, On | On |
+| Particles, from Sky and Visuals | Rain Splashes, Falling Leaves, Cave Dust and Wakes, each how thick it is | 0 to 200% by 10 | 100% |
 | Sky Colors, from Sky and Visuals | Noon Sunlight, Low Sunlight, Moonlight and Night Tint, each a light by its hue | red, green and blue from 0 to 255 | the modpack's shader's |
 | | Day Sky, Day Horizon, Sunset Horizon, Night Sky and Night Horizon | red, green and blue from 0 to 255 | the modpack's shader's |
 

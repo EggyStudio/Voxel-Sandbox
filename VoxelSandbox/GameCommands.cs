@@ -501,7 +501,7 @@ public static class GameCommands
         return $"{light.Cascades} cascades, the finest's cell {light.CellSize} blocks, {light.Budget} built a frame";
     }
 
-    [Command("voxel.options", "Each setting of an options screen with its value and reach, of general, video, render, post, sky or colors, or sets one by its name, its words joined by underscores, to a value or a choice: voxel.options <screen> [setting] [value]")]
+    [Command("voxel.options", "Each setting of an options screen with its value and reach, of general, video, render, post, sky, particles or colors, or sets one by its name, its words joined by underscores, to a value or a choice: voxel.options <screen> [setting] [value]")]
     internal static string Options(string screen, string setting = "", string value = "")
     {
         if (Game is not { } game) return "no world is loaded";

@@ -35,3 +35,6 @@
 2026-10-24-item-42-water.webp | The sea by an island at noon and at 17, a lush cave's pools and a laid pool of three depths seen low, before on the left and after on the right, the sea deep and pale toward the horizon, the seabed's steps gone under it, the cave's pools clear and the shallow lane's bed showing.
 2026-10-24-item-32-weather.webp | Seed 1's forest from over its trees and seed 6's snowy village, clear on the left and under the weather's full turn on the right, rain over the forest and snow on the village under a grayed sky.
 2026-10-25-item-32-snow-layer.webp | Seed 6's snowy village before and after three minutes of snow, the spruces' and the bushes' tops and the ground laid with a layer an eighth deep, the stairs of the roofs taking none.
+2026-10-25-item-32-rain-splashes.webp | A river of seed 1 from over its bank under the rain, before on the left and after on the right, rings spreading on the water and drops leaping from the bank where the rain meets them.
+2026-10-25-item-32-falling-leaves.webp | Leaves falling and turning under a canopy of oak leaves laid over seed 1's forest, with Falling Leaves at 200%.
+2026-10-25-item-32-embers.webp | A dark room of stone laid under seed 1's forest round a pool of lava, embers rising from it as they cool, with the cave's dust lit only where the lava's light reaches.

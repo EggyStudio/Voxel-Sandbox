@@ -948,6 +948,31 @@ if [ -f "$fetched/Bare Bones 1.21.zip" ]; then
   cmd voxel.packs none
 fi
 
+check "the rain's splashes"
+# On the meadow with the weather held turned the rain splashes about the player, which the frame's
+# profile counts, burst from no more than the eleven emitters every kind together may hold, and what
+# every kind keeps alive with the rings stays within the budget the profile gives. With Rain
+# Splashes at none it splashes no more. The counts are eased over about a second, so each is read
+# some seconds of frames after the change it shows, and the last falls under one drop.
+profiled() { ask profile | sed -nE "s/^$1 (-?[0-9.]+).*/\1/p"; }
+cmd voxel.tp "$bx" "$((by + 1))" "$bz"
+cmd voxel.weather turned
+cmd frames.wait 150
+splashes=$(profiled particles.splashes)
+emitters=$(profiled particles.emitters)
+alive=$(ask profile | awk '/^particles\.(splashes|rings|leaves|dust|wakes) / { sum += $2 } END { print sum + 0 }')
+budget=$(profiled particles.budget)
+echo "the rain keeps $splashes drops of its splashes alive from $emitters emitters, $alive particles of every kind within a budget of $budget"
+awk -v s="$splashes" -v e="$emitters" 'BEGIN { exit !(s > 5 && e > 0 && e <= 11) }' \
+  || fail "the rain on the meadow keeps ${splashes:-no} drops of its splashes alive from ${emitters:-no} emitters, where more than 5 from 1 to 11 were written"
+awk -v a="$alive" -v b="$budget" 'BEGIN { exit !(b > 0 && a <= b) }' || fail "the particles keep $alive alive over their budget of ${budget:-none}"
+cmd voxel.options particles Rain_Splashes 0
+cmd frames.wait 300
+splashes=$(profiled particles.splashes)
+awk -v s="$splashes" 'BEGIN { exit !(s != "" && s < 1) }' || fail "the rain on the meadow keeps ${splashes:-no} drops of its splashes alive with Rain Splashes at none"
+cmd voxel.options particles Rain_Splashes 100
+cmd voxel.weather days
+
 check "the land's edge"
 # From high over the land, the drawn land's edge meets the dome under the horizon in the haze's color
 # with no step, read up the window's middle column: the land's last pixel and the one above it alike,
@@ -980,8 +1005,8 @@ echo "the draws at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ 
 [ -n "$draws" ] && [ "$draws" -le 400 ] || fail "the frame records more than 400 draws of sections at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ sections, [0-9]+ draws' || echo "$state")"
 
 check "the options"
-# Each setting of the options' own screen and of the Video, Render, Post Processing and Sky and
-# Visuals screens is set to the middle of its reach, or to its low end where it stands there, or to
+# Each setting of the options' own screen and of the Video, Render, Post Processing, Sky and
+# Visuals and Particles screens is set to the middle of its reach, or to its low end where it stands there, or to
 # its next choice, read back as set, through the engine's own state where the setting reads it
 # there, and set back as it was, to its step's nearest where it stood between two, as the hour can.
 # A setting is named in voxel.options by its words joined by underscores. The sky's colors'
@@ -989,7 +1014,7 @@ check "the options"
 # and vsync are left out, which the engine says of a window alone and an offscreen run has none.
 same() { awk -v a="$1" -v b="$2" 'BEGIN { d = a - b; exit !(d < 0.001 && d > -0.001) }'; }
 walked=0
-for screen in general video render post sky; do
+for screen in general video render post sky particles; do
   mapfile -t lines < <(ask voxel.options "$screen")
   for line in "${lines[@]}"; do
     name=${line%%: *}
@@ -1022,7 +1047,7 @@ for screen in general video render post sky; do
   done
 done
 echo "the options screens' $walked settings each set and set back"
-[ "$walked" -ge 37 ] || fail "the options screens hold $walked settings, where 37 were written"
+[ "$walked" -ge 41 ] || fail "the options screens hold $walked settings, where 41 were written"
 
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
@@ -1060,4 +1085,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a grass wall as bright above the eye as below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw deep water darker than shallow and the sky in water seen low, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a grass wall as bright above the eye as below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw deep water darker than shallow and the sky in water seen low, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, saw the rain splash on a meadow within its particles' budget, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"
