@@ -5,47 +5,21 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `1f07038`, item 102, the held light at the player's own place, the body's middle at
-the eye's height, its color, strength and reach unchanged, the play check reading the ground about a
-held torch at midnight from four headings within three levels, 61.3 to 61.5 where 55.3 to 64.3
-turned with the view before, 275 tests, play.sh 136 s; after `ad3499f`, item 101, plants giving way
-to a placed block, the placement taking the target's own cell where it gives way and is no fluid,
-fire and the grasses among them, a plant or a fire in the cell counting as air and dropping nothing,
-water and lava as before, the play check reading stone aimed at a short grass landing in its cell
-and stone aimed at a stone's side over a grass landing in the grass's cell, both refused or
-misplaced before, 275 tests, play.sh 129 s; after `54fc848`, item 100, felling's last log and the
-crown's pace, and `dc2ad9f`, item 99, no tree cut by a cave or a ravine, and nothing else, carrying
-the review's files and the devlog's trees pair. Item 100 found the flood taking all 26 neighbors at
-the cut's height and above alone, so two trees joined through their branches left the lower one's
-trunk under the cut, three single logs in 23 cherries, the owner's case; the flood follows every
-neighbor at any height within the 12 blocks and 256 logs, the logs breaking from the lowest upward,
-the leaves read in the last log's tick and decaying one to two seconds after it; a test of an oak
-and a lower tree joined by a branch, failing before; the departure a log wall a branch touches
-felled under the cut too, the leaves guard kept; 275 tests, play.sh 141 s. Item 99. The ravine is
-cut in each column before the features and the other structures after, and a tree stands only where
-its base's four blocks are whole, cut by no ravine and opened by no cave at the ground's top over
-the sea's level, the caves' density read at single places from the same corners as the column's
-grid, so a neighbor's column decides a tree reaching in the same way; over the eleven by eleven
-columns about seed 1's first ravine the logs joined to none on the ground go from one to none and
-the leaves with no log within seven steps from ten to none, the tree bases 365 to 363, a column 16.5
-to 18 ms; the plant test adds the three checks and fails on the loose log before; the departure the
-trunk test stopping at the ground's top since a cave carves nothing above it; the pair trees-cmp.png
-in the coder's scratchpad; 274 tests, the strict build clean, play.sh 138 s on the GPU. Read at
-11:38, 11:45, 11:51 and 11:55 on 2026-10-24. Pushed at 11:58 after the build run of `56cb608` ended
-green, its play job 31.7 minutes; its run red at 12:03 on the play job's held torch check, Verdict
-2, the three suites green. Next 103, then 93's mends, then 98, the particles' light at every angle,
-then 99, trees whole over carved ground, then 100, felling's last log and the crown's pace, then
-101, plants giving way to a placed block, then 102, the held light at the player, then 103, the
-flames' top row, then the ECS, items 94, 95 and 96 in order, a piece a commit; then 42, 43 and 70,
-then 28 to 36 in order; items 38's second part and 54 when their packages come, and the deep caves'
-sky light under 27 with the engine's next package; the AGENTS.md rows for the Ui and build folders
-wait on the owner's word.
+Reviewed up to `fa6963d`, Verdict 2's mend, the held light a third of a block under the eye, within
+the player's box and still not turning with the view, since a point light at the camera's own point
+shades the frame with black specks on lavapipe, the roof's probe landing on one; the shadow cube,
+the contact shadows and the global illumination each off left the specks, and the light a third of a
+block under the eye read the roof 114, 71, 29 on lavapipe and on the GPU, where 109, 68, 29 stood
+before; HeldLights' remarks and the README say why; 275 tests, play.sh 144 s on the GPU, the held
+torch's four headings 61.5 to 61.8. Pushed at 12:34 on 2026-10-24 after the coder's whole play.sh on
+lavapipe passed every check in 879 s, the roof 114, 71, 29, the held torch 61.5 to 62.0 from four
+headings, the plant's place and the bits; the run watched.
+
+Before it, `1f07038` came, items 99 to 102, pushed at 11:58 on 2026-10-24, its run red at the play
+job's held torch check, Verdict 2, the three suites green.
 
 Before it, `56cb608` came, item 98, pushed at 11:25 on 2026-10-24, its run green, the play job 31.7
 minutes.
-
-Before it, `2263618` came, item 92, far land removed, pushed at 10:44 on 2026-10-24, its run green,
-the play job 29.0 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -755,7 +729,12 @@ full.
     eye's own point or inside the player's box on lavapipe. The mend by the cause, read in the run's
     log and locally on lavapipe with the validation layer; the light's place kept at the player, the
     camera's turn having no part, as the owner asked. One commit, before the next push. Mended at
-    `?`.
+    `fa6963d`, read at 12:21, the cause a point light at the camera's own point, which lavapipe
+    shades with black specks across the frame, the probe's pixel one of them, where the GPU shades
+    it whole; the shadow cube, the contact shadows and the global illumination each off left the
+    specks, so the fault is the engine's shading of a light at the eye, sent to the engine as its
+    item 97 through ASKS.md; the game's light stands a third of a block under the eye, within the
+    player's box, still not turning with the view. Settled when its run is green.
 
 Verdict 2 is open. Verdict 1 is settled, said under it in REVIEW-ARCHIVE.md.
 

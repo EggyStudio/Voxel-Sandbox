@@ -270,6 +270,11 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     float2 texels = place * pixels;
     float spans = max(length(ddx(texels)), length(ddy(texels)));
     float level = clamp(log2(max(spans, 1e-6)), 0.0, log2(pixels) + 1.0);
+    // A carried place, a plant's or a flame's picture, which does not tile, is kept half a texel of
+    // the coarser level sampled inside its tile, since a texel at its edge reaches into the copy of
+    // the tile beside it in its cell, its far edge's rows, which drew a line along a fire's top.
+    if (surface.w == 3)
+        place = clamp(place, float2(0.5 * exp2(ceil(level)) / pixels), float2(1.0 - 0.5 * exp2(ceil(level)) / pixels));
 
     if (surface.w == 4)
         place = joined(place, surface.y, surface.z, input.block, surface.x, level);

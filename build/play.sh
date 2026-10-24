@@ -499,6 +499,7 @@ picture() {
       red => sub { "\xff\x00\x00\xff" },
       blue => sub { "\x00\x00\xff\xff" },
       halves => sub { my ($x, $y) = @_; $y < 16 ? "\xff\xff\xff\xff" : "\x00\x00\x00\xff" },
+      flames => sub { my ($x, $y) = @_; my ($f, $r) = (int($y / 16), $y % 16); $r >= 1 && ($x * 5 + $r * 3 + $f * 7) % 16 < $r * 2 ? "\xff\xc0\x10\xff" : "\xff\xff\xff\x00" },
     );
     my $raw = "";
     for my $y (0 .. $h - 1) { $raw .= "\0"; $raw .= $rules{$rule}->($_, $y) for 0 .. $w - 1; }
@@ -513,6 +514,8 @@ picture 16 16 red > "$textures/block/furnace_front_on.png"
 picture 16 16 blue > "$textures/block/furnace_top.png"
 picture 16 32 halves > "$textures/block/water_still.png"
 printf '{"animation":{"frametime":1}}' > "$textures/block/water_still.png.mcmeta"
+picture 16 512 flames > "$textures/block/fire_0.png"
+printf '{"animation":{"frametime":1}}' > "$textures/block/fire_0.png.mcmeta"
 pack="$data/picture-pack"
 if command -v cygpath > /dev/null; then pack=$(cygpath -m "$pack"); fi
 cmd voxel.packs "$pack"
@@ -600,6 +603,34 @@ done
 echo "the water's green over the frames:$greens"
 printf '%s\n' $greens | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low >= 40) }' \
   || fail "the water's texture does not step through its frames, its green reading$greens"
+
+check "the fire's top"
+# A fire's walls show no line along their tops. The pack's fire is 32 frames of flames reaching the
+# second row under pixels clear and white, as a pack's are, and seen from above at a slant at night
+# three lines down across the top edge of its north wall, read nine times a few frames apart, are
+# each no brighter than the ground beyond the wall where they start, where a texel at the wall's
+# top read into the copy of the frame above it in its cell and drew its bottom rows as a line.
+cmd voxel.kill all
+cmd voxel.time 20
+cmd voxel.set 40 3 -50 stone
+cmd voxel.set 40 4 -50 fire
+cmd voxel.tp 40.5 5.5 -45
+cmd voxel.look 0 -12
+cmd frames.wait 30
+ask voxel.line 1 1 1 1 1 1 2 > /dev/null
+cmd frames.wait 2
+tops=""
+for x in 40.3 40.5 40.7; do
+  for i in 1 2 3; do
+    top=$(ask voxel.line "$x" 5.44 -49.9994 "$x" 5.36 -49.9994 40 | sed -nE 's/.*by place (.*)$/\1/p')
+    tops="$tops $(printf '%s\n' $top | awk 'NR == 1 { first = $1 } $1 > high { high = $1 } END { printf "%.1f", high - first }')"
+    cmd frames.wait 5
+  done
+done
+cmd voxel.set 40 4 -50 air
+echo "the brightest over the ground across a fire's top edge:$tops"
+[ -n "${tops// /}" ] || fail "voxel.line read nothing across a fire's top edge"
+printf '%s\n' $tops | awk '$1 > 15 { bad = 1 } END { exit bad }' || fail "a fire's walls show a line along their tops, brighter than the ground by$tops"
 cmd voxel.packs none
 
 check "the far pillar"
@@ -835,4 +866,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a broken block's bits lit alike from eight headings, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a broken block's bits lit alike from eight headings, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"
