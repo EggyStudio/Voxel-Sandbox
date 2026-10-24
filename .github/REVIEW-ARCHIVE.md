@@ -1232,6 +1232,41 @@ before a batch.
     2026-10-24, the levels' balance in; the floor's darkness found to be the engine's light under a
     canopy the field holds solid, taken on as item 117 and an engine entry.
 
+117. **A face under a canopy is lit at least by the sky's light at its level.** From item 107's
+    reading at 14:02 on 2026-10-24, the rain forest's floor at noon near black in the capture while
+    its sky level reads 13, since the canopy shadows the sun and the field holds the leaves solid,
+    so the engine's sky light does not reach the floor where the source lights it at 13 of 15. The
+    terrain shader lifts a face's light to a floor of the sky's light at the hour, the sky's color
+    and strength the game already feeds the sky, scaled by the face's sky level on the source's
+    brightness curve, as a maximum against the engine's light, so open ground and the sunlit patches
+    are unchanged and the floor under a canopy reads as the source's level 13 does, about 0.85 of
+    the open ground's sky light, and at night the floor term is the night sky's and so near nothing;
+    the plants and the held bits the same; the rain forest's floor at noon and at midnight captured
+    before and after with the plains for no change, and the play check reading the jungle's floor at
+    noon within a few levels of the open ground's shade. The proper mend is the engine's, the field
+    letting a share of light through leaves, which the game's ASKS.md entry asks and the engine's
+    item 100 takes; this floor stands meanwhile and stays as a floor after it. One commit, after
+    item 107 and before item 108. Done at `f480dbf` on 2026-10-24, the rain forest's floor at noon
+    42.4 where 20.2 stood, open ground and the night unchanged, the departures in the head.
+
+108. **The clouds reach the camera's far plane, fading into the sky there.** The owner wrote at
+    13:29 on 2026-10-24 that the clouds still have a limit, asking whether the scene field's last
+    cascade reaches the far plane as the lowest level of detail, which the engine's item 72 gave it
+    on its main and the package after 5.2.215 carries. The clouds are the game's own, `Clouds.cs`
+    building the cells within twice the render distance of the eye and fading them into the sky from
+    six tenths of that reach, 384 blocks at 12, so their edge shows under a high sky where the
+    land's does not. The clouds reach the camera's far plane, the near cells as boxes as they are
+    and the cells beyond the present reach as the flat layer alone where their sides are not seen,
+    the fade into the sky at the far plane; the drift, the night's darkening and the capture's hold
+    unchanged; the clouds' cost read before and after at 1920 by 1080 with the cells' count, and a
+    capture of the horizon under clouds at noon. One commit, after item 107 and before item 94.
+    Closed at 14:49 on 2026-10-24 on the owner's word to the game's session at about 15:00, Decision
+    44, the clouds not stretched so far, the before images right where they covered the area about
+    the player and did not reach the horizon; what was built, the boxes within twice the render
+    distance and the flat layer out to the haze dome at 3,576, 18,131 faces against 2,723 and about
+    1.05 ms of the scene pass against 0.4 at 1920 by 1080, reverted uncommitted, its play check on a
+    cloud's underside red besides.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

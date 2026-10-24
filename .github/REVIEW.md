@@ -5,57 +5,49 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `aaeaa2a`, item 107, read at 14:02 on 2026-10-24, carrying the review's files. Light
-falling straight down through a canopy under the open sky loses one level entering the first leaf
-and one more entering the second and nothing for the layers under, keeping the rest to the floor,
-leaves still taking a level each sideways and up; Lighting.Into gains `open`, nothing but sky and
-leaves over the cell, the column pass goes through leaves and queues the cells under a canopy for
-the sideways spread, without which 201 plains cells by a branch log went darker, and the engine
-scans up for `open` only for downward light at 13 or more. Five leaves deep reads 14 at the top leaf
-and 13 under the second and at the floor, one deep 14, a hole cut through the five 15 and refilled
-13, TreeTests' three layers 13 where 6 to 12 stood; the other biomes' columns with no leaf above
-identical in the desert, the badlands, the plains, the jungle and the cherry grove and the savanna
-moved by 2 over 757,000 cells, under leaves the jungle plus 7.7 percent, the cherry grove plus 18,
-the plains plus 1.3 and the savanna plus 3.5, no plains cell darker; the rain forest's floor at noon
-11 to 13 and 9 to 13. The capture shows next to no change, since the levels only darken a face where
-the light is low and a corner at level 9 and up keeps 0.975 of its color; the dark floor is the
-engine's light, the canopy shadowing the sun and the field holding the leaves solid so the sky's
-indirect light does not reach the floor, these packs' leaves not cut out. 276 tests, play.sh 166 s
-on the GPU. Held until the run of `e82d965` ends, then pushed. After `e82d965`, item 106, the corner
-shade at a half by default, read at 13:46 on 2026-10-24, carrying the review's files,
-`SectionMesher.CornerStrength` starting at 0.5, the slider, the menu and voxel.corners unchanged,
-the game saving no settings so the menu's value lasts the session, the README's line saying a corner
-with three cells closed keeps 0.725 of its color, the mesher's corner test asserting a new mesher's
-half; 275 tests, play.sh 301 s on the GPU through the coder's own copy. The three pushed at 13:55 on
-2026-10-24 after the run of `08d0943` went green; the run watched. After `ccf6fcf`, item 98 reworked
-on the owner's words, read at 13:39 on 2026-10-24, carrying the review's files. The bits are lit by
-the engine again, the square's own face toward the eye taking the light, double sided, the upward
-normal gone; bits.slang only moves where the light is read, the vertex stage carrying the bit's
-middle in the vertex color and the fragment calling lit() with the world point at that middle and
-toEye moved with it, a bit's body keeping its middle in the open since bits start in the broken cell
-or a tenth out from the face hit. In a tunnel two high and one wide into a stone hill at noon, its
-end broken, the bit on the floor against the west wall by the mouth read 29, 49, 51, the sky's blue,
-on the engine's lighting as before `56cb608`, the other bits 16, 25, 13, and with the middle it
-reads 15, 25, 16; deep in, everything reads 0 either way. play.sh's check of the bits is that
-tunnel, the five bits nearest the walls within six levels of one another, 18 each, the floor facing
-up into the ceiling at 0, 5, 0 so the bits are compared with one another; the eight-heading check
-gone with the normal; voxel.bits takes a place. 275 tests, play.sh 262 s on the GPU from the coder's
-own build folders, the owner's bin/Debug untouched. After `4a2cd7b`, item 93's fourth mend, read at
-13:21 on 2026-10-24, carrying the review's files. ChunkRenderer.Update holds a section in reach that
-the last flood left out in an unseen set, unmeshed, and a flood that reaches it puts it back into
-the loaded set, all of them with culling off, an edit still meshing at once; update.meshed and
-update.unseen in the profile. A Release flight east from the cherry grove at a sprint, the mean of
-eight samples after the first, reads the update 0.88 and 0.69 ms where 1.30 and 1.33 stood, the
-frame 15.4 and 14.4 where 15.5 and 16.4, most of the old meshing stone no pass draws, 4,200 to 4,500
-sections held unseen against some 390 meshed a second; a teleport into the deep cave meshes nothing
-and draws 83 as before, and the land's edge meshes 189 against 200 with the same 262 draws. The
-README's culling paragraph has the rule; 275 tests, play.sh 176 s on the GPU.
+Reviewed up to `f480dbf`, item 117, the sky's floor in the terrain shader, its plants and the bits,
+read at 14:33 on 2026-10-24, carrying the review's files. Each corner carries its sky level in the
+second uint's alpha byte from 240 up, an alpha below 240 kept as it is with no level, which only
+untextured glass, water, ice, the clouds and the dome's rings have; the floor is the albedo times
+the environment's irradiance at the face's normal times environment.x and the screen's occlusion, on
+the source's curve f over 4 minus 3f taken halfway to linear, level 0 giving 0 and 13 reading 0.80
+of 15, taken as a maximum with the engine's light before toDisplay; the bits carry their cell's sky
+level in their material's otherwise unread OcclusionStrength. Departures, the floor fades out from
+level 14 to 15, since unfaded the whole sky at 15 lifted the engine's shade beside a wall on open
+ground from green 55 to 67, and the play check builds its own canopy on the flat world, jungle
+leaves two deep over grass at sky 13 against grass in a stone wall's shade at 15, each at least 0.72
+of the other's luminance, three source levels. At 1280 by 720 the floor reads 42.4 where 20.2 stood,
+the shade 42.2 and the sunlit ground 172.9 unchanged; the rain forest's whole frame at noon 4.0 to
+21.2 in mean luma and at midnight 0.1 either way, differing by no more than a level anywhere; the
+plains village differs by 8 or more in 2,776 pixels, all on the ground under the bush's leaves, open
+ground, cast shadows and sunlit faces unchanged; the bits under a leaf roof 18, 34, 49 to 31, 61,
+102. The held item and dropped stacks draw through the engine's shader and take no floor; house
+interiors and cave mouths take it at their levels as the source lights them. The capture shows the
+rain forest's floor lit at noon where it was near black, midnight and the plains the same. 278
+tests, play.sh 178 s on the GPU. Both pushed at 14:33 on 2026-10-24 after the run of `e82d965` went
+green; their run green at 14:55, the play job 22.0 minutes. After `aaeaa2a`, item 107, read at 14:02
+on 2026-10-24, carrying the review's files. Light falling straight down through a canopy under the
+open sky loses one level entering the first leaf and one more entering the second and nothing for
+the layers under, keeping the rest to the floor, leaves still taking a level each sideways and up;
+Lighting.Into gains `open`, nothing but sky and leaves over the cell, the column pass goes through
+leaves and queues the cells under a canopy for the sideways spread, without which 201 plains cells
+by a branch log went darker, and the engine scans up for `open` only for downward light at 13 or
+more. Five leaves deep reads 14 at the top leaf and 13 under the second and at the floor, one deep
+14, a hole cut through the five 15 and refilled 13, TreeTests' three layers 13 where 6 to 12 stood;
+the other biomes' columns with no leaf above identical in the desert, the badlands, the plains, the
+jungle and the cherry grove and the savanna moved by 2 over 757,000 cells, under leaves the jungle
+plus 7.7 percent, the cherry grove plus 18, the plains plus 1.3 and the savanna plus 3.5, no plains
+cell darker; the rain forest's floor at noon 11 to 13 and 9 to 13. The capture shows next to no
+change, since the levels only darken a face where the light is low and a corner at level 9 and up
+keeps 0.975 of its color; the dark floor is the engine's light, the canopy shadowing the sun and the
+field holding the leaves solid so the sky's indirect light does not reach the floor, these packs'
+leaves not cut out. 276 tests, play.sh 166 s on the GPU.
+
+Before it, `e82d965` came, item 106 with `ccf6fcf`, item 98 reworked, and `4a2cd7b`, item 93's
+fourth mend, pushed at 13:55 on 2026-10-24, its run green, the play job 37.4 minutes.
 
 Before it, `08d0943` came, item 103 and item 93's second and third mends with `89d8caa` and
 `3236b56`, pushed at 13:12 on 2026-10-24, its run green, the play job 37.8 minutes.
-
-Before it, `fa6963d` came, Verdict 2's mend, pushed at 12:34 on 2026-10-24, its run green at 13:11,
-the play job 36.0 minutes, Verdict 2 settled.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -112,6 +104,13 @@ full.
     and height. After item 26. One or two commits. Item 58 takes the sun's color by hour and the
     haze's strength from the modpack's settings; this item keeps the shadows' softness, the haze by
     height and the captures at three hours.
+
+44. **The clouds cover the area about the player and do not reach the horizon.** The owner wrote to
+    the game's session at about 15:00 on 2026-10-24, on item 108's try, not to stretch the clouds so
+    far, since the before images looked right where the clouds reached not to the horizon but
+    covered the area around. So the clouds stay within twice the render distance of the eye, fading
+    into the sky from six tenths of that reach, as Clouds.cs has them; item 108 is closed and its
+    build reverted.
 
 46. **The README's pictures taken again, an animation at its head and pictures in its parts
     (Decision 24).** The owner wrote shortly before 05:15 on 2026-10-21 to update the README's
@@ -657,34 +656,6 @@ full.
     from the caller; the game's `litStepped` then hands the step's read in and reads the shadow
     once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
     again. One commit, small, with the package carrying the engine's item 99.
-
-117. **A face under a canopy is lit at least by the sky's light at its level.** From item 107's
-    reading at 14:02 on 2026-10-24, the rain forest's floor at noon near black in the capture while
-    its sky level reads 13, since the canopy shadows the sun and the field holds the leaves solid,
-    so the engine's sky light does not reach the floor where the source lights it at 13 of 15. The
-    terrain shader lifts a face's light to a floor of the sky's light at the hour, the sky's color
-    and strength the game already feeds the sky, scaled by the face's sky level on the source's
-    brightness curve, as a maximum against the engine's light, so open ground and the sunlit patches
-    are unchanged and the floor under a canopy reads as the source's level 13 does, about 0.85 of
-    the open ground's sky light, and at night the floor term is the night sky's and so near nothing;
-    the plants and the held bits the same; the rain forest's floor at noon and at midnight captured
-    before and after with the plains for no change, and the play check reading the jungle's floor at
-    noon within a few levels of the open ground's shade. The proper mend is the engine's, the field
-    letting a share of light through leaves, which the game's ASKS.md entry asks and the engine's
-    item 100 takes; this floor stands meanwhile and stays as a floor after it. One commit, after
-    item 107 and before item 108.
-
-108. **The clouds reach the camera's far plane, fading into the sky there.** The owner wrote at
-    13:29 on 2026-10-24 that the clouds still have a limit, asking whether the scene field's last
-    cascade reaches the far plane as the lowest level of detail, which the engine's item 72 gave it
-    on its main and the package after 5.2.215 carries. The clouds are the game's own, `Clouds.cs`
-    building the cells within twice the render distance of the eye and fading them into the sky from
-    six tenths of that reach, 384 blocks at 12, so their edge shows under a high sky where the
-    land's does not. The clouds reach the camera's far plane, the near cells as boxes as they are
-    and the cells beyond the present reach as the flat layer alone where their sides are not seen,
-    the fade into the sky at the far plane; the drift, the night's darkening and the capture's hold
-    unchanged; the clouds' cost read before and after at 1920 by 1080 with the cells' count, and a
-    capture of the horizon under clouds at noon. One commit, after item 107 and before item 94.
 
 109. **The cactus is the source's model, its sides a pixel in and their clear edges cut out so the
     thorns stick out.** The owner wrote at 13:31 on 2026-10-24 that the cactus needs to be one pixel

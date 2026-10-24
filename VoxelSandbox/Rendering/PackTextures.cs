@@ -63,6 +63,7 @@ public static class PackTextures
         [Surfaces.SandstoneTop] = new("block/sandstone_top"),
         [Surfaces.CactusSide] = new("block/cactus_side"),
         [Surfaces.CactusTop] = new("block/cactus_top"),
+        [Surfaces.CactusBottom] = new("block/cactus_bottom"),
         [Surfaces.Gravel] = new("block/gravel"),
         [Surfaces.Glass] = new("block/glass"),
         // The water's gray texture under the color of Minecraft's water in most of its biomes.

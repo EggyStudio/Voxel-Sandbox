@@ -44,7 +44,8 @@ public sealed class CutoutTests : IDisposable
         Assert.True(atlas.Cuts(Surfaces.Glass));
         Assert.False(atlas.Cuts(Surfaces.Ice));
         Assert.False(atlas.Cuts(Surfaces.Stone));
-        // The cactus's texture is clear for the source's smaller model, so the whole cube stays whole.
+        // The cactus's texture is clear at its edges for the source's model, which its own shape
+        // draws, so no whole block of it is cut out.
         Assert.True(atlas.Cuts(Surfaces.CactusSide));
         Assert.False(atlas.CutOut(BlockId.Cactus));
         // The game's own masks of its plants are cut out by their own meshes.

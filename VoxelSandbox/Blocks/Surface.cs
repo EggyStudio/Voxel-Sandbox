@@ -106,6 +106,7 @@ public static class Surfaces
     public static readonly int Sandstone = Add("sandstone", new Color(211, 196, 148));
     public static readonly int CactusSide = Add("cactus side", new Color(104, 140, 55));
     public static readonly int CactusTop = Add("cactus top", new Color(109, 142, 63));
+    public static readonly int CactusBottom = Add("cactus bottom", new Color(109, 142, 63));
     public static readonly int Gravel = Add("gravel", new Color(127, 124, 123));
     // A see-through surface's alpha is how much of it covers what is behind.
     public static readonly int Glass = Add("glass", new Color(239, 247, 248, 65), roughness: 0.05f);

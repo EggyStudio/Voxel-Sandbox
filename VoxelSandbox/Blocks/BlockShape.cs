@@ -49,10 +49,18 @@ public readonly record struct Parts(Vector4 Sides, Vector4 Top, Vector4 Bottom)
 /// of one surface, its top face moved by <see cref="Lean"/>, as a torch on a wall leans out from it,
 /// or where it is a <see cref="Plane"/> a flat wall standing from its first corner across to its
 /// second, as a plant's are. Its faces show the <see cref="Parts"/> of its texture where it has them,
-/// and otherwise the part its place in the cell covers.
+/// and otherwise the part its place in the cell covers. A box shows the <see cref="Faces"/> its bits
+/// name, a bit for each in the order +x, -x, +y, -y, +z and -z, all six unless it is given fewer, as
+/// an element of the source's models lists the faces it has.
 /// </summary>
-public readonly record struct Piece(Vector3 From, Vector3 To, int Surface, Vector3 Lean = default, bool Plane = false, Parts? Parts = null)
+public readonly record struct Piece(Vector3 From, Vector3 To, int Surface, Vector3 Lean = default, bool Plane = false, Parts? Parts = null, int Faces = Piece.All)
 {
+    /// <summary>The bits of all six faces.</summary>
+    public const int All = 63;
+
+    /// <summary>Whether it shows a face by its number in the order +x, -x, +y, -y, +z and -z.</summary>
+    public bool Shows(int face) => (Faces >> face & 1) != 0;
+
     /// <summary>Whether its surface is emissive, so it is drawn as a lamp's cube rather than as faces of its section.</summary>
     public bool Glows => Surfaces.All[Surface].Emits;
 }
@@ -85,9 +93,10 @@ public readonly record struct Box(Vector3 Min, Vector3 Max)
 public sealed class BlockShape
 {
     public BlockShape(Facing facing, Piece[] pieces, bool falls = true, bool solid = false, bool upper = false, bool open = false, Box[]? collision = null, StairForm? form = null,
-        bool cutout = false, PlantOffset offset = PlantOffset.None, Box[]? outline = null)
+        bool cutout = false, PlantOffset offset = PlantOffset.None, Box[]? outline = null, bool whole = false)
     {
         Facing = facing;
+        Whole = whole;
         Form = form;
         Cutout = cutout;
         Offset = offset;
@@ -137,6 +146,12 @@ public sealed class BlockShape
 
     /// <summary>How a plant stands off its cell's middle, by its place's hash, as Minecraft offsets its flowers and grass.</summary>
     public PlantOffset Offset { get; }
+
+    /// <summary>
+    /// Whether its item, on the ground, in the hand and as an icon, is the whole cube of its block's
+    /// pictures, as a cactus's is, its model filling its cell but for its sides standing a pixel in.
+    /// </summary>
+    public bool Whole { get; }
 
     public IReadOnlyList<Piece> Pieces { get; }
 
@@ -258,6 +273,27 @@ public sealed class BlockShape
     // the stick's 7 and the flame's 3, each showing its share of the rows.
     private static readonly Parts StickParts = Shows(7, 9, 9, 16, 7, 6, 9, 8, 7, 13, 9, 15);
     private static readonly Parts FlameParts = Shows(7, 6, 9, 9, 7, 6, 9, 8, 7, 13, 9, 15);
+
+    /// <summary>
+    /// A cactus as the source's model draws it, its top and bottom across the whole cell, each side
+    /// standing a pixel in from its side of the cell and spanning the cell's whole width, so where a
+    /// pack's pictures are clear at their edges, as the source's are, they are cut out and the thorns
+    /// on the edges stick out past the sides beside them. Each face shows its whole picture as a part,
+    /// laid as one laid by its place would be, so its corners carry their places and its shadow is cut
+    /// where the picture is clear, and the top's clear border, a pixel past the sides, casts no band
+    /// of shadow down them. The source's box stops the player, a pixel in at each side and a pixel
+    /// short of the top, and its outline is a pixel in at each side.
+    /// </summary>
+    public static BlockShape Cactus(int top, int side, int bottom) => new(Facing.Up,
+    [
+        new(Vector3.Zero, Vector3.One, top, Parts: WholePicture, Faces: 1 << 2),
+        new(Vector3.Zero, Vector3.One, bottom, Parts: WholePicture, Faces: 1 << 3),
+        new(new Vector3(0, 0, 1) / 16, new Vector3(16, 16, 15) / 16, side, Parts: WholePicture, Faces: 1 << 4 | 1 << 5),
+        new(new Vector3(1, 0, 0) / 16, new Vector3(15, 16, 16) / 16, side, Parts: WholePicture, Faces: 1 << 0 | 1 << 1),
+    ], falls: false, solid: true, collision: [new Box(new Vector3(1, 0, 1) / 16, new Vector3(15, 15, 15) / 16)],
+        outline: [new Box(new Vector3(1, 0, 1) / 16, new Vector3(15, 16, 15) / 16)], whole: true);
+
+    private static readonly Parts WholePicture = Shows(0, 0, 16, 16, 0, 0, 16, 16, 0, 0, 16, 16);
 
     /// <summary>A torch standing on the block below, a stick with a flame at its top, showing the parts of the torch's texture the source's model gives.</summary>
     public static BlockShape Torch(int flame, int stick) => new(Facing.Up,

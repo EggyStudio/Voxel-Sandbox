@@ -73,9 +73,7 @@ public sealed class TerrainAtlas
         (Pixels, _tile, _overlay, _tint, _own, _variants, _pictures, Animations) = (pixels, tile, overlay, tint, own, variants, pictures, animations);
         _averages = [.. pictures.Select(Average)];
         _cuts = [.. pictures.Select(p => Enumerable.Range(0, p.Length / 4).Any(i => p[i * 4 + 3] == 0) && Enumerable.Range(0, p.Length / 4).All(i => p[i * 4 + 3] is 0 or 255))];
-        // The cactus's texture is clear at its edges for the source's model, its sides standing a
-        // pixel in from its cell's, which on the game's whole cube would show through at its corners.
-        _cutOut = [.. Blocks.All.Select(b => b.Kind == BlockKind.Opaque && b.Shape is null && !b.Emits && b.Id != BlockId.Cactus
+        _cutOut = [.. Blocks.All.Select(b => b.Kind == BlockKind.Opaque && b.Shape is null && !b.Emits
             && (Cuts(b.Top) || Cuts(b.Side) || Cuts(b.Bottom)))];
         Serial = Interlocked.Increment(ref _made);
         Rows = (pictures.Count + Columns - 1) / Columns;

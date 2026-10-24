@@ -11,7 +11,8 @@ namespace VoxelSandbox;
 /// pictures as the packs give the terrain them, tinted as in the plains as the block's icon is, or in
 /// their colors where no pack gives one, and an item whose icon is flat, the pack's picture of it or
 /// the game's own drawing, that picture a pixel deep as Minecraft's item models make it, cut out where
-/// it is clear. A block of a shape of its own that no pack draws flat stays a small box of its color.
+/// it is clear. A block of a shape of its own that no pack draws flat stays a small box of its color,
+/// but for one whose item is its whole cube, as the cactus's is, which wears its pictures as a block's.
 /// They cast no shadow, which keeps them out of the scene's distance field as well, where each, moving
 /// every frame, would be stamped as a box.
 /// </remarks>
@@ -74,7 +75,7 @@ public sealed class DropRenderer : IDisposable
     private (ModelMesh, ModelMaterial?) Build(Item item)
     {
         var mesh = new BoxMesh();
-        if (item.Block is { } id && Blocks.Get(id) is { Shape: null } block)
+        if (item.Block is { } id && Blocks.Get(id) is { Shape: null or { Whole: true } } block)
         {
             if (_terrain.Tile(block.Top) != 0 || _terrain.Tile(block.Side) != 0 || _terrain.Tile(block.Bottom) != 0)
             {

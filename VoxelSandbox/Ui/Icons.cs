@@ -129,7 +129,7 @@ public static class Icons
     // the way through the pixel meets first.
     private static byte[] Cube(BlockInfo block)
     {
-        (Vector3 Min, Vector3 Max, int Top, int Side)[] boxes = block.Shape is { } shape
+        (Vector3 Min, Vector3 Max, int Top, int Side)[] boxes = block.Shape is { Whole: false } shape
             ? [.. shape.Pieces.Select(p => (Vector3.Min(p.From, p.To), Vector3.Max(p.From, p.To), p.Surface, p.Surface))]
             : [(Vector3.Zero, Vector3.One, block.Top, block.Side)];
         var middle = new Vector3(0.5f);

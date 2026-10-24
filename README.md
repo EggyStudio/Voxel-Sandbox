@@ -851,9 +851,11 @@ the frame's other edge on straight past a join and keeping a corner inside an L 
 since none of the packs the game fetches has them. Leaves cut out hide nothing behind them, so they
 keep their faces against each other and the faces beside them, as Minecraft draws its leaves, and
 the sections seen through them are drawn. Bare Bones' leaves are covered in every pixel and so stay
-whole. A texture partly clear, as ice's is, blends as before, and the cactus, whose texture is clear
-at its edges for Minecraft's model of sides a pixel in from its cell's, stays whole, since on the
-game's whole cube those edges would show through at its corners. An emissive block's cube is drawn
+whole. A texture partly clear, as ice's is, blends as before. The cactus is Minecraft's model, its
+top and bottom across the whole cell and each side a pixel in from its side of the cell and as wide
+as the cell, so its pictures' clear edges are cut out, shadow and all, and the thorns on them stick
+out past the sides beside them. Its box stops the player a pixel in at each side and a pixel short
+of its top, as Minecraft's does. An emissive block's cube is drawn
 with its texture, and one whose faces differ, the lit furnace, with its top's, its sides' and its
 bottom's laid side by side, so it shows the furnace's top above its front, its front alone emissive
 where its pixels are bright. A pack's animated texture, a strip of frames its metadata plays in an
@@ -1113,8 +1115,7 @@ drawn with the engine's own shader and take no haze.
 
 ## What is not here yet
 
-A pack's block models and its connected textures. The cactus's model of Minecraft's, its sides a
-pixel in from its cell's, so a pack's clear edges of it show the color the pixel holds. Slabs and
+A pack's block models and its connected textures. Slabs and
 stairs that keep light out, as Minecraft's do. Greedy meshing. Saplings that grow, and vines and
 cocoa on the jungle's trees. Structures read from files rather than built in code. Villagers that
 trade, sleep in beds or work their farms, and animals that breed or follow food. A bed to set where

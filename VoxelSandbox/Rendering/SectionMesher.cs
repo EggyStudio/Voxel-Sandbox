@@ -471,6 +471,7 @@ public sealed class SectionMesher
             var size = piece.To - piece.From;
             for (int face = 0; face < 6; face++)
             {
+                if (!piece.Shows(face)) continue;
                 var axis = face / 2;
                 var onSide = face % 2 == 0 ? Component(piece.To, axis) >= 1 : Component(piece.From, axis) <= 0;
                 if (onSide && (axis == 1 || piece.Lean == Vector3.Zero) && Atlas.Hides((BlockId)_blocks[at + Steps[face]])) continue;

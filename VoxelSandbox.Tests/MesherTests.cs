@@ -211,6 +211,43 @@ public class MesherTests
     }
 
     [Fact]
+    public void A_Cactus_Is_The_Sources_Model_Its_Sides_A_Pixel_In_Across_The_Whole_Cell_And_Its_Box_A_Pixel_In()
+    {
+        var world = Floor();
+        world.SetBlock(8, 20, 8, BlockId.Stone);
+        world.SetBlock(8, 21, 8, BlockId.Cactus);
+
+        // The cactus's cell is 5 to 6 in the section. Its bottom on the stone is left out, and the
+        // stone's top under it, which the cactus does not hide, lies at 5.
+        var faces = Meshed(world).Solid;
+        var quads = Enumerable.Range(0, faces.Count / 4)
+            .Select(q => (faces.Unpack(4 * q).Face,
+                Min: Enumerable.Range(4 * q, 4).Select(i => faces.Positions[i]).Aggregate(System.Numerics.Vector3.Min),
+                Max: Enumerable.Range(4 * q, 4).Select(i => faces.Positions[i]).Aggregate(System.Numerics.Vector3.Max)))
+            .Where(f => f.Min.Y >= 5 && f.Max.Y <= 6 && !(f.Face == 2 && f.Max.Y == 5))
+            .OrderBy(f => f.Face).ToArray();
+        const float In = 1 / 16f, Out = 15 / 16f;
+        (int, System.Numerics.Vector3, System.Numerics.Vector3)[] model =
+        [
+            (0, new(8 + Out, 5, 8), new(8 + Out, 6, 9)),
+            (1, new(8 + In, 5, 8), new(8 + In, 6, 9)),
+            (2, new(8, 6, 8), new(9, 6, 9)),
+            (4, new(8, 5, 8 + Out), new(9, 6, 8 + Out)),
+            (5, new(8, 5, 8 + In), new(9, 6, 8 + In)),
+        ];
+        Assert.Equal(model.Length, quads.Length);
+        for (int i = 0; i < model.Length; i++)
+        {
+            Assert.Equal(model[i].Item1, quads[i].Face);
+            Assert.True(System.Numerics.Vector3.Distance(model[i].Item2, quads[i].Min) < 1e-5f && System.Numerics.Vector3.Distance(model[i].Item3, quads[i].Max) < 1e-5f,
+                $"face {quads[i].Face} from {quads[i].Min} to {quads[i].Max}");
+        }
+
+        var box = Assert.Single(Blocks.Get(BlockId.Cactus).Boxes);
+        Assert.Equal(new Box(new System.Numerics.Vector3(In, 0, In), new System.Numerics.Vector3(Out, Out, Out)), box);
+    }
+
+    [Fact]
     public void Each_Corner_Of_A_Face_Lies_Toward_The_Faces_Normal_From_The_Blocks_Middle()
     {
         // The face a corner's packed bytes name is the one its position lies on, so the shader's
