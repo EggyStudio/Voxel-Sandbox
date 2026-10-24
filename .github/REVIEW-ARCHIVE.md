@@ -1428,6 +1428,24 @@ before a batch.
     reading clearly, and the play check's corner reads black; the README's line follows. One commit,
     small, after item 27's pin of 5.2.283 and before item 124. Done at `e643539` on 2026-10-24.
 
+124. **The settings live in the game's own screens, by area, and F3 keeps only what is read.** The
+    owner wrote to the game's session at about 18:5x on 2026-10-24 to convert the settings from F3
+    to the in-game UI, where further things can be set, as a render settings screen holding the
+    global illumination's settings, a post processing screen, and sky and visuals, the sun's color
+    at noon and the like where it is not hardcoded, since F3 becomes the information screen and not
+    a settings screen later. The game's options, reached from the pause menu and the title as the
+    source's are, gain the screens, Render with the quality, the probes, the shadow distance, the
+    render distance and the corner shade, Post processing with what the engine offers, and Sky and
+    visuals with the day's colors where the game sets them; each setting that F3's window holds
+    moves there and F3's window keeps its readings and the toggles of debugging alone for the
+    present, the whole of F3 the information screen on a later word; the settings in the source's
+    style of buttons and sliders, read for their reach and their defaults and said in the README; a
+    test walking each screen's settings and reading them applied, and captures of each screen. Two
+    commits, the screens and the moves, after item 125 and before item 94's arrows. The screens at
+    `a82e342` on 2026-10-24, the departure on the test in the head; the moves out of F3 next. Done
+    at `5f7bad8` on 2026-10-24 with the moves, F3 holding its readings, the debugging toggles and
+    the world's choice; the video settings and the saved options follow as items 126 and 127.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

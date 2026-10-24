@@ -5,27 +5,36 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `a82e342`, item 124's first commit, the screens, read at 19:34 on 2026-10-24,
-carrying the review's files and the devlog's sheet of the six screens. Options holds the field of
-view, the sensitivity, the GUI scale and the fading HUD with buttons to Render Settings, Post
-Processing, Sky and Visuals and Resource Packs; Render Settings holds nine, the render distance, the
-quality, the screen probes, the shadow distance, the corner shade, the emission, the field's
-cascades, cell and cascades a frame; Post Processing fourteen, bloom, occlusion, auto exposure,
-exposure, contrast, saturation, the engine's twelve tonemaps, the curve's four numbers, vignette,
-FXAA and motion blur; Sky and Visuals eight, the time, the daylight cycle, the day's length, the
-moon's phase, the sun's and the moon's strength, the clouds and the fog, with Sky Colors, nine
-colors that were constants in Sky.cs and live in a SkyColors class, each with R, G and B sliders, a
-swatch and Reset, and a Reset All, a change repainting and relighting the sky at once; the values
-read from the engine's getters where it has them, and voxel.options lists or sets any setting by
-screen and name. Departure, a test cannot build VoxelGame without the engine's app, the first ECS
-entry's gap, so the unit tests cover the option model and the 27 color channels against SkyColors
-and play.sh walks the 31 settings live, each set to mid-reach or the next choice, read back and set
-back, about 15 s on the GPU; no setting is saved yet, item 127. 292 tests, play.sh 305 s on the GPU.
-The owner wrote to the game's session at about 19:2x that video settings are needed too, for the
-resolution and the window mode, item 126. Held until the run of `e643539` ends, then pushed. After
-`e643539`, item 125, the loading screen pure black, read at 19:13 on 2026-10-24, carrying the pair
-and its caption line, the review's files and the regenerated DEVLOG.md. LoadingBackground is 0, 0,
-0, the bar's empty part with it, the title white and the bar green in its white outline, the play
+Reviewed up to `5f7bad8`, item 124's second commit, the moves out of F3, read at 19:44 on
+2026-10-24, carrying the review's files and the devlog's pair of F3. The F3 window holds three
+parts, Readings with the old lines and the clouds' face count and the hour, day and cycle added,
+Debugging with the light levels, the shaded corners, cull, mobs still and the global illumination,
+profile and effects windows, and World with the mode, save, and kind, seed and open, kept since no
+title screen holds a world's choice; moved off F3 are the quality, the probes, the field, the corner
+shade, the emission, bloom, occlusion, exposure, the hour, the day as the moon's phase, the cycle,
+the minutes, the fog, the clouds and the render distance; the README's F3 row says the F3 window and
+its eight mentions of the settings window point to the screen holding each setting. 292 tests,
+play.sh 322 s on the GPU. Held with `a82e342` until the run of `e643539` ends, then pushed. After
+`a82e342`, item 124's first commit, the screens, read at 19:34 on 2026-10-24, carrying the review's
+files and the devlog's sheet of the six screens. Options holds the field of view, the sensitivity,
+the GUI scale and the fading HUD with buttons to Render Settings, Post Processing, Sky and Visuals
+and Resource Packs; Render Settings holds nine, the render distance, the quality, the screen probes,
+the shadow distance, the corner shade, the emission, the field's cascades, cell and cascades a
+frame; Post Processing fourteen, bloom, occlusion, auto exposure, exposure, contrast, saturation,
+the engine's twelve tonemaps, the curve's four numbers, vignette, FXAA and motion blur; Sky and
+Visuals eight, the time, the daylight cycle, the day's length, the moon's phase, the sun's and the
+moon's strength, the clouds and the fog, with Sky Colors, nine colors that were constants in Sky.cs
+and live in a SkyColors class, each with R, G and B sliders, a swatch and Reset, and a Reset All, a
+change repainting and relighting the sky at once; the values read from the engine's getters where it
+has them, and voxel.options lists or sets any setting by screen and name. Departure, a test cannot
+build VoxelGame without the engine's app, the first ECS entry's gap, so the unit tests cover the
+option model and the 27 color channels against SkyColors and play.sh walks the 31 settings live,
+each set to mid-reach or the next choice, read back and set back, about 15 s on the GPU; no setting
+is saved yet, item 127. 292 tests, play.sh 305 s on the GPU. The owner wrote to the game's session
+at about 19:2x that video settings are needed too, for the resolution and the window mode, item 126.
+After `e643539`, item 125, the loading screen pure black, read at 19:13 on 2026-10-24, carrying the
+pair and its caption line, the review's files and the regenerated DEVLOG.md. LoadingBackground is 0,
+0, 0, the bar's empty part with it, the title white and the bar green in its white outline, the play
 check reading the corner black and the README's paragraph following; 288 tests, play.sh 280 s on the
 GPU. The four pushed at 19:14 on 2026-10-24 after the run of `4142a32` went green; the run watched.
 After `3d70b20`, item 27's pin of 5.2.283, read at 19:06 on 2026-10-24, carrying REVIEW.md and
@@ -696,22 +705,6 @@ full.
     bounds, kept meshed as the drawn ones are and counted in the profile as draw.sections.shadow;
     the deep cave's tops and edge lines read again at the entry's place, and the cost at the grove
     and in the cave before and after. One commit, with the package carrying the engine's item 101.
-
-124. **The settings live in the game's own screens, by area, and F3 keeps only what is read.** The
-    owner wrote to the game's session at about 18:5x on 2026-10-24 to convert the settings from F3
-    to the in-game UI, where further things can be set, as a render settings screen holding the
-    global illumination's settings, a post processing screen, and sky and visuals, the sun's color
-    at noon and the like where it is not hardcoded, since F3 becomes the information screen and not
-    a settings screen later. The game's options, reached from the pause menu and the title as the
-    source's are, gain the screens, Render with the quality, the probes, the shadow distance, the
-    render distance and the corner shade, Post processing with what the engine offers, and Sky and
-    visuals with the day's colors where the game sets them; each setting that F3's window holds
-    moves there and F3's window keeps its readings and the toggles of debugging alone for the
-    present, the whole of F3 the information screen on a later word; the settings in the source's
-    style of buttons and sliders, read for their reach and their defaults and said in the README; a
-    test walking each screen's settings and reading them applied, and captures of each screen. Two
-    commits, the screens and the moves, after item 125 and before item 94's arrows. The screens at
-    `a82e342` on 2026-10-24, the departure on the test in the head; the moves out of F3 next.
 
 126. **A Video Settings screen holds the resolution, the window mode, the frame limit and VSync.**
     The owner wrote to the game's session at about 19:2x on 2026-10-24 that video settings are

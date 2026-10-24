@@ -106,8 +106,8 @@ public sealed record SkyColor(string Name, Func<Vector3> Get, Action<Vector3> Se
 }
 
 /// <summary>
-/// The screens the options open, Render, Post Processing and Sky and Visuals, each holding the
-/// settings of its area, and the sky's colors, a screen to each color.
+/// The screens the options open, Video, Render, Post Processing and Sky and Visuals, each holding
+/// the settings of its area, and the sky's colors, a screen to each color.
 /// </summary>
 /// <remarks>
 /// Each setting reads its value from where the game keeps it, the engine's own where the engine
@@ -124,6 +124,19 @@ public sealed class OptionScreens
         var light = game.Light;
         var renderer = game.Renderer;
         var sky = game.Sky;
+        var video = VideoSettings = new VideoSettings();
+        Video = new("Video Settings",
+        [
+            new("Window Mode", () => VideoSettings.WindowMode, v => video.SetWindowMode((int)v)) { Choices = VideoSettings.WindowModes },
+            // The window or the monitor changes once the slider is let go, rather than through every
+            // size it passes.
+            new("Resolution", () => video.Resolution, v => video.Resolution = (int)v)
+                { High = Math.Max(1, video.Modes.Length), Step = 1, Format = v => video.ResolutionName((int)v), Settled = video.ApplyResolution },
+            new("Frame Limit", () => video.FrameLimit, v => video.SetFrameLimit((int)v))
+                { Low = 10, High = VideoSettings.Unlimited, Step = 10, Format = v => v >= VideoSettings.Unlimited ? "Unlimited" : $"{v:0} fps" },
+            Option.Toggle("VSync", () => VideoSettings.Vsync, VideoSettings.SetVsync),
+        ], []);
+
         Render = new("Render Settings",
         [
             new("Render Distance", () => game.RenderDistance, v => game.RenderDistance = (int)v) { Low = 2, High = 16, Step = 1, Format = v => $"{v:0} chunks" },
@@ -238,6 +251,10 @@ public sealed class OptionScreens
         SkyColors = colors;
     }
 
+    public OptionScreen Video { get; }
+
+    public VideoSettings VideoSettings { get; }
+
     public OptionScreen Render { get; }
 
     public OptionScreen PostProcessing { get; }
@@ -249,9 +266,10 @@ public sealed class OptionScreens
 
     public SkyColors SkyColors { get; }
 
-    /// <summary>The screens of settings by the name a command gives each, render, post, sky and colors, the last every channel of every color.</summary>
+    /// <summary>The screens of settings by the name a command gives each, video, render, post, sky and colors, the last every channel of every color.</summary>
     public IEnumerable<(string Name, IReadOnlyList<Option> Options)> All()
     {
+        yield return ("video", Video.Options);
         yield return ("render", Render.Options);
         yield return ("post", PostProcessing.Options);
         yield return ("sky", SkyAndVisuals.Options);

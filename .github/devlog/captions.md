@@ -24,3 +24,4 @@
 2026-10-24-item-125-loading.webp | The loading screen in the source's red and in black, the white words and the green bar reading plainly on the black.
 2026-10-24-item-124-screens.webp | The options with a button to each area's screen, Render Settings, Post Processing, Sky and Visuals, the sky's colors and the noon sunlight's own screen, each in the source's buttons and sliders.
 2026-10-24-item-124-f3.webp | The F3 window before and after the settings moved to the options' screens, keeping what the frame holds and costs, the toggles of debugging and the world's kind, seed and mode.
+2026-10-24-item-126-video.webp | The options with Video Settings among the areas' screens, and the screen of the window's mode, its resolution, the frame limit and vsync.

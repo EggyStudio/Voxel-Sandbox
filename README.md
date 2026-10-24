@@ -653,14 +653,18 @@ Escape opens the game's menu over the darkened world, which holds the world stil
 as Minecraft's does when played alone, with Back to Game, the options, Save the World, and Save and
 Quit. The options are in two columns of buttons and sliders as Minecraft lays its options out, the
 field of view, the mouse's sensitivity, the interface's scale, automatic or 1 to 4, and whether full
-rows of the HUD fade, with a button to each screen of settings by its area, Render Settings, Post
-Processing, Sky and Visuals and Resource Packs. A setting's slider moves by its step, a button steps
-through its choices, each takes effect at once, and Done goes back a screen. The window F3 opens is
-the engine's ImGui, a tool for the developer, with what the frame holds and costs, the toggles of
-debugging and the world's kind, seed and mode.
+rows of the HUD fade, with a button to each screen of settings by its area, Video Settings, Render
+Settings, Post Processing, Sky and Visuals and Resource Packs. A setting's slider moves by its step,
+a button steps through its choices, each takes effect at once, and Done goes back a screen. The
+window F3 opens is the engine's ImGui, a tool for the developer, with what the frame holds and
+costs, the toggles of debugging and the world's kind, seed and mode.
 
 | Screen | Setting | Reach | Starts at |
 |---|---|---|---|
+| Video Settings | Window Mode | Windowed, Fullscreen, Borderless | Windowed |
+| | Resolution, the window's size, or the monitor's mode in fullscreen | Current, the window's size as the screen was first opened or the desktop's mode, then each of the monitor's sizes, set as the slider is let go | Current |
+| | Frame Limit | 10 to 250 frames a second by 10, then Unlimited | Unlimited |
+| | VSync | Off, On | Off |
 | Render Settings | Render Distance | 2 to 16 chunks | 12 |
 | | Global Illumination | Off, Low, Medium, High | High |
 | | Screen Probes | Off, On | Off |
