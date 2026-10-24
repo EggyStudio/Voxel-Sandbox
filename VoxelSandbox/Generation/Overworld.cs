@@ -191,13 +191,6 @@ public sealed class Overworld : IWorldGenerator
         return (height, biome, top, sandy ? BlockId.Sand : biome.Under, temperature, humidity);
     }
 
-    /// <summary>The ground's top, or over land under the sea level the sea's, frozen where the climate is cold, as a column lays them.</summary>
-    public (int Height, BlockId Top, byte Biome) Surface(int x, int z)
-    {
-        var (height, biome, top, _, temperature, _) = Ground(x, z);
-        return height < SeaLevel ? (SeaLevel, temperature < 0.3f ? BlockId.Ice : BlockId.Water, biome.Id) : (height, top, biome.Id);
-    }
-
     public ChunkColumn Generate(int columnX, int columnZ)
     {
         var column = new ChunkColumn(columnX, columnZ);

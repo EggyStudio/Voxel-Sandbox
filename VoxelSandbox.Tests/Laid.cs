@@ -18,8 +18,6 @@ public sealed class Laid(Action<ChunkColumn> lay) : IWorldGenerator
     {
     }
 
-    public (int Height, BlockId Top, byte Biome) Surface(int x, int z) => (ChunkColumn.Bottom - 1, BlockId.Air, 0);
-
     /// <summary>A world of the columns within <paramref name="radius"/> of the origin's, each lit and taken in as the streamer takes them.</summary>
     public static VoxelWorld World(Action<ChunkColumn> lay, int radius = 2)
     {

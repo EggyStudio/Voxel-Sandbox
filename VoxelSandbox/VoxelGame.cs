@@ -190,12 +190,6 @@ public sealed class VoxelGame : IDisposable
     /// <summary>Where the world is saved, or null for a transient one.</summary>
     public WorldSave? Save { get; private set; }
 
-    /// <summary>The surfaces of the columns seen, which the far land is drawn from.</summary>
-    public FarCache Seen { get; private set; } = new(null);
-
-    /// <summary>The land past the render distance, drawn coarser by distance.</summary>
-    public FarLand Far { get; } = new();
-
     public ChunkRenderer Renderer { get; }
 
     public FirstPersonController Player { get; } = new();
@@ -313,7 +307,7 @@ public sealed class VoxelGame : IDisposable
     /// <summary>Saves the world loaded and opens the one saved under a kind and seed, or begins it.</summary>
     public void SwitchWorld(string kind, int seed)
     {
-        SaveWorld(leaving: true);
+        SaveWorld();
         Open(kind, seed, null);
     }
 
@@ -324,8 +318,6 @@ public sealed class VoxelGame : IDisposable
         var info = Save?.ReadInfo();
         var generator = (info is null ? null : Generators.Create(info.Kind, info.Seed)) ?? Generators.Create(kind, seed) ?? new Overworld(seed);
         Renderer.Clear();
-        Far.Clear();
-        Seen = new FarCache(Save is null ? null : Path.Combine(Save.Folder, "far"));
         World = new VoxelWorld(generator);
         var (kept, placed) = Save?.ReadMobs() ?? ([], []);
         Mobs = new Mobs(kept, placed);
@@ -346,7 +338,7 @@ public sealed class VoxelGame : IDisposable
         if (info is null) Vitals.Set();
         else Vitals.Set(info.Health, info.Food, info.Saturation);
         // The old streamer's workers finish into its own queue, which nothing reads again.
-        Streamer = new ChunkStreamer(World, Renderer, Mobs, Save, Seen);
+        Streamer = new ChunkStreamer(World, Renderer, Mobs, Save);
         Clouds.Follow(generator.Seed);
         _sinceSave = 0;
         Loading = true;
@@ -421,22 +413,14 @@ public sealed class VoxelGame : IDisposable
         _landing = false;
     }
 
-    /// <summary>
-    /// Keeps every loaded column the player changed and the player's place, and writes them, unless
-    /// the world is transient, with the surfaces of the changed columns for the far land, or of every
-    /// loaded column where the world is being left.
-    /// </summary>
-    public void SaveWorld(bool leaving = false)
+    /// <summary>Keeps every loaded column the player changed and the player's place, and writes them, unless the world is transient.</summary>
+    public void SaveWorld()
     {
         // A new world left before its player stood in it has nothing to keep.
         if (Save is null || Loading && _landing) return;
         foreach (var column in World.Columns)
-        {
-            if (column.Changed || leaving) Seen.Record(column);
             if (column.Changed) Save.Keep(column);
-        }
         Save.Flush();
-        Seen.Flush();
         Save.WriteMobs(Mobs.Columns());
         Save.WriteFurnaces(Furnaces);
         var at = Player.Body.Position;
@@ -561,7 +545,6 @@ public sealed class VoxelGame : IDisposable
         World.Fluids.Update(seconds);
         Clouds.Update(seconds);
         Streamer.Update(Player.Body.Position, RenderDistance);
-        Far.Update(Player.Eye, RenderDistance, Seen, Renderer.Atlas, World.Generator);
         Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
     }
 
@@ -1027,7 +1010,7 @@ public sealed class VoxelGame : IDisposable
         // each point fading into the sky drawn behind it, so a mountain's top high against the sky
         // fades into the sky's blue, and under water it is the water's blue and covers it within 16
         // blocks.
-        var reach = Math.Max(RenderDistance, Far.Distance) * Section.Size;
+        var reach = RenderDistance * Section.Size;
         if (Player.EyeInWater) Renderer.Fog(new Color(24, 52, 120), 2, 16);
         // Over that the atmosphere hazes the land as the modpack's shader does with its owner's
         // settings, its fog's strength of 0.95 less the 0.25 it keeps in clear weather, held to
@@ -1046,8 +1029,6 @@ public sealed class VoxelGame : IDisposable
         Lap("draw.sky");
         Renderer.Draw(World, Player.Eye, RenderDistance);
         Lap("draw.sections");
-        Far.Draw(Renderer.FarMaterial);
-        Lap("draw.far");
         MobRenderer.Draw(Mobs.All, Player.Eye);
         DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Size))), Player.Eye, GetTime());
         // A burning TNT shows white every other five ticks, a hair larger than its cube.
@@ -1182,14 +1163,13 @@ public sealed class VoxelGame : IDisposable
 
     public void Dispose()
     {
-        SaveWorld(leaving: true);
+        SaveWorld();
         Renderer.Dispose();
         MobRenderer.Dispose();
         DropRenderer.Dispose();
         Bits.Dispose();
         Lights.Dispose();
         Blasts.Dispose();
-        Far.Dispose();
         Cracks.Dispose();
         Clouds.Dispose();
         Sky.Dispose();

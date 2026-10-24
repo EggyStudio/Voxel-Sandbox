@@ -127,30 +127,29 @@ and the light, and the block the eye is inside where it is in one. `voxel.fill`,
 `voxel.set` change blocks, `voxel.tp`, `voxel.look` and `voxel.fly` move the player, `voxel.break`
 and `voxel.place` act as the mouse buttons do, `voxel.time`, `voxel.day` and `voxel.cycle` set the
 sky, `voxel.clouds` shows or hides the clouds and places their drift, `voxel.distance` the render
-distance, `voxel.far` how far the far land reaches, `voxel.light` reads a block's light levels,
-`voxel.shade` turns the light levels and the shaded corners on or off, `voxel.corners` sets how far
-the corners darken, `voxel.world` saves the world and opens or begins another of a kind and seed,
-`voxel.loading` holds its loading screen up for a capture, `voxel.save` saves at once, and
-`voxel.blocks` lists the blocks by number and name. `voxel.mobs` counts the mobs and lists the
-nearest, `voxel.spawn` places one where the crosshair rests, `voxel.attack` hits the one it rests on
-as the left button does, `voxel.still` stops them where they stand and holds the clouds for a
-capture, and `voxel.kill` takes them away. `voxel.fires` counts the fires and lists the nearest with
-their ages. `voxel.mode` plays in creative, survival, adventure or spectator mode, `voxel.select`
-puts an item in the chosen slot, `voxel.give` puts items in the inventory, `voxel.craft` makes an
-item from what the inventory holds, `voxel.furnace` fills and reads a furnace, `voxel.inventory`
-lists what it holds, `voxel.items` lists every item, `voxel.throw` throws as Q does, and
-`voxel.drop` lays one of an item on the ground at a place. `voxel.packs` says or sets the resource
-packs on, and `voxel.reload` reads them again. `voxel.vitals` says or sets the health and food,
-`voxel.hurt` harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and
-`voxel.shadows` set global illumination, the scene's distance field and the sun's shadows,
-`voxel.hud` hides what is drawn over the world for a capture, `voxel.scale` sets the interface's
-scale, at which `build/pictures.sh` takes the windows, and `voxel.fov` sets the field of view, which
-the script narrows to 40 degrees for its views of the world, as a zoom does for a screenshot. Three
-measure the light. `voxel.flicker` records each frame's change in the picture around a turn or a
-step into a file, with the first frame after it, the settled one and their difference beside it,
-`voxel.ring` reads the last frame's light around a circle on the ground by angle, and `voxel.depth`
-says how far the block under a pixel is. The engine's own `gi.*` and `field.*` commands show and
-measure global illumination.
+distance, `voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the
+shaded corners on or off, `voxel.corners` sets how far the corners darken, `voxel.world` saves the
+world and opens or begins another of a kind and seed, `voxel.loading` holds its loading screen up
+for a capture, `voxel.save` saves at once, and `voxel.blocks` lists the blocks by number and name.
+`voxel.mobs` counts the mobs and lists the nearest, `voxel.spawn` places one where the crosshair
+rests, `voxel.attack` hits the one it rests on as the left button does, `voxel.still` stops them
+where they stand and holds the clouds for a capture, and `voxel.kill` takes them away. `voxel.fires`
+counts the fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival,
+adventure or spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items
+in the inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills
+and reads a furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
+`voxel.throw` throws as Q does, and `voxel.drop` lays one of an item on the ground at a place.
+`voxel.packs` says or sets the resource packs on, and `voxel.reload` reads them again.
+`voxel.vitals` says or sets the health and food, `voxel.hurt` harms the player, and `voxel.respawn`
+gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global illumination, the scene's
+distance field and the sun's shadows, `voxel.hud` hides what is drawn over the world for a capture,
+`voxel.scale` sets the interface's scale, at which `build/pictures.sh` takes the windows, and
+`voxel.fov` sets the field of view, which the script narrows to 40 degrees for its views of the
+world, as a zoom does for a screenshot. Three measure the light. `voxel.flicker` records each
+frame's change in the picture around a turn or a step into a file, with the first frame after it,
+the settled one and their difference beside it, `voxel.ring` reads the last frame's light around a
+circle on the ground by angle, and `voxel.depth` says how far the block under a pixel is. The
+engine's own `gi.*` and `field.*` commands show and measure global illumination.
 
 ## Biomes
 
@@ -321,7 +320,7 @@ down.
 <td><img src=".github/assets/world/ravine.webp" width="400" height="225" alt="A ravine cutting the plains of seed 1 at noon, magma on its floor"></td>
 <td><img src=".github/assets/world/lava-lake.webp" width="400" height="225" alt="A lake of lava under -54 far under a forest of seed 1, lighting the deepslate of its cave"></td>
 </tr><tr>
-<td><img src=".github/assets/world/lush-cave.webp" width="400" height="225" alt="A lush cave of seed 1 under a swamp, moss and grass about a clear pool in its rim of clay and cave vines with glow berries over it"></td>
+<td><img src=".github/assets/world/lush-cave.webp" width="400" height="225" alt="A lush cave of seed 1 under a swamp, cave vines with glow berries hanging over its moss"></td>
 </tr></table>
 
 The world stands on Minecraft's floor of bedrock at -64, whole there and thinning out over the five
@@ -1093,28 +1092,21 @@ distance sets most of the frame's cost. It is 12 columns by default, 192 blocks,
 the settings window, whose first lines give the frame's time, draws and triangles, and through
 `voxel.distance`, and a save keeps no distance of its own. The sections are drawn through the
 terrain's own shader, which keeps the positions their meshes hold, and the game marks it so with
-`SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and each of
-the sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the
-shadows, which reach 96 blocks, take about the same from 8 columns to 16. Over seed 1's spawn at
-noon, from 100 blocks up looking north, at 1280 by 720 offscreen on the development machine's RTX
-4070 Laptop GPU with the three default packs, the frame keeps 60 a second at 8 columns and loses it
-at 12, where the main thread bounds it, the game's update and drawing with the engine's render
-work, while the GPU's work stays at 14 to 15 ms. Far land adds under a millisecond of the GPU's work
-at any distance. The frame's time, the GPU's and the CPU's passes' in milliseconds and the memory
-the game holds, one session each, the frame's time varying by up to 6 ms between sessions at 12
-columns and the GPU's by under 0.5:
+`SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and each of the
+sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the shadows,
+which reach 96 blocks, take about the same from 8 columns to 16. Over seed 1's spawn at noon, from
+100 blocks up looking north, at 1280 by 720 offscreen on the development machine's RTX 4070 Laptop
+GPU with the three default packs, the frame keeps 60 a second at 8 columns and loses it at 12, where
+the main thread bounds it, the game's update and drawing with the engine's render work, while the
+GPU's work stays at 14 to 15 ms. The frame's time, the GPU's and the CPU's passes' in milliseconds
+and the memory the game holds, one session each, the frame's time varying by up to 6 ms between
+sessions at 12 columns and the GPU's by under 0.5:
 
-| columns | far land | frame | GPU | CPU's passes | memory | far tiles, triangles |
-|---|---|---|---|---|---|---|
-| 8 | none | 16.8 | 10.8 | 7.4 | 1,002 MB | |
-| 8 | 32 | 16.7 | 11.1 | 6.4 | 1,011 MB | 40, 58,512 |
-| 8 | 64 | 16.7 | 11.5 | 5.5 | 1,017 MB | 60, 79,658 |
-| 12 | none | 17.5 | 14.3 | 10.1 | 1,551 MB | |
-| 12 | 32 | 23.4 | 14.7 | 13.3 | 1,722 MB | 52, 69,056 |
-| 12 | 64 | 18.4 | 15.0 | 10.6 | 1,749 MB | 88, 113,432 |
-| 16 | none | 40.3 | 18.4 | 22.6 | 2,675 MB | |
-| 16 | 32 | 38.6 | 18.6 | 22.1 | 2,701 MB | 60, 81,970 |
-| 16 | 64 | 41.5 | 18.9 | 23.1 | 2,749 MB | 120, 158,558 |
+| columns | frame | GPU | CPU's passes | memory |
+|---|---|---|---|---|
+| 8 | 16.8 | 10.8 | 7.4 | 1,002 MB |
+| 12 | 17.5 | 14.3 | 10.1 | 1,551 MB |
+| 16 | 40.3 | 18.4 | 22.6 | 2,675 MB |
 
 The plants are most of what a meadow draws. Over seed 1's plains at noon at 12 columns, from 20
 blocks up at -288, 64 looking east, they take the frame from 1.18 million triangles to 1.64, the
@@ -1131,19 +1123,6 @@ blocks, are meshed and drawn wherever the column is, and its deep sections only 
 distance of the eye in all three dimensions. Those two sections past that are packed, compressed
 until something reads them, so from 230 blocks over seed 1's spawn 3,817 sections pack and the
 columns hold 25 MB. A column takes 11 to 16 ms to generate on a worker and 6 to 7 ms to light.
-
-Past the render distance far land reaches 32 columns by default, up to 64, which `voxel.far` and the
-settings window set, drawn coarser by distance in rings, each twice as far out as the one before and
-of cells twice as wide, 2 blocks across out to twice the render distance, 4 out to four times and 8
-past that. Each cell is a box of its size at its own place, its top the highest the column's surface
-holds over it rounded down to its width, so far land keeps its size and steps in cubes of the merged
-size, colored by its highest block's texture's average under its biome's tint, lit with no shaded
-corners and casting no shadow. The surface of each column the player has seen is kept as it unloads
-and with the save, so far land shows what stood there when it was last seen, the trees and the
-player's buildings among it, and where no column was seen the generator's surface at each cell's
-middle, the ground's top or the sea's, without its trees. A ring's tiles of 64 by 64 cells draw only
-the columns within the ring, so the rings and the near land meet with no gap and no overlap, and the
-haze reaches to the far land's edge.
 
 Flying east over land the stream has not loaded, the game meshes the sections and joins the columns
 that come into reach on the main thread, and the frame keeps 60 a second at no distance. In three

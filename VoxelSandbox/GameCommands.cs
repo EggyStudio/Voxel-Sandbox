@@ -217,16 +217,6 @@ public static class GameCommands
         return $"{game.RenderDistance} columns are drawn around the player";
     }
 
-    [Command("voxel.far", "Sets how many columns around the player far land reaches past the render distance, drawn coarser by distance, up to 64, none at the render distance or under: voxel.far <columns>")]
-    internal static string FarDistance(int columns)
-    {
-        if (Game is not { } game) return "no world is loaded";
-        game.Far.Distance = Math.Clamp(columns, 0, 64);
-        return game.Far.Distance > game.RenderDistance
-            ? $"far land reaches {game.Far.Distance} columns around the player, {game.Far.Drawn.Tiles} tiles of {game.Far.Drawn.Triangles} triangles drawn"
-            : "no far land is drawn";
-    }
-
     [Command("voxel.packs", "Says the resource packs on, the first over the rest, and those in the game's folder, or turns on the packs named, parted by semicolons, a name in the folder or a whole path, and saves them as the setting, or turns every one off with none: voxel.packs [pack; pack...|none]")]
     internal static string Packs(string packs = "")
     {

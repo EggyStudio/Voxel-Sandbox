@@ -1,11 +1,20 @@
 # Voxel-Sandbox devlog
 
-What landed in Voxel-Sandbox, by day and newest first, with the pictures taken on the way: the
+What landed in Voxel-Sandbox, by day and newest first, with the pictures taken on the way, the
 captures the repository keeps under `.github/assets`, and the pictures made while an item was built,
 kept under `.github/devlog` as WebP files named by their day. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
 ## 2026-10-24
+
+![](.github/assets/world/lush-cave.webp)
+Lush caves lie under the wettest ground as the source's do, with moss and grass, cave vines whose
+glow berries light them, and clear pools in rims of clay. (`c8dbbee`)
+
+![](.github/assets/world/lava-lake.webp)
+Caves fill from the source's aquifers with water and lava to levels of their own and with lava under
+-54, through a lava block meshed with its own emission, and play.sh keeps far land off but for one
+check of it. (`9cb81ad`)
 
 ![](.github/assets/world/plant-shadows.webp)
 The plants cast the shadows of their blades and flowers on the 3DEngine 5.2.215 package, the terrain
@@ -18,15 +27,15 @@ The plains village under the modpack's own tonemap curve at three saturations, b
 Reinhard look and the modpack.
 
 ![](captures/glass-joined.png)
-Glass under Bare Bones, the streaks gone, where panes of the same glass join into one frame, with a
+Glass under Bare Bones, its streaks gone, where panes of the same glass join into one frame, with a
 corner kept inside the L at the right end.
 
 ![](.github/devlog/2026-10-24-breaking-pair.webp)
-Breaking stone in survival: Bare Bones' destroy stage on the left, the game's own cracks with no
+Breaking stone in survival, Bare Bones' destroy stage on the left and the game's own cracks with no
 pack on the right, with the bits cut from the stone's side.
 
 ![](.github/devlog/2026-10-24-hand-three.webp)
-The hand in view under Bare Bones: holding stone, holding a stick (a pixel deep), and the empty arm
+The hand in view under Bare Bones, holding stone, holding a stick a pixel deep, and the empty arm
 wearing Steve's sleeve.
 
 ![](.github/devlog/2026-10-24-fire1.webp)
@@ -60,10 +69,12 @@ The world views at a field of view of 70, before the retake (item 46).
 ![](.github/devlog/2026-10-24-views-40.webp)
 The world views retaken at a field of view of 40, the village views moved (item 46).
 
-Done:
+Done that day
 
-- Item 26 at `a528c79`. The world's layout: sections streamed, meshed and saved in three dimensions
+- Item 26 at `3a99729`. The world's layout, sections streamed, meshed and saved in three dimensions
   with a taller world, and far land drawn at a coarser level by distance, the blocks' size kept.
+- Item 27 at `c8dbbee`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
+  aquifers.
 - Item 55 at `d7c4892`. The plants cast shadows, cut by their texture (Decision 27).
 - Item 67 at `073d84b`. The inventory screens take no player key, draw a dragged stack every frame,
   and dropped items wear the pack's pictures.
@@ -84,6 +95,9 @@ Done:
 - Item 83 at `dd64fd0`. Glass without the diagonal streaks, its borders connecting across neighbors.
 - Item 88 at `b730088`. The play job comes back under 40 minutes.
 - Item 89 at `cfdc298`. The clouds are not drawn black by the fire's uniform.
+- Item 90 at `ba60ae4`. The frame at a render distance of 12 comes back under 16.7 ms with the
+  taller world, the main thread's draws read first.
+- Item 91 at `23aa4ff`. The screen probes stay off by default (Decision 42).
 
 ## 2026-10-23
 
@@ -102,7 +116,7 @@ A village before and after the grass and the paths were mended (item 70).
 A pool before and after its surface stopped reflecting the scene field, the water rough for the
 present (item 86).
 
-Done:
+Done that day
 
 - Item 39 at `710fe0d`. Cutout textures, a texture a face for the lamp's kind, and animated
   textures.
@@ -189,11 +203,11 @@ and mid-stride, in the assets. (`7fe7639`)
 ![](.github/devlog/2026-10-21-windows-sheet2.webp)
 ![](.github/devlog/2026-10-21-menus-sheet.webp)
 ![](.github/devlog/2026-10-21-hud-sheet.webp)
-The new interface: the inventory, furnace and creative windows; the Escape menu and options; the HUD
-with its hearts fading when full and returning after a hit.
+The new interface, the inventory, furnace and creative windows, the Escape menu and options, and the
+HUD with its hearts fading when full and returning after a hit.
 
 ![](.github/devlog/2026-10-21-packs-interface.webp)
-With --pack Bare Bones, Recolorful Containers and qrafty's font: Bare Bones' HUD and buttons,
+With the packs Bare Bones, Recolorful Containers and qrafty's font, Bare Bones' HUD and buttons,
 Recolorful's inventory and furnace, and the pack's font.
 
 ![](.github/devlog/2026-10-21-own-art.webp)
@@ -201,16 +215,16 @@ The game's own art with no pack. The planks in this sheet are the first try; the
 after.
 
 ![](.github/devlog/2026-10-21-rows2.webp)
-Plants as flat crossed planes, lit as brightly as the ground: the game's own art on the left, Bare
-Bones on the right.
+Plants as flat crossed planes, lit as brightly as the ground, the game's own art on the left and
+Bare Bones on the right.
 
 ![](.github/devlog/2026-10-21-trees-sheet.webp)
 Acacias in the savanna, the cherry grove's pink crowns, the dark forest with giant mushrooms, and
 the jungle floor under its canopy, all with Bare Bones.
 
 ![](.github/devlog/2026-10-21-edges.webp)
-Render distance 4, from high, from low and at night: the land fades into a dome of the haze's color
-below the horizon, with no dark band.
+At a render distance of 4, from high, from low and at night, the land fades into a dome of the
+haze's color below the horizon, with no dark band.
 
 ![](.github/devlog/2026-10-21-scenes-sheet.webp)
 Lamps in the open and in a room, the readings of the global illumination's faults (item 38).
@@ -266,7 +280,7 @@ The villagers in their professions' robes (item 65).
 ![](.github/devlog/2026-10-21-blocks-crop.webp)
 A door, a trapdoor and a furnace among the blocks (item 39).
 
-Done:
+Done that day
 
 - Item 17 at `5cd1521`. Out of the water onto the shore, swimming while any of the body is in it.
 - Item 18 at `28eb41c`. The mobs' proportions toward the source's, the villager first, with some
@@ -331,13 +345,13 @@ Each mob in the game with Minecraft 26.3's outline in red, standing and mid-stri
 camera. The villager at full size second.
 
 ![](.github/devlog/2026-10-20-all-after.webp)
-After the walk fix: each mob in the game with Minecraft 26.3's outline in red, standing and mid-
+Each mob in the game after the walk fix, with Minecraft 26.3's outline in red, standing and mid-
 stride.
 
 ![](.github/devlog/2026-10-20-frame-pair.webp)
 A lamp's light on the walls as the engine's glow light draws it, two frames apart (item 15).
 
-Done:
+Done that day
 
 - Item 10 at `35696e2`. Some of the animals' feet do not show (Decision 6).
 - Item 15 at `cc334ab`. The section's mesh keeps the stone's faces against a lamp block, so the
@@ -354,7 +368,7 @@ The sun over the plains at the global illumination's qualities, the halo read ag
 The mobs from the side, the pig, the cow, the sheep, the chicken, the villager, the zombie, the
 skeleton, the creeper and the spider.
 
-Done:
+Done that day
 
 - Item 6 at `6d71cd1`. The sun, the moon and the stars fixed on the sky's sphere with textures, the
   moon with phases, the glow around the sun and the moon as particles parented to them (Decisions 6
@@ -369,7 +383,7 @@ Done:
 
 ## 2026-10-18
 
-Done:
+Done that day
 
 - Item 7 at `4fc4809`. The sun's shadows are pixelated (Decision 6).
 - Item 8 at `344ef5b`. The sun's surround in the sky is pixelated and the rest of the sky stays
@@ -377,12 +391,12 @@ Done:
 
 ## 2026-10-17
 
-Done:
+Done that day
 
 - Item 1 at `c08d259`. The replacement, one commit (Decision 1).
 - Item 2 at `e0f4e66`. The names, one commit after item 1.
 - Item 3 at `105bdd1`. The first pack run's proof, its known failure mended at `105bdd1`; done on
   the pack run of 2026-10-17.
-- Item 4 at `b87e386`. The register: STYLE.md's rule and the sweep (Decision 5).
+- Item 4 at `b87e386`. The register, STYLE.md's rule and the sweep (Decision 5).
 - Item 5 at `4358f3b`. The register widens to likenesses and figures of speech (Decision 5),
   README.md:3 and AGENTS.md:3 and 5.

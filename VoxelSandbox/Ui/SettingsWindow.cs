@@ -154,8 +154,6 @@ public sealed class SettingsWindow
         if (ImGui.Checkbox($"Clouds, {game.Clouds.Faces} faces###clouds", ref clouds)) game.Clouds.Shown = clouds;
         var distance = game.RenderDistance;
         if (ImGui.SliderInt("Render distance", ref distance, 2, 16)) game.RenderDistance = distance;
-        var far = game.Far.Distance;
-        if (ImGui.SliderInt($"Far land, {game.Far.Drawn.Tiles} tiles of {game.Far.Drawn.Triangles} triangles###far", ref far, 0, 64)) game.Far.Distance = far;
         var mode = (int)game.Mode;
         if (ImGui.Combo("Mode", ref mode, Modes, Modes.Length)) game.Mode = (GameMode)mode;
         var still = game.Mobs.Still;

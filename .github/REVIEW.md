@@ -5,25 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `c8dbbee`, item 27's part C, the lush caves, and nothing else, carrying the review's
-file with items 91 to 93, committed as it stood done when the owner's words came: lush caves where
-the climate's humidity is 0.75 or more, 6.8 percent of the land, from 26 to 115 blocks under the
-top, four in five floor and roof blocks moss, the floor's mosses bearing short grass, carpets and
-tall grass by the source's weights, a roof in seven with cave vines by the source's lengths and glow
-berries one block in five at light 14 as an unseen emissive box, three clay pools tried a column;
-departures, the pools' radius 2 to 3 within the column against the source's 4 to 7, no azaleas,
-spore blossoms or dripleaves, the berries' light pale since the fire's orange browned the leaves,
-glow berries an item feeding 2 and hanging a vine from an underside, vines falling with their
-support; rich columns up to 800 moss, 160 vines and 106 clay, no water over or beside air, a lush
-column in 13 to 24 ms; two tests added and two changed for the new blocks, 277 passing, the strict
-build clean, play.sh 133 s on the GPU, the capture lush-cave.webp in. Read at 10:12 on 2026-10-24.
-Not pushed, the build run of `9cb81ad` running; pushed when it ends. The owner's words come next,
-item 91, the screen probes off by default, then 92, far land removed, then 93, the frame's cost read
-and brought down; then 42, 43 and 70, then 28 to 36 in order; items 38's second part and 54 when
-their packages come, and the deep caves' sky light under 27 with the engine's next package; the
+Reviewed up to `23aa4ff`, item 91, the screen probes off by default, LightSettings.ScreenProbes
+false and applied at the start, gi.state saying so, a checkbox in the settings window turning them
+on, the README's light paragraph saying why, room.webp taken again with them off and a little
+smoother, no e3d verb for them, play.sh clean on the GPU in 127 s with its checks unchanged, after
+`c8dbbee`, item 27's part C, the lush caves, and nothing else, carrying the review's file. Part C:
+lush caves where the climate's humidity is 0.75 or more, 6.8 percent of the land, from 26 to 115
+blocks under the top, four in five floor and roof blocks moss, the floor's mosses bearing short
+grass, carpets and tall grass by the source's weights, a roof in seven with cave vines by the
+source's lengths and glow berries one block in five at light 14 as an unseen emissive box, three
+clay pools tried a column; departures, the pools' radius 2 to 3 within the column against the
+source's 4 to 7, no azaleas, spore blossoms or dripleaves, the berries' light pale since the fire's
+orange browned the leaves, glow berries an item feeding 2 and hanging a vine from an underside,
+vines falling with their support; rich columns up to 800 moss, 160 vines and 106 clay, no water over
+or beside air, a lush column in 13 to 24 ms; two tests added and two changed for the new blocks, 277
+passing, the strict build clean, play.sh 133 s on the GPU, the capture lush-cave.webp in. Read at
+10:12 and 10:17 on 2026-10-24. Pushed at 10:22 after the build run of `9cb81ad` ended green, its
+play job 24.3 minutes with far land off, the cut's proof; the run watched. Next item 92, far land
+removed, then 93, the frame's cost read and brought down; then the ECS, items 94, 95 and 96 in
+order, a piece a commit; then 42, 43 and 70, then 28 to 36 in order; items 38's second part and 54
+when their packages come, and the deep caves' sky light under 27 with the engine's next package; the
 AGENTS.md rows for the Ui and build folders wait on the owner's word.
 
-Before it, `9cb81ad` came, item 27's part B, pushed at 09:53 on 2026-10-24, its run in flight.
+Before it, `9cb81ad` came, item 27's part B, pushed at 09:53 on 2026-10-24, its run green, the play
+job 24.3 minutes.
 
 Before it, `d8a05a1` came, item 27's part A, pushed at 09:26 on 2026-10-24 with `3a99729` and
 `ba60ae4`, its run green, the play job 18.3 minutes.
@@ -395,7 +400,8 @@ full.
     read under its item 71 and left as a limit. So the game calls
     SetGlobalIlluminationScreenProbes(false) at its start and keeps its setting for turning them on,
     with the capture of a view with the probes off; the play check that reads the light holds as it
-    stands or moves to the probes off. One commit, small, first.
+    stands or moves to the probes off. One commit, small, first. Done at `23aa4ff` on 2026-10-24, a
+    checkbox and no e3d verb.
 
 92. **Far land goes (Decision 41).** The owner played on 2026-10-24 and found the far land looking
     bad, and said to remove it. FarLand, its rings, tiles and skirts, FarCache and the far folder of
@@ -417,6 +423,39 @@ full.
     of sections the eye cannot see held back, and whatever else the reading names; the frame held
     under 16.7 ms at 12 on the 4070 as item 90's draw test holds the draws. After item 92, before
     item 27's part C.
+
+94. **The things that move become entities with behaviors (Decision 43).** The mobs, the drops, the
+    arrows, the primed TNT, the falling blocks, the fires and the blasts, which the game keeps in
+    lists of its own and steps from one Update, become entities of the engine's ECS: components for
+    what each is, its body of position, velocity and box, its kind, its health, its path and target,
+    its fuse or age, its stack, its light, and a behavior for each concern, the movement against the
+    voxel world and its collisions, the hostile and the grazing minds, the aging and the vanishing,
+    the loot on a death, the renderer reading them by query; the save keeping them per column from
+    the components as it keeps them today. One kind of thing a commit, in this order, the drops, the
+    arrows, the primed TNT and the falling blocks, the fires and the blasts, the mobs last, each
+    with its tests and the play checks' readings unchanged, the game playable at every commit. Where
+    the ECS lacks a thing the game needs, queries over more than three components, a save of
+    entities, a spatial lookup or a system run on a worker, the gap goes into the engine's ASKS.md
+    as an entry and the engine takes it ahead of its other work, the game waiting on the package
+    where it must and never keeping a structure of its own around the gap. After items 92 and 93.
+
+95. **The world's sections become mesh entities the engine draws (Decision 43).** Each meshed
+    section becomes an entity with the engine's Mesh, Material and Transform and a component of the
+    game's naming its column and height, made and replaced by the main thread when a worker's mesh
+    arrives as today, despawned when the section leaves the reach, so the engine's model pass draws,
+    culls and keeps them with its change detection and the game's loop of DrawMesh over every
+    section, with item 90's kept flood, goes; the lava's and the plants' parts as entities of their
+    own materials. The frame read before and after at item 93's views and the draw count test kept
+    on the engine's count. Generation and meshing stay on the workers. One or two commits, after
+    item 94.
+
+96. **The player and the game's states live in the ECS (Decision 43).** The player an entity with
+    its body, its vitals and its hand as components, the inventory a resource, the first person
+    controller a behavior reading the input from its context; the game mode, the menus and the
+    loading screen as ECS states, with InState, OnEnter and OnExit on the behaviors they gate and a
+    run condition where VoxelGame.Update holds an if, so what runs when is read from the attributes
+    rather than the one long Update. One or two commits, after item 95; the commands of voxel.* and
+    the interface's immediate drawing stay as they are.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
@@ -1043,5 +1082,16 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     sixth term, the probes' own, so the game leaves the screen probes off by default as item 91, the
     setting kept, and the owner's eye judges them again when the engine's package with item 90
     comes.
+
+43. **The game uses the engine's ECS where it fits, beside the loop.** The owner wrote at about
+    10:23 on 2026-10-24 that the game should move to the ECS where it fits, the engine's ECS being
+    its own feature over raylib, with the immediate loop kept where it is best, loops and data such
+    as the chunks in the ECS and the whole easier to read; and answered the reviewer's questions:
+    the things that move, the world's sections as mesh entities, and the player and the states move,
+    generation and meshing stay on the workers; piece by piece on main after items 92 and 93, the
+    game playable at every commit, no branch; where the ECS falls short the engine grows first, each
+    gap an entry in its ASKS.md taken ahead of other engine work; and the engine's DESIGN.md says
+    both where each fits with this game as the model, the engine's own small games staying as they
+    are. Items 94 to 96.
 
 ## Replies
