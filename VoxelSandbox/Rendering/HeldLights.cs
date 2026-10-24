@@ -11,9 +11,10 @@ namespace VoxelSandbox;
 /// </summary>
 /// <remarks>
 /// <para>
-/// A held light stands at the player's own place, the body's middle at the eye's height, where
-/// standing at the hand, a third of a block ahead and to the right, it swung with each turn of the
-/// view and went inside a wall the player faced.
+/// A held light stands at the player's own place, the body's middle a third of a block under the
+/// eye, where standing at the hand, a third of a block ahead and to the right, it swung with each
+/// turn of the view and went inside a wall the player faced. It keeps off the eye's own point,
+/// since the engine shades a point light standing at the camera with black specks on lavapipe.
 /// </para>
 /// <para>
 /// Each light casts shadows, so it lights no room through a wall, and global illumination takes
@@ -31,6 +32,9 @@ public sealed class HeldLights : IDisposable
     /// player as a torch standing there lights it.
     /// </summary>
     public const float Strength = 3;
+
+    /// <summary>How far under the eye a held light stands, within the player's box.</summary>
+    public const float UnderEye = 0.3f;
 
     private readonly List<(LightHandle Light, BlockId Block)> _lights = [];
 

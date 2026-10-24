@@ -535,7 +535,7 @@ public sealed class VoxelGame : IDisposable
         var blasts = Tnt.Exploded.ToArray();
         Tnt.Exploded.Clear();
         foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT");
-        Lights.Update(Player.Eye, Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye);
+        Lights.Update(Player.Eye - new Vector3(0, HeldLights.UnderEye, 0), Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye);
 
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
