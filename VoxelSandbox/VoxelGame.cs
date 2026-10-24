@@ -406,7 +406,7 @@ public sealed class VoxelGame : IDisposable
     private void Stand()
     {
         Streamer.Update(Player.Body.Position, 1);
-        Renderer.Update(World, Player.Eye, MeshBudget());
+        Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
         if (HoldLoading || LoadingShare() < 1) return;
         Loading = false;
         if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(new Vector3(0.5f, World.Top(0, 0) + 1, 0.5f));
@@ -545,7 +545,7 @@ public sealed class VoxelGame : IDisposable
         World.Fluids.Update(seconds);
         Clouds.Update(seconds);
         Streamer.Update(Player.Body.Position, RenderDistance);
-        Renderer.Update(World, Player.Eye, MeshBudget());
+        Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
     }
 
     // The vitals' frame in survival, reckoned afresh after a teleport, and on death the inventory

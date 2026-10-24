@@ -75,6 +75,60 @@ public sealed class ChunkColumn
 
     public void Set(int x, int y, int z, BlockId block) => At(y).Set(x, y & Section.Mask, z, block);
 
+    /// <summary>
+    /// The lowest of its places' highest blocks, as of when it was made, a section under whose section
+    /// is deep, so it is drawn and kept only near the eye.
+    /// </summary>
+    public int Floor { get; private set; } = Bottom;
+
+    /// <summary>The number of its lowest section that is not deep, the one under its floor's.</summary>
+    public int FloorSection => (Floor >> Section.Shift) - 1;
+
+    /// <summary>The fires it held as it was settled, each where it burns in the world, for the world to keep burning.</summary>
+    public List<(int X, int Y, int Z)> Burning { get; } = [];
+
+    /// <summary>Whether <see cref="Settle"/> has run.</summary>
+    public bool Settled { get; private set; }
+
+    /// <summary>
+    /// Finds its <see cref="Floor"/> and the fires it holds, and has its sections of air open to the
+    /// sky share their arrays, once it is made and lit and before any is packed, once only.
+    /// </summary>
+    public void Settle()
+    {
+        if (Settled) return;
+        Settled = true;
+        var floor = Ceiling;
+        for (int z = 0; z < Section.Size; z++)
+            for (int x = 0; x < Section.Size; x++)
+                floor = Math.Min(floor, Top(x, z));
+        Floor = floor;
+        for (int s = 0; s < SectionCount; s++)
+        {
+            if (Sections[s].Share()) continue;
+            var blocks = Sections[s].Blocks;
+            for (int i = Array.IndexOf(blocks, (ushort)BlockId.Fire); i >= 0; i = Array.IndexOf(blocks, (ushort)BlockId.Fire, i + 1))
+            {
+                int x = i & Section.Mask, z = i >> Section.Shift & Section.Mask, y = i >> 2 * Section.Shift;
+                Burning.Add((X * Section.Size + x, Bottom + s * Section.Size + y, Z * Section.Size + z));
+            }
+        }
+    }
+
+    /// <summary>Packs its deep sections out of reach of the eye's section, and says how many it packed.</summary>
+    public int Pack(SectionKey eye, int distance)
+    {
+        var packed = 0;
+        for (int s = 0; s < SectionCount; s++)
+        {
+            var section = Sections[s];
+            if (section.Packed || section.Open || Reach.Within(new SectionKey(X, BottomSection + s, Z), FloorSection, eye, distance)) continue;
+            section.Pack();
+            packed++;
+        }
+        return packed;
+    }
+
     /// <summary>The height of the highest block that is not air, or one under <see cref="Bottom"/> in a column of air.</summary>
     public int Top(int x, int z)
     {

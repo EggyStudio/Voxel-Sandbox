@@ -5,28 +5,27 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `5556519`, item 46's retake at a field of view of 40 degrees with voxel.fov, and
-nothing else, carrying the review's file: every world view stepped back level from its old place and
-turned up to keep its subject in the middle, but the cherry grove kept since a step back stands in
-its crowns, the meadow moved to a dandelion and daisy patch since the plant patches moved its
-poppies, the sunrise stepped back 40 blocks and the night sky kept at a pitch of 9 so the island
-stays in frame, the room and the interface at 70; the desert village from the south of its well,
-seed 1's plains village by its river with the mobs and the HUD moved there, the snowy village by day
-and night on seed 6; the alt texts changed, head.gif 1.53 MB; 260 tests, the strict build clean. The
-coder's slip: the commit went before the play run's result, and play.sh then failed its last check
-twice on a log that was not its run's, the engine's session starting its own copy of the game under
-the same E3D name into the same build/sessions log; the check is run again when that copy is gone
-and said before the push. Read at 06:44 on 2026-10-24. play.sh passed on its own log at 07:0x;
-pushed at 07:07, the build run of `cfdc298` having ended green at 06:52 with its play job at 32.3
-minutes; the run watched. Next 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at
-40 degrees, then 26 and the items in order; items 38's second part and 54 when their packages come;
-the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `d2f8b0b`, item 26's first part, the taller world, and nothing else, carrying the
+review's file: a column from minus 64 to 320 in sections numbered minus 4 to 19, every bound through
+ChunkColumn's three readers, the mountains' clamp at 308, bedrock whole at the floor thinning to
+none five blocks up and deepslate under 0 thinning to none at 8 by the source's gradient rule,
+cobbled deepslate as its drop making tools and a furnace, an old eight-section save told by its
+length and laid at 0 to 127 over generated deep stone and kept again whole, mobs spawning in the
+deep caves; the departure the tunnels and caverns running to the bedrock unchanged until item 27.
+Costs read again, a column generating in 24 to 29 ms against 9 to 11 with the caverns' noise at 104
+layers against 40, lighting in 5.6 to 7 against 1.2 to 1.8, 300 KB against 100, meshing 16 ms
+against 7, the cherry grove view 5,064 sections and 1.47 million triangles over 703 columns; two
+tests, 263 passing, the strict build clean, play.sh clean on the GPU in 154 s against about 140.
+Read at 07:28 on 2026-10-24. Not pushed, the build run of `5556519` running; pushed when it ends.
+Next item 26's second part, sections by distance in three dimensions, then its far levels, then 78,
+80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in
+order; items 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `5556519` came, item 46's retake, pushed at 07:07 on 2026-10-24, its run in flight.
 
 Before it, `cfdc298` came, item 89, pushed at 06:20 on 2026-10-24, its run green, the play job 32.3
 minutes.
-
-Before it, `edbc3b2` and `ee557b3` came, item 72, fire, pushed at 05:47 on 2026-10-24, their run
-green, the play job 32.3 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -358,7 +357,8 @@ full.
     boxes at their own place in the top block's average color, flat lit, hazed, no shadows, field,
     plants or mobs, the surface sampled to 64 columns in under a second on the workers. Four commits
     as said. Deepslate comes with part 1 as the source lays it below 0, its ores and caves with item
-    27; the far reach in columns and the rings by doubling as read.
+    27; the far reach in columns and the rings by doubling as read. Part 1 at `d2f8b0b` on
+    2026-10-24, the costs in the head.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where

@@ -146,6 +146,13 @@ public sealed class LightEngine(VoxelWorld world)
             for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
             {
                 var (mine, theirs) = (column.At(y), other.At(y));
+                // Two sections of open air, or two packed with no light in them, have no light to
+                // join, and a packed one is left packed.
+                if (mine.Open && theirs.Open || mine is { Packed: true, Dark: true } && theirs is { Packed: true, Dark: true })
+                {
+                    y += Section.Mask;
+                    continue;
+                }
                 for (int t = 0; t < Section.Size; t++)
                 {
                     // The cell on this column's edge and the one across it in the neighbor.

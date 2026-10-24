@@ -62,18 +62,11 @@ public sealed class VoxelWorld
             for (int dx = -1; dx <= 1; dx++)
                 for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++)
                     Loaded.Add(new SectionKey(column.X + dx, y, column.Z + dz));
+        // The fires a saved column holds burn on, found as it settled, which a column made on a worker
+        // has done before its deep sections were packed.
+        column.Settle();
+        Kindled.AddRange(column.Burning);
         _light.Join(column);
-        // The fires a saved column holds burn on, found by a search of each section, which is quick
-        // where there are none.
-        for (int s = 0; s < ChunkColumn.SectionCount; s++)
-        {
-            var blocks = column.Sections[s].Blocks;
-            for (int i = Array.IndexOf(blocks, (ushort)BlockId.Fire); i >= 0; i = Array.IndexOf(blocks, (ushort)BlockId.Fire, i + 1))
-            {
-                int x = i & Section.Mask, z = i >> Section.Shift & Section.Mask, y = i >> 2 * Section.Shift;
-                Kindled.Add((column.X * Section.Size + x, ChunkColumn.Bottom + s * Section.Size + y, column.Z * Section.Size + z));
-            }
-        }
     }
 
     public bool Remove(int x, int z) => _columns.Remove((x, z));

@@ -1067,7 +1067,16 @@ blocks up at -288, 64 looking east, they take the frame from 1.18 million triang
 window's model pass from 7.7 ms to 10.1 and the GPU's passes from 13.1 ms to 14.9, the mean of three
 sessions each, and the frame keeps 60 a second. They cast no shadow and the scene's distance field
 holds none of them, so the shadows and global illumination take no more for them. A column takes
-about as long to generate with them, 9 ms.
+about as long to generate with them.
+
+A column's 24 sections hold 288 KB of blocks and light, and its sections of open air over the land,
+most of them, share one pair of arrays until a block or a level in one of them changes, so a column
+of seed 1 holds about 100 KB of its own, 69 MB over the 665 columns loaded at 12. A column's
+sections from the one under its floor up, its floor being the lowest of its places' highest
+blocks, are meshed and drawn wherever the column is, and its deep sections only within the render
+distance of the eye in all three dimensions. Those two sections past that are packed, compressed
+until something reads them, so from 230 blocks over seed 1's spawn 3,817 sections pack and the
+columns hold 25 MB. A column takes 24 to 29 ms to generate on a worker and 6 to 7 ms to light.
 
 Flying east over land the stream has not loaded, the game meshes the sections and joins the columns
 that come into reach on the main thread, and the frame keeps 60 a second at no distance. In three

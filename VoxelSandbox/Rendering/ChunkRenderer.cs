@@ -114,6 +114,11 @@ public sealed class ChunkRenderer : IDisposable
     private readonly ModelMesh[] _lampCubes;
     private readonly List<Matrix4x4>[] _emitterDraws = [.. Surfaces.All.Select(_ => new List<Matrix4x4>())];
     private readonly List<SectionKey> _queue = [];
+    // The loaded sections out of the eye's reach, meshed once it comes near, and the eye's section
+    // and render distance they were last sorted for.
+    private readonly HashSet<SectionKey> _parked = [];
+    private readonly List<SectionKey> _gone = [];
+    private (SectionKey Eye, int Distance)? _reachedFor;
     private readonly List<(float Distance, SectionMeshes Entry)> _seeThrough = [];
     private ModelMaterial[] _lamps = [];
     // Each animated emissive surface's steps, its texture's steps and the ticks each is held, the
@@ -378,17 +383,36 @@ public sealed class ChunkRenderer : IDisposable
 
     /// <summary>
     /// Meshes every section an edit changed, then those whose shading changed and those that loaded,
-    /// nearest the eye first, until <paramref name="budgetMs"/> of the frame is spent.
+    /// nearest the eye first, until <paramref name="budgetMs"/> of the frame is spent. A section out
+    /// of the eye's reach, as <see cref="Reach"/> has it at <paramref name="renderDistance"/>, is set
+    /// aside and meshed once the eye comes near, and a deep one's meshes are let go a section past it.
     /// </summary>
-    public void Update(VoxelWorld world, Vector3 eye, double budgetMs)
+    public void Update(VoxelWorld world, Vector3 eye, int renderDistance, double budgetMs)
     {
         foreach (var key in world.Edited)
             if (!Remesh(world, key)) world.Loaded.Add(key);
         world.Reshaded.ExceptWith(world.Edited);
         world.Edited.Clear();
 
+        var at = Reach.Of(eye);
+        if (_reachedFor != (at, renderDistance))
+        {
+            _reachedFor = (at, renderDistance);
+            foreach (var key in _parked)
+                if (InReach(world, key, at, renderDistance)) world.Loaded.Add(key);
+            _parked.ExceptWith(world.Loaded);
+            _gone.Clear();
+            foreach (var key in _sections.Keys)
+                if (!InReach(world, key, at, renderDistance + 1)) _gone.Add(key);
+            foreach (var key in _gone)
+            {
+                Forget(key);
+                _parked.Add(key);
+            }
+        }
+
         if (world.Loaded.Count == 0 && world.Reshaded.Count == 0) return;
-        int ex = (int)MathF.Floor(eye.X) >> Section.Shift, ey = (int)MathF.Floor(eye.Y) >> Section.Shift, ez = (int)MathF.Floor(eye.Z) >> Section.Shift;
+        var (ex, ey, ez) = (at.X, at.Y, at.Z);
         _queue.Clear();
         _queue.AddRange(world.Reshaded);
         _queue.AddRange(world.Loaded);
@@ -402,9 +426,18 @@ public sealed class ChunkRenderer : IDisposable
             // A section whose neighbor column has not arrived is dropped rather than kept, since the
             // neighbor's arrival marks it again.
             if (!world.Reshaded.Remove(key) & !world.Loaded.Remove(key)) continue;
+            if (!InReach(world, key, at, renderDistance))
+            {
+                _parked.Add(key);
+                continue;
+            }
             Remesh(world, key);
         }
     }
+
+    // Whether a loaded section is within the eye's reach, one of a column not loaded being let go.
+    private static bool InReach(VoxelWorld world, SectionKey key, SectionKey eye, int distance) =>
+        world.TryGetColumn(key.X, key.Z, out var column) && Reach.Within(key, column.FloorSection, eye, distance);
 
     private bool Remesh(VoxelWorld world, SectionKey key)
     {
@@ -451,13 +484,19 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>Lets go of the meshes of a column's sections, as it unloads.</summary>
     public void ForgetColumn(int x, int z)
     {
-        for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++) Forget(new SectionKey(x, y, z));
+        for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++)
+        {
+            Forget(new SectionKey(x, y, z));
+            _parked.Remove(new SectionKey(x, y, z));
+        }
     }
 
     /// <summary>Lets go of every section's meshes, as a new world begins.</summary>
     public void Clear()
     {
         foreach (var key in _sections.Keys.ToList()) Forget(key);
+        _parked.Clear();
+        _reachedFor = null;
     }
 
     /// <summary>
