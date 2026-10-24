@@ -3,7 +3,7 @@ using static Engine.E3D;
 
 namespace VoxelSandbox;
 
-/// <summary>The settings of global illumination and of the frame's post-processing, which the settings window changes.</summary>
+/// <summary>The settings of global illumination and of the frame's post-processing, which the Render and Post Processing screens change.</summary>
 public sealed class LightSettings
 {
     /// <summary>The quality of global illumination, the highest by default, since the game is made to show it.</summary>
@@ -40,6 +40,9 @@ public sealed class LightSettings
     // The frame graded as vividly as the modpack's pictures, whose shader's warm light and deep shade
     // saturate them, each channel pushed from the middle gray by 1.12 and the color by 1.4.
     public float Contrast = 1.12f, Saturation = 1.4f;
+    // The modpack's shader's curve with the modpack's own settings, its exposure 0.9,
+    // white curve 1.3, lower curve 1.05 and upper 1.0.
+    public float CurveExposure = 0.9f, CurveWhite = 1.3f, CurveLower = 1.05f, CurveUpper = 1f;
 
     public void ApplyAll()
     {
@@ -54,9 +57,7 @@ public sealed class LightSettings
         // blur lays a soft fringe beside the map's edges, which step along the blocks' pixels, and
         // kept past the map, where the land has no other shadow of the sun.
         SetContactShadows(ContactShadows.PastShadowMap);
-        // The modpack's shader's curve with the settings of the owner's modpack, its exposure 0.9,
-        // white curve 1.3, lower curve 1.05 and upper 1.0.
-        SetTonemapCurve(0.9f, 1.3f, 1.05f, 1f);
+        ApplyCurve();
         SetColorGrading(Contrast, Saturation, Color.White);
     }
 
@@ -65,6 +66,9 @@ public sealed class LightSettings
     // wall beside a pane of glass, cost the scene pass about 5 ms at the cherry grove at 1920 by 1080,
     // and left the light deep in a cave as it was.
     public void ApplyField() => SetSceneField(Cascades, CellSize, Budget);
+
+    /// <summary>Brings the frame's light under 1 by the curve of the four numbers, which chooses that curve.</summary>
+    public void ApplyCurve() => SetTonemapCurve(CurveExposure, CurveWhite, CurveLower, CurveUpper);
 
     public void ApplyExposure()
     {

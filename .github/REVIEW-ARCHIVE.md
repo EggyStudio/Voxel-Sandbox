@@ -1422,6 +1422,12 @@ before a batch.
     small, before item 94's pieces. Done at `e04a1a5` on 2026-10-24, the one loading screen, dark
     gray before, in the source's red.
 
+125. **The loading screen is pure black.** The owner wrote to the game's session at about 18:5x on
+    2026-10-24 that the red loading screen is too neon and to make it pure black.
+    VoxelGame.LoadingBackground becomes 0, 0, 0, the bar's empty part with it, the title and the bar
+    reading clearly, and the play check's corner reads black; the README's line follows. One commit,
+    small, after item 27's pin of 5.2.283 and before item 124. Done at `e643539` on 2026-10-24.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

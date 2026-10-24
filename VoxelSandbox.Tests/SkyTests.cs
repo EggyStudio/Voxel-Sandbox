@@ -5,6 +5,9 @@ namespace VoxelSandbox.Tests;
 
 public class SkyTests
 {
+    // The sky's colors as they start, the modpack's shader's.
+    private static readonly SkyColors Colors = new();
+
     [Fact]
     public void The_Day_Goes_On_At_Midnight_And_The_Hour_Starts_Again()
     {
@@ -228,18 +231,18 @@ public class SkyTests
     [Fact]
     public void The_Sun_Lights_Warm_White_At_Noon_And_Orange_Low_As_The_Modpacks_Shader_Colors_It()
     {
-        var noon = Sky.SunLight(1);
+        var noon = Colors.SunLight(1);
         Assert.Equal(1.33f, noon.X, 3);
         Assert.Equal(1.045f, noon.Y, 3);
         Assert.Equal(0.76f, noon.Z, 3);
         // Warmer the lower it stands, red over green over blue, its blue falling away fastest.
-        var low = Sky.SunLight(0.05f);
+        var low = Colors.SunLight(0.05f);
         Assert.True(low.X > low.Y && low.Y > low.Z);
         Assert.True(low.Z / low.X < noon.Z / noon.X && low.Y / low.X < noon.Y / noon.X);
         float last = 1;
         for (float height = 0.05f; height <= 1; height += 0.05f)
         {
-            var light = Sky.SunLight(height);
+            var light = Colors.SunLight(height);
             Assert.True(light.Z / light.X >= last - 1e-4f || height <= 0.05f, $"the light cools as the sun sinks at {height}");
             last = light.Z / light.X;
         }
@@ -249,13 +252,13 @@ public class SkyTests
     public void The_Night_Sky_Takes_The_Modpacks_Violet_Tint_And_The_Day_Keeps_Its_Colors()
     {
         var blue = new Vector3(18, 24, 44);
-        var day = Sky.AtNight(blue, 1);
+        var day = Colors.AtNight(blue, 1);
         Assert.Equal(blue.X, day.X, 0.5f);
         Assert.Equal(blue.Y, day.Y, 0.5f);
         Assert.Equal(blue.Z, day.Z, 0.5f);
         // By night red and blue rise and green falls, each by its share of 1.10, 0.90 and 1.30 in
         // linear light.
-        var night = Sky.AtNight(blue, 0);
+        var night = Colors.AtNight(blue, 0);
         Assert.True(night.X > blue.X && night.Y < blue.Y && night.Z > blue.Z, $"{night}");
     }
 

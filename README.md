@@ -143,7 +143,8 @@ reads a furnace, `voxel.inventory` lists what it holds, `voxel.items` lists ever
 `voxel.packs` says or sets the resource packs on, and `voxel.reload` reads them again.
 `voxel.vitals` says or sets the health and food, `voxel.hurt` harms the player, and `voxel.respawn`
 gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global illumination, the scene's
-distance field and the sun's shadows, `voxel.hud` hides what is drawn over the world for a capture,
+distance field and the sun's shadows, `voxel.options` says or sets any setting of the options'
+screens by its screen and name, `voxel.hud` hides what is drawn over the world for a capture,
 `voxel.scale` sets the interface's scale, at which `build/pictures.sh` takes the windows, and
 `voxel.fov` sets the field of view, which the script narrows to 40 degrees for its views of the
 world, as a zoom does for a screenshot. Three measure the light. `voxel.flicker` records each
@@ -650,11 +651,50 @@ follows the pointer.
 
 Escape opens the game's menu over the darkened world, which holds the world still while it is open,
 as Minecraft's does when played alone, with Back to Game, the options, Save the World, and Save and
-Quit. The options are the player's own, in two columns of buttons and sliders as Minecraft lays its
-options out, the render distance, the field of view, the mouse's sensitivity, the interface's scale,
-automatic or 1 to 4, whether full rows of the HUD fade, how far corners darken, the quality of
-global illumination, and the resource packs. The settings window F3 opens is the engine's ImGui, a
-tool for the developer.
+Quit. The options are in two columns of buttons and sliders as Minecraft lays its options out, the
+field of view, the mouse's sensitivity, the interface's scale, automatic or 1 to 4, and whether full
+rows of the HUD fade, with a button to each screen of settings by its area, Render Settings, Post
+Processing, Sky and Visuals and Resource Packs. A setting's slider moves by its step, a button steps
+through its choices, each takes effect at once, and Done goes back a screen. The settings window F3
+opens is the engine's ImGui, a tool for the developer.
+
+| Screen | Setting | Reach | Starts at |
+|---|---|---|---|
+| Render Settings | Render Distance | 2 to 16 chunks | 12 |
+| | Global Illumination | Off, Low, Medium, High | High |
+| | Screen Probes | Off, On | Off |
+| | Shadow Distance | 16 to 192 blocks by 8 | 64 |
+| | Corner Shade | 0 to 100% by 5, the sections shaded again as it is let go | 50% |
+| | Emission, what every emissive surface's light is multiplied by | 0 to 4 by 0.1 | 1 |
+| | Field Cascades, the scene's distance field's | 1 to 8 | 4 |
+| | Field Cell, the finest cascade's cell | 0.125 to 1 block by 0.125 | 0.25 |
+| | Cascades a Frame, built again each frame | 1 to 8 | 2 |
+| Post Processing | Bloom | 0 to 2 by 0.05 | 0.1 |
+| | Ambient Occlusion | 0 to 1 by 0.05 | 0 |
+| | Auto Exposure | Off, On | Off |
+| | Exposure, while Auto Exposure is off | 0.1 to 4 by 0.05 | 1.6 |
+| | Contrast | 0.5 to 2 by 0.02 | 1.12 |
+| | Saturation | 0 to 2.5 by 0.05 | 1.4 |
+| | Tonemap, the curve the light past 1 is brought under by | the engine's twelve by their names, from its own and ACES to Bevy's and the curve of four numbers | Curve |
+| | Curve Exposure, Curve White, Curve Lower and Curve Upper, each choosing the curve as it is set | 0.1 to 3, 0.5 to 3, 0.5 to 2 and 0.5 to 2, by 0.05 | 0.9, 1.3, 1.05 and 1 |
+| | Vignette | 0 to 1 by 0.05 | 0 |
+| | FXAA | Off, On | Off |
+| | Motion Blur | 0 to 1 by 0.05 | 0 |
+| Sky and Visuals | Time | 00:00 to 24:00 by a quarter hour | the world's |
+| | Daylight Cycle | Off, On | the world's |
+| | Day Length | 1 to 60 minutes | 20 |
+| | Moon, its phase, set by moving the days on to the next night of it | the eight phases | the world's |
+| | Sun Strength and Moon Strength | 0 to 200% by 5 and 0 to 400% by 10 | 100% |
+| | Clouds and Fog | Off, On | On |
+| Sky Colors, from Sky and Visuals | Noon Sunlight, Low Sunlight, Moonlight and Night Tint, each a light by its hue | red, green and blue from 0 to 255 | the modpack's shader's |
+| | Day Sky, Day Horizon, Sunset Horizon, Night Sky and Night Horizon | red, green and blue from 0 to 255 | the modpack's shader's |
+
+A color's screen shows the color under its three sliders, with Reset, which puts it back as it
+started, and the screen of the sky's colors has Reset All. A light is set by its hue, each channel a
+share of the largest channel of the color it starts at, so it starts with one channel at 255, and
+its strength by the Sun and Moon Strength sliders. The sky's colors are its top and its horizon by
+day, at sunset and by night, and the night's tint multiplies them as far as the night has come. No
+setting is saved, and each starts as above at every start.
 
 A world opens behind a black loading screen, with the world's name over a bar of how far its loading
 has come, and under it, while the default packs are fetched, a line and a bar of their own. Half the

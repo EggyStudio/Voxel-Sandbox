@@ -75,27 +75,6 @@ public sealed class Sky : IDisposable
     // shadows of the blocks do not run along their edges at noon, the moon opposite it.
     private static readonly Vector3 SunWay = Vector3.Normalize(new Vector3(1, 0, 0.3f));
 
-    private static readonly Vector3 NightZenith = new(6, 9, 22), DayZenith = new(78, 134, 222);
-    private static readonly Vector3 NightHorizon = new(18, 24, 44), DayHorizon = new(178, 208, 240), DuskHorizon = new(238, 150, 96);
-    // The moonlight in the hue of the modpack's shader's night light, (0.15, 0.14, 0.20) in linear
-    // light, as strong as a moonlight of the luminance the game's had, a quarter of a white's 0.41.
-    private static readonly Vector3 Moonlight = new Vector3(0.15f, 0.14f, 0.20f) / 0.20f;
-    private const float MoonStrength = 0.25f * 0.409f / 0.732f;
-
-    // The night's tint of the modpack's shader with its owner's settings, which multiplies the sky's
-    // colors and so the haze's in linear light, a violet blue, by as much as the night is the night.
-    private static readonly Vector3 NightTint = new(1.10f, 0.90f, 1.30f);
-
-    // The sunlight of the modpack's shader, Aurora's Shaders after Complementary, read as numbers, in
-    // linear light (0.7, 0.55, 0.4) times 1.9 at noon, a warm white, and toward the horizon
-    // (0.64, 0.45, 0.3) to the power of 1.5 and the share short of noon, times 5, an orange, mixed by
-    // the square root of the sun's height, the shader's noon factor.
-    private static readonly Vector3 NoonLight = new Vector3(0.7f, 0.55f, 0.4f) * 1.9f, LowLight = new(0.64f, 0.45f, 0.3f);
-
-    // How strong the sun is for each unit of the shader's light, so its noon is as bright as the
-    // game's sun was before it took the shader's color, a white of 2.2 whose luminance was 0.915.
-    private const float SunStrength = 2.2f * 0.915f / 1.085f;
-
     /// <summary>
     /// Each star's way on the sky as it stands at 6, when the sun rises, the half of its square's
     /// right side and of its up there, and its color in sRGB levels from 0 to 1.
@@ -106,6 +85,7 @@ public sealed class Sky : IDisposable
     private readonly byte[] _pixels = new byte[Width * Height * 4];
     private readonly Texture2D _sun, _moon;
     private float _litHour = float.NaN, _paintedHour = float.NaN;
+    private int _colorsPainted;
 
     // A pack's sun, and its moon as one sheet of four phases by two or as a picture to each phase,
     // or none where no pack has them.
@@ -143,6 +123,9 @@ public sealed class Sky : IDisposable
             _packMoonSheet = Loaded(packs.Texture("environment/moon_phases"));
         }
     }
+
+    /// <summary>The colors the sky is painted in and the light the sun and the moon cast, which the Sky and Visuals screen sets.</summary>
+    public SkyColors Colors { get; } = new();
 
     /// <summary>The hour of the day, from 0 to 24, the sun rising at 6 in the east and setting at 18 in the west.</summary>
     public float Hour { get; set; }
@@ -415,6 +398,8 @@ public sealed class Sky : IDisposable
 
     private void Apply()
     {
+        // A change of the colors lights and paints the sky again at once, whatever the hour.
+        if (Colors.Version != _colorsPainted) (_colorsPainted, _litHour, _paintedHour) = (Colors.Version, float.NaN, float.NaN);
         var lightHour = LightHour(Hour);
         if (lightHour != _litHour)
         {
@@ -427,15 +412,15 @@ public sealed class Sky : IDisposable
             {
                 // The shader's light by the sun's height, its hue as the color and its largest part as
                 // the strength, so the hue never clips.
-                var light = SunLight(toLight.Y);
+                var light = Colors.SunLight(toLight.Y);
                 var most = MathF.Max(light.X, MathF.Max(light.Y, light.Z));
                 SetLightDirection(_light, -toLight);
-                SetLightColor(_light, ColorOf(Encode(light / most) * 255), SunStrength * most * SmoothStep(-0.05f, 0.1f, toLight.Y));
+                SetLightColor(_light, ColorOf(Encode(light / most) * 255), Colors.SunStrength * most * SmoothStep(-0.05f, 0.1f, toLight.Y));
             }
             else
             {
                 SetLightDirection(_light, toLight);
-                SetLightColor(_light, ColorOf(Encode(Moonlight) * 255), MoonStrength * SmoothStep(0.05f, 0.2f, -toLight.Y));
+                SetLightColor(_light, ColorOf(Encode(Colors.Moonlight) * 255), Colors.MoonStrength * SmoothStep(0.05f, 0.2f, -toLight.Y));
             }
         }
 
@@ -479,8 +464,8 @@ public sealed class Sky : IDisposable
     {
         var day = DayShare(toSun);
         var dusk = DuskShare(toSun);
-        var zenith = AtNight(Vector3.Lerp(NightZenith, DayZenith, day), day);
-        var horizon = AtNight(Vector3.Lerp(Vector3.Lerp(NightHorizon, DayHorizon, day), DuskHorizon, dusk * 0.8f), day);
+        var zenith = Colors.AtNight(Vector3.Lerp(Colors.NightZenith, Colors.DayZenith, day), day);
+        var horizon = Colors.AtNight(Vector3.Lerp(Vector3.Lerp(Colors.NightHorizon, Colors.DayHorizon, day), Colors.DuskHorizon, dusk * 0.8f), day);
         var ground = horizon * 0.5f;
         Horizon = ColorOf(horizon);
 
@@ -508,34 +493,9 @@ public sealed class Sky : IDisposable
         }
     }
 
-    /// <summary>The sun's light in linear light at a height, the sine of its angle over the horizon, as the modpack's shader colors it.</summary>
-    public static Vector3 SunLight(float height)
-    {
-        var noon = MathF.Sqrt(MathF.Max(height, 0));
-        var power = 1.5f + (1 - noon);
-        var low = new Vector3(MathF.Pow(LowLight.X, power), MathF.Pow(LowLight.Y, power), MathF.Pow(LowLight.Z, power)) * 5;
-        return Vector3.Lerp(low, NoonLight, noon);
-    }
+    private static float Decode(float c) => SkyColors.Decode(c);
 
-    /// <summary>A sky's color in sRGB levels from 0 to 255 tinted by the night's tint as far as the day's light is gone, <paramref name="day"/> from 0 at night to 1 by day.</summary>
-    public static Vector3 AtNight(Vector3 color, float day) => Tinted(color, Vector3.Lerp(NightTint, Vector3.One, day));
-
-    // An sRGB level from 0 to 1 in linear light.
-    private static float Decode(float c) => c <= 0.04045f ? c / 12.92f : MathF.Pow((c + 0.055f) / 1.055f, 2.4f);
-
-    // A color in sRGB levels from 0 to 255 multiplied by a tint in linear light.
-    private static Vector3 Tinted(Vector3 color, Vector3 tint)
-    {
-        var linear = new Vector3(Decode(color.X / 255), Decode(color.Y / 255), Decode(color.Z / 255)) * tint;
-        return Encode(Vector3.Min(linear, Vector3.One)) * 255;
-    }
-
-    // Linear light to sRGB levels from 0 to 1.
-    private static Vector3 Encode(Vector3 linear)
-    {
-        static float One(float c) => c <= 0.0031308f ? 12.92f * c : 1.055f * MathF.Pow(c, 1 / 2.4f) - 0.055f;
-        return new Vector3(One(linear.X), One(linear.Y), One(linear.Z));
-    }
+    private static Vector3 Encode(Vector3 linear) => SkyColors.Encode(linear);
 
     private static float HoursApart(float a, float b)
     {

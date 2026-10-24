@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Numerics;
 using Engine;
 using static Engine.E3D;
@@ -479,6 +480,31 @@ public static class GameCommands
         (light.Cascades, light.CellSize, light.Budget) = (Math.Clamp(cascades, 1, 8), Math.Max(0.05f, cell), Math.Clamp(budget, 1, 8));
         light.ApplyField();
         return $"{light.Cascades} cascades, the finest's cell {light.CellSize} blocks, {light.Budget} built a frame";
+    }
+
+    [Command("voxel.options", "Each setting of an options screen with its value and reach, of render, post, sky or colors, or sets one by its name, its words joined by underscores, to a value or a choice: voxel.options <screen> [setting] [value]")]
+    internal static string Options(string screen, string setting = "", string value = "")
+    {
+        if (Game is not { } game) return "no world is loaded";
+        var screens = game.Menus.Screens(game).All().ToList();
+        var options = screens.FirstOrDefault(s => s.Name.Equals(screen, StringComparison.OrdinalIgnoreCase)).Options;
+        if (options is null) return $"no screen is called {screen}, which is {string.Join(", ", screens.Select(s => s.Name))}";
+        if (setting.Length == 0) return string.Join("\n", options.Select(Reach));
+        var option = options.FirstOrDefault(o => o.Name.Replace(' ', '_').Equals(setting, StringComparison.OrdinalIgnoreCase));
+        if (option is null) return $"no setting of {screen} is called {setting}";
+        if (value.Length > 0)
+        {
+            var choice = option.Choices is { } choices ? Array.FindIndex(choices, c => c.Replace(' ', '_').Equals(value, StringComparison.OrdinalIgnoreCase)) : -1;
+            if (choice >= 0) option.Change(choice);
+            else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number)) option.Change(number);
+            else return $"{value} is neither a number nor a choice of {option.Name}";
+            option.Settled?.Invoke();
+        }
+        return Reach(option);
+
+        static string Reach(Option o) => o.Choices is { } choices
+            ? $"{o.Label}, of {string.Join(", ", choices)}"
+            : string.Create(CultureInfo.InvariantCulture, $"{o.Label}, {o.Value:0.###} from {o.Low} to {o.High}{(o.Step > 0 ? " by " + o.Step.ToString(CultureInfo.InvariantCulture) : "")}");
     }
 
     [Command("voxel.shadows", "Sets how far from the eye the sun's shadows reach, in blocks: voxel.shadows <distance>")]

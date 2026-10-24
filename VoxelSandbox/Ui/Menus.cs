@@ -10,6 +10,11 @@ public enum Menu
     Pause,
     Options,
     Packs,
+    Render,
+    PostProcessing,
+    SkyAndVisuals,
+    SkyColors,
+    SkyColor,
 }
 
 /// <summary>
@@ -17,10 +22,10 @@ public enum Menu
 /// played alone, and its options of the player's own, drawn as the game's own buttons and sliders.
 /// </summary>
 /// <remarks>
-/// The options are the ones a player sets, the render distance, the field of view, the mouse's
-/// sensitivity, the interface's scale, whether full rows of the HUD fade, how far corners darken, how
-/// much light bounces and the resource packs. What the developer reads and sets stays in the settings
-/// window F3 opens.
+/// The options are the field of view, the mouse's sensitivity, the interface's scale and whether full
+/// rows of the HUD fade, with buttons to the screens of the render's settings, the effects over the
+/// frame, the sky and its colors, and the resource packs, each of <see cref="OptionScreens"/> drawn
+/// as two columns of sliders and buttons with Done under them.
 /// <para>
 /// The resource packs' screen lists the packs that are on, the first over the rest, numbered, then
 /// the others in the game's folder. A click turns a pack on over the rest or off, the arrow beside a
@@ -45,8 +50,15 @@ public sealed class Menus
     private FetchState? _fetchSeen;
     private bool _missing;
 
+    private OptionScreens? _screens;
+    // The sky's color the color's screen sets.
+    private int _color;
+
     /// <summary>The menu open, or none.</summary>
     public Menu Open { get; set; }
+
+    /// <summary>The options' screens of the game's settings, made the first time they are asked for.</summary>
+    public OptionScreens Screens(VoxelGame game) => _screens ??= new OptionScreens(game);
 
     /// <summary>Whether the player asked to quit, which ends the game's loop once the frame is drawn.</summary>
     public bool QuitAsked { get; private set; }
@@ -55,7 +67,14 @@ public sealed class Menus
     public void Back()
     {
         _chosen = null;
-        Open = Open switch { Menu.Packs => Menu.Options, Menu.Options => Menu.Pause, _ => Menu.None };
+        Open = Open switch
+        {
+            Menu.Packs or Menu.Render or Menu.PostProcessing or Menu.SkyAndVisuals => Menu.Options,
+            Menu.SkyColor => Menu.SkyColors,
+            Menu.SkyColors => Menu.SkyAndVisuals,
+            Menu.Options => Menu.Pause,
+            _ => Menu.None,
+        };
     }
 
     /// <summary>Draws the menu open over the darkened world and answers its buttons and sliders.</summary>
@@ -86,27 +105,131 @@ public sealed class Menus
             DrawPacks(game, s, height);
             return;
         }
+        var screens = Screens(game);
+        switch (Open)
+        {
+            case Menu.Render:
+                DrawScreen(screens.Render, s, height);
+                return;
+            case Menu.PostProcessing:
+                DrawScreen(screens.PostProcessing, s, height);
+                return;
+            case Menu.SkyAndVisuals:
+                DrawScreen(screens.SkyAndVisuals, s, height);
+                return;
+            case Menu.SkyColors:
+                DrawSkyColors(screens, s, height);
+                return;
+            case Menu.SkyColor:
+                DrawSkyColor(screens, s, height);
+                return;
+        }
 
-        // The options in two columns of 150, as Minecraft lays its options out, and Done under them.
-        Rectangle Cell(int column, int row) => new(GetScreenWidth() / 2 - 155 * s + column * 160 * s, top + (row * 24 + 16) * s, 150 * s, height);
         Title("Options", top);
-        game.RenderDistance = (int)MathF.Round(Gui.Slider($"Render Distance: {game.RenderDistance}", Cell(0, 0), game.RenderDistance, 2, 16, out _));
-        game.Player.FieldOfView = MathF.Round(Gui.Slider($"FOV: {game.Player.FieldOfView:0}", Cell(1, 0), game.Player.FieldOfView, 30, 110, out _));
+        game.Player.FieldOfView = MathF.Round(Gui.Slider($"FOV: {game.Player.FieldOfView:0}", Cell(0, 0, top), game.Player.FieldOfView, 30, 110, out _));
         // The sensitivity in hundredths of the game's own, 100 the 0.0025 radians a pixel it starts at.
-        var sensitivity = Gui.Slider($"Sensitivity: {game.Player.Sensitivity / 0.0025f * 100:0}%", Cell(0, 1), game.Player.Sensitivity / 0.0025f * 100, 10, 200, out _);
+        var sensitivity = Gui.Slider($"Sensitivity: {game.Player.Sensitivity / 0.0025f * 100:0}%", Cell(1, 0, top), game.Player.Sensitivity / 0.0025f * 100, 10, 200, out _);
         game.Player.Sensitivity = MathF.Round(sensitivity) / 100 * 0.0025f;
-        if (Gui.Button($"GUI Scale: {(Gui.Chosen == 0 ? "Auto" : Gui.Chosen.ToString())}", Cell(1, 1))) Gui.Chosen = (Gui.Chosen + 1) % 5;
-        if (Gui.Button($"Fading HUD: {(game.Fade.Enabled ? "On" : "Off")}", Cell(0, 2))) game.Fade.Enabled = !game.Fade.Enabled;
-        var corners = Gui.Slider($"Corner Shade: {game.Renderer.CornerStrength * 100:0}%", Cell(1, 2), game.Renderer.CornerStrength * 100, 0, 100, out var letGo) / 100;
-        game.Renderer.CornerStrength = MathF.Round(corners * 20) / 20;
-        if (letGo) game.World.ReshadeAll();
-        if (Gui.Button($"Light: {game.Light.Quality}", Cell(0, 3))) game.Light.NextQuality();
-        if (Gui.Button("Resource Packs...", Cell(1, 3)))
+        if (Gui.Button($"GUI Scale: {(Gui.Chosen == 0 ? "Auto" : Gui.Chosen.ToString())}", Cell(0, 1, top))) Gui.Chosen = (Gui.Chosen + 1) % 5;
+        if (Gui.Button($"Fading HUD: {(game.Fade.Enabled ? "On" : "Off")}", Cell(1, 1, top))) game.Fade.Enabled = !game.Fade.Enabled;
+        if (Gui.Button("Render Settings...", Cell(0, 2, top))) Open = Menu.Render;
+        if (Gui.Button("Post Processing...", Cell(1, 2, top))) Open = Menu.PostProcessing;
+        if (Gui.Button("Sky and Visuals...", Cell(0, 3, top))) Open = Menu.SkyAndVisuals;
+        if (Gui.Button("Resource Packs...", Cell(1, 3, top)))
         {
             (_chosen, _fetchSeen, _packScroll) = (null, null, 0);
             Open = Menu.Packs;
         }
         if (Gui.Button("Done", Row(4))) Open = Menu.Pause;
+    }
+
+    // A cell of two columns of 150, as Minecraft lays its options out.
+    private static Rectangle Cell(int column, int row, int top)
+    {
+        var s = Gui.Scale;
+        return new(GetScreenWidth() / 2 - 155 * s + column * 160 * s, top + (row * 24 + 16) * s, 150 * s, ButtonHeight * s);
+    }
+
+    // The top of a screen of so many rows and Done under them, a quarter down the window where they
+    // fit under it and higher where they would not.
+    private static int TopFor(int rows) => Math.Max(20 * Gui.Scale, Math.Min(GetScreenHeight() / 4, GetScreenHeight() - ((rows + 1) * 24 + 24) * Gui.Scale));
+
+    // A screen's settings in two columns, the buttons to the screens under it after them, and Done
+    // under all, which goes back a screen.
+    private void DrawScreen(OptionScreen screen, int s, int height)
+    {
+        var cells = screen.Options.Count + screen.Links.Count;
+        var rows = (cells + 1) / 2;
+        var top = TopFor(rows);
+        Title(screen.Title, top);
+        for (int i = 0; i < screen.Options.Count; i++) Draw(screen.Options[i], Cell(i % 2, i / 2, top));
+        for (int i = 0; i < screen.Links.Count; i++)
+        {
+            var at = screen.Options.Count + i;
+            if (Gui.Button(screen.Links[i].Label, Cell(at % 2, at / 2, top))) Open = screen.Links[i].Opens;
+        }
+        var width = ButtonWidth * s;
+        if (Gui.Button("Done", new Rectangle((GetScreenWidth() - width) / 2, top + (rows * 24 + 16) * s, width, height))) Back();
+    }
+
+    // A setting as a slider or a button. A slider sets its value only as it is moved, so a value
+    // between its steps, as the hour the day has reached, stays as it is while the screen is shown.
+    private static void Draw(Option option, Rectangle box)
+    {
+        if (option.Choices is not null)
+        {
+            if (Gui.Button(option.Label, box)) option.Next();
+            return;
+        }
+        var value = Gui.Slider(option.Label, box, option.Value, option.Low, option.High, out var letGo);
+        if (value != option.Value) option.Change(value);
+        if (letGo) option.Settled?.Invoke();
+    }
+
+    // A button to each of the sky's colors in two columns, each opening the color's screen, then one
+    // that puts every color back as it started, and Done.
+    private void DrawSkyColors(OptionScreens screens, int s, int height)
+    {
+        var colors = screens.Colors;
+        var rows = (colors.Count + 2) / 2;
+        var top = TopFor(rows);
+        Title("Sky Colors", top);
+        for (int i = 0; i < colors.Count; i++)
+        {
+            if (Gui.Button(colors[i].Name + "...", Cell(i % 2, i / 2, top)))
+            {
+                _color = i;
+                Open = Menu.SkyColor;
+            }
+        }
+        if (Gui.Button("Reset All", Cell(colors.Count % 2, colors.Count / 2, top))) screens.SkyColors.Reset();
+        var width = ButtonWidth * s;
+        if (Gui.Button("Done", new Rectangle((GetScreenWidth() - width) / 2, top + (rows * 24 + 16) * s, width, height))) Back();
+    }
+
+    // A color's red, green and blue as sliders across the screen, the color itself under them, and
+    // Reset, which puts the color back as it started, beside Done.
+    private void DrawSkyColor(OptionScreens screens, int s, int height)
+    {
+        var color = screens.Colors[_color];
+        var top = TopFor(5);
+        int width = 310 * s, x = (GetScreenWidth() - width) / 2;
+        Rectangle Line(int row) => new(x, top + (row * 24 + 16) * s, width, height);
+        Title(color.Name, top);
+        var channels = color.Channels(screens.SkyColors);
+        for (int i = 0; i < channels.Count; i++) Draw(channels[i], Line(i));
+        var levels = color.Levels;
+        var swatch = Line(3);
+        DrawRectangle((int)swatch.X, (int)swatch.Y, (int)swatch.Width, (int)swatch.Height, Color.White);
+        DrawRectangle((int)swatch.X + s, (int)swatch.Y + s, (int)swatch.Width - 2 * s, (int)swatch.Height - 2 * s,
+            new Color((byte)Math.Clamp(levels.X, 0, 255), (byte)Math.Clamp(levels.Y, 0, 255), (byte)Math.Clamp(levels.Z, 0, 255)));
+        if (Gui.Button("Reset", Cell(0, 4, top)))
+        {
+            var fresh = OptionScreens.SkyColorsOf(new SkyColors())[_color];
+            color.Set(fresh.Get());
+            screens.SkyColors.Changed();
+        }
+        if (Gui.Button("Done", Cell(1, 4, top))) Back();
     }
 
     // The packs on and the packs in the folder in rows the wheel scrolls, the folder's place under

@@ -916,6 +916,49 @@ draws=$(printf '%s\n' "$state" | sed -nE 's/.* ([0-9]+) draws, .*/\1/p')
 echo "the draws at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ sections, [0-9]+ draws, [0-9]+ triangles')"
 [ -n "$draws" ] && [ "$draws" -le 400 ] || fail "the frame records more than 400 draws of sections at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ sections, [0-9]+ draws' || echo "$state")"
 
+check "the options"
+# Each setting of the Render, Post Processing and Sky and Visuals screens is set to the middle of
+# its reach, or to its low end where it stands there, or to its next choice, read back as set,
+# through the engine's own state where the setting reads it there, and set back as it was, to its
+# step's nearest where it stood between two, as the hour can. A setting is named in voxel.options
+# by its words joined by underscores. The sky's colors' channels, which change only the game's own
+# numbers, are walked by the tests.
+same() { awk -v a="$1" -v b="$2" 'BEGIN { d = a - b; exit !(d < 0.001 && d > -0.001) }'; }
+walked=0
+for screen in render post sky; do
+  mapfile -t lines < <(ask voxel.options "$screen")
+  for line in "${lines[@]}"; do
+    name=${line%%: *}
+    setting=${name// /_}
+    if [[ "$line" == *", of "* ]]; then
+      shown=${line#*: }
+      shown=${shown%%, of *}
+      choices=${line##*, of }
+      IFS=',' read -ra list <<< "${choices//, /,}"
+      next=""
+      for i in "${!list[@]}"; do [ "${list[$i]}" = "$shown" ] && next=${list[$(((i + 1) % ${#list[@]}))]}; done
+      [ -n "$next" ] || fail "the $screen screen's $name shows $shown, none of its choices, $line"
+      answer=$(ask voxel.options "$screen" "$setting" "${next// /_}")
+      [[ "$answer" == "$name: $next, of "* ]] || fail "the $screen screen's $name set to $next reads $answer"
+      answer=$(ask voxel.options "$screen" "$setting" "${shown// /_}")
+      [[ "$answer" == "$name: $shown, of "* ]] || fail "the $screen screen's $name set back to $shown reads $answer"
+    else
+      read -r value _ low _ high _ step <<< "${line##*, }"
+      to=$(awk -v l="$low" -v h="$high" -v s="$step" -v v="$value" 'BEGIN { m = l + int((h - l) / 2 / s + 0.5) * s; d = v - m; print (d < 0.001 && d > -0.001) ? l : m }')
+      answer=$(ask voxel.options "$screen" "$setting" "$to")
+      read -r now _ <<< "${answer##*, }"
+      same "$now" "$to" || fail "the $screen screen's $name set to $to reads $answer"
+      back=$(awk -v l="$low" -v s="$step" -v v="$value" 'BEGIN { print l + int((v - l) / s + 0.5) * s }')
+      answer=$(ask voxel.options "$screen" "$setting" "$value")
+      read -r now _ <<< "${answer##*, }"
+      same "$now" "$back" || fail "the $screen screen's $name set back to $value reads $answer"
+    fi
+    walked=$((walked + 1))
+  done
+done
+echo "the options screens' $walked settings each set and set back"
+[ "$walked" -ge 31 ] || fail "the options screens hold $walked settings, where 31 were written"
+
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
@@ -943,4 +986,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error and wrote $name on F2"
