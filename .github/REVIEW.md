@@ -5,53 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `1c881d0`, item 32's snow layer, read at 00:36 on 2026-10-25, carrying the review's
-files and the devlog's capture. BlockId.SnowLayer is appended so no save's numbering moves, a shaped
-block of one box 16 by 2 by 16 pixels of the snow surface, solid and walked on, going with the block
-under it as a torch does; SnowCover tries 60 random columns a second within 48 blocks of the eye as
-the source ticks its blocks, laying a layer on the highest block where the biome snows, that block
-whole-topped or leaves and the cell over it open, while the shown overcast is at or above a half,
-and removing a layer on top while it is at or under 0.01; the README's Weather section has the
-settling snow. SnowCoverTests lays on stone and leaves but not twice, on water or on a plains
-column, the box 0.125 high and melting once clear, more than 128 of the 256 near tops covered over
-two simulated minutes and under a quarter of those left after four clear; the snowy village captured
-before and after three minutes of snow, the roofs as stairs taking none as the source has it. 306
-tests, play.sh 315 s on the GPU. The three pushed at 00:40 on 2026-10-25 after the run of `9d4b295`
-went green; their run green at 01:27, the play job 47.0 minutes. After `24a4916`, item 32's first
-piece, the weather, read at 00:21 on 2026-10-25, carrying the review's files and the devlog's
-captures. The clock in Weather.cs is a function of the seed, the day and the hour, each day turning
-at a chance of 0.4 at a random hour for 3 to 12 hours from a Random seeded by the seed and the day,
-a turn fading over half an hour each way and running past midnight, Held overriding it and saved in
-WorldInfo.Weather, Enabled the setting; Biome.Precipitation gives snow to the snowy plains and
-taiga, nothing to the desert, the savanna and the badlands and rain to the rest; Sky.Overcast grays
-the painted sky toward 0.7 of its brightness and scales the sun by the overcast's 0.7 and the moon
-by 0.5, repainting as it moves by 0.02, the shown overcast easing toward the clock's at a time
-constant of 2 s; PrecipitationRenderer gives each column within 8 blocks of the eye whose biome
-rains or snows two crossed walls from 14 blocks over the eye down to its highest block so none falls
-under a roof, the pictures the game's own, nine streaks at 10 blocks a second and twelve flakes at
-1.5 with a drift, the walls rebuilt each frame and fading with the share; voxel.weather, a Weather
-toggle under Sky and Visuals and the README's section. WeatherTests reads 60 to 100 turns of 200
-days at seed 1, the same for the same seed and other for another, the fade and the run past
-midnight, held and disabled, and the precipitation by biome; the forest from over its trees and the
-snowy village captured clear and turned. 305 tests, play.sh 325 s on the GPU. After `ce693af`, item
-35, the zoom key, read at 00:02 on 2026-10-25, carrying the review's files. The controller holds a
-Zoom whose share eases to a quarter of the field over a tenth of a second while the key is held and
-back to 1 on release, a wheel notch away multiplying the target by 0.8 down to a tenth and one
-toward widening back up to a quarter, the next press starting at a quarter again; the camera's field
-is the eased field times the share and the mouse's turn a pixel the sensitivity times it, the key
-and the wheel acting only while the mouse turns the view, the hotbar ignoring the wheel while the
-zoom's key is down; the options' general screen holds the Zoom Key among C, V, Z, X, R and Left Alt,
-kept in options.txt and walked by play, the README covering the controls row and the option.
-ZoomTests reads the share over a press and a release, the wheel's floor and reset, and the field and
-the turn narrowing to a quarter; live offscreen the field read 70, then 17.5 with C held and 70
-again. A gap, BehaviorContext.Input keeping the wheel internal so the controller reads it through
-GetMouseWheelMove, the engine's item 113 through ASKS.md. 301 tests, play.sh 325 s on the GPU.
+Reviewed up to `7443bdc`, item 32's second commit, the ambient particles, pushed at 01:31 on
+2026-10-25 after the run of `1c881d0` went green, the run watched, carrying the review's files and
+the devlog's captures. Rain splashes at 60 a second within 8 blocks with three drops each and rings
+on water, leaves falling and turning from canopies with three blocks of air under them, cave dust
+with spores by moss and embers by lava drawn additive, and wakes of the player and the mobs at the
+water's top, each with a density from 0 to 200 percent on a Particles screen under Sky and Visuals
+that voxel.options and options.txt cover. Departures, the rings a flat mesh rebuilt each frame from
+a six-frame sheet since the engine's particles always face the camera; emitters made when a burst
+needs one and unloaded once their particles have died, at most three of a kind and eleven in all,
+since the engine steps, sorts and draws every emitter to its full capacity when empty, 20 fixed
+emitters reading 3.5 ms of CPU and 2.1 of GPU with nothing alive; no emitter colliding with the
+scene, each living no longer than its fall; and the profile's particle counts eased over a second
+since the profile shows a program's value as last set, the three gaps the engine's items 114 to 116
+through ASKS.md. Against `1c881d0` at the rainy forest spawn at 1280 by 720 the frame reads 14.7 to
+19.7 ms against 15.0 to 15.2, inside the noise, the particles 0.005 to 0.04 ms of CPU and up to 0.03
+of GPU from two to four emitters; ParticleTests reads the rates over frames and the cap on a long
+frame, the ring sheet and the leaf sheet's half-turn, and play gains the rain's splashes check and
+walks 45 settings. 309 tests, play.sh 310 s on the GPU.
+
+Before it, `1c881d0` came, items 35 and 32's weather and snow layer with `24a4916` and `ce693af`,
+pushed at 00:40 on 2026-10-25, its run green, the play job 47.0 minutes.
 
 Before it, `9d4b295` came, item 42's second commit, pushed at 23:52 on 2026-10-24, its run green,
 the play job 47.5 minutes.
-
-Before it, `4b398bd` came, items 70 and 43 with `8bcbfde`, pushed at 22:42 on 2026-10-24, its run
-green, the play job 45.6 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -610,24 +587,6 @@ full.
     finished in the neighbor as the villages are. After items 25 and 26. Tests: each kind placed in
     a laid world at a known seed with its blocks counted, a structure crossing an edge whole on both
     sides, and a capture of each in the record. Two or three commits by kind.
-
-32. **Weather and the ambient particles, rain and snow by biome, falling leaves, cave dust and wakes
-    (Decision 15).** The game gains weather, rain in the wet biomes and snow in the cold at the same
-    hours, a chance a day and a length, with the sky and the light dimmed, the rain drawn as the
-    source draws it in a ring about the camera from the sky down to the highest block and the snow
-    laid a layer thick on the top blocks while it snows; and the ambient particles of the modpack's
-    kind through the engine's emitters, raindrops splashing on the blocks they meet and rings on
-    water, leaves falling from leaf blocks in the forests at a slow rate and turning as they fall,
-    dust drifting in caves under a depth, wakes and splashes on water the player and the mobs move
-    through, each a setting on by default with a density. The weather is saved. Tests: the weather's
-    clock over days at a seed, the snow laid and melted, the particle counts within their budget at
-    the default density in the frame's profile, and a capture of rain in a forest and snow on a
-    village in the record. Two commits, the weather, then the particles. Embers in the nether's kind
-    of dark and spores in lush and deep caves drift as the look shows (Decision 21). The weather at
-    `24a4916` on 2026-10-25, the clock by seed and day, the precipitation by biome, the overcast sky
-    and the walls of rain and snow; the snow layer at `1c881d0`, laid on the tops while it snows and
-    melting after; the particles as the second commit next, the splashes and rings, the falling
-    leaves, the cave dust and the wakes, each a setting with a density.
 
 33. **Ambient sound, footsteps by the block and the sound's occlusion and reverb by the room
     (Decision 15).** The game gains footsteps that sound by the block walked on, grass, stone, wood,

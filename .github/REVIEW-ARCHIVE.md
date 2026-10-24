@@ -1557,6 +1557,26 @@ before a batch.
     release, and the sensitivity's scale. One commit, small. Done at `ce693af` on 2026-10-25, the
     share eased, the wheel's steps and the key a general option.
 
+32. **Weather and the ambient particles, rain and snow by biome, falling leaves, cave dust and wakes
+    (Decision 15).** The game gains weather, rain in the wet biomes and snow in the cold at the same
+    hours, a chance a day and a length, with the sky and the light dimmed, the rain drawn as the
+    source draws it in a ring about the camera from the sky down to the highest block and the snow
+    laid a layer thick on the top blocks while it snows; and the ambient particles of the modpack's
+    kind through the engine's emitters, raindrops splashing on the blocks they meet and rings on
+    water, leaves falling from leaf blocks in the forests at a slow rate and turning as they fall,
+    dust drifting in caves under a depth, wakes and splashes on water the player and the mobs move
+    through, each a setting on by default with a density. The weather is saved. Tests: the weather's
+    clock over days at a seed, the snow laid and melted, the particle counts within their budget at
+    the default density in the frame's profile, and a capture of rain in a forest and snow on a
+    village in the record. Two commits, the weather, then the particles. Embers in the nether's kind
+    of dark and spores in lush and deep caves drift as the look shows (Decision 21). The weather at
+    `24a4916` on 2026-10-25, the clock by seed and day, the precipitation by biome, the overcast sky
+    and the walls of rain and snow; the snow layer at `1c881d0`, laid on the tops while it snows and
+    melting after; the particles as the second commit next, the splashes and rings, the falling
+    leaves, the cave dust and the wakes, each a setting with a density. Done at `7443bdc` on
+    2026-10-25 with the particles, the weather at `24a4916` and the snow layer at `1c881d0` before
+    it, the three engine gaps as its items 114 to 116.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

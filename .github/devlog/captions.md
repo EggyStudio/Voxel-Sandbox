@@ -38,3 +38,4 @@
 2026-10-25-item-32-rain-splashes.webp | A river of seed 1 from over its bank under the rain, before on the left and after on the right, rings spreading on the water and drops leaping from the bank where the rain meets them.
 2026-10-25-item-32-falling-leaves.webp | Leaves falling and turning under a canopy of oak leaves laid over seed 1's forest, with Falling Leaves at 200%.
 2026-10-25-item-32-embers.webp | A dark room of stone laid under seed 1's forest round a pool of lava, embers rising from it as they cool, with the cave's dust lit only where the lava's light reaches.
+2026-10-25-item-27-grove-291.webp | Seed 1's cherry grove at 1920 by 1080 at High on the 3DEngine 5.2.283 package and on 5.2.291, alike to the pixel but for 129 of them, the frame 19 to 21 ms on the first and 18 to 21 ms on the second.
