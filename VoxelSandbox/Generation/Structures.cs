@@ -87,13 +87,16 @@ public abstract class Structure
     private static int FloorDiv(int a, int b) => (int)Math.Floor((double)a / b);
 }
 
-/// <summary>Every kind of structure, built in this order.</summary>
+/// <summary>Every kind of structure, built in this order, the ravines before the trees and the rest after them.</summary>
 public static class Structures
 {
     /// <summary>The villages, whose ground the tunnels and the ravines keep out of.</summary>
     public static readonly Village Village = new();
 
-    public static readonly Structure[] All = [new Ravine(), new Dungeon(), Village, new Igloo(), new DesertPyramid()];
+    /// <summary>The ravines, cut before the trees, which stand nowhere on their cuts.</summary>
+    public static readonly Ravine Ravine = new();
+
+    public static readonly Structure[] All = [Ravine, new Dungeon(), Village, new Igloo(), new DesertPyramid()];
 
     public static Structure? Find(string name) => All.FirstOrDefault(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 }

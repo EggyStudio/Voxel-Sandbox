@@ -248,12 +248,17 @@ public sealed class Overworld : IWorldGenerator
         Ores.Place(column, Seed);
         LushCaves.Decorate(column, Seed, [.. grounds.Select(g => g.Height)], _climate.Humidity);
         var clip = new ColumnClip(column);
-        PlaceFeatures(clip, columnX, columnZ);
+        // The ravines are cut before the trees, as the source carves before it places its features,
+        // and a tree stands only where neither they nor the caves have cut its ground, in its own
+        // column or in the one it reaches from.
+        Structures.Ravine.BuildIn(clip, this);
+        PlaceFeatures(clip, columnX, columnZ, new Caves.Places(_caves, (x, z) => At(x, z).Height));
         PlacePatches(clip, grounds, columnX, columnZ);
         PlacePlants(clip, grounds);
-        foreach (var structure in Structures.All) structure.BuildIn(clip, this);
-        // A plant whose ground a tunnel's mouth carved away, or a ravine built after the plants, is
-        // taken out, so none stands in the air.
+        foreach (var structure in Structures.All)
+            if (structure != Structures.Ravine) structure.BuildIn(clip, this);
+        // A plant whose ground a tunnel's mouth or a ravine carved away is taken out, so none stands
+        // in the air.
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
@@ -273,7 +278,7 @@ public sealed class Overworld : IWorldGenerator
     // The features that reach past their place, the trees, that start in this column and in the eight
     // around it within reach of it, in one order every column keeps, so two that overlap overlap the
     // same way wherever they are placed.
-    private void PlaceFeatures(ColumnClip clip, int columnX, int columnZ)
+    private void PlaceFeatures(ColumnClip clip, int columnX, int columnZ, Caves.Places caves)
     {
         // The areas where structures keep trees out, which a tree reaching into them is kept out of too.
         var clearings = new List<(int X0, int Z0, int X1, int Z1)>();
@@ -303,10 +308,25 @@ public sealed class Overworld : IWorldGenerator
                                 roll -= (uint)perThousand;
                                 continue;
                             }
-                            if (feature.GrowsOn(top)) feature.Place(clip, wx, height, wz, hash / 1000);
+                            if (feature.GrowsOn(top) && Whole(wx, wz, caves)) feature.Place(clip, wx, height, wz, hash / 1000);
                             break;
                         }
                     }
+    }
+
+    // Whether the ground a tree stands on is whole, its top at a place and the three toward +x and
+    // +z, so the widest trunks stand too, neither cut by a ravine nor opened by a cave's entrance,
+    // which reaches the top only over the sea's level, as a column carves them.
+    private bool Whole(int x, int z, Caves.Places caves)
+    {
+        for (int dz = 0; dz <= 1; dz++)
+            for (int dx = 0; dx <= 1; dx++)
+            {
+                if (Structures.Ravine.Cuts(this, x + dx, z + dz)) return false;
+                var ground = At(x + dx, z + dz).Height;
+                if (ground > SeaLevel + 1 && caves.DensityAt(x + dx, ground, z + dz) <= 0) return false;
+            }
+        return true;
     }
 
     // The source's patches of grass and flowers that start in this column's chunk and in the eight

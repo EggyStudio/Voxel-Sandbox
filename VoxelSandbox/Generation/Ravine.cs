@@ -9,8 +9,8 @@ namespace VoxelSandbox;
 /// Its line runs across its cell along a way the start's hash picks, swaying to either side, so
 /// each column it crosses finds the same line from the start alone and cuts its own part, from the
 /// ground the generator makes at each place down. It cuts nothing beside ground at the sea's level,
-/// so no water stands beside its air, and it clears whatever grows over its cut, so no tree hangs
-/// over it. None is cut across a village's ground, its margin too, where a road or a footing laid
+/// so no water stands beside its air. It is cut before the trees, and no tree stands on its cut, so
+/// none hangs over it. None is cut across a village's ground, its margin too, where a road or a footing laid
 /// at the ground's height would hang over it.
 /// </remarks>
 public sealed class Ravine : Structure
@@ -34,27 +34,43 @@ public sealed class Ravine : Structure
 
     public override void Build(ColumnClip clip, StructureStart start, Overworld land)
     {
+        for (int z = Math.Max(start.Z, clip.MinZ); z < Math.Min(start.Z + Size, clip.MinZ + Section.Size); z++)
+            for (int x = Math.Max(start.X, clip.MinX); x < Math.Min(start.X + Size, clip.MinX + Section.Size); x++)
+            {
+                if (Cut(start, land, x, z) is not var (floor, ground)) continue;
+                clip.Fill(x, floor, z, x, ground + 12, z, BlockId.Air);
+                if (PlaceHash.Of(x, z, (int)start.Hash) % 13 == 0) clip.Set(x, floor - 1, z, BlockId.Magma);
+            }
+    }
+
+    /// <summary>Whether a ravine cuts the ground at a place, where no tree stands.</summary>
+    public bool Cuts(Overworld land, int x, int z)
+    {
+        foreach (var start in StartsIn(x, z, x, z, land))
+            if (Cut(start, land, x, z) is not null) return true;
+        return false;
+    }
+
+    // The floor a ravine cuts down to at a place and the ground it cuts from, or none where its line
+    // does not pass or the ground lies beside the sea.
+    private (int Floor, int Ground)? Cut(StructureStart start, Overworld land, int x, int z)
+    {
+        if (x < start.X || x >= start.X + Size || z < start.Z || z >= start.Z + Size) return null;
         var angle = start.Hash % 360 * MathF.PI / 180;
         float ax = MathF.Cos(angle), az = MathF.Sin(angle), phase = start.Hash / 360 % 100 / 16f;
         float cx = start.X + Size / 2f, cz = start.Z + Size / 2f;
 
-        for (int z = Math.Max(start.Z, clip.MinZ); z < Math.Min(start.Z + Size, clip.MinZ + Section.Size); z++)
-            for (int x = Math.Max(start.X, clip.MinX); x < Math.Min(start.X + Size, clip.MinX + Section.Size); x++)
-            {
-                // Along the line and across it, from the cell's middle.
-                float dx = x + 0.5f - cx, dz = z + 0.5f - cz;
-                float along = dx * ax + dz * az, across = -dx * az + dz * ax;
-                if (MathF.Abs(along) > Reach) continue;
-                var middle = 1 - along * along / (Reach * Reach);
-                across -= Sway * MathF.Sin(along / Reach * 2.5f + phase);
-                if (MathF.Abs(across) > 1 + 2.5f * middle) continue;
+        // Along the line and across it, from the cell's middle.
+        float dx = x + 0.5f - cx, dz = z + 0.5f - cz;
+        float along = dx * ax + dz * az, across = -dx * az + dz * ax;
+        if (MathF.Abs(along) > Reach) return null;
+        var middle = 1 - along * along / (Reach * Reach);
+        across -= Sway * MathF.Sin(along / Reach * 2.5f + phase);
+        if (MathF.Abs(across) > 1 + 2.5f * middle) return null;
 
-                var ground = land.At(x, z).Height;
-                if (NearWater(land, x, z, ground)) continue;
-                var floor = Math.Max(2, ground - (int)(8 + 22 * middle));
-                clip.Fill(x, floor, z, x, ground + 12, z, BlockId.Air);
-                if (PlaceHash.Of(x, z, (int)start.Hash) % 13 == 0) clip.Set(x, floor - 1, z, BlockId.Magma);
-            }
+        var ground = land.At(x, z).Height;
+        if (NearWater(land, x, z, ground)) return null;
+        return (Math.Max(2, ground - (int)(8 + 22 * middle)), ground);
     }
 
     // Whether the ground at a place or beside it lies at the sea's level or under it.

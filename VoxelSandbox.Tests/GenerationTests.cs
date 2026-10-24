@@ -200,7 +200,7 @@ public class GenerationTests
     }
 
     [Fact]
-    public void No_Plant_Stands_Over_Ground_A_Cave_Or_A_Ravine_Carved_Away()
+    public void No_Plant_Or_Tree_Stands_Over_Ground_A_Cave_Or_A_Ravine_Carved_Away()
     {
         // The land of seed 1 for a hundred and sixty blocks each way about a ravine's start, its plants
         // each standing on a block a body stands on, but the upper half of tall grass on its lower
@@ -208,11 +208,12 @@ public class GenerationTests
         var land = new Overworld(1);
         var start = Structures.Find("ravine")!.StartsIn(-512, -512, 512, 512, land).First();
         int cx = start.X >> Section.Shift, cz = start.Z >> Section.Shift;
+        var columns = new Dictionary<(int, int), ChunkColumn>();
         var floating = new List<string>();
         for (int dz = -5; dz <= 5; dz++)
             for (int dx = -5; dx <= 5; dx++)
             {
-                var column = land.Generate(cx + dx, cz + dz);
+                var column = columns[(cx + dx, cz + dz)] = land.Generate(cx + dx, cz + dz);
                 for (int z = 0; z < Section.Size; z++)
                     for (int x = 0; x < Section.Size; x++)
                         for (int y = 1; y < ChunkColumn.Ceiling; y++)
@@ -222,5 +223,54 @@ public class GenerationTests
                                 floating.Add($"{column.Get(x, y, z)} at {(cx + dx) * Section.Size + x}, {y}, {(cz + dz) * Section.Size + z}");
             }
         Assert.Empty(floating);
+
+        // Its trees stand only where the caves and the ravine left their ground whole, so every log
+        // is joined through the logs around it to one standing on the ground, branches among them,
+        // and every leaf has a log within seven steps, the widest crown's reach, in the columns whose
+        // neighbors are all generated. As many trees stand as the land places, 363 when this was
+        // written against 365 placed over the cuts too.
+        BlockId Get(int x, int y, int z) =>
+            columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var c) && ChunkColumn.Holds(y) ? c.Get(x & Section.Mask, y, z & Section.Mask) : BlockId.Air;
+        bool Inner(int x, int z) => Math.Abs((x >> Section.Shift) - cx) <= 4 && Math.Abs((z >> Section.Shift) - cz) <= 4;
+        var logs = new List<(int X, int Y, int Z)>();
+        var standing = new HashSet<(int X, int Y, int Z)>();
+        var queue = new Queue<(int X, int Y, int Z)>();
+        int bases = 0, alone = 0;
+        foreach (var ((colX, colZ), column) in columns)
+            for (int z = 0; z < Section.Size; z++)
+                for (int x = 0; x < Section.Size; x++)
+                    for (int y = 1; y < ChunkColumn.Ceiling; y++)
+                    {
+                        int wx = colX * Section.Size + x, wz = colZ * Section.Size + z;
+                        var block = column.Get(x, y, z);
+                        if (BlockGroups.Leaves.ContainsKey(block) && Inner(wx, wz) && !LogWithin(wx, y, wz)) alone++;
+                        if (!BlockGroups.Logs.Contains(block)) continue;
+                        logs.Add((wx, y, wz));
+                        var under = column.Get(x, y - 1, z);
+                        if (BlockGroups.Logs.Contains(under) || !VoxelSandbox.Blocks.Collides(under)) continue;
+                        if (Inner(wx, wz)) bases++;
+                        standing.Add((wx, y, wz));
+                        queue.Enqueue((wx, y, wz));
+                    }
+        while (queue.TryDequeue(out var at))
+            for (int dy = -1; dy <= 1; dy++)
+                for (int dz = -1; dz <= 1; dz++)
+                    for (int dx = -1; dx <= 1; dx++)
+                    {
+                        var next = (at.X + dx, at.Y + dy, at.Z + dz);
+                        if (BlockGroups.Logs.Contains(Get(next.Item1, next.Item2, next.Item3)) && standing.Add(next)) queue.Enqueue(next);
+                    }
+        Assert.Empty(logs.Where(l => Inner(l.X, l.Z) && !standing.Contains(l)).Select(l => $"{Get(l.X, l.Y, l.Z)} at {l.X}, {l.Y}, {l.Z}"));
+        Assert.Equal(0, alone);
+        Assert.InRange(bases, 340, 400);
+
+        bool LogWithin(int x, int y, int z)
+        {
+            for (int dy = -7; dy <= 7; dy++)
+                for (int dz = -7; dz <= 7; dz++)
+                    for (int dx = -7; dx <= 7; dx++)
+                        if (Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz) <= 7 && BlockGroups.Logs.Contains(Get(x + dx, y + dy, z + dz))) return true;
+            return false;
+        }
     }
 }

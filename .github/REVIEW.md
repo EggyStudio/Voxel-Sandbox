@@ -5,31 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `2263618`, item 92, far land removed, and nothing else, carrying the review's file
-and DEVLOG.md. FarLand, FarCache, their tests, voxel.far, the slider, the far material, the save's
-surface records and the generator's Surface go, the haze's reach back at the render distance as
-before item 26's third part, play.sh's far check and toggle gone, the README's paragraph, mention
-and far columns gone with its three rows kept, every picture taken again and checked on a sheet, the
-land fading into the haze at 192 blocks, the lush cave view moved where the first spot read nearly
-black offscreen; the departure, old saves keeping their far folder unread; the message amended
-before any push to give the reason in place of naming who asked; 274 tests, the strict build clean,
-play.sh 125 s on the GPU. Read at 10:36 on 2026-10-24. Pushed at 10:44 after the build run of
-`23aa4ff` ended green, its play job 21.8 minutes; its run green at 11:18, the play job 29.0 minutes
-with far land gone. Item 97 done ahead in the engine's tree while the machine was loud, the owner
-playing and the engine's suite running. Item 104 closed by its reading, the draw set the same at
-every pitch. Next item 93, the frame's cost read once the machine is quiet, then 98, the particles'
-light at every angle, then 99, trees whole over carved ground, then 100, felling's last log and the
-crown's pace, then 101, plants giving way to a placed block, then 102, the held light at the player,
-then 103, the flames' top row, then the ECS, items 94, 95 and 96 in order, a piece a commit; then
-42, 43 and 70, then 28 to 36 in order; items 38's second part and 54 when their packages come, and
-the deep caves' sky light under 27 with the engine's next package; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+Reviewed up to `56cb608`, item 98, the block bits lit the same from every heading, and nothing else,
+carrying the review's files. The bits were lit by their squares' normal, which turns to the eye, so
+with the sun behind them they took the ambient alone, reading 138 to 236 around eight headings; a
+bits.slang lights the square as a face turned up seen from straight above, taken a sixteenth out
+along its normal as the mob shader does, reading 219 at all eight headings at hour 8; an upward
+normal on the mesh was tried first and split each square at the eye's height, the engine turning a
+face seen from behind over; voxel.still holds the bits and voxel.bits counts them, and play.sh reads
+the bits from eight headings within six levels; the blasts' clouds are unlit and the flames draw at
+their own color, so neither was it; 274 tests, the strict build clean, play.sh 134 s on the GPU.
+Read at 11:25 on 2026-10-24 and pushed at once, the run of `2263618` having ended green with its
+play job at 29.0 minutes; its run watched. Item 93's reading stands under it and its mends come when
+the GPU is quiet; the engine's ASKS.md has the entry on the scene pass reading the cascades per
+pixel. Next 99 to 103, then 93's mends, then 98, the particles' light at every angle, then 99, trees
+whole over carved ground, then 100, felling's last log and the crown's pace, then 101, plants giving
+way to a placed block, then 102, the held light at the player, then 103, the flames' top row, then
+the ECS, items 94, 95 and 96 in order, a piece a commit; then 42, 43 and 70, then 28 to 36 in order;
+items 38's second part and 54 when their packages come, and the deep caves' sky light under 27 with
+the engine's next package; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `2263618` came, item 92, far land removed, pushed at 10:44 on 2026-10-24, its run green,
+the play job 29.0 minutes.
 
 Before it, `23aa4ff` and `c8dbbee` came, item 91 and item 27's part C, pushed at 10:22 on
 2026-10-24, their run green, the play job 21.8 minutes.
-
-Before it, `9cb81ad` came, item 27's part B, pushed at 09:53 on 2026-10-24, its run green, the play
-job 24.3 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -464,7 +463,8 @@ full.
     where the cause is the game's bits shader the game mends it, and where it is the engine's
     particle sheet the gap goes into the engine's ASKS.md as an entry and the game waits on the
     package. A test reading the same particle from eight headings within a few levels of each other.
-    One commit, after item 93.
+    One commit, after item 93. Done at `56cb608` on 2026-10-24, the bits lit as a face turned up,
+    the clouds and the flames not it.
 
 99. **No tree stands cut by a cave or a cliff, and no leaves hang with no trunk.** The owner played
     at about 10:51 on 2026-10-24 and saw trees cut off where caves and cliffs carved the terrain

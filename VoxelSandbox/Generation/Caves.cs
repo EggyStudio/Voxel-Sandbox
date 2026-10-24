@@ -93,15 +93,43 @@ public sealed class Caves
                 int x = x0 + cx * CellWidth, z = z0 + cz * CellWidth;
                 var ground = groundAt(x, z);
                 for (int level = 0; level < Levels; level++)
-                {
-                    var y = ChunkColumn.Bottom + level * CellHeight;
-                    // The top block counts one deep, as the source's terrain is solid through its
-                    // surface, and a corner over the ground as deep as the top, so a cell across
-                    // the top opens only where an entrance does.
-                    grid.Values[(level * Across + cz) * Across + cx] = y > ground + CellHeight ? 1 : Density(x, y, z, Math.Max(ground - y, 0) + 1);
-                }
+                    grid.Values[(level * Across + cz) * Across + cx] = Corner(x, ChunkColumn.Bottom + level * CellHeight, z, ground);
             }
         return grid;
+    }
+
+    // The density at a corner of the cells under the ground's top there. The top block counts one
+    // deep, as the source's terrain is solid through its surface, and a corner over the ground as
+    // deep as the top, so a cell across the top opens only where an entrance does.
+    private double Corner(int x, int y, int z, int ground) => y > ground + CellHeight ? 1 : Density(x, y, z, Math.Max(ground - y, 0) + 1);
+
+    /// <summary>
+    /// The density at single places as a column's <see cref="Grid"/> has it, each corner of the
+    /// cells asked worked out once, for a feature that reaches from one column into another and
+    /// asks whether the ground it stands on is carved where no grid of that column is at hand.
+    /// </summary>
+    public sealed class Places(Caves caves, Func<int, int, int> groundAt)
+    {
+        private readonly Dictionary<(int, int, int), double> _corners = [];
+
+        /// <summary>The density at a place, interpolated between its cell's corners as the column's grid interpolates it.</summary>
+        public double DensityAt(int x, int y, int z)
+        {
+            int x0 = (int)Math.Floor(x / (double)CellWidth) * CellWidth, z0 = (int)Math.Floor(z / (double)CellWidth) * CellWidth;
+            var y0 = ChunkColumn.Bottom + (y - ChunkColumn.Bottom) / CellHeight * CellHeight;
+            double fx = (x - x0) / (double)CellWidth, fz = (z - z0) / (double)CellWidth, fy = (y - y0) / (double)CellHeight;
+            double At(int dx, int dy, int dz) => Corner(x0 + dx * CellWidth, y0 + dy * CellHeight, z0 + dz * CellWidth);
+            static double Lerp(double t, double a, double b) => a + t * (b - a);
+            return Lerp(fy,
+                Lerp(fz, Lerp(fx, At(0, 0, 0), At(1, 0, 0)), Lerp(fx, At(0, 0, 1), At(1, 0, 1))),
+                Lerp(fz, Lerp(fx, At(0, 1, 0), At(1, 1, 0)), Lerp(fx, At(0, 1, 1), At(1, 1, 1))));
+        }
+
+        private double Corner(int x, int y, int z)
+        {
+            if (_corners.TryGetValue((x, y, z), out var value)) return value;
+            return _corners[(x, y, z)] = caves.Corner(x, y, z, groundAt(x, z));
+        }
     }
 
     /// <summary>The density at the corners of a column's cells, rows of corners along x, then along z, then up.</summary>

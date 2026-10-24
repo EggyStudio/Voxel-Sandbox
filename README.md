@@ -378,11 +378,16 @@ or a footing laid at the ground's height would hang over it. `voxel.find ravine`
 <td><img src=".github/assets/world/jungle.webp" width="400" height="225" alt="The jungle of seed 1 from over its canopy, its giant trees standing out of it"></td>
 </tr></table>
 
-Each column places the trees and the structures that start in it and those that start in the
-columns around it and reach into it, keeping the blocks that fall inside itself. Where one starts
-depends on the seed and the ground at its start alone, which the generator can tell for a column
-not generated, so a tree or a building crosses a column's edge whole although every column is
-generated alone on a worker, as Minecraft places a structure's pieces chunk by chunk.
+Each column places the trees and the structures that start in it and those that start in the columns
+around it and reach into it, keeping the blocks that fall inside itself. Where one starts depends on
+the seed and the ground at its start alone, which the generator can tell for a column not generated,
+so a tree or a building crosses a column's edge whole although every column is generated alone on a
+worker, as Minecraft places a structure's pieces chunk by chunk. The ravines are cut before the
+trees, as Minecraft carves before it places its features, and a tree stands only where neither a
+ravine nor a cave's entrance cuts the four blocks of ground under its trunk, a test any column can
+make of a tree reaching into it from another, so no trunk stands over a cut and no crown is left in
+the air. Over the forest by seed 1's first ravine the test takes a column from 16.5 ms to 18 to
+generate.
 
 The trees take Minecraft's shapes as numbers with the game's own touches. Oaks of four to six logs,
 big oaks of six to fourteen with branches leaning out to balls of leaves, birches and spruces stand
