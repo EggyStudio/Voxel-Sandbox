@@ -11,14 +11,14 @@ public sealed class FallingTests
     private static void Settle(VoxelWorld world, FallingBlocks falling)
     {
         falling.Take(world);
-        for (int i = 0; i < 600 && falling.All.Count > 0; i++) falling.Update(world, 1 / 60f);
+        for (int i = 0; i < 600 && falling.Count > 0; i++) falling.Update(world, 1 / 60f);
     }
 
     [Fact]
     public void A_Column_Of_Sand_In_The_Air_Falls_Block_By_Block_Onto_The_Floor()
     {
         var world = Floor();
-        var falling = new FallingBlocks();
+        var falling = new FallingBlocks(new Engine.EcsWorld());
         for (int y = 10; y <= 12; y++) world.SetBlock(2, y, 2, BlockId.Sand);
         Assert.Equal(3, world.Loosened.Count);
         Assert.All(Enumerable.Range(10, 3), y => Assert.Equal(BlockId.Air, world.GetBlock(2, y, 2)));
@@ -44,7 +44,7 @@ public sealed class FallingTests
     public void Sand_Landing_On_A_Torch_Breaks_Into_Its_Item_And_Gravel_Sinks_Through_Water()
     {
         var world = Floor();
-        var falling = new FallingBlocks();
+        var falling = new FallingBlocks(new Engine.EcsWorld());
         world.SetBlock(2, 4, 2, BlockId.Torch);
         world.SetBlock(2, 8, 2, BlockId.Sand);
         Settle(world, falling);
@@ -83,7 +83,7 @@ public sealed class FallingTests
         var felling = new TreeFelling();
         world.SetBlock(4, 4, 4, BlockId.Air);
         felling.Fell(world, 4, 4, 4);
-        var falling = new FallingBlocks();
+        var falling = new FallingBlocks(new Engine.EcsWorld());
         var (broken, dropped) = (0, 0);
         for (int i = 0; i < 6 * 60; i++)
         {

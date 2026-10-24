@@ -5,24 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `d6532d1`, item 127, the options file, read at 20:05 on 2026-10-24, carrying the
-review's files. options.txt sits beside the saves next to resourcepacks.txt, one line a setting as
-the screen, a dot, the name with underscores, a colon and the value, a choice by its name; it is
-read once the world opens, each value applied through its setter with Settled run, and written when
-a screen is left by a button or Escape or when voxel.options or G changes a setting, written beside
-and moved over, only when the text differs; a bad line keeps the default, an unknown key, no colon,
-a value that is no number, NaN, out of reach or an unknown choice; the time, the daylight cycle and
-the moon belong to the world's save and stay out, and a transient run neither reads nor writes it;
-the options' own four settings are Option objects on a general screen, their labels unchanged. Two
-unit tests, the file written and read back into fresh settings with a second write of nothing
-changed writing nothing and the unkept hour out, and seven kinds of bad line each leaving the
-default with the good line beside read; play.sh's kept run starts on a file with the render distance
-at 5 and an unreadable corner shade line, reads 5 and 50 percent, sets the corner shade to 30 and
-finds both lines rewritten, the walk at 37 settings and about 20 s on the GPU, kept as it is. 294
-tests, play.sh 315 s on the GPU. Held until the run of `80d149e` ends, then pushed. After `80d149e`,
-item 126, the Video Settings screen, read at 19:55 on 2026-10-24, carrying the review's files and
-the devlog's pair of Options and Video. Options lists it first among the areas' screens, Resource
-Packs on a full-width row; the window mode is Windowed, Fullscreen or Borderless read back through
+Reviewed up to `c0dd6e4`, item 94's second piece, the arrows as entities, read at 20:14 on
+2026-10-24, carrying the review's files and the devlog's capture. Each arrow is an entity with one
+Arrow behavior struct holding its position, velocity, stuck and age, no Body, the old Arrow class
+gone; one system, Fly on update, static on the main thread, reads GameStep's world, player and
+seconds, flies only when seconds pass and despawns an arrow on a hit or after 60 s; strikes go into
+GameStep.Hits, which the game deals and clears one frame after the strike when its next frame
+answers the mobs, and GameStep holds a Random for the extra point of damage since E3D006 keeps a
+class out of the behavior; the Arrows facade wraps the EcsWorld as ItemDrops does, the hostile test
+stepping a bare EcsWorld. In an offscreen flat world at hour 0 a skeleton 10 blocks off took the
+player's health from 20 to 12 in 300 frames. No new gap. 294 tests, play.sh 322 s on the GPU. Held
+with `d6532d1` until the run of `80d149e` ends, then pushed. After `d6532d1`, item 127, the options
+file, read at 20:05 on 2026-10-24, carrying the review's files. options.txt sits beside the saves
+next to resourcepacks.txt, one line a setting as the screen, a dot, the name with underscores, a
+colon and the value, a choice by its name; it is read once the world opens, each value applied
+through its setter with Settled run, and written when a screen is left by a button or Escape or when
+voxel.options or G changes a setting, written beside and moved over, only when the text differs; a
+bad line keeps the default, an unknown key, no colon, a value that is no number, NaN, out of reach
+or an unknown choice; the time, the daylight cycle and the moon belong to the world's save and stay
+out, and a transient run neither reads nor writes it; the options' own four settings are Option
+objects on a general screen, their labels unchanged. Two unit tests, the file written and read back
+into fresh settings with a second write of nothing changed writing nothing and the unkept hour out,
+and seven kinds of bad line each leaving the default with the good line beside read; play.sh's kept
+run starts on a file with the render distance at 5 and an unreadable corner shade line, reads 5 and
+50 percent, sets the corner shade to 30 and finds both lines rewritten, the walk at 37 settings and
+about 20 s on the GPU, kept as it is. 294 tests, play.sh 315 s on the GPU. After `80d149e`, item
+126, the Video Settings screen, read at 19:55 on 2026-10-24, carrying the review's files and the
+devlog's pair of Options and Video. Options lists it first among the areas' screens, Resource Packs
+on a full-width row; the window mode is Windowed, Fullscreen or Borderless read back through
 IsWindowFullscreen and IsWindowState, the resolution Current and then the monitor's sizes from
 GetMonitorModes at their highest refresh rate, 38 on the machine, setting the window's size or the
 fullscreen mode when the slider is let go, the frame limit 10 to 250 by 10 and Unlimited through
@@ -486,7 +496,9 @@ full.
     where it must and never keeping a structure of its own around the gap. After items 92 and 93.
     The drops at `5113176` on 2026-10-24, each stack an entity with its behavior and Body and three
     systems by stage, the three gaps found as the engine's items 104 to 106 through ASKS.md; the
-    arrows next, after items 27's pin, 125 and 124.
+    arrows next, after items 27's pin, 125 and 124. The arrows at `c0dd6e4`, one behavior and one
+    system, the strikes dealt a frame after through GameStep; the primed TNT and the falling blocks
+    next.
 
 95. **The world's sections become mesh entities the engine draws (Decision 43).** Each meshed
     section becomes an entity with the engine's Mesh, Material and Transform and a component of the

@@ -543,46 +543,46 @@ breaks over a few jumps, and begins again on another block. A block broken in an
 bits, each a quarter of its side's picture tinted by the climate's grass and leaves where it stood,
 as its faces are, so a grass block broken in the savanna throws the savanna's grass and leaves in a
 jungle the jungle's, which fall, land and are gone within two seconds, as Minecraft's do, each lit
-as its face toward the eye takes the light at its middle, which its body
-keeps in the open, so one clipped into a wall takes no light through it. Grass, farmland and a path
-drop their dirt, stone its cobblestone, coal ore its coal, diamond and emerald ore their gem, lapis
-ore four to nine lapis and redstone ore four or five redstone, wheat its wheat and seeds, the
-grasses a seed one time in eight, a dead bush up to two sticks, leaves their sapling one time in
-twenty, glass and ice nothing, and any other block itself. An ore asks a pickaxe, of stone or better
-for iron, copper and lapis and of iron for gold, redstone, diamond and emerald, and gives nothing to
-a lesser one. A torch or a lantern that falls with the block it held to drops too, and placing a
-block uses one up. A block placed into a plant's cell, a grass's, a fern's or a dead bush's, or a
-fire's, takes the place of what stood there, which drops nothing, and one placed aimed at such a
-plant goes into the plant's own cell, as Minecraft's grasses give way. Sand, red sand and gravel
-over air, water or a plant that gives way fall as Minecraft's gravity blocks do, faster by 0.04 of a
-block a tick each tick and keeping 0.98 of their speed, a column of them block by block as each
-under it goes, and stand where they land, or break into their item over a block that keeps its
-place, as a torch or a slab in their cell. Breaking the log a tree's trunk stands on fells the tree,
-its logs joined to the cut through any of the 26 blocks about each, under the cut too, so a lower
-tree whose branch touches it fells with it whole, breaking from the lowest upward a block a tick
-with their drops and a few bits each, one in four falling as a block that lands, and its leaves
-decaying one after another over the second from the tick the first log goes, so the crown and the
-falling logs are in the air together, with bits and the source's drops, those with no log of
-another tree within six leaves of them, as the source's leaves decay, so the leaves of a tree beside
-it stay, and a wall of logs no leaf touches fells nothing. An axe in survival takes a use for each
-log the felling drops as an item, none for one that falls as a block, so a tree of eight logs of
-which three drop as items takes three besides the cut's own, and an axe that runs out mid-tree
-leaves the logs still to go standing, with the leaves about them. What the player's right hand
-holds stands at the window's lower right as the source draws it, the block's cube turned by 45
-degrees or the item's picture a pixel deep, as the source's item models make it, in the source's
-places for the right hand, a tool's picture turned half about its handle so an axe's blade faces
-ahead, swinging on a hit, a break or a use and bobbing with the walk, and an
-empty hand shows nothing. It is posed as the source poses it about a block before the eye and drawn
-at a quarter of that size toward it, which shows it the same and keeps it inside the player's own
-box, so no wall the player stands against cuts into it, and it is hidden with the HUD. A stack on
-the ground of an item drawn flat is its picture a pixel deep too. A block that gives light, a torch,
-a lantern or glowstone, lights the ground about the player while it is in the hand, and about itself
-where it lies dropped, a point light of its own color at the player's own place, the body's middle a
-third of a block under the eye, so no turn of the view swings it and no wall the player faces takes
-it in, or at the stack reaching as many blocks as its level of light, which casts shadows, so it
-lights no room through a wall, and which global illumination carries on to the walls around as it
-carries a placed one's. The held and the nearest three dropped lights shine, and a torch in the hand
-lights the ground a block off about as a torch standing there does.
+as its face toward the eye takes the light at its middle, which its body keeps in the open, so one
+clipped into a wall takes no light through it. Grass, farmland and a path drop their dirt, stone its
+cobblestone, coal ore its coal, diamond and emerald ore their gem, lapis ore four to nine lapis and
+redstone ore four or five redstone, wheat its wheat and seeds, the grasses a seed one time in eight,
+a dead bush up to two sticks, leaves their sapling one time in twenty, glass and ice nothing, and
+any other block itself. An ore asks a pickaxe, of stone or better for iron, copper and lapis and of
+iron for gold, redstone, diamond and emerald, and gives nothing to a lesser one. A torch or a
+lantern that falls with the block it held to drops too, and placing a block uses one up. A block
+placed into a plant's cell, a grass's, a fern's or a dead bush's, or a fire's, takes the place of
+what stood there, which drops nothing, and one placed aimed at such a plant goes into the plant's
+own cell, as Minecraft's grasses give way. Sand, red sand and gravel over air, water or a plant that
+gives way fall as Minecraft's gravity blocks do, faster by 0.04 of a block a tick each tick and
+keeping 0.98 of their speed, a column of them block by block as each under it goes, and stand where
+they land, or break into their item over a block that keeps its place, as a torch or a slab in their
+cell, each falling block an entity of the engine's ECS that a behavior of its own lets fall in the
+engine's frame. Breaking the log a tree's trunk stands on fells the tree, its logs joined to the cut
+through any of the 26 blocks about each, under the cut too, so a lower tree whose branch touches it
+fells with it whole, breaking from the lowest upward a block a tick with their drops and a few bits
+each, one in four falling as a block that lands, and its leaves decaying one after another over the
+second from the tick the first log goes, so the crown and the falling logs are in the air together,
+with bits and the source's drops, those with no log of another tree within six leaves of them, as
+the source's leaves decay, so the leaves of a tree beside it stay, and a wall of logs no leaf
+touches fells nothing. An axe in survival takes a use for each log the felling drops as an item,
+none for one that falls as a block, so a tree of eight logs of which three drop as items takes three
+besides the cut's own, and an axe that runs out mid-tree leaves the logs still to go standing, with
+the leaves about them. What the player's right hand holds stands at the window's lower right as the
+source draws it, the block's cube turned by 45 degrees or the item's picture a pixel deep, as the
+source's item models make it, in the source's places for the right hand, a tool's picture turned
+half about its handle so an axe's blade faces ahead, swinging on a hit, a break or a use and bobbing
+with the walk, and an empty hand shows nothing. It is posed as the source poses it about a block
+before the eye and drawn at a quarter of that size toward it, which shows it the same and keeps it
+inside the player's own box, so no wall the player stands against cuts into it, and it is hidden
+with the HUD. A stack on the ground of an item drawn flat is its picture a pixel deep too. A block
+that gives light, a torch, a lantern or glowstone, lights the ground about the player while it is in
+the hand, and about itself where it lies dropped, a point light of its own color at the player's own
+place, the body's middle a third of a block under the eye, so no turn of the view swings it and no
+wall the player faces takes it in, or at the stack reaching as many blocks as its level of light,
+which casts shadows, so it lights no room through a wall, and which global illumination carries on
+to the walls around as it carries a placed one's. The held and the nearest three dropped lights
+shine, and a torch in the hand lights the ground a block off about as a torch standing there does.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival and adventure, where a left click takes up a stack, puts it down, joins it to a stack of
@@ -823,7 +823,8 @@ ingot and flint, gravel giving flint one time in ten, and wears out after 64 use
 up from its cell, falls, flashes white every five ticks and swells over its last ten, and after four
 seconds explodes at Minecraft's power of 4, a hollow of about a hundred dirt where a creeper's takes
 fifty, and a blast that reaches TNT lights it on a fuse of half a second to a second and a half, so
-a row of it goes off one after another. Each blast throws Minecraft's cloud, six puffs a tick for
+a row of it goes off one after another, each lit TNT an entity of the engine's ECS that a behavior
+of its own burns in the engine's frame. Each blast throws Minecraft's cloud, six puffs a tick for
 eight ticks within four blocks of it, drawn unlit with the pack's sixteen pictures of an explosion,
 and a flash of light for a tenth of a second, which global illumination carries onto the land
 around.

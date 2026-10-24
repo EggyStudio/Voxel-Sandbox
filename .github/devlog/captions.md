@@ -26,3 +26,4 @@
 2026-10-24-item-124-f3.webp | The F3 window before and after the settings moved to the options' screens, keeping what the frame holds and costs, the toggles of debugging and the world's kind, seed and mode.
 2026-10-24-item-126-video.webp | The options with Video Settings among the areas' screens, and the screen of the window's mode, its resolution, the frame limit and vsync.
 2026-10-24-item-94-arrows.webp | A skeleton at night in the flat world, whose arrows, now entities of the engine's ECS, took eight of the player's twenty points of health in five seconds.
+2026-10-24-item-94-tnt.webp | A TNT lit in the flat world a half second after it popped up from its cell, burning as an entity of the engine's ECS, which blew its crater five seconds on.

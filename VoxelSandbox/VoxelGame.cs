@@ -49,7 +49,11 @@ public sealed class VoxelGame : IDisposable
     public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null)
     {
         _transient = transient;
+        // The game's step, and the falling blocks and the TNT, where their behaviors leave what they
+        // broke and set off.
         GetApp().World.InsertResource(Step);
+        GetApp().World.InsertResource(Falling);
+        GetApp().World.InsertResource(Tnt);
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer();
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
@@ -154,7 +158,7 @@ public sealed class VoxelGame : IDisposable
     public GameStep Step { get; } = new();
 
     /// <summary>The sand and gravel falling where nothing held them up, and a felled tree's logs.</summary>
-    public FallingBlocks Falling { get; } = new();
+    public FallingBlocks Falling { get; } = new(GetApp().World.Resource<EcsWorld>());
 
     /// <summary>The fires burning.</summary>
     public Fires Fires { get; } = new();
@@ -163,7 +167,7 @@ public sealed class VoxelGame : IDisposable
     public TreeFelling Felling { get; } = new();
 
     /// <summary>The TNT lit and burning down its fuse.</summary>
-    public PrimedTnt Tnt { get; } = new();
+    public PrimedTnt Tnt { get; } = new(GetApp().World.Resource<EcsWorld>());
 
     /// <summary>The smoke and the flash of light of the blasts.</summary>
     public BlastEffects Blasts { get; } = new();
@@ -527,8 +531,9 @@ public sealed class VoxelGame : IDisposable
         }
         (Step.World, Step.Player, Step.Inventory, Step.Seconds, Step.PickUp) = (World, Player.Body, Inventory, seconds, alive && Mode.Touches());
         Bits.Update(World, seconds);
+        // The blocks the world loosened start to fall, and those that landed where they could not
+        // stand as the engine's frame let them fall drop as items.
         Falling.Take(World);
-        Falling.Update(World, seconds);
         foreach (var (x, y, z, block) in Falling.Broken) Drops.Pop(Items.Of(block), 1, x, y, z);
         Falling.Broken.Clear();
         // A felled tree's logs and leaves throw a few bits each, many breaking at once, and drop what
@@ -553,8 +558,8 @@ public sealed class VoxelGame : IDisposable
         Fires.Update(World, seconds);
         foreach (var (x, y, z) in Fires.Primed) Tnt.Light(x, y, z);
         Fires.Primed.Clear();
-        Tnt.Update(World, seconds);
         Blasts.Update(seconds);
+        // The TNT whose fuses ran out as the engine's frame burned them goes off.
         var blasts = Tnt.Exploded.ToArray();
         Tnt.Exploded.Clear();
         foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT");
@@ -1074,10 +1079,10 @@ public sealed class VoxelGame : IDisposable
         Renderer.Draw(World, Player.Eye, RenderDistance);
         Lap("draw.sections");
         MobRenderer.Draw(Mobs.All, Player.Eye);
-        DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Size))), Player.Eye, GetTime());
+        DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Falling.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Lit.Size))), Player.Eye, GetTime());
         // A burning TNT shows white every other five ticks, a hair larger than its cube.
-        foreach (var lit in Tnt.All)
-            if (lit.Flashing) DrawCube(lit.Body.Position + new Vector3(0, 0.5f * lit.Size, 0), 1.01f * lit.Size, 1.01f * lit.Size, 1.01f * lit.Size, new Color(255, 255, 255, 150));
+        foreach (var (lit, body) in Tnt.All)
+            if (lit.Flashing) DrawCube(body.Position + new Vector3(0, 0.5f * lit.Size, 0), 1.01f * lit.Size, 1.01f * lit.Size, 1.01f * lit.Size, new Color(255, 255, 255, 150));
         Bits.Draw(Player.Eye, Player.Look);
         if (!HudHidden && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead)) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer);
         DrawArrows();

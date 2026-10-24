@@ -27,19 +27,19 @@ public sealed class TntTests
     public void A_Lit_Tnt_Pops_Up_Lands_Flashes_And_Goes_Off_At_Four_Seconds()
     {
         var world = Laid.World(c => Laid.Fill(c, 0, 3, BlockId.Stone));
-        var tnt = new PrimedTnt();
+        var tnt = new PrimedTnt(new Engine.EcsWorld());
         tnt.Light(2, 4, 2);
-        var lit = Assert.Single(tnt.All);
-        Assert.True(lit.Flashing);
+        Assert.True(Assert.Single(tnt.All).Lit.Flashing);
         var highest = 0f;
         for (int frame = 0; frame < 4 * 60 - 1; frame++)
         {
             tnt.Update(world, 1 / 60f);
-            highest = MathF.Max(highest, lit.Body.Position.Y);
+            highest = MathF.Max(highest, Assert.Single(tnt.All).Body.Position.Y);
         }
         Assert.Empty(tnt.Exploded);
         Assert.InRange(highest, 4.3f, 5.5f);
-        Assert.True(lit.Body.OnGround);
+        var (lit, body) = Assert.Single(tnt.All);
+        Assert.True(body.OnGround);
         Assert.True(lit.Size > 1.25f);
         tnt.Update(world, 1 / 30f);
         var blast = Assert.Single(tnt.Exploded);
@@ -49,6 +49,6 @@ public sealed class TntTests
 
         // TNT another blast reaches burns 10 to 29 ticks.
         for (int i = 0; i < 20; i++) tnt.Chain(2, 4, 2);
-        Assert.All(tnt.All, t => Assert.InRange(t.Left, 0.5f, 1.45f));
+        Assert.All(tnt.All, t => Assert.InRange(t.Lit.Left, 0.5f, 1.45f));
     }
 }
