@@ -5,31 +5,29 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `a528c79`, item 26's fourth part, far land from the generator's surface where nothing
-was seen, with the devlog's move to DEVLOG.md at the root and AGENTS.md's row, and nothing else,
-carrying the review's file: the generator's Surface giving the ground's top or the water at sea
-level, a far cell no seen column covers sampled at its middle, far land on by default at 32 columns,
-tiles grown to 64 cells since the cost was per draw, 278 tiles to 88 and the frame 25.4 to 21.0 ms.
-The readings at seed 1's spawn at noon from 100 up, one session each, frame, GPU and resident: near
-8 with far 0, 32 and 64 at 16.8, 16.7 and 16.7 ms, the GPU 10.8 to 11.5, about 1.0 GB; near 12 at
-17.5, 23.4 and 18.4, the GPU 14.3 to 15.0, 1.55 to 1.75 GB; near 16 at 40.3, 38.6 and 41.5, the GPU
-18.4 to 18.9, 2.7 GB; far land under a millisecond of GPU at any distance, the frame at 12 over 16.7
-ms without it from the taller world's draws with the main thread bound, single sessions varying by
-up to 6 ms. Departures, play.sh turning far land off for its two haze checks, the far land from the
-generator bare of trees so a step of tone shows where the near forest ends, and the README's
-pictures showing no far land yet. 271 tests, the strict build clean, play.sh 145 s on the GPU. Read
-at 08:19 on 2026-10-24. Pushed at 08:48 after the build run of `3d7b1ed` ended green, its play job
-32.6 minutes; the run watched. Decision 40: far land 32 by default and the render distance kept at
-12, the frame's main thread at 12 read as item 90. Next item 90's reading, then the world pictures
-taken again with far land, then 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at
-40 degrees, then 26 and the items in order; items 38's second part and 54 when their packages come;
-the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `ba60ae4`, item 90, the frame at a render distance of 12 back at the 60 Hz pace, and
+nothing else, carrying the review's file, DEVLOG.md and the devlog's pictures: the reading at the
+cherry grove view, 1,824 draws and 1.32 million triangles, the game's drawing 7.5 ms of a 19.0 ms
+frame, the visibility flood 4.8 of it walking 24 sections a column every frame, the sections' draw
+loop 1.9, the engine's graph 10.6 with the scene pass 3.0, the window depth 2.5, the shadows 2.1 and
+the global illumination 1.4; the mend keeping the flood until its key changes, the eye's section and
+the faces its cell leaves by, the world's openings count moved by a column added or removed or an
+opaque block set, the distance and the atlas, the flood 4.8 to 0.004 ms and the game's drawing to
+2.4 to 2.8, the frame 16.7 to 17.0 ms at the 60 Hz pace with the main thread waiting 2.4 to 4.3 ms,
+the GPU at about 14.5 the bound; no merge of the draws, the package having no call for one and the
+main thread spare; the play check bounding the draws at 400 at the land edge's view, reading 277,
+and the water frames check's waits alternating six and seven ticks so its readings fall on two
+frames; 269 tests, the strict build clean, play.sh 151 s on the GPU. Read at 08:56 on 2026-10-24.
+Not pushed, the build run of `a528c79` running; pushed when it ends. Next the world pictures taken
+again with far land, then 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40
+degrees, then 26 and the items in order; items 38's second part and 54 when their packages come; the
+AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `a528c79` came, item 26's fourth part with the devlog's move, pushed at 08:48 on
+2026-10-24, its run in flight.
 
 Before it, `3d7b1ed` came, item 26's third part, pushed at 08:10 on 2026-10-24, its run green, the
 play job 32.6 minutes.
-
-Before it, `1b53cee` and `d2f8b0b` came, item 26's first two parts, pushed at 07:42 on 2026-10-24,
-their run green, the play job 25.0 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -377,7 +375,8 @@ full.
     over buffers with an indirect draw, or the draws recorded once and kept while nothing changes,
     whichever the reading names, holding the frame under 16.7 ms at 12 with far land at 32 on the
     development machine's GPU; a test of the draw count at a known view against a bound. One or two
-    commits, before the items in order.
+    commits, before the items in order. Done at `ba60ae4` on 2026-10-24, the flood kept until its
+    key changes, the numbers in the head; the GPU at 14.5 ms is the engine's bound, no item.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where

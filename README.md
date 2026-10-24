@@ -67,7 +67,7 @@ packs by the addresses and the SHA-512 sums `VoxelSandbox/resources/packs.json` 
 `captures/packs`, which git leaves out, and opens the game with them. Each view of the world is
 encoded at 800 by 450, each window of the interface is drawn at 2 of the screen's pixels to each of
 its own and cut out at 800 by 450 so its pixels keep their edges, the eye is raised out of any block
-it lands in before a capture, and ten of the views make the animation at the head, a GIF of 1.4 MB
+it lands in before a capture, and ten of the views make the animation at the head, a GIF of 1.7 MB
 with a palette of its own for each frame, kept over an animated WebP of the same frames at 0.3 MB
 since a GIF plays wherever a README is read.
 
