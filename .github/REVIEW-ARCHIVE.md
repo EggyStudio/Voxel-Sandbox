@@ -1550,6 +1550,13 @@ before a batch.
     on the owner's word, the haze by height and toward dawn with their settings and the sun's color
     read at four hours.
 
+35. **A zoom key (Decision 15).** C held narrows the field of view to a quarter of the setting over
+    a tenth of a second and widens it back on release, the mouse's sensitivity scaled with it so the
+    aim stays steady, the wheel while held narrowing further to a tenth, as the modpack's zoom does;
+    the key settable in the settings. Tests: the field of view over the frames of a press and a
+    release, and the sensitivity's scale. One commit, small. Done at `ce693af` on 2026-10-25, the
+    share eased, the wheel's steps and the key a general option.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

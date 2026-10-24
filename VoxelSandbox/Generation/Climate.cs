@@ -28,6 +28,9 @@ public sealed record Biome(string Name, BlockId Top, BlockId Under, BlockId Deep
 
     /// <summary>The source's patches of grass and flowers that grow in it, which the overworld lays out after the trees.</summary>
     public PlantPatch[] Patches { get; init; } = [];
+
+    /// <summary>What falls on it while the weather turns, rain unless it is cold enough for snow or too dry for either, as the source's biomes have it.</summary>
+    public Precipitation Precipitation { get; init; } = Precipitation.Rain;
 }
 
 /// <summary>Every biome, by its id.</summary>
@@ -49,9 +52,9 @@ public static class Biomes
     public static readonly Biome Forest = new("forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Oak, 26), (BigOak, 4), (Birch, 8), (Mushrooms, 4)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassForest], GrassColor = new Color(121, 192, 90), FoliageColor = new Color(89, 174, 48), Id = 1, Animals = Farm };
     public static readonly Biome BirchForest = new("birch forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Birch, 34)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassForest], GrassColor = new Color(136, 187, 103), FoliageColor = new Color(107, 169, 65), Id = 2, Animals = Farm };
     public static readonly Biome Taiga = new("taiga", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Spruce, 28), (Mushrooms, 4)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassTaiga2], GrassColor = new Color(134, 183, 131), FoliageColor = new Color(104, 164, 100), Id = 3, Animals = Farm };
-    public static readonly Biome SnowyTaiga = new("snowy taiga", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 22)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassTaiga2], GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 4 };
-    public static readonly Biome SnowyPlains = new("snowy plains", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 2)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 5 };
-    public static readonly Biome Desert = new("desert", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, [(Cactus, 6), (DeadBushes, 4)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 6 };
+    public static readonly Biome SnowyTaiga = new("snowy taiga", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 22)]) { Precipitation = Precipitation.Snow, Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassTaiga2], GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 4 };
+    public static readonly Biome SnowyPlains = new("snowy plains", BlockId.Snow, BlockId.Dirt, BlockId.Air, [(Spruce, 2)]) { Precipitation = Precipitation.Snow, Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(128, 180, 151), FoliageColor = new Color(96, 161, 123), Id = 5 };
+    public static readonly Biome Desert = new("desert", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, [(Cactus, 6), (DeadBushes, 4)]) { Precipitation = Precipitation.None, Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 6 };
     public static readonly Biome Mountains = new("mountains", BlockId.Stone, BlockId.Stone, BlockId.Air, [(Spruce, 3)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(138, 182, 137), FoliageColor = new Color(109, 163, 107), Id = 7, Animals = [MobKinds.Sheep] };
 
     // The seven of the source's biomes after them, their colors and how often their trees stand read
@@ -63,11 +66,12 @@ public static class Biomes
         Patches = [PlantPatch.FlowerSwamp, PlantPatch.GrassNormal],
         Id = 8, GrassColor = new Color(106, 112, 57), FoliageColor = new Color(106, 112, 57), Mottled = true,
     };
-    public static readonly Biome Savanna = new("savanna", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Acacia, 4)]) { Patches = [PlantPatch.TallGrass, PlantPatch.FlowerWarm, PlantPatch.GrassSavanna], GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 9, Animals = [MobKinds.Cow, MobKinds.Sheep] };
+    public static readonly Biome Savanna = new("savanna", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Acacia, 4)]) { Precipitation = Precipitation.None, Patches = [PlantPatch.TallGrass, PlantPatch.FlowerWarm, PlantPatch.GrassSavanna], GrassColor = new Color(191, 183, 85), FoliageColor = new Color(174, 164, 42), Id = 9, Animals = [MobKinds.Cow, MobKinds.Sheep] };
     public static readonly Biome Jungle = new("jungle", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(MegaJungle, 8), (SmallJungle, 30), (Bush, 30)]) { Patches = [PlantPatch.FlowerWarm, PlantPatch.GrassJungle], GrassColor = new Color(89, 201, 60), FoliageColor = new Color(48, 187, 11), Id = 10, Animals = [MobKinds.Chicken, MobKinds.Pig] };
     public static readonly Biome DarkForest = new("dark forest", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(DarkOak, 40), (BrownMushroom, 3), (RedMushroom, 3), (Oak, 6), (Birch, 4), (Mushrooms, 12)]) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassForest], GrassColor = new Color(80, 122, 50), FoliageColor = new Color(89, 174, 48), Id = 11, Animals = Farm };
     public static readonly Biome Badlands = new("badlands", BlockId.RedSand, BlockId.RedSand, BlockId.Terracotta, [(Cactus, 3), (DeadBushes, 10)])
     {
+        Precipitation = Precipitation.None,
         Patches = [PlantPatch.GrassBadlands],
         Id = 12, GrassColor = new Color(144, 129, 77), FoliageColor = new Color(158, 129, 77),
     };

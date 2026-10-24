@@ -232,6 +232,16 @@ public sealed class VoxelGame : IDisposable
 
     public Clouds Clouds { get; } = new();
 
+    /// <summary>The world's weather, which turns by its seed and its days.</summary>
+    public Weather Weather { get; } = new();
+
+    /// <summary>The rain and the snow drawn about the eye while the weather turns.</summary>
+    public PrecipitationRenderer Precipitation { get; } = new();
+
+    // How far the weather has turned as the sky and the rain show it, eased toward the weather's own
+    // share so a held change comes over a few seconds rather than at once.
+    private float _overcast;
+
     public LightSettings Light { get; } = new();
 
     public Hotbar Hotbar { get; }
@@ -378,6 +388,8 @@ public sealed class VoxelGame : IDisposable
         GetApp().World.ClearEvents<MobDied>();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
         Blasts.Clear();
+        // The weather turns by the world's own seed, held as its save held it.
+        (Weather.Seed, Weather.Held, _overcast) = (World.Generator.Seed, info?.Weather, 0);
         // The mode and the inventory are the world's own, a new world's in creative with its hotbar of blocks.
         Mode = Enum.TryParse<GameMode>(info?.Mode, ignoreCase: true, out var mode) ? mode : GameMode.Creative;
         PreviousMode = null;
@@ -486,7 +498,7 @@ public sealed class VoxelGame : IDisposable
         var at = Player.Body.Position;
         Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
             Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, [.. Blocks.All.Select(b => b.Key)],
-            Mode.ToString().ToLowerInvariant(), Inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day));
+            Mode.ToString().ToLowerInvariant(), Inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
         _sinceSave = 0;
     }
 
@@ -610,6 +622,8 @@ public sealed class VoxelGame : IDisposable
         foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(blast.At, PrimedTnt.Power, "was blown up by TNT");
         Lights.Update(Player.Eye - new Vector3(0, HeldLights.UnderEye, 0), Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye);
 
+        _overcast += (Weather.Share(Sky.Day, Sky.Hour) - _overcast) * (1 - MathF.Exp(-0.5f * seconds));
+        Sky.Overcast = _overcast;
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
         Clouds.Update(seconds);
@@ -1132,6 +1146,7 @@ public sealed class VoxelGame : IDisposable
         foreach (var blast in Blasts.All)
             DrawSphere(blast.At, blast.Power * (0.4f + blast.Age), new Color(255, 236, 200, (byte)(220 * Math.Clamp(1 - blast.Age / Blast.Seconds, 0, 1))));
         Lap("draw.things");
+        Precipitation.Draw(World, Player.Eye, _overcast, GetTime());
         Clouds.Draw(Player.Eye, RenderDistance, Sky.Horizon);
         Lap("draw.clouds");
         // The cracks are the block's own, shown with the interface hidden as the source shows them,
@@ -1264,6 +1279,7 @@ public sealed class VoxelGame : IDisposable
         Blasts.Dispose();
         Cracks.Dispose();
         Clouds.Dispose();
+        Precipitation.Dispose();
         Sky.Dispose();
         Packs.Dispose();
     }

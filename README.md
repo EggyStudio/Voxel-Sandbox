@@ -150,18 +150,19 @@ spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` put
 inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and
 reads a furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
 `voxel.throw` throws as Q does, and `voxel.drop` lays one of an item on the ground at a place.
-`voxel.packs` says or sets the resource packs on, and `voxel.reload` reads them again.
-`voxel.vitals` says or sets the health and food, `voxel.hurt` harms the player, and `voxel.respawn`
-gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global illumination, the scene's
-distance field and the sun's shadows, `voxel.options` says or sets any setting of the options'
-screens by its screen and name, `voxel.hud` hides what is drawn over the world for a capture,
-`voxel.scale` sets the interface's scale, at which `build/pictures.sh` takes the windows, and
-`voxel.fov` sets the field of view, which the script narrows to 40 degrees for its views of the
-world, as a zoom does for a screenshot. Three measure the light. `voxel.flicker` records each
-frame's change in the picture around a turn or a step into a file, with the first frame after it,
-the settled one and their difference beside it, `voxel.ring` reads the last frame's light around a
-circle on the ground by angle, and `voxel.depth` says how far the block under a pixel is. The
-engine's own `gi.*` and `field.*` commands show and measure global illumination.
+`voxel.weather` says, holds or frees the weather, `voxel.packs` says or sets the resource packs on,
+and `voxel.reload` reads them again. `voxel.vitals` says or sets the health and food, `voxel.hurt`
+harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and
+`voxel.shadows` set global illumination, the scene's distance field and the sun's shadows,
+`voxel.options` says or sets any setting of the options' screens by its screen and name, `voxel.hud`
+hides what is drawn over the world for a capture, `voxel.scale` sets the interface's scale, at which
+`build/pictures.sh` takes the windows, and `voxel.fov` sets the field of view, which the script
+narrows to 40 degrees for its views of the world, as a zoom does for a screenshot. Three measure the
+light. `voxel.flicker` records each frame's change in the picture around a turn or a step into a
+file, with the first frame after it, the settled one and their difference beside it, `voxel.ring`
+reads the last frame's light around a circle on the ground by angle, and `voxel.depth` says how far
+the block under a pixel is. The engine's own `gi.*` and `field.*` commands show and measure global
+illumination.
 
 ## Biomes
 
@@ -212,6 +213,22 @@ others' are. The numbers, the climate's ranges, the colors and how many trees st
 read from Minecraft's and from those of Terralith, the biome overhaul of the owner's modpack, as a
 model and not a copy, since its license forbids handing its files out. `voxel.biome` finds the
 nearest place of a biome.
+
+## Weather
+
+One sky stands over every biome, as the source's does, and its weather turns at the same hours
+everywhere, each day at a chance of two in five, at an hour of its own and for three to twelve
+hours, reckoned from the world's seed and the day alone, so a world's days bring the same weather
+each time they come round and a save that keeps the hour keeps the weather. A turn comes and goes
+over half an hour and runs on past midnight where it began late. While it lasts the sky is painted
+toward a darker gray of its own brightness and the sun loses up to seven tenths of its light and the
+moon half, and rain falls on the wet biomes, snow on the snowy plains and the snowy taiga, and
+nothing on the desert, the savanna and the badlands. They fall as the source draws them, in each
+column within eight blocks of the eye from fourteen blocks over it down to the column's highest
+block, so none falls under a roof, two walls crossed in each column with the game's own picture of
+thin pale streaks falling ten blocks a second or a dozen flakes a block and a half a second,
+drifting as they go. `voxel.weather` holds the weather turned or clear, which the save keeps, or lets
+it turn by its days again, and the Sky and Visuals screen turns the weather off.
 
 ## Plants, woods and colors
 
@@ -712,6 +729,7 @@ and mode.
 | | Day Length | 1 to 60 minutes | 20 |
 | | Moon, its phase, set by moving the days on to the next night of it | the eight phases | the world's |
 | | Sun Strength and Moon Strength | 0 to 200% by 5 and 0 to 400% by 10 | 100% |
+| | Weather, whether it turns | Off, On | On |
 | | Clouds and Fog | Off, On | On |
 | | Haze by Height, the haze thinning over land high above the sea, and Morning Haze, the haze thickening about sunrise | Off, On | On |
 | Sky Colors, from Sky and Visuals | Noon Sunlight, Low Sunlight, Moonlight and Night Tint, each a light by its hue | red, green and blue from 0 to 255 | the modpack's shader's |

@@ -5,25 +5,38 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `9d4b295`, item 42's second commit, the depth, the edge and the sky, pushed at 23:52
-on 2026-10-24 after the run of `4b398bd` went green, the run watched, carrying the review's files
-and the devlog's captures. The water's faces are a mesh of their own, SectionMesher.Water, drawn
-with a material whose alpha of 253 marks water to the terrain shader; each top corner carries the
-water's depth in the overlay's nine bits, which water never uses, the mean of the four columns about
-the corner down to the first block that is not water to 15 blocks, the shader zeroing the overlay
-for water, since a mesh uploaded from positions and a stream gives its colors to the light field
-alone and a shader reading COLOR0 reads white, as the engine documents; the shader darkens and
-clears the water by depth over the view's slope, its alpha from a floor of 0.4 or less toward the
-shore up to 1 for deep water so the bank has no hard line and a small pool keeps its texture; the
-sky is the haze's color along the reflected view by Schlick's fresnel, scaled by the sky reaching
-the water so cave pools mirror none; the fragment's local lighting is renamed facing. play.sh reads
-a red-lined pool while flying, one block deep red 156 against green 109, five deep 63 against 99,
-and the far end 36 lighter than the near seen low, where the old build reads 16 over and 23 lighter;
-the red wall's pool takes a white concrete bed since clear shallow water shows the dirt's red, and
-the water animation's swing is 43 against 40 asked; the mesher's corner depths tested at 48 inside,
-24 at an edge and 12 at a corner; captures of the sea by the island at noon and 17, the lush cave's
-pools and the stepped pool seen low. The mirror is the engine's item 112, its entry in the engine's
-tree. 298 tests, play.sh 301 s on the GPU.
+Reviewed up to `ce693af`, item 35, the zoom key, read at 00:02 on 2026-10-25, carrying the review's
+files. The controller holds a Zoom whose share eases to a quarter of the field over a tenth of a
+second while the key is held and back to 1 on release, a wheel notch away multiplying the target by
+0.8 down to a tenth and one toward widening back up to a quarter, the next press starting at a
+quarter again; the camera's field is the eased field times the share and the mouse's turn a pixel
+the sensitivity times it, the key and the wheel acting only while the mouse turns the view, the
+hotbar ignoring the wheel while the zoom's key is down; the options' general screen holds the Zoom
+Key among C, V, Z, X, R and Left Alt, kept in options.txt and walked by play, the README covering
+the controls row and the option. ZoomTests reads the share over a press and a release, the wheel's
+floor and reset, and the field and the turn narrowing to a quarter; live offscreen the field read
+70, then 17.5 with C held and 70 again. A gap, BehaviorContext.Input keeping the wheel internal so
+the controller reads it through GetMouseWheelMove, the engine's item 113 through ASKS.md. 301 tests,
+play.sh 325 s on the GPU. Held until the run of `9d4b295` ends, then pushed. After `9d4b295`, item
+42's second commit, the depth, the edge and the sky, pushed at 23:52 on 2026-10-24 after the run of
+`4b398bd` went green, the run watched, carrying the review's files and the devlog's captures. The
+water's faces are a mesh of their own, SectionMesher.Water, drawn with a material whose alpha of 253
+marks water to the terrain shader; each top corner carries the water's depth in the overlay's nine
+bits, which water never uses, the mean of the four columns about the corner down to the first block
+that is not water to 15 blocks, the shader zeroing the overlay for water, since a mesh uploaded from
+positions and a stream gives its colors to the light field alone and a shader reading COLOR0 reads
+white, as the engine documents; the shader darkens and clears the water by depth over the view's
+slope, its alpha from a floor of 0.4 or less toward the shore up to 1 for deep water so the bank has
+no hard line and a small pool keeps its texture; the sky is the haze's color along the reflected
+view by Schlick's fresnel, scaled by the sky reaching the water so cave pools mirror none; the
+fragment's local lighting is renamed facing. play.sh reads a red-lined pool while flying, one block
+deep red 156 against green 109, five deep 63 against 99, and the far end 36 lighter than the near
+seen low, where the old build reads 16 over and 23 lighter; the red wall's pool takes a white
+concrete bed since clear shallow water shows the dirt's red, and the water animation's swing is 43
+against 40 asked; the mesher's corner depths tested at 48 inside, 24 at an edge and 12 at a corner;
+captures of the sea by the island at noon and 17, the lush cave's pools and the stepped pool seen
+low. The mirror is the engine's item 112, its entry in the engine's tree. 298 tests, play.sh 301 s
+on the GPU.
 
 Before it, `4b398bd` came, items 70 and 43 with `8bcbfde`, pushed at 22:42 on 2026-10-24, its run
 green, the play job 45.6 minutes.
@@ -631,12 +644,6 @@ full.
     where the machine has one, skipped where not. One commit. Under Decision 22 the properties are
     read as a picture's metadata, the tiles and the method's name, and the methods are the game's
     own.
-
-35. **A zoom key (Decision 15).** C held narrows the field of view to a quarter of the setting over
-    a tenth of a second and widens it back on release, the mouse's sensitivity scaled with it so the
-    aim stays steady, the wheel while held narrowing further to a tenth, as the modpack's zoom does;
-    the key settable in the settings. Tests: the field of view over the frames of a press and a
-    release, and the sensitivity's scale. One commit, small.
 
 36. **The player seen in third person, with their own animations (Decision 15).** F5 cycles the
     first-person view, a camera behind the player and one in front, as the source's does, the camera

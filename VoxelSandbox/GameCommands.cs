@@ -184,6 +184,25 @@ public static class GameCommands
     private static readonly string[] PhaseNames =
         ["full", "waning gibbous", "at its last quarter", "a waning crescent", "new", "a waxing crescent", "at its first quarter", "waxing gibbous"];
 
+    [Command("voxel.weather", "Says how far the weather has turned and what falls where the player stands, or holds it turned or clear, or lets it turn by its days again: voxel.weather [turned|clear|days]")]
+    internal static string SetWeather(string hold = "")
+    {
+        if (Game is not { } game) return "no world is loaded";
+        var weather = game.Weather;
+        switch (hold.ToLowerInvariant())
+        {
+            case "": break;
+            case "turned": weather.Held = true; break;
+            case "clear": weather.Held = false; break;
+            case "days": weather.Held = null; break;
+            default: return $"no weather is called {hold}, which is turned, clear or days";
+        }
+        var at = game.Player.Body.Position;
+        var falls = game.World.BiomeAt((int)MathF.Floor(at.X), (int)MathF.Floor(at.Z))?.Precipitation ?? Precipitation.None;
+        var held = weather.Held switch { true => "held turned", false => "held clear", null => "turning by its days" };
+        return string.Create(CultureInfo.InvariantCulture, $"the weather is {held}, turned {weather.Share(game.Sky.Day, game.Sky.Hour):0.00} and shown {game.Sky.Overcast:0.00}, and {(falls == Precipitation.None ? "nothing falls" : falls.ToString().ToLowerInvariant() + " falls")} where the player stands, on {game.Precipitation.Columns} columns about the eye");
+    }
+
     [Command("voxel.cycle", "Lets the day go on by itself or holds the hour: voxel.cycle <on>")]
     internal static string Cycle(bool on)
     {

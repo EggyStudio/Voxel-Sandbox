@@ -260,6 +260,7 @@ public sealed class OptionScreens
                 colors.MoonStrength = SkyColors.DefaultMoonStrength * v / 100;
                 colors.Changed();
             }) { High = 400, Step = 10, Format = Option.Percent },
+            Option.Toggle("Weather", () => game.Weather.Enabled, on => game.Weather.Enabled = on),
             Option.Toggle("Clouds", () => game.Clouds.Shown, on => game.Clouds.Shown = on),
             Option.Toggle("Fog", () => game.Fog, on => game.Fog = on),
             Option.Toggle("Haze by Height", () => game.HazeByHeight, on => game.HazeByHeight = on),

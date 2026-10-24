@@ -86,6 +86,7 @@ public sealed class Sky : IDisposable
     private readonly Texture2D _sun, _moon;
     private float _litHour = float.NaN, _paintedHour = float.NaN;
     private int _colorsPainted;
+    private float _overcastPainted;
 
     // A pack's sun, and its moon as one sheet of four phases by two or as a picture to each phase,
     // or none where no pack has them.
@@ -126,6 +127,13 @@ public sealed class Sky : IDisposable
 
     /// <summary>The colors the sky is painted in and the light the sun and the moon cast, which the Sky and Visuals screen sets.</summary>
     public SkyColors Colors { get; } = new();
+
+    /// <summary>
+    /// How overcast the sky is, from 0 clear to 1 under the weather's full turn, which grays the sky
+    /// painted and takes most of the sun's and half the moon's light, as the source's rain dims its
+    /// sky, painted again as it changes by a fiftieth.
+    /// </summary>
+    public float Overcast { get; set; }
 
     /// <summary>The hour of the day, from 0 to 24, the sun rising at 6 in the east and setting at 18 in the west.</summary>
     public float Hour { get; set; }
@@ -400,6 +408,7 @@ public sealed class Sky : IDisposable
     {
         // A change of the colors lights and paints the sky again at once, whatever the hour.
         if (Colors.Version != _colorsPainted) (_colorsPainted, _litHour, _paintedHour) = (Colors.Version, float.NaN, float.NaN);
+        if (MathF.Abs(Overcast - _overcastPainted) > 0.02f) (_overcastPainted, _litHour, _paintedHour) = (Overcast, float.NaN, float.NaN);
         var lightHour = LightHour(Hour);
         if (lightHour != _litHour)
         {
@@ -415,12 +424,12 @@ public sealed class Sky : IDisposable
                 var light = Colors.SunLight(toLight.Y);
                 var most = MathF.Max(light.X, MathF.Max(light.Y, light.Z));
                 SetLightDirection(_light, -toLight);
-                SetLightColor(_light, ColorOf(Encode(light / most) * 255), Colors.SunStrength * most * SmoothStep(-0.05f, 0.1f, toLight.Y));
+                SetLightColor(_light, ColorOf(Encode(light / most) * 255), Colors.SunStrength * most * SmoothStep(-0.05f, 0.1f, toLight.Y) * (1 - 0.7f * _overcastPainted));
             }
             else
             {
                 SetLightDirection(_light, toLight);
-                SetLightColor(_light, ColorOf(Encode(Colors.Moonlight) * 255), Colors.MoonStrength * SmoothStep(0.05f, 0.2f, -toLight.Y));
+                SetLightColor(_light, ColorOf(Encode(Colors.Moonlight) * 255), Colors.MoonStrength * SmoothStep(0.05f, 0.2f, -toLight.Y) * (1 - 0.5f * _overcastPainted));
             }
         }
 
@@ -464,8 +473,8 @@ public sealed class Sky : IDisposable
     {
         var day = DayShare(toSun);
         var dusk = DuskShare(toSun);
-        var zenith = Colors.AtNight(Vector3.Lerp(Colors.NightZenith, Colors.DayZenith, day), day);
-        var horizon = Colors.AtNight(Vector3.Lerp(Vector3.Lerp(Colors.NightHorizon, Colors.DayHorizon, day), Colors.DuskHorizon, dusk * 0.8f), day);
+        var zenith = Overcasting(Colors.AtNight(Vector3.Lerp(Colors.NightZenith, Colors.DayZenith, day), day));
+        var horizon = Overcasting(Colors.AtNight(Vector3.Lerp(Vector3.Lerp(Colors.NightHorizon, Colors.DayHorizon, day), Colors.DuskHorizon, dusk * 0.8f), day));
         var ground = horizon * 0.5f;
         Horizon = ColorOf(horizon);
 
@@ -491,6 +500,13 @@ public sealed class Sky : IDisposable
                 _pixels[at + 3] = 255;
             }
         }
+    }
+
+    // A sky's color in sRGB levels drawn toward a darker gray of its own brightness as far as the sky is overcast.
+    private Vector3 Overcasting(Vector3 color)
+    {
+        var gray = 0.2126f * color.X + 0.7152f * color.Y + 0.0722f * color.Z;
+        return Vector3.Lerp(color, new Vector3(gray * 0.7f), _overcastPainted * 0.85f);
     }
 
     private static float Decode(float c) => SkyColors.Decode(c);
