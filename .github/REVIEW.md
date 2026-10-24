@@ -5,7 +5,13 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `ccf6fcf`, item 98 reworked on the owner's words, read at 13:39 on 2026-10-24,
+Reviewed up to `e82d965`, item 106, the corner shade at a half by default, read at 13:46 on
+2026-10-24, carrying the review's files, `SectionMesher.CornerStrength` starting at 0.5, the slider,
+the menu and voxel.corners unchanged, the game saving no settings so the menu's value lasts the
+session, the README's line saying a corner with three cells closed keeps 0.725 of its color, the
+mesher's corner test asserting a new mesher's half; 275 tests, play.sh 301 s on the GPU through the
+coder's own copy. The three pushed at 13:55 on 2026-10-24 after the run of `08d0943` went green; the
+run watched. After `ccf6fcf`, item 98 reworked on the owner's words, read at 13:39 on 2026-10-24,
 carrying the review's files. The bits are lit by the engine again, the square's own face toward the
 eye taking the light, double sided, the upward normal gone; bits.slang only moves where the light is
 read, the vertex stage carrying the bit's middle in the vertex color and the fragment calling lit()
@@ -17,44 +23,23 @@ bits 16, 25, 13, and with the middle it reads 15, 25, 16; deep in, everything re
 play.sh's check of the bits is that tunnel, the five bits nearest the walls within six levels of one
 another, 18 each, the floor facing up into the ceiling at 0, 5, 0 so the bits are compared with one
 another; the eight-heading check gone with the normal; voxel.bits takes a place. 275 tests, play.sh
-262 s on the GPU from the coder's own build folders, the owner's bin/Debug untouched. Held with
-`4a2cd7b` until the run of `08d0943` ends, then pushed. After `4a2cd7b`, item 93's fourth mend, read
-at 13:21 on 2026-10-24, carrying the review's files. ChunkRenderer.Update holds a section in reach
-that the last flood left out in an unseen set, unmeshed, and a flood that reaches it puts it back
-into the loaded set, all of them with culling off, an edit still meshing at once; update.meshed and
-update.unseen in the profile. A Release flight east from the cherry grove at a sprint, the mean of
-eight samples after the first, reads the update 0.88 and 0.69 ms where 1.30 and 1.33 stood, the
-frame 15.4 and 14.4 where 15.5 and 16.4, most of the old meshing stone no pass draws, 4,200 to 4,500
-sections held unseen against some 390 meshed a second; a teleport into the deep cave meshes nothing
-and draws 83 as before, and the land's edge meshes 189 against 200 with the same 262 draws. The
-README's culling paragraph has the rule; 275 tests, play.sh 176 s on the GPU. After `08d0943`, item
-93's third mend as a reading, read at 13:07 on 2026-10-24, carrying REVIEW.md. ChunkRenderer.Deep
-counts the drawn sections under their column's floor and their triangles, shown in voxel.state and
-in the profile as draw.sections.deep; at 1920 by 1080 in Release the cherry grove draws 61 of 1,683
-sections deep, 40,934 of 1.17 million triangles, 3.5 percent, and the plains village 149 of 1,563,
-97,828 of 0.98 million, 10 percent. The flood already draws a deep section only where the eye's open
-cells join it, which is where a cave opens within reach, and a cut by distance would hide cave
-interiors seen through their mouths for 0.4 to 0.9 ms of CPU recording at most, so the mend stays at
-the counter; 275 tests, play.sh 162 s on the GPU. After `89d8caa`, item 93's second mend, read at
-13:01 on 2026-10-24, carrying the review's files, LightSettings.ShadowDistance 96 to 64. Read in
-Release at 1920 by 1080 at the cherry grove, 96, 64 and 48 in turn twice, the first triple spoiled
-by another GPU user and the clean one the frame 17.84, 16.79 and 15.81 ms, the GPU's shadows 2.01,
-1.04 and 0.70, the CPU's 2.84, 2.31 and 2.13; by eye at the cherry grove, the plains village and the
-hills, 48 loses the shadows of the trees about the village some 50 to 60 blocks off and 64 keeps
-them a little fainter at the far left, the grove the same at all three, so 64 for about a
-millisecond. The README's Shadows paragraph says the distance and why, the stepped sun's cost of
-about 1.6 ms beside the old reading, the costs paragraph no longer naming 96; 275 tests, play.sh 164
-s on the GPU. After `3236b56`, item 103, the fire's top line, read at 12:45, the carried place in
-terrain.slang clamped half a texel of the sampled level inside its tile, the play pack's 32-frame
-fire and play.sh's check of the north wall's top edge against the ground beyond, 275 tests, play.sh
-162 s. The three pushed at 13:12 on 2026-10-24 after the run of `fa6963d` went green; the run
-watched.
+262 s on the GPU from the coder's own build folders, the owner's bin/Debug untouched. After
+`4a2cd7b`, item 93's fourth mend, read at 13:21 on 2026-10-24, carrying the review's files.
+ChunkRenderer.Update holds a section in reach that the last flood left out in an unseen set,
+unmeshed, and a flood that reaches it puts it back into the loaded set, all of them with culling
+off, an edit still meshing at once; update.meshed and update.unseen in the profile. A Release flight
+east from the cherry grove at a sprint, the mean of eight samples after the first, reads the update
+0.88 and 0.69 ms where 1.30 and 1.33 stood, the frame 15.4 and 14.4 where 15.5 and 16.4, most of the
+old meshing stone no pass draws, 4,200 to 4,500 sections held unseen against some 390 meshed a
+second; a teleport into the deep cave meshes nothing and draws 83 as before, and the land's edge
+meshes 189 against 200 with the same 262 draws. The README's culling paragraph has the rule; 275
+tests, play.sh 176 s on the GPU.
+
+Before it, `08d0943` came, item 103 and item 93's second and third mends with `89d8caa` and
+`3236b56`, pushed at 13:12 on 2026-10-24, its run green, the play job 37.8 minutes.
 
 Before it, `fa6963d` came, Verdict 2's mend, pushed at 12:34 on 2026-10-24, its run green at 13:11,
 the play job 36.0 minutes, Verdict 2 settled.
-
-Before it, `1f07038` came, items 99 to 102, pushed at 11:58 on 2026-10-24, its run red at the play
-job's held torch check, Verdict 2, the three suites green.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -657,13 +642,6 @@ full.
     once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
     again. One commit, small, with the package carrying the engine's item 99.
 
-106. **The corner shade stands at a half by default.** The owner wrote at 13:23 on 2026-10-24 that
-    the corner shade should be 0.5 by default; `SectionMesher.CornerStrength` starts at 1, the whole
-    of the occlusion's darkening at a block's corners. The default becomes 0.5, the settings
-    window's slider, the menu's and `voxel.corners` unchanged, a saved setting still read over it;
-    the README's line on how far corners darken says the half, and the mesher's test of the default
-    reads it. One commit, small, after item 98 and before item 94.
-
 107. **The rain forest's floor is shaded, not dark, the canopy taking its levels at its edges.** The
     owner wrote at 13:26 on 2026-10-24 that the rain forest is too dark in the middle and asked for
     a better balance, with the example that the light level should not drop by one with each block
@@ -689,15 +667,19 @@ full.
     unchanged; the clouds' cost read before and after at 1920 by 1080 with the cells' count, and a
     capture of the horizon under clouds at noon. One commit, after item 107 and before item 94.
 
-109. **The cactus stands a pixel in from its cell's sides and a pixel under its top, its picture's
-    white corners left out.** The owner wrote at 13:31 on 2026-10-24 that the cactus needs to be one
-    pixel thinner, white showing in its corners, two pixels smaller on each horizontal axis and one
-    on the vertical since it sits on the ground. The cactus's faces stand a pixel in from each side
-    of the cell, 14 of 16 wide, and its top a pixel under the cell's, the bottom on the ground, the
-    pictures' rows and columns read so the side's and the top's white corners fall outside the
-    faces, as the source's model places them; its collision box the same; a capture of a cactus up
-    close against the before, and the mesher's test of the cactus's bounds. One commit, small, after
-    item 108 and before item 94.
+109. **The cactus is the source's model, its sides a pixel in and their clear edges cut out so the
+    thorns stick out.** The owner wrote at 13:31 on 2026-10-24 that the cactus needs to be one pixel
+    thinner, white showing in its corners, and at 13:46 that the thorns are on the white border, so
+    the faces go a pixel in and the white is cut out as alpha so the thorns at the edges stick out.
+    The game draws the cactus as a whole cube whose texture's clear edges show the color the pixel
+    holds, the TODO line on the source's model open. The cactus becomes the source's model, each
+    side face standing a pixel in from its side of the cell and spanning the cell's full width, the
+    clear pixels cut out as the plants' are so the thorns on the picture's edge columns stick out
+    past the face beside them, the top and the bottom on the inset square, the top at the height the
+    source's model gives it, the bottom on the ground, with the picture's rows and columns as the
+    source maps them; its collision box the source's; a capture of a cactus up close against the
+    before, and the mesher's test of the cactus's faces. One commit, small, after item 108 and
+    before item 94.
 
 110. **The bits of a tinted block carry the biome's tint.** The owner wrote at 13:31 on 2026-10-24
     that the color of the particles for grass and dirt is not adjusted to the temperature of the

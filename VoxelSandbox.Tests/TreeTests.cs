@@ -70,9 +70,11 @@ public class TreeTests
     }
 
     [Fact]
-    public void Leaves_Let_The_Sky_Through_At_A_Level_Each()
+    public void Leaves_Let_The_Sky_Through_Down_To_The_Floor_Two_Levels_Down_Past_A_Second_Layer()
     {
-        // Three layers of leaves over air in a column of its own, open to the sky above.
+        // Three layers of leaves over air in a column of its own, open to the sky above, which take a
+        // level on the way in and one past the first layer, and none for the third, the air under
+        // them keeping the rest down to the floor.
         var column = new ChunkColumn(0, 0);
         for (int z = 0; z < 16; z++)
             for (int x = 0; x < 16; x++)
@@ -82,6 +84,6 @@ public class TreeTests
             }
         Lighting.Compute(column);
         var under = column.At(15).SkyLight(Section.Index(8, 15 & Section.Mask, 8));
-        Assert.InRange(under, 6, 12);
+        Assert.Equal(13, under);
     }
 }

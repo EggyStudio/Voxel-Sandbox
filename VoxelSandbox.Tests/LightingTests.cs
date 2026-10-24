@@ -57,6 +57,37 @@ public class LightingTests
     }
 
     [Fact]
+    public void A_Canopy_Takes_A_Level_On_The_Way_In_And_One_More_Past_Its_First_Layer_And_Its_Floor_Keeps_The_Rest()
+    {
+        // A canopy five deep from 20 to 24 over every place, and one a single leaf deep at 24.
+        var deep = Laid.World(c =>
+        {
+            Laid.Fill(c, 0, 3, BlockId.Stone);
+            Laid.Fill(c, 20, 24, BlockId.OakLeaves);
+        });
+        Assert.Equal(14, deep.GetLight(8, 24, 8).Sky);
+        Assert.Equal(13, deep.GetLight(8, 23, 8).Sky);
+        Assert.Equal(13, deep.GetLight(8, 20, 8).Sky);
+        Assert.Equal(13, deep.GetLight(8, 19, 8).Sky);
+        Assert.Equal(13, deep.GetLight(8, 4, 8).Sky);
+
+        var thin = Laid.World(c =>
+        {
+            Laid.Fill(c, 0, 3, BlockId.Stone);
+            Laid.Fill(c, 24, 24, BlockId.OakLeaves);
+        });
+        Assert.Equal(14, thin.GetLight(8, 4, 8).Sky);
+
+        // A hole cut down through the five opens the floor under it to the full sky, and the leaves
+        // set back shade it as before.
+        for (int y = 20; y <= 24; y++) deep.SetBlock(8, y, 8, BlockId.Air);
+        Assert.Equal(15, deep.GetLight(8, 4, 8).Sky);
+        for (int y = 20; y <= 24; y++) deep.SetBlock(8, y, 8, BlockId.OakLeaves);
+        Assert.Equal(13, deep.GetLight(8, 4, 8).Sky);
+        Assert.Equal(13, deep.GetLight(8, 12, 8).Sky);
+    }
+
+    [Fact]
     public void Glass_Lets_The_Sky_Through_As_Air_Does()
     {
         var world = Stone();

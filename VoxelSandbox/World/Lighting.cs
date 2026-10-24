@@ -5,9 +5,12 @@ namespace VoxelSandbox;
 /// sky, falls straight down without losing any and loses one level for each block it goes sideways
 /// or up, and an emissive block's loses one level for each block from it. Opaque blocks stop both,
 /// glass lets them through, water takes a level more for each block of it, so the sky's light
-/// fades with depth, and leaves take one level for each block of them, the way down too, so a
-/// forest's floor is shaded by its canopy rather than darkened as a cave is, as Minecraft's leaves
-/// let the light through.
+/// fades with depth, and leaves take one level for each block of them sideways and up. The sky's
+/// light falling straight down through a canopy loses a level on the way in and one more past its
+/// first layer, a canopy five deep taking two and one deep taking one, and keeps what is left down
+/// to the floor under it, so a rain forest's floor under its layered crowns is shaded rather than
+/// darkened as a cave is, where a level for each leaf on the way down and one for each block under
+/// the canopy would leave it nearly black.
 /// </summary>
 /// <remarks>
 /// Each block's levels darken the faces beside it where neither the sky nor a lamp reaches, so a
@@ -26,17 +29,23 @@ public static class Lighting
     internal static readonly int[] Dz = [0, 0, 0, 0, 1, -1];
     internal const int Down = 3;
 
-    /// <summary>The level a neighbor of a kind of block takes from a block at <paramref name="level"/> the way <paramref name="direction"/> goes, or 0 for one light does not enter.</summary>
-    internal static int Into(int level, int direction, bool sky, BlockId neighbor)
+    /// <summary>
+    /// The level a neighbor of a kind of block takes from a block at <paramref name="level"/> the way
+    /// <paramref name="direction"/> goes, or 0 for one light does not enter, where
+    /// <paramref name="open"/> says that nothing but the sky and leaves stands over the neighbor, so
+    /// the sky's light falling into it straight down is a canopy's.
+    /// </summary>
+    internal static int Into(int level, int direction, bool sky, BlockId neighbor, bool open = false)
     {
-        if (Blocks.IsLeaves(neighbor)) return level - 1;
+        var falling = sky && direction == Down && open;
+        if (Blocks.IsLeaves(neighbor)) return falling ? level == Max ? Max - 1 : level == Max - 1 ? Max - 2 : level : level - 1;
         if (Blocks.IsOpaque(neighbor)) return 0;
         if (Blocks.IsWater(neighbor)) return level - 2;
-        return sky && direction == Down && level == Max ? Max : level - 1;
+        return sky && direction == Down && (level == Max || open) ? level : level - 1;
     }
 
     // Whether the sky shines straight down through a block without losing a level, as through air and glass.
-    private static bool Clear(BlockId block) => !Blocks.IsOpaque(block) && !Blocks.IsWater(block);
+    internal static bool Clear(BlockId block) => !Blocks.IsOpaque(block) && !Blocks.IsWater(block);
 
     /// <summary>
     /// Works out a column's light as though its sides were walls, on the worker that generated it,
@@ -44,20 +53,35 @@ public static class Lighting
     /// </summary>
     public static void Compute(ChunkColumn column)
     {
+        // Each place's highest block the sky does not pass whole, a leaf or one it stops at, and its
+        // highest the sky does not pass at all, over which only the sky and leaves stand.
         var tops = new int[Section.Size * Section.Size];
+        var opens = new int[Section.Size * Section.Size];
+        // The cells under a canopy spread its light sideways too, as the spreading lit them before.
+        var queue = new Queue<(int X, int Y, int Z)>();
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
-                var y = ChunkColumn.Ceiling - 1;
-                for (; y >= ChunkColumn.Bottom && Clear(column.Get(x, y, z)); y--)
-                    column.At(y).SetLevel(Section.Index(x, y & Section.Mask, z), true, Max);
-                tops[z * Section.Size + x] = y;
+                int y = ChunkColumn.Ceiling - 1, level = Max, top = int.MinValue;
+                for (; y >= ChunkColumn.Bottom; y--)
+                {
+                    var block = column.Get(x, y, z);
+                    if (Blocks.IsLeaves(block))
+                    {
+                        if (top == int.MinValue) top = y;
+                        level = Into(level, Down, true, block, open: true);
+                    }
+                    else if (!Clear(block)) break;
+                    column.At(y).SetLevel(Section.Index(x, y & Section.Mask, z), true, level);
+                    if (top != int.MinValue) queue.Enqueue((x, y, z));
+                }
+                tops[z * Section.Size + x] = top == int.MinValue ? y : top;
+                opens[z * Section.Size + x] = y;
             }
 
         // The open sky beside a column whose top is higher spreads sideways under its overhang and
         // into any cave opening from it, and the lowest open cell of each place spreads down into
         // the water under it, so those cells are where the spreading starts.
-        var queue = new Queue<(int X, int Y, int Z)>();
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
@@ -71,7 +95,7 @@ public static class Lighting
                 var lowest = tops[z * Section.Size + x] + 1;
                 for (int y = lowest; y <= Math.Max(highest, lowest) && y < ChunkColumn.Ceiling; y++) queue.Enqueue((x, y, z));
             }
-        Spread(column, queue, sky: true);
+        Spread(column, queue, sky: true, opens);
 
         for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
             for (int z = 0; z < Section.Size; z++)
@@ -82,10 +106,10 @@ public static class Lighting
                     column.At(y).SetLevel(Section.Index(x, y & Section.Mask, z), false, light);
                     queue.Enqueue((x, y, z));
                 }
-        Spread(column, queue, sky: false);
+        Spread(column, queue, sky: false, opens);
     }
 
-    private static void Spread(ChunkColumn column, Queue<(int X, int Y, int Z)> queue, bool sky)
+    private static void Spread(ChunkColumn column, Queue<(int X, int Y, int Z)> queue, bool sky, int[] opens)
     {
         while (queue.TryDequeue(out var cell))
         {
@@ -97,7 +121,7 @@ public static class Lighting
                 if ((uint)x >= Section.Size || (uint)z >= Section.Size || !ChunkColumn.Holds(y)) continue;
                 var section = column.At(y);
                 var index = Section.Index(x, y & Section.Mask, z);
-                var next = Into(level, d, sky, (BlockId)section.Blocks[index]);
+                var next = Into(level, d, sky, (BlockId)section.Blocks[index], y > opens[z * Section.Size + x]);
                 if (section.Level(index, sky) >= next) continue;
                 section.SetLevel(index, sky, next);
                 queue.Enqueue((x, y, z));
@@ -211,7 +235,7 @@ public sealed class LightEngine(VoxelWorld world)
         if (!opaque)
         {
             // The open sky above the world's top shines straight in.
-            if (y == ChunkColumn.Ceiling - 1) Set(x, y, z, section, index, true, Lighting.Into(Lighting.Max, Lighting.Down, true, now));
+            if (y == ChunkColumn.Ceiling - 1) Set(x, y, z, section, index, true, Lighting.Into(Lighting.Max, Lighting.Down, true, now, open: true));
             Around(x, y, z, _sky);
         }
         Spread(_sky, sky: true);
@@ -239,7 +263,9 @@ public sealed class LightEngine(VoxelWorld world)
                 // An emissive block keeps its own level. One that lets light through, as a torch
                 // does, may hold more from a brighter light beside it, which is taken back to its own.
                 var own = sky ? 0 : Blocks.Get((BlockId)section.Blocks[index]).Light;
-                var came = level < cell.Level || sky && d == Lighting.Down && cell.Level == Lighting.Max && level == Lighting.Max;
+                // The sky's light falls straight down at full and through a canopy without losing a
+                // level, so a level as high under one as over it came from it.
+                var came = level < cell.Level || sky && d == Lighting.Down && level == cell.Level && level >= Lighting.Max - 2;
                 if (came && level > own)
                 {
                     Set(x, y, z, section, index, sky, own);
@@ -262,11 +288,25 @@ public sealed class LightEngine(VoxelWorld world)
             {
                 int x = cell.X + Lighting.Dx[d], y = cell.Y + Lighting.Dy[d], z = cell.Z + Lighting.Dz[d];
                 if (!TryCell(x, y, z, out var section, out var index)) continue;
-                var next = Lighting.Into(level, d, sky, (BlockId)section.Blocks[index]);
+                var open = sky && d == Lighting.Down && level >= Lighting.Max - 2 && OpenAbove(x, y, z);
+                var next = Lighting.Into(level, d, sky, (BlockId)section.Blocks[index], open);
                 if (section.Level(index, sky) >= next) continue;
                 Set(x, y, z, section, index, sky, next);
                 queue.Enqueue((x, y, z));
             }
         }
+    }
+
+    // Whether nothing but the sky and leaves stands over a place, so the sky's light falls into it
+    // straight down as a canopy's.
+    private bool OpenAbove(int x, int y, int z)
+    {
+        var top = world.Top(x, z);
+        for (int above = y + 1; above <= top; above++)
+        {
+            var block = world.GetBlock(x, above, z);
+            if (!Blocks.IsLeaves(block) && !Lighting.Clear(block)) return false;
+        }
+        return true;
     }
 }

@@ -391,15 +391,18 @@ generate.
 
 The trees take Minecraft's shapes as numbers with the game's own touches. Oaks of four to six logs,
 big oaks of six to fourteen with branches leaning out to balls of leaves, birches and spruces stand
-in the temperate and cold biomes, acacias bending to one side under flat crowns in the savanna,
-dark oaks of two logs by two under wide low crowns in the dark forest with giant brown and red
-mushrooms among them, jungle trees, bushes and giant jungle trees of two by two up to thirty high
-with branches in the jungle, and cherry trees forking under wide pink crowns with leaves hanging
-from their edges in the cherry grove, a lantern hung under one crown in three. The crowns are a few
-layers thick, as the source's, and leaves take a level of the light passing through each of them,
-so a forest's floor is shaded by its canopy rather than dark as a cave. As many trees stand in a
-thousand places as the source's chunks hold, fewer where a crown is wide, since the game's trees
-grow into each other where the source leaves out one with no room.
+in the temperate and cold biomes, acacias bending to one side under flat crowns in the savanna, dark
+oaks of two logs by two under wide low crowns in the dark forest with giant brown and red mushrooms
+among them, jungle trees, bushes and giant jungle trees of two by two up to thirty high with
+branches in the jungle, and cherry trees forking under wide pink crowns with leaves hanging from
+their edges in the cherry grove, a lantern hung under one crown in three. The crowns are a few
+layers thick, as the source's, and the sky's light falling through a canopy loses a level on the way
+in and one more past its first layer, a canopy five deep taking two, and keeps the rest down to the
+floor, so a rain forest's floor under its layered crowns reads 13, where a level for each leaf and
+for each block under the canopy would leave it at 9, and leaves take a level each from light passing
+sideways through them. As many trees stand in a thousand places as the source's chunks hold, fewer
+where a crown is wide, since the game's trees grow into each other where the source leaves out one
+with no room.
 
 A structure has at most one start in each cell of 64 by 64 blocks, where its chance falls and the
 land at its start suits it. An igloo of snow with a shroomlight inside stands on the snowy plains, a

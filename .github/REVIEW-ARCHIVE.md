@@ -1209,6 +1209,14 @@ before a batch.
     lighting back with the light read at the bit's middle, the tunnel's bits within six levels of
     one another.
 
+106. **The corner shade stands at a half by default.** The owner wrote at 13:23 on 2026-10-24 that
+    the corner shade should be 0.5 by default; `SectionMesher.CornerStrength` starts at 1, the whole
+    of the occlusion's darkening at a block's corners. The default becomes 0.5, the settings
+    window's slider, the menu's and `voxel.corners` unchanged, a saved setting still read over it;
+    the README's line on how far corners darken says the half, and the mesher's test of the default
+    reads it. One commit, small, after item 98 and before item 94. Done at `e82d965` on 2026-10-24,
+    the default a half, no saved setting since the game saves none.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
