@@ -5,15 +5,23 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `4142a32`, item 121, shadows taking the ground's color and not the sky's blue, read
-at 18:34 on 2026-10-24, carrying the review's files; the owner wrote at about 18:4x that the after
-images look nice. The near tree's shadow on the village's grass at noon read 6.5, 73.9, 57.9 at High
-against the sunlit grass 155, 187, 56, 9.9, 82.4, 67.5 with global illumination off, and 3.2, 43.0,
-27.8 with SetEnvironmentLight at 0, so the blue is the sky's light, which the engine's
-environmentLight scales for the probes' sky too. Each time Sky.cs paints the sky it takes the light
-the painted sky gives a face turned up, the upper half weighted by cos theta sin theta, draws it
-toward a white of the same brightness as far as DayShare reaches, unchanged at night, and passes it
-to SetEnvironmentLight(share, tint), at noon 2.79 and 254, 161, 99, at hour 0 one and white;
+Reviewed up to `e04a1a5`, item 122, the loading screen in the source's red, read at 18:44 on
+2026-10-24, carrying the review's files. At HEAD the one screen shown while a world loads was dark
+gray, VoxelGame.LoadingBackground at 24, 24, 28, cleared by DrawLoading behind the world's name and
+its bar, so it was the screen the owner saw; it is 239, 50, 61, filling the bar's empty part too,
+the white title and the green bar in its white outline reading clearly on it, and the play check
+reads the corner at that red; 288 tests, play.sh 292 s on the GPU. The owner asked the game's
+session why the F3 window and the global illumination window each hold a screen probes checkbox,
+which is the engine's item 103. Held until the run of `4142a32` ends, then pushed. After `4142a32`,
+item 121, shadows taking the ground's color and not the sky's blue, read at 18:34 on 2026-10-24,
+carrying the review's files; the owner wrote at about 18:4x that the after images look nice. The
+near tree's shadow on the village's grass at noon read 6.5, 73.9, 57.9 at High against the sunlit
+grass 155, 187, 56, 9.9, 82.4, 67.5 with global illumination off, and 3.2, 43.0, 27.8 with
+SetEnvironmentLight at 0, so the blue is the sky's light, which the engine's environmentLight scales
+for the probes' sky too. Each time Sky.cs paints the sky it takes the light the painted sky gives a
+face turned up, the upper half weighted by cos theta sin theta, draws it toward a white of the same
+brightness as far as DayShare reaches, unchanged at night, and passes it to
+SetEnvironmentLight(share, tint), at noon 2.79 and 254, 161, 99, at hour 0 one and white;
 terrain.slang's and bits.slang's floor multiply by environmentLight as the engine does. After, the
 shadow reads 48.4, 73.0, 13.6 at brightness 63.5 against 58.4 and the sunlit grass 161, 187, 10,
 midnight identical but for 36 pixels at the lanterns. Departure, the engine's tint scales what the
@@ -109,6 +117,14 @@ full.
     covered the area around. So the clouds stay within twice the render distance of the eye, fading
     into the sky from six tenths of that reach, as Clouds.cs has them; item 108 is closed and its
     build reverted.
+
+45. **A session saves the pictures of its work in the repository, N 4.8.** The owner wrote at about
+    18:5x on 2026-10-24, after BevyCSharp's session kept none of a day's captures, that the rule
+    should be written where the sessions read it and be the same in the three repositories, as this
+    game does. N 4.8 says it, the game's pictures under .github/devlog/ as WebP files named by the
+    date and the item in the commit of their work with the commit's sentence as the caption,
+    DEVLOG.md generated from them, which the game's session has done since Decision 39 through the
+    reviewer's collection and does itself from here on.
 
 46. **The README's pictures taken again, an animation at its head and pictures in its parts
     (Decision 24).** The owner wrote shortly before 05:15 on 2026-10-21 to update the README's
@@ -658,14 +674,16 @@ full.
     once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
     again. One commit, small, with the package carrying the engine's item 99.
 
-122. **The overworld's loading screen is the red of the source's loading overlay.** The owner wrote
-    to the game's session at about 18:4x on 2026-10-24 to make the loading overworld screen the red
-    from the source's logo, a nice color. The README says a world opens behind a loading screen in
-    that red already, so the screen the owner means is the one shown while the overworld loads that
-    is not, read from the game and said in the commit. Its ground becomes the source's loading
-    overlay red, 239, 50, 61, the bar and the words on it readable against it as the source's are,
-    the other screens unchanged; a test reading the overlay's color and a capture. One commit,
-    small, before item 94's pieces.
+123. **The sections the flood culls still cast the sun's shadow.** From the engine's reading of item
+    101 at 18:48 on 2026-10-24 on the game at `758e9df`, the deep cave's tops read sunlit because
+    the flood draws only the sections the eye sees through open cells, so the ground over the cave
+    is never drawn and never reaches the shadow pass, and with voxel.cull off the tops read 0 at
+    every shadow distance. With the package carrying the engine's item 101, a draw into the shadow
+    maps alone, the game draws the culled sections that lie between its view and the sun within the
+    shadow distance through that draw, the sections above and toward the sun of the drawn set's
+    bounds, kept meshed as the drawn ones are and counted in the profile as draw.sections.shadow;
+    the deep cave's tops and edge lines read again at the entry's place, and the cost at the grove
+    and in the cave before and after. One commit, with the package carrying the engine's item 101.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the

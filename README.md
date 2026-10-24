@@ -599,11 +599,15 @@ Control with Q its stack, and a middle click on the window or R sorts the 27 slo
 each kind together in filled stacks, as the sorting mods do. With the window shut, Q throws one of
 the chosen slot's items and Control with Q its stack. A stack on the ground is a small cube of its
 block wearing its faces' pictures as the packs give them, or their colors where no pack does, or an
-item's icon on a square cut out where it is clear, the pack's picture of it or the game's own, and
+item's icon a pixel deep, a cube for each of its pixels shown, the pack's picture of it or the
+game's own, and
 falls, slides to a stop and turns slowly, and is picked up once the player comes within a block of
 it, half a second after it fell or two after it was thrown, joining stacks of its item in the
 inventory first. Two stacks of an item lying together join, and a stack is gone after five minutes.
-The stacks on the ground are not saved with the world. A mob drops its loot as it dies, in either
+The stacks on the ground are not saved with the world. Each is an entity of the engine's ECS, its
+stack and its body its components, and behaviors of its own in the engine's frame make it fall and
+age, put it into the inventory and join it with its kind and take it away, each a concern of its
+own. A mob drops its loot as it dies, in either
 mode. A pig drops porkchops, a cow leather and beef, a sheep a block of wool of its coat's color and
 mutton, and a chicken feathers and its meat.
 

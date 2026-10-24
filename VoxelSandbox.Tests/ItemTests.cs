@@ -1,4 +1,5 @@
 using System.Numerics;
+using Engine;
 using Xunit;
 
 namespace VoxelSandbox.Tests;
@@ -108,7 +109,7 @@ public sealed class ItemTests : IDisposable
         var inventory = new Inventory();
         for (int i = 1; i < Inventory.Size; i++) inventory.Slots[i] = new ItemStack(Items.Feather, 64);
         inventory.Slots[0] = new ItemStack(Of(BlockId.Sand), 60);
-        var drops = new ItemDrops();
+        var drops = new ItemDrops(new EcsWorld());
         drops.Spawn(Of(BlockId.Sand), 10, new Vector3(5.5f, 11.5f, 4.5f), Vector3.Zero);
 
         Assert.Equal(0, drops.Update(world, player, inventory, 0.3f));
@@ -116,7 +117,7 @@ public sealed class ItemTests : IDisposable
 
         Assert.Equal(64, inventory.Slots[0]!.Value.Count);
         var left = Assert.Single(drops.All);
-        Assert.Equal(6, left.Count);
+        Assert.Equal(6, left.Drop.Count);
         Assert.Equal(11, left.Body.Position.Y, 2);
     }
 
@@ -124,15 +125,15 @@ public sealed class ItemTests : IDisposable
     public void Two_Stacks_Of_One_Item_Lying_Together_Join()
     {
         var world = Floor();
-        var drops = new ItemDrops();
+        var drops = new ItemDrops(new EcsWorld());
         drops.Spawn(Items.Leather, 2, new Vector3(4.5f, 11, 4.5f), Vector3.Zero);
         drops.Spawn(Items.Leather, 3, new Vector3(4.7f, 11, 4.5f), Vector3.Zero);
         drops.Spawn(Items.Feather, 1, new Vector3(4.6f, 11, 4.5f), Vector3.Zero);
 
         drops.Update(world, new Body { Position = new Vector3(20.5f, 11, 20.5f) }, new Inventory(), 0.1f);
 
-        Assert.Equal(2, drops.All.Count);
-        Assert.Equal(5, drops.All.Single(d => d.Item == Items.Leather).Count);
+        Assert.Equal(2, drops.Count);
+        Assert.Equal(5, drops.All.Single(d => d.Drop.Item == Items.Leather).Drop.Count);
     }
 
     [Fact]

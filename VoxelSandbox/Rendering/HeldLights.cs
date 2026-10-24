@@ -39,13 +39,13 @@ public sealed class HeldLights : IDisposable
     private readonly List<(LightHandle Light, BlockId Block)> _lights = [];
 
     /// <summary>Puts a light at the player's place for what the hand holds, where that gives light, and at each of the nearest dropped stacks that do, as of this frame.</summary>
-    public void Update(Vector3 carrier, Item? held, IReadOnlyList<ItemDrop> drops, Vector3 eye)
+    public void Update(Vector3 carrier, Item? held, IEnumerable<(ItemDrop Drop, Body Body)> drops, Vector3 eye)
     {
         var wanted = new List<(Vector3 At, BlockId Block)>();
         if (held?.Block is { } carried && Blocks.Get(carried).Light > 0) wanted.Add((carrier, carried));
-        foreach (var drop in drops.Where(d => d.Item.Block is { } b && Blocks.Get(b).Light > 0)
+        foreach (var (drop, body) in drops.Where(d => d.Drop.Item.Block is { } b && Blocks.Get(b).Light > 0)
                      .OrderBy(d => Vector3.DistanceSquared(d.Body.Position, eye)).Take(Most - wanted.Count))
-            wanted.Add((drop.Body.Position + new Vector3(0, 0.25f, 0), drop.Item.Block!.Value));
+            wanted.Add((body.Position + new Vector3(0, 0.25f, 0), drop.Item.Block!.Value));
 
         for (int i = 0; i < Math.Max(wanted.Count, _lights.Count); i++)
         {

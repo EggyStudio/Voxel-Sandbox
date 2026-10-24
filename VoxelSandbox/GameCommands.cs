@@ -34,7 +34,7 @@ public static class GameCommands
             + $"{game.Mobs.All.Count} mobs loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws; "
             + $"hour {game.Sky.Hour:0.00} of day {game.Sky.Day}, light {game.Light.Quality}, render distance {game.RenderDistance}, world {game.World.Generator.Name} of seed {game.World.Generator.Seed}, "
             + $"{(game.Save is { } save ? $"saved in {save.Name}" : "transient")}, {game.Mode.ToString().ToLowerInvariant()}, "
-            + $"holding {(game.Hotbar.Current is { } held ? $"{held.Count} {held.Item.Key}" : "nothing")}, {game.Drops.All.Count} stacks on the ground; "
+            + $"holding {(game.Hotbar.Current is { } held ? $"{held.Count} {held.Item.Key}" : "nothing")}, {game.Drops.Count} stacks on the ground; "
             + Vitals(game.Vitals);
     }
 
@@ -342,7 +342,7 @@ public static class GameCommands
     internal static string Throw(bool all = false)
     {
         if (Game is not { } game) return "no world is loaded";
-        return game.Throw(all) ? $"thrown, {game.Drops.All.Count} stacks on the ground" : "the chosen slot is empty";
+        return game.Throw(all) ? $"thrown, {game.Drops.Count} stacks on the ground" : "the chosen slot is empty";
     }
 
     [Command("voxel.clouds", "Shows or hides the clouds, and where a drift is given places them that many blocks east, as a capture taken again places them: voxel.clouds <on|off> [drift]")]

@@ -46,6 +46,7 @@ public sealed class VoxelGame : IDisposable
     public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null)
     {
         _transient = transient;
+        GetApp().World.InsertResource(Step);
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer();
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
@@ -137,7 +138,10 @@ public sealed class VoxelGame : IDisposable
     public MobRenderer MobRenderer { get; } = new();
 
     /// <summary>The stacks of items lying in the world.</summary>
-    public ItemDrops Drops { get; } = new();
+    public ItemDrops Drops { get; } = new(GetApp().World.Resource<EcsWorld>());
+
+    /// <summary>What the game's behaviors in the engine's frame read of the game, set each frame.</summary>
+    public GameStep Step { get; } = new();
 
     /// <summary>The sand and gravel falling where nothing held them up, and a felled tree's logs.</summary>
     public FallingBlocks Falling { get; } = new();
@@ -432,6 +436,8 @@ public sealed class VoxelGame : IDisposable
 
     public void Update()
     {
+        // The behaviors step nothing in a frame the game does not step, as while the world loads.
+        Step.Seconds = 0;
         TakeDefaults();
         if (NextWorld is { } next)
         {
@@ -508,7 +514,7 @@ public sealed class VoxelGame : IDisposable
             if (AtFurnace == (x, y, z)) CloseInventory();
             Drops.Spawn(stack.Item, stack.Count, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
-        Drops.Update(World, Player.Body, Inventory, seconds, pickUp: alive && Mode.Touches());
+        (Step.World, Step.Player, Step.Inventory, Step.Seconds, Step.PickUp) = (World, Player.Body, Inventory, seconds, alive && Mode.Touches());
         Bits.Update(World, seconds);
         Falling.Take(World);
         Falling.Update(World, seconds);
@@ -1196,4 +1202,22 @@ public sealed class VoxelGame : IDisposable
         Sky.Dispose();
         Packs.Dispose();
     }
+}
+
+/// <summary>
+/// What the game's behaviors in the engine's frame read of the game, a resource of the app's world:
+/// its voxel world, the player's body and inventory, the seconds the game steps this frame, none
+/// while a menu is open or the world loads, and whether the player picks up what lies near.
+/// </summary>
+public sealed class GameStep
+{
+    public VoxelWorld World { get; set; } = null!;
+
+    public Body Player { get; set; } = null!;
+
+    public Inventory Inventory { get; set; } = null!;
+
+    public float Seconds { get; set; }
+
+    public bool PickUp { get; set; }
 }

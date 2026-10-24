@@ -1412,6 +1412,16 @@ before a batch.
     environment's light drawn toward white by day through SetEnvironmentLight, the owner finding the
     after images nice, the departure on the sky's reflections in the head.
 
+122. **The overworld's loading screen is the red of the source's loading overlay.** The owner wrote
+    to the game's session at about 18:4x on 2026-10-24 to make the loading overworld screen the red
+    from the source's logo, a nice color. The README says a world opens behind a loading screen in
+    that red already, so the screen the owner means is the one shown while the overworld loads that
+    is not, read from the game and said in the commit. Its ground becomes the source's loading
+    overlay red, 239, 50, 61, the bar and the words on it readable against it as the source's are,
+    the other screens unchanged; a test reading the overlay's color and a capture. One commit,
+    small, before item 94's pieces. Done at `e04a1a5` on 2026-10-24, the one loading screen, dark
+    gray before, in the source's red.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

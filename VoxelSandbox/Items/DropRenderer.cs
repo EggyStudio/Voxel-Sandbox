@@ -45,19 +45,19 @@ public sealed class DropRenderer : IDisposable
     /// whole blocks moving, falling sand or burning TNT, each its block's stack four times its size
     /// and the size given over that, standing on its feet. Called inside <c>BeginMode3D</c>.
     /// </summary>
-    public void Draw(IReadOnlyList<ItemDrop> drops, IEnumerable<(BlockId Block, Vector3 Feet, float Size)> blocks, Vector3 eye, double time)
+    public void Draw(IEnumerable<(ItemDrop Drop, Body Body)> drops, IEnumerable<(BlockId Block, Vector3 Feet, float Size)> blocks, Vector3 eye, double time)
     {
         foreach (var list in _draws) list.Clear();
         foreach (var (block, feet, size) in blocks)
             if (Vector3.DistanceSquared(feet, eye) <= Distance * Distance)
                 _draws[Items.Of(block).Id].Add(Matrix4x4.CreateScale(4 * size) * Matrix4x4.CreateTranslation(feet + new Vector3(0, 0.5f, 0)));
-        foreach (var drop in drops)
+        foreach (var (drop, body) in drops)
         {
-            if (Vector3.DistanceSquared(drop.Body.Position, eye) > Distance * Distance) continue;
+            if (Vector3.DistanceSquared(body.Position, eye) > Distance * Distance) continue;
             // Each stack turns and bobs out of step with the others, by its own age.
-            var spin = (float)time * 1.2f + drop.Delay * 7 + drop.Body.Position.X * 3;
-            var bob = 0.06f * (1 + MathF.Sin((float)time * 2.5f + drop.Body.Position.Z * 5));
-            _draws[drop.Item.Id].Add(Matrix4x4.CreateRotationY(spin) * Matrix4x4.CreateTranslation(drop.Body.Position + new Vector3(0, 0.125f + bob, 0)));
+            var spin = (float)time * 1.2f + drop.Delay * 7 + body.Position.X * 3;
+            var bob = 0.06f * (1 + MathF.Sin((float)time * 2.5f + body.Position.Z * 5));
+            _draws[drop.Item.Id].Add(Matrix4x4.CreateRotationY(spin) * Matrix4x4.CreateTranslation(body.Position + new Vector3(0, 0.125f + bob, 0)));
         }
         var draws = 0;
         for (int i = 0; i < _draws.Length; i++)

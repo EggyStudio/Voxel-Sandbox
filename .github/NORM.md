@@ -58,6 +58,14 @@ is checked with no request made.** By review.
 **N 4.7 A document or a comment a player or a contributor reads names no one who decided, no owner
 and no session.** Documents speak for the game. By review.
 
+**N 4.8 A picture a session makes while it works, a reading, a pair before and after a mend or a
+capture sent to the owner, is saved in the repository in the commit of the work it belongs to.** The
+pictures are the devlog's substance, and one left in a session's scratch space is gone with the
+session, as a day's radiance cascade captures were. Each is a WebP under `.github/devlog/`, named by
+the date and the item, as `2026-10-24-item-51-emitters.webp`, and the commit's sentence is its
+caption in DEVLOG.md, which is generated from them; a picture of no item takes the day and a name.
+By review.
+
 ## 6 Build and package
 
 **N 6.1 A build has no warnings, and a warning fails the workflow.** A warning left standing hides
@@ -113,6 +121,7 @@ cherry-picked.
 | N 4.1 | to check at the first commit |
 | N 4.3 | to check at the first commit |
 | N 4.7 | to check at the first commit |
+| N 4.8 | by review |
 | N 6.1 | to check at the first push |
 | N 6.2 | to check at the first push |
 | N 6.6 | to check at the first commit |
