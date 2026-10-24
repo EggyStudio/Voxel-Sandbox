@@ -603,9 +603,11 @@ check "the far pillar"
 # A far pillar high against the sky fades into the sky drawn behind it rather than the horizon's
 # color, read at a height of 60 on its face and on the sky four blocks east of it, the two within a
 # few levels and both the sky's deep blue, far from the horizon's paler color. It stands 59 blocks
-# out, inside the four columns drawn and past the haze's end at 61.
+# out, inside the four columns drawn and past the haze's end at 61, far land being turned off, which
+# carries the haze out to its own edge.
 cmd voxel.hud off
 cmd voxel.time 12
+cmd voxel.far 0
 cmd voxel.fill -1 4 -61 1 80 -59 stone
 cmd voxel.fly on
 cmd voxel.tp 0.5 5 0.5
@@ -620,6 +622,7 @@ read -r sr sg sb <<< "$(channels "$beside")"
 [ -n "$pb" ] && [ -n "$sb" ] || fail "voxel.pixel read no far pillar or sky, saying $pillar and $beside"
 awk -v p="$pr $pg $pb" -v s="$sr $sg $sb" 'BEGIN { split(p, a); split(s, b); for (i = 1; i <= 3; i++) if (a[i] - b[i] > 4 || b[i] - a[i] > 4) exit 1; exit !(a[3] - a[1] > 100) }' \
   || fail "the far pillar high against the sky is not the sky's color beside it, $pillar against $beside"
+cmd voxel.far 32
 
 check "the overworld's loading"
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
@@ -694,8 +697,10 @@ check "the land's edge"
 # From high over the land, the drawn land's edge meets the dome under the horizon in the haze's color
 # with no step, read up the window's middle column: the land's last pixel and the one above it alike,
 # and no two neighbors within 16 of the edge more than a few levels apart. It is read at four
-# columns, the land within them generated and meshed first, so the edge lies past the haze's start.
+# columns, the land within them generated and meshed first, so the edge lies past the haze's start,
+# with far land off, whose trees stop where the near land's do and would read as a step.
 cmd voxel.distance 4
+cmd voxel.far 0
 cmd voxel.tp "$bx" 120 "$bz"
 meshed
 cmd voxel.look 0 -20

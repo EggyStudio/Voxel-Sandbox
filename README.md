@@ -1046,21 +1046,25 @@ terrain's own shader, which keeps the positions their meshes hold, and the game 
 `SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and each of
 the sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the
 shadows, which reach 96 blocks, take about the same from 8 columns to 16. Over seed 1's spawn at
-noon, seen from above the forest, at 1280 by 720 on the development machine's RTX 4070 Laptop GPU,
-the frame keeps 60 a second up to 14 columns, with 6.9 ms of each frame to spare at 12 and 3.2 at
-14, and loses it at 16, where the main thread bounds it, the game's update and drawing with the
-engine's render work, while the GPU's work stays under 13 ms. The frame's time, the GPU's and its
-passes' in milliseconds, and the memory the game holds, each but the first the mean of three
-sessions:
+noon, from 100 blocks up looking north, at 1280 by 720 offscreen on the development machine's RTX
+4070 Laptop GPU with the three default packs, the frame keeps 60 a second at 8 columns and loses it
+at 12, where the main thread bounds it, the game's update and drawing with the engine's render
+work, while the GPU's work stays at 14 to 15 ms. Far land adds under a millisecond of the GPU's work
+at any distance. The frame's time, the GPU's and the CPU's passes' in milliseconds and the memory
+the game holds, one session each, the frame's time varying by up to 6 ms between sessions at 12
+columns and the GPU's by under 0.5:
 
-| columns | frame | GPU | shadows | depth | global illumination | memory |
+| columns | far land | frame | GPU | CPU's passes | memory | far tiles, triangles |
 |---|---|---|---|---|---|---|
-| 4 | 16.7 | 5.5 | 0.6 | 0.2 | 1.8 | 599 MB |
-| 8 | 16.7 | 6.6 | 1.1 | 0.7 | 1.3 | 812 MB |
-| 10 | 16.7 | 8.1 | 1.2 | 1.1 | 1.4 | 1,163 MB |
-| 12 | 16.7 | 9.5 | 1.2 | 1.7 | 1.4 | 1,277 MB |
-| 14 | 16.8 | 11.3 | 1.2 | 2.4 | 1.4 | 1,971 MB |
-| 16 | 17.5 | 12.8 | 1.2 | 2.9 | 1.5 | 2,169 MB |
+| 8 | none | 16.8 | 10.8 | 7.4 | 1,002 MB | |
+| 8 | 32 | 16.7 | 11.1 | 6.4 | 1,011 MB | 40, 58,512 |
+| 8 | 64 | 16.7 | 11.5 | 5.5 | 1,017 MB | 60, 79,658 |
+| 12 | none | 17.5 | 14.3 | 10.1 | 1,551 MB | |
+| 12 | 32 | 23.4 | 14.7 | 13.3 | 1,722 MB | 52, 69,056 |
+| 12 | 64 | 18.4 | 15.0 | 10.6 | 1,749 MB | 88, 113,432 |
+| 16 | none | 40.3 | 18.4 | 22.6 | 2,675 MB | |
+| 16 | 32 | 38.6 | 18.6 | 22.1 | 2,701 MB | 60, 81,970 |
+| 16 | 64 | 41.5 | 18.9 | 23.1 | 2,749 MB | 120, 158,558 |
 
 The plants are most of what a meadow draws. Over seed 1's plains at noon at 12 columns, from 20
 blocks up at -288, 64 looking east, they take the frame from 1.18 million triangles to 1.64, the
@@ -1078,16 +1082,17 @@ distance of the eye in all three dimensions. Those two sections past that are pa
 until something reads them, so from 230 blocks over seed 1's spawn 3,817 sections pack and the
 columns hold 25 MB. A column takes 24 to 29 ms to generate on a worker and 6 to 7 ms to light.
 
-Past the render distance far land reaches as many columns as `voxel.far` and the settings window
-set, none by default, up to 64, drawn coarser by distance in rings, each twice as far out as the one
+Past the render distance far land reaches 32 columns by default, up to 64, which `voxel.far` and the
+settings window set, drawn coarser by distance in rings, each twice as far out as the one
 before and of cells twice as wide, 2 blocks across out to twice the render distance, 4 out to four
 times and 8 past that. Each cell is a box of its size at its own
 place, its top the highest the column's surface holds over it rounded down to its width, so far
 land keeps its size and steps in cubes of the merged size, colored by its highest block's texture's
 average under its biome's tint, lit with no shaded corners and casting no shadow. The surface of each column the
 player has seen is kept as it unloads and with the save, so far land shows what stood there when
-it was last seen, the trees and the player's buildings among it. A ring's tiles of 32 by 32 cells
-draw only the columns within the ring, so the rings and the near land meet with no gap and no
+it was last seen, the trees and the player's buildings among it, and where no column was seen the
+generator's surface at each cell's middle, the ground's top or the sea's, without its trees. A
+ring's tiles of 64 by 64 cells draw only the columns within the ring, so the rings and the near land meet with no gap and no
 overlap, and the haze reaches to the far land's edge.
 
 Flying east over land the stream has not loaded, the game meshes the sections and joins the columns

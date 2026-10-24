@@ -561,7 +561,7 @@ public sealed class VoxelGame : IDisposable
         World.Fluids.Update(seconds);
         Clouds.Update(seconds);
         Streamer.Update(Player.Body.Position, RenderDistance);
-        Far.Update(Player.Eye, RenderDistance, Seen, Renderer.Atlas);
+        Far.Update(Player.Eye, RenderDistance, Seen, Renderer.Atlas, World.Generator);
         Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
     }
 

@@ -2,38 +2,38 @@
 
 What landed in Voxel-Sandbox, by day and newest first, with the pictures taken on the way: the
 captures the repository keeps under `.github/assets`, and the pictures made while an item was built,
-kept here as WebP files named by their day. A line under Done names the item of REVIEW.md or
-REVIEW-ARCHIVE.md and the commit that closed it.
+kept under `.github/devlog` as WebP files named by their day. A line under Done names the item of
+.github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
 ## 2026-10-24
 
-![](../assets/world/plant-shadows.webp)
+![](.github/assets/world/plant-shadows.webp)
 The plants cast the shadows of their blades and flowers on the 3DEngine 5.2.215 package, the terrain
 shader cutting each wall's shadow by its picture while glass a pack cuts out still casts none, the
 engine's own F2 and F3 are turned off since the game takes those keys, and the play script reads
 across a poppy's shadow. (`d7c4892`)
 
-![](2026-10-24-curve-choice.webp)
+![](.github/devlog/2026-10-24-curve-choice.webp)
 The plains village under the modpack's own tonemap curve at three saturations, beside today's
 Reinhard look and the modpack.
 
-![](2026-10-24-glass-joined.webp)
+![](.github/devlog/2026-10-24-glass-joined.webp)
 Glass under Bare Bones, the streaks gone, where panes of the same glass join into one frame, with a
 corner kept inside the L at the right end.
 
-![](2026-10-24-breaking-pair.webp)
+![](.github/devlog/2026-10-24-breaking-pair.webp)
 Breaking stone in survival: Bare Bones' destroy stage on the left, the game's own cracks with no
 pack on the right, with the bits cut from the stone's side.
 
-![](2026-10-24-hand-three.webp)
+![](.github/devlog/2026-10-24-hand-three.webp)
 The hand in view under Bare Bones: holding stone, holding a stick (a pixel deep), and the empty arm
 wearing Steve's sleeve.
 
-![](2026-10-24-fire1.webp)
+![](.github/devlog/2026-10-24-fire1.webp)
 A fire lighting a closed stone room at night, its flames the source's models over the pack's
 animated fire.
 
-![](2026-10-24-use2.webp)
+![](.github/devlog/2026-10-24-use2.webp)
 The fires a TNT's blast leaves in its crater.
 
 Done:
@@ -57,6 +57,7 @@ Done:
   forest.
 - Item 83 at `dd64fd0`. Glass without the diagonal streaks, its borders connecting across neighbors.
 - Item 88 at `b730088`. The play job comes back under 40 minutes.
+- Item 89 at `cfdc298`. The clouds are not drawn black by the fire's uniform.
 
 ## 2026-10-23
 
@@ -78,95 +79,95 @@ Done:
 
 ## 2026-10-21
 
-![](../assets/mobs/daylight-pack.webp)
+![](.github/assets/mobs/daylight-pack.webp)
 With a pack loaded, the villager wears its body's picture with the clothes of its biome laid over it
 where they are not clear and the sheep its body's picture under its wool's tinted by its color, the
 pig's, cow's and chicken's pictures are found by the names Minecraft 26 gives them, and the daylight
 row is taken again wearing the default packs. (`9ce44d7`)
 
-![](../assets/gi/plant-shadows.webp)
+![](.github/assets/gi/plant-shadows.webp)
 A capture of the plants' shadows drawn as whole quads, which the engine's ask on masked surfaces
 drawn through a program's shader links. (`bc02459`)
 
-![](../assets/gi/blotches.webp)
-![](../assets/interface/crafting.webp)
-![](../assets/interface/creative.webp)
-![](../assets/interface/furnace.webp)
-![](../assets/interface/hud.webp)
-![](../assets/interface/inventory.webp)
-![](../assets/interface/options.webp)
-![](../assets/interface/switcher.webp)
-![](../assets/world/badlands.webp)
-![](../assets/world/cherry-grove.webp)
-![](../assets/world/desert-village.webp)
-![](../assets/world/jungle.webp)
-![](../assets/world/meadow.webp)
-![](../assets/world/night.webp)
-![](../assets/world/plains-village-own.webp)
-![](../assets/world/plains-village.webp)
-![](../assets/world/ravine.webp)
-![](../assets/world/room.webp)
-![](../assets/world/savanna.webp)
-![](../assets/world/snowy-taiga.webp)
-![](../assets/world/snowy-village.webp)
-![](../assets/world/sunrise.webp)
-![](../assets/world/swamp.webp)
-![](../assets/world/village-night.webp)
+![](.github/assets/gi/blotches.webp)
+![](.github/assets/interface/crafting.webp)
+![](.github/assets/interface/creative.webp)
+![](.github/assets/interface/furnace.webp)
+![](.github/assets/interface/hud.webp)
+![](.github/assets/interface/inventory.webp)
+![](.github/assets/interface/options.webp)
+![](.github/assets/interface/switcher.webp)
+![](.github/assets/world/badlands.webp)
+![](.github/assets/world/cherry-grove.webp)
+![](.github/assets/world/desert-village.webp)
+![](.github/assets/world/jungle.webp)
+![](.github/assets/world/meadow.webp)
+![](.github/assets/world/night.webp)
+![](.github/assets/world/plains-village-own.webp)
+![](.github/assets/world/plains-village.webp)
+![](.github/assets/world/ravine.webp)
+![](.github/assets/world/room.webp)
+![](.github/assets/world/savanna.webp)
+![](.github/assets/world/snowy-taiga.webp)
+![](.github/assets/world/snowy-village.webp)
+![](.github/assets/world/sunrise.webp)
+![](.github/assets/world/swamp.webp)
+![](.github/assets/world/village-night.webp)
 The README opens on an animated GIF of ten views of seed 1 and shows the biomes, plants, villages,
 lamps, sky and interface in its sections, all taken with the three default packs by
 build/pictures.sh, which fetches them, sets the windows at a scale of 2 through voxel.scale and
 raises the eye out of any block voxel.state finds it in. (`7039d5a`)
 
-![](../assets/mobs/daylight.webp)
+![](.github/assets/mobs/daylight.webp)
 The mobs are drawn through a shader of the game's own that takes the color out of the light from all
 around them and floors each face at Minecraft's flat shade of its top's light, so a white sheep's
 side in the shade reads gray, with the scripted run reading it, the nine in daylight and the pairs
 drawn again. (`e3d9a74`)
 
-![](../assets/gi/forty.webp)
-![](../assets/gi/leak.webp)
-![](../assets/gi/penumbra.webp)
+![](.github/assets/gi/forty.webp)
+![](.github/assets/gi/leak.webp)
+![](.github/assets/gi/penumbra.webp)
 The captures of the faults global illumination shows at 28eb41c, a light block's light leaking
 through the edge where two blocks meet, the zig-zag edges of its light and of a lamp's shadow, and
 forty glowstones with the screen's probes and without, for the engine's entry that links them.
 (`404ab74`)
 
-![](../assets/mobs/chicken.webp)
-![](../assets/mobs/cow.webp)
-![](../assets/mobs/creeper.webp)
-![](../assets/mobs/pig.webp)
-![](../assets/mobs/sheep.webp)
-![](../assets/mobs/skeleton.webp)
-![](../assets/mobs/spider.webp)
-![](../assets/mobs/villager.webp)
-![](../assets/mobs/zombie.webp)
+![](.github/assets/mobs/chicken.webp)
+![](.github/assets/mobs/cow.webp)
+![](.github/assets/mobs/creeper.webp)
+![](.github/assets/mobs/pig.webp)
+![](.github/assets/mobs/sheep.webp)
+![](.github/assets/mobs/skeleton.webp)
+![](.github/assets/mobs/spider.webp)
+![](.github/assets/mobs/villager.webp)
+![](.github/assets/mobs/zombie.webp)
 The villager is drawn at the 0.9375 that Minecraft's layer gives it and the cow has the nose and
 horns of Minecraft 26.3, with each mob beside Minecraft's outline through the same camera, standing
 and mid-stride, in the assets. (`7fe7639`)
 
-![](2026-10-21-windows-sheet2.webp)
-![](2026-10-21-menus-sheet.webp)
-![](2026-10-21-hud-sheet.webp)
+![](.github/devlog/2026-10-21-windows-sheet2.webp)
+![](.github/devlog/2026-10-21-menus-sheet.webp)
+![](.github/devlog/2026-10-21-hud-sheet.webp)
 The new interface: the inventory, furnace and creative windows; the Escape menu and options; the HUD
 with its hearts fading when full and returning after a hit.
 
-![](2026-10-21-packs-interface.webp)
+![](.github/devlog/2026-10-21-packs-interface.webp)
 With --pack Bare Bones, Recolorful Containers and qrafty's font: Bare Bones' HUD and buttons,
 Recolorful's inventory and furnace, and the pack's font.
 
-![](2026-10-21-own-art.webp)
+![](.github/devlog/2026-10-21-own-art.webp)
 The game's own art with no pack. The planks in this sheet are the first try; they became boards
 after.
 
-![](2026-10-21-rows2.webp)
+![](.github/devlog/2026-10-21-rows2.webp)
 Plants as flat crossed planes, lit as brightly as the ground: the game's own art on the left, Bare
 Bones on the right.
 
-![](2026-10-21-trees-sheet.webp)
+![](.github/devlog/2026-10-21-trees-sheet.webp)
 Acacias in the savanna, the cherry grove's pink crowns, the dark forest with giant mushrooms, and
 the jungle floor under its canopy, all with Bare Bones.
 
-![](2026-10-21-edges.webp)
+![](.github/devlog/2026-10-21-edges.webp)
 Render distance 4, from high, from low and at night: the land fades into a dome of the haze's color
 below the horizon, with no dark band.
 
@@ -229,12 +230,12 @@ Done:
 
 ## 2026-10-20
 
-![](2026-10-20-all-mobs.webp)
-![](2026-10-20-villager.webp)
+![](.github/devlog/2026-10-20-all-mobs.webp)
+![](.github/devlog/2026-10-20-villager.webp)
 Each mob in the game with Minecraft 26.3's outline in red, standing and mid-stride, through the same
 camera. The villager at full size second.
 
-![](2026-10-20-all-after.webp)
+![](.github/devlog/2026-10-20-all-after.webp)
 After the walk fix: each mob in the game with Minecraft 26.3's outline in red, standing and mid-
 stride.
 

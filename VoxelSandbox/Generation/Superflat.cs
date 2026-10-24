@@ -15,6 +15,8 @@ public sealed class Superflat(int seed) : IWorldGenerator
         Array.Fill(column.FoliageTint, Biomes.Plains.FoliageColor);
     }
 
+    public (int Height, BlockId Top, byte Biome) Surface(int x, int z) => (3, BlockId.Grass, Biomes.Plains.Id);
+
     public ChunkColumn Generate(int columnX, int columnZ)
     {
         var column = new ChunkColumn(columnX, columnZ);

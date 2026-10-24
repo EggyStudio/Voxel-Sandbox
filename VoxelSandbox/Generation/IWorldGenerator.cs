@@ -20,6 +20,13 @@ public interface IWorldGenerator
     /// place alone, so a column read back from a save is painted again rather than saved with them.
     /// </summary>
     void Paint(ChunkColumn column);
+
+    /// <summary>
+    /// The surface at a world place as the generator lays it, the height of its highest block, that
+    /// block and the biome's id, without the trees and structures a column holds, for far land where
+    /// no column was seen. Safe to call from a worker.
+    /// </summary>
+    (int Height, BlockId Top, byte Biome) Surface(int x, int z);
 }
 
 /// <summary>The kinds of world, by the names a save and <c>voxel.world</c> give them.</summary>

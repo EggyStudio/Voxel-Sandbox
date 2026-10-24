@@ -22,7 +22,7 @@ namespace VoxelSandbox;
 /// where the neighbor is drawn by another ring or the near land.
 /// </para>
 /// <para>
-/// The land is tiled in squares of 32 cells, and a ring's tiles draw only the columns within the
+/// The land is tiled in squares of 64 cells, and a ring's tiles draw only the columns within the
 /// ring, so the rings and the near land meet with no gap and no overlap. A tile is sampled and
 /// meshed on a worker and uploaded on the main thread, and meshed again as the eye's column moves
 /// a ring's edge over it, and sampled again as a column in it is seen anew. Far land is lit flat
@@ -36,7 +36,7 @@ public sealed class FarLand : IDisposable
     public const int Levels = 3;
 
     /// <summary>A tile's cells along each side.</summary>
-    public const int Cells = 32;
+    public const int Cells = 64;
 
     /// <summary>The cells along each side of a tile's sampled heights and colors, its own and a border of one.</summary>
     public const int Side = Cells + 2;
@@ -64,8 +64,12 @@ public sealed class FarLand : IDisposable
     private (int X, int Z, int Near, int Far)? _ringsFor;
     private int _running;
 
-    /// <summary>How many columns from the eye far land reaches, none where it is no more than the render distance, as by default.</summary>
-    public int Distance { get; set; }
+    /// <summary>
+    /// How many columns from the eye far land reaches, none where it is no more than the render
+    /// distance, 32 by default, which over seed 1's spawn at 12 columns adds 0.4 ms of the GPU's
+    /// work.
+    /// </summary>
+    public int Distance { get; set; } = 32;
 
     /// <summary>The tiles drawn last frame and their triangles, for the settings window.</summary>
     public (int Tiles, int Triangles) Drawn { get; private set; }
@@ -74,7 +78,7 @@ public sealed class FarLand : IDisposable
     /// Takes in the tiles the workers finished, works out which tiles each ring needs as the eye's
     /// column moves, and starts sampling and meshing those that need it, nearest first.
     /// </summary>
-    public void Update(Vector3 eye, int renderDistance, FarCache seen, TerrainAtlas atlas)
+    public void Update(Vector3 eye, int renderDistance, FarCache seen, TerrainAtlas atlas, IWorldGenerator generator)
     {
         while (_done.TryDequeue(out var result))
         {
@@ -124,7 +128,7 @@ public sealed class FarLand : IDisposable
             {
                 try
                 {
-                    if (sample || heights is null || colors is null) (heights, colors) = Sample(tile.Level, tile.X, tile.Z, seen, atlas);
+                    if (sample || heights is null || colors is null) (heights, colors) = Sample(tile.Level, tile.X, tile.Z, seen, atlas, generator);
                     _done.Enqueue((tile, heights, colors, drawn, Mesh(tile.Level, tile.X, tile.Z, heights, colors, ex, ez, inner, outer)));
                 }
                 catch (Exception error)
@@ -210,10 +214,11 @@ public sealed class FarLand : IDisposable
     /// <summary>
     /// The height and color of each cell of a level's tile, with a border of one cell around it,
     /// rows of <see cref="Side"/>, the highest of the heights the seen surfaces hold over the cell's
-    /// places and its block's average color under its biome's tint, or <see cref="Unknown"/> where
-    /// no surface is known. Safe to call from a worker.
+    /// places, or where no column there was seen the generator's surface at the cell's middle, and
+    /// its block's average color under its biome's tint, or <see cref="Unknown"/> where neither
+    /// gives one. Safe to call from a worker.
     /// </summary>
-    public static (short[] Heights, Color[] Colors) Sample(int level, int tileX, int tileZ, FarCache seen, TerrainAtlas atlas)
+    public static (short[] Heights, Color[] Colors) Sample(int level, int tileX, int tileZ, FarCache seen, TerrainAtlas atlas, IWorldGenerator generator)
     {
         var (heights, colors) = (new short[Side * Side], new Color[Side * Side]);
         var width = 1 << level;
@@ -223,7 +228,15 @@ public sealed class FarLand : IDisposable
                 int bx = (tileX * Cells + i - 1) * width, bz = (tileZ * Cells + j - 1) * width;
                 var surface = seen.Get(bx >> Section.Shift, bz >> Section.Shift);
                 heights[j * Side + i] = Unknown;
-                if (surface is null) continue;
+                if (surface is null)
+                {
+                    var (height, block, id) = generator.Surface(bx + width / 2, bz + width / 2);
+                    if (height < ChunkColumn.Bottom) continue;
+                    var land = Biomes.All[id];
+                    heights[j * Side + i] = (short)height;
+                    colors[j * Side + i] = atlas.Paint(Blocks.Get(block).Top, land.GrassColor, land.FoliageColor).Albedo with { A = 255 };
+                    continue;
+                }
                 int best = -1, highest = int.MinValue;
                 for (int z = 0; z < width; z++)
                     for (int x = 0; x < width; x++)

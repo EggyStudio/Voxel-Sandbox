@@ -39,7 +39,7 @@ before scripting a session.
 | [.github/NORM.md](.github/NORM.md) | The numbered rules the game keeps, each with what checks it |
 | [.github/STYLE.md](.github/STYLE.md) | Rules for every comment, message and Markdown file |
 | [.github/COMMITS.md](.github/COMMITS.md) | How and when work is committed |
-| [.github/devlog/README.md](.github/devlog/README.md) | What landed by day, with the pictures taken on the way |
+| [DEVLOG.md](DEVLOG.md) | What landed by day, with the pictures taken on the way, which `.github/devlog` keeps |
 | The engine's [.github/ASKS.md](https://github.com/EggyStudio/3DEngine/blob/main/.github/ASKS.md) | What the games built on the engine ask of it, this game's entries under its own heading |
 
 ## Building and testing
