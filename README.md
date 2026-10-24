@@ -912,12 +912,15 @@ land under the ground and behind a cave's or a closed room's walls is left out. 
 section it leaves by the faces the open cells around the eye reach. The flood is kept until the eye
 enters another section or leaves it by other faces, a column comes or goes, or a block that may hide
 what is behind it is set or taken, since over 24 sections a column it walks thousands and took 4.8
-ms of each frame at seed 1's cherry grove at 12 columns. `voxel.cull` and the settings window turn
-it off. Sections are not culled to the view's frustum, because a mesh left out of a
-frame leaves the field, and the indirect light it reflected or blocked goes with it until the field
-settles again, where the land the flood leaves out lies behind walls the field holds, so a cave
-lit by a glowstone looks the same either way. Each of the engine's passes leaves out on its own the
-sections whose boxes it cannot see, and the field keeps them all the same.
+ms of each frame at seed 1's cherry grove at 12 columns. A section the flood leaves out is not
+meshed until a flood reaches it, so the stone under the land within reach is meshed only where a
+cave opens to it, which in a flight east over seed 1's cherry grove held about 4,400 sections and
+took the game's update from 1.3 ms a frame to 0.7 or 0.9. `voxel.cull` and the settings window turn
+it off. Sections are not culled to the view's frustum, because a mesh left out of a frame leaves the
+field, and the indirect light it reflected or blocked goes with it until the field settles again,
+where the land the flood leaves out lies behind walls the field holds, so a cave lit by a glowstone
+looks the same either way. Each of the engine's passes leaves out on its own the sections whose
+boxes it cannot see, and the field keeps them all the same.
 
 With the eye inside a whole opaque block, in every mode but spectator, the block's side covers the
 window, its texture or its own color darkened to a tenth, repeated four times across and four down

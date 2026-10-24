@@ -5,21 +5,30 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `89d8caa`, item 93's second mend, read at 13:01 on 2026-10-24, carrying the review's
-files, LightSettings.ShadowDistance 96 to 64. Read in Release at 1920 by 1080 at the cherry grove,
-96, 64 and 48 in turn twice, the first triple spoiled by another GPU user and the clean one the
-frame 17.84, 16.79 and 15.81 ms, the GPU's shadows 2.01, 1.04 and 0.70, the CPU's 2.84, 2.31 and
-2.13; by eye at the cherry grove, the plains village and the hills, 48 loses the shadows of the
-trees about the village some 50 to 60 blocks off and 64 keeps them a little fainter at the far left,
-the grove the same at all three, so 64 for about a millisecond. The README's Shadows paragraph says
-the distance and why, the stepped sun's cost of about 1.6 ms beside the old reading, the costs
-paragraph no longer naming 96; 275 tests, play.sh 164 s on the GPU. After `3236b56`, item 103, the
-fire's top line, read at 12:45, the carried place in terrain.slang clamped half a texel of the
-sampled level inside its tile, the play pack's 32-frame fire and play.sh's check of the north wall's
-top edge against the ground beyond, 275 tests, play.sh 162 s. Both held until the run of `fa6963d`
-ends, then pushed.
+Reviewed up to `08d0943`, item 93's third mend as a reading, read at 13:07 on 2026-10-24, carrying
+REVIEW.md. ChunkRenderer.Deep counts the drawn sections under their column's floor and their
+triangles, shown in voxel.state and in the profile as draw.sections.deep; at 1920 by 1080 in Release
+the cherry grove draws 61 of 1,683 sections deep, 40,934 of 1.17 million triangles, 3.5 percent, and
+the plains village 149 of 1,563, 97,828 of 0.98 million, 10 percent. The flood already draws a deep
+section only where the eye's open cells join it, which is where a cave opens within reach, and a cut
+by distance would hide cave interiors seen through their mouths for 0.4 to 0.9 ms of CPU recording
+at most, so the mend stays at the counter; 275 tests, play.sh 162 s on the GPU. After `89d8caa`,
+item 93's second mend, read at 13:01 on 2026-10-24, carrying the review's files,
+LightSettings.ShadowDistance 96 to 64. Read in Release at 1920 by 1080 at the cherry grove, 96, 64
+and 48 in turn twice, the first triple spoiled by another GPU user and the clean one the frame
+17.84, 16.79 and 15.81 ms, the GPU's shadows 2.01, 1.04 and 0.70, the CPU's 2.84, 2.31 and 2.13; by
+eye at the cherry grove, the plains village and the hills, 48 loses the shadows of the trees about
+the village some 50 to 60 blocks off and 64 keeps them a little fainter at the far left, the grove
+the same at all three, so 64 for about a millisecond. The README's Shadows paragraph says the
+distance and why, the stepped sun's cost of about 1.6 ms beside the old reading, the costs paragraph
+no longer naming 96; 275 tests, play.sh 164 s on the GPU. After `3236b56`, item 103, the fire's top
+line, read at 12:45, the carried place in terrain.slang clamped half a texel of the sampled level
+inside its tile, the play pack's 32-frame fire and play.sh's check of the north wall's top edge
+against the ground beyond, 275 tests, play.sh 162 s. The three pushed at 13:12 on 2026-10-24 after
+the run of `fa6963d` went green; the run watched.
 
-Before it, `fa6963d` came, Verdict 2's mend, pushed at 12:34 on 2026-10-24, its run watched.
+Before it, `fa6963d` came, Verdict 2's mend, pushed at 12:34 on 2026-10-24, its run green at 13:11,
+the play job 36.0 minutes, Verdict 2 settled.
 
 Before it, `1f07038` came, items 99 to 102, pushed at 11:58 on 2026-10-24, its run red at the play
 job's held torch check, Verdict 2, the three suites green.
@@ -434,7 +443,10 @@ full.
     5.6 ms at 1080p, goes to the engine as an entry in its ASKS.md. The owner runs Release, dotnet
     run -c Release or a published build, which the record says to them. The second mend at
     `89d8caa`, the shadow distance 64, about a millisecond at 1920 by 1080, the village's trees'
-    shadows kept where 48 loses them; the deep sections next.
+    shadows kept where 48 loses them; the third at `08d0943` a counter alone, the flood already
+    drawing a deep section only where the eye's open cells join it, 3.5 to 10 percent of the
+    triangles, a cut by distance hiding cave interiors seen through their mouths; the unseen
+    sections' meshing next.
 
 97. **The game's entries in the engine's ASKS.md hold no colon inside a running sentence.** The
     owner wrote at about 10:3x on 2026-10-24 that some documents join sentences with a colon and
@@ -714,23 +726,7 @@ full.
 
 ## Verdicts
 
-2. **The play job's held torch check fails on lavapipe after item 102.** Read at 12:09 on 2026-10-24
-    from the run of `1f07038`, the three suites green and the play job red at its check "a torch in
-    the hand does not light the roof about the player", the roof reading 27, 25, 39 at 640, 243 with
-    the torch held against 0, 0, 0 without it, so the held light adds nothing there on lavapipe
-    where the GPU's play.sh passed the same check in 136 s. The light moved from the hand to the
-    eye's place in the body's middle at `1f07038`, so the reading is of that, a point light at the
-    eye's own point or inside the player's box on lavapipe. The mend by the cause, read in the run's
-    log and locally on lavapipe with the validation layer; the light's place kept at the player, the
-    camera's turn having no part, as the owner asked. One commit, before the next push. Mended at
-    `fa6963d`, read at 12:21, the cause a point light at the camera's own point, which lavapipe
-    shades with black specks across the frame, the probe's pixel one of them, where the GPU shades
-    it whole; the shadow cube, the contact shadows and the global illumination each off left the
-    specks, so the fault is the engine's shading of a light at the eye, sent to the engine as its
-    item 97 through ASKS.md; the game's light stands a third of a block under the eye, within the
-    player's box, still not turning with the view. Settled when its run is green.
-
-Verdict 2 is open. Verdict 1 is settled, said under it in REVIEW-ARCHIVE.md.
+No verdict is open. Verdicts 1 and 2 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 

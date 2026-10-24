@@ -1112,3 +1112,20 @@ before a batch.
     the build run of `8261308` with its play job green and its time read. Settled on that run on
     2026-10-21, the play job green in 24 minutes 30 seconds. The walk went to render distance 2 at
     `be968a2` on 2026-10-21 after the run of `7039d5a` took 46 minutes.
+
+2. **The play job's held torch check fails on lavapipe after item 102.** Read at 12:09 on 2026-10-24
+    from the run of `1f07038`, the three suites green and the play job red at its check "a torch in
+    the hand does not light the roof about the player", the roof reading 27, 25, 39 at 640, 243 with
+    the torch held against 0, 0, 0 without it, so the held light adds nothing there on lavapipe
+    where the GPU's play.sh passed the same check in 136 s. The light moved from the hand to the
+    eye's place in the body's middle at `1f07038`, so the reading is of that, a point light at the
+    eye's own point or inside the player's box on lavapipe. The mend by the cause, read in the run's
+    log and locally on lavapipe with the validation layer; the light's place kept at the player, the
+    camera's turn having no part, as the owner asked. One commit, before the next push. Mended at
+    `fa6963d`, read at 12:21, the cause a point light at the camera's own point, which lavapipe
+    shades with black specks across the frame, the probe's pixel one of them, where the GPU shades
+    it whole; the shadow cube, the contact shadows and the global illumination each off left the
+    specks, so the fault is the engine's shading of a light at the eye, sent to the engine as its
+    item 97 through ASKS.md; the game's light stands a third of a block under the eye, within the
+    player's box, still not turning with the view. Settled at 13:11 on 2026-10-24 on the run of
+    `fa6963d`, green on the three suites and the play job in 36.0 minutes.

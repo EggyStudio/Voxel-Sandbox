@@ -122,6 +122,11 @@ public sealed class ChunkRenderer : IDisposable
     // The loaded sections out of the eye's reach, meshed once it comes near, and the eye's section
     // and render distance they were last sorted for.
     private readonly HashSet<SectionKey> _parked = [];
+    // The loaded sections within reach the last flood left out, meshed once a flood reaches them,
+    // since no pass draws a section the flood leaves out, so the stone under the land within reach
+    // is meshed only where a cave opens to it, about 4,400 sections held in a flight over seed 1's
+    // cherry grove against some 400 meshed a second.
+    private readonly HashSet<SectionKey> _unseen = [];
     private readonly List<SectionKey> _gone = [];
     private (SectionKey Eye, int Distance)? _reachedFor;
     private readonly List<(float Distance, SectionMeshes Entry)> _seeThrough = [];
@@ -438,6 +443,7 @@ public sealed class ChunkRenderer : IDisposable
         int Distance(SectionKey k) => (k.X - ex) * (k.X - ex) + (k.Y - ey) * (k.Y - ey) + (k.Z - ez) * (k.Z - ez);
 
         var watch = Stopwatch.StartNew();
+        var meshed = 0;
         foreach (var key in _queue)
         {
             if (watch.Elapsed.TotalMilliseconds > budgetMs) break;
@@ -449,8 +455,16 @@ public sealed class ChunkRenderer : IDisposable
                 _parked.Add(key);
                 continue;
             }
+            if (Cull && !_visibility.Sees(key))
+            {
+                _unseen.Add(key);
+                continue;
+            }
             Remesh(world, key);
+            meshed++;
         }
+        SetProfileValue("update.meshed", meshed);
+        SetProfileValue("update.unseen", _unseen.Count);
     }
 
     // Whether a loaded section is within the eye's reach, one of a column not loaded being let go.
@@ -509,6 +523,7 @@ public sealed class ChunkRenderer : IDisposable
         {
             Forget(new SectionKey(x, y, z));
             _parked.Remove(new SectionKey(x, y, z));
+            _unseen.Remove(new SectionKey(x, y, z));
         }
     }
 
@@ -517,6 +532,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         foreach (var key in _sections.Keys.ToList()) Forget(key);
         _parked.Clear();
+        _unseen.Clear();
         _reachedFor = null;
     }
 
@@ -533,7 +549,14 @@ public sealed class ChunkRenderer : IDisposable
         var reach = renderDistance * renderDistance + renderDistance;
         int draws = 0, triangles = 0, lamps = 0, culled = 0, deep = 0, deepTriangles = 0;
         var laps = System.Diagnostics.Stopwatch.StartNew();
-        if (Cull) _visibility.Flood(world, eye, renderDistance, Atlas);
+        // The sections held back as unseen that a new flood reaches, or all of them once culling is
+        // off, are meshed from the next update.
+        if (Cull ? _visibility.Flood(world, eye, renderDistance, Atlas) : _unseen.Count > 0)
+        {
+            foreach (var key in _unseen)
+                if (_visibility.Sees(key) || !Cull) world.Loaded.Add(key);
+            _unseen.ExceptWith(world.Loaded);
+        }
         SetProfileValue("draw.sections.flood", laps.Elapsed.TotalMilliseconds);
         laps.Restart();
         foreach (var list in _emitterDraws) list.Clear();
