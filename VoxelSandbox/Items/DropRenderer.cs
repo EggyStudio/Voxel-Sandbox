@@ -40,15 +40,15 @@ public sealed class DropRenderer : IDisposable
 
     /// <summary>
     /// Draws the stacks within reach of the eye at a time in seconds, which turns them, and the
-    /// blocks falling, each its block's stack four times its size, a whole block. Called inside
-    /// <c>BeginMode3D</c>.
+    /// whole blocks moving, falling sand or burning TNT, each its block's stack four times its size
+    /// and the size given over that, standing on its feet. Called inside <c>BeginMode3D</c>.
     /// </summary>
-    public void Draw(IReadOnlyList<ItemDrop> drops, IReadOnlyList<FallingBlocks.Falling> falling, Vector3 eye, double time)
+    public void Draw(IReadOnlyList<ItemDrop> drops, IEnumerable<(BlockId Block, Vector3 Feet, float Size)> blocks, Vector3 eye, double time)
     {
         foreach (var list in _draws) list.Clear();
-        foreach (var block in falling)
-            if (Vector3.DistanceSquared(block.Body.Position, eye) <= Distance * Distance)
-                _draws[Items.Of(block.Block).Id].Add(Matrix4x4.CreateScale(4) * Matrix4x4.CreateTranslation(block.Body.Position + new Vector3(0, 0.5f, 0)));
+        foreach (var (block, feet, size) in blocks)
+            if (Vector3.DistanceSquared(feet, eye) <= Distance * Distance)
+                _draws[Items.Of(block).Id].Add(Matrix4x4.CreateScale(4 * size) * Matrix4x4.CreateTranslation(feet + new Vector3(0, 0.5f, 0)));
         foreach (var drop in drops)
         {
             if (Vector3.DistanceSquared(drop.Body.Position, eye) > Distance * Distance) continue;

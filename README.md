@@ -683,7 +683,13 @@ a half explodes, unless the player gets seven blocks away. Its explosion, of Min
 sends rays out that break the blocks they reach by each block's blast resistance, a hollow of dirt
 and little stone, drops a third of what it breaks, and harms the player and the mobs by their
 distance and how much of them it sees, 43 points at its middle. Zombies and skeletons burn under the
-open sky by day, a point a second. In creative mode they wander and hunt no one.
+open sky by day, a point a second. In creative mode they wander and hunt no one. TNT, made of five
+gunpowder and four sand in a cross, is lit by flint and steel used on it, which is made of an iron
+ingot and flint, gravel giving flint one time in ten, and wears out after 64 uses. Lit, the TNT pops
+up from its cell, falls, flashes white every five ticks and swells over its last ten, and after four
+seconds explodes at Minecraft's power of 4, a hollow of about a hundred dirt where a creeper's takes
+fifty, and a blast that reaches TNT lights it on a fuse of half a second to a second and a half, so
+a row of it goes off one after another.
 
 They drop Minecraft's loot as they die. A zombie drops rotten flesh, which feeds four points, a
 skeleton bones and arrows, a spider string and now and then an eye, and a creeper gunpowder, unless

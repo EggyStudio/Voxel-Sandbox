@@ -74,6 +74,8 @@ public static class Items
     public static readonly Item Bone = Find("bone")!;
     public static readonly Item Arrow = Find("arrow")!;
     public static readonly Item Gunpowder = Find("gunpowder")!;
+    public static readonly Item Flint = Find("flint")!;
+    public static readonly Item FlintAndSteel = Find("flint_and_steel")!;
     public static readonly Item String = Find("string")!;
     public static readonly Item SpiderEye = Find("spider_eye")!;
     public static readonly Item IronIngot = Find("iron_ingot")!;
@@ -117,6 +119,7 @@ public static class Items
             ("bone", "Bone", new Color(226, 222, 206), 0, 0),
             ("arrow", "Arrow", new Color(150, 120, 90), 0, 0),
             ("gunpowder", "Gunpowder", new Color(96, 96, 96), 0, 0),
+            ("flint", "Flint", new Color(60, 60, 64), 0, 0),
             ("string", "String", new Color(232, 232, 232), 0, 0),
             ("spider_eye", "Spider Eye", new Color(150, 40, 60), 2, 3.2f),
             ("iron_ingot", "Iron Ingot", new Color(216, 216, 216), 0, 0),
@@ -143,6 +146,8 @@ public static class Items
                 {
                     Id = all.Count, MostInStack = 1, Tool = tool, Speed = speed, Durability = uses, Damage = damage + bonus, Tier = bonus + 1,
                 });
+        // Flint and steel, which lights TNT, and wears out after the source's 64 uses.
+        all.Add(new Item("flint_and_steel", "Flint and Steel", new Color(120, 120, 124), null) { Id = all.Count, MostInStack = 1, Durability = 64 });
         return [.. all];
     }
 

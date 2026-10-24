@@ -69,6 +69,11 @@ public static class Recipes
             R(I(BlockId.CraftingTable), 1, ["PP", "PP"], ('P', Planks)),
             R(I(BlockId.Torch), 4, ["C", "S"], ('C', [Items.Coal, Items.Charcoal]), ('S', Stick)),
             R(I(BlockId.Furnace), 1, ["CCC", "C C", "CCC"], ('C', [I(BlockId.Cobblestone)])),
+            R(I(BlockId.Tnt), 1, ["GSG", "SGS", "GSG"], ('G', [Items.Gunpowder]), ('S', [I(BlockId.Sand), I(BlockId.RedSand)])),
+            // The source's flint and steel takes its two in any cells, which a shape of the two side by side
+            // or one over the other covers but for the corners.
+            R(Items.FlintAndSteel, 1, ["IF"], ('I', [Items.IronIngot]), ('F', [Items.Flint])),
+            R(Items.FlintAndSteel, 1, ["I", "F"], ('I', [Items.IronIngot]), ('F', [Items.Flint])),
             R(I(BlockId.OakFence), 3, ["PSP", "PSP"], ('P', Planks), ('S', Stick)),
             R(I(BlockId.OakDoor), 3, ["PP", "PP", "PP"], ('P', Planks)),
             R(I(BlockId.HayBale), 1, ["WWW", "WWW", "WWW"], ('W', [Items.Wheat])),

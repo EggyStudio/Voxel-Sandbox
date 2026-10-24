@@ -144,6 +144,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The trees being felled, their logs breaking and their leaves decaying.</summary>
     public TreeFelling Felling { get; } = new();
 
+    /// <summary>The TNT lit and burning down its fuse.</summary>
+    public PrimedTnt Tnt { get; } = new();
+
     /// <summary>The arrows skeletons have loosed.</summary>
     public Arrows Arrows { get; } = new();
 
@@ -313,6 +316,7 @@ public sealed class VoxelGame : IDisposable
         Mobs = new Mobs(kept, placed);
         Drops.Clear();
         Falling.Clear();
+        Tnt.Clear();
         Arrows.Clear();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
         _blasts.Clear();
@@ -514,6 +518,10 @@ public sealed class VoxelGame : IDisposable
         Felling.Broken.Clear();
         foreach (var (x, y, z, block) in Felling.Dropped) Falling.Drop(block, x, y, z);
         Felling.Dropped.Clear();
+        Tnt.Update(World, seconds);
+        var blasts = Tnt.Exploded.ToArray();
+        Tnt.Exploded.Clear();
+        foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT");
         // The hand a third of a block ahead of the eye, to its right and below it.
         var ahead = Player.Look;
         var side = Vector3.Normalize(Vector3.Cross(ahead, Vector3.UnitY));
@@ -613,6 +621,13 @@ public sealed class VoxelGame : IDisposable
         foreach (var (x, y, z) in Explosion.Breaks(World, at, power, _random))
         {
             var block = World.GetBlock(x, y, z);
+            // A TNT the blast reaches is lit on a short fuse rather than broken.
+            if (block == BlockId.Tnt)
+            {
+                World.SetBlock(x, y, z, BlockId.Air);
+                Tnt.Chain(x, y, z);
+                continue;
+            }
             if (!World.SetBlock(x, y, z, BlockId.Air) || !survival || _random.NextDouble() >= 1 / power) continue;
             foreach (var (item, count) in Loot.Of(block, _random, pickaxe)) Drops.Pop(item, count, x, y, z);
         }
@@ -830,6 +845,14 @@ public sealed class VoxelGame : IDisposable
     public BlockId Use()
     {
         if (!Mode.Touches()) return BlockId.Air;
+        // Flint and steel lights the TNT it is used on, a use of its own worn in survival.
+        if (Hotbar.Current?.Item == Items.FlintAndSteel && Target is { } tnt && World.GetBlock(tnt.X, tnt.Y, tnt.Z) == BlockId.Tnt && Mode.Builds())
+        {
+            World.SetBlock(tnt.X, tnt.Y, tnt.Z, BlockId.Air);
+            Tnt.Light(tnt.X, tnt.Y, tnt.Z);
+            if (Mode.Lives()) Wear(1);
+            return BlockId.Tnt;
+        }
         if (Target is { } table && World.GetBlock(table.X, table.Y, table.Z) == BlockId.CraftingTable)
         {
             (InventoryOpen, AtTable) = (true, true);
@@ -977,7 +1000,10 @@ public sealed class VoxelGame : IDisposable
         Sky.Draw(Player.Eye, Renderer.Hazed);
         Renderer.Draw(World, Player.Eye, RenderDistance);
         MobRenderer.Draw(Mobs.All, Player.Eye);
-        DropRenderer.Draw(Drops.All, Falling.All, Player.Eye, GetTime());
+        DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Size))), Player.Eye, GetTime());
+        // A burning TNT shows white every other five ticks, a hair larger than its cube.
+        foreach (var lit in Tnt.All)
+            if (lit.Flashing) DrawCube(lit.Body.Position + new Vector3(0, 0.5f * lit.Size, 0), 1.01f * lit.Size, 1.01f * lit.Size, 1.01f * lit.Size, new Color(255, 255, 255, 150));
         Bits.Draw(Player.Eye, Player.Look);
         if (!HudHidden && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead)) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer);
         DrawArrows();

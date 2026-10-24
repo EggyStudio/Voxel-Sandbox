@@ -232,6 +232,7 @@ public enum BlockId : ushort
     RedMushroomBlock,
     MushroomStem,
     TallGrassTop,
+    Tnt,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -547,6 +548,7 @@ public static class Blocks
             Same(BlockId.RedMushroomBlock, "red_mushroom_block", "Red Mushroom Block", Surfaces.RedMushroomCap),
             Same(BlockId.MushroomStem, "mushroom_stem", "Mushroom Stem", Surfaces.MushroomStem),
             Plant(BlockId.TallGrassTop, "tall_grass_top", "Tall Grass", BlockShape.Plant(Surfaces.TallGrass, 16, offset: PlantOffset.Across), Surfaces.TallGrass) with { HeldAs = BlockId.TallGrass },
+            new(BlockId.Tnt, "tnt", "TNT", Surfaces.TntTop, Surfaces.TntSide, Surfaces.TntBottom),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");

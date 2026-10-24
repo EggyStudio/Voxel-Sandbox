@@ -40,6 +40,10 @@ public static class Loot
             case BlockId.ShortGrass or BlockId.TallGrass or BlockId.Fern:
                 if (random.Next(8) == 0) yield return (Items.Of(BlockId.Wheat), 1);
                 yield break;
+            case BlockId.Gravel:
+                // Gravel gives flint one time in ten, as the source's does.
+                yield return random.Next(10) == 0 ? (Items.Flint, 1) : (Items.Of(BlockId.Gravel), 1);
+                yield break;
             case BlockId.DeadBush:
                 if (random.Next(3) is > 0 and var sticks) yield return (Items.Stick, sticks);
                 yield break;
@@ -173,7 +177,7 @@ public static class Loot
     /// <summary>A block's hardness, Minecraft's, by the item that places it.</summary>
     public static float Hardness(BlockId block) => Blocks.Get(block).Item switch
     {
-        BlockId.Torch or BlockId.SoulTorch or BlockId.EndRod or BlockId.Wheat => 0,
+        BlockId.Torch or BlockId.SoulTorch or BlockId.EndRod or BlockId.Wheat or BlockId.Tnt => 0,
         var plant when BlockGroups.Plants.Contains(plant) => 0,
         var leaves when BlockGroups.Leaves.ContainsKey(leaves) => 0.2f,
         BlockId.BrownMushroomBlock or BlockId.RedMushroomBlock or BlockId.MushroomStem => 0.2f,

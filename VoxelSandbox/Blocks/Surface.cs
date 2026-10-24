@@ -257,6 +257,9 @@ public static class Surfaces
     public static readonly int BrownMushroomCap = Add("brown mushroom cap", new Color(150, 113, 81));
     public static readonly int RedMushroomCap = Add("red mushroom cap", new Color(225, 56, 56));
     public static readonly int MushroomStem = Add("mushroom stem", new Color(206, 198, 182));
+    public static readonly int TntSide = Add("tnt side", new Color(206, 72, 52));
+    public static readonly int TntTop = Add("tnt top", new Color(170, 150, 140));
+    public static readonly int TntBottom = Add("tnt bottom", new Color(150, 130, 120));
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;
