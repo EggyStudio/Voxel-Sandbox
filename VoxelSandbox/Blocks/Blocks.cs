@@ -236,6 +236,14 @@ public enum BlockId : ushort
     Fire,
     Deepslate,
     CobbledDeepslate,
+    DeepslateCoalOre,
+    DeepslateIronOre,
+    DeepslateCopperOre,
+    DeepslateGoldOre,
+    DeepslateRedstoneOre,
+    DeepslateLapisOre,
+    DeepslateDiamondOre,
+    DeepslateEmeraldOre,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -558,6 +566,14 @@ public static class Blocks
                 Shape: BlockShape.Fire(0), HeldAs: BlockId.Air),
             new(BlockId.Deepslate, "deepslate", "Deepslate", Surfaces.DeepslateTop, Surfaces.Deepslate, Surfaces.DeepslateTop),
             Same(BlockId.CobbledDeepslate, "cobbled_deepslate", "Cobbled Deepslate", Surfaces.CobbledDeepslate),
+            Same(BlockId.DeepslateCoalOre, "deepslate_coal_ore", "Deepslate Coal Ore", Surfaces.DeepslateCoalOre),
+            Same(BlockId.DeepslateIronOre, "deepslate_iron_ore", "Deepslate Iron Ore", Surfaces.DeepslateIronOre),
+            Same(BlockId.DeepslateCopperOre, "deepslate_copper_ore", "Deepslate Copper Ore", Surfaces.DeepslateCopperOre),
+            Same(BlockId.DeepslateGoldOre, "deepslate_gold_ore", "Deepslate Gold Ore", Surfaces.DeepslateGoldOre),
+            Same(BlockId.DeepslateRedstoneOre, "deepslate_redstone_ore", "Deepslate Redstone Ore", Surfaces.DeepslateRedstoneOre),
+            Same(BlockId.DeepslateLapisOre, "deepslate_lapis_ore", "Deepslate Lapis Ore", Surfaces.DeepslateLapisOre),
+            Same(BlockId.DeepslateDiamondOre, "deepslate_diamond_ore", "Deepslate Diamond Ore", Surfaces.DeepslateDiamondOre),
+            Same(BlockId.DeepslateEmeraldOre, "deepslate_emerald_ore", "Deepslate Emerald Ore", Surfaces.DeepslateEmeraldOre),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");

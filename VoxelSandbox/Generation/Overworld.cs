@@ -9,7 +9,8 @@ namespace VoxelSandbox;
 /// savanna beside it and the jungle where it is hot and wet, swamps sunk to the sea level with pools
 /// among them, mountains of stone with snowy tops, lakes and seas up to sea level over sand and
 /// gravel, frozen where it is cold, beaches along them, rivers winding through the land to them,
-/// veins of coal in the stone, and caves under the ground that open to the sky in places, and ravines.
+/// veins of ore in the stone and the deepslate, the source's caves under the ground opening to the
+/// sky at its entrances, and ravines.
 /// </summary>
 public sealed class Overworld : IWorldGenerator
 {
@@ -23,8 +24,9 @@ public sealed class Overworld : IWorldGenerator
     // Badlands ground this high is a mesa, its terracotta bare.
     private const int Mesas = SeaLevel + 14;
 
-    private readonly Noise _hills, _mountains, _sand, _gravel, _tunnelA, _tunnelB, _caverns, _basins, _mouths, _rivers, _mesas, _swampFloor, _mottle, _clay;
+    private readonly Noise _hills, _mountains, _sand, _gravel, _basins, _rivers, _mesas, _swampFloor, _mottle, _clay;
     private readonly Climate _climate;
+    private readonly Caves _caves;
     // The badlands' terracotta's color at each height, bands one to three high, the same for a seed.
     private readonly BlockId[] _bands;
 
@@ -35,17 +37,14 @@ public sealed class Overworld : IWorldGenerator
         _mountains = new Noise(seed + 1);
         _sand = new Noise(seed + 2);
         _gravel = new Noise(seed + 3);
-        _tunnelA = new Noise(seed + 4);
-        _tunnelB = new Noise(seed + 5);
-        _caverns = new Noise(seed + 6);
         _basins = new Noise(seed + 7);
-        _mouths = new Noise(seed + 8);
         _rivers = new Noise(seed + 12);
         _mesas = new Noise(seed + 13);
         _swampFloor = new Noise(seed + 14);
         _mottle = new Noise(seed + 15);
         _clay = new Noise(seed + 16);
         _climate = new Climate(seed);
+        _caves = new Caves(seed);
         _bands = Bands(seed);
     }
 
@@ -203,13 +202,16 @@ public sealed class Overworld : IWorldGenerator
         int minX = columnX * Section.Size, minZ = columnZ * Section.Size;
         var villages = Structures.Village.GroundIn(minX, minZ, minX + Section.Mask, minZ + Section.Mask, this);
         var grounds = new (int Height, Biome Biome, BlockId Top)[Section.Size * Section.Size];
+        var caves = _caves.Carve(columnX, columnZ, (x, z) => At(x, z).Height);
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
                 int wx = columnX * Section.Size + x, wz = columnZ * Section.Size + z;
                 var (height, biome, top, under, temperature, _) = Ground(wx, wz);
                 grounds[z * Section.Size + x] = (height, biome, top);
-                var open = height > SeaLevel + 4 && _mouths.Fractal(wx / 90f, wz / 90f, 2) > 0.3f && !Structures.Village.OnGround(villages, wx, wz);
+                // The caves open to the top where an entrance reaches it but under water, which they
+                // would drain, and on a village's ground, which its roads and footings lie on.
+                var open = height > SeaLevel + 1 && !Structures.Village.OnGround(villages, wx, wz);
                 Paint(column, x, z, wx, wz, Shape(wx, wz));
                 var banded = biome == Biomes.Badlands;
                 column.Set(x, ChunkColumn.Bottom, z, BlockId.Bedrock);
@@ -231,11 +233,10 @@ public sealed class Overworld : IWorldGenerator
                         column.Set(x, y, z, BlockId.Bedrock);
                         continue;
                     }
-                    // The caves stay three blocks under the ground, so they are dark until dug into,
-                    // where an emissive block is the only light, but in patches of high ground a
-                    // tunnel that rises near the top breaks out, a mouth the sun shines into, though
-                    // never on a village's ground, which its roads and footings lie on.
-                    if ((y < height - 3 || open) && IsCave(wx, y, wz)) continue;
+                    // The caves stay three blocks under the ground where they may not open, and
+                    // elsewhere open where the source's entrances reach the top, a mouth the sun
+                    // shines into.
+                    if ((y < height - 3 || open) && caves.IsCave(x, y, z)) continue;
                     column.Set(x, y, z, block);
                 }
                 // Water over lower ground, its top frozen where the climate is cold.
@@ -397,18 +398,10 @@ public sealed class Overworld : IWorldGenerator
     private static readonly int MostFeatures = Biomes.All.Max(b => b.Trees.Where(t => t.Feature.Reach > 0).Sum(t => t.PerThousand));
     private static readonly int MostReach = Biomes.All.SelectMany(b => b.Trees).Max(t => t.Feature.Reach);
 
-    // Tunnels where two noises are both near zero, and wide caverns where a third is high.
     // Whether a block takes a layer that is whole up to one height and thins out to none at another,
     // as the source's vertical gradients do, its share falling evenly between them, by a hash of the
     // block's place, so deepslate meets the stone and bedrock the deepslate in a ragged edge.
     private bool Thins(int x, int y, int z, int whole, int none, int salt) =>
         y <= whole || y < none && PlaceHash.Of(x * 389 + y, z, Seed ^ salt) % 1000 < 1000 * (none - y) / (none - whole);
 
-    private bool IsCave(int x, int y, int z)
-    {
-        var a = _tunnelA.At(x / 40f, y / 28f, z / 40f);
-        var b = _tunnelB.At(x / 40f, y / 28f, z / 40f);
-        if (a * a + b * b < 0.0035f) return true;
-        return y < 40 && _caverns.At(x / 64f, y / 32f, z / 64f) > 0.38f;
-    }
 }

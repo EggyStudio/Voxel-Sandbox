@@ -122,20 +122,27 @@ public sealed class SmeltingTests : IDisposable
     }
 
     [Fact]
-    public void The_Stone_Holds_Iron_Low_Down()
+    public void The_Stone_Holds_Iron_And_The_Deepslate_Deepslate_Iron_By_The_Sources_Heights()
     {
         var land = new Overworld(1);
-        int iron = 0, highest = 0;
+        int iron = 0, deep = 0, lowestIron = int.MaxValue, highestDeep = int.MinValue;
         for (int cz = -2; cz <= 2; cz++)
             for (int cx = -2; cx <= 2; cx++)
             {
                 var column = land.Generate(cx, cz);
-                for (int y = 0; y < ChunkColumn.Ceiling; y++)
+                for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
                     for (int z = 0; z < Section.Size; z++)
                         for (int x = 0; x < Section.Size; x++)
-                            if (column.Get(x, y, z) == BlockId.IronOre) (iron, highest) = (iron + 1, Math.Max(highest, y));
+                        {
+                            var block = column.Get(x, y, z);
+                            if (block == BlockId.IronOre) (iron, lowestIron) = (iron + 1, Math.Min(lowestIron, y));
+                            if (block == BlockId.DeepslateIronOre) (deep, highestDeep) = (deep + 1, Math.Max(highestDeep, y));
+                        }
             }
+        // Iron in the stone and deepslate iron in the deepslate, which thins out to none at 8.
         Assert.True(iron > 50, $"{iron} iron ore in 25 columns");
-        Assert.InRange(highest, 30, 70);
+        Assert.True(deep > 20, $"{deep} deepslate iron ore in 25 columns");
+        Assert.True(lowestIron >= 1, $"iron ore at {lowestIron}");
+        Assert.True(highestDeep <= 7, $"deepslate iron ore at {highestDeep}");
     }
 }

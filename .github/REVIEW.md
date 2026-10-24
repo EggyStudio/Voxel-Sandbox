@@ -5,23 +5,26 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `ba60ae4`, item 90, the frame at a render distance of 12 back at the 60 Hz pace, and
-nothing else, carrying the review's file, DEVLOG.md and the devlog's pictures: the reading at the
-cherry grove view, 1,824 draws and 1.32 million triangles, the game's drawing 7.5 ms of a 19.0 ms
-frame, the visibility flood 4.8 of it walking 24 sections a column every frame, the sections' draw
-loop 1.9, the engine's graph 10.6 with the scene pass 3.0, the window depth 2.5, the shadows 2.1 and
-the global illumination 1.4; the mend keeping the flood until its key changes, the eye's section and
-the faces its cell leaves by, the world's openings count moved by a column added or removed or an
-opaque block set, the distance and the atlas, the flood 4.8 to 0.004 ms and the game's drawing to
-2.4 to 2.8, the frame 16.7 to 17.0 ms at the 60 Hz pace with the main thread waiting 2.4 to 4.3 ms,
-the GPU at about 14.5 the bound; no merge of the draws, the package having no call for one and the
-main thread spare; the play check bounding the draws at 400 at the land edge's view, reading 277,
-and the water frames check's waits alternating six and seven ticks so its readings fall on two
-frames; 269 tests, the strict build clean, play.sh 151 s on the GPU. Read at 08:56 on 2026-10-24.
-Not pushed, the build run of `a528c79` running; pushed when it ends. Next the world pictures taken
-again with far land, then 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40
-degrees, then 26 and the items in order; items 38's second part and 54 when their packages come; the
-AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `3a99729`, the README's world pictures taken again with far land at its default,
+every horizon going on past the near land, the pictures and the README's text alone with no code
+since the checks, after `ba60ae4`, item 90, the frame at a render distance of 12 back at the 60 Hz
+pace, and nothing else, carrying the review's file, DEVLOG.md and the devlog's pictures. Item 90:
+the reading at the cherry grove view, 1,824 draws and 1.32 million triangles, the game's drawing 7.5
+ms of a 19.0 ms frame, the visibility flood 4.8 of it walking 24 sections a column every frame, the
+sections' draw loop 1.9, the engine's graph 10.6 with the scene pass 3.0, the window depth 2.5, the
+shadows 2.1 and the global illumination 1.4; the mend keeping the flood until its key changes, the
+eye's section and the faces its cell leaves by, the world's openings count moved by a column added
+or removed or an opaque block set, the distance and the atlas, the flood 4.8 to 0.004 ms and the
+game's drawing to 2.4 to 2.8, the frame 16.7 to 17.0 ms at the 60 Hz pace with the main thread
+waiting 2.4 to 4.3 ms, the GPU at about 14.5 the bound; no merge of the draws, the package having no
+call for one and the main thread spare; the play check bounding the draws at 400 at the land edge's
+view, reading 277, and the water frames check's waits alternating six and seven ticks so its
+readings fall on two frames; 269 tests, the strict build clean, play.sh 151 s on the GPU. Read at
+08:56 and 09:08 on 2026-10-24. Not pushed, the build run of `a528c79` running; the two go when it
+ends. The README's long lines of today reflowed in the next commit. Next item 27, the caves, then
+42, 43 and 70, then 28 to 36 in order; items 38's second part and 54 when their packages come, and
+the deep caves' sky light under 27 with the engine's next package; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
 
 Before it, `a528c79` came, item 26's fourth part with the devlog's move, pushed at 08:48 on
 2026-10-24, its run in flight.
@@ -363,7 +366,7 @@ full.
     2026-10-24, the costs in the head. Part 2 at `1b53cee`, the numbers in the head. Part 3 at
     `3d7b1ed`, off by default until part 4. Part 4 at `a528c79`, far land on at 32 by default, the
     readings in the head; item 26 done, held for the push. The world pictures are taken again with
-    far land in a small commit after item 90's reading.
+    far land in a small commit after item 90's reading. The pictures at `3a99729`.
 
 90. **The frame at a render distance of 12 comes back under 16.7 ms with the taller world, the main
     thread's draws read first.** Item 26's readings on 2026-10-24: at 12 the frame stands at 17.5 ms

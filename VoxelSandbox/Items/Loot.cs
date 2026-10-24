@@ -33,7 +33,8 @@ public static class Loot
             yield break;
         }
         if (BlockGroups.Glass.Contains(item)) yield break;
-        switch (item)
+        // An ore in deepslate drops what its ore in stone does, or itself where that drops itself.
+        switch (Ores.Plain(item))
         {
             case BlockId.Air or BlockId.Water or BlockId.Bedrock or BlockId.Ice:
                 yield break;
@@ -131,7 +132,7 @@ public static class Loot
         ToolFor(block) is not (ToolKind.Pickaxe, true) || held?.Tool == ToolKind.Pickaxe && held.Tier >= TierFor(block);
 
     /// <summary>The tier of pickaxe a block's ore asks, 2 for iron, copper and lapis ore, 3 for gold, redstone, diamond and emerald ore and 1 for the rest.</summary>
-    public static int TierFor(BlockId block) => block switch
+    public static int TierFor(BlockId block) => Ores.Plain(block) switch
     {
         BlockId.IronOre or BlockId.CopperOre or BlockId.LapisOre => 2,
         BlockId.GoldOre or BlockId.RedstoneOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
@@ -139,7 +140,7 @@ public static class Loot
     };
 
     /// <summary>The kind of tool a block breaks fastest to, and whether it drops anything broken without one, as Minecraft's stone does not.</summary>
-    public static (ToolKind Tool, bool Needed) ToolFor(BlockId block) => Blocks.Get(block).Item switch
+    public static (ToolKind Tool, bool Needed) ToolFor(BlockId block) => Ores.Plain(Blocks.Get(block).Item) switch
     {
         var wood when BlockGroups.Logs.Contains(wood) || BlockGroups.Planks.Contains(wood) => (ToolKind.Axe, false),
         BlockId.BrownMushroomBlock or BlockId.RedMushroomBlock or BlockId.MushroomStem => (ToolKind.Axe, false),
@@ -163,7 +164,7 @@ public static class Loot
     /// hardness for most, 6 for stone and what is made of it, 3 for wood and coal ore, 100 for
     /// water, and bedrock past any explosion.
     /// </summary>
-    public static float Resistance(BlockId block) => Blocks.Get(block).Item switch
+    public static float Resistance(BlockId block) => Ores.Plain(Blocks.Get(block).Item) switch
     {
         BlockId.Bedrock => 3_600_000,
         var wood when BlockGroups.Logs.Contains(wood) || BlockGroups.Planks.Contains(wood) => 3,
@@ -182,6 +183,7 @@ public static class Loot
     {
         // Fire, which places as no item, breaks at once and stops no blast, as the source's does.
         BlockId.Air => 0,
+        var deep when Ores.InStone.ContainsKey(deep) => 4.5f,
         BlockId.Torch or BlockId.SoulTorch or BlockId.EndRod or BlockId.Wheat or BlockId.Tnt => 0,
         var plant when BlockGroups.Plants.Contains(plant) => 0,
         var leaves when BlockGroups.Leaves.ContainsKey(leaves) => 0.2f,

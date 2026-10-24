@@ -280,6 +280,15 @@ public static class Surfaces
     public static readonly int Deepslate = Add("deepslate", new Color(85, 85, 87));
     public static readonly int DeepslateTop = Add("deepslate top", new Color(84, 84, 86));
     public static readonly int CobbledDeepslate = Add("cobbled deepslate", new Color(84, 84, 87));
+    // The ores in deepslate, each its ore's own color darkened as deepslate is from stone.
+    public static readonly int DeepslateCoalOre = Add("deepslate coal ore", new Color(47, 47, 48));
+    public static readonly int DeepslateIronOre = Add("deepslate iron ore", new Color(111, 95, 84));
+    public static readonly int DeepslateCopperOre = Add("deepslate copper ore", new Color(98, 78, 65));
+    public static readonly int DeepslateGoldOre = Add("deepslate gold ore", new Color(115, 107, 72));
+    public static readonly int DeepslateRedstoneOre = Add("deepslate redstone ore", new Color(95, 63, 63));
+    public static readonly int DeepslateLapisOre = Add("deepslate lapis ore", new Color(65, 73, 95));
+    public static readonly int DeepslateDiamondOre = Add("deepslate diamond ore", new Color(78, 107, 107));
+    public static readonly int DeepslateEmeraldOre = Add("deepslate emerald ore", new Color(71, 95, 76));
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

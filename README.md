@@ -127,30 +127,30 @@ and the light, and the block the eye is inside where it is in one. `voxel.fill`,
 `voxel.set` change blocks, `voxel.tp`, `voxel.look` and `voxel.fly` move the player, `voxel.break`
 and `voxel.place` act as the mouse buttons do, `voxel.time`, `voxel.day` and `voxel.cycle` set the
 sky, `voxel.clouds` shows or hides the clouds and places their drift, `voxel.distance` the render
-distance, `voxel.far` how far the far land reaches, `voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the
-shaded corners on or off, `voxel.corners` sets how far the corners darken, `voxel.world` saves the
-world and opens or begins another of a kind and seed, `voxel.loading` holds its loading screen up
-for a capture, `voxel.save` saves at once, and `voxel.blocks`
-lists the blocks by number and name. `voxel.mobs` counts the mobs and lists the nearest,
-`voxel.spawn` places one where the crosshair rests, `voxel.attack` hits the one it rests on as the
-left button does, `voxel.still` stops them where they stand and holds the clouds for a capture, and
-`voxel.kill` takes them away. `voxel.fires` counts the fires and lists the nearest with their ages.
-`voxel.mode` plays in creative, survival, adventure or spectator mode,
-`voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the inventory,
-`voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and reads a
-furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item, `voxel.throw`
-throws as Q does, and `voxel.drop` lays one of an item on the ground at a place. `voxel.packs` says
-or sets the resource packs on, and `voxel.reload` reads them again. `voxel.vitals` says or sets the
-health and food, `voxel.hurt` harms the player, and
-`voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global
-illumination, the scene's distance field and the sun's shadows, `voxel.hud` hides what is drawn over
-the world for a capture, `voxel.scale` sets the interface's scale, at which `build/pictures.sh`
-takes the windows, and `voxel.fov` sets the field of view, which the script narrows to 40 degrees
-for its views of the world, as a zoom does for a screenshot. Three measure the light. `voxel.flicker` records each frame's change in the
-picture around a turn or a step into a file, with the first frame after it, the settled one and
-their difference beside it, `voxel.ring` reads the last frame's light around a circle on the ground
-by angle, and `voxel.depth` says how far the block under a pixel is. The engine's own `gi.*` and
-`field.*` commands show and measure global illumination.
+distance, `voxel.far` how far the far land reaches, `voxel.light` reads a block's light levels,
+`voxel.shade` turns the light levels and the shaded corners on or off, `voxel.corners` sets how far
+the corners darken, `voxel.world` saves the world and opens or begins another of a kind and seed,
+`voxel.loading` holds its loading screen up for a capture, `voxel.save` saves at once, and
+`voxel.blocks` lists the blocks by number and name. `voxel.mobs` counts the mobs and lists the
+nearest, `voxel.spawn` places one where the crosshair rests, `voxel.attack` hits the one it rests on
+as the left button does, `voxel.still` stops them where they stand and holds the clouds for a
+capture, and `voxel.kill` takes them away. `voxel.fires` counts the fires and lists the nearest with
+their ages. `voxel.mode` plays in creative, survival, adventure or spectator mode, `voxel.select`
+puts an item in the chosen slot, `voxel.give` puts items in the inventory, `voxel.craft` makes an
+item from what the inventory holds, `voxel.furnace` fills and reads a furnace, `voxel.inventory`
+lists what it holds, `voxel.items` lists every item, `voxel.throw` throws as Q does, and
+`voxel.drop` lays one of an item on the ground at a place. `voxel.packs` says or sets the resource
+packs on, and `voxel.reload` reads them again. `voxel.vitals` says or sets the health and food,
+`voxel.hurt` harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and
+`voxel.shadows` set global illumination, the scene's distance field and the sun's shadows,
+`voxel.hud` hides what is drawn over the world for a capture, `voxel.scale` sets the interface's
+scale, at which `build/pictures.sh` takes the windows, and `voxel.fov` sets the field of view, which
+the script narrows to 40 degrees for its views of the world, as a zoom does for a screenshot. Three
+measure the light. `voxel.flicker` records each frame's change in the picture around a turn or a
+step into a file, with the first frame after it, the settled one and their difference beside it,
+`voxel.ring` reads the last frame's light around a circle on the ground by angle, and `voxel.depth`
+says how far the block under a pixel is. The engine's own `gi.*` and `field.*` commands show and
+measure global illumination.
 
 ## Biomes
 
@@ -324,11 +324,16 @@ down.
 The world stands on Minecraft's floor of bedrock at -64, whole there and thinning out over the five
 blocks above, and under 0 its stone is deepslate, as Minecraft's is, thinning out up to 8 so the two
 meet in a ragged edge. Deepslate breaks into cobbled deepslate, which makes stone tools and a
-furnace as cobblestone does and smelts back into deepslate. Tunnels wind under the ground where two
-noises are both near zero, down to the bedrock, and wide caverns open deep down where a third is
-high. They stay three blocks under the ground, so they are dark until dug into, but
-in patches of high ground away from the sea a tunnel that rises near the top breaks out, a mouth the
-sun shines into, though never on a village's ground or within six blocks of it. A ravine cuts the
+furnace as cobblestone does and smelts back into deepslate. The caves are Minecraft's newer ones,
+by its density functions and their numbers, cheese caves, wide and tall, where a large noise is
+low, with pillars left standing where their noise holds them, spaghetti tunnels where two noises
+are near zero, thinned by a third, noodles thinner still, and entrances that open them to the
+ground's top. The density is worked out at the corners of Minecraft's cells, 4 blocks across and 8
+high, and interpolated between, which shapes the caves smoothly and asks a tenth of the noises a
+block, and the ground closes toward the floor from -40. Minecraft's terrain density, which the
+caves read for how deep a place lies, is the depth under the ground's top, so only an entrance
+reaches the top ten blocks, and never in the top three under water, which it would drain, nor on a
+village's ground. A ravine cuts the
 ground open along a swaying line about 48 blocks long, up to seven wide at its middle and narrowing
 to its ends, its floor up to 30 blocks down with a few emissive magma blocks on it, so the sun's
 light falls down its walls and the magma's lights its depths at night. No ravine is cut beside the
@@ -620,12 +625,17 @@ item of each stack. A log makes four planks of its wood, two planks four sticks,
 or charcoal four torches, eight cobblestone in a ring a furnace, planks, cobblestone or iron ingots
 with sticks the tools in Minecraft's shapes, three blocks in a row six slabs, a staircase of six
 blocks four stairs, planks and sticks three fences, six planks three doors, four sand a block of
-sandstone, four stone four stone bricks, and nine wheat a hay bale. Ores lie in veins in the stone
-by depth, as Minecraft's do, coal 18 to a column from 5 to 100 blocks up, iron 10 from 5 to 64,
-copper 10 from 20 to 80, gold 4 from 5 to 32, redstone 6 from 5 to 16, lapis 2 from 5 to 32, a
-diamond vein from 5 to 16 and, in the mountains, single emeralds from 48 to 98, each in the stone's
-color warmed or cooled by what is in it, which the walls of a cave or a ravine show. Minecraft's
-depths are raised, so the rarest lie in the stone over the deepslate, which holds none.
+sandstone, four stone four stone bricks, and nine wheat a hay bale. Ores lie in the stone and the
+deepslate as Minecraft's ore features place them, so many blobs to a column at heights of an even
+or a trapezoid spread, an ore of the stone in stone and its deepslate ore in deepslate, coal 30
+from 136 up and 20 from 0 to 192, iron 90 from 80 to 384, 10 from -24 to 56 and 10 small ones from
+the floor to 72, copper 16 from -16 to 112, gold 4 from -64 to 32 and in the badlands 50 from 32 to
+256, redstone 4 from the floor to 15 and 8 peaking under it, lapis 2 from -32 to 32 and 4 buried,
+diamonds peaking far under the floor up to 16, and in the mountains 100 small emerald blobs, each
+in the stone's or the deepslate's color warmed or cooled by what is in it, which the walls of a
+cave or a ravine show. Some blobs leave out their blocks open to a cave's air, as Minecraft's do,
+so the buried lapis and diamonds lie only behind the walls. An ore in deepslate drops what its ore
+in stone does and is harder to break, 4.5.
 
 ## Furnaces and iron
 
@@ -687,19 +697,20 @@ skeleton keeps five to ten blocks off and shoots an arrow every two seconds, aim
 player's chest for its drop, each arrow two points for each block a tick it flies and sometimes one
 more, and a creeper within three blocks swells by Minecraft's numbers, wider more than taller,
 flashing white over every other tenth of its fuse, and after a second and a half explodes, unless
-the player gets seven blocks away. Its hiss waits for the game to have sound. Its explosion, of Minecraft's power 3,
-sends rays out that break the blocks they reach by each block's blast resistance, a hollow of dirt
-and little stone, drops a third of what it breaks, and harms the player and the mobs by their
-distance and how much of them it sees, 43 points at its middle. Zombies and skeletons burn under the
-open sky by day, a point a second. In creative mode they wander and hunt no one. TNT, made of five
-gunpowder and four sand in a cross, is lit by flint and steel used on it, which is made of an iron
-ingot and flint, gravel giving flint one time in ten, and wears out after 64 uses. Lit, the TNT pops
-up from its cell, falls, flashes white every five ticks and swells over its last ten, and after four
-seconds explodes at Minecraft's power of 4, a hollow of about a hundred dirt where a creeper's takes
-fifty, and a blast that reaches TNT lights it on a fuse of half a second to a second and a half, so
-a row of it goes off one after another. Each blast throws Minecraft's cloud, six puffs a tick for
-eight ticks within four blocks of it, drawn unlit with the pack's sixteen pictures of an explosion,
-and a flash of light for a tenth of a second, which global illumination carries onto the land around.
+the player gets seven blocks away. Its hiss waits for the game to have sound. Its explosion, of
+Minecraft's power 3, sends rays out that break the blocks they reach by each block's blast
+resistance, a hollow of dirt and little stone, drops a third of what it breaks, and harms the player
+and the mobs by their distance and how much of them it sees, 43 points at its middle. Zombies and
+skeletons burn under the open sky by day, a point a second. In creative mode they wander and hunt no
+one. TNT, made of five gunpowder and four sand in a cross, is lit by flint and steel used on it,
+which is made of an iron ingot and flint, gravel giving flint one time in ten, and wears out after
+64 uses. Lit, the TNT pops up from its cell, falls, flashes white every five ticks and swells over
+its last ten, and after four seconds explodes at Minecraft's power of 4, a hollow of about a hundred
+dirt where a creeper's takes fifty, and a blast that reaches TNT lights it on a fuse of half a
+second to a second and a half, so a row of it goes off one after another. Each blast throws
+Minecraft's cloud, six puffs a tick for eight ticks within four blocks of it, drawn unlit with the
+pack's sixteen pictures of an explosion, and a flash of light for a tenth of a second, which global
+illumination carries onto the land around.
 
 They drop Minecraft's loot as they die. A zombie drops rotten flesh, which feeds four points, a
 skeleton bones and arrows, a spider string and now and then an eye, and a creeper gunpowder, unless
@@ -709,14 +720,15 @@ which cast no shadow.
 
 ## Fire
 
-Flint and steel used on a block's face lights a fire in the cell before it, where the block under
-it is whole or a block beside it burns, as Minecraft's does, and a blast lights none, as Minecraft's
-TNT and creepers light none. A fire burns by Minecraft's numbers. It ticks every one and a half to two seconds, growing older, burns away a block beside it
-that burns or turns it to fire, at Minecraft's odds for planks, logs, leaves, wool, hay, TNT, which
-it lights, and the flowers and grasses, and catches the air near them, up to four blocks over it and
-one to each side. One with nothing that burns around it goes out once it is older than 3, about
-twenty seconds on stone, and one over magma burns on. A house of planks burns down, and a hand,
-a block placed in its cell or a blast puts a fire out.
+Flint and steel used on a block's face lights a fire in the cell before it, where the block under it
+is whole or a block beside it burns, as Minecraft's does, and a blast lights none, as Minecraft's
+TNT and creepers light none. A fire burns by Minecraft's numbers. It ticks every one and a half to
+two seconds, growing older, burns away a block beside it that burns or turns it to fire, at
+Minecraft's odds for planks, logs, leaves, wool, hay, TNT, which it lights, and the flowers and
+grasses, and catches the air near them, up to four blocks over it and one to each side. One with
+nothing that burns around it goes out once it is older than 3, about twenty seconds on stone, and
+one over magma burns on. A house of planks burns down, and a hand, a block placed in its cell or a
+blast puts a fire out.
 
 Its flames are Minecraft's walls of the pack's animated `fire_0`, four leaning across the cell and
 four at its sides on the ground, or toward each block beside and over it that burns where it hangs
@@ -774,49 +786,49 @@ stairs shows the part of the texture its place covers. A torch's and a lantern's
 parts of the torch's and the lantern's textures the source's models give their faces, read from the
 models as numbers, a lantern's handle and chain two crossed walls cut out where the texture is
 clear, and its glass and a torch's flame, drawn as lamps' cubes, emit four times the color of their
-bright pixels, so the iron around the glass shows as iron. Grass and oak leaves take the
-climate's color over their gray textures, birch and spruce leaves and water a color of their own as
-Minecraft gives them, and the grass block's side its overlay tinted over the dirt under it. The
-scene's distance field reads each face as its texture's average under its tint, so the light a wall
-gives back takes its texture's color. A face whose texture is clear in some pixels and wholly
-covered in the rest is cut out where it is clear, as Minecraft cuts out its glass, a door's window
-and its leaves, the shader dropping those pixels. Glass goes in a mesh of each section that casts
-no shadow, as the see-through faces cast none, and a door's window and a pack's leaves in one that
-casts the whole face's, the terrain shader's `shadowMain` cutting only the faces whose corners carry
-their places on the texture, so a canopy's shade stays whole. Glass a pack draws in a frame keeps
-the frame and loses the streaks the pack lays across its pane, everything inside the frame taking
-the pane's most common pixel, and two panes of the same glass side by side show one frame about
-both, as the modpack's connected textures draw them. The mesher packs which of a glass face's eight
-neighbors in its plane are the same glass, and the terrain shader leaves out the frame toward them,
-running the frame's other edge on straight past a join and keeping a corner inside an L of three
-panes, as `build/play.sh` reads where two panes meet. A pack's own pieces of connected glass are
-not read, since none of the packs the game fetches has them.
-Leaves cut out hide nothing behind them, so they keep their faces against each other and the faces
-beside them, as Minecraft draws its leaves, and the sections seen through them are drawn. Bare
-Bones' leaves are covered in every pixel and so stay whole. A texture partly clear, as ice's is,
-blends as before, and the cactus, whose texture is clear at its edges for Minecraft's model of
-sides a pixel in from its cell's, stays whole, since on the game's whole cube those edges would
-show through at its corners. An emissive block's cube is drawn with its texture, and one whose
-faces differ, the lit furnace, with its top's, its sides' and its bottom's laid side by side, so it
-shows the furnace's top above its front, its front alone emissive where its pixels are bright. A
-pack's animated texture, a strip of frames its metadata plays in an order and for times of its own,
-has its frames laid in the atlas one after another, each held the shortest frame's time and a
-longer frame for as many steps as it lasts, a face carrying the first and the terrain shader
-stepping it by the game's ticks, twenty a second, as Minecraft steps them, up to 16 such textures.
-An animated lamp's cube keeps its first frame's texture, whose average the scene's distance field
-reads as its color, since a draw whose color changes is stamped again without its light for frames,
-and steps the map of its emission, which shows most of what the face shows, so a lantern's flame
-flickers and the light it casts holds still. `build/play.sh` writes water of a white and a black
-frame and reads both in turn. An item's icon is the pack's texture for it, or a block's cube with its faces' textures. The grass's
-top shows looks of the game's own in its flat style, little blossoms of four colors, patches of
-clover a shade darker than the grass under them and so tinted by the climate as it is, and pebbles,
-laid over a pack's grass or the game's own at four quarter turns, the grass's own tile keeping the
-way it lies, since a pack draws its grass's streaks one way, and about four blocks in five plain, a
-twelfth clover and a few in a hundred flowers or stones, as the looks of the grass in the owner's
-modpack are weighed. A hash of the block's place picks one, so the same block shows the same look
-every time. A pack gives the pictures alone, its textures, its sprites and its font, and the game
-reads nothing of its block states or models, which hold how the source draws and chooses its blocks,
-since how the game draws and chooses is its own.
+bright pixels, so the iron around the glass shows as iron. Grass and oak leaves take the climate's
+color over their gray textures, birch and spruce leaves and water a color of their own as Minecraft
+gives them, and the grass block's side its overlay tinted over the dirt under it. The scene's
+distance field reads each face as its texture's average under its tint, so the light a wall gives
+back takes its texture's color. A face whose texture is clear in some pixels and wholly covered in
+the rest is cut out where it is clear, as Minecraft cuts out its glass, a door's window and its
+leaves, the shader dropping those pixels. Glass goes in a mesh of each section that casts no shadow,
+as the see-through faces cast none, and a door's window and a pack's leaves in one that casts the
+whole face's, the terrain shader's `shadowMain` cutting only the faces whose corners carry their
+places on the texture, so a canopy's shade stays whole. Glass a pack draws in a frame keeps the
+frame and loses the streaks the pack lays across its pane, everything inside the frame taking the
+pane's most common pixel, and two panes of the same glass side by side show one frame about both, as
+the modpack's connected textures draw them. The mesher packs which of a glass face's eight neighbors
+in its plane are the same glass, and the terrain shader leaves out the frame toward them, running
+the frame's other edge on straight past a join and keeping a corner inside an L of three panes, as
+`build/play.sh` reads where two panes meet. A pack's own pieces of connected glass are not read,
+since none of the packs the game fetches has them. Leaves cut out hide nothing behind them, so they
+keep their faces against each other and the faces beside them, as Minecraft draws its leaves, and
+the sections seen through them are drawn. Bare Bones' leaves are covered in every pixel and so stay
+whole. A texture partly clear, as ice's is, blends as before, and the cactus, whose texture is clear
+at its edges for Minecraft's model of sides a pixel in from its cell's, stays whole, since on the
+game's whole cube those edges would show through at its corners. An emissive block's cube is drawn
+with its texture, and one whose faces differ, the lit furnace, with its top's, its sides' and its
+bottom's laid side by side, so it shows the furnace's top above its front, its front alone emissive
+where its pixels are bright. A pack's animated texture, a strip of frames its metadata plays in an
+order and for times of its own, has its frames laid in the atlas one after another, each held the
+shortest frame's time and a longer frame for as many steps as it lasts, a face carrying the first
+and the terrain shader stepping it by the game's ticks, twenty a second, as Minecraft steps them, up
+to 16 such textures. An animated lamp's cube keeps its first frame's texture, whose average the
+scene's distance field reads as its color, since a draw whose color changes is stamped again without
+its light for frames, and steps the map of its emission, which shows most of what the face shows, so
+a lantern's flame flickers and the light it casts holds still. `build/play.sh` writes water of a
+white and a black frame and reads both in turn. An item's icon is the pack's texture for it, or a
+block's cube with its faces' textures. The grass's top shows looks of the game's own in its flat
+style, little blossoms of four colors, patches of clover a shade darker than the grass under them
+and so tinted by the climate as it is, and pebbles, laid over a pack's grass or the game's own at
+four quarter turns, the grass's own tile keeping the way it lies, since a pack draws its grass's
+streaks one way, and about four blocks in five plain, a twelfth clover and a few in a hundred
+flowers or stones, as the looks of the grass in the owner's modpack are weighed. A hash of the
+block's place picks one, so the same block shows the same look every time. A pack gives the pictures
+alone, its textures, its sprites and its font, and the game reads nothing of its block states or
+models, which hold how the source draws and chooses its blocks, since how the game draws and chooses
+is its own.
 
 The interface takes a pack's pictures where Minecraft reads them, the hotbar, its frame, the hearts,
 the food, the bubbles of breath and the crosshair under `gui/sprites/hud`, the buttons and sliders
@@ -1011,33 +1023,33 @@ as the engine's sky shader reads it, under the share of the dome's band below, a
 hides where the world ends and as the owner's modpack's shader colors its fog by the way the eye
 looks. So a mountain's top high against the sky fades into the sky's blue and the land at the
 horizon into the horizon's haze. Nearer, the atmosphere hazes the land as the modpack's shader does
-with the owner's settings, toward the same color by a share that grows as one less e to the minus half a millionth of the cube of the
-distance in blocks, as much slower as the render distance is past twelve columns, to 0.23 at most,
-its fog's strength of 0.95 less the 0.25 it keeps in clear weather, held to 0.325 of that under its
-altitude of 300, so about a tenth of the land's color at 100 blocks and a fifth at 150. Under water
-the haze is the water's blue and covers the view within 16 blocks. Past the last section the world
-ends, so a dome about the eye below the horizon is drawn in the haze's color, as Minecraft draws
-what lies below its horizon in its fog's color, fading into the sky over six degrees above the
-horizon. It is drawn through the same shader beyond the haze's end, which gives it the haze's color
-itself, so the land's fading edge meets it with no step at any render distance and under water,
-while the sky's image keeps its darker lower half for the light it gives the world. It lies 3,600
-blocks out, beyond the sun, the moon and the stars and inside the engine's far plane, since it
-writes depth over its whole band, so a sun drawn behind it would end in a line six degrees up, where
-its band begins clear. They are drawn over it instead, the sun and the moon as a grid of a quad to
-each pixel of their pictures, and each corner takes the share of the haze left clear at its height,
-so a low sun dims into the haze as the dome blended over it would show it. `voxel.edge` reads where
-the drawn land ends up a column of pixels and how it meets what lies above it. The settings window
-turns the fog off, and the dome with it. The lamps' cubes are drawn with the engine's own shader and
-take no haze.
+with the owner's settings, toward the same color by a share that grows as one less e to the minus
+half a millionth of the cube of the distance in blocks, as much slower as the render distance is
+past twelve columns, to 0.23 at most, its fog's strength of 0.95 less the 0.25 it keeps in clear
+weather, held to 0.325 of that under its altitude of 300, so about a tenth of the land's color at
+100 blocks and a fifth at 150. Under water the haze is the water's blue and covers the view within
+16 blocks. Past the last section the world ends, so a dome about the eye below the horizon is drawn
+in the haze's color, as Minecraft draws what lies below its horizon in its fog's color, fading into
+the sky over six degrees above the horizon. It is drawn through the same shader beyond the haze's
+end, which gives it the haze's color itself, so the land's fading edge meets it with no step at any
+render distance and under water, while the sky's image keeps its darker lower half for the light it
+gives the world. It lies 3,600 blocks out, beyond the sun, the moon and the stars and inside the
+engine's far plane, since it writes depth over its whole band, so a sun drawn behind it would end in
+a line six degrees up, where its band begins clear. They are drawn over it instead, the sun and the
+moon as a grid of a quad to each pixel of their pictures, and each corner takes the share of the
+haze left clear at its height, so a low sun dims into the haze as the dome blended over it would
+show it. `voxel.edge` reads where the drawn land ends up a column of pixels and how it meets what
+lies above it. The settings window turns the fog off, and the dome with it. The lamps' cubes are
+drawn with the engine's own shader and take no haze.
 
 ## What is not here yet
 
-A pack's block models and its connected textures. The cactus's model of Minecraft's, its sides a pixel in from its cell's, so a pack's clear
-edges of it show the color the pixel holds. Slabs and stairs that keep light out, as
-Minecraft's do. Greedy meshing. Saplings that grow, and vines and cocoa on the jungle's trees.
-Structures read from files rather than built in code. Villagers that trade, sleep in beds or work
-their farms, and animals that breed or follow food. A bed to set where the player respawns, spiders
-that climb walls, and a bow and armor for the player.
+A pack's block models and its connected textures. The cactus's model of Minecraft's, its sides a
+pixel in from its cell's, so a pack's clear edges of it show the color the pixel holds. Slabs and
+stairs that keep light out, as Minecraft's do. Greedy meshing. Saplings that grow, and vines and
+cocoa on the jungle's trees. Structures read from files rather than built in code. Villagers that
+trade, sleep in beds or work their farms, and animals that breed or follow food. A bed to set where
+the player respawns, spiders that climb walls, and a bow and armor for the player.
 
 ## What it costs
 
@@ -1083,20 +1095,20 @@ sections from the one under its floor up, its floor being the lowest of its plac
 blocks, are meshed and drawn wherever the column is, and its deep sections only within the render
 distance of the eye in all three dimensions. Those two sections past that are packed, compressed
 until something reads them, so from 230 blocks over seed 1's spawn 3,817 sections pack and the
-columns hold 25 MB. A column takes 24 to 29 ms to generate on a worker and 6 to 7 ms to light.
+columns hold 25 MB. A column takes 11 to 16 ms to generate on a worker and 6 to 7 ms to light.
 
 Past the render distance far land reaches 32 columns by default, up to 64, which `voxel.far` and the
-settings window set, drawn coarser by distance in rings, each twice as far out as the one
-before and of cells twice as wide, 2 blocks across out to twice the render distance, 4 out to four
-times and 8 past that. Each cell is a box of its size at its own
-place, its top the highest the column's surface holds over it rounded down to its width, so far
-land keeps its size and steps in cubes of the merged size, colored by its highest block's texture's
-average under its biome's tint, lit with no shaded corners and casting no shadow. The surface of each column the
-player has seen is kept as it unloads and with the save, so far land shows what stood there when
-it was last seen, the trees and the player's buildings among it, and where no column was seen the
-generator's surface at each cell's middle, the ground's top or the sea's, without its trees. A
-ring's tiles of 64 by 64 cells draw only the columns within the ring, so the rings and the near land meet with no gap and no
-overlap, and the haze reaches to the far land's edge.
+settings window set, drawn coarser by distance in rings, each twice as far out as the one before and
+of cells twice as wide, 2 blocks across out to twice the render distance, 4 out to four times and 8
+past that. Each cell is a box of its size at its own place, its top the highest the column's surface
+holds over it rounded down to its width, so far land keeps its size and steps in cubes of the merged
+size, colored by its highest block's texture's average under its biome's tint, lit with no shaded
+corners and casting no shadow. The surface of each column the player has seen is kept as it unloads
+and with the save, so far land shows what stood there when it was last seen, the trees and the
+player's buildings among it, and where no column was seen the generator's surface at each cell's
+middle, the ground's top or the sea's, without its trees. A ring's tiles of 64 by 64 cells draw only
+the columns within the ring, so the rings and the near land meet with no gap and no overlap, and the
+haze reaches to the far land's edge.
 
 Flying east over land the stream has not loaded, the game meshes the sections and joins the columns
 that come into reach on the main thread, and the frame keeps 60 a second at no distance. In three
