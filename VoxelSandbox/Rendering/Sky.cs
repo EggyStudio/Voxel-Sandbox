@@ -441,8 +441,38 @@ public sealed class Sky : IDisposable
 
         if (!float.IsNaN(_paintedHour) && HoursApart(Hour, _paintedHour) < RepaintHours) return;
         _paintedHour = Hour;
-        Paint(SunToward(Hour));
+        var toSun = SunToward(Hour);
+        Paint(toSun);
         SetEnvironmentMap(new Image(_pixels, Width, Height));
+        Neutralize(DayShare(toSun));
+    }
+
+    // The sky's light on the land drawn toward a white of the same brightness as far as the day's
+    // light reaches, so a shadow is the ground darker in its own color, as the source's are, and the
+    // far shadows the cascades fade read alike, where the sky's blue lit a near shadow blue. The sky
+    // drawn keeps its blue, and the night's light its color. The light is the painted sky's on a face
+    // turned up, each pixel of the image's upper half by the cosine of its height above the horizon
+    // and the sine of its angle from the top, which the image's rows cover.
+    private void Neutralize(float day)
+    {
+        var (sum, weight) = (Vector3.Zero, 0f);
+        for (int py = 0; py < Height / 2; py++)
+        {
+            var theta = (py + 0.5f) / Height * MathF.PI;
+            var w = MathF.Cos(theta) * MathF.Sin(theta);
+            for (int px = 0; px < Width; px++)
+            {
+                var at = (py * Width + px) * 4;
+                sum += new Vector3(Decode(_pixels[at] / 255f), Decode(_pixels[at + 1] / 255f), Decode(_pixels[at + 2] / 255f)) * w;
+                weight += w;
+            }
+        }
+        var light = sum / weight;
+        var brightness = 0.2126f * light.X + 0.7152f * light.Y + 0.0722f * light.Z;
+        var white = MathF.Min(light.X, MathF.Min(light.Y, light.Z)) > 1e-4f ? new Vector3(brightness) / light : Vector3.One;
+        var factor = Vector3.Lerp(Vector3.One, white, day);
+        var most = MathF.Max(factor.X, MathF.Max(factor.Y, factor.Z));
+        SetEnvironmentLight(most, ColorOf(Encode(factor / most) * 255));
     }
 
     private void Paint(Vector3 toSun)
@@ -490,10 +520,12 @@ public sealed class Sky : IDisposable
     /// <summary>A sky's color in sRGB levels from 0 to 255 tinted by the night's tint as far as the day's light is gone, <paramref name="day"/> from 0 at night to 1 by day.</summary>
     public static Vector3 AtNight(Vector3 color, float day) => Tinted(color, Vector3.Lerp(NightTint, Vector3.One, day));
 
+    // An sRGB level from 0 to 1 in linear light.
+    private static float Decode(float c) => c <= 0.04045f ? c / 12.92f : MathF.Pow((c + 0.055f) / 1.055f, 2.4f);
+
     // A color in sRGB levels from 0 to 255 multiplied by a tint in linear light.
     private static Vector3 Tinted(Vector3 color, Vector3 tint)
     {
-        static float Decode(float c) => c <= 0.04045f ? c / 12.92f : MathF.Pow((c + 0.055f) / 1.055f, 2.4f);
         var linear = new Vector3(Decode(color.X / 255), Decode(color.Y / 255), Decode(color.Z / 255)) * tint;
         return Encode(Vector3.Min(linear, Vector3.One)) * 255;
     }

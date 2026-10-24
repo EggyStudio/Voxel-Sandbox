@@ -999,8 +999,13 @@ curve at 1.7, the brightness of the modpack's pictures, the darks deeper by the 
 and the lights brighter, and the frame is graded, each channel pushed from the middle gray by 1.12
 and the color by 1.4, so a village's roofs, its wheat and its
 grass in the afternoon read as vividly as in the modpack's pictures, whose shader's warm light and
-deep shade saturate them. `SetEnvironmentLight`, which the engine is asked for, would let the sky's
-light take the shader's share and whiteness too.
+deep shade saturate them. By day the sky's light on the land is drawn through the engine's
+`SetEnvironmentLight` toward a white of its own brightness, the painted sky's light on a face turned
+up taken each time the sky is painted, so a shadow is the ground darker in its own color, as the
+source's are and as the far shadows the cascades fade read, where the sky's blue lit the near ones
+blue, a village tree's shadow on the grass at noon 48, 73, 14 where it read 6, 74, 58. The sky drawn
+keeps its blue and the night its light, and since the tint scales what the sky's light reflects too,
+a lake's blue is 12 levels less and the clouds' undersides white.
 
 ## Sky
 

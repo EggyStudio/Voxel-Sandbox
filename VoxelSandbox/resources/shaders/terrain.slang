@@ -202,7 +202,7 @@ float skyBrightness(float level)
 }
 
 // The least light a face takes, the sky's light from all around as the engine lights an open face by
-// it, the environment's at its strength, under the face's sky level on the source's brightness curve
+// it, the environment's at its strength and its light's share and tint, under the face's sky level on the source's brightness curve
 // in linear light. The scene's field holds leaves solid, so without the floor a canopy's shade at
 // sky level 13 takes next to none of the sky's light, where the source lights it at 13. A face at sky
 // level 15 has nothing over it, and the field sees the sky above it itself, so the floor fades out
@@ -213,7 +213,7 @@ float3 skyFloor(float3 albedo, ModelVertexOutput input, float level)
 {
     if (lighting.environment.z <= 0.0 || level <= 0.0 || level >= 15.0)
         return float3(0.0);
-    float3 sky = environmentIrradiance(surfaceNormal(input)) * lighting.environment.x * screenOcclusion(input);
+    float3 sky = environmentIrradiance(surfaceNormal(input)) * lighting.environment.x * lighting.environmentLight.rgb * screenOcclusion(input);
     return albedo * sky * srgbToLinear(float3(skyBrightness(level))) * saturate(15.0 - level);
 }
 

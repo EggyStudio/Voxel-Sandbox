@@ -1386,6 +1386,15 @@ before a batch.
     the lines the sun's map's and not the mesh's, the mesher's test added, the map's share the
     engine's item 101 through ASKS.md.
 
+120. **The selected item's name over the hotbar fades away.** The owner wrote at 16:44 on 2026-10-24
+    that selecting an item from the hotbar shows its name, which should fade away and not stick
+    forever. The name shows when the selection changes and fades out as the source's does, held
+    about a second and a half and faded over about half a second, shown again on the next change,
+    and the HUD's own fade of full rows unchanged; a test reading the name's alpha over the frames
+    after a selection, full, then gone, and the play check's HUD capture read for no name after the
+    hold. One commit, small, after item 119 and before item 94's pieces. Done at `7ece2c1` on
+    2026-10-24, held 1.5 s and faded over 0.5 as the source's.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

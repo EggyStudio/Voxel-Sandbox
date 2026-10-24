@@ -541,7 +541,9 @@ read -r br bg bb <<< "$(printf '%s\n' "$body" | sed -nE 's/^red ([0-9]+), green 
 # middles and one gray frame about both, the frame left out where they meet, so the wall shows a
 # tenth of a block to either side of the join, and a lit furnace below them its blue top above its
 # red front. The eye stands level with the glass, straight before the first pane, so the line
-# through its middle meets the wall and no other face of it.
+# through its middle meets the wall and no other face of it. The frame's gray is read by its red
+# against its green, the wall's red lying far from its green, since the sun's warm light, which the
+# sky's light whitened by day no longer cools, leaves a gray's blue below its red.
 cmd voxel.fill 19 5 0 22 8 0 red_concrete
 cmd voxel.set 20 6 2 glass
 cmd voxel.set 21 6 2 glass
@@ -567,7 +569,7 @@ read -r sr sg sb <<< "$(channels "$side")"
 read -r tr tg tb <<< "$(channels "$top")"
 [ -n "$mb" ] && [ -n "$gb" ] && [ -n "$bb" ] && [ -n "$ab" ] && [ -n "$sb" ] && [ -n "$tb" ] || fail "voxel.pixel read no glass or furnace, saying $middle, $frame, $before, $after, $side and $top"
 [ "$mr" -gt $((2 * mg)) ] && [ "$mr" -gt $((2 * mb)) ] || fail "the glass's clear middle does not show the red wall behind it, $middle"
-[ $((gr > gb ? gr - gb : gb - gr)) -le 40 ] && [ "$gr" -gt 60 ] || fail "the glass's frame does not show its gray, $frame"
+[ $((gr > gg ? gr - gg : gg - gr)) -le 40 ] && [ "$gr" -gt 60 ] || fail "the glass's frame does not show its gray, $frame"
 [ "$br" -gt $((2 * bg)) ] && [ "$ar" -gt $((2 * ag)) ] || fail "the two panes' frames are not left out where they meet, $before and $after"
 [ "$sr" -gt $((2 * sb)) ] || fail "the lit furnace's front does not wear the picture's red, $side"
 [ "$tb" -gt $((2 * tr)) ] || fail "the lit furnace's top does not wear the furnace's top's blue, $top"
