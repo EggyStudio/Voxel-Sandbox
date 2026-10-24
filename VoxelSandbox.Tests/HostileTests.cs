@@ -70,6 +70,23 @@ public class HostileTests
     }
 
     [Fact]
+    public void A_Creeper_Swells_By_The_Sources_Numbers_And_Flashes_White_Every_Other_Tenth_Of_Its_Fuse()
+    {
+        Assert.Equal((1f, 1f, 0f), MobRenderer.CreeperSwell(-1));
+        Assert.Equal((1f, 1f, 0f), MobRenderer.CreeperSwell(0));
+        // At the end of its second and a half it stands four tenths wider and a tenth taller, a hair
+        // either way for its trembling.
+        var (wide, tall, _) = MobRenderer.CreeperSwell(1.5f);
+        Assert.InRange(wide, 1.38f, 1.42f);
+        Assert.InRange(tall, 1.09f, 1.12f);
+        // Halfway it has swollen a sixteenth as much, the share to the fourth power.
+        Assert.InRange(MobRenderer.CreeperSwell(0.75f).Wide, 1.02f, 1.03f);
+        Assert.Equal(0.5f, MobRenderer.CreeperSwell(0.2f).White);
+        Assert.Equal(0, MobRenderer.CreeperSwell(0.35f).White);
+        Assert.Equal(0.7f, MobRenderer.CreeperSwell(1.05f).White, 3);
+    }
+
+    [Fact]
     public void A_Skeleton_Shoots_From_Range_And_Its_Arrows_Strike_The_Player()
     {
         var world = Floor();

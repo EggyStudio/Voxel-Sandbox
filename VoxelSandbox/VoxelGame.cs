@@ -124,6 +124,7 @@ public sealed class VoxelGame : IDisposable
         InWall.Use(packs);
         Sky.Use(packs);
         MobRenderer.Use(packs);
+        Blasts.Use(packs);
         Packs.Dispose();
         Packs = packs;
         // The world is not there yet as the game begins, and its sections are meshed as it opens.
@@ -146,6 +147,9 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>The TNT lit and burning down its fuse.</summary>
     public PrimedTnt Tnt { get; } = new();
+
+    /// <summary>The smoke and the flash of light of the blasts.</summary>
+    public BlastEffects Blasts { get; } = new();
 
     /// <summary>The arrows skeletons have loosed.</summary>
     public Arrows Arrows { get; } = new();
@@ -519,6 +523,7 @@ public sealed class VoxelGame : IDisposable
         foreach (var (x, y, z, block) in Felling.Dropped) Falling.Drop(block, x, y, z);
         Felling.Dropped.Clear();
         Tnt.Update(World, seconds);
+        Blasts.Update(seconds);
         var blasts = Tnt.Exploded.ToArray();
         Tnt.Exploded.Clear();
         foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT");
@@ -643,6 +648,7 @@ public sealed class VoxelGame : IDisposable
             if (harm > 0) mob.Hit(at, harm);
         }
         _blasts.Add((at, power, 0));
+        Blasts.Add(at, power);
     }
 
     // What the mobs that died and, in survival, the blocks that fell with the block they held to leave
@@ -1125,6 +1131,7 @@ public sealed class VoxelGame : IDisposable
         DropRenderer.Dispose();
         Bits.Dispose();
         Lights.Dispose();
+        Blasts.Dispose();
         Cracks.Dispose();
         Clouds.Dispose();
         Sky.Dispose();

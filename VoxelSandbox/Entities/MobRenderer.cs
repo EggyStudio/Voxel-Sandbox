@@ -257,11 +257,12 @@ public sealed class MobRenderer : IDisposable
             drawn++;
             var body = Matrix4x4.CreateScale(mob.Kind.Scale) * Matrix4x4.CreateRotationY(mob.Yaw) * Matrix4x4.CreateTranslation(mob.Body.Position);
             // A mob dying falls onto its side over most of a second, and a creeper swells as its
-            // fuse burns, flashing white four times a second.
+            // fuse burns and flashes white, by the source's numbers.
             if (mob.Dying >= 0) body = Matrix4x4.CreateRotationZ(MathF.Sqrt(MathF.Min(1, mob.Dying / 0.6f)) * MathF.PI / 2) * body;
-            if (mob.Fuse >= 0) body = Matrix4x4.CreateScale(1 + 0.15f * mob.Fuse) * body;
+            var (wide, tall, flash) = CreeperSwell(mob.Fuse);
+            if (mob.Fuse >= 0) body = Matrix4x4.CreateScale(wide, tall, wide) * body;
             var red = mob.Hurt > 0 || mob.Dying >= 0;
-            var white = mob.Fuse >= 0 && (int)(mob.Fuse * 8) % 2 == 1;
+            var white = flash > 0;
             var stance = new Stance(mob.StridePhase, mob.Stride, mob.HeadYaw - mob.Yaw, mob.HeadPitch, mob.WingAngle, mob.Hunting);
             var parts = mob.Kind.Parts;
             for (int p = 0; p < parts.Length; p++)
@@ -297,6 +298,22 @@ public sealed class MobRenderer : IDisposable
             }
         }
         (Draws, Drawn) = (draws, drawn);
+    }
+
+    /// <summary>
+    /// How wide and how tall a creeper stands by how long its fuse has burned, and whether it shows
+    /// white, as the source swells it, the share of its second and a half to the fourth power widening
+    /// it by up to four tenths and raising it by one, both trembling a hundredth, and white over every
+    /// other tenth of the fuse, none before its fuse is lit.
+    /// </summary>
+    public static (float Wide, float Tall, float White) CreeperSwell(float fuse)
+    {
+        if (fuse < 0) return (1, 1, 0);
+        var share = Math.Clamp(fuse / 1.5f, 0, 1);
+        var tremble = 1 + MathF.Sin(share * 100) * share * 0.01f;
+        var f = share * share * share * share;
+        var white = (int)(share * 10) % 2 == 0 ? 0 : Math.Clamp(share, 0.5f, 1);
+        return ((1 + f * 0.4f) * tremble, (1 + f * 0.1f) / tremble, white);
     }
 
     public void Dispose()
