@@ -658,6 +658,33 @@ echo "a bit's levels from the eight headings:$levels"
 printf '%s\n' $levels | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low <= 6) }' \
   || fail "a broken block's bit is lit by the way the eye looks at it, its levels$levels"
 
+check "the plant's place"
+# A block placed aimed at a plant takes the plant's own cell, and one placed against a block's side
+# above the plant standing before it, where the aim passes over the plant, takes the plant's cell
+# too, as the source's grasses give way, where the first went into the cell before the plant and the
+# second was refused.
+cmd voxel.time 12
+cmd voxel.set 30 4 -30 short_grass
+cmd voxel.set 34 4 -30 stone
+cmd voxel.set 34 4 -29 short_grass
+cmd voxel.select stone
+# The look from feet at a place to a point, its heading clockwise from north and its pitch up.
+look_at() { awk -v fx="$1" -v fy="$2" -v fz="$3" -v x="$4" -v y="$5" -v z="$6" 'BEGIN { dx = x - fx; dy = y - fy - 1.62; dz = z - fz; h = atan2(dx, -dz) * 180 / 3.14159265; if (h < 0) h += 360; printf "%.3f %.3f", h, atan2(dy, sqrt(dx * dx + dz * dz)) * 180 / 3.14159265 }'; }
+cmd voxel.tp 30.5 4 -26.5
+cmd voxel.look $(look_at 30.5 4 -26.5 30.5 4.3 -29.5)
+cmd frames.wait 2
+cmd voxel.place
+aimed=$(ask voxel.light 30 4 -30)
+before=$(ask voxel.light 30 4 -29)
+cmd voxel.tp 34.5 4.38 -26.5
+cmd voxel.look $(look_at 34.5 4.38 -26.5 34.5 4.95 -28.99)
+cmd frames.wait 2
+cmd voxel.place
+beside=$(ask voxel.light 34 4 -29)
+echo "aimed at the grass, ${aimed%%,*} in its cell and ${before%%,*} before it; against the stone's side, ${beside%%,*} in the grass's cell"
+[[ "$aimed" == stone* && "$before" == air* ]] || fail "a block placed aimed at a plant did not take the plant's cell, $aimed and before it $before"
+[[ "$beside" == stone* ]] || fail "a block placed against a block's side into a plant's cell did not take it, $beside"
+
 check "the overworld's loading"
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
@@ -785,4 +812,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a broken block's bits lit alike from eight headings, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a broken block's bits lit alike from eight headings, placed blocks into plants' cells, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"

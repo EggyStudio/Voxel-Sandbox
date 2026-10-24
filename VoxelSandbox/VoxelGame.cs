@@ -942,9 +942,13 @@ public sealed class VoxelGame : IDisposable
         return true;
     }
 
+    // Whether a block gives way to one placed in its cell, a fire or a plant, but not water or lava,
+    // which a whole block takes the place of and a smaller one does not.
+    private static bool Replaced(BlockId block) => BlockGroups.GivesWay(block) && !Blocks.IsFluid(block);
+
     /// <summary>
-    /// Places a block against the face the crosshair rests on, unless it would take up some of the
-    /// player or of a mob. A torch or a lantern is placed the way of it that has a block to hold
+    /// Places a block against the face the crosshair rests on, or in the cell of a fire or a plant
+    /// it rests on, which gives way, unless it would take up some of the player or of a mob. A torch or a lantern is placed the way of it that has a block to hold
     /// to, stairs climbing the way the player looks, a door two blocks high, and a slab on the open
     /// half of a slab of its kind joined to it as the whole block. A door met is opened or shut
     /// instead.
@@ -967,10 +971,13 @@ public sealed class VoxelGame : IDisposable
         if (Blocks.Get(under) is { Item: var item, Doubled: { } whole, Shape: { } slab } && item == block && hit.NormalY == (slab.Upper ? -1 : 1))
             return World.SetBlock(hit.X, hit.Y, hit.Z, whole) ? whole : BlockId.Air;
 
-        var (x, y, z) = hit.Beside;
+        // A fire or a plant a block gives way to, aimed at, takes the block in its own cell, as the
+        // source's grasses are replaced, rather than the cell before the face met.
+        var (x, y, z) = Replaced(under) ? (hit.X, hit.Y, hit.Z) : hit.Beside;
         var there = World.GetBlock(x, y, z);
-        // A block placed into a fire puts it out, as the source's fire gives way to one.
-        if (there == BlockId.Fire) there = BlockId.Air;
+        // A block placed into a fire puts it out and one placed into a plant takes its place, the
+        // plant dropping nothing, as the source's fire and grasses give way to one.
+        if (Replaced(there)) there = BlockId.Air;
         // A door stands two blocks high, shut and facing the way the player looks, on a whole block.
         if (Blocks.Get(block).Toggled is not null)
         {
