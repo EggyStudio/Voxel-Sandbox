@@ -150,7 +150,8 @@ public class MesherTests
         world.SetBlock(8, 21, 9, BlockId.Stone);
 
         // With the light levels left out, the corner between the two walls is Minecraft's darkest,
-        // 0.45, at a strength of 1, halfway to 1 at 0.5, and 1 at 0.
+        // 0.45, at a strength of 1, halfway to 1 at 0.5, the strength a mesher starts at, and 1 at 0.
+        Assert.Equal(0.5f, new SectionMesher().CornerStrength);
         foreach (var (strength, shade) in new[] { (1f, 0.45f), (0.5f, 0.725f), (0f, 1f) })
         {
             var mesher = new SectionMesher { LightLevels = false, CornerStrength = strength };

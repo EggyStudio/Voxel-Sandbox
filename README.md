@@ -950,8 +950,8 @@ indirect light off a section a lamp has lit since takes its new light. Each quad
 diagonal its occlusion favors, so a shaded corner darkens one triangle softly. A corner where blocks
 meet keeps 0.8, 0.62 or 0.45 of its color for one, two or three of its cells closed, both its sides
 closed counted as three, as Minecraft's does, and the corner shade's strength, from 0 to 1 in the
-settings window and through `voxel.corners`, takes each level that far from 1, 1 by default, the
-sections shaded again when it changes.
+settings window and through `voxel.corners`, takes each level that far from 1, half by default, so a
+corner where three cells close keeps 0.725 of its color, the sections shaded again when it changes.
 
 The settings window turns the light levels and the shaded corners off, each on its own, to see
 global illumination alone, and opens the engine's windows of what global illumination holds, of the

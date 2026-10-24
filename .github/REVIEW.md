@@ -5,37 +5,50 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `4a2cd7b`, item 93's fourth mend, read at 13:21 on 2026-10-24, carrying the review's
-files. ChunkRenderer.Update holds a section in reach that the last flood left out in an unseen set,
-unmeshed, and a flood that reaches it puts it back into the loaded set, all of them with culling
-off, an edit still meshing at once; update.meshed and update.unseen in the profile. A Release flight
-east from the cherry grove at a sprint, the mean of eight samples after the first, reads the update
-0.88 and 0.69 ms where 1.30 and 1.33 stood, the frame 15.4 and 14.4 where 15.5 and 16.4, most of the
-old meshing stone no pass draws, 4,200 to 4,500 sections held unseen against some 390 meshed a
-second; a teleport into the deep cave meshes nothing and draws 83 as before, and the land's edge
-meshes 189 against 200 with the same 262 draws. The README's culling paragraph has the rule; 275
-tests, play.sh 176 s on the GPU. Held until the run of `08d0943` ends, then pushed. After `08d0943`,
-item 93's third mend as a reading, read at 13:07 on 2026-10-24, carrying REVIEW.md.
-ChunkRenderer.Deep counts the drawn sections under their column's floor and their triangles, shown
-in voxel.state and in the profile as draw.sections.deep; at 1920 by 1080 in Release the cherry grove
-draws 61 of 1,683 sections deep, 40,934 of 1.17 million triangles, 3.5 percent, and the plains
-village 149 of 1,563, 97,828 of 0.98 million, 10 percent. The flood already draws a deep section
-only where the eye's open cells join it, which is where a cave opens within reach, and a cut by
-distance would hide cave interiors seen through their mouths for 0.4 to 0.9 ms of CPU recording at
-most, so the mend stays at the counter; 275 tests, play.sh 162 s on the GPU. After `89d8caa`, item
-93's second mend, read at 13:01 on 2026-10-24, carrying the review's files,
-LightSettings.ShadowDistance 96 to 64. Read in Release at 1920 by 1080 at the cherry grove, 96, 64
-and 48 in turn twice, the first triple spoiled by another GPU user and the clean one the frame
-17.84, 16.79 and 15.81 ms, the GPU's shadows 2.01, 1.04 and 0.70, the CPU's 2.84, 2.31 and 2.13; by
-eye at the cherry grove, the plains village and the hills, 48 loses the shadows of the trees about
-the village some 50 to 60 blocks off and 64 keeps them a little fainter at the far left, the grove
-the same at all three, so 64 for about a millisecond. The README's Shadows paragraph says the
-distance and why, the stepped sun's cost of about 1.6 ms beside the old reading, the costs paragraph
-no longer naming 96; 275 tests, play.sh 164 s on the GPU. After `3236b56`, item 103, the fire's top
-line, read at 12:45, the carried place in terrain.slang clamped half a texel of the sampled level
-inside its tile, the play pack's 32-frame fire and play.sh's check of the north wall's top edge
-against the ground beyond, 275 tests, play.sh 162 s. The three pushed at 13:12 on 2026-10-24 after
-the run of `fa6963d` went green; the run watched.
+Reviewed up to `ccf6fcf`, item 98 reworked on the owner's words, read at 13:39 on 2026-10-24,
+carrying the review's files. The bits are lit by the engine again, the square's own face toward the
+eye taking the light, double sided, the upward normal gone; bits.slang only moves where the light is
+read, the vertex stage carrying the bit's middle in the vertex color and the fragment calling lit()
+with the world point at that middle and toEye moved with it, a bit's body keeping its middle in the
+open since bits start in the broken cell or a tenth out from the face hit. In a tunnel two high and
+one wide into a stone hill at noon, its end broken, the bit on the floor against the west wall by
+the mouth read 29, 49, 51, the sky's blue, on the engine's lighting as before `56cb608`, the other
+bits 16, 25, 13, and with the middle it reads 15, 25, 16; deep in, everything reads 0 either way.
+play.sh's check of the bits is that tunnel, the five bits nearest the walls within six levels of one
+another, 18 each, the floor facing up into the ceiling at 0, 5, 0 so the bits are compared with one
+another; the eight-heading check gone with the normal; voxel.bits takes a place. 275 tests, play.sh
+262 s on the GPU from the coder's own build folders, the owner's bin/Debug untouched. Held with
+`4a2cd7b` until the run of `08d0943` ends, then pushed. After `4a2cd7b`, item 93's fourth mend, read
+at 13:21 on 2026-10-24, carrying the review's files. ChunkRenderer.Update holds a section in reach
+that the last flood left out in an unseen set, unmeshed, and a flood that reaches it puts it back
+into the loaded set, all of them with culling off, an edit still meshing at once; update.meshed and
+update.unseen in the profile. A Release flight east from the cherry grove at a sprint, the mean of
+eight samples after the first, reads the update 0.88 and 0.69 ms where 1.30 and 1.33 stood, the
+frame 15.4 and 14.4 where 15.5 and 16.4, most of the old meshing stone no pass draws, 4,200 to 4,500
+sections held unseen against some 390 meshed a second; a teleport into the deep cave meshes nothing
+and draws 83 as before, and the land's edge meshes 189 against 200 with the same 262 draws. The
+README's culling paragraph has the rule; 275 tests, play.sh 176 s on the GPU. After `08d0943`, item
+93's third mend as a reading, read at 13:07 on 2026-10-24, carrying REVIEW.md. ChunkRenderer.Deep
+counts the drawn sections under their column's floor and their triangles, shown in voxel.state and
+in the profile as draw.sections.deep; at 1920 by 1080 in Release the cherry grove draws 61 of 1,683
+sections deep, 40,934 of 1.17 million triangles, 3.5 percent, and the plains village 149 of 1,563,
+97,828 of 0.98 million, 10 percent. The flood already draws a deep section only where the eye's open
+cells join it, which is where a cave opens within reach, and a cut by distance would hide cave
+interiors seen through their mouths for 0.4 to 0.9 ms of CPU recording at most, so the mend stays at
+the counter; 275 tests, play.sh 162 s on the GPU. After `89d8caa`, item 93's second mend, read at
+13:01 on 2026-10-24, carrying the review's files, LightSettings.ShadowDistance 96 to 64. Read in
+Release at 1920 by 1080 at the cherry grove, 96, 64 and 48 in turn twice, the first triple spoiled
+by another GPU user and the clean one the frame 17.84, 16.79 and 15.81 ms, the GPU's shadows 2.01,
+1.04 and 0.70, the CPU's 2.84, 2.31 and 2.13; by eye at the cherry grove, the plains village and the
+hills, 48 loses the shadows of the trees about the village some 50 to 60 blocks off and 64 keeps
+them a little fainter at the far left, the grove the same at all three, so 64 for about a
+millisecond. The README's Shadows paragraph says the distance and why, the stepped sun's cost of
+about 1.6 ms beside the old reading, the costs paragraph no longer naming 96; 275 tests, play.sh 164
+s on the GPU. After `3236b56`, item 103, the fire's top line, read at 12:45, the carried place in
+terrain.slang clamped half a texel of the sampled level inside its tile, the play pack's 32-frame
+fire and play.sh's check of the north wall's top edge against the ground beyond, 275 tests, play.sh
+162 s. The three pushed at 13:12 on 2026-10-24 after the run of `fa6963d` went green; the run
+watched.
 
 Before it, `fa6963d` came, Verdict 2's mend, pushed at 12:34 on 2026-10-24, its run green at 13:11,
 the play job 36.0 minutes, Verdict 2 settled.
@@ -433,32 +446,6 @@ full.
     headings with a comma after the game's name and six sentences split or recast, the engine's next
     batch carrying it; the file's header lines are the engine's sweep's, item 93 there.
 
-98. **The particles keep their light at every angle of looking.** The owner played at about 10:51 on
-    2026-10-24 and saw the particles showing only the ambient color at some angles of looking. Read
-    first which particles, the game's own bits cut from a block's side, the engine's particle sheets
-    of the blasts' clouds, or the flames, and at which angles between the eye, the sun and the
-    billboard, with the readings of one particle from eight headings around it under the sun; then
-    the mend where the cause lies. A billboard's face follows the eye, so a lighting that takes its
-    normal against the sun goes dark where the sun stands behind the eye's side of it, and the right
-    light for a particle is the sun's reaching its center through the shadow map with no normal
-    term, or the normal's dot taken on both sides, with the probes' light gathered about its center;
-    where the cause is the game's bits shader the game mends it, and where it is the engine's
-    particle sheet the gap goes into the engine's ASKS.md as an entry and the game waits on the
-    package. A test reading the same particle from eight headings within a few levels of each other.
-    One commit, after item 93. Done at `56cb608` on 2026-10-24, the bits lit as a face turned up,
-    the clouds and the flames not it. Reopened at 13:21 on 2026-10-24 on the owner's word, who did
-    not mean the bits lit as a face turned up and has that reverted; the fault is a broken block's
-    bits dropping with a part clipping into the wall beside them, as in a tunnel two high and one
-    wide dug into a hill, and taking the sun's or the sky's light there. The mend by the reading, a
-    bit's light sampled at the open cell it came from or the air it falls through, a bit whose
-    center enters a block keeping the last open cell's light, so no sun or sky reaches a bit through
-    a wall; the turned-up face taken out; a test breaking a block at the end of such a tunnel under
-    the sun and reading the bits beside the wall within a few levels of the tunnel's floor. The
-    owner added at 13:21 that the turned-up face makes the bits dropping from a block above dark
-    where the face toward the eye says they take the light from the eye's side, so the bits'
-    lighting before `56cb608` is read first and put back, and the mend for the clipping is built on
-    it. One commit, first, before item 94.
-
 94. **The things that move become entities with behaviors (Decision 43).** The mobs, the drops, the
     arrows, the primed TNT, the falling blocks, the fires and the blasts, which the game keeps in
     lists of its own and steps from one Update, become entities of the engine's ECS: components for
@@ -756,6 +743,25 @@ full.
     seed 1 at the owner's spawn and the plains village for the count before and after and saying it
     in the commit; a test counting the cliffs over a seeded span against a bound, and a capture of
     the same land before and after. One commit, after item 113 and before item 94.
+
+115. **A wall torch's wood leans up to its head's foot, and the lit head alone stands straight.**
+    The owner wrote at 13:41 on 2026-10-24 that the torch on a wall goes straight a pixel too early,
+    the wood bending to straight where only the lit part should stand straight up. The wall torch is
+    a leaning stick piece, its top's corners moved out by the lean, and a lit head piece standing
+    straight on it; the stick's lean reaches the head's foot, the head the picture's own two rows of
+    coal and nothing of the wood, one pixel higher than it stands, read against the source's torch
+    picture and its wall torch model; a capture of a wall torch up close before and after, and the
+    mesher's test of the wall torch's pieces reading the stick's top at the head's foot. One commit,
+    small, after item 114 and before item 94.
+
+116. **A held axe faces the right way, its blade forward.** The owner wrote at 13:44 on 2026-10-24
+    that the axe is backwards when held. The held tools are the source's item pictures stood up in
+    the hand, and the axe's blade points back toward the player where the source holds it forward;
+    the tool's picture in the hand is turned as the source's first-person item display turns it, the
+    blade and the pick's head forward and the handle toward the eye, read for the pickaxe, the
+    shovel, the hoe and the sword as well so each matches the source; a capture of each tool held
+    before and after, and the test of the held item's placement reading the axe's blade ahead of its
+    handle. One commit, small, after item 115 and before item 94.
 
 ## Verdicts
 

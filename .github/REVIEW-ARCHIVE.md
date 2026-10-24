@@ -1181,6 +1181,34 @@ before a batch.
     the lamp room's roof as it stands. One commit, small, after item 101. Done at `1f07038` on
     2026-10-24, the light at the eye's place in the body's middle.
 
+98. **The particles keep their light at every angle of looking.** The owner played at about 10:51 on
+    2026-10-24 and saw the particles showing only the ambient color at some angles of looking. Read
+    first which particles, the game's own bits cut from a block's side, the engine's particle sheets
+    of the blasts' clouds, or the flames, and at which angles between the eye, the sun and the
+    billboard, with the readings of one particle from eight headings around it under the sun; then
+    the mend where the cause lies. A billboard's face follows the eye, so a lighting that takes its
+    normal against the sun goes dark where the sun stands behind the eye's side of it, and the right
+    light for a particle is the sun's reaching its center through the shadow map with no normal
+    term, or the normal's dot taken on both sides, with the probes' light gathered about its center;
+    where the cause is the game's bits shader the game mends it, and where it is the engine's
+    particle sheet the gap goes into the engine's ASKS.md as an entry and the game waits on the
+    package. A test reading the same particle from eight headings within a few levels of each other.
+    One commit, after item 93. Done at `56cb608` on 2026-10-24, the bits lit as a face turned up,
+    the clouds and the flames not it. Reopened at 13:21 on 2026-10-24 on the owner's word, who did
+    not mean the bits lit as a face turned up and has that reverted; the fault is a broken block's
+    bits dropping with a part clipping into the wall beside them, as in a tunnel two high and one
+    wide dug into a hill, and taking the sun's or the sky's light there. The mend by the reading, a
+    bit's light sampled at the open cell it came from or the air it falls through, a bit whose
+    center enters a block keeping the last open cell's light, so no sun or sky reaches a bit through
+    a wall; the turned-up face taken out; a test breaking a block at the end of such a tunnel under
+    the sun and reading the bits beside the wall within a few levels of the tunnel's floor. The
+    owner added at 13:21 that the turned-up face makes the bits dropping from a block above dark
+    where the face toward the eye says they take the light from the eye's side, so the bits'
+    lighting before `56cb608` is read first and put back, and the mend for the clipping is built on
+    it. One commit, first, before item 94. Done again at `ccf6fcf` on 2026-10-24, the engine's
+    lighting back with the light read at the bit's middle, the tunnel's bits within six levels of
+    one another.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

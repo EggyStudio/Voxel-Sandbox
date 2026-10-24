@@ -55,9 +55,10 @@ public sealed class SectionMesher
 
     /// <summary>
     /// How far the corners darken where blocks meet around them, from 0 for not at all to 1 for
-    /// Minecraft's four levels, each level taken that far from 1.
+    /// Minecraft's four levels, each level taken that far from 1, half of them by default, so a
+    /// corner where blocks meet darkens softly.
     /// </summary>
-    public float CornerStrength { get; set; } = 1;
+    public float CornerStrength { get; set; } = 0.5f;
 
     /// <summary>
     /// Faces as a mesh, with the position of each corner, eight packed bytes a corner
