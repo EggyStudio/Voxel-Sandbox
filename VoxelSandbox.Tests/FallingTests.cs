@@ -8,10 +8,13 @@ public sealed class FallingTests
     // Stone to 3, the ground's top at 4, the rest open sky.
     private static VoxelWorld Floor() => Laid.World(c => Laid.Fill(c, 0, 3, BlockId.Stone));
 
-    private static void Settle(VoxelWorld world, FallingBlocks falling)
+    // Lets the loosened blocks fall until all have landed, giving those that broke.
+    private static List<(int X, int Y, int Z, BlockId Block)> Settle(VoxelWorld world, FallingBlocks falling)
     {
         falling.Take(world);
-        for (int i = 0; i < 600 && falling.Count > 0; i++) falling.Update(world, 1 / 60f);
+        var broken = new List<(int, int, int, BlockId)>();
+        for (int i = 0; i < 600 && falling.Count > 0; i++) broken.AddRange(falling.Update(world, 1 / 60f));
+        return broken;
     }
 
     [Fact]
@@ -22,9 +25,8 @@ public sealed class FallingTests
         for (int y = 10; y <= 12; y++) world.SetBlock(2, y, 2, BlockId.Sand);
         Assert.Equal(3, world.Loosened.Count);
         Assert.All(Enumerable.Range(10, 3), y => Assert.Equal(BlockId.Air, world.GetBlock(2, y, 2)));
-        Settle(world, falling);
+        Assert.Empty(Settle(world, falling));
         Assert.Empty(falling.All);
-        Assert.Empty(falling.Broken);
         Assert.All(Enumerable.Range(4, 3), y => Assert.Equal(BlockId.Sand, world.GetBlock(2, y, 2)));
         Assert.Equal(BlockId.Air, world.GetBlock(2, 7, 2));
 
@@ -47,9 +49,9 @@ public sealed class FallingTests
         var falling = new FallingBlocks(new Engine.EcsWorld());
         world.SetBlock(2, 4, 2, BlockId.Torch);
         world.SetBlock(2, 8, 2, BlockId.Sand);
-        Settle(world, falling);
+        var broken = Settle(world, falling);
         Assert.Equal(BlockId.Torch, world.GetBlock(2, 4, 2));
-        Assert.Equal((2, 4, 2, BlockId.Sand), Assert.Single(falling.Broken));
+        Assert.Equal((2, 4, 2, BlockId.Sand), Assert.Single(broken));
 
         for (int y = 4; y <= 6; y++) world.SetBlock(6, y, 6, BlockId.Water);
         world.SetBlock(6, 9, 6, BlockId.Gravel);

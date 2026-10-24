@@ -5,21 +5,36 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `c0dd6e4`, item 94's second piece, the arrows as entities, read at 20:14 on
-2026-10-24, carrying the review's files and the devlog's capture. Each arrow is an entity with one
-Arrow behavior struct holding its position, velocity, stuck and age, no Body, the old Arrow class
-gone; one system, Fly on update, static on the main thread, reads GameStep's world, player and
-seconds, flies only when seconds pass and despawns an arrow on a hit or after 60 s; strikes go into
-GameStep.Hits, which the game deals and clears one frame after the strike when its next frame
-answers the mobs, and GameStep holds a Random for the extra point of damage since E3D006 keeps a
-class out of the behavior; the Arrows facade wraps the EcsWorld as ItemDrops does, the hostile test
-stepping a bare EcsWorld. In an offscreen flat world at hour 0 a skeleton 10 blocks off took the
-player's health from 20 to 12 in 300 frames. No new gap. 294 tests, play.sh 322 s on the GPU. Held
-with `d6532d1` until the run of `80d149e` ends, then pushed. After `d6532d1`, item 127, the options
-file, read at 20:05 on 2026-10-24, carrying the review's files. options.txt sits beside the saves
-next to resourcepacks.txt, one line a setting as the screen, a dot, the name with underscores, a
-colon and the value, a choice by its name; it is read once the world opens, each value applied
-through its setter with Settled run, and written when a screen is left by a button or Escape or when
+Reviewed up to `e0d9788`, item 94's third piece, the lit TNT and the falling blocks as entities,
+read at 20:25 on 2026-10-24, carrying the review's files and the devlog's lit TNT. Each is an entity
+with a behavior struct and the Body, LitTnt holding Left with Flashing and Size read from it and
+FallingBlock holding Block and Age; two systems on update, Burn and Drop, static on the main thread,
+Drop still moving the lowest block first by sorted pairs reached through GetRef; the PrimedTnt and
+FallingBlocks facades are resources, the behaviors leaving blasts in Tnt.Exploded and blocks that
+could not stand in Falling.Broken, which the game sets off and drops in its next update a frame
+later, each Clear emptying its pending list since events wait a frame across a world switch; the
+tests step bare EcsWorlds, the TNT test reading its stack afresh each frame since the struct read is
+a copy. Live offscreen a lit TNT burned and left air under it and sand over air fell onto a pillar
+and stood a block lower. No new gap; results handed back through a list on a resource, an event
+channel the better fit, which the engine has in World.SendEvent, ReadEvents and DrainEvents with a
+typed queue an event type the engine never clears for a game's own, missed at first; the strikes,
+the blasts and the landed blocks become events the behaviors send and the game drains in a small
+commit before the fires, no ask. 294 tests, play.sh 307 s on the GPU. The three pushed at 20:31 on
+2026-10-24 after the run of `80d149e` went green; the run watched. After `c0dd6e4`, item 94's second
+piece, the arrows as entities, read at 20:14 on 2026-10-24, carrying the review's files and the
+devlog's capture. Each arrow is an entity with one Arrow behavior struct holding its position,
+velocity, stuck and age, no Body, the old Arrow class gone; one system, Fly on update, static on the
+main thread, reads GameStep's world, player and seconds, flies only when seconds pass and despawns
+an arrow on a hit or after 60 s; strikes go into GameStep.Hits, which the game deals and clears one
+frame after the strike when its next frame answers the mobs, and GameStep holds a Random for the
+extra point of damage since E3D006 keeps a class out of the behavior; the Arrows facade wraps the
+EcsWorld as ItemDrops does, the hostile test stepping a bare EcsWorld. In an offscreen flat world at
+hour 0 a skeleton 10 blocks off took the player's health from 20 to 12 in 300 frames. No new gap.
+294 tests, play.sh 322 s on the GPU. After `d6532d1`, item 127, the options file, read at 20:05 on
+2026-10-24, carrying the review's files. options.txt sits beside the saves next to
+resourcepacks.txt, one line a setting as the screen, a dot, the name with underscores, a colon and
+the value, a choice by its name; it is read once the world opens, each value applied through its
+setter with Settled run, and written when a screen is left by a button or Escape or when
 voxel.options or G changes a setting, written beside and moved over, only when the text differs; a
 bad line keeps the default, an unknown key, no colon, a value that is no number, NaN, out of reach
 or an unknown choice; the time, the daylight cycle and the moon belong to the world's save and stay
@@ -29,51 +44,13 @@ into fresh settings with a second write of nothing changed writing nothing and t
 and seven kinds of bad line each leaving the default with the good line beside read; play.sh's kept
 run starts on a file with the render distance at 5 and an unreadable corner shade line, reads 5 and
 50 percent, sets the corner shade to 30 and finds both lines rewritten, the walk at 37 settings and
-about 20 s on the GPU, kept as it is. 294 tests, play.sh 315 s on the GPU. After `80d149e`, item
-126, the Video Settings screen, read at 19:55 on 2026-10-24, carrying the review's files and the
-devlog's pair of Options and Video. Options lists it first among the areas' screens, Resource Packs
-on a full-width row; the window mode is Windowed, Fullscreen or Borderless read back through
-IsWindowFullscreen and IsWindowState, the resolution Current and then the monitor's sizes from
-GetMonitorModes at their highest refresh rate, 38 on the machine, setting the window's size or the
-fullscreen mode when the slider is let go, the frame limit 10 to 250 by 10 and Unlimited through
-SetTargetFPS with Unlimited the default, and VSync through the window state, the package exposing
-it. Read live in a hidden window each mode read back as set, a resolution resized the window to 2880
-by 1620 and Current put it back, VSync read off then on, and a limit of 60 read 57; play.sh walks
-the resolution and the frame limit offscreen, 33 settings in all, the window mode and VSync left out
-since the engine reports them for a real window alone. 292 tests, play.sh 288 s on the GPU. The
-three pushed at 20:03 on 2026-10-24 after the run of `e643539` went green; the run watched. After
-`5f7bad8`, item 124's second commit, the moves out of F3, read at 19:44 on 2026-10-24, carrying the
-review's files and the devlog's pair of F3. The F3 window holds three parts, Readings with the old
-lines and the clouds' face count and the hour, day and cycle added, Debugging with the light levels,
-the shaded corners, cull, mobs still and the global illumination, profile and effects windows, and
-World with the mode, save, and kind, seed and open, kept since no title screen holds a world's
-choice; moved off F3 are the quality, the probes, the field, the corner shade, the emission, bloom,
-occlusion, exposure, the hour, the day as the moon's phase, the cycle, the minutes, the fog, the
-clouds and the render distance; the README's F3 row says the F3 window and its eight mentions of the
-settings window point to the screen holding each setting. 292 tests, play.sh 322 s on the GPU. After
-`a82e342`, item 124's first commit, the screens, read at 19:34 on 2026-10-24, carrying the review's
-files and the devlog's sheet of the six screens. Options holds the field of view, the sensitivity,
-the GUI scale and the fading HUD with buttons to Render Settings, Post Processing, Sky and Visuals
-and Resource Packs; Render Settings holds nine, the render distance, the quality, the screen probes,
-the shadow distance, the corner shade, the emission, the field's cascades, cell and cascades a
-frame; Post Processing fourteen, bloom, occlusion, auto exposure, exposure, contrast, saturation,
-the engine's twelve tonemaps, the curve's four numbers, vignette, FXAA and motion blur; Sky and
-Visuals eight, the time, the daylight cycle, the day's length, the moon's phase, the sun's and the
-moon's strength, the clouds and the fog, with Sky Colors, nine colors that were constants in Sky.cs
-and live in a SkyColors class, each with R, G and B sliders, a swatch and Reset, and a Reset All, a
-change repainting and relighting the sky at once; the values read from the engine's getters where it
-has them, and voxel.options lists or sets any setting by screen and name. Departure, a test cannot
-build VoxelGame without the engine's app, the first ECS entry's gap, so the unit tests cover the
-option model and the 27 color channels against SkyColors and play.sh walks the 31 settings live,
-each set to mid-reach or the next choice, read back and set back, about 15 s on the GPU; no setting
-is saved yet, item 127. 292 tests, play.sh 305 s on the GPU. The owner wrote to the game's session
-at about 19:2x that video settings are needed too, for the resolution and the window mode, item 126.
+about 20 s on the GPU, kept as it is. 294 tests, play.sh 315 s on the GPU.
+
+Before it, `80d149e` came, items 124 and 126 with `5f7bad8` and `a82e342`, pushed at 20:03 on
+2026-10-24, its run green, the play job 25.0 minutes.
 
 Before it, `e643539` came, items 122, 125, 94's drops and 27's pin of 5.2.283 with `3d70b20`,
 `5113176` and `e04a1a5`, pushed at 19:14 on 2026-10-24, its run green, the play job 43.1 minutes.
-
-Before it, `4142a32` came, items 119, 120 and 121 with `7ece2c1` and `ffa7a7b`, pushed at 18:36 on
-2026-10-24, its run green, the play job 36.6 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -498,7 +475,9 @@ full.
     systems by stage, the three gaps found as the engine's items 104 to 106 through ASKS.md; the
     arrows next, after items 27's pin, 125 and 124. The arrows at `c0dd6e4`, one behavior and one
     system, the strikes dealt a frame after through GameStep; the primed TNT and the falling blocks
-    next.
+    next. The lit TNT and the falling blocks at `e0d9788`, their results handed back through
+    resources, which the engine's own event channel takes over in a small commit; then the fires and
+    the blasts on events from the start.
 
 95. **The world's sections become mesh entities the engine draws (Decision 43).** Each meshed
     section becomes an entity with the engine's Mesh, Material and Transform and a component of the

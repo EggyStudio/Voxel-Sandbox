@@ -3,13 +3,16 @@ using Engine;
 
 namespace VoxelSandbox;
 
+/// <summary>A falling block that landed where it could not stand, where and which, an event the game drops as an item.</summary>
+public readonly record struct FallingBroke(int X, int Y, int Z, BlockId Block);
+
 /// <summary>A block falling, an entity of the engine's ECS beside its <see cref="Body"/>.</summary>
 /// <remarks>
 /// Its behavior lets it fall in the engine's frame, reading the voxel world and the seconds from the
 /// game's <see cref="GameStep"/> on the main thread, which alone may read and change the world, and
-/// leaves each that lands where it cannot stand in <see cref="FallingBlocks.Broken"/>, which the game
-/// drops as items. It also takes its world and its inputs as arguments, so a test lets fall the
-/// blocks of an ECS world of its own.
+/// sends each that lands where it cannot stand as a <see cref="FallingBroke"/>, which the game drops
+/// as an item. It also takes its world and its inputs as arguments, so a test lets fall the blocks
+/// of an ECS world of its own.
 /// </remarks>
 [Behavior]
 public partial struct FallingBlock
@@ -24,8 +27,10 @@ public partial struct FallingBlock
     [OnUpdate]
     public static void Drop(BehaviorContext ctx)
     {
-        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds > 0 && ctx.World.TryGetResource<FallingBlocks>(out var falling))
-            Drop(ctx.Ecs, step.World, step.Seconds, falling.Broken);
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
+        var broken = new List<(int, int, int, BlockId)>();
+        Drop(ctx.Ecs, step.World, step.Seconds, broken);
+        foreach (var (x, y, z, block) in broken) ctx.World.SendEvent(new FallingBroke(x, y, z, block));
     }
 
     /// <summary>Moves the falling blocks on by so many seconds, and sets down or breaks those that land.</summary>
@@ -83,9 +88,6 @@ public sealed class FallingBlocks(EcsWorld ecs)
     /// <summary>How many blocks fall.</summary>
     public int Count => ecs.Count<FallingBlock>();
 
-    /// <summary>The blocks that landed where they could not stand, where and which, for the game to drop as items and clear.</summary>
-    public List<(int X, int Y, int Z, BlockId Block)> Broken { get; } = [];
-
     /// <summary>Lets fall the blocks the world loosened, each from its cell.</summary>
     public void Take(VoxelWorld world)
     {
@@ -93,8 +95,13 @@ public sealed class FallingBlocks(EcsWorld ecs)
         world.Loosened.Clear();
     }
 
-    /// <summary>Moves the falling blocks on by so many seconds as a frame moves them, and sets down or breaks those that land.</summary>
-    public void Update(VoxelWorld world, float seconds) => FallingBlock.Drop(ecs, world, seconds, Broken);
+    /// <summary>Moves the falling blocks on by so many seconds as a frame moves them, sets down those that land, and gives where and which broke.</summary>
+    public List<(int X, int Y, int Z, BlockId Block)> Update(VoxelWorld world, float seconds)
+    {
+        var broken = new List<(int, int, int, BlockId)>();
+        FallingBlock.Drop(ecs, world, seconds, broken);
+        return broken;
+    }
 
     /// <summary>Lets a block fall from its cell, as a felled tree's log does.</summary>
     public void Drop(BlockId block, int x, int y, int z)
@@ -104,12 +111,11 @@ public sealed class FallingBlocks(EcsWorld ecs)
         ecs.Add(id, new Body(0.49f, 0.98f) { Position = new Vector3(x + 0.5f, y, z + 0.5f) });
     }
 
-    /// <summary>Lets go of every falling block and forgets those broken, as a world closes.</summary>
+    /// <summary>Lets go of every falling block, as a world closes.</summary>
     public void Clear()
     {
         var all = new List<int>();
         foreach (var (id, _) in ecs.Query<FallingBlock>()) all.Add(id);
         foreach (var id in all) ecs.Despawn(id);
-        Broken.Clear();
     }
 }

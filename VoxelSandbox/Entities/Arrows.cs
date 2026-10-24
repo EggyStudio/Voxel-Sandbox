@@ -3,13 +3,16 @@ using Engine;
 
 namespace VoxelSandbox;
 
+/// <summary>An arrow's strike on the player, its damage and where it came from, an event the game deals.</summary>
+public readonly record struct ArrowStrike(int Damage, Vector3 From);
+
 /// <summary>An arrow in flight or stuck in a block, an entity of the engine's ECS.</summary>
 /// <remarks>
 /// Its behavior flies it in the engine's frame, reading the voxel world, the player and the
 /// seconds from the game's <see cref="GameStep"/> on the main thread, which alone may read the
-/// world, and leaves each strike on the player in the step's hits, which the game deals as its next
-/// frame answers the mobs. It also takes its world and its inputs as arguments, so a test flies the
-/// arrows of an ECS world of its own as the frame flies the game's.
+/// world, and sends each strike on the player as an <see cref="ArrowStrike"/>, which the game deals
+/// as its next frame answers the mobs. It also takes its world and its inputs as arguments, so a
+/// test flies the arrows of an ECS world of its own as the frame flies the game's.
 /// </remarks>
 [Behavior]
 public partial struct Arrow
@@ -29,8 +32,8 @@ public partial struct Arrow
     [OnUpdate]
     public static void Fly(BehaviorContext ctx)
     {
-        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds > 0)
-            step.Hits.AddRange(Fly(ctx.Ecs, step.World, step.Player, step.Seconds, step.Random));
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
+        foreach (var (damage, from) in Fly(ctx.Ecs, step.World, step.Player, step.Seconds, step.Random)) ctx.World.SendEvent(new ArrowStrike(damage, from));
     }
 
     /// <summary>Moves every arrow in flight, a step of a tenth of a block at a time, and gives the damage of each that struck the player and where it came from.</summary>

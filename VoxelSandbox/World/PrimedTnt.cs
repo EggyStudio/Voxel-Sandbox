@@ -3,12 +3,15 @@ using Engine;
 
 namespace VoxelSandbox;
 
+/// <summary>Where a TNT went off, its blast's middle a sixteenth over its feet, an event the game sets off.</summary>
+public readonly record struct TntBlast(Vector3 At);
+
 /// <summary>A TNT lit and burning down its fuse, an entity of the engine's ECS beside its <see cref="Body"/>.</summary>
 /// <remarks>
 /// Its behavior burns it in the engine's frame, reading the voxel world and the seconds from the
-/// game's <see cref="GameStep"/> on the main thread, which alone may read the world, and leaves
-/// where each went off in <see cref="PrimedTnt.Exploded"/>, which the game sets off. It also takes
-/// its world and its inputs as arguments, so a test burns the TNT of an ECS world of its own.
+/// game's <see cref="GameStep"/> on the main thread, which alone may read the world, and sends
+/// where each went off as a <see cref="TntBlast"/>, which the game sets off. It also takes its world
+/// and its inputs as arguments, so a test burns the TNT of an ECS world of its own.
 /// </remarks>
 [Behavior]
 public partial struct LitTnt
@@ -33,8 +36,10 @@ public partial struct LitTnt
     [OnUpdate]
     public static void Burn(BehaviorContext ctx)
     {
-        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds > 0 && ctx.World.TryGetResource<PrimedTnt>(out var tnt))
-            Burn(ctx.Ecs, step.World, step.Seconds, tnt.Exploded);
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
+        var exploded = new List<Vector3>();
+        Burn(ctx.Ecs, step.World, step.Seconds, exploded);
+        foreach (var at in exploded) ctx.World.SendEvent(new TntBlast(at));
     }
 
     /// <summary>Moves the TNT on by so many seconds and burns their fuses, setting off those whose fuses have run out.</summary>
@@ -89,9 +94,6 @@ public sealed class PrimedTnt(EcsWorld ecs)
     /// <summary>How many TNT burn.</summary>
     public int Count => ecs.Count<LitTnt>();
 
-    /// <summary>Where TNT went off, its blasts' middles a sixteenth over its feet, for the game to set off and clear.</summary>
-    public List<Vector3> Exploded { get; } = [];
-
     /// <summary>Lights the TNT of a cell, the cell's block taken out by the caller, with a fuse of so many seconds, popping it up as the source's does.</summary>
     public void Light(int x, int y, int z, float fuse = Fuse)
     {
@@ -108,15 +110,19 @@ public sealed class PrimedTnt(EcsWorld ecs)
     /// <summary>Lights the TNT of a cell that another blast reached, its fuse 10 to 29 ticks.</summary>
     public void Chain(int x, int y, int z) => Light(x, y, z, (10 + _random.Next(20)) * Tick);
 
-    /// <summary>Burns the TNT by so many seconds as a frame burns them, setting off those whose fuses have run out.</summary>
-    public void Update(VoxelWorld world, float seconds) => LitTnt.Burn(ecs, world, seconds, Exploded);
+    /// <summary>Burns the TNT by so many seconds as a frame burns them, and gives where those whose fuses ran out went off.</summary>
+    public List<Vector3> Update(VoxelWorld world, float seconds)
+    {
+        var exploded = new List<Vector3>();
+        LitTnt.Burn(ecs, world, seconds, exploded);
+        return exploded;
+    }
 
-    /// <summary>Puts out every TNT and forgets those set off, as a world closes.</summary>
+    /// <summary>Puts out every TNT, as a world closes.</summary>
     public void Clear()
     {
         var all = new List<int>();
         foreach (var (id, _) in ecs.Query<LitTnt>()) all.Add(id);
         foreach (var id in all) ecs.Despawn(id);
-        Exploded.Clear();
     }
 }

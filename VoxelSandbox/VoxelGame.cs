@@ -49,11 +49,7 @@ public sealed class VoxelGame : IDisposable
     public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null)
     {
         _transient = transient;
-        // The game's step, and the falling blocks and the TNT, where their behaviors leave what they
-        // broke and set off.
         GetApp().World.InsertResource(Step);
-        GetApp().World.InsertResource(Falling);
-        GetApp().World.InsertResource(Tnt);
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer();
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
@@ -344,7 +340,10 @@ public sealed class VoxelGame : IDisposable
         Fires.Clear();
         Tnt.Clear();
         Arrows.Clear();
-        Step.Hits.Clear();
+        // What the behaviors sent of the world left is dropped with it.
+        GetApp().World.ClearEvents<ArrowStrike>();
+        GetApp().World.ClearEvents<TntBlast>();
+        GetApp().World.ClearEvents<FallingBroke>();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
         _blasts.Clear();
         // The mode and the inventory are the world's own, a new world's in creative with its hotbar of blocks.
@@ -534,8 +533,7 @@ public sealed class VoxelGame : IDisposable
         // The blocks the world loosened start to fall, and those that landed where they could not
         // stand as the engine's frame let them fall drop as items.
         Falling.Take(World);
-        foreach (var (x, y, z, block) in Falling.Broken) Drops.Pop(Items.Of(block), 1, x, y, z);
-        Falling.Broken.Clear();
+        foreach (var (x, y, z, block) in GetApp().World.DrainEvents<FallingBroke>()) Drops.Pop(Items.Of(block), 1, x, y, z);
         // A felled tree's logs and leaves throw a few bits each, many breaking at once, and drop what
         // the source drops in survival, and a share of its logs falls as blocks.
         Felling.Update(World, seconds);
@@ -560,9 +558,7 @@ public sealed class VoxelGame : IDisposable
         Fires.Primed.Clear();
         Blasts.Update(seconds);
         // The TNT whose fuses ran out as the engine's frame burned them goes off.
-        var blasts = Tnt.Exploded.ToArray();
-        Tnt.Exploded.Clear();
-        foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT");
+        foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(blast.At, PrimedTnt.Power, "was blown up by TNT");
         Lights.Update(Player.Eye - new Vector3(0, HeldLights.UnderEye, 0), Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye);
 
         Sky.Update(seconds);
@@ -629,8 +625,7 @@ public sealed class VoxelGame : IDisposable
             }
         Mobs.Events.Clear();
         // The arrows that struck the player as the engine's frame flew them.
-        foreach (var (damage, from) in Step.Hits) Harm(damage, from, "were shot by a skeleton");
-        Step.Hits.Clear();
+        foreach (var strike in GetApp().World.DrainEvents<ArrowStrike>()) Harm(strike.Damage, strike.From, "were shot by a skeleton");
         for (int i = _blasts.Count - 1; i >= 0; i--)
         {
             _blasts[i] = _blasts[i] with { Age = _blasts[i].Age + seconds };
@@ -1248,9 +1243,6 @@ public sealed class GameStep
     public float Seconds { get; set; }
 
     public bool PickUp { get; set; }
-
-    /// <summary>The arrows' strikes on the player, each its damage and where it came from, which the game deals and clears.</summary>
-    public List<(int Damage, Vector3 From)> Hits { get; } = [];
 
     /// <summary>The chances the behaviors draw, as of an arrow's extra point of damage.</summary>
     public Random Random { get; } = new();
