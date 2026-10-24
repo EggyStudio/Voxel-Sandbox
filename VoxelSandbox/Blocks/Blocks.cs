@@ -754,5 +754,15 @@ public static class BlockGroups
 
     public static readonly HashSet<BlockId> Glass = [.. Blocks.All.Where(b => b.Kind == BlockKind.Glass && b.Id != BlockId.Ice).Select(b => b.Id)];
 
+    /// <summary>The blocks that fall where nothing holds them up, as the source's gravity blocks do.</summary>
+    public static readonly HashSet<BlockId> Gravity = [BlockId.Sand, BlockId.RedSand, BlockId.Gravel];
+
+    /// <summary>
+    /// Whether a block holds nothing up and gives way to a falling block landing in its place, air,
+    /// water and the plants the source lets a block replace, the grasses, the fern and the dead bush.
+    /// </summary>
+    public static bool GivesWay(BlockId block) =>
+        block is BlockId.Air or BlockId.ShortGrass or BlockId.TallGrass or BlockId.TallGrassTop or BlockId.Fern or BlockId.DeadBush || Blocks.IsWater(block);
+
     public static readonly HashSet<BlockId> Terracotta = [.. Blocks.All.Where(b => b.Key.EndsWith("terracotta", StringComparison.Ordinal)).Select(b => b.Id)];
 }

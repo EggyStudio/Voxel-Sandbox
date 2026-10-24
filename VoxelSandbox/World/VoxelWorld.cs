@@ -31,6 +31,9 @@ public sealed class VoxelWorld
     /// <summary>Blocks smaller than their cell that fell as the block they held to went, where and which, for the game to drop as items and clear.</summary>
     public List<(int X, int Y, int Z, BlockId Block)> Fallen { get; } = [];
 
+    /// <summary>Sand and gravel that came loose over what holds nothing up and were taken out of the world, where and which, for the game to let fall and clear.</summary>
+    public List<(int X, int Y, int Z, BlockId Block)> Loosened { get; } = [];
+
     /// <summary>Sections a column's arrival left to mesh, which are meshed a few at a time, nearest first.</summary>
     public HashSet<SectionKey> Loaded { get; } = [];
 
@@ -158,7 +161,20 @@ public sealed class VoxelWorld
                 if (SetBlock(nx, ny, nz, BlockId.Air)) Fallen.Add((nx, ny, nz, fell));
             }
         }
+
+        // Sand or gravel over what holds nothing up comes loose, the block set here or the one over
+        // it, and a column of it comes loose block by block as each under it goes.
+        Loosen(x, y, z);
+        Loosen(x, y + 1, z);
         return true;
+    }
+
+    private void Loosen(int x, int y, int z)
+    {
+        var block = GetBlock(x, y, z);
+        if (y == 0 || !BlockGroups.Gravity.Contains(block) || !BlockGroups.GivesWay(GetBlock(x, y - 1, z))) return;
+        Loosened.Add((x, y, z, block));
+        SetBlock(x, y, z, BlockId.Air);
     }
 
     /// <summary>

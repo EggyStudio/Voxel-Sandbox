@@ -138,6 +138,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The stacks of items lying in the world.</summary>
     public ItemDrops Drops { get; } = new();
 
+    /// <summary>The sand and gravel falling where nothing held them up.</summary>
+    public FallingBlocks Falling { get; } = new();
+
     /// <summary>The arrows skeletons have loosed.</summary>
     public Arrows Arrows { get; } = new();
 
@@ -300,6 +303,7 @@ public sealed class VoxelGame : IDisposable
         var (kept, placed) = Save?.ReadMobs() ?? ([], []);
         Mobs = new Mobs(kept, placed);
         Drops.Clear();
+        Falling.Clear();
         Arrows.Clear();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
         _blasts.Clear();
@@ -481,6 +485,10 @@ public sealed class VoxelGame : IDisposable
         }
         Drops.Update(World, Player.Body, Inventory, seconds, pickUp: alive && Mode.Touches());
         Bits.Update(World, seconds);
+        Falling.Take(World);
+        Falling.Update(World, seconds);
+        foreach (var (x, y, z, block) in Falling.Broken) Drops.Pop(Items.Of(block), 1, x, y, z);
+        Falling.Broken.Clear();
 
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
@@ -927,7 +935,7 @@ public sealed class VoxelGame : IDisposable
         Sky.Draw(Player.Eye, Renderer.Hazed);
         Renderer.Draw(World, Player.Eye, RenderDistance);
         MobRenderer.Draw(Mobs.All, Player.Eye);
-        DropRenderer.Draw(Drops.All, Player.Eye, GetTime());
+        DropRenderer.Draw(Drops.All, Falling.All, Player.Eye, GetTime());
         Bits.Draw(Player.Eye, Player.Look);
         DrawArrows();
         // An explosion's flash, a ball swelling to the power's size and fading over half a second.

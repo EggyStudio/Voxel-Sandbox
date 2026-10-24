@@ -5,9 +5,15 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `9b25aa3`, item 80, villages spaced as the source spaces them, after `b032e76`, item
-78, the grass as the source places it with the two-block grass, and nothing else, carrying the
-review's file. Item 80: the source's spacing of 34 chunks and separation of 8 from its villages
+Reviewed up to `8da806a`, item 81, no badlands beside green land, after `9b25aa3`, item 80, and
+`b032e76`, item 78, and nothing else, carrying the review's file. Item 81: the mesas lifted hot dry
+land past the mountains' height, where Climate.Choose gave stone with spruces, so badlands met
+mountains 1,518 times over 12,000 blocks square on seed 1; one line in Choose gives badlands at that
+height where the temperature is over 0.7 and the humidity under 0.4, as the source's hot band has no
+stony or snowy peaks, and afterwards badlands meet desert, river and beach alone and no hot biome
+meets a snowy one; the departure the game's two-noise climate kept and the choice mended rather than
+the source's six-noise table taken; a test over 8,192 square of the pairs the source never puts side
+by side; 251 tests. Item 80: the source's spacing of 34 chunks and separation of 8 from its villages
 structure set, a structure's cell size and its start at a chunk corner among the first 26 chunks
 each way, every square a candidate and the biome and level-ground checks deciding; the departure the
 game's own hash in place of the source's salted random, so the grid is the source's and the
@@ -17,12 +23,13 @@ per chunk and its eight neighbors; short grass on seed 1's plains 21.8 of a hund
 against 86 before and the source's 25.6, the tall grass a top block held as the plant; departures,
 the forest's two-block flowers and small patch kinds left out since the game has no two-block
 flowers, patch kinds no near biome grows skipped so a column costs 9.4 ms against 13.0; 249 tests.
-Both the strict build clean and play.sh clean on the GPU, lavapipe not run. Read at 03:51 and 03:57
-on 2026-10-24. Not pushed, the build run of `526f20b` running; the two go when it ends. The README's
-village views point where no village stands any more, taken up under item 46. Next 81, 78, 80, 81,
-69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order;
-items 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and build
-folders wait on the owner's word.
+The strict build clean and play.sh clean on the GPU for each, lavapipe not run. Read at 03:51, 03:57
+and 04:02 on 2026-10-24. Not pushed, the build run of `526f20b` running; the three go when it ends.
+The README's village views point where no village stands any more, and the badlands picture will
+show terracotta on the former stone tops, both taken up under item 46. Next 69, 78, 80, 81, 69, 75,
+74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order; items
+38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and build folders
+wait on the owner's word.
 
 Before it, `526f20b` came, item 79, pushed at 03:50 on 2026-10-24, its run in flight.
 
@@ -290,7 +297,8 @@ full.
     the source's parameter table, said in the commit; then the mend, the source's table taken as
     numbers so badlands sit in hot dry land beside savanna and desert with the source's transitions,
     or, where the game keeps its own climate, a border rule keeping badlands off forests. A test of
-    a map's biome pairs holding no pair the source never makes. One commit.
+    a map's biome pairs holding no pair the source never makes. One commit. Done at `8da806a` on
+    2026-10-24, the game's climate kept and the choice mended.
 
 83. **Glass without the diagonal streaks, its borders connecting across neighbors.** The owner wrote
     on 2026-10-23 (Decision 34) to make the glass not have the diagonal streaks and to connect the

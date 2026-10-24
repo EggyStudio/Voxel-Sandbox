@@ -481,15 +481,19 @@ Minecraft, cracking as it goes through Minecraft's ten stages, a pack's destroy 
 own cracks branching out from its middle where no pack has them, and throwing a bit of its side's
 picture from the face hit each tick, and then drops what it leaves. The progress is kept while the
 button stays held and the aim is lost for up to a second, as over a jump, so a block above reach
-breaks over a few jumps, and begins again on another block. A block broken in any mode
-throws 64 bits, each a quarter of its side's picture, which fall, land and are gone within two
-seconds, as Minecraft's do. Grass, farmland and a path drop their dirt, stone its cobblestone, coal
-ore its coal, diamond and emerald ore their gem, lapis ore four to nine lapis and redstone ore four
-or five redstone, wheat its wheat and seeds, the grasses a seed one time in eight, a dead bush up to
-two sticks, leaves their sapling one time in twenty, glass and ice nothing, and any other block
-itself. An ore asks a pickaxe, of stone or better for iron, copper and lapis and of iron for gold,
-redstone, diamond and emerald, and gives nothing to a lesser one. A torch or a lantern that falls
-with the block it held to drops too, and placing a block uses one up.
+breaks over a few jumps, and begins again on another block. A block broken in any mode throws 64
+bits, each a quarter of its side's picture, which fall, land and are gone within two seconds, as
+Minecraft's do. Grass, farmland and a path drop their dirt, stone its cobblestone, coal ore its
+coal, diamond and emerald ore their gem, lapis ore four to nine lapis and redstone ore four or five
+redstone, wheat its wheat and seeds, the grasses a seed one time in eight, a dead bush up to two
+sticks, leaves their sapling one time in twenty, glass and ice nothing, and any other block itself.
+An ore asks a pickaxe, of stone or better for iron, copper and lapis and of iron for gold, redstone,
+diamond and emerald, and gives nothing to a lesser one. A torch or a lantern that falls with the
+block it held to drops too, and placing a block uses one up. Sand, red sand and gravel over air,
+water or a plant that gives way fall as Minecraft's gravity blocks do, faster by 0.04 of a block a
+tick each tick and keeping 0.98 of their speed, a column of them block by block as each under it
+goes, and stand where they land, or break into their item over a block that keeps its place, as a
+torch or a slab in their cell.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival and adventure, where a left click takes up a stack, puts it down, joins it to a stack of
