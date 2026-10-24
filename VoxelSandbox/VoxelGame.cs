@@ -120,6 +120,7 @@ public sealed class VoxelGame : IDisposable
         DropRenderer.Use(terrain);
         Bits.Use(terrain);
         Cracks.Use(packs);
+        Hand.Use(packs);
         PackGui.Use(packs);
         InWall.Use(packs);
         Sky.Use(packs);
@@ -160,6 +161,9 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>The cracks drawn over the block being broken.</summary>
     public Cracks Cracks { get; } = new();
+
+    /// <summary>The player's arm and what it holds, drawn before the eye.</summary>
+    public HandRenderer Hand { get; } = new();
 
     public Inventory Inventory { get; } = new();
 
@@ -454,7 +458,10 @@ public sealed class VoxelGame : IDisposable
         Hotbar.Update(keys && !screen, _captured);
         var alive = !Mode.Lives() || !Vitals.Dead;
         Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
+        var before = Player.Body.Position;
         Player.Update(World, seconds, look: _captured && alive, move: keys && !screen && alive);
+        var walked = new Vector2(Player.Body.Position.X - before.X, Player.Body.Position.Z - before.Z).Length();
+        Hand.Update(seconds, Player.Flying ? 0 : walked, Player.Body.OnGround);
         if (Mode.Lives())
         {
             Live(seconds);
@@ -737,15 +744,20 @@ public sealed class VoxelGame : IDisposable
         {
             _breakWait = Repeat;
             if (!Attack()) Break();
+            Hand.Swing();
         }
         if (Mode == GameMode.Survival) Dig(seconds);
         // In adventure a click hits a mob and breaks nothing.
-        if (Mode == GameMode.Adventure && IsMouseButtonPressed(MouseButton.Left)) Attack();
+        if (Mode == GameMode.Adventure && IsMouseButtonPressed(MouseButton.Left))
+        {
+            Attack();
+            Hand.Swing();
+        }
         if (Mode.Lives() && Eat(seconds)) return;
         if (IsMouseButtonDown(MouseButton.Right) && _placeWait <= 0)
         {
             _placeWait = Repeat;
-            Use();
+            if (Use() != BlockId.Air) Hand.Swing();
         }
         if (IsMouseButtonPressed(MouseButton.Middle) && Target is { } hit)
             Hotbar.Pick(Items.Of(World.GetBlock(hit.X, hit.Y, hit.Z)), Mode == GameMode.Creative);
@@ -780,7 +792,11 @@ public sealed class VoxelGame : IDisposable
             _breaking.Stop();
             return;
         }
-        if (IsMouseButtonPressed(MouseButton.Left) && Attack() || TargetMob is not null || _breakWait > 0) return;
+        if (IsMouseButtonPressed(MouseButton.Left) && Attack() || TargetMob is not null || _breakWait > 0)
+        {
+            if (IsMouseButtonPressed(MouseButton.Left)) Hand.Swing();
+            return;
+        }
         if (Target is { } solid && !Blocks.Get(World.GetBlock(solid.X, solid.Y, solid.Z)).Breakable)
         {
             _breaking.Stop();
@@ -791,6 +807,7 @@ public sealed class VoxelGame : IDisposable
         {
             time = Loot.BreakSeconds(World.GetBlock(hit.X, hit.Y, hit.Z), Hotbar.Current?.Item);
             Bits.Hit(World.GetBlock(hit.X, hit.Y, hit.Z), hit, seconds);
+            Hand.Swing();
         }
         if (!_breaking.Step(Target is { } at ? (at.X, at.Y, at.Z) : null, seconds, time)) return;
         Break();
@@ -955,6 +972,7 @@ public sealed class VoxelGame : IDisposable
         MobRenderer.Draw(Mobs.All, Player.Eye);
         DropRenderer.Draw(Drops.All, Falling.All, Player.Eye, GetTime());
         Bits.Draw(Player.Eye, Player.Look);
+        if (!HudHidden && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead)) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer);
         DrawArrows();
         // An explosion's flash, a ball swelling to the power's size and fading over half a second.
         foreach (var (at, power, age) in _blasts)
@@ -1073,6 +1091,7 @@ public sealed class VoxelGame : IDisposable
         MobRenderer.Dispose();
         DropRenderer.Dispose();
         Bits.Dispose();
+        Hand.Dispose();
         Cracks.Dispose();
         Clouds.Dispose();
         Sky.Dispose();

@@ -273,6 +273,20 @@ cmd input.key W 10
 after=$(feet "$(ask voxel.state)")
 [ -n "$before" ] && [ "$before" = "$after" ] || fail "W walked the player with the creative window open, from $before to $after"
 cmd input.key E 1
+# The stone in the hand stands at the window's lower right, as the source holds a block, read there
+# with the HUD shown and hidden, which hides the hand with it, the two far apart.
+ask voxel.color 1 1 1 1 > /dev/null
+cmd frames.wait 2
+held=$(ask voxel.color 1100 600 80 60)
+cmd voxel.hud off
+ask voxel.color 1 1 1 1 > /dev/null
+cmd frames.wait 2
+bare=$(ask voxel.color 1100 600 80 60)
+cmd voxel.hud on
+echo "the hand's corner $held, with the HUD hidden $bare"
+printf '%s\n%s\n' "$held" "$bare" | sed -nE 's/^red ([0-9.]+), green ([0-9.]+), blue ([0-9.]+) .*/\1 \2 \3/p' | paste -sd ' ' \
+  | awk 'NF == 6 { d = ($1 - $4) ^ 2 + ($2 - $5) ^ 2 + ($3 - $6) ^ 2; exit !(d > 40 ^ 2) } NF != 6 { exit 1 }' \
+  || fail "the hand's block does not show at the window's lower right, $held, and with the HUD hidden $bare"
 
 check "the swim to the bank"
 # A pool of water four blocks deep east of the room, with a bank on its east side level with the

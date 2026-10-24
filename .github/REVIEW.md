@@ -5,33 +5,43 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `8da806a`, item 81, no badlands beside green land, after `9b25aa3`, item 80, and
-`b032e76`, item 78, and nothing else, carrying the review's file. Item 81: the mesas lifted hot dry
-land past the mountains' height, where Climate.Choose gave stone with spruces, so badlands met
-mountains 1,518 times over 12,000 blocks square on seed 1; one line in Choose gives badlands at that
-height where the temperature is over 0.7 and the humidity under 0.4, as the source's hot band has no
-stony or snowy peaks, and afterwards badlands meet desert, river and beach alone and no hot biome
-meets a snowy one; the departure the game's two-noise climate kept and the choice mended rather than
-the source's six-noise table taken; a test over 8,192 square of the pairs the source never puts side
-by side; 251 tests. Item 80: the source's spacing of 34 chunks and separation of 8 from its villages
-structure set, a structure's cell size and its start at a chunk corner among the first 26 chunks
-each way, every square a candidate and the biome and level-ground checks deciding; the departure the
-game's own hash in place of the source's salted random, so the grid is the source's and the
-positions are not; a test of 2 to 9 starts in a 64-chunk square, every pair 8 chunks apart at least;
-250 tests. Item 78: the patches' counts and thresholds from the source's placement files, laid out
-per chunk and its eight neighbors; short grass on seed 1's plains 21.8 of a hundred grass tops
-against 86 before and the source's 25.6, the tall grass a top block held as the plant; departures,
-the forest's two-block flowers and small patch kinds left out since the game has no two-block
-flowers, patch kinds no near biome grows skipped so a column costs 9.4 ms against 13.0; 249 tests.
-The strict build clean and play.sh clean on the GPU for each, lavapipe not run. Read at 03:51, 03:57
-and 04:02 on 2026-10-24. Not pushed, the build run of `526f20b` running; the three go when it ends.
-The README's village views point where no village stands any more, and the badlands picture will
-show terracotta on the former stone tops, both taken up under item 46. Next 69, 78, 80, 81, 69, 75,
-74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order; items
-38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and build folders
-wait on the owner's word.
+Reviewed up to `45b4b93`, item 69's felling, after `cc4f29a`, its gravity blocks, `8da806a`, item
+81, `9b25aa3`, item 80, and `b032e76`, item 78, and nothing else, carrying the review's file. Item
+69: sand, red sand and gravel come loose block by block when the cell below gives way to the
+source's replaceable list and fall with the source's 0.04 a tick, a landed block set where its floor
+cell gives way and broken into its item on a torch or a slab; felling runs when the broken log has
+none below, flood-filling joined logs at the cut's height and above within 12 blocks up to 256, only
+where leaves touch them so log walls stay, the logs breaking upward a tick a block, one in four
+falling as a block, then the leaves with no log within six steps decaying each at its own time over
+0.5 to 4 s; departures, felling in creative too with drops in survival alone, 8 bits a leaf or log
+since a crown breaks many at once, no concrete powder in the game; the second commit an amend of an
+unpushed one whose README lines a chained edit had dropped; six tests; 254 tests. Item 81: the mesas
+lifted hot dry land past the mountains' height, where Climate.Choose gave stone with spruces, so
+badlands met mountains 1,518 times over 12,000 blocks square on seed 1; one line in Choose gives
+badlands at that height where the temperature is over 0.7 and the humidity under 0.4, as the
+source's hot band has no stony or snowy peaks, and afterwards badlands meet desert, river and beach
+alone and no hot biome meets a snowy one; the departure the game's two-noise climate kept and the
+choice mended rather than the source's six-noise table taken; a test over 8,192 square of the pairs
+the source never puts side by side; 251 tests. Item 80: the source's spacing of 34 chunks and
+separation of 8 from its villages structure set, a structure's cell size and its start at a chunk
+corner among the first 26 chunks each way, every square a candidate and the biome and level-ground
+checks deciding; the departure the game's own hash in place of the source's salted random, so the
+grid is the source's and the positions are not; a test of 2 to 9 starts in a 64-chunk square, every
+pair 8 chunks apart at least; 250 tests. Item 78: the patches' counts and thresholds from the
+source's placement files, laid out per chunk and its eight neighbors; short grass on seed 1's plains
+21.8 of a hundred grass tops against 86 before and the source's 25.6, the tall grass a top block
+held as the plant; departures, the forest's two-block flowers and small patch kinds left out since
+the game has no two-block flowers, patch kinds no near biome grows skipped so a column costs 9.4 ms
+against 13.0; 249 tests. The strict build clean and play.sh clean on the GPU for each, lavapipe not
+run. Read at 03:51, 03:57, 04:02 and 04:16 on 2026-10-24. Pushed at 04:23 after the build run of
+`526f20b` ended green, its play job 31.9 minutes; the run watched. The README's village views and
+the badlands picture are taken up under item 46. Next 75, 78, 80, 81, 69, 75, 74, 72 and 73, then
+the pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part and
+54 when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's
+word.
 
-Before it, `526f20b` came, item 79, pushed at 03:50 on 2026-10-24, its run in flight.
+Before it, `526f20b` came, item 79, pushed at 03:50 on 2026-10-24, its run green, the play job 31.9
+minutes.
 
 Before it, `7da1d96` and `8bc0796` came, item 68, pushed at 03:22 on 2026-10-24, its run green, the
 play job 23.1 minutes.
@@ -212,7 +222,8 @@ full.
     unsupported, as the source's gravity blocks do, landing as blocks or breaking on a non-solid as
     the source has it, the owner's cobble read as that list unless they say otherwise. Tests: a
     tree's logs and leaves gone after the cut with the drops counted, a falling log landing, and a
-    sand column falling onto a floor. Two commits, the gravity blocks, then the felling.
+    sand column falling onto a floor. Two commits, the gravity blocks, then the felling. Done at
+    `cc4f29a` and `45b4b93` on 2026-10-24, the departures in the head.
 
 70. **The land's light is the same above the eye's height as below it.** The owner wrote on
     2026-10-23 (Decision 34) of a visual fault with the height, the land lighter below a line and
