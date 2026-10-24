@@ -46,7 +46,7 @@ public class TreeTests
         {
             int logs = 0, crown = 0, farthest = 0;
             foreach (var column in Grown(tree, hash))
-                for (int y = 41; y < ChunkColumn.Height; y++)
+                for (int y = 41; y < ChunkColumn.Ceiling; y++)
                     for (int z = 0; z < 16; z++)
                         for (int x = 0; x < 16; x++)
                         {
@@ -81,7 +81,7 @@ public class TreeTests
                 for (int y = 20; y < 23; y++) column.Set(x, y, z, BlockId.JungleLeaves);
             }
         Lighting.Compute(column);
-        var under = column.Sections[15 >> Section.Shift].SkyLight(Section.Index(8, 15 & Section.Mask, 8));
+        var under = column.At(15).SkyLight(Section.Index(8, 15 & Section.Mask, 8));
         Assert.InRange(under, 6, 12);
     }
 }

@@ -2,16 +2,17 @@
 
 <img src=".github/assets/head.gif" width="800" height="450" alt="Ten views of seeds 1 and 6 two seconds each, a desert village, the badlands, a cherry grove, a plains village by its river, a swamp, the jungle, a snowy village by day and by night, a room lit by a lantern and torches, and the sun rising over the sea">
 
-A voxel game written in C# on [3DEngine](https://github.com/EggyStudio/3DEngine) through its
-package on nuget.org, set in an endless generated world whose blocks are placed and broken, with its
-light, its water, its mobs and the items they drop. Its first use is to test the engine's global
-illumination, radiance cascades traced through the scene's distance field, with emissive blocks.
-The world is held in columns of colored blocks 16 by 16 by 128, with animals that graze it,
-villagers in its villages and hostile mobs where it is dark. The game has a first-person player
-with Minecraft's sizes and speeds, building and breaking with an outline on the block looked at, in
-creative mode or in survival with health and hunger, an inventory, tools and crafting, Minecraft's
-light levels with smooth lighting and shaded corners, a sky whose sun, moon and stars cross it
-behind drifting clouds, and an ImGui window of the light's settings.
+A voxel game written in C# on [3DEngine](https://github.com/EggyStudio/3DEngine) through its package
+on nuget.org, set in an endless generated world whose blocks are placed and broken, with its light,
+its water, its mobs and the items they drop. Its first use is to test the engine's global
+illumination, radiance cascades traced through the scene's distance field, with emissive blocks. The
+world is held in columns of colored blocks 16 by 16 from a height of -64 to one of 320, as
+Minecraft's overworld stands, with animals that graze it, villagers in its villages and hostile mobs
+where it is dark. The game has a first-person player with Minecraft's sizes and speeds, building and
+breaking with an outline on the block looked at, in creative mode or in survival with health and
+hunger, an inventory, tools and crafting, Minecraft's light levels with smooth lighting and shaded
+corners, a sky whose sun, moon and stars cross it behind drifting clouds, and an ImGui window of the
+light's settings.
 
 The pictures show the game drawn with the three resource packs it fetches at its first start, [Bare
 Bones](https://modrinth.com/resourcepack/bare-bones) by RobotPants, [Recolourful Containers GUI +
@@ -320,8 +321,12 @@ down.
 <td><img src=".github/assets/world/ravine.webp" width="400" height="225" alt="A ravine cutting the plains of seed 1 at noon, magma on its floor"></td>
 </tr></table>
 
-Tunnels wind under the ground where two noises are both near zero, and wide caverns open deep down
-where a third is high. They stay three blocks under the ground, so they are dark until dug into, but
+The world stands on Minecraft's floor of bedrock at -64, whole there and thinning out over the five
+blocks above, and under 0 its stone is deepslate, as Minecraft's is, thinning out up to 8 so the two
+meet in a ragged edge. Deepslate breaks into cobbled deepslate, which makes stone tools and a
+furnace as cobblestone does and smelts back into deepslate. Tunnels wind under the ground where two
+noises are both near zero, down to the bedrock, and wide caverns open deep down where a third is
+high. They stay three blocks under the ground, so they are dark until dug into, but
 in patches of high ground away from the sea a tunnel that rises near the top breaks out, a mouth the
 sun shines into, though never on a village's ground or within six blocks of it. A ravine cuts the
 ground open along a swaying line about 48 blocks long, up to seven wide at its middle and narrowing
@@ -619,8 +624,8 @@ sandstone, four stone four stone bricks, and nine wheat a hay bale. Ores lie in 
 by depth, as Minecraft's do, coal 18 to a column from 5 to 100 blocks up, iron 10 from 5 to 64,
 copper 10 from 20 to 80, gold 4 from 5 to 32, redstone 6 from 5 to 16, lapis 2 from 5 to 32, a
 diamond vein from 5 to 16 and, in the mountains, single emeralds from 48 to 98, each in the stone's
-color warmed or cooled by what is in it, which the walls of a cave or a ravine show. The world is
-128 blocks high, so Minecraft's depths are raised to keep the rarest under the sea level.
+color warmed or cooled by what is in it, which the walls of a cave or a ravine show. Minecraft's
+depths are raised, so the rarest lie in the stone over the deepslate, which holds none.
 
 ## Furnaces and iron
 

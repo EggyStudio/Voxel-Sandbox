@@ -69,6 +69,9 @@ public static class Loot
             case BlockId.Stone:
                 yield return (Items.Of(BlockId.Cobblestone), 1);
                 yield break;
+            case BlockId.Deepslate:
+                yield return (Items.Of(BlockId.CobbledDeepslate), 1);
+                yield break;
             case BlockId.CoalOre:
                 yield return (Items.Coal, 1);
                 yield break;
@@ -144,7 +147,7 @@ public static class Loot
         BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => (ToolKind.Pickaxe, true),
         BlockId.RedSand or BlockId.Clay => (ToolKind.Shovel, false),
         BlockId.Stone or BlockId.Cobblestone or BlockId.CoalOre or BlockId.IronOre or BlockId.Furnace or BlockId.Sandstone or BlockId.StoneBricks or BlockId.Magma
-            or BlockId.WhiteConcrete or BlockId.RedConcrete or BlockId.GreenConcrete or BlockId.BlueConcrete
+            or BlockId.Deepslate or BlockId.CobbledDeepslate or BlockId.WhiteConcrete or BlockId.RedConcrete or BlockId.GreenConcrete or BlockId.BlueConcrete
             or BlockId.Lantern or BlockId.SoulLantern or BlockId.StoneSlab or BlockId.CobblestoneSlab or BlockId.SandstoneSlab
             or BlockId.CobblestoneStairs or BlockId.SandstoneStairs or BlockId.StoneBrickStairs => (ToolKind.Pickaxe, true),
         BlockId.Ice => (ToolKind.Pickaxe, false),
@@ -168,7 +171,7 @@ public static class Loot
         BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
         BlockId.Water => 100,
         BlockId.Stone or BlockId.Cobblestone or BlockId.StoneBricks or BlockId.StoneSlab or BlockId.CobblestoneSlab
-            or BlockId.CobblestoneStairs or BlockId.StoneBrickStairs => 6,
+            or BlockId.CobblestoneStairs or BlockId.StoneBrickStairs or BlockId.Deepslate or BlockId.CobbledDeepslate => 6,
         BlockId.OakLog or BlockId.BirchLog or BlockId.SpruceLog or BlockId.OakPlanks or BlockId.SprucePlanks or BlockId.BirchPlanks
             or BlockId.OakSlab or BlockId.SpruceSlab or BlockId.OakStairs or BlockId.SpruceStairs or BlockId.OakFence or BlockId.CoalOre or BlockId.IronOre => 3,
         var item => Hardness(item),
@@ -200,6 +203,8 @@ public static class Loot
         BlockId.Shroomlight => 1,
         BlockId.Stone or BlockId.StoneBricks or BlockId.StoneBrickStairs => 1.5f,
         BlockId.CraftingTable => 2.5f,
+        BlockId.Deepslate => 3,
+        BlockId.CobbledDeepslate => 3.5f,
         BlockId.CoalOre or BlockId.IronOre => 3,
         BlockId.Furnace => 3.5f,
         BlockId.WhiteConcrete or BlockId.RedConcrete or BlockId.GreenConcrete or BlockId.BlueConcrete => 1.8f,

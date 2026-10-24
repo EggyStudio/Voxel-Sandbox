@@ -21,6 +21,7 @@ public static class Smelting
         [Items.RawChicken] = Items.Find("cooked_chicken")!,
         [I(BlockId.Sand)] = I(BlockId.Glass),
         [I(BlockId.Cobblestone)] = I(BlockId.Stone),
+        [I(BlockId.CobbledDeepslate)] = I(BlockId.Deepslate),
         [I(BlockId.IronOre)] = Items.IronIngot,
         [I(BlockId.CopperOre)] = Items.CopperIngot,
         [I(BlockId.GoldOre)] = Items.GoldIngot,

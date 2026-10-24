@@ -68,7 +68,7 @@ public static class Recipes
             R(Items.Stick, 4, ["P", "P"], ('P', Planks)),
             R(I(BlockId.CraftingTable), 1, ["PP", "PP"], ('P', Planks)),
             R(I(BlockId.Torch), 4, ["C", "S"], ('C', [Items.Coal, Items.Charcoal]), ('S', Stick)),
-            R(I(BlockId.Furnace), 1, ["CCC", "C C", "CCC"], ('C', [I(BlockId.Cobblestone)])),
+            R(I(BlockId.Furnace), 1, ["CCC", "C C", "CCC"], ('C', [I(BlockId.Cobblestone), I(BlockId.CobbledDeepslate)])),
             R(I(BlockId.Tnt), 1, ["GSG", "SGS", "GSG"], ('G', [Items.Gunpowder]), ('S', [I(BlockId.Sand), I(BlockId.RedSand)])),
             // The source's flint and steel takes its two in any cells, which a shape of the two side by side
             // or one over the other covers but for the corners.
@@ -81,8 +81,9 @@ public static class Recipes
             R(I(BlockId.Sandstone), 1, ["SS", "SS"], ('S', [I(BlockId.Sand)])),
             R(I(BlockId.StoneBricks), 4, ["SS", "SS"], ('S', [I(BlockId.Stone)])),
         };
-        // A tool of each kind from planks and from cobblestone, with sticks for its handle.
-        foreach (var (material, head) in (ReadOnlySpan<(string, Item[])>)[("wooden", Planks), ("stone", [I(BlockId.Cobblestone)]), ("iron", [Items.IronIngot])])
+        // A tool of each kind from planks and from cobblestone or cobbled deepslate, as the source's
+        // stone tools take either, with sticks for its handle.
+        foreach (var (material, head) in (ReadOnlySpan<(string, Item[])>)[("wooden", Planks), ("stone", [I(BlockId.Cobblestone), I(BlockId.CobbledDeepslate)]), ("iron", [Items.IronIngot])])
         {
             Item Tool(string kind) => Items.Find($"{material}_{kind}")!;
             all.Add(R(Tool("pickaxe"), 1, ["MMM", " S ", " S "], ('M', head), ('S', Stick)));

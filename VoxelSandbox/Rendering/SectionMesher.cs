@@ -277,7 +277,7 @@ public sealed class SectionMesher
                 if (!world.TryGetColumn(key.X + dx, key.Z + dz, out var column)) return false;
                 if (dx == 0 && dz == 0) _column = column;
                 for (int dy = -1; dy <= 1; dy++)
-                    _around[(dy + 1) * 9 + (dz + 1) * 3 + dx + 1] = (uint)(key.Y + dy) < ChunkColumn.SectionCount ? column.Sections[key.Y + dy] : null;
+                    _around[(dy + 1) * 9 + (dz + 1) * 3 + dx + 1] = column.Numbered(key.Y + dy);
             }
         if (_around[13] is not { Filled: > 0 }) return true;
 

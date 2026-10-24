@@ -60,7 +60,7 @@ public sealed class VoxelWorld
         _columns[(column.X, column.Z)] = column;
         for (int dz = -1; dz <= 1; dz++)
             for (int dx = -1; dx <= 1; dx++)
-                for (int y = 0; y < ChunkColumn.SectionCount; y++)
+                for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++)
                     Loaded.Add(new SectionKey(column.X + dx, y, column.Z + dz));
         _light.Join(column);
         // The fires a saved column holds burn on, found by a search of each section, which is quick
@@ -71,7 +71,7 @@ public sealed class VoxelWorld
             for (int i = Array.IndexOf(blocks, (ushort)BlockId.Fire); i >= 0; i = Array.IndexOf(blocks, (ushort)BlockId.Fire, i + 1))
             {
                 int x = i & Section.Mask, z = i >> Section.Shift & Section.Mask, y = i >> 2 * Section.Shift;
-                Kindled.Add((column.X * Section.Size + x, s * Section.Size + y, column.Z * Section.Size + z));
+                Kindled.Add((column.X * Section.Size + x, ChunkColumn.Bottom + s * Section.Size + y, column.Z * Section.Size + z));
             }
         }
     }
@@ -81,7 +81,7 @@ public sealed class VoxelWorld
     /// <summary>The block at a world position, air above and below the world and in a column not loaded.</summary>
     public BlockId GetBlock(int x, int y, int z)
     {
-        if ((uint)y >= ChunkColumn.Height || !_columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column))
+        if (!ChunkColumn.Holds(y) || !_columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column))
             return BlockId.Air;
         return column.Get(x & Section.Mask, y, z & Section.Mask);
     }
@@ -89,10 +89,10 @@ public sealed class VoxelWorld
     /// <summary>The sky's and the blocks' light levels at a world position, the open sky's above the world and none where nothing is loaded.</summary>
     public (int Sky, int Block) GetLight(int x, int y, int z)
     {
-        if (y >= ChunkColumn.Height) return (Lighting.Max, 0);
-        if (y < 0 || !_columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column)) return (0, 0);
+        if (y >= ChunkColumn.Ceiling) return (Lighting.Max, 0);
+        if (y < ChunkColumn.Bottom || !_columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column)) return (0, 0);
         var index = Section.Index(x & Section.Mask, y & Section.Mask, z & Section.Mask);
-        var section = column.Sections[y >> Section.Shift];
+        var section = column.At(y);
         return (section.SkyLight(index), section.BlockLight(index));
     }
 
@@ -103,8 +103,8 @@ public sealed class VoxelWorld
     /// </summary>
     public IReadOnlyList<Box> BoxesAt(int x, int y, int z)
     {
-        if (y < 0) return [Box.Cell];
-        if (y >= ChunkColumn.Height) return [];
+        if (y < ChunkColumn.Bottom) return [Box.Cell];
+        if (y >= ChunkColumn.Ceiling) return [];
         if (!_columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column)) return [Box.Cell];
         var block = column.Get(x & Section.Mask, y, z & Section.Mask);
         return Blocks.Joins(block) ? Joined(block, x, y, z)!.Collision : Blocks.Get(block).Boxes;
@@ -130,7 +130,7 @@ public sealed class VoxelWorld
     /// <returns>Whether the block changed. A place above or below the world or in a column not loaded is left alone.</returns>
     public bool SetBlock(int x, int y, int z, BlockId block)
     {
-        if ((uint)y >= ChunkColumn.Height || !_columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column))
+        if (!ChunkColumn.Holds(y) || !_columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column))
             return false;
         int lx = x & Section.Mask, lz = z & Section.Mask, ly = y & Section.Mask;
         var was = column.Get(lx, y, lz);
@@ -145,8 +145,8 @@ public sealed class VoxelWorld
         if (lx == Section.Mask) Edited.Add(key with { X = key.X + 1 });
         if (lz == 0) Edited.Add(key with { Z = key.Z - 1 });
         if (lz == Section.Mask) Edited.Add(key with { Z = key.Z + 1 });
-        if (ly == 0 && key.Y > 0) Edited.Add(key with { Y = key.Y - 1 });
-        if (ly == Section.Mask && key.Y < ChunkColumn.SectionCount - 1) Edited.Add(key with { Y = key.Y + 1 });
+        if (ly == 0 && key.Y > ChunkColumn.BottomSection) Edited.Add(key with { Y = key.Y - 1 });
+        if (ly == Section.Mask && key.Y < ChunkColumn.CeilingSection - 1) Edited.Add(key with { Y = key.Y + 1 });
         // A block shades the corners of faces in the sections across its edges and corners as well.
         Reshade(x, y, z);
 
@@ -242,7 +242,7 @@ public sealed class VoxelWorld
         int lx = x & Section.Mask, ly = y & Section.Mask, lz = z & Section.Mask;
         for (int dy = ly == 0 ? -1 : 0; dy <= (ly == Section.Mask ? 1 : 0); dy++)
         {
-            if ((uint)(cy + dy) >= ChunkColumn.SectionCount) continue;
+            if (cy + dy < ChunkColumn.BottomSection || cy + dy >= ChunkColumn.CeilingSection) continue;
             for (int dz = lz == 0 ? -1 : 0; dz <= (lz == Section.Mask ? 1 : 0); dz++)
                 for (int dx = lx == 0 ? -1 : 0; dx <= (lx == Section.Mask ? 1 : 0); dx++)
                     Reshaded.Add(new SectionKey(cx + dx, cy + dy, cz + dz));
@@ -253,7 +253,7 @@ public sealed class VoxelWorld
     public void ReshadeAll()
     {
         foreach (var column in _columns.Values)
-            for (int y = 0; y < ChunkColumn.SectionCount; y++) Reshaded.Add(new SectionKey(column.X, y, column.Z));
+            for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++) Reshaded.Add(new SectionKey(column.X, y, column.Z));
     }
 
     /// <summary>The biome at a world column, or null where it is not loaded.</summary>
@@ -262,7 +262,7 @@ public sealed class VoxelWorld
             ? Biomes.All[column.Biome[(z & Section.Mask) * Section.Size + (x & Section.Mask)]]
             : null;
 
-    /// <summary>The height of the highest block that is not air at a world column, or -1 where it is all air or not loaded.</summary>
+    /// <summary>The height of the highest block that is not air at a world column, or one under the world's bottom where it is all air or not loaded.</summary>
     public int Top(int x, int z) =>
-        _columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column) ? column.Top(x & Section.Mask, z & Section.Mask) : -1;
+        _columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var column) ? column.Top(x & Section.Mask, z & Section.Mask) : ChunkColumn.Bottom - 1;
 }

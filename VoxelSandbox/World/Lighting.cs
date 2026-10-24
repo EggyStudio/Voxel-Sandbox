@@ -48,9 +48,9 @@ public static class Lighting
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
-                var y = ChunkColumn.Height - 1;
-                for (; y >= 0 && Clear(column.Get(x, y, z)); y--)
-                    column.Sections[y >> Section.Shift].SetLevel(Section.Index(x, y & Section.Mask, z), true, Max);
+                var y = ChunkColumn.Ceiling - 1;
+                for (; y >= ChunkColumn.Bottom && Clear(column.Get(x, y, z)); y--)
+                    column.At(y).SetLevel(Section.Index(x, y & Section.Mask, z), true, Max);
                 tops[z * Section.Size + x] = y;
             }
 
@@ -69,17 +69,17 @@ public static class Lighting
                     highest = Math.Max(highest, tops[nz * Section.Size + nx]);
                 }
                 var lowest = tops[z * Section.Size + x] + 1;
-                for (int y = lowest; y <= Math.Max(highest, lowest) && y < ChunkColumn.Height; y++) queue.Enqueue((x, y, z));
+                for (int y = lowest; y <= Math.Max(highest, lowest) && y < ChunkColumn.Ceiling; y++) queue.Enqueue((x, y, z));
             }
         Spread(column, queue, sky: true);
 
-        for (int y = 0; y < ChunkColumn.Height; y++)
+        for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
             for (int z = 0; z < Section.Size; z++)
                 for (int x = 0; x < Section.Size; x++)
                 {
                     var light = Blocks.Get(column.Get(x, y, z)).Light;
                     if (light == 0) continue;
-                    column.Sections[y >> Section.Shift].SetLevel(Section.Index(x, y & Section.Mask, z), false, light);
+                    column.At(y).SetLevel(Section.Index(x, y & Section.Mask, z), false, light);
                     queue.Enqueue((x, y, z));
                 }
         Spread(column, queue, sky: false);
@@ -89,13 +89,13 @@ public static class Lighting
     {
         while (queue.TryDequeue(out var cell))
         {
-            var level = column.Sections[cell.Y >> Section.Shift].Level(Section.Index(cell.X, cell.Y & Section.Mask, cell.Z), sky);
+            var level = column.At(cell.Y).Level(Section.Index(cell.X, cell.Y & Section.Mask, cell.Z), sky);
             if (level <= 1) continue;
             for (int d = 0; d < 6; d++)
             {
                 int x = cell.X + Dx[d], y = cell.Y + Dy[d], z = cell.Z + Dz[d];
-                if ((uint)x >= Section.Size || (uint)z >= Section.Size || (uint)y >= ChunkColumn.Height) continue;
-                var section = column.Sections[y >> Section.Shift];
+                if ((uint)x >= Section.Size || (uint)z >= Section.Size || !ChunkColumn.Holds(y)) continue;
+                var section = column.At(y);
                 var index = Section.Index(x, y & Section.Mask, z);
                 var next = Into(level, d, sky, (BlockId)section.Blocks[index]);
                 if (section.Level(index, sky) >= next) continue;
@@ -117,12 +117,12 @@ public sealed class LightEngine(VoxelWorld world)
 
     private bool TryCell(int x, int y, int z, out Section section, out int index)
     {
-        if ((uint)y >= ChunkColumn.Height || !world.TryGetColumn(x >> Section.Shift, z >> Section.Shift, out var column))
+        if (!ChunkColumn.Holds(y) || !world.TryGetColumn(x >> Section.Shift, z >> Section.Shift, out var column))
         {
             (section, index) = (null!, 0);
             return false;
         }
-        section = column.Sections[y >> Section.Shift];
+        section = column.At(y);
         index = Section.Index(x & Section.Mask, y & Section.Mask, z & Section.Mask);
         return true;
     }
@@ -143,9 +143,9 @@ public sealed class LightEngine(VoxelWorld world)
         foreach (var (dx, dz) in sides)
         {
             if (!world.TryGetColumn(column.X + dx, column.Z + dz, out var other)) continue;
-            for (int y = 0; y < ChunkColumn.Height; y++)
+            for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
             {
-                var (mine, theirs) = (column.Sections[y >> Section.Shift], other.Sections[y >> Section.Shift]);
+                var (mine, theirs) = (column.At(y), other.At(y));
                 for (int t = 0; t < Section.Size; t++)
                 {
                     // The cell on this column's edge and the one across it in the neighbor.
@@ -204,7 +204,7 @@ public sealed class LightEngine(VoxelWorld world)
         if (!opaque)
         {
             // The open sky above the world's top shines straight in.
-            if (y == ChunkColumn.Height - 1) Set(x, y, z, section, index, true, Lighting.Into(Lighting.Max, Lighting.Down, true, now));
+            if (y == ChunkColumn.Ceiling - 1) Set(x, y, z, section, index, true, Lighting.Into(Lighting.Max, Lighting.Down, true, now));
             Around(x, y, z, _sky);
         }
         Spread(_sky, sky: true);

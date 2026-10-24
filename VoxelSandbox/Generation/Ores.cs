@@ -6,8 +6,8 @@ namespace VoxelSandbox;
 /// long, copper 10 from 20 to 80, eight long, gold 4 from 5 to 32 and redstone 6 from 5 to 16, seven
 /// long, lapis 2 from 5 to 32, six long, a diamond vein from 5 to 16, five long, and in the
 /// mountains three single emeralds from 48 to 98, taking the place of stone alone, so a cave's
-/// walls and a ravine's show them. The world is 128 blocks high, so Minecraft's depths are raised
-/// to keep the rarest ores under the sea level.
+/// walls and a ravine's show them. Minecraft's depths are raised, so the rarest ores lie in the stone
+/// over the deepslate under the floor of 0, which holds none.
 /// </summary>
 /// <remarks>Each vein stays within its column and depends on the seed and the column alone, so a column is generated the same every time.</remarks>
 public static class Ores

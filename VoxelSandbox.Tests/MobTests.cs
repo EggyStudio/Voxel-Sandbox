@@ -223,7 +223,7 @@ public sealed class MobTests : IDisposable
             for (int cx = (start.X - 4) >> Section.Shift; cx <= (start.X + village.Size + 4) >> Section.Shift; cx++)
                 columns[(cx, cz)] = land.Generate(cx, cz);
         BlockId Block(int x, int y, int z) =>
-            columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var c) && (uint)y < ChunkColumn.Height ? c.Get(x & Section.Mask, y, z & Section.Mask) : BlockId.Air;
+            columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var c) && ChunkColumn.Holds(y) ? c.Get(x & Section.Mask, y, z & Section.Mask) : BlockId.Air;
 
         var villagers = columns.Values.SelectMany(c => c.Spawns).Where(m => m.Kind == MobKinds.Villager).ToList();
         Assert.True(villagers.Count >= 4, $"the village has {villagers.Count} villagers");

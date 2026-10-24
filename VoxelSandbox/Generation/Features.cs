@@ -19,7 +19,7 @@ public readonly struct ColumnClip(ChunkColumn column)
     public int MinZ => column.Z * Section.Size;
 
     public bool Inside(int x, int y, int z) =>
-        (uint)(x - MinX) < Section.Size && (uint)(z - MinZ) < Section.Size && (uint)y < ChunkColumn.Height;
+        (uint)(x - MinX) < Section.Size && (uint)(z - MinZ) < Section.Size && ChunkColumn.Holds(y);
 
     public BlockId Get(int x, int y, int z) => Inside(x, y, z) ? column.Get(x - MinX, y, z - MinZ) : BlockId.Air;
 
@@ -37,7 +37,7 @@ public readonly struct ColumnClip(ChunkColumn column)
     /// <summary>Fills a box between two corners, both included, with a block.</summary>
     public void Fill(int x0, int y0, int z0, int x1, int y1, int z1, BlockId block)
     {
-        for (int y = Math.Max(y0, 0); y <= Math.Min(y1, ChunkColumn.Height - 1); y++)
+        for (int y = Math.Max(y0, ChunkColumn.Bottom); y <= Math.Min(y1, ChunkColumn.Ceiling - 1); y++)
             for (int z = Math.Max(z0, MinZ); z <= Math.Min(z1, MinZ + Section.Mask); z++)
                 for (int x = Math.Max(x0, MinX); x <= Math.Min(x1, MinX + Section.Mask); x++)
                     column.Set(x - MinX, y, z - MinZ, block);
@@ -78,7 +78,7 @@ public sealed class OakTree : IFeature
     {
         var height = 4 + (int)(hash % 3);
         var top = y + height;
-        if (top + 2 >= ChunkColumn.Height) return;
+        if (top + 2 >= ChunkColumn.Ceiling) return;
 
         clip.Set(x, y, z, BlockId.Dirt);
         for (int i = 1; i <= height; i++) clip.Set(x, y + i, z, BlockId.OakLog);
@@ -109,7 +109,7 @@ public sealed class BirchTree : IFeature
     {
         var height = 5 + (int)(hash % 3);
         var top = y + height;
-        if (top + 2 >= ChunkColumn.Height) return;
+        if (top + 2 >= ChunkColumn.Ceiling) return;
 
         clip.Set(x, y, z, BlockId.Dirt);
         for (int i = 1; i <= height; i++) clip.Set(x, y + i, z, BlockId.BirchLog);
@@ -140,7 +140,7 @@ public sealed class SpruceTree : IFeature
     {
         var height = 6 + (int)(hash % 4);
         var top = y + height;
-        if (top + 2 >= ChunkColumn.Height) return;
+        if (top + 2 >= ChunkColumn.Ceiling) return;
 
         clip.Set(x, y, z, BlockId.Dirt);
         for (int i = 1; i <= height; i++) clip.Set(x, y + i, z, BlockId.SpruceLog);
@@ -169,7 +169,7 @@ public sealed class CactusFeature : IFeature
     public void Place(ColumnClip clip, int x, int y, int z, uint hash)
     {
         var height = 1 + (int)(hash % 3);
-        for (int i = 1; i <= height && y + i < ChunkColumn.Height; i++) clip.Set(x, y + i, z, BlockId.Cactus);
+        for (int i = 1; i <= height && y + i < ChunkColumn.Ceiling; i++) clip.Set(x, y + i, z, BlockId.Cactus);
     }
 }
 
@@ -187,7 +187,7 @@ public sealed class PlantFeature((BlockId Plant, int Weight)[] kinds, params Blo
 
     public void Place(ColumnClip clip, int x, int y, int z, uint hash)
     {
-        if (y + 1 >= ChunkColumn.Height) return;
+        if (y + 1 >= ChunkColumn.Ceiling) return;
         var pick = (int)(hash % (uint)_total);
         foreach (var (plant, weight) in kinds)
             if ((pick -= weight) < 0)

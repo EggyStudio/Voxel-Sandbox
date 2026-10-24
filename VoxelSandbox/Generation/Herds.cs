@@ -31,8 +31,8 @@ public static class Herds
         {
             int x = Math.Clamp(mx + random.Next(-3, 4), 0, Section.Mask), z = Math.Clamp(mz + random.Next(-3, 4), 0, Section.Mask);
             var y = column.Top(x, z);
-            var ground = y < 0 ? BlockId.Air : column.Get(x, y, z);
-            if (ground != biome.Top && ground != BlockId.Grass || y + 3 >= ChunkColumn.Height
+            var ground = y < ChunkColumn.Bottom ? BlockId.Air : column.Get(x, y, z);
+            if (ground != biome.Top && ground != BlockId.Grass || y + 3 >= ChunkColumn.Ceiling
                 || column.Get(x, y + 1, z) != BlockId.Air || column.Get(x, y + 2, z) != BlockId.Air) continue;
             var at = new Vector3(column.X * Section.Size + x + 0.5f, y + 1, column.Z * Section.Size + z + 0.5f);
             column.Spawns.Add(new MobRecord(kind, kind.Variant(random.Next(1000)), at, (float)(random.NextDouble() * MathF.Tau), kind.Health, null));

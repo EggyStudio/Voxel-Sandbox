@@ -59,7 +59,7 @@ public sealed class Overworld : IWorldGenerator
             (BlockId.BrownTerracotta, 1), (BlockId.WhiteTerracotta, 2), (BlockId.LightGrayTerracotta, 1),
         ];
         var total = colors.Sum(c => c.Weight);
-        var bands = new BlockId[ChunkColumn.Height];
+        var bands = new BlockId[ChunkColumn.Ceiling];
         for (int y = 0; y < bands.Length;)
         {
             var hash = PlaceHash.Of(y, 0, seed ^ 0x7e2a);
@@ -126,7 +126,7 @@ public sealed class Overworld : IWorldGenerator
         var river = SmoothStep(0.032f, 0.01f, winding) * below;
         if (height > SeaLevel - 3) height -= (height - (SeaLevel - 3)) * river;
 
-        var ground = Math.Clamp((int)height, 4, ChunkColumn.Height - 12);
+        var ground = Math.Clamp((int)height, 4, ChunkColumn.Ceiling - 12);
         var biome = river > 0.5f && ground < SeaLevel ? Biomes.River
             // A beach along the sea where the basin sinks the land, above the water and a little over it, but where it is cold.
             : sunk > 0.02f && ground >= SeaLevel - 1 && ground <= SeaLevel + 2 && temperature >= 0.3f && swamp < 0.5f && badlands < 0.5f ? Biomes.Beach
@@ -205,17 +205,25 @@ public sealed class Overworld : IWorldGenerator
                 var open = height > SeaLevel + 4 && _mouths.Fractal(wx / 90f, wz / 90f, 2) > 0.3f && !Structures.Village.OnGround(villages, wx, wz);
                 Paint(column, x, z, wx, wz, Shape(wx, wz));
                 var banded = biome == Biomes.Badlands;
-                column.Set(x, 0, z, BlockId.Bedrock);
-                for (int y = 1; y <= height; y++)
+                column.Set(x, ChunkColumn.Bottom, z, BlockId.Bedrock);
+                for (int y = ChunkColumn.Bottom + 1; y <= height; y++)
                 {
                     // The badlands' terracotta lies in its bands down to the sea level, so a mesa's
-                    // sides and top show them, red sand lying on the low ground alone, and stone below.
+                    // sides and top show them, red sand lying on the low ground alone, and stone below,
+                    // which the source's deepslate takes the place of under 0, thinning out up to 8.
                     var block = y == height ? top
                         : banded && y > height - 2 ? under
                         : banded && y > SeaLevel - 8 ? _bands[y]
                         : y > height - 4 ? under
                         : biome.Deep != BlockId.Air && y > height - 8 ? biome.Deep
-                        : BlockId.Stone;
+                        : Thins(wx, y, wz, 0, 8, 0x0de5) ? BlockId.Deepslate : BlockId.Stone;
+                    // The source's bedrock thins out over the five blocks above the world's floor,
+                    // and lies under the caves' carving, so no cave opens onto the void.
+                    if (Thins(wx, y, wz, ChunkColumn.Bottom, ChunkColumn.Bottom + 5, 0x0bed))
+                    {
+                        column.Set(x, y, z, BlockId.Bedrock);
+                        continue;
+                    }
                     // The caves stay three blocks under the ground, so they are dark until dug into,
                     // where an emissive block is the only light, but in patches of high ground a
                     // tunnel that rises near the top breaks out, a mouth the sun shines into, though
@@ -240,10 +248,10 @@ public sealed class Overworld : IWorldGenerator
             for (int x = 0; x < Section.Size; x++)
             {
                 var y = grounds[z * Section.Size + x].Height + 1;
-                if (y < ChunkColumn.Height && BlockGroups.Plants.Contains(column.Get(x, y, z)) && !Blocks.Collides(column.Get(x, y - 1, z)))
+                if (y < ChunkColumn.Ceiling && BlockGroups.Plants.Contains(column.Get(x, y, z)) && !Blocks.Collides(column.Get(x, y - 1, z)))
                     column.Set(x, y, z, BlockId.Air);
                 // Tall grass stands whole or not at all, where a structure took one of its halves.
-                if (y + 1 >= ChunkColumn.Height) continue;
+                if (y + 1 >= ChunkColumn.Ceiling) continue;
                 var (lower, upper) = (column.Get(x, y, z) == BlockId.TallGrass, column.Get(x, y + 1, z) == BlockId.TallGrassTop);
                 if (lower && !upper) column.Set(x, y, z, BlockId.Air);
                 if (upper && !lower) column.Set(x, y + 1, z, BlockId.Air);
@@ -334,7 +342,7 @@ public sealed class Overworld : IWorldGenerator
                             var plant = patch.Pick(tries, x, z);
                             if (x < clip.MinX || x > clip.MinX + Section.Mask || z < clip.MinZ || z > clip.MinZ + Section.Mask) continue;
                             var ground = grounds[(z - clip.MinZ) * Section.Size + x - clip.MinX];
-                            if (y != ground.Height + 1 || y + 1 >= ChunkColumn.Height || ground.Top != BlockId.Grass || clip.Get(x, y, z) != BlockId.Air) continue;
+                            if (y != ground.Height + 1 || y + 1 >= ChunkColumn.Ceiling || ground.Top != BlockId.Grass || clip.Get(x, y, z) != BlockId.Air) continue;
                             if (plant == BlockId.TallGrass)
                             {
                                 if (clip.Get(x, y + 1, z) != BlockId.Air) continue;
@@ -383,6 +391,12 @@ public sealed class Overworld : IWorldGenerator
     private static readonly int MostReach = Biomes.All.SelectMany(b => b.Trees).Max(t => t.Feature.Reach);
 
     // Tunnels where two noises are both near zero, and wide caverns where a third is high.
+    // Whether a block takes a layer that is whole up to one height and thins out to none at another,
+    // as the source's vertical gradients do, its share falling evenly between them, by a hash of the
+    // block's place, so deepslate meets the stone and bedrock the deepslate in a ragged edge.
+    private bool Thins(int x, int y, int z, int whole, int none, int salt) =>
+        y <= whole || y < none && PlaceHash.Of(x * 389 + y, z, Seed ^ salt) % 1000 < 1000 * (none - y) / (none - whole);
+
     private bool IsCave(int x, int y, int z)
     {
         var a = _tunnelA.At(x / 40f, y / 28f, z / 40f);

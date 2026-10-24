@@ -260,10 +260,10 @@ public sealed class Mobs
         int x = (int)MathF.Floor(player.X + (float)(Math.Cos(angle) * distance)), z = (int)MathF.Floor(player.Z + (float)(Math.Sin(angle) * distance));
         if (!Around(world, VoxelWorld.ColumnOf(x), VoxelWorld.ColumnOf(z))) return;
         var top = world.Top(x, z);
-        if (top < 0) return;
+        if (top < ChunkColumn.Bottom) return;
         // A height at random from the bottom to over the ground, and the first open cell on a block under it.
-        var y = 1 + _random.Next(top + 1);
-        while (y > 1 && (world.BoxesAt(x, y - 1, z).Count == 0 || world.BoxesAt(x, y, z).Count > 0)) y--;
+        var y = ChunkColumn.Bottom + 1 + _random.Next(top - ChunkColumn.Bottom + 1);
+        while (y > ChunkColumn.Bottom + 1 && (world.BoxesAt(x, y - 1, z).Count == 0 || world.BoxesAt(x, y, z).Count > 0)) y--;
         var kind = Pick(_random.Next(100));
         var pack = 1 + _random.Next(4);
         for (int tries = 0; tries < pack * 3 && pack > 0 && Hostile < HostileCap; tries++)

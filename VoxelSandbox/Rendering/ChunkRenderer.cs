@@ -451,7 +451,7 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>Lets go of the meshes of a column's sections, as it unloads.</summary>
     public void ForgetColumn(int x, int z)
     {
-        for (int y = 0; y < ChunkColumn.SectionCount; y++) Forget(new SectionKey(x, y, z));
+        for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++) Forget(new SectionKey(x, y, z));
     }
 
     /// <summary>Lets go of every section's meshes, as a new world begins.</summary>

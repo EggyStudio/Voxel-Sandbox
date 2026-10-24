@@ -130,7 +130,7 @@ public sealed class SmeltingTests : IDisposable
             for (int cx = -2; cx <= 2; cx++)
             {
                 var column = land.Generate(cx, cz);
-                for (int y = 0; y < ChunkColumn.Height; y++)
+                for (int y = 0; y < ChunkColumn.Ceiling; y++)
                     for (int z = 0; z < Section.Size; z++)
                         for (int x = 0; x < Section.Size; x++)
                             if (column.Get(x, y, z) == BlockId.IronOre) (iron, highest) = (iron + 1, Math.Max(highest, y));

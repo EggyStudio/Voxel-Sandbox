@@ -60,7 +60,7 @@ public sealed class FallingBlocks
                 if (!BlockGroups.GivesWay(world.GetBlock(x, y, z)) || !world.SetBlock(x, y, z, falling.Block)) Broken.Add((x, y, z, falling.Block));
                 landed.Add(falling);
             }
-            else if (falling.Age > MostSeconds || body.Position.Y < -16) landed.Add(falling);
+            else if (falling.Age > MostSeconds || body.Position.Y < ChunkColumn.Bottom - 16) landed.Add(falling);
         }
         _all.RemoveAll(landed.Contains);
     }

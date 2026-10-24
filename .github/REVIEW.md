@@ -5,22 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `cfdc298`, item 89, the clouds no longer drawn black by the fire's uniform, and
-nothing else, carrying the review's file: the fire's tile kept as one more than its number, 0 for
-none, so the clouds' own shader copy that sets nothing draws no face as flames; the play check
-reading a cloud's underside from 20 blocks under at noon, red 146 against a bound of 100 where a
-black underside read about 9, two seconds of the play job; 260 tests, the strict build clean,
-play.sh clean on the GPU. Read at 06:20 on 2026-10-24. Pushed at 06:20 after the build run of
-`edbc3b2` ended green, its play job 32.3 minutes; the run watched. Next item 46's final run at 40
-degrees with the village views moved and voxel.fov, 78, 80, 81, 69, 75, 74, 72 and 73, then the
-pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part and 54
-when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `5556519`, item 46's retake at a field of view of 40 degrees with voxel.fov, and
+nothing else, carrying the review's file: every world view stepped back level from its old place and
+turned up to keep its subject in the middle, but the cherry grove kept since a step back stands in
+its crowns, the meadow moved to a dandelion and daisy patch since the plant patches moved its
+poppies, the sunrise stepped back 40 blocks and the night sky kept at a pitch of 9 so the island
+stays in frame, the room and the interface at 70; the desert village from the south of its well,
+seed 1's plains village by its river with the mobs and the HUD moved there, the snowy village by day
+and night on seed 6; the alt texts changed, head.gif 1.53 MB; 260 tests, the strict build clean. The
+coder's slip: the commit went before the play run's result, and play.sh then failed its last check
+twice on a log that was not its run's, the engine's session starting its own copy of the game under
+the same E3D name into the same build/sessions log; the check is run again when that copy is gone
+and said before the push. Read at 06:44 on 2026-10-24. play.sh passed on its own log at 07:0x;
+pushed at 07:07, the build run of `cfdc298` having ended green at 06:52 with its play job at 32.3
+minutes; the run watched. Next 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at
+40 degrees, then 26 and the items in order; items 38's second part and 54 when their packages come;
+the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `cfdc298` came, item 89, pushed at 06:20 on 2026-10-24, its run green, the play job 32.3
+minutes.
 
 Before it, `edbc3b2` and `ee557b3` came, item 72, fire, pushed at 05:47 on 2026-10-24, their run
 green, the play job 32.3 minutes.
-
-Before it, `cba35ca` and `1eeeeff` came, item 73, pushed at 05:21 on 2026-10-24, their run green,
-the play job 24.5 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -117,7 +123,8 @@ full.
     697.6 still at its village's edge; the retake moves the plains views to a village of seed 1,
     576, minus 432 the nearest, and the snowy one to another seed or a village found with
     voxel.find, none standing within 1,600 blocks on seed 1; the plains-village.webp of `b032e76`
-    shows a village that no longer stands there until then.
+    shows a village that no longer stands there until then. The retake at `5556519` on 2026-10-24,
+    the views as the head says; play.sh passed; item 46 done.
 
 89. **The clouds are not drawn black by the fire's uniform.** Found at item 46's retake on
     2026-10-24: in every daytime view the clouds' undersides drew a dark navy near black, where the
@@ -339,7 +346,19 @@ full.
     sections' streaming and saving, then the far levels. The far levels read first from the saved
     world, the sections a player has already visited and saved, before the generator's surface, as
     the modpack's far-chunk cache keeps far land drawn from what was seen (Decision 14). Three or
-    four commits.
+    four commits. The reading before any commit, at 07:10 on 2026-10-24 on seed 1 at three places: a
+    column generates in 9 to 11 ms and lights in 1.2 to 1.8, 100 KB in memory, a section meshes in
+    0.6 to 1.2 ms, the surface alone costs a tenth of a column; the taller world of 24 sections from
+    minus 64 to 320 at an estimated 15 to 20 ms a column and three times the memory, 147 MB at a
+    distance of 12, old saves read as 0 to 127 with the ground below generated and the format given
+    a version; a sphere of sections at 8, 12 and 16 keeping 47, 65 and 78 percent of the cylinder, a
+    column generated whole once and its far sections saved and let go, an unloaded section opaque to
+    its neighbors; the far rings by doubling, 12 to 24, 24 to 48 and 48 to 64 columns, cells of 2 to
+    the k blocks in tiles of 16 by 16, from saved tops first and the generator's surface otherwise,
+    boxes at their own place in the top block's average color, flat lit, hazed, no shadows, field,
+    plants or mobs, the surface sampled to 64 columns in under a second on the workers. Four commits
+    as said. Deepslate comes with part 1 as the source lays it below 0, its ores and caves with item
+    27; the far reach in columns and the rings by doubling as read.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where

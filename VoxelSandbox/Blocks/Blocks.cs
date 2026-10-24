@@ -234,6 +234,8 @@ public enum BlockId : ushort
     TallGrassTop,
     Tnt,
     Fire,
+    Deepslate,
+    CobbledDeepslate,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -554,6 +556,8 @@ public static class Blocks
             // light's surface, which makes it emissive.
             new(BlockId.Fire, "fire", "Fire", Surfaces.FireLight, Surfaces.FireLight, Surfaces.FireLight, Light: 15, Kind: BlockKind.Shaped,
                 Shape: BlockShape.Fire(0), HeldAs: BlockId.Air),
+            new(BlockId.Deepslate, "deepslate", "Deepslate", Surfaces.DeepslateTop, Surfaces.Deepslate, Surfaces.DeepslateTop),
+            Same(BlockId.CobbledDeepslate, "cobbled_deepslate", "Cobbled Deepslate", Surfaces.CobbledDeepslate),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");

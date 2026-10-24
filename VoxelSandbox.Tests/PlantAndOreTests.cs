@@ -197,7 +197,7 @@ public class PlantAndOreTests
             for (int cz = -6; cz < 6; cz++)
             {
                 var column = land.Generate(cx, cz);
-                for (int y = 1; y < ChunkColumn.Height; y++)
+                for (int y = 1; y < ChunkColumn.Ceiling; y++)
                     for (int z = 0; z < 16; z++)
                         for (int x = 0; x < 16; x++)
                         {

@@ -48,7 +48,7 @@ internal static class Grower
     public static Random Seeded(uint hash) => new(unchecked((int)hash));
 
     /// <summary>Whether a tree so tall fits under the world's ceiling with room for its crown.</summary>
-    public static bool Fits(int y, int height) => y + height + 4 < ChunkColumn.Height;
+    public static bool Fits(int y, int height) => y + height + 4 < ChunkColumn.Ceiling;
 }
 
 /// <summary>

@@ -276,6 +276,10 @@ public static class Surfaces
     // room for its smaller box.
     public static readonly int Fire = Add("fire", new Color(232, 140, 40));
     public static readonly int FireLight = Add("fire light", new Color(255, 170, 70), emissive: new Color(255, 150, 50), glow: 6, unseen: true);
+    // The deepslate under the floor of 0, its sides and its top, and the cobbles it breaks into.
+    public static readonly int Deepslate = Add("deepslate", new Color(85, 85, 87));
+    public static readonly int DeepslateTop = Add("deepslate top", new Color(84, 84, 86));
+    public static readonly int CobbledDeepslate = Add("cobbled deepslate", new Color(84, 84, 87));
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

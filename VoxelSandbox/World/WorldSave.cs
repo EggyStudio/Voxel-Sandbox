@@ -328,16 +328,29 @@ public sealed class WorldSave
         return output.ToArray();
     }
 
-    /// <summary>Makes a kept column again from its compressed blocks, their numbers changed by <paramref name="renumber"/> where given. Safe to call from a worker.</summary>
-    public static ChunkColumn Decode(int x, int z, byte[] bytes, ushort[]? renumber)
+    /// <summary>
+    /// Makes a kept column again from its compressed blocks, their numbers changed by
+    /// <paramref name="renumber"/> where given. Safe to call from a worker.
+    /// </summary>
+    /// <remarks>
+    /// A column kept while the world stood from 0 to 128, eight sections, is laid at its heights over
+    /// the deep stone of <paramref name="generated"/>, the column as the generator makes it, its floor
+    /// of bedrock at 0 taken out for the generated blocks, and is kept again whole when it next
+    /// unloads. Where no generated column is given, such a column's deep stone is air.
+    /// </remarks>
+    public static ChunkColumn Decode(int x, int z, byte[] bytes, ushort[]? renumber, ChunkColumn? generated = null)
     {
         var column = new ChunkColumn(x, z);
         using var zip = new ZLibStream(new MemoryStream(bytes), CompressionMode.Decompress);
         var raw = new byte[Section.Volume * sizeof(ushort)];
-        foreach (var section in column.Sections)
+        var sections = new List<ushort[]>();
+        while (zip.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length)
+            sections.Add(System.Runtime.InteropServices.MemoryMarshal.Cast<byte, ushort>(raw).ToArray());
+        var shallow = sections.Count == OldSections;
+        var first = shallow ? -ChunkColumn.BottomSection : 0;
+        for (int s = 0; s < sections.Count && first + s < ChunkColumn.SectionCount; s++)
         {
-            zip.ReadExactly(raw);
-            var blocks = System.Runtime.InteropServices.MemoryMarshal.Cast<byte, ushort>(raw);
+            var (section, blocks) = (column.Sections[first + s], sections[s]);
             for (int i = 0; i < Section.Volume; i++)
             {
                 var block = blocks[i];
@@ -346,6 +359,27 @@ public sealed class WorldSave
             }
         }
         column.Changed = false;
+        if (!shallow || generated is null) return column;
+        for (int s = 0; s < first; s++)
+            for (int i = 0; i < Section.Volume; i++)
+                column.Sections[s].Set(i & Section.Mask, i >> 8, (i >> 4) & Section.Mask, (BlockId)generated.Sections[s].Blocks[i]);
+        for (int dz = 0; dz < Section.Size; dz++)
+            for (int dx = 0; dx < Section.Size; dx++)
+                if (column.Get(dx, 0, dz) == BlockId.Bedrock) column.Set(dx, 0, dz, generated.Get(dx, 0, dz));
+        column.Changed = true;
         return column;
+    }
+
+    // How many sections a column was kept with while the world stood from 0 to 128.
+    private const int OldSections = 8;
+
+    /// <summary>Whether a kept column's bytes hold the eight sections of a world that stood from 0 to 128, which its deep stone is generated under.</summary>
+    public static bool Shallow(byte[] bytes)
+    {
+        using var zip = new ZLibStream(new MemoryStream(bytes), CompressionMode.Decompress);
+        var raw = new byte[Section.Volume * sizeof(ushort)];
+        var sections = 0;
+        while (zip.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length) sections++;
+        return sections == OldSections;
     }
 }

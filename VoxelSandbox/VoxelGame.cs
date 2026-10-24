@@ -348,7 +348,7 @@ public sealed class VoxelGame : IDisposable
             // A new world's player waits over the origin, and stands on its highest block once the
             // columns there have loaded.
             Player.Flying = false;
-            Player.Teleport(new Vector3(0.5f, ChunkColumn.Height, 0.5f));
+            Player.Teleport(new Vector3(0.5f, ChunkColumn.Ceiling, 0.5f));
             (_landing, _loadTeleports) = (true, Player.Teleports);
             return;
         }
@@ -393,7 +393,7 @@ public sealed class VoxelGame : IDisposable
         if (made == 25)
             for (int z = cz - 1; z <= cz + 1; z++)
                 for (int x = cx - 1; x <= cx + 1; x++)
-                    for (int y = 0; y < ChunkColumn.SectionCount; y++)
+                    for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++)
                     {
                         var key = new SectionKey(x, y, z);
                         if (!World.Loaded.Contains(key) && !World.Reshaded.Contains(key) && !World.Edited.Contains(key)) standing++;

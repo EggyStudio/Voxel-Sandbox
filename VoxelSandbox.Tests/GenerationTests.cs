@@ -33,7 +33,7 @@ public class GenerationTests
             for (int z = 2; z < 14; z++)
             {
                 var top = -1;
-                for (int y = 0; y < ChunkColumn.Height; y++)
+                for (int y = 0; y < ChunkColumn.Ceiling; y++)
                     if (column.Get(15, y, z) is BlockId.OakLog or BlockId.BirchLog or BlockId.SpruceLog) top = y;
                 if (top < 0 || column.Get(14, top, z) is BlockId.OakLog or BlockId.BirchLog or BlockId.SpruceLog) continue;
                 var crown = 0;
@@ -97,12 +97,12 @@ public class GenerationTests
             for (int cx = (start.X - 4) >> Section.Shift; cx <= (start.X + village.Size + 4) >> Section.Shift; cx++)
                 columns[(cx, cz)] = land.Generate(cx, cz);
         BlockId At(int x, int y, int z) =>
-            columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var c) && (uint)y < ChunkColumn.Height ? c.Get(x & Section.Mask, y, z & Section.Mask) : BlockId.Air;
+            columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var c) && ChunkColumn.Holds(y) ? c.Get(x & Section.Mask, y, z & Section.Mask) : BlockId.Air;
 
         int lights = 0, paths = 0;
         for (int z = start.Z; z < start.Z + village.Size; z++)
             for (int x = start.X; x < start.X + village.Size; x++)
-                for (int y = 1; y < ChunkColumn.Height; y++)
+                for (int y = 1; y < ChunkColumn.Ceiling; y++)
                 {
                     var block = At(x, y, z);
                     if (block == BlockId.DirtPath) paths++;
@@ -170,7 +170,7 @@ public class GenerationTests
         for (int y = ground - 6; y <= ground + 2; y++)
             Assert.Equal(BlockId.Air, column.Get(x & Section.Mask, y, z & Section.Mask));
         var index = Section.Index(x & Section.Mask, (ground - 6) & Section.Mask, z & Section.Mask);
-        Assert.Equal(Lighting.Max, column.Sections[(ground - 6) >> Section.Shift].SkyLight(index));
+        Assert.Equal(Lighting.Max, column.At(ground - 6).SkyLight(index));
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class GenerationTests
                         var ground = land.At(cx * Section.Size + x, cz * Section.Size + z).Height;
                         var y = ground - 5;
                         if (y <= Overworld.SeaLevel || column.Get(x, y, z) != BlockId.Air) continue;
-                        if (column.Sections[y >> Section.Shift].SkyLight(Section.Index(x, y & Section.Mask, z)) == Lighting.Max) mouths++;
+                        if (column.At(y).SkyLight(Section.Index(x, y & Section.Mask, z)) == Lighting.Max) mouths++;
                     }
             }
         Assert.True(mouths > 0, "no tunnel near the origin opens to the sky");
@@ -214,7 +214,7 @@ public class GenerationTests
                 var column = land.Generate(cx + dx, cz + dz);
                 for (int z = 0; z < Section.Size; z++)
                     for (int x = 0; x < Section.Size; x++)
-                        for (int y = 1; y < ChunkColumn.Height; y++)
+                        for (int y = 1; y < ChunkColumn.Ceiling; y++)
                             if (BlockGroups.Plants.Contains(column.Get(x, y, z)) && !VoxelSandbox.Blocks.Collides(column.Get(x, y - 1, z)))
                                 floating.Add($"{column.Get(x, y, z)} at {(cx + dx) * Section.Size + x}, {y}, {(cz + dz) * Section.Size + z}");
             }

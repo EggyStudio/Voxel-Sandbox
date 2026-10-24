@@ -126,18 +126,18 @@ public sealed class Visibility
         _seen.Clear();
         _queue.Clear();
         var start = new SectionKey((int)MathF.Floor(eye.X) >> Section.Shift, (int)MathF.Floor(eye.Y) >> Section.Shift, (int)MathF.Floor(eye.Z) >> Section.Shift);
-        Culled = start.Y is >= 0 and < ChunkColumn.SectionCount;
+        Culled = start.Y is >= ChunkColumn.BottomSection and < ChunkColumn.CeilingSection;
         if (!Culled) return;
         var reach = renderDistance * renderDistance + renderDistance;
         _seen.Add(start);
         _queue.Enqueue((start, -1, 0));
         var exits = world.TryGetColumn(start.X, start.Z, out var home)
-            ? FacesFrom(home.Sections[start.Y], Section.Index((int)MathF.Floor(eye.X) & Section.Mask, (int)MathF.Floor(eye.Y) & Section.Mask, (int)MathF.Floor(eye.Z) & Section.Mask), atlas)
+            ? FacesFrom(home.Numbered(start.Y)!, Section.Index((int)MathF.Floor(eye.X) & Section.Mask, (int)MathF.Floor(eye.Y) & Section.Mask, (int)MathF.Floor(eye.Z) & Section.Mask), atlas)
             : 63;
         while (_queue.TryDequeue(out var at))
         {
             if (!world.TryGetColumn(at.Key.X, at.Key.Z, out var column)) continue;
-            var joins = Joins(column.Sections[at.Key.Y], atlas);
+            var joins = Joins(column.Numbered(at.Key.Y)!, atlas);
             for (int d = 0; d < 6; d++)
             {
                 // Never back the way any step of the flood went, and out only through a face the cells
@@ -145,7 +145,7 @@ public sealed class Visibility
                 if ((at.Ways & 1 << (d ^ 1)) != 0) continue;
                 if (at.From >= 0 ? (joins >> (at.From * 6 + d) & 1) == 0 : (exits >> d & 1) == 0) continue;
                 var next = new SectionKey(at.Key.X + Steps[d].X, at.Key.Y + Steps[d].Y, at.Key.Z + Steps[d].Z);
-                if (next.Y is < 0 or >= ChunkColumn.SectionCount || !_seen.Add(next)) continue;
+                if (next.Y is < ChunkColumn.BottomSection or >= ChunkColumn.CeilingSection || !_seen.Add(next)) continue;
                 int dx = next.X - start.X, dz = next.Z - start.Z;
                 if (dx * dx + dz * dz > reach || !world.HasColumn(next.X, next.Z)) continue;
                 _queue.Enqueue((next, d ^ 1, at.Ways | 1 << d));

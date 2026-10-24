@@ -102,7 +102,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         if (kept is null) column = generator.Generate(x, z);
         else
         {
-            column = WorldSave.Decode(x, z, kept, renumber);
+            column = WorldSave.Decode(x, z, kept, renumber, WorldSave.Shallow(kept) ? generator.Generate(x, z) : null);
             generator.Paint(column);
         }
         Lighting.Compute(column);
