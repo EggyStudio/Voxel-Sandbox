@@ -241,8 +241,8 @@ public sealed class MobRenderer : IDisposable
         return true;
     }
 
-    /// <summary>Draws the mobs within reach of the eye. Called inside <c>BeginMode3D</c>.</summary>
-    public void Draw(IReadOnlyList<Mob> mobs, Vector3 eye)
+    /// <summary>Draws the mobs of an ECS world within reach of the eye, read by their components. Called inside <c>BeginMode3D</c>.</summary>
+    public void Draw(EcsWorld ecs, Vector3 eye)
     {
         foreach (var slot in _slots)
         {
@@ -251,29 +251,10 @@ public sealed class MobRenderer : IDisposable
             slot.Flash.Clear();
         }
         var drawn = 0;
-        foreach (var mob in mobs)
-        {
-            if (Vector3.DistanceSquared(mob.Body.Position, eye) > Distance * Distance) continue;
-            drawn++;
-            var body = Matrix4x4.CreateScale(mob.Kind.Scale) * Matrix4x4.CreateRotationY(mob.Yaw) * Matrix4x4.CreateTranslation(mob.Body.Position);
-            // A mob dying falls onto its side over most of a second, and a creeper swells as its
-            // fuse burns and flashes white, by the source's numbers.
-            if (mob.Dying >= 0) body = Matrix4x4.CreateRotationZ(MathF.Sqrt(MathF.Min(1, mob.Dying / 0.6f)) * MathF.PI / 2) * body;
-            var (wide, tall, flash) = CreeperSwell(mob.Fuse);
-            if (mob.Fuse >= 0) body = Matrix4x4.CreateScale(wide, tall, wide) * body;
-            var red = mob.Hurt > 0 || mob.Dying >= 0;
-            var white = flash > 0;
-            var stance = new Stance(mob.StridePhase, mob.Stride, mob.HeadYaw - mob.Yaw, mob.HeadPitch, mob.WingAngle, mob.Hunting);
-            var parts = mob.Kind.Parts;
-            for (int p = 0; p < parts.Length; p++)
-            {
-                var part = parts[p];
-                var local = part.PlacedBy(Gait.Turn(mob.Kind, part, stance));
-                var variants = _byKind[mob.Kind.Id][p];
-                var slot = variants[variants.Length == 1 ? 0 : mob.Variant % variants.Length];
-                (red ? slot.Hurt : white ? slot.Flash : slot.Plain).Add(local * body);
-            }
-        }
+        foreach (var (_, mob, body, life, pose) in ecs.Query<Mob, Body, MobLife, MobPose>().Without<MobHostile>())
+            if (Place(mob, body, life, pose, -1, false, eye)) drawn++;
+        foreach (var (_, mob, body, life, pose, hostile) in ecs.Query<Mob, Body, MobLife, MobPose, MobHostile>())
+            if (Place(mob, body, life, pose, hostile.Fuse, hostile.Hunting, eye)) drawn++;
 
         var draws = 0;
         foreach (var slot in _slots)
@@ -298,6 +279,32 @@ public sealed class MobRenderer : IDisposable
             }
         }
         (Draws, Drawn) = (draws, drawn);
+    }
+
+    // Adds a mob within reach of the eye to the instances of its parts, by its life, its pose and a
+    // hostile one's fuse and hunt, and says whether it was within reach.
+    private bool Place(Mob mob, Body body, MobLife life, MobPose pose, float fuse, bool hunting, Vector3 eye)
+    {
+        if (Vector3.DistanceSquared(body.Position, eye) > Distance * Distance) return false;
+        var placed = Matrix4x4.CreateScale(mob.Kind.Scale) * Matrix4x4.CreateRotationY(pose.Yaw) * Matrix4x4.CreateTranslation(body.Position);
+        // A mob dying falls onto its side over most of a second, and a creeper swells as its fuse
+        // burns and flashes white, by the source's numbers.
+        if (life.Dying >= 0) placed = Matrix4x4.CreateRotationZ(MathF.Sqrt(MathF.Min(1, life.Dying / 0.6f)) * MathF.PI / 2) * placed;
+        var (wide, tall, flash) = CreeperSwell(fuse);
+        if (fuse >= 0) placed = Matrix4x4.CreateScale(wide, tall, wide) * placed;
+        var red = life.Hurt > 0 || life.Dying >= 0;
+        var white = flash > 0;
+        var stance = new Stance(pose.StridePhase, pose.Stride, pose.HeadYaw - pose.Yaw, pose.HeadPitch, pose.WingAngle, hunting);
+        var parts = mob.Kind.Parts;
+        for (int p = 0; p < parts.Length; p++)
+        {
+            var part = parts[p];
+            var local = part.PlacedBy(Gait.Turn(mob.Kind, part, stance));
+            var variants = _byKind[mob.Kind.Id][p];
+            var slot = variants[variants.Length == 1 ? 0 : mob.Variant % variants.Length];
+            (red ? slot.Hurt : white ? slot.Flash : slot.Plain).Add(local * placed);
+        }
+        return true;
     }
 
     /// <summary>

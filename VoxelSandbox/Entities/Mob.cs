@@ -75,6 +75,38 @@ public partial struct MobLife
 }
 
 /// <summary>
+/// A mob's pose, the turns of its body and its head, its legs' swing and its wings' spread, a
+/// component of the mob's entity that its movement writes and the renderer reads by a query.
+/// </summary>
+/// <remarks>
+/// The yaw is a turn about the vertical as the player's is, 0 facing north and growing to the left,
+/// so a model built facing north is turned by it alone.
+/// </remarks>
+public struct MobPose
+{
+    /// <summary>The body's turn, toward where it walks.</summary>
+    public float Yaw;
+
+    /// <summary>The head's turn, which leads the body's and watches the player.</summary>
+    public float HeadYaw;
+
+    /// <summary>The head's tilt, positive looking up.</summary>
+    public float HeadPitch;
+
+    /// <summary>How far its legs swing, from 0 standing to 1 at five blocks a second, and where in their swing they are, as <see cref="Gait.Step"/> moves them.</summary>
+    public float Stride, StridePhase;
+
+    /// <summary>How far its wings are spread, from 0 to 1, as a chicken's flap while it falls.</summary>
+    public float Flap;
+
+    /// <summary>Seconds it has moved for, which a wing's flap beats by.</summary>
+    public float Swing;
+
+    /// <summary>A wing's angle in radians as it flaps, from <see cref="Flap"/>.</summary>
+    public readonly float WingAngle => Flap * (0.6f + 0.6f * MathF.Sin(Swing * 30));
+}
+
+/// <summary>
 /// A mob in the world, with its body, which falls, swims and is stopped by the blocks as the
 /// player's is, and its mind, which wanders along the ways <see cref="Pathfinder"/> finds, runs
 /// when hit, looks at the player nearby, for a villager goes home at night through its door, and
@@ -89,13 +121,10 @@ public partial struct MobLife
 /// opening the doors in its way and shutting them behind it.
 /// </para>
 /// <para>
-/// The yaw is a turn about the vertical as the player's is, 0 facing north and growing to the left,
-/// so a model built facing north is turned by it alone.
-/// </para>
-/// <para>
 /// A mob is an entity of an ECS world, the game's or one of its own where none is given, as in a
-/// test, with itself, its body and its <see cref="MobLife"/> as components, and it reads its health
-/// from its life there.
+/// test, with itself, its body, its <see cref="MobLife"/> and its <see cref="MobPose"/> as
+/// components, and a hostile one its <see cref="MobHostile"/>, and it reads and writes them there.
+/// The class keeps what a struct cannot hold safely, its way and its Random.
 /// </para>
 /// </remarks>
 public sealed partial class Mob
@@ -107,7 +136,7 @@ public sealed partial class Mob
     private readonly Random _random;
     private List<Step>? _path;
     private int _next;
-    private float _wait, _panic, _stuck, _walked, _watching, _swing;
+    private float _wait, _panic, _stuck, _walked, _watching;
     private Vector3 _lastPlace;
     private bool _goingHome, _swimming;
     private Step? _openedDoor;
@@ -118,13 +147,14 @@ public sealed partial class Mob
         Kind = record.Kind;
         Variant = record.Variant;
         Body = new Body(record.Kind.HalfWidth, record.Kind.Height) { Position = record.Position };
-        Yaw = HeadYaw = record.Yaw;
         Home = record.Home;
         Ecs = ecs ?? new EcsWorld();
         Entity = Ecs.Spawn();
         Ecs.Add(Entity, this);
         Ecs.Add(Entity, Body);
         Ecs.Add(Entity, new MobLife { Health = record.Health, Dying = -1 });
+        Ecs.Add(Entity, new MobPose { Yaw = record.Yaw, HeadYaw = record.Yaw });
+        if (Kind.Hostile) Ecs.Add(Entity, new MobHostile { ShotWait = 1, Fuse = -1 });
         _random = new Random(seed);
         _wait = 1 + (float)_random.NextDouble() * 6;
         _lastPlace = record.Position;
@@ -139,22 +169,18 @@ public sealed partial class Mob
 
     public Body Body { get; }
 
-    /// <summary>The body's turn, toward where it walks.</summary>
-    public float Yaw { get; private set; }
-
-    /// <summary>The head's turn, which leads the body's and watches the player.</summary>
-    public float HeadYaw { get; private set; }
-
-    /// <summary>The head's tilt, positive looking up.</summary>
-    public float HeadPitch { get; private set; }
-
     /// <summary>The ECS world it is an entity of, and its entity there.</summary>
     public EcsWorld Ecs { get; }
 
     public int Entity { get; }
 
-    // Its life as its entity holds it, read and written in place.
+    // Its life and its pose as its entity holds them, read and written in place.
     private ref MobLife Life => ref Ecs.GetRef<MobLife>(Entity);
+
+    private ref MobPose Pose => ref Ecs.GetRef<MobPose>(Entity);
+
+    /// <inheritdoc cref="MobPose.Yaw"/>
+    public float Yaw => Pose.Yaw;
 
     public int Health => Life.Health;
 
@@ -169,19 +195,13 @@ public sealed partial class Mob
     /// <inheritdoc cref="MobLife.Gone"/>
     public bool Gone => Life.Gone;
 
-    /// <summary>How far its legs swing, from 0 standing to 1 at five blocks a second, and where in their swing they are, as <see cref="Gait.Step"/> moves them.</summary>
-    public float Stride { get; private set; }
+    /// <inheritdoc cref="MobPose.Stride"/>
+    public float Stride => Pose.Stride;
 
-    public float StridePhase { get; private set; }
-
-    /// <summary>Whether it hunts the player, which raises a zombie's arms and a skeleton's bow.</summary>
-    public bool Hunting => _hunting;
-
-    /// <summary>How far its wings are spread, from 0 to 1, as a chicken's flap while it falls.</summary>
-    public float Flap { get; private set; }
+    public float StridePhase => Pose.StridePhase;
 
     /// <summary>What it is doing, for <c>voxel.mobs</c>.</summary>
-    public string Doing => Dying >= 0 ? "dying" : Fuse >= 0 ? "hissing" : _hunting ? "hunting" : _panic > 0 ? "running" : _goingHome ? "going home" : _path is not null ? "walking" : "standing";
+    public string Doing => Dying >= 0 ? "dying" : Fuse >= 0 ? "hissing" : Hunting ? "hunting" : _panic > 0 ? "running" : _goingHome ? "going home" : _path is not null ? "walking" : "standing";
 
     /// <summary>The cells it is walking through, the next first, or none.</summary>
     public IEnumerable<Step> Path => _path is null ? [] : _path.Skip(_next);
@@ -203,7 +223,7 @@ public sealed partial class Mob
         Body.Velocity = new Vector3(away.X * 7, 6, away.Z * 7);
         if (life.Dying >= 0) return true;
         // A hostile mob hit turns on the player wherever it is, where a passive one runs.
-        if (Kind.Hostile) _angry = true;
+        if (Kind.Hostile) Hostile.Angry = true;
         else
         {
             _panic = Panicking;
@@ -381,6 +401,7 @@ public sealed partial class Mob
     // otherwise along the body.
     private void Look(Vector3 playerEye, float seconds)
     {
+        ref var pose = ref Pose;
         var eye = Body.Position + new Vector3(0, Kind.Eyes, 0);
         var toPlayer = playerEye - eye;
         _watching -= seconds;
@@ -390,16 +411,16 @@ public sealed partial class Mob
         {
             var yaw = MathF.Atan2(-toPlayer.X, -toPlayer.Z);
             // The head turns no further than 75 degrees from the body, which turns after it beyond that.
-            var off = Math.Clamp(Angle(yaw - Yaw), -1.3f, 1.3f);
-            HeadYaw = Turn(HeadYaw, Yaw + off, 8 * seconds);
+            var off = Math.Clamp(Angle(yaw - pose.Yaw), -1.3f, 1.3f);
+            pose.HeadYaw = Turn(pose.HeadYaw, pose.Yaw + off, 8 * seconds);
             var flat = MathF.Sqrt(toPlayer.X * toPlayer.X + toPlayer.Z * toPlayer.Z);
-            HeadPitch += (Math.Clamp(MathF.Atan2(toPlayer.Y, flat), -0.8f, 0.8f) - HeadPitch) * MathF.Min(1, 8 * seconds);
-            if (MathF.Abs(Angle(yaw - Yaw)) > 1.3f && _path is null) Yaw = Turn(Yaw, yaw, 2 * seconds);
+            pose.HeadPitch += (Math.Clamp(MathF.Atan2(toPlayer.Y, flat), -0.8f, 0.8f) - pose.HeadPitch) * MathF.Min(1, 8 * seconds);
+            if (MathF.Abs(Angle(yaw - pose.Yaw)) > 1.3f && _path is null) pose.Yaw = Turn(pose.Yaw, yaw, 2 * seconds);
         }
         else
         {
-            HeadYaw = Turn(HeadYaw, Yaw, 6 * seconds);
-            HeadPitch += (0 - HeadPitch) * MathF.Min(1, 6 * seconds);
+            pose.HeadYaw = Turn(pose.HeadYaw, pose.Yaw, 6 * seconds);
+            pose.HeadPitch += (0 - pose.HeadPitch) * MathF.Min(1, 6 * seconds);
         }
     }
 
@@ -424,17 +445,13 @@ public sealed partial class Mob
         Body.Move(world, Body.Velocity * seconds, keepToEdges: false);
         var moved = Body.Position - before;
         var along = MathF.Sqrt(moved.X * moved.X + moved.Z * moved.Z);
+        ref var pose = ref Pose;
         // A hunter faces its prey as it moves, a skeleton backing away from the player among them.
-        if (along > 1e-4f && wish != Vector3.Zero && !_hunting) Yaw = Turn(Yaw, MathF.Atan2(-moved.X, -moved.Z), 10 * seconds);
-        var (stride, phase) = (Stride, StridePhase);
-        Gait.Step(ref stride, ref phase, along, seconds);
-        (Stride, StridePhase) = (stride, phase);
-        _swing += seconds;
-        Flap += ((Kind.FallsSlowly && !Body.OnGround && !swimming ? 1 : 0) - Flap) * MathF.Min(1, 12 * seconds);
+        if (along > 1e-4f && wish != Vector3.Zero && !Hunting) pose.Yaw = Turn(pose.Yaw, MathF.Atan2(-moved.X, -moved.Z), 10 * seconds);
+        Gait.Step(ref pose.Stride, ref pose.StridePhase, along, seconds);
+        pose.Swing += seconds;
+        pose.Flap += ((Kind.FallsSlowly && !Body.OnGround && !swimming ? 1 : 0) - pose.Flap) * MathF.Min(1, 12 * seconds);
     }
-
-    /// <summary>A wing's angle in radians as it flaps, from <see cref="Flap"/>.</summary>
-    public float WingAngle => Flap * (0.6f + 0.6f * MathF.Sin(_swing * 30));
 
     private static float Angle(float a) => MathF.IEEERemainder(a, MathF.Tau);
 

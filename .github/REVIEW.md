@@ -5,7 +5,14 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `7443bdc`, item 32's second commit, the ambient particles, pushed at 01:31 on
+Reviewed up to `9dad43e`, item 27's pin of 5.2.291, read at 01:44 on 2026-10-25, carrying the
+review's files and the devlog's grove. The csproj's version alone changes, the build clean under the
+strict flag; the grove at 1920 by 1080 at High, the two pins run in turn twice each with the desktop
+holding 22 percent of the GPU, reads 21.0 and 18.2 ms a frame on 5.2.291 against 20.9 and 19.0 on
+5.2.283, the scene pass 11.7 and 9.7 against 12.3 and 10.5, the shadows and the global illumination
+the same, the pictures differing in 129 pixels of 2.07 million; the cave left for item 123 and the
+far cascade still off. 309 tests, play.sh 325 s on the GPU. Held until the run of `7443bdc` ends,
+then pushed. After `7443bdc`, item 32's second commit, the ambient particles, pushed at 01:31 on
 2026-10-25 after the run of `1c881d0` went green, the run watched, carrying the review's files and
 the devlog's captures. Rain splashes at 60 a second within 8 blocks with three drops each and rings
 on water, leaves falling and turning from canopies with three blocks of air under them, cave dust
@@ -510,6 +517,7 @@ full.
     readings unchanged, said in the head; the far cascade set once the engine's item 102 mends its
     slab, and the cave read again with the engine's item 101. The pin of 5.2.283 at `3d70b20`, the
     grove's frame 19 to 22 ms where 5.2.281 read 33 to 35 and 5.2.215 15 to 18, the cave unchanged.
+    The pin of 5.2.291 at `9dad43e` on 2026-10-25, the grove's frame as 5.2.283's.
 
 28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
     emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the

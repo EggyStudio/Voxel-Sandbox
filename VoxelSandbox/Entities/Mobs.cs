@@ -8,8 +8,9 @@ public readonly record struct MobDied(Mob Mob);
 
 /// <summary>
 /// The behaviors of the mobs, each an entity of the engine's ECS with its <see cref="Mob"/>, the
-/// mob's <see cref="Body"/> and its <see cref="MobLife"/>, which think and move them, push them
-/// apart and take away the dead in the engine's frame.
+/// mob's <see cref="Body"/>, its <see cref="MobLife"/> and its <see cref="MobPose"/>, which think
+/// and move the mobs that are not hostile, push every mob apart and take away the dead in the
+/// engine's frame, the hostile ones thinking in <see cref="MobHostile"/>'s.
 /// </summary>
 /// <remarks>
 /// They read the voxel world, the player, the hour and the seconds from the game's
@@ -58,14 +59,14 @@ public partial struct MobMind
     }
 
     /// <summary>
-    /// Thinks and moves every mob whose columns are loaded around it, the hostile ones hunting the
-    /// target where one is given, as in survival, adding what they do to the player to <paramref name="events"/>.
+    /// Thinks and moves every mob that is not hostile whose columns are loaded around it, which
+    /// <paramref name="target"/> and <paramref name="events"/> are given to as to the hostile ones'.
     /// </summary>
     public static void Think(EcsWorld ecs, VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events)
     {
-        foreach (var (_, mob) in ecs.Query<Mob>())
+        foreach (var (_, mob, body, _, _) in ecs.Query<Mob, Body, MobLife, MobPose>().Without<MobHostile>())
         {
-            var (cx, cz) = Mobs.ColumnOf(mob);
+            var (cx, cz) = Mobs.ColumnOf(body.Position);
             if (Mobs.Around(world, cx, cz)) mob.Update(world, target, playerEye, hour, seconds, events);
         }
     }
@@ -232,8 +233,10 @@ public sealed class Mobs
     }
 
     /// <summary>The column a mob stands in.</summary>
-    public static (int X, int Z) ColumnOf(Mob mob) =>
-        (VoxelWorld.ColumnOf((int)MathF.Floor(mob.Body.Position.X)), VoxelWorld.ColumnOf((int)MathF.Floor(mob.Body.Position.Z)));
+    public static (int X, int Z) ColumnOf(Mob mob) => ColumnOf(mob.Body.Position);
+
+    /// <summary>The column a place lies in.</summary>
+    public static (int X, int Z) ColumnOf(Vector3 at) => (VoxelWorld.ColumnOf((int)MathF.Floor(at.X)), VoxelWorld.ColumnOf((int)MathF.Floor(at.Z)));
 
     /// <summary>Every column that has had its mobs placed, with the mobs it holds, the loaded ones' by where they stand.</summary>
     public IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> Columns()

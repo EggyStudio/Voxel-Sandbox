@@ -1,4 +1,5 @@
 using System.Numerics;
+using Engine;
 
 namespace VoxelSandbox;
 
@@ -17,36 +18,92 @@ public sealed record MobShot(Mob Mob, Vector3 From, Vector3 Velocity) : MobEvent
 /// <summary>An explosion of a power at a place, as a creeper's of three.</summary>
 public sealed record MobBlast(Mob Mob, Vector3 At, float Power) : MobEvent(Mob);
 
+/// <summary>
+/// A hostile mob's hunt, whether it hunts the player and has been angered, its waits between its
+/// strikes, its shots and its ways found again, its creeper's fuse and its burning by day, a
+/// component of the mob's entity whose behavior is the hostile mobs' mind in the engine's frame.
+/// </summary>
+/// <remarks>
+/// The hostile mobs think and move in this behavior's system and the others in
+/// <see cref="MobMind"/>'s, each reading its mob's body, life, pose and hunt by one query. Each
+/// also takes its world and its inputs as arguments, so a test steps the mobs of an ECS world of its
+/// own as the frame steps the game's.
+/// </remarks>
+[Behavior]
+public partial struct MobHostile
+{
+    /// <summary>Seconds until it finds its way to the player again, strikes again and shoots again.</summary>
+    public float Repath, StrikeWait, ShotWait;
+
+    /// <summary>Seconds it has burned under the sun since its last point of health lost to it.</summary>
+    public float Burn;
+
+    /// <summary>Whether a hit has angered it, so it hunts the player wherever it is.</summary>
+    public bool Angry;
+
+    /// <summary>Whether it hunts the player, which raises a zombie's arms and a skeleton's bow.</summary>
+    public bool Hunting;
+
+    /// <summary>Seconds a creeper's fuse has burned, or less than zero while it is not lit.</summary>
+    public float Fuse;
+
+    [OnUpdate]
+    public static void Hunt(BehaviorContext ctx)
+    {
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0 || step.MobsStill) return;
+        var events = new List<MobEvent>();
+        Hunt(ctx.Ecs, step.World, step.Hunted ? new MobTarget(step.Player, step.Eye) : null, step.Eye, step.Hour, step.Seconds, events);
+        foreach (var e in events) ctx.World.SendEvent(e);
+    }
+
+    /// <summary>
+    /// Thinks and moves every hostile mob whose columns are loaded around it, hunting the target
+    /// where one is given, as in survival, adding what they do to the player to <paramref name="events"/>.
+    /// </summary>
+    public static void Hunt(EcsWorld ecs, VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events)
+    {
+        foreach (var (_, mob, body, _, _, _) in ecs.Query<Mob, Body, MobLife, MobPose, MobHostile>())
+        {
+            var (cx, cz) = Mobs.ColumnOf(body.Position);
+            if (Mobs.Around(world, cx, cz)) mob.Update(world, target, playerEye, hour, seconds, events);
+        }
+    }
+}
+
 public sealed partial class Mob
 {
     // A strike or a shot every second or two, and a creeper's fuse of a second and a half, which it
     // gives up where the player gets seven blocks away, as Minecraft's do.
     private const float StrikeEvery = 1, ShotEvery = 2, FuseTime = 1.5f, FuseReach = 3, FuseLeave = 7, ArrowSpeed = 30;
 
-    private float _repath, _strikeWait, _shotWait = 1, _burn;
-    private bool _angry, _hunting;
+    // Its hunt as its entity holds it, which a hostile mob alone has.
+    private ref MobHostile Hostile => ref Ecs.GetRef<MobHostile>(Entity);
 
-    /// <summary>Seconds a creeper's fuse has burned, or less than zero while it is not lit.</summary>
-    public float Fuse { get; private set; } = -1;
+    /// <inheritdoc cref="MobHostile.Fuse"/>
+    public float Fuse => Kind.Hostile ? Hostile.Fuse : -1;
 
-    /// <summary>Whether it blew itself up, which leaves nothing to drop.</summary>
+    /// <inheritdoc cref="MobHostile.Hunting"/>
+    public bool Hunting => Kind.Hostile && Hostile.Hunting;
+
+    /// <summary>Whether it blew itself up, which leaves nothing to drop, kept here since the loot is reckoned once its entity is gone.</summary>
     public bool Exploded { get; private set; }
 
     // The target where it is the hunter's to hunt, within its range and seen, or anywhere within
     // twice that once the hunt has begun or a hit has angered it.
     private MobTarget? Hunts(VoxelWorld world, MobTarget? target)
     {
+        ref var hostile = ref Hostile;
         if (target is not { } prey)
         {
-            _hunting = false;
+            hostile.Hunting = false;
             return null;
         }
         var eye = Body.Position + new Vector3(0, Kind.Eyes, 0);
         var distance = Vector3.Distance(eye, prey.Eye);
-        var range = _hunting || _angry ? Kind.FollowRange * 2 : Kind.FollowRange;
-        _hunting = distance <= range && (_hunting || _angry || Sees(world, eye, prey.Eye));
-        if (!_hunting) Fuse = -1;
-        return _hunting ? prey : null;
+        var range = hostile.Hunting || hostile.Angry ? Kind.FollowRange * 2 : Kind.FollowRange;
+        hostile.Hunting = distance <= range && (hostile.Hunting || hostile.Angry || Sees(world, eye, prey.Eye));
+        if (!hostile.Hunting) hostile.Fuse = -1;
+        return hostile.Hunting ? prey : null;
     }
 
     /// <summary>Whether no block stands between two points.</summary>
@@ -59,9 +116,10 @@ public sealed partial class Mob
 
     private (Vector3 Wish, bool Jump) Hunt(VoxelWorld world, MobTarget prey, float seconds, List<MobEvent> events)
     {
-        _strikeWait -= seconds;
-        _shotWait -= seconds;
-        _repath -= seconds;
+        ref var hostile = ref Hostile;
+        hostile.StrikeWait -= seconds;
+        hostile.ShotWait -= seconds;
+        hostile.Repath -= seconds;
         var eye = Body.Position + new Vector3(0, Kind.Eyes, 0);
         var to = prey.Body.Position - Body.Position;
         var flat = new Vector2(to.X, to.Z);
@@ -70,10 +128,10 @@ public sealed partial class Mob
 
         if (Kind.Explodes)
         {
-            if (Fuse >= 0)
+            if (hostile.Fuse >= 0)
             {
-                Fuse = distance > FuseLeave ? -1 : Fuse + seconds;
-                if (Fuse < FuseTime) return (Vector3.Zero, false);
+                hostile.Fuse = distance > FuseLeave ? -1 : hostile.Fuse + seconds;
+                if (hostile.Fuse < FuseTime) return (Vector3.Zero, false);
                 events.Add(new MobBlast(this, Body.Position + new Vector3(0, Kind.Height / 2, 0), 3));
                 Exploded = true;
                 ref var life = ref Life;
@@ -82,16 +140,16 @@ public sealed partial class Mob
             }
             if (distance < FuseReach && Sees(world, eye, prey.Eye))
             {
-                Fuse = 0;
+                hostile.Fuse = 0;
                 return (Vector3.Zero, false);
             }
         }
 
         if (Kind.Shoots && distance < 15 && Sees(world, eye, prey.Eye))
         {
-            if (_shotWait <= 0)
+            if (hostile.ShotWait <= 0)
             {
-                _shotWait = ShotEvery;
+                hostile.ShotWait = ShotEvery;
                 events.Add(new MobShot(this, eye + Vector3.Normalize(prey.Eye - eye) * 0.6f, Aim(eye, prey)));
             }
             // It keeps between five and ten blocks off, backing away from a player who closes in.
@@ -111,9 +169,9 @@ public sealed partial class Mob
         // Within reach of the player, a strike each second, still pressing in.
         if (!Kind.Shoots && !Kind.Explodes && flat.Length() < Kind.HalfWidth + prey.Body.HalfWidth + 0.7f && MathF.Abs(to.Y) < 1.5f)
         {
-            if (_strikeWait <= 0)
+            if (hostile.StrikeWait <= 0)
             {
-                _strikeWait = StrikeEvery;
+                hostile.StrikeWait = StrikeEvery;
                 events.Add(new MobStrike(this, Kind.AttackDamage, Body.Position));
             }
             return (Ahead(flat) * Kind.ChaseSpeed * 0.3f, false);
@@ -126,9 +184,9 @@ public sealed partial class Mob
             _path = null;
             return (Ahead(flat) * Kind.ChaseSpeed, Body.OnGround && Blocked(world, flat));
         }
-        if (_repath <= 0 || _path is null)
+        if (hostile.Repath <= 0 || _path is null)
         {
-            _repath = 0.5f;
+            hostile.Repath = 0.5f;
             if (Ground(world, prey.Body.Position) is not { } goal || !WalkTo(world, goal)) _path = null;
         }
         if (_path is null) return (Ahead(flat) * Kind.ChaseSpeed, Body.OnGround && Blocked(world, flat));
@@ -171,13 +229,14 @@ public sealed partial class Mob
     // Turns the head to look at a point and the body after it.
     private void Face(Vector3 point, float seconds)
     {
+        ref var pose = ref Pose;
         var eye = Body.Position + new Vector3(0, Kind.Eyes, 0);
         var to = point - eye;
         var yaw = MathF.Atan2(-to.X, -to.Z);
-        HeadYaw = Turn(HeadYaw, yaw, 10 * seconds);
-        Yaw = Turn(Yaw, yaw, 6 * seconds);
+        pose.HeadYaw = Turn(pose.HeadYaw, yaw, 10 * seconds);
+        pose.Yaw = Turn(pose.Yaw, yaw, 6 * seconds);
         var flat = MathF.Sqrt(to.X * to.X + to.Z * to.Z);
-        HeadPitch += (Math.Clamp(MathF.Atan2(to.Y, flat), -0.8f, 0.8f) - HeadPitch) * MathF.Min(1, 8 * seconds);
+        pose.HeadPitch += (Math.Clamp(MathF.Atan2(to.Y, flat), -0.8f, 0.8f) - pose.HeadPitch) * MathF.Min(1, 8 * seconds);
     }
 
     // Under the open sky by day, out of water, a point of health a second, as Minecraft's undead burn.
@@ -185,14 +244,15 @@ public sealed partial class Mob
     {
         var head = Body.Position + new Vector3(0, Kind.Height - 0.1f, 0);
         int x = (int)MathF.Floor(head.X), y = (int)MathF.Floor(head.Y), z = (int)MathF.Floor(head.Z);
+        ref var hostile = ref Hostile;
         if (hour < 6.5f || hour > 17.5f || _swimming || world.GetLight(x, y, z).Sky < Lighting.Max)
         {
-            _burn = 0;
+            hostile.Burn = 0;
             return;
         }
-        _burn += seconds;
-        if (_burn < 1) return;
-        _burn = 0;
+        hostile.Burn += seconds;
+        if (hostile.Burn < 1) return;
+        hostile.Burn = 0;
         Harm(1);
     }
 }

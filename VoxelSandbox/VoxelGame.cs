@@ -1144,7 +1144,7 @@ public sealed class VoxelGame : IDisposable
         Lap("draw.sky");
         Renderer.Draw(World, Player.Eye, RenderDistance);
         Lap("draw.sections");
-        MobRenderer.Draw(Mobs.All, Player.Eye);
+        MobRenderer.Draw(GetApp().World.Resource<EcsWorld>(), Player.Eye);
         DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Falling.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Lit.Size))), Player.Eye, GetTime());
         // A burning TNT shows white every other five ticks, a hair larger than its cube.
         foreach (var (lit, body) in Tnt.All)
