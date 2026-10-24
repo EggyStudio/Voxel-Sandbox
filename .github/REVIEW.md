@@ -5,21 +5,23 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `fa6963d`, Verdict 2's mend, the held light a third of a block under the eye, within
-the player's box and still not turning with the view, since a point light at the camera's own point
-shades the frame with black specks on lavapipe, the roof's probe landing on one; the shadow cube,
-the contact shadows and the global illumination each off left the specks, and the light a third of a
-block under the eye read the roof 114, 71, 29 on lavapipe and on the GPU, where 109, 68, 29 stood
-before; HeldLights' remarks and the README say why; 275 tests, play.sh 144 s on the GPU, the held
-torch's four headings 61.5 to 61.8. Pushed at 12:34 on 2026-10-24 after the coder's whole play.sh on
-lavapipe passed every check in 879 s, the roof 114, 71, 29, the held torch 61.5 to 62.0 from four
-headings, the plant's place and the bits; the run watched.
+Reviewed up to `3236b56`, item 103, the fire's top line, read at 12:45 on 2026-10-24, carrying
+REVIEW.md. A carried place in terrain.slang, surface.w 3 for the plants' and flames' pictures that
+do not tile, is clamped half a texel of ceil(level) inside its tile, since each atlas cell holds its
+tile two by two wrapped from half a tile in and a coarse texel at a wall's top read into the copy
+above and drew the frame's bottom rows as a line; the pack's fire frames are white in their top rows
+with flames from the second, which a 32-frame strip showed and a single frame did not. The capture
+at a slant, before over after in three views, shows the line along the walls' tops gone. The play
+pack gains a 32-frame fire_0 of that shape, and play.sh's check "the fire's top" sees a fire at 40,
+4, minus 50 at night from 40.5, 5.5, minus 45 pitched minus 12, three lines of 40 samples across the
+north wall's top edge in nine readings five frames apart, each brightest at most 15 over the ground
+beyond the wall, 26.8 to 28.3 in four of nine before and 4.2 to 8.0 after, the bloom's own slope.
+275 tests, play.sh 162 s on the GPU. Held until the run of `fa6963d` ends, then pushed.
+
+Before it, `fa6963d` came, Verdict 2's mend, pushed at 12:34 on 2026-10-24, its run watched.
 
 Before it, `1f07038` came, items 99 to 102, pushed at 11:58 on 2026-10-24, its run red at the play
 job's held torch check, Verdict 2, the three suites green.
-
-Before it, `56cb608` came, item 98, pushed at 11:25 on 2026-10-24, its run green, the play job 31.7
-minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -501,17 +503,6 @@ full.
     light about the player reads the same at four headings with a torch held, and the play check of
     the lamp room's roof as it stands. One commit, small, after item 101. Done at `1f07038` on
     2026-10-24, the light at the eye's place in the body's middle.
-
-103. **The flames' top row is the picture's own, with no stair-stepped line.** The owner played at
-    about 10:55 on 2026-10-24 and saw at the top of a fire a line one pixel wide with stair-stepped
-    edges, a texture coordinate that is not pixel-exact the likely cause. The flames' pictures are
-    the pack's animated fire, frames stacked in one image, and the source's fire models stretch
-    their faces over a frame; a coordinate reaching the frame's edge reads the next frame's bottom
-    row or the atlas's neighbor through the filter, so the row shows as a line that steps with the
-    face's slant. The mend by the reading, the frame's coordinates inset by half a texel, or the
-    frame sampled nearest and clamped within its own rows, as the terrain's tiles are kept within
-    theirs; a test reading the flame's top row against the frame's own and a capture of a fire at a
-    slant. One commit, small, after item 102.
 
 94. **The things that move become entities with behaviors (Decision 43).** The mobs, the drops, the
     arrows, the primed TNT, the falling blocks, the fires and the blasts, which the game keeps in

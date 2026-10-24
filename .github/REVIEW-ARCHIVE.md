@@ -1084,6 +1084,19 @@ before a batch.
     reading neither the look nor the frustum, its one bound beside the joins and the reach the
     source's never-back rule, the same whichever way the eye looks; closed, no change.
 
+103. **The flames' top row is the picture's own, with no stair-stepped line.** The owner played at
+    about 10:55 on 2026-10-24 and saw at the top of a fire a line one pixel wide with stair-stepped
+    edges, a texture coordinate that is not pixel-exact the likely cause. The flames' pictures are
+    the pack's animated fire, frames stacked in one image, and the source's fire models stretch
+    their faces over a frame; a coordinate reaching the frame's edge reads the next frame's bottom
+    row or the atlas's neighbor through the filter, so the row shows as a line that steps with the
+    face's slant. The mend by the reading, the frame's coordinates inset by half a texel, or the
+    frame sampled nearest and clamped within its own rows, as the terrain's tiles are kept within
+    theirs; a test reading the flame's top row against the frame's own and a capture of a fire at a
+    slant. One commit, small, after item 102. Done at `3236b56` on 2026-10-24, the carried place
+    clamped half a texel of the sampled level inside its tile, the check in play.sh reading the
+    north wall's top edge against the ground beyond.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

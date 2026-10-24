@@ -23,7 +23,10 @@ public sealed class LightSettings
     // its meshes settling.
     public int Budget = 2;
 
-    public float ShadowDistance = 96;
+    // The sun's shadows reach 64 blocks, which keeps a village's trees' shadows in a view across it
+    // and takes a millisecond off the frame at 1920 by 1080 against 96, where 48 lost the trees' shadows
+    // fifty blocks off.
+    public float ShadowDistance = 64;
     // A tenth of the light past 1 spread around it, a faint glow about a flame or a lamp, where more
     // spreads a halo far wider than the flame's own block.
     public float Bloom = 0.1f;

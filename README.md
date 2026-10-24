@@ -1022,21 +1022,26 @@ place.
 
 ## Shadows
 
-The sun's shadows come from the engine's shadow map, out to 96 blocks unless `voxel.shadows` sets
-another distance, and are pixelated. The terrain's shader takes the sun's shadow at each point of a
-face at the middle of the step it lies in, an eighth of a block on a side, as the modpack's shader
-steps its shadows with the settings it is played with, two of a texture's sixteen pixels, so a
-shadow's edge steps along the face rather than running slantwise across it. The grid is the sun's
-alone. The rest of the light, the lamps' and global illumination's, is taken at the point itself, so
-a lantern's light on the floor it stands on falls smoothly from its glass, and `voxel.line` reads
-the last frame's light along a line in the world. Taking the sun's shadow at the step's middle reads
-the shadow map twice more at each pixel the map holds, which over seed 1's plains at noon at 12
-columns with Bare Bones costs too little to read, the window's model pass taking 10.73 ms against
-10.71 with all of the light taken at the step's middle, the mean of three sessions each, whose
-readings swing by half a millisecond. The engine's soft contact shadow, traced toward the sun
-through the scene's distance field, is left out where the shadow map holds a point, so no fringe
-lies beside a shadow's edge, and kept past the map's reach, where the land has no other shadow of
-the sun.
+The sun's shadows come from the engine's shadow map, out to 64 blocks unless `voxel.shadows` sets
+another distance, which keeps a village's trees' shadows in a view across it and takes a millisecond
+off the frame at 1920 by 1080 against 96, 17.8 ms to 16.8 at seed 1's cherry grove, where 48 takes
+two and loses the trees' shadows fifty blocks off, and are pixelated. The terrain's shader takes the
+sun's shadow at each point of a face at the middle of the step it lies in, an eighth of a block on a
+side, as the modpack's shader steps its shadows with the settings it is played with, two of a
+texture's sixteen pixels, so a shadow's edge steps along the face rather than running slantwise
+across it. The grid is the sun's alone. The rest of the light, the lamps' and global illumination's,
+is taken at the point itself, so a lantern's light on the floor it stands on falls smoothly from its
+glass, and `voxel.line` reads the last frame's light along a line in the world. Taking the sun's
+shadow at the step's middle reads the shadow map twice more at each pixel the map holds, which over
+seed 1's plains at noon at 12 columns with Bare Bones costs too little to read, the window's model
+pass taking 10.73 ms against 10.71 with all of the light taken at the step's middle, the mean of
+three sessions each, whose readings swing by half a millisecond. Against no stepping at all, at 1920
+by 1080 over seed 1's cherry grove, the steps cost the scene pass about 1.6 ms, 12.5 and 12.7
+against 10.9 and 11.2 in two sessions each, which the engine is asked to bring to one read of the
+shadow by letting `litLight` take it from the shader that calls it. The engine's soft contact
+shadow, traced toward the sun through the scene's distance field, is left out where the shadow map
+holds a point, so no fringe lies beside a shadow's edge, and kept past the map's reach, where the
+land has no other shadow of the sun.
 
 As the day passes the light stands at the nearest of 36 steps an hour while the sun drawn on the
 sky moves smoothly, so a shadow stands still between steps and jumps at once to its next place,
@@ -1106,14 +1111,14 @@ the settings window, whose first lines give the frame's time, draws and triangle
 `voxel.distance`, and a save keeps no distance of its own. The sections are drawn through the
 terrain's own shader, which keeps the positions their meshes hold, and the game marks it so with
 `SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and each of the
-sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the shadows,
-which reach 96 blocks, take about the same from 8 columns to 16. Over seed 1's spawn at noon, from
-100 blocks up looking north, at 1280 by 720 offscreen on the development machine's RTX 4070 Laptop
-GPU with the three default packs, the frame keeps 60 a second at 8 columns and loses it at 12, where
-the main thread bounds it, the game's update and drawing with the engine's render work, while the
-GPU's work stays at 14 to 15 ms. The frame's time, the GPU's and the CPU's passes' in milliseconds
-and the memory the game holds, one session each, the frame's time varying by up to 6 ms between
-sessions at 12 columns and the GPU's by under 0.5:
+sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the shadows
+take about the same from 8 columns to 16. Over seed 1's spawn at noon, from 100 blocks up looking
+north, at 1280 by 720 offscreen on the development machine's RTX 4070 Laptop GPU with the three
+default packs, the frame keeps 60 a second at 8 columns and loses it at 12, where the main thread
+bounds it, the game's update and drawing with the engine's render work, while the GPU's work stays
+at 14 to 15 ms. The frame's time, the GPU's and the CPU's passes' in milliseconds and the memory the
+game holds, one session each, the frame's time varying by up to 6 ms between sessions at 12 columns
+and the GPU's by under 0.5:
 
 | columns | frame | GPU | CPU's passes | memory |
 |---|---|---|---|---|
