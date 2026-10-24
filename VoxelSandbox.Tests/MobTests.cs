@@ -146,7 +146,7 @@ public sealed class MobTests : IDisposable
     [Fact]
     public void A_Column_Places_Its_Mobs_Once_And_Has_Them_Back_Where_They_Were_Left()
     {
-        var mobs = new Mobs();
+        var mobs = new Mobs(new Engine.EcsWorld());
         var spawn = At(MobKinds.Sheep, 4.5f, 11, 4.5f);
         var column = new ChunkColumn(0, 0);
         column.Spawns.Add(spawn);
@@ -170,7 +170,7 @@ public sealed class MobTests : IDisposable
     [Fact]
     public void Mobs_Read_Back_From_The_Save_With_The_Columns_That_Hold_None()
     {
-        var mobs = new Mobs();
+        var mobs = new Mobs(new Engine.EcsWorld());
         var villager = new MobRecord(MobKinds.Villager, 2, new Vector3(-20.5f, 64, 40.25f), 1.5f, 13, new Vector3(-18.5f, 64, 42.5f));
         var sheep = new MobRecord(MobKinds.Sheep, 3, new Vector3(-30.5f, 70, 33.5f), -2, 8, null);
         var full = new ChunkColumn(-2, 2);

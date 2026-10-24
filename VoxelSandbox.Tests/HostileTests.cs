@@ -143,7 +143,7 @@ public class HostileTests
     [Fact]
     public void A_Column_Keeps_Its_Animals_And_Lets_Its_Hostile_Mobs_Go()
     {
-        var mobs = new Mobs();
+        var mobs = new Mobs(new Engine.EcsWorld());
         var column = new ChunkColumn(0, 0);
         column.Spawns.Add(new MobRecord(MobKinds.Cow, 0, new Vector3(4.5f, 11, 4.5f), 0, 10, null));
         mobs.Joined(column);

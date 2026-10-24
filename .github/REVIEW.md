@@ -5,33 +5,46 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `299aa33`, item 94's events commit, read at 20:33 on 2026-10-24, carrying the
-review's files. ArrowStrike, TntBlast and FallingBroke are record structs the three behaviors send
-with World.SendEvent, the game taking them with DrainEvents where it read the lists and clearing the
-three types on a world switch; GameStep.Hits, PrimedTnt.Exploded, FallingBlocks.Broken and the
-facades as resources are gone, the facades' Update for tests returning what it set off or broke.
-Live offscreen a TNT left air under it, sand over a torch broke into a stack with the torch
-standing, and a skeleton's arrows took the health from 20 to 10 in 300 frames. 294 tests, play.sh
-295 s on the GPU. Held until the run of `e0d9788` ends, then pushed. After `e0d9788`, item 94's
-third piece, the lit TNT and the falling blocks as entities, read at 20:25 on 2026-10-24, carrying
-the review's files and the devlog's lit TNT. Each is an entity with a behavior struct and the Body,
-LitTnt holding Left with Flashing and Size read from it and FallingBlock holding Block and Age; two
-systems on update, Burn and Drop, static on the main thread, Drop still moving the lowest block
-first by sorted pairs reached through GetRef; the PrimedTnt and FallingBlocks facades are resources,
-the behaviors leaving blasts in Tnt.Exploded and blocks that could not stand in Falling.Broken,
-which the game sets off and drops in its next update a frame later, each Clear emptying its pending
-list since events wait a frame across a world switch; the tests step bare EcsWorlds, the TNT test
-reading its stack afresh each frame since the struct read is a copy. Live offscreen a lit TNT burned
-and left air under it and sand over air fell onto a pillar and stood a block lower. No new gap;
-results handed back through a list on a resource, an event channel the better fit, which the engine
-has in World.SendEvent, ReadEvents and DrainEvents with a typed queue an event type the engine never
-clears for a game's own, missed at first; the strikes, the blasts and the landed blocks become
-events the behaviors send and the game drains in a small commit before the fires, no ask. 294 tests,
-play.sh 307 s on the GPU. The three pushed at 20:31 on 2026-10-24 after the run of `80d149e` went
-green; the run watched. After `c0dd6e4`, item 94's second piece, the arrows as entities, read at
-20:14 on 2026-10-24, carrying the review's files and the devlog's capture. Each arrow is an entity
-with one Arrow behavior struct holding its position, velocity, stuck and age, no Body, the old Arrow
-class gone; one system, Fly on update, static on the main thread, reads GameStep's world, player and
+Reviewed up to `9a70f28`, item 94's fires and blasts piece, read at 20:47 on 2026-10-24, carrying
+the review's files. Each fire is an entity with one Fire component holding its cell, age and wait,
+Spread on update counting the waits down and burning the fires due by the source's numbers, a burned
+TNT going out as a TntCaught event the game drains into Tnt.Light, Light and Take still spawning
+from the game; the world names every fire cell it sets, the spread's own among them, so Take skips a
+cell with its fire by walking the fires into a set each frame the world names one, the ECS having no
+lookup by cell, asked of the engine as its item 107; the first build changed the order of random
+draws so seed 1 burned its plank away, and Take draws a delay for every cell named as the old TryAdd
+did, with a comment. The flash ball is a Blast entity holding its place, power and age, Fade on
+update despawning it at half a second and the game drawing them by query, the cloud emitters and the
+flash lights staying in BlastEffects' pool as engine handles outside the systems, which stands. Live
+offscreen three fires on planks grew to 41 over 40 s and a TNT's flash showed on one entity then
+none. 294 tests, play.sh 303 s on the GPU. The mobs come last, their plan before the code. Held with
+`299aa33` until the run of `e0d9788` ends, then pushed. After `299aa33`, item 94's events commit,
+read at 20:33 on 2026-10-24, carrying the review's files. ArrowStrike, TntBlast and FallingBroke are
+record structs the three behaviors send with World.SendEvent, the game taking them with DrainEvents
+where it read the lists and clearing the three types on a world switch; GameStep.Hits,
+PrimedTnt.Exploded, FallingBlocks.Broken and the facades as resources are gone, the facades' Update
+for tests returning what it set off or broke. Live offscreen a TNT left air under it, sand over a
+torch broke into a stack with the torch standing, and a skeleton's arrows took the health from 20 to
+10 in 300 frames. 294 tests, play.sh 295 s on the GPU. After `e0d9788`, item 94's third piece, the
+lit TNT and the falling blocks as entities, read at 20:25 on 2026-10-24, carrying the review's files
+and the devlog's lit TNT. Each is an entity with a behavior struct and the Body, LitTnt holding Left
+with Flashing and Size read from it and FallingBlock holding Block and Age; two systems on update,
+Burn and Drop, static on the main thread, Drop still moving the lowest block first by sorted pairs
+reached through GetRef; the PrimedTnt and FallingBlocks facades are resources, the behaviors leaving
+blasts in Tnt.Exploded and blocks that could not stand in Falling.Broken, which the game sets off
+and drops in its next update a frame later, each Clear emptying its pending list since events wait a
+frame across a world switch; the tests step bare EcsWorlds, the TNT test reading its stack afresh
+each frame since the struct read is a copy. Live offscreen a lit TNT burned and left air under it
+and sand over air fell onto a pillar and stood a block lower. No new gap; results handed back
+through a list on a resource, an event channel the better fit, which the engine has in
+World.SendEvent, ReadEvents and DrainEvents with a typed queue an event type the engine never clears
+for a game's own, missed at first; the strikes, the blasts and the landed blocks become events the
+behaviors send and the game drains in a small commit before the fires, no ask. 294 tests, play.sh
+307 s on the GPU. The three pushed at 20:31 on 2026-10-24 after the run of `80d149e` went green; the
+run watched. After `c0dd6e4`, item 94's second piece, the arrows as entities, read at 20:14 on
+2026-10-24, carrying the review's files and the devlog's capture. Each arrow is an entity with one
+Arrow behavior struct holding its position, velocity, stuck and age, no Body, the old Arrow class
+gone; one system, Fly on update, static on the main thread, reads GameStep's world, player and
 seconds, flies only when seconds pass and despawns an arrow on a hit or after 60 s; strikes go into
 GameStep.Hits, which the game deals and clears one frame after the strike when its next frame
 answers the mobs, and GameStep holds a Random for the extra point of damage since E3D006 keeps a
@@ -485,7 +498,24 @@ full.
     system, the strikes dealt a frame after through GameStep; the primed TNT and the falling blocks
     next. The lit TNT and the falling blocks at `e0d9788`, their results handed back through
     resources, which the engine's own event channel took over at `299aa33`, the shared lists gone;
-    the fires and the blasts next, on events from the start.
+    the fires and the blasts at `9a70f28`, a lookup by a component's key asked of the engine as its
+    item 107, the engine handles of the blasts' clouds and lights kept in the game's pool outside
+    the systems; the mobs last, their plan read here before the code, the six-component queries of
+    the engine's item 105 landing with the next package. The mobs' plan, read at 20:48, three
+    commits each playable with HostileTests, MobTests and play's readings unchanged. First, each mob
+    an entity with Body and the Mob class as a component, its mind inside unchanged, the systems by
+    stage, Mind on update for think, hunt and move, Crowd after it pushing mobs apart and off the
+    player, and Vanish aging the dying, despawning the gone and the far and sending a MobDied event
+    with the loot's kind and place, MobStrike, MobShot and MobBlast as engine events, the Mobs
+    facade keeping spawn, Cast, Overlaps, Columns and the joined and leaving over queries since a
+    mob leaving its column becomes a record for the save. Second, the health, hurt and dying into a
+    MobLife struct with its own behavior, Hit and Harm writing it. Third, the pose into a MobPose
+    struct written by the movement and read by MobRenderer through a query, the hostile state into a
+    MobHostile struct with the hostile mind as its own system, the path and the Random staying in a
+    MobMind class component by E3D006; the third after the package carrying the engine's item 105,
+    so its queries over Body, the identity, the life, the pose and the hostile state take the
+    four-to-six-component forms rather than GetRef beside a narrower query, and the column
+    bookkeeping taking item 107's lookup when it lands, the walk meanwhile.
 
 95. **The world's sections become mesh entities the engine draws (Decision 43).** Each meshed
     section becomes an entity with the engine's Mesh, Material and Transform and a component of the

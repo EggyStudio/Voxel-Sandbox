@@ -333,7 +333,9 @@ public sealed class VoxelGame : IDisposable
         Renderer.Clear();
         World = new VoxelWorld(generator);
         var (kept, placed) = Save?.ReadMobs() ?? ([], []);
-        Mobs = new Mobs(kept, placed);
+        // The mobs of the world left are taken out of the engine's ECS with it.
+        Mobs?.Clear(null);
+        Mobs = new Mobs(GetApp().World.Resource<EcsWorld>(), kept, placed);
         Drops.Clear();
         Falling.Clear();
         Fires.Clear();
@@ -344,6 +346,8 @@ public sealed class VoxelGame : IDisposable
         GetApp().World.ClearEvents<TntBlast>();
         GetApp().World.ClearEvents<FallingBroke>();
         GetApp().World.ClearEvents<TntCaught>();
+        GetApp().World.ClearEvents<MobEvent>();
+        GetApp().World.ClearEvents<MobDied>();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
         Blasts.Clear();
         // The mode and the inventory are the world's own, a new world's in creative with its hotbar of blocks.
@@ -503,8 +507,6 @@ public sealed class VoxelGame : IDisposable
             Fade.Update(Vitals, seconds);
         }
         else Fade.Reset();
-        var hunted = Mode.Lives() && !Vitals.Dead;
-        Mobs.Update(World, Player.Body, Player.Eye, Sky.Hour, seconds, hunted);
         if (Mode.Lives()) Mobs.Spawn(World, Player.Body.Position, Sky.Hour, seconds);
         Answer(seconds);
         Aim();
@@ -529,6 +531,7 @@ public sealed class VoxelGame : IDisposable
             Drops.Spawn(stack.Item, stack.Count, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
         (Step.World, Step.Player, Step.Inventory, Step.Seconds, Step.PickUp) = (World, Player.Body, Inventory, seconds, alive && Mode.Touches());
+        (Step.Eye, Step.Hour, Step.Hunted, Step.MobsStill) = (Player.Eye, Sky.Hour, Mode.Lives() && !Vitals.Dead, Mobs.Still);
         Bits.Update(World, seconds);
         // The blocks the world loosened start to fall, and those that landed where they could not
         // stand as the engine's frame let them fall drop as items.
@@ -610,7 +613,7 @@ public sealed class VoxelGame : IDisposable
     // strikes, each taking its damage from the player and knocking it away from where it came.
     private void Answer(float seconds)
     {
-        foreach (var e in Mobs.Events)
+        foreach (var e in GetApp().World.DrainEvents<MobEvent>())
             switch (e)
             {
                 case MobStrike strike:
@@ -623,7 +626,6 @@ public sealed class VoxelGame : IDisposable
                     Explode(blast.At, blast.Power, $"were blown up by a {blast.Mob.Kind.Name}");
                     break;
             }
-        Mobs.Events.Clear();
         // The arrows that struck the player as the engine's frame flew them.
         foreach (var strike in GetApp().World.DrainEvents<ArrowStrike>()) Harm(strike.Damage, strike.From, "were shot by a skeleton");
     }
@@ -678,10 +680,9 @@ public sealed class VoxelGame : IDisposable
     // on the ground.
     private void LeaveDrops()
     {
-        foreach (var mob in Mobs.Died)
-            foreach (var (item, count) in Loot.Of(mob, _random))
-                Drops.Spawn(item, count, mob.Body.Position + new Vector3(0, 0.25f, 0), new Vector3(0, 3, 0));
-        Mobs.Died.Clear();
+        foreach (var died in GetApp().World.DrainEvents<MobDied>())
+            foreach (var (item, count) in Loot.Of(died.Mob, _random))
+                Drops.Spawn(item, count, died.Mob.Body.Position + new Vector3(0, 0.25f, 0), new Vector3(0, 3, 0));
         if (Mode.Lives())
             foreach (var (x, y, z, block) in World.Fallen)
                 foreach (var (item, count) in Loot.Of(block, _random))
@@ -1237,6 +1238,17 @@ public sealed class GameStep
     public float Seconds { get; set; }
 
     public bool PickUp { get; set; }
+
+    /// <summary>The player's eye, which the mobs watch and hunt toward.</summary>
+    public Vector3 Eye { get; set; }
+
+    public float Hour { get; set; }
+
+    /// <summary>Whether the hostile mobs hunt the player, as in survival while it lives.</summary>
+    public bool Hunted { get; set; }
+
+    /// <summary>Whether the mobs stand still and think nothing, as for a capture.</summary>
+    public bool MobsStill { get; set; }
 
     /// <summary>The chances the behaviors draw, as of an arrow's extra point of damage.</summary>
     public Random Random { get; } = new();

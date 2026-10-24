@@ -1,6 +1,103 @@
 using System.Numerics;
+using Engine;
 
 namespace VoxelSandbox;
+
+/// <summary>A mob that died and was taken away, an event the game drops its loot for.</summary>
+public readonly record struct MobDied(Mob Mob);
+
+/// <summary>
+/// The behaviors of the mobs, each an entity of the engine's ECS with its <see cref="Mob"/> and the
+/// mob's <see cref="Body"/>, which think and move them, push them apart and take away the dead in
+/// the engine's frame.
+/// </summary>
+/// <remarks>
+/// They read the voxel world, the player, the hour and the seconds from the game's
+/// <see cref="GameStep"/> on the main thread, which alone may read the world, and send what the
+/// hostile mobs did to the player as <see cref="MobEvent"/>s and each mob taken away as a
+/// <see cref="MobDied"/>, which the game carries out. Nothing steps while the mobs stand still. Each
+/// also takes its world and its inputs as arguments, so a test steps the mobs of an ECS world of its
+/// own as the frame steps the game's.
+/// </remarks>
+[Behavior]
+public partial struct MobMind
+{
+    [OnUpdate]
+    public static void Think(BehaviorContext ctx)
+    {
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0 || step.MobsStill) return;
+        var events = new List<MobEvent>();
+        Think(ctx.Ecs, step.World, step.Hunted ? new MobTarget(step.Player, step.Eye) : null, step.Eye, step.Hour, step.Seconds, events);
+        foreach (var e in events) ctx.World.SendEvent(e);
+    }
+
+    [OnPostUpdate]
+    public static void Crowd(BehaviorContext ctx)
+    {
+        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds > 0 && !step.MobsStill) Crowd(ctx.Ecs, step.Player, step.Seconds);
+    }
+
+    [OnPostUpdate]
+    public static void Vanish(BehaviorContext ctx)
+    {
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0 || step.MobsStill) return;
+        foreach (var mob in Vanish(ctx.Ecs)) ctx.World.SendEvent(new MobDied(mob));
+    }
+
+    /// <summary>
+    /// Thinks and moves every mob whose columns are loaded around it, the hostile ones hunting the
+    /// target where one is given, as in survival, adding what they do to the player to <paramref name="events"/>.
+    /// </summary>
+    public static void Think(EcsWorld ecs, VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events)
+    {
+        foreach (var (_, mob) in ecs.Query<Mob>())
+        {
+            var (cx, cz) = Mobs.ColumnOf(mob);
+            if (Mobs.Around(world, cx, cz)) mob.Update(world, target, playerEye, hour, seconds, events);
+        }
+    }
+
+    /// <summary>Pushes each pair of overlapping mobs apart along x and z, and a mob the player overlaps away from the player.</summary>
+    public static void Crowd(EcsWorld ecs, Body player, float seconds)
+    {
+        var bodies = new List<Body>();
+        foreach (var (_, _, body) in ecs.Query<Mob, Body>()) bodies.Add(body);
+        var strength = MathF.Min(1, 8 * seconds);
+        for (int i = 0; i < bodies.Count; i++)
+        {
+            var a = bodies[i];
+            for (int j = i + 1; j < bodies.Count; j++)
+            {
+                var b = bodies[j];
+                if (Apart(a, b) is not { } push) continue;
+                a.Velocity -= push * strength * 4;
+                b.Velocity += push * strength * 4;
+            }
+            if (Apart(player, a) is { } away) a.Velocity += away * strength * 6;
+        }
+    }
+
+    /// <summary>Takes away the mobs that have fallen over for long enough, and gives them.</summary>
+    public static List<Mob> Vanish(EcsWorld ecs)
+    {
+        var gone = new List<(int Id, Mob Mob)>();
+        foreach (var (id, mob) in ecs.Query<Mob>())
+            if (mob.Gone) gone.Add((id, mob));
+        foreach (var (id, _) in gone) ecs.Despawn(id);
+        return [.. gone.Select(g => g.Mob)];
+    }
+
+    // The way from a box to another along x and z, as long as they overlap, or null where they do not.
+    private static Vector3? Apart(Body a, Body b)
+    {
+        Vector3 aMin = a.Min, aMax = a.Max, bMin = b.Min, bMax = b.Max;
+        if (aMin.X >= bMax.X || aMax.X <= bMin.X || aMin.Z >= bMax.Z || aMax.Z <= bMin.Z || aMin.Y >= bMax.Y || aMax.Y <= bMin.Y) return null;
+        var way = b.Position - a.Position;
+        way.Y = 0;
+        var overlap = MathF.Min(MathF.Min(aMax.X - bMin.X, bMax.X - aMin.X), MathF.Min(aMax.Z - bMin.Z, bMax.Z - aMin.Z));
+        return way.LengthSquared() > 1e-6f ? Vector3.Normalize(way) * overlap : new Vector3(overlap, 0, 0);
+    }
+}
 
 /// <summary>
 /// The mobs of the loaded columns, those of the columns unloaded kept by their column, and which
@@ -16,6 +113,10 @@ namespace VoxelSandbox;
 /// <para>
 /// Mobs push each other apart and are pushed away by the player, as Minecraft's are, a little each
 /// frame by how far their boxes overlap.
+/// </para>
+/// <para>
+/// Each mob is an entity of an ECS world, its <see cref="Mob"/> and its <see cref="Body"/>, which
+/// <see cref="MobMind"/> steps in the engine's frame.
 /// </para>
 /// <para>
 /// Hostile mobs spawn as Minecraft's do, in packs of one to four on a solid block in the dark,
@@ -37,32 +138,39 @@ public sealed class Mobs
 
     private float _spawnWait;
 
-    private readonly List<Mob> _mobs = [];
+    private readonly EcsWorld _ecs;
     private readonly Dictionary<(int X, int Z), List<MobRecord>> _kept;
     private readonly HashSet<(int X, int Z)> _placed;
     private readonly Random _random = new();
     private int _nextId = 1;
 
-    /// <summary>Begins with the mobs a save kept, or none.</summary>
-    public Mobs(Dictionary<(int X, int Z), List<MobRecord>>? kept = null, HashSet<(int X, int Z)>? placed = null)
+    /// <summary>Begins with the mobs a save kept, or none, as entities of an ECS world.</summary>
+    public Mobs(EcsWorld ecs, Dictionary<(int X, int Z), List<MobRecord>>? kept = null, HashSet<(int X, int Z)>? placed = null)
     {
+        _ecs = ecs;
         _kept = kept ?? [];
         _placed = placed ?? [];
     }
 
-    public IReadOnlyList<Mob> All => _mobs;
+    /// <summary>The mobs of the loaded columns, gathered as they stand.</summary>
+    public IReadOnlyList<Mob> All
+    {
+        get
+        {
+            var all = new List<Mob>();
+            foreach (var (_, mob) in _ecs.Query<Mob>()) all.Add(mob);
+            return all;
+        }
+    }
+
+    /// <summary>How many mobs the loaded columns hold.</summary>
+    public int Count => _ecs.Count<Mob>();
 
     /// <summary>Whether the mobs stand still and think nothing, as for a capture.</summary>
     public bool Still { get; set; }
 
-    /// <summary>Mobs that died and were taken away, for the game to drop what they leave and clear.</summary>
-    public List<Mob> Died { get; } = [];
-
-    /// <summary>What hostile mobs did to the player this frame, their strikes, shots and blasts, for the game to carry out and clear.</summary>
-    public List<MobEvent> Events { get; } = [];
-
     /// <summary>The hostile mobs alive.</summary>
-    public int Hostile => _mobs.Count(m => m.Kind.Hostile && m.Dying < 0);
+    public int Hostile => All.Count(m => m.Kind.Hostile && m.Dying < 0);
 
     /// <summary>Mobs kept by columns not loaded.</summary>
     public int Kept => _kept.Values.Sum(l => l.Count);
@@ -71,7 +179,9 @@ public sealed class Mobs
     public Mob Add(MobRecord record)
     {
         var mob = new Mob(_nextId++, record, _random.Next());
-        _mobs.Add(mob);
+        var id = _ecs.Spawn();
+        _ecs.Add(id, mob);
+        _ecs.Add(id, mob.Body);
         return mob;
     }
 
@@ -92,7 +202,8 @@ public sealed class Mobs
     public void Leaving(int x, int z)
     {
         List<MobRecord>? kept = null;
-        _mobs.RemoveAll(mob =>
+        // The mobs are walked for their column, since the ECS finds an entity by its id alone.
+        Despawn(mob =>
         {
             if (mob.Dying >= 0 || ColumnOf(mob) != (x, z)) return false;
             if (!mob.Kind.Hostile) (kept ??= []).Add(mob.Record);
@@ -101,14 +212,25 @@ public sealed class Mobs
         if (kept is not null) _kept[(x, z)] = kept;
     }
 
-    private static (int X, int Z) ColumnOf(Mob mob) =>
+    // Takes away the mobs a rule picks, and gives how many.
+    private int Despawn(Func<Mob, bool> picked)
+    {
+        var gone = new List<int>();
+        foreach (var (id, mob) in _ecs.Query<Mob>())
+            if (picked(mob)) gone.Add(id);
+        foreach (var id in gone) _ecs.Despawn(id);
+        return gone.Count;
+    }
+
+    /// <summary>The column a mob stands in.</summary>
+    public static (int X, int Z) ColumnOf(Mob mob) =>
         (VoxelWorld.ColumnOf((int)MathF.Floor(mob.Body.Position.X)), VoxelWorld.ColumnOf((int)MathF.Floor(mob.Body.Position.Z)));
 
     /// <summary>Every column that has had its mobs placed, with the mobs it holds, the loaded ones' by where they stand.</summary>
     public IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> Columns()
     {
         var loaded = new Dictionary<(int, int), List<MobRecord>>();
-        foreach (var mob in _mobs)
+        foreach (var mob in All)
             if (mob.Dying < 0 && !mob.Kind.Hostile)
             {
                 var key = ColumnOf(mob);
@@ -123,28 +245,8 @@ public sealed class Mobs
         }
     }
 
-    /// <summary>
-    /// Thinks and moves every mob whose columns are loaded around it, the hostile ones hunting the
-    /// player where <paramref name="hunted"/> is set, as in survival, pushes them apart, and takes
-    /// away the dead.
-    /// </summary>
-    public void Update(VoxelWorld world, Body player, Vector3 playerEye, float hour, float seconds, bool hunted = false)
-    {
-        if (Still) return;
-        MobTarget? target = hunted ? new MobTarget(player, playerEye) : null;
-        foreach (var mob in _mobs)
-        {
-            var (cx, cz) = ColumnOf(mob);
-            if (!Around(world, cx, cz)) continue;
-            mob.Update(world, target, playerEye, hour, seconds, Events);
-        }
-        Push(player, seconds);
-        foreach (var mob in _mobs)
-            if (mob.Gone) Died.Add(mob);
-        _mobs.RemoveAll(m => m.Gone);
-    }
-
-    private static bool Around(VoxelWorld world, int cx, int cz)
+    /// <summary>Whether the columns around a column are loaded, which a mob's own must be for it to think and move.</summary>
+    public static bool Around(VoxelWorld world, int cx, int cz)
     {
         for (int dz = -1; dz <= 1; dz++)
             for (int dx = -1; dx <= 1; dx++)
@@ -152,42 +254,12 @@ public sealed class Mobs
         return true;
     }
 
-    // Each pair of overlapping boxes is pushed apart along x and z, and a mob the player overlaps
-    // away from the player.
-    private void Push(Body player, float seconds)
-    {
-        var strength = MathF.Min(1, 8 * seconds);
-        for (int i = 0; i < _mobs.Count; i++)
-        {
-            var a = _mobs[i].Body;
-            for (int j = i + 1; j < _mobs.Count; j++)
-            {
-                var b = _mobs[j].Body;
-                if (Apart(a, b) is not { } push) continue;
-                a.Velocity -= push * strength * 4;
-                b.Velocity += push * strength * 4;
-            }
-            if (Apart(player, a) is { } away) a.Velocity += away * strength * 6;
-        }
-    }
-
-    // The way from a box to another along x and z, as long as they overlap, or null where they do not.
-    private static Vector3? Apart(Body a, Body b)
-    {
-        Vector3 aMin = a.Min, aMax = a.Max, bMin = b.Min, bMax = b.Max;
-        if (aMin.X >= bMax.X || aMax.X <= bMin.X || aMin.Z >= bMax.Z || aMax.Z <= bMin.Z || aMin.Y >= bMax.Y || aMax.Y <= bMin.Y) return null;
-        var way = b.Position - a.Position;
-        way.Y = 0;
-        var overlap = MathF.Min(MathF.Min(aMax.X - bMin.X, bMax.X - aMin.X), MathF.Min(aMax.Z - bMin.Z, bMax.Z - aMin.Z));
-        return way.LengthSquared() > 1e-6f ? Vector3.Normalize(way) * overlap : new Vector3(overlap, 0, 0);
-    }
-
     /// <summary>The nearest living mob a ray from a point meets within a reach, and how far along the ray.</summary>
     public (Mob Mob, float Distance)? Cast(Vector3 from, Vector3 direction, float reach)
     {
         direction = Vector3.Normalize(direction);
         (Mob, float)? nearest = null;
-        foreach (var mob in _mobs)
+        foreach (var mob in All)
         {
             if (mob.Dying >= 0) continue;
             if (Meets(from, direction, mob.Body.Min, mob.Body.Max) is { } distance && distance <= reach && (nearest is null || distance < nearest.Value.Item2))
@@ -220,7 +292,7 @@ public sealed class Mobs
     /// <summary>Whether a living mob's box takes up any of the boxes a block would stand in at a place, which the block is not placed into.</summary>
     public bool Overlaps(int x, int y, int z, IReadOnlyList<Box> boxes)
     {
-        foreach (var mob in _mobs)
+        foreach (var mob in All)
             if (mob.Dying < 0 && mob.Body.Overlaps(x, y, z, boxes)) return true;
         return false;
     }
@@ -251,7 +323,7 @@ public sealed class Mobs
     /// <summary>Tries for a pack of hostile mobs in the dark around the player, four tries a second, and takes away those far from it.</summary>
     public void Spawn(VoxelWorld world, Vector3 player, float hour, float seconds)
     {
-        _mobs.RemoveAll(m => m.Kind.Hostile && m.Dying < 0 && Despawns(Vector3.Distance(m.Body.Position, player), seconds));
+        Despawn(m => m.Kind.Hostile && m.Dying < 0 && Despawns(Vector3.Distance(m.Body.Position, player), seconds));
         _spawnWait -= seconds;
         if (_spawnWait > 0 || Hostile >= HostileCap) return;
         _spawnWait = SpawnEvery;
@@ -293,5 +365,5 @@ public sealed class Mobs
     }
 
     /// <summary>Takes away every mob of a kind, or every mob where none is given, from the loaded columns.</summary>
-    public int Clear(MobKind? kind) => _mobs.RemoveAll(m => kind is null || m.Kind == kind);
+    public int Clear(MobKind? kind) => Despawn(m => kind is null || m.Kind == kind);
 }
