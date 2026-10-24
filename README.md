@@ -134,8 +134,8 @@ for a capture, `voxel.save` saves at once, and `voxel.blocks` lists the blocks b
 `voxel.mobs` counts the mobs and lists the nearest, `voxel.spawn` places one where the crosshair
 rests, `voxel.attack` hits the one it rests on as the left button does, `voxel.still` stops them
 where they stand and holds the clouds and the bits of broken blocks for a capture, `voxel.bits` says
-where the nearest bit flies, and `voxel.kill` takes the mobs away. `voxel.fires` counts the fires
-and lists the nearest with their ages. `voxel.mode` plays in creative, survival, adventure or
+where the bit nearest a place flies, and `voxel.kill` takes the mobs away. `voxel.fires` counts the
+fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival, adventure or
 spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the
 inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and
 reads a furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
@@ -531,41 +531,41 @@ picture from the face hit each tick, and then drops what it leaves. The progress
 button stays held and the aim is lost for up to a second, as over a jump, so a block above reach
 breaks over a few jumps, and begins again on another block. A block broken in any mode throws 64
 bits, each a quarter of its side's picture, which fall, land and are gone within two seconds, as
-Minecraft's do, each lit as a block's top is lit where it flies, so it reads the same whichever way
-the eye looks at it. Grass, farmland and a path drop their dirt, stone its cobblestone, coal ore its
-coal, diamond and emerald ore their gem, lapis ore four to nine lapis and redstone ore four or five
-redstone, wheat its wheat and seeds, the grasses a seed one time in eight, a dead bush up to two
-sticks, leaves their sapling one time in twenty, glass and ice nothing, and any other block itself.
-An ore asks a pickaxe, of stone or better for iron, copper and lapis and of iron for gold, redstone,
-diamond and emerald, and gives nothing to a lesser one. A torch or a lantern that falls with the
-block it held to drops too, and placing a block uses one up. A block placed into a plant's cell, a
-grass's, a fern's or a dead bush's, or a fire's, takes the place of what stood there, which drops
-nothing, and one placed aimed at such a plant goes into the plant's own cell, as Minecraft's grasses
-give way. Sand, red sand and gravel over air, water or a plant that gives way fall as Minecraft's
-gravity blocks do, faster by 0.04 of a block a tick each tick and keeping 0.98 of their speed, a
-column of them block by block as each under it goes, and stand where they land, or break into their
-item over a block that keeps its place, as a torch or a slab in their cell. Breaking the log a
-tree's trunk stands on fells the tree, its logs joined to the cut through any of the 26 blocks about
-each, under the cut too, so a lower tree whose branch touches it fells with it whole, breaking from
-the lowest upward a block a tick with their drops and a few bits each, one in four falling as a
-block that lands, and then its leaves decaying each at its own time one to two seconds after the
-last log with bits and the source's drops, those with no log within six leaves of them, as the
-source's leaves decay, so the leaves of a tree beside it stay, and a wall of logs no leaf touches
-fells nothing. What the player's right hand holds stands at the window's lower right as the source
-draws it, the block's cube turned by 45 degrees or the item's picture a pixel deep, as the source's
-item models make it, in the source's places for the right hand, swinging on a hit, a break or a use
-and bobbing with the walk, and an empty hand shows nothing. It is posed as the source poses it about
-a block before the eye and drawn at a quarter of that size toward it, which shows it the same and
-keeps it inside the player's own box, so no wall the player stands against cuts into it, and it is
-hidden with the HUD. A stack on the ground of an item drawn flat is its picture a pixel deep too. A
-block that gives light, a torch, a lantern or glowstone, lights the ground about the player while it
-is in the hand, and about itself where it lies dropped, a point light of its own color at the
-player's own place, the body's middle a third of a block under the eye, so no turn of the view
-swings it and no wall the player faces takes it in, or at the stack reaching as many blocks as its
-level of light, which casts shadows, so it lights no room through a wall, and which global
-illumination carries on to the walls around as it carries a placed one's. The held and the nearest
-three dropped lights shine, and a torch in the hand lights the ground a block off about as a torch
-standing there does.
+Minecraft's do, each lit as its face toward the eye takes the light at its middle, which its body
+keeps in the open, so one clipped into a wall takes no light through it. Grass, farmland and a path
+drop their dirt, stone its cobblestone, coal ore its coal, diamond and emerald ore their gem, lapis
+ore four to nine lapis and redstone ore four or five redstone, wheat its wheat and seeds, the
+grasses a seed one time in eight, a dead bush up to two sticks, leaves their sapling one time in
+twenty, glass and ice nothing, and any other block itself. An ore asks a pickaxe, of stone or better
+for iron, copper and lapis and of iron for gold, redstone, diamond and emerald, and gives nothing to
+a lesser one. A torch or a lantern that falls with the block it held to drops too, and placing a
+block uses one up. A block placed into a plant's cell, a grass's, a fern's or a dead bush's, or a
+fire's, takes the place of what stood there, which drops nothing, and one placed aimed at such a
+plant goes into the plant's own cell, as Minecraft's grasses give way. Sand, red sand and gravel
+over air, water or a plant that gives way fall as Minecraft's gravity blocks do, faster by 0.04 of a
+block a tick each tick and keeping 0.98 of their speed, a column of them block by block as each
+under it goes, and stand where they land, or break into their item over a block that keeps its
+place, as a torch or a slab in their cell. Breaking the log a tree's trunk stands on fells the tree,
+its logs joined to the cut through any of the 26 blocks about each, under the cut too, so a lower
+tree whose branch touches it fells with it whole, breaking from the lowest upward a block a tick
+with their drops and a few bits each, one in four falling as a block that lands, and then its leaves
+decaying each at its own time one to two seconds after the last log with bits and the source's
+drops, those with no log within six leaves of them, as the source's leaves decay, so the leaves of a
+tree beside it stay, and a wall of logs no leaf touches fells nothing. What the player's right hand
+holds stands at the window's lower right as the source draws it, the block's cube turned by 45
+degrees or the item's picture a pixel deep, as the source's item models make it, in the source's
+places for the right hand, swinging on a hit, a break or a use and bobbing with the walk, and an
+empty hand shows nothing. It is posed as the source poses it about a block before the eye and drawn
+at a quarter of that size toward it, which shows it the same and keeps it inside the player's own
+box, so no wall the player stands against cuts into it, and it is hidden with the HUD. A stack on
+the ground of an item drawn flat is its picture a pixel deep too. A block that gives light, a torch,
+a lantern or glowstone, lights the ground about the player while it is in the hand, and about itself
+where it lies dropped, a point light of its own color at the player's own place, the body's middle a
+third of a block under the eye, so no turn of the view swings it and no wall the player faces takes
+it in, or at the stack reaching as many blocks as its level of light, which casts shadows, so it
+lights no room through a wall, and which global illumination carries on to the walls around as it
+carries a placed one's. The held and the nearest three dropped lights shine, and a torch in the hand
+lights the ground a block off about as a torch standing there does.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival and adventure, where a left click takes up a stack, puts it down, joins it to a stack of

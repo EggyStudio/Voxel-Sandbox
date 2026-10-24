@@ -426,12 +426,12 @@ public static class GameCommands
         return on ? "the mobs stand still and the clouds and the bits hold" : "the mobs move and the clouds and the bits drift";
     }
 
-    [Command("voxel.bits", "How many bits of broken blocks fly and the middle of the one nearest the eye")]
-    internal static string BitsAround()
+    [Command("voxel.bits", "How many bits of broken blocks fly and the middle of the one nearest a place: voxel.bits <x> <y> <z>")]
+    internal static string BitsAround(float x, float y, float z)
     {
         if (Game is not { } game) return "no world is loaded";
-        var eye = game.Player.Eye;
-        var nearest = game.Bits.All.Select(b => b.Body.Position + new Vector3(0, b.Size / 2, 0)).OrderBy(p => Vector3.DistanceSquared(p, eye)).FirstOrDefault();
+        var place = new Vector3(x, y, z);
+        var nearest = game.Bits.All.Select(b => b.Body.Position + new Vector3(0, b.Size / 2, 0)).OrderBy(p => Vector3.DistanceSquared(p, place)).FirstOrDefault();
         return game.Bits.All.Count == 0 ? "no bits fly" : $"{game.Bits.All.Count} bits, the nearest at {nearest.X:F2}, {nearest.Y:F2}, {nearest.Z:F2}";
     }
 

@@ -5,15 +5,25 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `08d0943`, item 93's third mend as a reading, read at 13:07 on 2026-10-24, carrying
-REVIEW.md. ChunkRenderer.Deep counts the drawn sections under their column's floor and their
-triangles, shown in voxel.state and in the profile as draw.sections.deep; at 1920 by 1080 in Release
-the cherry grove draws 61 of 1,683 sections deep, 40,934 of 1.17 million triangles, 3.5 percent, and
-the plains village 149 of 1,563, 97,828 of 0.98 million, 10 percent. The flood already draws a deep
-section only where the eye's open cells join it, which is where a cave opens within reach, and a cut
-by distance would hide cave interiors seen through their mouths for 0.4 to 0.9 ms of CPU recording
-at most, so the mend stays at the counter; 275 tests, play.sh 162 s on the GPU. After `89d8caa`,
-item 93's second mend, read at 13:01 on 2026-10-24, carrying the review's files,
+Reviewed up to `4a2cd7b`, item 93's fourth mend, read at 13:21 on 2026-10-24, carrying the review's
+files. ChunkRenderer.Update holds a section in reach that the last flood left out in an unseen set,
+unmeshed, and a flood that reaches it puts it back into the loaded set, all of them with culling
+off, an edit still meshing at once; update.meshed and update.unseen in the profile. A Release flight
+east from the cherry grove at a sprint, the mean of eight samples after the first, reads the update
+0.88 and 0.69 ms where 1.30 and 1.33 stood, the frame 15.4 and 14.4 where 15.5 and 16.4, most of the
+old meshing stone no pass draws, 4,200 to 4,500 sections held unseen against some 390 meshed a
+second; a teleport into the deep cave meshes nothing and draws 83 as before, and the land's edge
+meshes 189 against 200 with the same 262 draws. The README's culling paragraph has the rule; 275
+tests, play.sh 176 s on the GPU. Held until the run of `08d0943` ends, then pushed. After `08d0943`,
+item 93's third mend as a reading, read at 13:07 on 2026-10-24, carrying REVIEW.md.
+ChunkRenderer.Deep counts the drawn sections under their column's floor and their triangles, shown
+in voxel.state and in the profile as draw.sections.deep; at 1920 by 1080 in Release the cherry grove
+draws 61 of 1,683 sections deep, 40,934 of 1.17 million triangles, 3.5 percent, and the plains
+village 149 of 1,563, 97,828 of 0.98 million, 10 percent. The flood already draws a deep section
+only where the eye's open cells join it, which is where a cave opens within reach, and a cut by
+distance would hide cave interiors seen through their mouths for 0.4 to 0.9 ms of CPU recording at
+most, so the mend stays at the counter; 275 tests, play.sh 162 s on the GPU. After `89d8caa`, item
+93's second mend, read at 13:01 on 2026-10-24, carrying the review's files,
 LightSettings.ShadowDistance 96 to 64. Read in Release at 1920 by 1080 at the cherry grove, 96, 64
 and 48 in turn twice, the first triple spoiled by another GPU user and the clean one the frame
 17.84, 16.79 and 15.81 ms, the GPU's shadows 2.01, 1.04 and 0.70, the CPU's 2.84, 2.31 and 2.13; by
@@ -412,42 +422,6 @@ full.
     without far land. One commit, after item 91. Done at `2263618` on 2026-10-24, the pictures taken
     again, old saves' far folder left unread.
 
-93. **The frame's cost on the development machine with the taller world, read and brought down.**
-    The owner played on 2026-10-24 and found the performance bad. Read first at the owner's
-    settings, the render distance of 12, High and the three packs, at the cherry grove and the
-    plains village with the engine's profile: the GPU's passes, the scene pass, the window depth,
-    the shadows, the global illumination and the rest, and the main thread's parts, with the deep
-    sections' share, the aquifers' and the caves' meshing, the screen probes off; say the numbers
-    and what each would give back. Then the mends by the reading, in order of what they give for
-    what they cost, each a commit with its before and after: the sun's cascades' count and the
-    shadow distance, the deep sections drawn only where a cave opens to the eye's reach, the meshing
-    of sections the eye cannot see held back, and whatever else the reading names; the frame held
-    under 16.7 ms at 12 on the 4070 as item 90's draw test holds the draws. After item 92, before
-    item 27's part C. The reading at 11:18 on 2026-10-24, Release, offscreen, the three packs, 12,
-    High, the probes off, 300 frames, the cherry grove and the plains village at hour 16. At 1280 by
-    720 the frame is 14.9 and 15.3 ms, the GPU's scene pass 8.3 to 9.6, the global illumination 2.1
-    to 2.6, the shadows 1.8 to 2.3 and the window depth 1.5, the graph's recording 8.9 to 9.9 ms of
-    CPU with the game's drawing 1.6, 1,683 draws and 1.18 million triangles; at 1920 by 1080 the
-    frame is 19.0 and 19.2, the scene pass 12.2 to 13.3 and the rest unchanged, so the GPU and its
-    scene pass bound the frame. With global illumination off the frame is 11.9 against 18.6 at
-    1080p, 2.9 of it the pass and 5.6 the cascades read per pixel inside the scene pass, which is
-    the engine's. The owner's build is Debug through dotnet run, standing still 13.4 to 13.7 ms, in
-    a sprinting flight over unloaded land 17.7 to 26.1 with the game's update at 4.2 to 7.8 ms of
-    joining and meshing, where Release reads 11.6 to 17.8 with the update at 1.0 to 1.3. The mends
-    by gain for cost, each with its before and after when the GPU is quiet, are the terrain shader's
-    stepped light reading the sun's shadow once per pixel rather than twice, then the shadow
-    distance from 96 toward 64 or 48, about 1 to 1.4 ms of GPU at 48 with the shadow line nearer,
-    then the deep sections drawn only where a cave opens within reach, about 0.6 ms of CPU for a
-    hundred draws fewer and the GPU's share read then, then the meshing of unseen sections held
-    back, the flight's update; and the engine's per-pixel read of the cascades in the scene pass,
-    5.6 ms at 1080p, goes to the engine as an entry in its ASKS.md. The owner runs Release, dotnet
-    run -c Release or a published build, which the record says to them. The second mend at
-    `89d8caa`, the shadow distance 64, about a millisecond at 1920 by 1080, the village's trees'
-    shadows kept where 48 loses them; the third at `08d0943` a counter alone, the flood already
-    drawing a deep section only where the eye's open cells join it, 3.5 to 10 percent of the
-    triangles, a cut by distance hiding cave interiors seen through their mouths; the unseen
-    sections' meshing next.
-
 97. **The game's entries in the engine's ASKS.md hold no colon inside a running sentence.** The
     owner wrote at about 10:3x on 2026-10-24 that some documents join sentences with a colon and
     that STYLE.md forbids it; the entries this session wrote in the engine's ASKS.md hold 24 such
@@ -472,52 +446,18 @@ full.
     particle sheet the gap goes into the engine's ASKS.md as an entry and the game waits on the
     package. A test reading the same particle from eight headings within a few levels of each other.
     One commit, after item 93. Done at `56cb608` on 2026-10-24, the bits lit as a face turned up,
-    the clouds and the flames not it.
-
-99. **No tree stands cut by a cave or a cliff, and no leaves hang with no trunk.** The owner played
-    at about 10:51 on 2026-10-24 and saw trees cut off where caves and cliffs carved the terrain
-    after the tree was placed, some leaves staying in the air, as the grass over carved caves did
-    before item 82. The source carves before it places its features, so the caves of item 27, the
-    entrances among them, and the cliffs' cuts run before the trees and the plants in the column's
-    pipeline, the neighbors a tree spills into carved first as well; and a tree whose base would
-    stand on air or whose trunk a cut would cross is not placed there. Tests, over a seeded region,
-    that no log has air under the trunk's base, that no leaf stands with no log within the crown's
-    reach, and that the trees' count stays within the source's range for the biome, failing without
-    the mend; a capture of a cliff's edge and a cave's mouth under trees. One commit, after item 98
-    and before item 94. Done at `dc2ad9f` on 2026-10-24, the departure in the head.
-
-100. **Felling takes every log of the tree, and the crown decays within a second or two.** The owner
-    felled trees at about {now} on 2026-10-24 and found it working but for one tree whose single log
-    stayed disconnected, its leaves hanging until that log was broken by hand, and found the leaves
-    decaying too slowly. So the felling's flood follows a log to every one of its 26 neighbors, the
-    corners across two axes among them, as the branch logs of the bigger trees stand, and counts the
-    trunk's logs under the cut as the tree's where the cut was made above the base; and the crown's
-    leaves decay each at its own time within one to two seconds of the last log, where item 69
-    spread them over half a second to four. Tests, over the game's tree kinds, that felling leaves
-    no log and no leaf within the crown's reach, and that the last leaf goes within two seconds; the
-    play check as it stands. One commit, small, after item 99. Done at `54fc848` on 2026-10-24, the
-    cause two trees joined through their branches, the departure in the head.
-
-101. **Grass and the other plants give way to a block placed where they stand.** The owner placed
-    blocks at about {now} on 2026-10-24 and found that aiming at a plant, the plant highlighted,
-    placed the block in front of it rather than in its place, and that a block placed beside another
-    was refused where a plant stood in the cell. The source's plants are replaceable, so a placement
-    whose cell holds one of BlockGroups.GivesWay, short and tall grass, ferns, dead bushes and their
-    kin, replaces the plant, and aiming at such a plant places the block in the plant's own cell
-    rather than on its face; the plant drops nothing. Tests of a block placed on a plant's face
-    landing in the plant's cell and of a block placed beside another into a cell a plant holds; the
-    play check as it stands. One commit, small, after item 100. Done at `ad3499f` on 2026-10-24, the
-    play check in place of a unit test since none builds a game.
-
-102. **A held light shines from the player, not from the hand.** The owner played at about 10:53 on
-    2026-10-24 and found the held light standing at the hand, a third of a block ahead of the eye
-    and to the right, where it clips into a wall the player faces and turns with the camera, so the
-    light about the player swings as the eye turns. Item 74's light moves to the player's own place,
-    the body's middle at the eye's height, so the camera's turn has no part in it and no wall takes
-    it inside; its color, strength and range stay as item 74 set them. A test that the ground's
-    light about the player reads the same at four headings with a torch held, and the play check of
-    the lamp room's roof as it stands. One commit, small, after item 101. Done at `1f07038` on
-    2026-10-24, the light at the eye's place in the body's middle.
+    the clouds and the flames not it. Reopened at 13:21 on 2026-10-24 on the owner's word, who did
+    not mean the bits lit as a face turned up and has that reverted; the fault is a broken block's
+    bits dropping with a part clipping into the wall beside them, as in a tunnel two high and one
+    wide dug into a hill, and taking the sun's or the sky's light there. The mend by the reading, a
+    bit's light sampled at the open cell it came from or the air it falls through, a bit whose
+    center enters a block keeping the last open cell's light, so no sun or sky reaches a bit through
+    a wall; the turned-up face taken out; a test breaking a block at the end of such a tunnel under
+    the sun and reading the bits beside the wall within a few levels of the tunnel's floor. The
+    owner added at 13:21 that the turned-up face makes the bits dropping from a block above dark
+    where the face toward the eye says they take the light from the eye's side, so the bits'
+    lighting before `56cb608` is read first and put back, and the mend for the clipping is built on
+    it. One commit, first, before item 94.
 
 94. **The things that move become entities with behaviors (Decision 43).** The mobs, the drops, the
     arrows, the primed TNT, the falling blocks, the fires and the blasts, which the game keeps in
@@ -723,6 +663,99 @@ full.
     camera's distance against blocks, each state's pose at a known phase, and a capture of the
     player mid-stride and mid-swim from behind beside the source's silhouette in the record. After
     item 30. Two commits, the camera and the model, then the animations.
+
+105. **The stepped sun's shadow is read once a pixel through the engine's hook.** From item 93's
+    first mend, which waits on the engine's item 99, `litLight` taking the shadow light's shadow
+    from the caller; the game's `litStepped` then hands the step's read in and reads the shadow
+    once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
+    again. One commit, small, with the package carrying the engine's item 99.
+
+106. **The corner shade stands at a half by default.** The owner wrote at 13:23 on 2026-10-24 that
+    the corner shade should be 0.5 by default; `SectionMesher.CornerStrength` starts at 1, the whole
+    of the occlusion's darkening at a block's corners. The default becomes 0.5, the settings
+    window's slider, the menu's and `voxel.corners` unchanged, a saved setting still read over it;
+    the README's line on how far corners darken says the half, and the mesher's test of the default
+    reads it. One commit, small, after item 98 and before item 94.
+
+107. **The rain forest's floor is shaded, not dark, the canopy taking its levels at its edges.** The
+    owner wrote at 13:26 on 2026-10-24 that the rain forest is too dark in the middle and asked for
+    a better balance, with the example that the light level should not drop by one with each block
+    of leaves but at the way in and the way out, a canopy five deep dropping two and the blocks
+    between ignored. `Lighting.cs` takes one level for each block of leaves, the way down too, so
+    the rain forest's layered canopy darkens its floor as a cave is darkened. The mend by the
+    owner's example or a better balance the coder finds and says in the commit, a leaf lit from a
+    leaf taking nothing and the canopy's outer layers taking the levels, so a canopy five deep takes
+    two, one deep still one, sideways spread under it as before; a capture of a rain forest's floor
+    at noon before and after, the forests and the other biomes read for no change beyond the
+    canopies, and a test of a column under five leaves reading two levels under the open sky's and
+    under one leaf reading one. One commit, after item 106 and before item 94.
+
+108. **The clouds reach the camera's far plane, fading into the sky there.** The owner wrote at
+    13:29 on 2026-10-24 that the clouds still have a limit, asking whether the scene field's last
+    cascade reaches the far plane as the lowest level of detail, which the engine's item 72 gave it
+    on its main and the package after 5.2.215 carries. The clouds are the game's own, `Clouds.cs`
+    building the cells within twice the render distance of the eye and fading them into the sky from
+    six tenths of that reach, 384 blocks at 12, so their edge shows under a high sky where the
+    land's does not. The clouds reach the camera's far plane, the near cells as boxes as they are
+    and the cells beyond the present reach as the flat layer alone where their sides are not seen,
+    the fade into the sky at the far plane; the drift, the night's darkening and the capture's hold
+    unchanged; the clouds' cost read before and after at 1920 by 1080 with the cells' count, and a
+    capture of the horizon under clouds at noon. One commit, after item 107 and before item 94.
+
+109. **The cactus stands a pixel in from its cell's sides and a pixel under its top, its picture's
+    white corners left out.** The owner wrote at 13:31 on 2026-10-24 that the cactus needs to be one
+    pixel thinner, white showing in its corners, two pixels smaller on each horizontal axis and one
+    on the vertical since it sits on the ground. The cactus's faces stand a pixel in from each side
+    of the cell, 14 of 16 wide, and its top a pixel under the cell's, the bottom on the ground, the
+    pictures' rows and columns read so the side's and the top's white corners fall outside the
+    faces, as the source's model places them; its collision box the same; a capture of a cactus up
+    close against the before, and the mesher's test of the cactus's bounds. One commit, small, after
+    item 108 and before item 94.
+
+110. **The bits of a tinted block carry the biome's tint.** The owner wrote at 13:31 on 2026-10-24
+    that the color of the particles for grass and dirt is not adjusted to the temperature of the
+    biome, breaking grass in the savanna dropping pure green bits and not the savanna's color. The
+    bits cut from a block's picture take the tint the block is drawn with at its place, the grass
+    block's top and its side's overlay, the short grass, the ferns and the tall plants by the
+    biome's grass color, the leaves by its foliage color, the untinted blocks as they are, dirt
+    among them; a test breaking a grass block in the savanna and in the plains reading the bits'
+    colors as the blocks' tops read there, within a few levels, and a capture of each. One commit,
+    small, after item 109 and before item 94.
+
+111. **A felled tree's crown drops as its logs fall, not after they land.** The owner wrote at 13:33
+    on 2026-10-24 that breaking a tree with the axe drops the logs first and the leaves only once
+    the logs have fallen, and that both should happen at the same time. Felling starts the crown's
+    decay and the leaves' drop in the same tick as the logs begin to fall, the crown's pace of item
+    100 kept, so the leaves and the logs are in the air together; the felling test reads the first
+    leaf gone within the tick of the first log's fall, and a capture of a felled tree in the air.
+    One commit, small, after item 110 and before item 94.
+
+112. **Felling wears the axe by the logs it drops as items, the falling logs not counted.** The
+    owner wrote at 13:36 on 2026-10-24 that the axe's use should drop by the number of logs felling
+    breaks, a tree of eight logs taking eight, and where three of the eight drop as items and the
+    rest fall as blocks, three, the falling logs not counted. Felling takes one use of the axe for
+    each log it turns into a dropped item, none for a log that falls as a block, and the axe that
+    runs out mid-tree breaks the logs it had uses for and leaves the rest standing or falling as the
+    source does; the felling test reads the axe's uses after a tree of known logs with a known share
+    falling, and the README's felling paragraph says the wear. One commit, small, after item 111 and
+    before item 94.
+
+113. **Pyramids are as rare as the source's.** The owner wrote at 13:36 on 2026-10-24 that there are
+    far too many pyramids. The desert pyramid is placed at the source's spacing, one at most in each
+    region of 32 columns a side with a separation of 8, the region's one place drawn from the seed,
+    and only where the desert holds it, so a desert of the owner's size shows one or none where it
+    shows several; a test counting the pyramids over a seeded span of desert against the source's
+    bound, and the README's line on the structures saying the rarity. One commit, small, after item
+    112 and before item 94.
+
+114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
+    there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
+    generator carves them; their count falls to what the source's land shows, a cliff here and there
+    at a hill's or a mountain's side and none across the plains and the forests, by a higher slope
+    for a cut, a wider spacing, or a noise that gates them by region, the coder reading the land of
+    seed 1 at the owner's spawn and the plains village for the count before and after and saying it
+    in the commit; a test counting the cliffs over a seeded span against a bound, and a capture of
+    the same land before and after. One commit, after item 113 and before item 94.
 
 ## Verdicts
 

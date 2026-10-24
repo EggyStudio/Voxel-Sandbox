@@ -24,10 +24,10 @@ namespace VoxelSandbox;
 /// each turned toward the eye. They cast no shadow and global illumination holds none of them.
 /// </para>
 /// <para>
-/// A square is lit through the game's bits shader as a block's top is lit at its place, the sun's
-/// light and the light from all around taken by a face turned up and seen from straight above, as
-/// Minecraft lights its bits by the light where they are and by no way they face. Lit by its own
-/// way, a square turned toward the eye went dark wherever the sun stood behind it.
+/// A square is lit by the engine's light as its face toward the eye takes it, through the game's
+/// bits shader, which reads the shadow and the probes at the bit's middle, which its body keeps in
+/// the open, where a square clipped into the wall beside it read the sun's and the sky's light from
+/// inside the wall at its clipped part.
 /// </para>
 /// </remarks>
 public sealed class BlockBits : IDisposable

@@ -1097,6 +1097,90 @@ before a batch.
     clamped half a texel of the sampled level inside its tile, the check in play.sh reading the
     north wall's top edge against the ground beyond.
 
+93. **The frame's cost on the development machine with the taller world, read and brought down.**
+    The owner played on 2026-10-24 and found the performance bad. Read first at the owner's
+    settings, the render distance of 12, High and the three packs, at the cherry grove and the
+    plains village with the engine's profile: the GPU's passes, the scene pass, the window depth,
+    the shadows, the global illumination and the rest, and the main thread's parts, with the deep
+    sections' share, the aquifers' and the caves' meshing, the screen probes off; say the numbers
+    and what each would give back. Then the mends by the reading, in order of what they give for
+    what they cost, each a commit with its before and after: the sun's cascades' count and the
+    shadow distance, the deep sections drawn only where a cave opens to the eye's reach, the meshing
+    of sections the eye cannot see held back, and whatever else the reading names; the frame held
+    under 16.7 ms at 12 on the 4070 as item 90's draw test holds the draws. After item 92, before
+    item 27's part C. The reading at 11:18 on 2026-10-24, Release, offscreen, the three packs, 12,
+    High, the probes off, 300 frames, the cherry grove and the plains village at hour 16. At 1280 by
+    720 the frame is 14.9 and 15.3 ms, the GPU's scene pass 8.3 to 9.6, the global illumination 2.1
+    to 2.6, the shadows 1.8 to 2.3 and the window depth 1.5, the graph's recording 8.9 to 9.9 ms of
+    CPU with the game's drawing 1.6, 1,683 draws and 1.18 million triangles; at 1920 by 1080 the
+    frame is 19.0 and 19.2, the scene pass 12.2 to 13.3 and the rest unchanged, so the GPU and its
+    scene pass bound the frame. With global illumination off the frame is 11.9 against 18.6 at
+    1080p, 2.9 of it the pass and 5.6 the cascades read per pixel inside the scene pass, which is
+    the engine's. The owner's build is Debug through dotnet run, standing still 13.4 to 13.7 ms, in
+    a sprinting flight over unloaded land 17.7 to 26.1 with the game's update at 4.2 to 7.8 ms of
+    joining and meshing, where Release reads 11.6 to 17.8 with the update at 1.0 to 1.3. The mends
+    by gain for cost, each with its before and after when the GPU is quiet, are the terrain shader's
+    stepped light reading the sun's shadow once per pixel rather than twice, then the shadow
+    distance from 96 toward 64 or 48, about 1 to 1.4 ms of GPU at 48 with the shadow line nearer,
+    then the deep sections drawn only where a cave opens within reach, about 0.6 ms of CPU for a
+    hundred draws fewer and the GPU's share read then, then the meshing of unseen sections held
+    back, the flight's update; and the engine's per-pixel read of the cascades in the scene pass,
+    5.6 ms at 1080p, goes to the engine as an entry in its ASKS.md. The owner runs Release, dotnet
+    run -c Release or a published build, which the record says to them. The second mend at
+    `89d8caa`, the shadow distance 64, about a millisecond at 1920 by 1080, the village's trees'
+    shadows kept where 48 loses them; the third at `08d0943` a counter alone, the flood already
+    drawing a deep section only where the eye's open cells join it, 3.5 to 10 percent of the
+    triangles, a cut by distance hiding cave interiors seen through their mouths; the fourth at
+    `4a2cd7b`, the unseen sections' meshing held back, the flight's update 0.7 to 0.9 ms where 1.3
+    stood. Done at `4a2cd7b` on 2026-10-24, the cherry grove's frame at 1920 by 1080 about 16.8 ms
+    where 17.8 stood before the mends and 14 to 15 at 1280 by 720, the first mend's one read with
+    the package carrying the engine's item 99 as item 105.
+
+99. **No tree stands cut by a cave or a cliff, and no leaves hang with no trunk.** The owner played
+    at about 10:51 on 2026-10-24 and saw trees cut off where caves and cliffs carved the terrain
+    after the tree was placed, some leaves staying in the air, as the grass over carved caves did
+    before item 82. The source carves before it places its features, so the caves of item 27, the
+    entrances among them, and the cliffs' cuts run before the trees and the plants in the column's
+    pipeline, the neighbors a tree spills into carved first as well; and a tree whose base would
+    stand on air or whose trunk a cut would cross is not placed there. Tests, over a seeded region,
+    that no log has air under the trunk's base, that no leaf stands with no log within the crown's
+    reach, and that the trees' count stays within the source's range for the biome, failing without
+    the mend; a capture of a cliff's edge and a cave's mouth under trees. One commit, after item 98
+    and before item 94. Done at `dc2ad9f` on 2026-10-24, the departure in the head.
+
+100. **Felling takes every log of the tree, and the crown decays within a second or two.** The owner
+    felled trees at about {now} on 2026-10-24 and found it working but for one tree whose single log
+    stayed disconnected, its leaves hanging until that log was broken by hand, and found the leaves
+    decaying too slowly. So the felling's flood follows a log to every one of its 26 neighbors, the
+    corners across two axes among them, as the branch logs of the bigger trees stand, and counts the
+    trunk's logs under the cut as the tree's where the cut was made above the base; and the crown's
+    leaves decay each at its own time within one to two seconds of the last log, where item 69
+    spread them over half a second to four. Tests, over the game's tree kinds, that felling leaves
+    no log and no leaf within the crown's reach, and that the last leaf goes within two seconds; the
+    play check as it stands. One commit, small, after item 99. Done at `54fc848` on 2026-10-24, the
+    cause two trees joined through their branches, the departure in the head.
+
+101. **Grass and the other plants give way to a block placed where they stand.** The owner placed
+    blocks at about {now} on 2026-10-24 and found that aiming at a plant, the plant highlighted,
+    placed the block in front of it rather than in its place, and that a block placed beside another
+    was refused where a plant stood in the cell. The source's plants are replaceable, so a placement
+    whose cell holds one of BlockGroups.GivesWay, short and tall grass, ferns, dead bushes and their
+    kin, replaces the plant, and aiming at such a plant places the block in the plant's own cell
+    rather than on its face; the plant drops nothing. Tests of a block placed on a plant's face
+    landing in the plant's cell and of a block placed beside another into a cell a plant holds; the
+    play check as it stands. One commit, small, after item 100. Done at `ad3499f` on 2026-10-24, the
+    play check in place of a unit test since none builds a game.
+
+102. **A held light shines from the player, not from the hand.** The owner played at about 10:53 on
+    2026-10-24 and found the held light standing at the hand, a third of a block ahead of the eye
+    and to the right, where it clips into a wall the player faces and turns with the camera, so the
+    light about the player swings as the eye turns. Item 74's light moves to the player's own place,
+    the body's middle at the eye's height, so the camera's turn has no part in it and no wall takes
+    it inside; its color, strength and range stay as item 74 set them. A test that the ground's
+    light about the player reads the same at four headings with a torch held, and the play check of
+    the lamp room's roof as it stands. One commit, small, after item 101. Done at `1f07038` on
+    2026-10-24, the light at the eye's place in the body's middle.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

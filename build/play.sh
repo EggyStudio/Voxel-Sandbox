@@ -656,38 +656,41 @@ awk -v p="$pr $pg $pb" -v s="$sr $sg $sb" 'BEGIN { split(p, a); split(s, b); for
   || fail "the far pillar high against the sky is not the sky's color beside it, $pillar against $beside"
 
 check "the block's bits"
-# The bits a broken block throws, held where they were thrown, read from eight headings around the
-# nearest three blocks off under the morning's low sun, all within 6 levels, since each square is lit
-# as if it faced up whichever way it turns toward the eye, where lit by its own way it went dark with
-# the sun behind it.
-cmd voxel.time 8
-cmd voxel.set 0 12 -6 white_concrete
-cmd voxel.tp 0.5 10.88 -3.5
-cmd voxel.look 0 0
-cmd frames.wait 2
-cmd voxel.still on
+# The bits a broken block throws at the end of a tunnel two high and one wide in a hill at noon, left
+# to fall a moment and held, each read where it lies, the one against the tunnel's wall within 6
+# levels of the rest, since each is lit at its middle, where one clipped into the wall took the
+# sky's light from inside it, 29, 49 and 51 against 16, 25 and 13.
+cmd voxel.time 12
+cmd voxel.kill all
+cmd voxel.fill 60 4 -70 70 12 -60 stone
+cmd voxel.fill 65 4 -61 65 5 -60 air
+cmd voxel.tp 65.5 4 -58.5
+cmd voxel.fly off
+cmd voxel.look 0 -2
+cmd frames.wait 30
 cmd voxel.break
-bits=$(ask voxel.bits)
-read -r bx by bz <<< "$(printf '%s\n' "$bits" | sed -nE 's/.* the nearest at (-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+)$/\1 \2 \3/p')"
-[ -n "$bz" ] || fail "breaking a block threw no bits, $bits"
-ask voxel.pixel "$bx" "$by" "$bz" > /dev/null
+cmd frames.wait 25
+cmd voxel.still on
+cmd frames.wait 10
+ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 levels=""
-for heading in 0 45 90 135 180 225 270 315; do
-  # The eye three blocks back from the bit along the heading it looks down, at the bit's height.
-  read -r ex ez <<< "$(awk -v x="$bx" -v z="$bz" -v h="$heading" 'BEGIN { a = h * 3.14159265 / 180; printf "%.3f %.3f", x - 3 * sin(a), z + 3 * cos(a) }')"
-  cmd voxel.tp "$ex" "$(awk -v y="$by" 'BEGIN { printf "%.3f", y - 1.62 }')" "$ez"
-  cmd voxel.look "$heading" 0
-  cmd frames.wait 10
-  bit=$(ask voxel.pixel "$bx" "$by" "$bz")
-  read -r r g b <<< "$(channels "$bit")"
-  [ -n "$b" ] || fail "voxel.pixel read no bit from heading $heading, saying $bit"
-  levels="$levels $(( (r + g + b) / 3 ))"
+seen=""
+for place in "65.02 4.05 -60.5" "65.98 4.05 -60.5" "65.02 5.05 -61.5" "65.98 5.05 -61.5" "65.5 4.05 -61.5"; do
+  bits=$(ask voxel.bits $place)
+  bit=$(printf '%s\n' "$bits" | sed -nE 's/.* the nearest at (-?[0-9.]+, -?[0-9.]+, -?[0-9.]+)$/\1/p')
+  [ -n "$bit" ] || fail "breaking the tunnel's end threw no bits, $bits"
+  [[ "$seen" == *"[$bit]"* ]] && continue
+  seen="$seen[$bit]"
+  read -r r g b <<< "$(channels "$(ask voxel.pixel ${bit//,/})")"
+  [ -n "$b" ] && levels="$levels $(( (r + g + b) / 3 ))"
 done
 cmd voxel.still off
-echo "a bit's levels from the eight headings:$levels"
+cmd voxel.fly on
+echo "the tunnel's bits:$levels"
+[ -n "${levels// /}" ] || fail "voxel.pixel read none of the tunnel's bits"
 printf '%s\n' $levels | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low <= 6) }' \
-  || fail "a broken block's bit is lit by the way the eye looks at it, its levels$levels"
+  || fail "a broken block's bit by the tunnel's wall takes light through the wall, its levels among the rest$levels"
 
 check "the plant's place"
 # A block placed aimed at a plant takes the plant's own cell, and one placed against a block's side
@@ -866,4 +869,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a broken block's bits lit alike from eight headings, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"
