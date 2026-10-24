@@ -355,15 +355,17 @@ and a cobblestone dungeon deep under any ground, a magma block at its middle whe
 its spawner. `voxel.find <village|igloo|pyramid|dungeon|ravine>` gives the nearest one's place.
 
 A village stands where the plains, the taiga, the snowy plains or the desert lie nearly level across
-48 blocks, built of that biome's wood or sandstone. A well at its middle has a lantern hanging under
-its roof, four roads of dirt path lead out from it, and beside each road stand two plots, each a
-small house, a long house, a farm of wheat with a row of water through it, a forge with a hearth of
-magma or a pile of hay, its front toward the road, with lamp posts along the roads, a lantern on a
-fence, or a torch in the desert. A house has a shut oak door with a torch over it, lanterns hanging
-inside and a roof of stairs climbing to a ridge, flat in the desert. Each road follows the ground
-block by block and crosses water on planks, each building stands at its own ground's height on a
-footing of stone, and no tree grows within the village. A villager lives in each house, two in a
-long house, and one keeps each forge and each farm.
+48 blocks, built of that biome's wood or sandstone. Villages are spaced as the source spaces them,
+one to each square of 34 chunks at a chunk among its first 26 each way, so two stand at least eight
+chunks apart and most a few hundred blocks. A well at its middle has a lantern hanging under its
+roof, four roads of dirt path lead out from it, and beside each road stand two plots, each a small
+house, a long house, a farm of wheat with a row of water through it, a forge with a hearth of magma
+or a pile of hay, its front toward the road, with lamp posts along the roads, a lantern on a fence,
+or a torch in the desert. A house has a shut oak door with a torch over it, lanterns hanging inside
+and a roof of stairs climbing to a ridge, flat in the desert. Each road follows the ground block by
+block and crosses water on planks, each building stands at its own ground's height on a footing of
+stone, and no tree grows within the village. A villager lives in each house, two in a long house,
+and one keeps each forge and each farm.
 
 ## Animals and villagers
 

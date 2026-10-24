@@ -29,8 +29,13 @@ public sealed class Village : Structure
 {
     public override string Name => "village";
     public override int Size => 2 * Half;
-    protected override int Chance => 30;
+    // The source's villages, one to each square of 34 chunks, at a chunk among its first 26 each way,
+    // so two stand at least eight chunks apart and most a few hundred blocks, where the land suits one.
+    public override int CellSize => 34 * Section.Size;
+    protected override int Chance => 100;
     protected override int Salt => 0x7111;
+
+    protected override (int X, int Z) Within(uint hash) => ((int)(hash / 100 % 26) * Section.Size, (int)(hash / 10000 % 26) * Section.Size);
 
     private const int Half = 24;
     // How far from the well along its road each plot stands, and how far from the road's middle

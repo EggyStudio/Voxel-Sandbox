@@ -590,7 +590,7 @@ public static class GameCommands
         if (Structures.Find(name) is not { } structure) return $"no structure is called {name}, which is {string.Join(", ", Structures.All.Select(s => s.Name))}";
         if (game.World.Generator is not Overworld land) return "only the overworld holds structures";
         var at = game.Player.Body.Position;
-        int cx = (int)MathF.Floor(at.X / Structure.Cell), cz = (int)MathF.Floor(at.Z / Structure.Cell);
+        int cx = (int)MathF.Floor(at.X / structure.CellSize), cz = (int)MathF.Floor(at.Z / structure.CellSize);
         // Ring by ring of cells outward, the nearest start in the first ring that holds one.
         for (int ring = 0; ring <= 40; ring++)
         {
@@ -605,7 +605,7 @@ public static class GameCommands
                 }
             if (best is { } found) return $"the nearest {structure.Name} is built from {found.X}, {found.Y}, {found.Z}, {bestDistance:0} blocks away";
         }
-        return $"no {structure.Name} within {40 * Structure.Cell} blocks";
+        return $"no {structure.Name} within {40 * structure.CellSize} blocks";
     }
 
     [Command("voxel.biome", "The nearest place of a biome from the player, its ground's top, searched outward in rings 8 blocks apart to 3000 blocks: voxel.biome <name>")]

@@ -4,8 +4,8 @@ namespace VoxelSandbox;
 public readonly record struct StructureStart(int X, int Y, int Z, uint Hash);
 
 /// <summary>
-/// A building or a room the generator places, one at most in each cell of 64 by 64 blocks, where its
-/// chance falls and the land at its corner suits it.
+/// A building or a room the generator places, one at most in each cell of 64 by 64 blocks, or of its
+/// own size where it spaces itself wider, where its chance falls and the land at its corner suits it.
 /// </summary>
 /// <remarks>
 /// Where a structure starts depends on the seed and the cell alone, and whether it is built there on
@@ -16,6 +16,9 @@ public readonly record struct StructureStart(int X, int Y, int Z, uint Hash);
 public abstract class Structure
 {
     public const int Cell = 64;
+
+    /// <summary>How wide its cells are, each holding one start at most, <see cref="Cell"/> unless it spaces itself wider.</summary>
+    public virtual int CellSize => Cell;
 
     /// <summary>Its name, which <c>voxel.find</c> takes.</summary>
     public abstract string Name { get; }
@@ -43,10 +46,17 @@ public abstract class Structure
     {
         var hash = PlaceHash.Of(cellX, cellZ, land.Seed ^ Salt);
         if (hash % 100 >= Chance) return null;
-        var room = Cell - Size;
-        int x = cellX * Cell + (int)(hash / 100 % (uint)room), z = cellZ * Cell + (int)(hash / 10000 % (uint)room);
+        var (alongX, alongZ) = Within(hash);
+        int x = cellX * CellSize + alongX, z = cellZ * CellSize + alongZ;
         var (ground, _, _, biome) = land.At(x + Size / 2, z + Size / 2);
         return Suits(biome, ground, hash, out var y) && Fits(land, x, z) ? new StructureStart(x, y, z, hash) : null;
+    }
+
+    /// <summary>How far into its cell along x and z a start stands, by its hash, anywhere it fits unless it says otherwise.</summary>
+    protected virtual (int X, int Z) Within(uint hash)
+    {
+        var room = (uint)(CellSize - Size);
+        return ((int)(hash / 100 % room), (int)(hash / 10000 % room));
     }
 
     /// <summary>How far past its size it builds on each side, as a roof's eaves or the space a pyramid clears around it.</summary>
@@ -58,8 +68,8 @@ public abstract class Structure
     /// <summary>Every start of it whose area, its margin included, reaches into a box between two corners at the ground.</summary>
     public IEnumerable<StructureStart> StartsIn(int minX, int minZ, int maxX, int maxZ, Overworld land)
     {
-        int cx0 = FloorDiv(minX - Size - Margin, Cell), cx1 = FloorDiv(maxX + Margin, Cell);
-        int cz0 = FloorDiv(minZ - Size - Margin, Cell), cz1 = FloorDiv(maxZ + Margin, Cell);
+        int cx0 = FloorDiv(minX - Size - Margin, CellSize), cx1 = FloorDiv(maxX + Margin, CellSize);
+        int cz0 = FloorDiv(minZ - Size - Margin, CellSize), cz1 = FloorDiv(maxZ + Margin, CellSize);
         for (int cz = cz0; cz <= cz1; cz++)
             for (int cx = cx0; cx <= cx1; cx++)
                 if (StartIn(cx, cz, land) is { } start && start.X - Margin <= maxX && start.X + Size - 1 + Margin >= minX

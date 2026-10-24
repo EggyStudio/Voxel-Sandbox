@@ -64,6 +64,26 @@ public class GenerationTests
     }
 
     [Fact]
+    public void Villages_Stand_As_The_Source_Spaces_Them_Eight_Chunks_Apart_At_Least()
+    {
+        // A square of 64 chunks reaches into nine of the source's squares of 34 chunks at most, each
+        // holding one village at most, at a chunk among its first 26 each way. Seed 1 has two in the
+        // square east and north of the origin, a desert's and a plains'.
+        var land = new Overworld(1);
+        var village = Structures.Find("village")!;
+        var starts = village.StartsIn(0, -1024, 1023, -1, land).ToList();
+        Assert.InRange(starts.Count, 2, 9);
+        Assert.All(starts, s => Assert.True(s.X % Section.Size == 0 && s.Z % Section.Size == 0, $"{s} stands off its chunk's corner"));
+        foreach (var a in starts)
+            foreach (var b in starts.Where(b => b != a))
+                Assert.True(Math.Max(Math.Abs(a.X - b.X), Math.Abs(a.Z - b.Z)) >= 8 * Section.Size, $"{a} and {b} stand within eight chunks");
+        // Over a wider square, a few hundred blocks between neighbors as a rule.
+        var wide = Enumerable.Range(-3, 7).SelectMany(cz => Enumerable.Range(-3, 7).Select(cx => village.StartIn(cx, cz, land))).OfType<StructureStart>().ToList();
+        var nearest = wide.Select(a => wide.Where(b => b != a).Min(b => MathF.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Z - b.Z) * (a.Z - b.Z)))).ToList();
+        Assert.True(nearest.Average() > 300, $"villages {nearest.Average():0} blocks from the nearest on average");
+    }
+
+    [Fact]
     public void Every_Torch_And_Lantern_Of_A_Village_Holds_To_A_Block_And_No_Tree_Stands_In_It()
     {
         var land = new Overworld(1);

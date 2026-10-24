@@ -5,28 +5,26 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `526f20b`, item 79, swimming as the source has it, and nothing else, carrying the
-review's file: the vertical motion in water and above it until the player stands runs the source's
-ticks exactly, Space adding 0.04 a tick or a jump of 0.42 in shallow water, the speed kept at 0.8
-less 0.005, gravity 0.08 and drag 0.98 above, the body moved at each tick's speed between tick
-boundaries so every frame length gives one path, the step out at 0.3 where the raised box fits free
-of water as the source's isFree asks; holding Space bobs the feet 0.73 under to 0.25 over against
-the source's 0.74 and 0.28; departures, a bank a block above the water's top block cannot be reached
-under the source's rules, the feet at most 0.53 over the surface, so the play check's bank stands
-level with the water's top and the earlier climb from `5cd1521` is gone, said in the README, a
-climbable one-block bank the owner's to choose as a departure from the source; five tests at two
-frame lengths; 248 tests, the strict build clean, play.sh clean on the GPU, the swim check 179 s on
-lavapipe against 131. Read at 03:28 on 2026-10-24. Pushed at 03:50 after the build run of `7da1d96`
-ended green, its play job 23.1 minutes; the run watched. Next 78, 78, 80, 81, 69, 75, 74, 72 and 73,
-then the pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part
-and 54 when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's
-word.
+Reviewed up to `b032e76`, item 78, the grass as the source places it with the two-block grass, and
+nothing else, carrying the review's file: the patches' counts, thresholds, rarities, tries and
+spreads from the source's own placed feature files, laid out per chunk and its eight neighbors so
+patches spill across chunk edges, the per-place rolls gone; on seed 1's plains short grass covers
+21.8 of a hundred grass tops against 86 before and the source's 25.6 on level land, tall grass 0.96
+and flowers 0.35; the tall grass a top block held as the plant, both halves going when either
+breaks; departures, the forest's two-block flowers and the large fern, bush, leaf litter, firefly
+and dry grass patches left out since the game has no two-block flowers, said in the README, patch
+kinds no near biome grows skipped so a column costs 9.4 ms against 13.0 replaying every neighbor, at
+the price of a third biome's spill at a border, and the play check reading the upper half;
+plains-village.webp taken again; 249 tests, the strict build clean, play.sh clean on the GPU,
+lavapipe not run. Read at 03:51 on 2026-10-24. Not pushed, the build run of `526f20b` running;
+pushed when it ends. Next 80, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40
+degrees, then 26 and the items in order; items 38's second part and 54 when their packages come; the
+AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `526f20b` came, item 79, pushed at 03:50 on 2026-10-24, its run in flight.
 
 Before it, `7da1d96` and `8bc0796` came, item 68, pushed at 03:22 on 2026-10-24, its run green, the
 play job 23.1 minutes.
-
-Before it, `073d84b` came, item 67, pushed at 02:49 on 2026-10-24 with `dd64fd0` and `2b265f3`, its
-run green, the play job 31.2 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -256,6 +254,7 @@ full.
     numbers from its worldgen data, rather than by the game's density, and tall grass as a two-block
     plant with its two pictures; a test of a plains chunk's grass count within the source's range
     and the tall grass standing on two blocks; the plains village picture taken again. One commit.
+    Done at `b032e76` on 2026-10-24, the departures in the head.
 
 79. **Swimming as the source has it, no launch out of the water.** The owner wrote on 2026-10-23
     (Decision 34) that the player should not jump out of the water automatically or with such force,
