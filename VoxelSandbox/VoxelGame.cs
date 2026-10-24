@@ -118,6 +118,8 @@ public sealed class VoxelGame : IDisposable
         Renderer.Atlas = terrain;
         Icons.Use(terrain, packs);
         DropRenderer.Use(terrain);
+        Bits.Use(terrain);
+        Cracks.Use(packs);
         PackGui.Use(packs);
         InWall.Use(packs);
         Sky.Use(packs);
@@ -146,6 +148,12 @@ public sealed class VoxelGame : IDisposable
     private readonly List<(Vector3 At, float Power, float Age)> _blasts = [];
 
     public DropRenderer DropRenderer { get; } = new();
+
+    /// <summary>The bits the blocks throw as they are hit and broken.</summary>
+    public BlockBits Bits { get; } = new();
+
+    /// <summary>The cracks drawn over the block being broken.</summary>
+    public Cracks Cracks { get; } = new();
 
     public Inventory Inventory { get; } = new();
 
@@ -466,6 +474,7 @@ public sealed class VoxelGame : IDisposable
             Drops.Spawn(stack.Item, stack.Count, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
         Drops.Update(World, Player.Body, Inventory, seconds, pickUp: alive && Mode.Touches());
+        Bits.Update(World, seconds);
 
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
@@ -749,6 +758,7 @@ public sealed class VoxelGame : IDisposable
         if (BreakingAt != (hit.X, hit.Y, hit.Z)) (BreakingAt, BreakProgress) = ((hit.X, hit.Y, hit.Z), 0);
         var time = Loot.BreakSeconds(World.GetBlock(hit.X, hit.Y, hit.Z), Hotbar.Current?.Item);
         BreakProgress += time <= 0 ? 1 : seconds / time;
+        Bits.Hit(World.GetBlock(hit.X, hit.Y, hit.Z), hit, seconds);
         if (BreakProgress < 1) return;
         Break();
         (BreakingAt, BreakProgress, _breakWait) = (null, 0, Repeat);
@@ -816,6 +826,7 @@ public sealed class VoxelGame : IDisposable
         if (!Mode.Builds() || Target is not { } hit) return false;
         var block = World.GetBlock(hit.X, hit.Y, hit.Z);
         if (!Blocks.Get(block).Breakable || !World.SetBlock(hit.X, hit.Y, hit.Z, BlockId.Air)) return false;
+        Bits.Break(block, hit.X, hit.Y, hit.Z);
         if (Mode != GameMode.Survival) return true;
         Vitals.Exhaust(0.005f);
         var held = Hotbar.Current?.Item;
@@ -901,15 +912,18 @@ public sealed class VoxelGame : IDisposable
         Renderer.Draw(World, Player.Eye, RenderDistance);
         MobRenderer.Draw(Mobs.All, Player.Eye);
         DropRenderer.Draw(Drops.All, Player.Eye, GetTime());
+        Bits.Draw(Player.Eye, Player.Look);
         DrawArrows();
         // An explosion's flash, a ball swelling to the power's size and fading over half a second.
         foreach (var (at, power, age) in _blasts)
             DrawSphere(at, power * (0.4f + age), new Color(255, 236, 200, (byte)(220 * (1 - age / 0.5f))));
         Clouds.Draw(Player.Eye, RenderDistance, Sky.Horizon);
-        if (Target is { } hit && !HudHidden && Mode.Touches())
+        // The cracks are the block's own, shown with the interface hidden as the source shows them,
+        // and the outline the interface's.
+        if (Target is { } hit && Mode.Touches())
         {
-            Hud.DrawOutline(hit, World.ShapeAt(hit.X, hit.Y, hit.Z));
-            if (BreakingAt == (hit.X, hit.Y, hit.Z)) Hud.DrawBreaking(hit, World.ShapeAt(hit.X, hit.Y, hit.Z), BreakProgress);
+            if (!HudHidden) Hud.DrawOutline(hit, World.ShapeAt(hit.X, hit.Y, hit.Z));
+            if (BreakingAt == (hit.X, hit.Y, hit.Z)) Cracks.Draw(hit, World.ShapeAt(hit.X, hit.Y, hit.Z), BreakProgress);
         }
         EndMode3D();
 
@@ -1016,6 +1030,8 @@ public sealed class VoxelGame : IDisposable
         Renderer.Dispose();
         MobRenderer.Dispose();
         DropRenderer.Dispose();
+        Bits.Dispose();
+        Cracks.Dispose();
         Clouds.Dispose();
         Sky.Dispose();
         Packs.Dispose();

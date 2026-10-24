@@ -27,20 +27,6 @@ public static class Hud
             DrawLine3D(cell + middle + (from - middle) * 1.004f, cell + middle + (to - middle) * 1.004f, color);
     }
 
-    /// <summary>
-    /// Darkens a block being broken in survival over its pieces, more the further it is broken, as
-    /// Minecraft's cracks spread. Called inside <c>BeginMode3D</c>.
-    /// </summary>
-    public static void DrawBreaking(BlockHit hit, BlockShape? shape, float progress)
-    {
-        var color = new Color(20, 16, 12, (byte)(15 + 95 * Math.Clamp(progress, 0, 1)));
-        foreach (var box in shape?.Boxes ?? [Box.Cell])
-        {
-            var size = box.Max - box.Min + new Vector3(0.006f);
-            DrawCube(new Vector3(hit.X, hit.Y, hit.Z) + (box.Min + box.Max) / 2, size.X, size.Y, size.Z, color);
-        }
-    }
-
     public static void DrawCrosshair()
     {
         int cx = GetScreenWidth() / 2, cy = GetScreenHeight() / 2;

@@ -457,14 +457,18 @@ hotbar or harm, and no mob hunts the player.
 
 In creative every item is to hand through E, a block breaks at once and drops nothing, placing a
 block uses nothing up, and Space pressed twice flies. In survival there is no flight, and a block
-takes its hardness times one and a half seconds to break with the button held, darkening as it goes,
-as by hand in Minecraft, and then drops what it leaves. Grass, farmland and a path drop their dirt,
-stone its cobblestone, coal ore its coal, diamond and emerald ore their gem, lapis ore four to nine
-lapis and redstone ore four or five redstone, wheat its wheat and seeds, the grasses a seed one time
-in eight, a dead bush up to two sticks, leaves their sapling one time in twenty, glass and ice
-nothing, and any other block itself. An ore asks a pickaxe, of stone or better for iron, copper and
-lapis and of iron for gold, redstone, diamond and emerald, and gives nothing to a lesser one. A
-torch or a lantern that falls with the block it held to drops too, and placing a block uses one up.
+takes its hardness times one and a half seconds to break with the button held, as by hand in
+Minecraft, cracking as it goes through Minecraft's ten stages, a pack's destroy stages or the game's
+own cracks branching out from its middle where no pack has them, and throwing a bit of its side's
+picture from the face hit each tick, and then drops what it leaves. A block broken in any mode
+throws 64 bits, each a quarter of its side's picture, which fall, land and are gone within two
+seconds, as Minecraft's do. Grass, farmland and a path drop their dirt, stone its cobblestone, coal
+ore its coal, diamond and emerald ore their gem, lapis ore four to nine lapis and redstone ore four
+or five redstone, wheat its wheat and seeds, the grasses a seed one time in eight, a dead bush up to
+two sticks, leaves their sapling one time in twenty, glass and ice nothing, and any other block
+itself. An ore asks a pickaxe, of stone or better for iron, copper and lapis and of iron for gold,
+redstone, diamond and emerald, and gives nothing to a lesser one. A torch or a lantern that falls
+with the block it held to drops too, and placing a block uses one up.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival and adventure, where a left click takes up a stack, puts it down, joins it to a stack of
