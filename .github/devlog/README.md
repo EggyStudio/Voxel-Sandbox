@@ -29,6 +29,13 @@ pack on the right, with the bits cut from the stone's side.
 The hand in view under Bare Bones: holding stone, holding a stick (a pixel deep), and the empty arm
 wearing Steve's sleeve.
 
+![](2026-10-24-fire1.webp)
+A fire lighting a closed stone room at night, its flames the source's models over the pack's
+animated fire.
+
+![](2026-10-24-use2.webp)
+The fires a TNT's blast leaves in its crater.
+
 Done:
 
 - Item 55 at `d7c4892`. The plants cast shadows, cut by their texture (Decision 27).
@@ -38,6 +45,7 @@ Done:
   keeps its progress across jumps.
 - Item 69 at `cc4f29a`. Felling a tree takes its logs and leaves, some logs falling, and gravity
   blocks fall (Decision 35).
+- Item 72 at `ee557b3`. Fire, a block that burns, animated and emissive (Decision 34).
 - Item 73 at `cba35ca`. TNT and the creeper's blast.
 - Item 74 at `2aea2bf`. A held light lights the ground around the player.
 - Item 75 at `1dce7b7`. The player's hand and held item in view.

@@ -704,9 +704,8 @@ which cast no shadow.
 ## Fire
 
 Flint and steel used on a block's face lights a fire in the cell before it, where the block under
-it is whole or a block beside it burns, as Minecraft's does, and a TNT's blast lights a third of the
-cells it empties over a whole block, as Minecraft's fiery blasts do. A fire burns by Minecraft's
-numbers. It ticks every one and a half to two seconds, growing older, burns away a block beside it
+it is whole or a block beside it burns, as Minecraft's does, and a blast lights none, as Minecraft's
+TNT and creepers light none. A fire burns by Minecraft's numbers. It ticks every one and a half to two seconds, growing older, burns away a block beside it
 that burns or turns it to fire, at Minecraft's odds for planks, logs, leaves, wool, hay, TNT, which
 it lights, and the flowers and grasses, and catches the air near them, up to four blocks over it and
 one to each side. One with nothing that burns around it goes out once it is older than 3, about

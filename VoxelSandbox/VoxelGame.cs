@@ -534,7 +534,7 @@ public sealed class VoxelGame : IDisposable
         Blasts.Update(seconds);
         var blasts = Tnt.Exploded.ToArray();
         Tnt.Exploded.Clear();
-        foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT", fiery: true);
+        foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT");
         // The hand a third of a block ahead of the eye, to its right and below it.
         var ahead = Player.Look;
         var side = Vector3.Normalize(Vector3.Cross(ahead, Vector3.UnitY));
@@ -627,12 +627,11 @@ public sealed class VoxelGame : IDisposable
     /// its rays reach, drops a third of them in survival, and harms and throws the player and the
     /// mobs near it by its impact, as Minecraft's explosions do.
     /// </summary>
-    public void Explode(Vector3 at, float power, string cause, bool fiery = false)
+    public void Explode(Vector3 at, float power, string cause)
     {
         var survival = Mode.Lives();
         var pickaxe = Items.Find("stone_pickaxe");
-        var broken = Explosion.Breaks(World, at, power, _random);
-        foreach (var (x, y, z) in broken)
+        foreach (var (x, y, z) in Explosion.Breaks(World, at, power, _random))
         {
             var block = World.GetBlock(x, y, z);
             // A TNT the blast reaches is lit on a short fuse rather than broken.
@@ -645,11 +644,6 @@ public sealed class VoxelGame : IDisposable
             if (!World.SetBlock(x, y, z, BlockId.Air) || !survival || _random.NextDouble() >= 1 / power) continue;
             foreach (var (item, count) in Loot.Of(block, _random, pickaxe)) Drops.Pop(item, count, x, y, z);
         }
-        // A fiery blast lights a third of the cells it emptied over a whole block, as the source's
-        // fiery explosions do.
-        if (fiery)
-            foreach (var (x, y, z) in broken)
-                if (_random.Next(3) == 0 && Blocks.IsSturdy(World.GetBlock(x, y - 1, z))) Fires.Light(World, x, y, z);
         var middle = Player.Body.Position + new Vector3(0, Player.Body.Height / 2, 0);
         var distance = Vector3.Distance(middle, at);
         var exposure = Explosion.Exposure(World, at, Player.Body.Min, Player.Body.Max);

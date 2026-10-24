@@ -5,29 +5,27 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `cba35ca`, item 73's creeper part, the swell by the source's numbers with its tremble
-and white, each blast's cloud of the source's huge explosion drawn with the pack's sixteen frames as
-an engine particle sheet, one emitter a blast, and a flash of a point light for a tenth of a second
-casting shadows, no hiss since the game has no sound, said in the README, after `1eeeeff`, its
-first, TNT, and nothing else, carrying the review's file. TNT: the TNT block with the source's
-pictures, flint and flint and steel as items with their recipes, gravel dropping flint one in ten as
-the source's does, a lit TNT following the source's primed entity, the pop, the 80-tick fuse, the
-white flash every other five ticks, the swell over the last ten and a blast of power 4 at its feet,
-a TNT the rays reach lit for 10 to 29 ticks rather than broken; departures, the flint and steel
-recipe shaped in two orientations where the source's is shapeless, and the flint drop and the
-recipes added so survival reaches TNT; tests over three seeds of the crater's dirt and stone against
-a creeper's, the pop's height, the fuse's time and a chained fuse, a capture sent to the owner; 256
-tests, the strict build clean, play.sh clean on the GPU. Read at 04:47 and 04:59 on 2026-10-24; 257
-tests. Pushed at 05:21 after the build run of `bfc4d39` ended green, its play job 33.9 minutes; the
-run watched. Next fire for 72, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at
-40 degrees, then 26 and the items in order; items 38's second part and 54 when their packages come;
-the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `ee557b3`, item 72, fire, and nothing else, carrying the review's file and the
+devlog: the source's fire tick, its aging, burn-out, spread odds and the blocks that burn, flint and
+steel lighting a cell before any face where fire stands, the flames the source's floor, side and up
+models chosen by neighbors with the pack's animated fire, a hand putting a fire out and a block
+placed replacing it; departures, TNT's blast lighting a third of the cells it empties by the
+source's fiery-explosion rule where the source's own TNT lights none, to go, the light a lamp box in
+a clear masked material the field reads and every pass cuts so the flames step without restamping,
+the flames drawn at twice their color as the source draws fire at full light, and one fire texture,
+no humid burnout, rain or fire damage; voxel.fires added, three tests, two captures in the devlog;
+260 tests, the strict build clean, play.sh clean on the GPU twice and unchanged. Read at 05:28 on
+2026-10-24. Not pushed, the build run of `cba35ca` running; pushed when it ends. Next TNT's fires
+out in a small commit, then item 46's pictures at 40 degrees with the village views moved, 78, 80,
+81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in
+order; items 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `cba35ca` and `1eeeeff` came, item 73, pushed at 05:21 on 2026-10-24, their run in
+flight.
 
 Before it, `bfc4d39` came, the devlog and AGENTS.md's rows, with `2aea2bf`, `adefc9d` and `1dce7b7`,
 items 74 and 75, pushed at 04:43 on 2026-10-24, their run green, the play job 33.9 minutes.
-
-Before it, `45b4b93` came, item 69's felling, with `cc4f29a`, `8da806a`, `9b25aa3` and `b032e76`,
-items 69, 81, 80 and 78, pushed at 04:23 on 2026-10-24, their run green, the play job 18.1 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -231,7 +229,9 @@ full.
     blast, burning out in the source's time where nothing feeds it and spreading to a flammable
     neighbor at the source's chance within a small radius, so a house burns and a stone floor does
     not; a test of a fire placed on planks spreading and one on stone dying, and a night capture of
-    a fire lighting a room. One commit, after item 73.
+    a fire lighting a room. One commit, after item 73. Done at `ee557b3` on 2026-10-24, the
+    departures in the head; TNT's blast lights nothing as the source's does not, in a small commit
+    after.
 
 73. **TNT and the creeper's blast.** The owner wrote on 2026-10-23 (Decision 34) asking for TNT and
     the creeper's explosion. The mend: a TNT block primed by a hit with flint and steel or by a
