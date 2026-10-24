@@ -5,40 +5,32 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `9a3d746`, item 118, a held tool's pixels meeting with no crack, read at 17:08 on
-2026-10-24, carrying the review's files. The cracks were where the front and the back met the sides,
-the front and the back each one quad of the whole picture alpha-tested on a nearest-sampled texture
-while the sides were geometry at the pixels' edges, so the front's cut edge, where the interpolated
-coordinate crosses a texel boundary, never fell on the sides' edges, dotted sky lines moving with
-the subpixel view and hard steps no multisampling smooths. DropRenderer.Extrude gives each shown
-pixel its own front, back and needed sides, every corner from one grid of the pixels' corners so
-meeting faces share them bit for bit, every face sampling its pixel's middle, the drops on the
-ground the same mesh; departure, runs of pixels are not merged into one face, since the long edge
-would meet the sides' shorter edges at T-junctions. Measured as pixels nearer the sky than both
-neighbors along a row or column over the window's lower right at 1280 by 720, the iron pickaxe 225
-to 27 and the wooden pickaxe at 70 degrees 224 to 22, the same on lavapipe, the rest the item's own
-one-pixel slivers of a lit face; ItemTests reads the extruded mesh of a ragged picture with a hole
-closed, every edge held by two faces or four at a corner touch, Measurements.Gaps counts a synthetic
-crack, voxel.gaps is new and the play check reads the wooden pickaxe against the noon sky at most
-60, 13 this run; 286 tests, play.sh 192 s on the GPU; the capture at four times shows the lines
-gone. Both pushed at 17:08 on 2026-10-24 after the run of `65eec11` went green; the run watched.
-After `cce1536`, item 116, the held axe's blade facing ahead, read at 16:30 on 2026-10-24, carrying
-the review's files. HandRenderer.Turn keeps the quarter turn of plus 90 and for a tool turns the
-picture first by a half about its handle's diagonal, x, y, z to y, x, minus z, so the handle stays
-where the quarter turn puts it and the axe's blade comes ahead, the pickaxe, the shovel and the
-sword lying alike on both sides of the handle and looking the same, flat items that are not tools
-keeping the plain turn; the game has no hoe. Departure, the source's handheld model says a turn of
-minus 90, which put every tool at the right edge leaning at the eye where the game's plus 90 gives
-the source's look, the part of the source's chain that flips the sign not found. ItemTests reads a
-point at the axe's blade at least 0.05 ahead of the handle's end with the tool's turn and the
-handle's end and grip where a plain picture has them; 284 tests, play.sh 192 s on the GPU; the
-capture shows the four tools before and after.
+Reviewed up to `758e9df`, item 27's package part, 5.2.281 pinned, pushed at 17:48 on 2026-10-24
+after the run of `9a3d746` went green, the run watched, carrying the review's files.
+SetProfileWindowKey gives way to SetDebugOverlayKey(Key.Null) and SetUiHiddenKey(Key.Null) is added,
+F1 and F3 being the game's own. Departure, the far cascade is not set, LightSettings carrying the
+reason, since at the far cascade the coarse cells hold the ground as a slab and take the sky's light
+from walls near it, the play check's gray glass frame reading 197, 192, 144 where it reads 197, 195,
+194 without and a red wall's blue 57 against 98, at about 5 ms of the scene pass at the grove, and
+it changed none of the cave's readings at any reach. The deep cave at minus 59.5, minus 4, minus
+91.5 reads digit for digit as on 5.2.215, the deepslate tops at 45 blocks sunlit at noon at High
+with shadows at 150 (35, 29, 20) and 96, the far tops at 90 blocks bluish (9, 13, 18 at High, 25,
+36, 53 with global illumination off or Low), the edge lines and the qualities' ambient fog
+unchanged, so the engine's item 83 mend does not reach this cave; both go to the engine as its items
+101 and 102 through ASKS.md. The black is mended, the desert village at 40 degrees and hour 17
+reading 0 pixels under 1 percent where 422,985 stood, 0 where 188,757 after a magma block and 0
+where 70,170 with the screen probes on, the owner's call on the probes asked with the capture. The
+grove at 1920 by 1080 at High reads the frame 40.7 to 46.4 ms with the far cascade and the shadow
+fill where 5.2.215 reads 15.4 to 18.0, the scene pass 30.9 to 34.6 against 10.2 to 12.2 and the
+shadows 5.2 to 5.9 against 1.0, the far cascade off 33.9 and 24.2, the fill off too 29.9 and 24.3
+with the shadows 1.14, so as committed the frame is about 34 ms with the scene pass about 24, the
+second package bringing the pass back to 5.2.215's. 286 tests, play.sh 290 s on the GPU.
+
+Before it, `9a3d746` came, items 116 and 118 with `cce1536`, pushed at 17:08 on 2026-10-24, its run
+green, the play job 36.9 minutes.
 
 Before it, `65eec11` came, items 114's first part and 115 with `3869d0c`, pushed at 16:27 on
 2026-10-24, its run green, the play job 40.1 minutes.
-
-Before it, `031d169` came, items 110 to 113 with `fd17371`, `f00f649` and `2a399af`, pushed at 15:44
-on 2026-10-24, its run green, the play job 40.5 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -502,7 +494,10 @@ full.
     ambient fog color begins, near at Low and far at High, and that it shows at a distance even at
     High; that is the counted cascades' reach and the sky past them, and the game sets the engine's
     far cascade through SetSceneField when the package comes, so the far rays of a cave meet the
-    ground before the sky at every quality, read again then.
+    ground before the sky at every quality, read again then. The package part at `758e9df` on
+    2026-10-24, 5.2.281 pinned with the keys renamed, the far cascade left off and the cave's
+    readings unchanged, said in the head; the far cascade set once the engine's item 102 mends its
+    slab, and the cave read again with the engine's item 101.
 
 28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
     emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the

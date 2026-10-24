@@ -248,6 +248,46 @@ public class MesherTests
     }
 
     [Fact]
+    public void No_Corner_Of_A_Generated_Sections_Faces_Lies_Inside_Another_Faces_Edge()
+    {
+        // Seed 1's ground at the origin, generated and meshed with its neighbors about it. Each block's
+        // face is a quad of its own with its corners on the block grid, so faces that meet share their
+        // corners, and none lies inside another's edge, where the rasterizer would leave a crack
+        // between the two faces as the view moves.
+        var land = new Overworld(1);
+        var world = new VoxelWorld(land);
+        for (int z = -1; z <= 1; z++)
+            for (int x = -1; x <= 1; x++)
+            {
+                var column = land.Generate(x, z);
+                Lighting.Compute(column);
+                world.Add(column);
+            }
+        var mesher = new SectionMesher();
+        var ground = land.At(8, 8).Height;
+        Assert.True(mesher.Mesh(world, new SectionKey(0, ground >> Section.Shift, 0)));
+        var faces = mesher.Solid;
+        Assert.True(faces.Count > 400, $"{faces.Count / 4} faces");
+
+        var corners = Enumerable.Range(0, faces.Count).Select(i => faces.Positions[i]).Distinct().ToList();
+        var inside = 0;
+        for (int face = 0; face < faces.Count; face += 4)
+            for (int i = 0; i < 4; i++)
+            {
+                System.Numerics.Vector3 a = faces.Positions[face + i], b = faces.Positions[face + (i + 1) % 4];
+                var along = b - a;
+                var length = along.LengthSquared();
+                foreach (var corner in corners)
+                {
+                    var t = System.Numerics.Vector3.Dot(corner - a, along) / length;
+                    if (t <= 1e-4f || t >= 1 - 1e-4f) continue;
+                    if (System.Numerics.Vector3.DistanceSquared(a + along * t, corner) < 1e-8f) inside++;
+                }
+            }
+        Assert.Equal(0, inside);
+    }
+
+    [Fact]
     public void Each_Corner_Of_A_Face_Lies_Toward_The_Faces_Normal_From_The_Blocks_Middle()
     {
         // The face a corner's packed bytes name is the one its position lies on, so the shader's
