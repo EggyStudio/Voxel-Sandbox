@@ -1467,6 +1467,41 @@ before a batch.
     and before item 94's arrows. Done at `d6532d1` on 2026-10-24, options.txt beside the saves, the
     world's own settings left to its save.
 
+96. **The player and the game's states live in the ECS (Decision 43).** The player an entity with
+    its body, its vitals and its hand as components, the inventory a resource, the first person
+    controller a behavior reading the input from its context; the game mode, the menus and the
+    loading screen as ECS states, with InState, OnEnter and OnExit on the behaviors they gate and a
+    run condition where VoxelGame.Update holds an if, so what runs when is read from the attributes
+    rather than the one long Update. One or two commits, after item 95; the commands of voxel.* and
+    the interface's immediate drawing stay as they are. The plan, read at 21:22 on 2026-10-24, two
+    commits. The frame today runs the game's update before BeginDrawing, which pumps input and runs
+    First through Update, the game's Draw sets the camera and EndDrawing runs PostUpdate through
+    Last, so a controller in PreUpdate moves the player before the camera is set with no lag while
+    Aim and Interact left in the update would read the frame before's eye; so the game's update
+    moves into the stages in its present order, the program loop calling Draw alone and VoxelGame a
+    resource the systems reach. First, the player an entity with its FirstPersonController, Body,
+    Vitals and HandRenderer, the VoxelGame properties pointing at the same objects so voxel.* and
+    the interface stand, the inventory a resource the drops' PickUp reads; GameFrame.Begin on First
+    for the world switch, the loading stand, the frame's seconds, the save timer, the toggles, the
+    cursor and the hotbar keys, setting GameStep's seconds and the player's look and move flags;
+    PlayerControl.Steer on PreUpdate, the controller reading the engine's input in place of the flat
+    calls and the hand's swing from the distance walked; GameFrame.Play on Update with the rest of
+    the update in order; input pumped before the stages, the game reading this frame's keys where it
+    read the frame before's. Second, the states, GameMode, Menu and a WorldState of Loading and
+    Playing as engine states through AddState, read and written through GetState and SetState, each
+    if an attribute, InState Playing on Steer and Play and RunIf Lives on a Live system split out of
+    Play, Lives a computed state of survival and adventure, OnEnter Pause freeing the cursor and
+    OnExit None stopping the breaking, the loading screen's draw keyed off the state; the order
+    within Update between Play and the entities' systems as loose as it is, their events drained the
+    frame after. Risks, the commands' timing against Begin within First and play's input checks if
+    input lands a frame earlier, read against today's readings. Taken as planned. The first commit
+    at `e77030b`, the player an entity and the update in the stages, the readings held; the walk's
+    6.82 blocks in 60 frames against 6.15 read at 21:49 as the frame time's spread, both builds
+    ending at the same place under a fixed frame time of a sixtieth, 4.30 blocks each, W seen for 60
+    frames in both and one frame earlier now, nothing to mend. Done at `2926dda` on 2026-10-24 with
+    the states, four engine states and the ifs as attributes, the ordered ones inside Play until the
+    engine's item 110 gives the order.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

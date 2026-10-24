@@ -28,3 +28,5 @@
 2026-10-24-item-94-arrows.webp | A skeleton at night in the flat world, whose arrows, now entities of the engine's ECS, took eight of the player's twenty points of health in five seconds.
 2026-10-24-item-94-tnt.webp | A TNT lit in the flat world a half second after it popped up from its cell, burning as an entity of the engine's ECS, which blew its crater five seconds on.
 2026-10-24-item-94-fires.webp | A block of planks forty seconds into a burn from three fires, each fire an entity of the engine's ECS, its top's 41 fires out of the view but for one.
+2026-10-24-item-70-plains-village.webp | The plains village as the README showed it beside the same view taken again, its shadows the ground's darker color and its river's banks widened since.
+2026-10-24-item-70-grass-wall.webp | A wall of grass blocks at noon seen from the player's height, as bright above the eye's line as below it, the same texel of each block reading 186 to 192 in red from the line up.

@@ -5,31 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `e77030b`, item 96's first commit, the player and the frame's order, read at 21:43 on
-2026-10-24, carrying the review's files. The player is an entity with FirstPersonController, Body,
-Vitals and HandRenderer, VoxelGame, its step and the Inventory are resources and the drops' PickUp
-reads the Inventory, the program's loop calls Draw alone; GameFrame.Begin on First covers the world
-switch, the loading stand, the seconds, the save timer, the toggles, the cursor and the hotbar and
-sets the step's Playing, Look and Move, PlayerControl.Steer on PreUpdate queries the controller and
-the hand, moves the player from the engine's input, swings the hand by the distance walked and sets
-the step's eye, GameFrame.Play on Update runs the rest of the old update in order, and Draw chooses
-the loading screen after BeginDrawing since First may open a world, the engine answering commands at
-the top of First. The play readings hold, the walk landing at 16.50, 5.00 at minus 11.80 and minus
-13.94 and the creeper, zombie, sheep and light readings identical, the streaming counts, the swim's
-end and the frames that follow the clock varying as between runs; the grove at 1920 by 1080 at High
-reads the frame 23.5 and 19.8 ms against 21.3 and 20.2, Begin, Steer and Play 0.017, 0.031 and 0.110
-ms where the old update was 0.12 to 0.14. Live, W for 60 frames went 6.82 blocks against the base's
-6.15, read after as the frame time's spread with the speed unchanged under a fixed frame time, a
-mouse drag turned the view 14 degrees, a world switch loaded and Escape opened Pause. 294 tests,
-play.sh 300 s on the GPU, no gap found. Pushed at 21:47 on 2026-10-24 after the run of `5bfafef`
-went green; the run watched.
+Reviewed up to `2926dda`, item 96's second commit, the states, read at 22:08 on 2026-10-24, carrying
+the review's files. WorldState of Loading and Playing, GameMode, a computed Living.Yes for survival
+and adventure, and Menu are engine states, the game's properties keeping the value at once since the
+engine applies a transition after PreUpdate; Steer and Play run in Playing, the vitals and the HUD's
+fade split out as GameFrame.Live under Living.Yes and Playing, the hostile spawning as MobMind.Spawn
+under the same, the HUD's reset on leaving Living.Yes, and the cursor freed on leaving Menu.None and
+taken back on entering it, the Capture calls gone; the ordered ifs stay inside Play, the aim before
+the hand's work, the player's move before either and the answering of the mobs, since no behavior
+attribute reaches a system's After or Before and InState is one to a method, the engine's item 110.
+Live the states start as Playing, Creative and None with the cursor captured, Escape gives Pause
+with it free and None with it back, survival gives Living.Yes with exhaustion rising at a sprint,
+and a creeper spawns at night in survival and none in creative; the play readings hold as at the
+first commit; the grove reads the frame 20.6 and 21.1 ms against 21.2 and 24.5, the game's cost
+0.105 ms against 0.11 to 0.135. 294 tests, play.sh 324 s on the GPU. Pushed at 22:15 on 2026-10-24
+after the run of `e77030b` went green; the run watched.
+
+Before it, `e77030b` came, item 96's first commit, pushed at 21:47 on 2026-10-24, its run green, the
+play job 24.0 minutes.
 
 Before it, `5bfafef` came, item 94's events, fires, blasts and the mobs' first two commits with
 `75be580`, `9a70f28` and `299aa33`, pushed at 21:19 on 2026-10-24, its run green, the play job 25.6
 minutes.
-
-Before it, `e0d9788` came, items 127 and 94's arrows, TNT and falling blocks with `c0dd6e4` and
-`d6532d1`, pushed at 20:31 on 2026-10-24, its run green, the play job 44.8 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -492,39 +489,6 @@ full.
     item 108 through ASKS.md; the flood stays as the game's visibility, a Visible component the
     engine honors once it has one, and the shadow-only draw of item 123 the ShadowOnly component.
     Waits on the package carrying the engine's item 108; item 96 taken before it.
-
-96. **The player and the game's states live in the ECS (Decision 43).** The player an entity with
-    its body, its vitals and its hand as components, the inventory a resource, the first person
-    controller a behavior reading the input from its context; the game mode, the menus and the
-    loading screen as ECS states, with InState, OnEnter and OnExit on the behaviors they gate and a
-    run condition where VoxelGame.Update holds an if, so what runs when is read from the attributes
-    rather than the one long Update. One or two commits, after item 95; the commands of voxel.* and
-    the interface's immediate drawing stay as they are. The plan, read at 21:22 on 2026-10-24, two
-    commits. The frame today runs the game's update before BeginDrawing, which pumps input and runs
-    First through Update, the game's Draw sets the camera and EndDrawing runs PostUpdate through
-    Last, so a controller in PreUpdate moves the player before the camera is set with no lag while
-    Aim and Interact left in the update would read the frame before's eye; so the game's update
-    moves into the stages in its present order, the program loop calling Draw alone and VoxelGame a
-    resource the systems reach. First, the player an entity with its FirstPersonController, Body,
-    Vitals and HandRenderer, the VoxelGame properties pointing at the same objects so voxel.* and
-    the interface stand, the inventory a resource the drops' PickUp reads; GameFrame.Begin on First
-    for the world switch, the loading stand, the frame's seconds, the save timer, the toggles, the
-    cursor and the hotbar keys, setting GameStep's seconds and the player's look and move flags;
-    PlayerControl.Steer on PreUpdate, the controller reading the engine's input in place of the flat
-    calls and the hand's swing from the distance walked; GameFrame.Play on Update with the rest of
-    the update in order; input pumped before the stages, the game reading this frame's keys where it
-    read the frame before's. Second, the states, GameMode, Menu and a WorldState of Loading and
-    Playing as engine states through AddState, read and written through GetState and SetState, each
-    if an attribute, InState Playing on Steer and Play and RunIf Lives on a Live system split out of
-    Play, Lives a computed state of survival and adventure, OnEnter Pause freeing the cursor and
-    OnExit None stopping the breaking, the loading screen's draw keyed off the state; the order
-    within Update between Play and the entities' systems as loose as it is, their events drained the
-    frame after. Risks, the commands' timing against Begin within First and play's input checks if
-    input lands a frame earlier, read against today's readings. Taken as planned. The first commit
-    at `e77030b`, the player an entity and the update in the stages, the readings held; the walk's
-    6.82 blocks in 60 frames against 6.15 read at 21:49 as the frame time's spread, both builds
-    ending at the same place under a fixed frame time of a sixtieth, 4.30 blocks each, W seen for 60
-    frames in both and one frame earlier now, nothing to mend.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where

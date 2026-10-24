@@ -438,6 +438,26 @@ lg=$(printf '%s\n' "$low" | sed -nE 's/^red [0-9]+, green ([0-9]+), .*/\1/p')
 [ -n "$hg" ] && [ -n "$lg" ] || fail "voxel.pixel read no sapling, saying $high and $low"
 [ $((5 * hg)) -ge $((4 * lg)) ] || fail "a plant above the eye's height is lit darker than one below it, $high against $low"
 
+check "the grass wall"
+# A wall of grass blocks at noon, seen from the player's height, is as bright above the eye's height
+# as below it. The same texel of each block's side, in its dirt under the grass's fringe, is read
+# from the block the eye's line crosses to three over it, and no two neighbors are more than 2 levels
+# of luminance apart, where a face lit as one turned from the eye would step at the eye's line.
+cmd voxel.fill -6 4 -40 6 11 -40 grass
+cmd voxel.tp 0.5 4 -32.5
+cmd voxel.look 0 0
+cmd frames.wait 20
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+wall=""
+for y in 5 6 7 8 9; do wall="$wall $(ask voxel.pixel 0.30 $y.30 -38.99 | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+).*/\1 \2 \3/p' | awk '{ printf "%.1f", 0.2126 * $1 + 0.7152 * $2 + 0.0722 * $3 }')"; done
+echo "the grass wall's luminance from the eye's line up,$wall"
+read -ra levels <<< "$wall"
+[ "${#levels[@]}" -eq 5 ] || fail "voxel.pixel read no grass wall, reading$wall"
+awk -v w="$wall" 'BEGIN { n = split(w, l, " "); for (i = 2; i <= n; i++) { d = l[i] - l[i - 1]; if (d > 2 || d < -2) exit 1 } }' \
+  || fail "the grass wall steps in light at the eye's height,$wall"
+cmd voxel.fill -6 4 -40 6 11 -40 air
+
 check "the tall grass"
 # A tall grass two blocks high on a pillar clear of the rooms built above, seen from a little below
 # against the sky, shows the sky alone in its upper half's top row, which its picture leaves clear,
@@ -997,4 +1017,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a grass wall as bright above the eye as below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"
