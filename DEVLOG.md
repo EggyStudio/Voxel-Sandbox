@@ -69,6 +69,11 @@ The world views at a field of view of 70, before the retake (item 46).
 ![](.github/devlog/2026-10-24-views-40.webp)
 The world views retaken at a field of view of 40, the village views moved (item 46).
 
+![](.github/devlog/2026-10-24-trees-cmp.webp)
+Trees before and after the caves and ravines carve ahead of them, the coast by seed 1's first ravine
+in the middle row where leaf clusters floated before, and the ravine's magma under the canopy below
+(item 99).
+
 Done that day
 
 - Item 26 at `3a99729`. The world's layout, sections streamed, meshed and saved in three dimensions
@@ -98,6 +103,9 @@ Done that day
 - Item 90 at `ba60ae4`. The frame at a render distance of 12 comes back under 16.7 ms with the
   taller world, the main thread's draws read first.
 - Item 91 at `23aa4ff`. The screen probes stay off by default (Decision 42).
+- Item 92 at `2263618`. Far land goes (Decision 41).
+- Item 98 at `56cb608`. The particles keep their light at every angle of looking.
+- Item 99 at `dc2ad9f`. No tree stands cut by a cave or a cliff, and no leaves hang with no trunk.
 
 ## 2026-10-23
 

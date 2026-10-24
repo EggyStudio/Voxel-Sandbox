@@ -5,30 +5,29 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `56cb608`, item 98, the block bits lit the same from every heading, and nothing else,
-carrying the review's files. The bits were lit by their squares' normal, which turns to the eye, so
-with the sun behind them they took the ambient alone, reading 138 to 236 around eight headings; a
-bits.slang lights the square as a face turned up seen from straight above, taken a sixteenth out
-along its normal as the mob shader does, reading 219 at all eight headings at hour 8; an upward
-normal on the mesh was tried first and split each square at the eye's height, the engine turning a
-face seen from behind over; voxel.still holds the bits and voxel.bits counts them, and play.sh reads
-the bits from eight headings within six levels; the blasts' clouds are unlit and the flames draw at
-their own color, so neither was it; 274 tests, the strict build clean, play.sh 134 s on the GPU.
-Read at 11:25 on 2026-10-24 and pushed at once, the run of `2263618` having ended green with its
-play job at 29.0 minutes; its run watched. Item 93's reading stands under it and its mends come when
-the GPU is quiet; the engine's ASKS.md has the entry on the scene pass reading the cascades per
-pixel. Next 99 to 103, then 93's mends, then 98, the particles' light at every angle, then 99, trees
-whole over carved ground, then 100, felling's last log and the crown's pace, then 101, plants giving
-way to a placed block, then 102, the held light at the player, then 103, the flames' top row, then
-the ECS, items 94, 95 and 96 in order, a piece a commit; then 42, 43 and 70, then 28 to 36 in order;
-items 38's second part and 54 when their packages come, and the deep caves' sky light under 27 with
-the engine's next package; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `dc2ad9f`, item 99, no tree cut by a cave or a ravine, and nothing else, carrying the
+review's file. The ravine is cut in each column before the features and the other structures after,
+and a tree stands only where its base's four blocks are whole, cut by no ravine and opened by no
+cave at the ground's top over the sea's level, the caves' density read at single places from the
+same corners as the column's grid, so a neighbor's column decides a tree reaching in the same way;
+over the eleven by eleven columns about seed 1's first ravine the logs joined to none on the ground
+go from one to none and the leaves with no log within seven steps from ten to none, the tree bases
+365 to 363, a column 16.5 to 18 ms; the plant test adds the three checks and fails on the loose log
+before; the departure the trunk test stopping at the ground's top since a cave carves nothing above
+it; the pair trees-cmp.png in the coder's scratchpad; 274 tests, the strict build clean, play.sh 138
+s on the GPU. Read at 11:38 on 2026-10-24. Not pushed, the build run of `56cb608` running; pushed
+when it ends. Next 100 to 103, then 93's mends, then 98, the particles' light at every angle, then
+99, trees whole over carved ground, then 100, felling's last log and the crown's pace, then 101,
+plants giving way to a placed block, then 102, the held light at the player, then 103, the flames'
+top row, then the ECS, items 94, 95 and 96 in order, a piece a commit; then 42, 43 and 70, then 28
+to 36 in order; items 38's second part and 54 when their packages come, and the deep caves' sky
+light under 27 with the engine's next package; the AGENTS.md rows for the Ui and build folders wait
+on the owner's word.
+
+Before it, `56cb608` came, item 98, pushed at 11:25 on 2026-10-24, its run in flight.
 
 Before it, `2263618` came, item 92, far land removed, pushed at 10:44 on 2026-10-24, its run green,
 the play job 29.0 minutes.
-
-Before it, `23aa4ff` and `c8dbbee` came, item 91 and item 27's part C, pushed at 10:22 on
-2026-10-24, their run green, the play job 21.8 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -476,7 +475,7 @@ full.
     that no log has air under the trunk's base, that no leaf stands with no log within the crown's
     reach, and that the trees' count stays within the source's range for the biome, failing without
     the mend; a capture of a cliff's edge and a cave's mouth under trees. One commit, after item 98
-    and before item 94.
+    and before item 94. Done at `dc2ad9f` on 2026-10-24, the departure in the head.
 
 100. **Felling takes every log of the tree, and the crown decays within a second or two.** The owner
     felled trees at about {now} on 2026-10-24 and found it working but for one tree whose single log

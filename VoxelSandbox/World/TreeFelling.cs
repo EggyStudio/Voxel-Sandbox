@@ -1,18 +1,19 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// A tree felled where the log its trunk stands on is broken, its logs breaking from the cut upward
-/// a block a tick, a share of them falling as blocks, and then its leaves decaying over a few
-/// seconds, as the source's leaves do once no log stands within six leaves of them.
+/// A tree felled where the log its trunk stands on is broken, its logs breaking from the lowest
+/// upward a block a tick, a share of them falling as blocks, and then its leaves decaying within
+/// two seconds, as the source's leaves do once no log stands within six leaves of them.
 /// </summary>
 /// <remarks>
-/// The logs of a tree are those joined to the cut, edge or corner, at its height or above, within
-/// twelve blocks of it across, as a big oak's branches join its trunk, so a tree touching another
-/// fells only where their logs touch, and they fell only where leaves touch them, so a wall of logs
-/// a house or a village stands on keeps its logs. Once the last of them has gone, every leaf within
-/// seven blocks of where they stood is read for its way to a log through leaves, and those with
-/// none within six steps decay, each at a time of its own from half a second to four, so the leaves
-/// of a tree beside it stay.
+/// The logs of a tree are those joined to the cut through any of the 26 blocks about each, edge or
+/// corner, above the cut or under it, within twelve blocks of it across, as a big oak's branches
+/// join its trunk, so a tree whose branches touch another's fells with it whole, where taking only
+/// the logs at the cut's height and above left the other's trunk under its hanging leaves when it
+/// stood lower. They fell only where leaves touch them, so a wall of logs a house or a village
+/// stands on keeps its logs. Once the last of them has gone, every leaf within seven blocks of where
+/// they stood is read for its way to a log through leaves, and those with none within six steps
+/// decay, each at a time of its own from one second to two, so the leaves of a tree beside it stay.
 /// </remarks>
 public sealed class TreeFelling(int seed = 1)
 {
@@ -48,7 +49,7 @@ public sealed class TreeFelling(int seed = 1)
                     for (int dx = -1; dx <= 1; dx++)
                     {
                         int nx = cx + dx, ny = cy + dy, nz = cz + dz;
-                        if (ny < y || Math.Abs(nx - x) > Reach || Math.Abs(nz - z) > Reach || !seen.Add((nx, ny, nz))) continue;
+                        if (Math.Abs(nx - x) > Reach || Math.Abs(nz - z) > Reach || !seen.Add((nx, ny, nz))) continue;
                         if (!BlockGroups.Logs.Contains(world.GetBlock(nx, ny, nz))) continue;
                         logs.Add((nx, ny, nz));
                         queue.Enqueue((nx, ny, nz));
@@ -64,13 +65,15 @@ public sealed class TreeFelling(int seed = 1)
             _steps.Add((_time, Step.Leaves, x - LeafReach - 1, y, z - LeafReach - 1, x + LeafReach + 1, y + LeafReach + 1, z + LeafReach + 1));
             return;
         }
-        int x0 = x, y1 = y, z0 = z, x1 = x, z1 = z;
+        int x0 = x, y0 = logs.Min(l => Math.Min(l.Y, y)), y1 = y, z0 = z, x1 = x, z1 = z;
         foreach (var (lx, ly, lz) in logs)
         {
-            _steps.Add((_time + (ly - y + 1) * Tick, Step.Log, lx, ly, lz, 0, 0, 0));
+            _steps.Add((_time + (ly - y0 + 1) * Tick, Step.Log, lx, ly, lz, 0, 0, 0));
             (x0, x1, z0, z1, y1) = (Math.Min(x0, lx), Math.Max(x1, lx), Math.Min(z0, lz), Math.Max(z1, lz), Math.Max(y1, ly));
         }
-        _steps.Add((_time + (y1 - y + 2) * Tick, Step.Leaves, x0 - LeafReach - 1, y, z0 - LeafReach - 1, x1 + LeafReach + 1, y1 + LeafReach + 1, z1 + LeafReach + 1));
+        // The leaves are read in the tick the last log goes, after it, since the steps of a tick are
+        // taken in the order they were added.
+        _steps.Add((_time + (y1 - y0 + 1) * Tick, Step.Leaves, x0 - LeafReach - 1, y0, z0 - LeafReach - 1, x1 + LeafReach + 1, y1 + LeafReach + 1, z1 + LeafReach + 1));
     }
 
     /// <summary>Goes on by so many seconds, taking each log and leaf whose time has come.</summary>
@@ -95,7 +98,7 @@ public sealed class TreeFelling(int seed = 1)
                     break;
                 case Step.Leaves:
                     foreach (var (lx, ly, lz) in Loose(world, step.X, step.Y, step.Z, step.X1, step.Y1, step.Z1))
-                        _steps.Add((_time + 0.5f + 3.5f * _random.NextSingle(), Step.Leaf, lx, ly, lz, 0, 0, 0));
+                        _steps.Add((_time + 1 + _random.NextSingle(), Step.Leaf, lx, ly, lz, 0, 0, 0));
                     break;
             }
         }

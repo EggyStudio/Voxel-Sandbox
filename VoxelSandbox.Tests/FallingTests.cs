@@ -113,4 +113,40 @@ public sealed class FallingTests
         for (int i = 0; i < 60; i++) felling.Update(world, 1 / 60f);
         Assert.All(Enumerable.Range(5, 3), y => Assert.Equal(BlockId.OakLog, world.GetBlock(24, y, 4)));
     }
+
+    [Fact]
+    public void Felling_Takes_A_Lower_Tree_Whose_Branch_Touches_Whole_And_The_Last_Leaf_Goes_Within_Two_Seconds()
+    {
+        // An oak, and a tree beside it in a pit a block lower, its trunk from 3 to 6 and its branch
+        // reaching across through the oak's leaves to touch the oak's trunk, a leaf over its top.
+        var world = Floor();
+        Oak(world, 4, 4);
+        for (int y = 3; y <= 6; y++) world.SetBlock(8, y, 4, BlockId.OakLog);
+        foreach (var x in (ReadOnlySpan<int>)[7, 6, 5]) world.SetBlock(x, 7, 4, BlockId.OakLog);
+        world.SetBlock(8, 7, 4, BlockId.OakLeaves);
+        var felling = new TreeFelling();
+        world.SetBlock(4, 4, 4, BlockId.Air);
+        felling.Fell(world, 4, 4, 4);
+        float time = 0, lastLog = 0, lastLeaf = 0;
+        for (int i = 0; i < 4 * 60; i++)
+        {
+            felling.Update(world, 1 / 60f);
+            time += 1 / 60f;
+            foreach (var (_, _, _, block) in felling.Broken.Concat(felling.Dropped))
+                if (BlockGroups.Logs.Contains(block)) lastLog = time;
+                else lastLeaf = time;
+            felling.Broken.Clear();
+            felling.Dropped.Clear();
+        }
+        Assert.False(felling.Busy);
+        // Neither tree keeps a log, the lower one's under the cut among them, nor a leaf.
+        for (int y = 3; y <= 12; y++)
+            for (int z = 0; z <= 8; z++)
+                for (int x = 0; x <= 12; x++)
+                {
+                    Assert.False(BlockGroups.Logs.Contains(world.GetBlock(x, y, z)), $"a log stays at {x}, {y}, {z}");
+                    Assert.False(Blocks.IsLeaves(world.GetBlock(x, y, z)), $"a leaf stays at {x}, {y}, {z}");
+                }
+        Assert.InRange(lastLeaf - lastLog, 1, 2);
+    }
 }
