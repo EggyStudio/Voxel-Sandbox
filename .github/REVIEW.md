@@ -5,30 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `7a0d61d`, item 76, the stepped shadows moving in whole steps, and nothing else,
-carrying the review's file: the light's direction and strength stand at the nearest of 36 steps an
-hour, 1.67 game minutes, about 1.4 seconds of the 20-minute day, set again only when a step passes
-while the sky's sun and its repaint follow the hour smoothly, a step read as the edge of a shadow 16
-blocks from its caster jumping 0.12 of a block, under one grid step of an eighth, rounding so the
-light is never more than half a step off the drawn sun and the scripts' whole and half hours stay
-exact; a test of the stillness within a step and of a step's move, and a play check reading the
-pillar's shadow across 57 points at 8.49 and 8.51 identical within a level, 154.2 to 154.2 on the
-GPU, where the next step moves the edge; the pillar check costing 102 seconds on four cores of
-lavapipe where it took 20, so the play job's estimate goes to about 38.5 minutes with a margin of
-1.5 under 40; 235 tests, the strict build clean, play.sh clean. Read at 01:11 on 2026-10-24, taken
-before items 55 and 58's curve by the reviewer's word of 00:54, which skipped them. Pushed at 01:25
-after the build run of `b730088` ended green, its play job 28.8 minutes, under the 40 of item 88's
-limit. Its own run ended green at 01:55, the play job 30.0 minutes, the three suites under 70
-seconds each. Next 55 and item 58's curve on 5.2.215, then 83, 67, 68, 79, 78, 80, 81, 69, 75, 74,
-72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order; item 55 once
-the engine's pack run of `d3473746` lands, items 38's second part and 54 when theirs come; the
-AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `d7c4892`, item 55, the plants' shadows cut by their picture on 3DEngine 5.2.215, and
+nothing else, carrying the review's files: the pin and the csproj moved to 5.2.215, the plants'
+material casting with BouncesLight off so the field holds no plants, terrain.slang's shadowMain
+cutting by the tile's alpha only faces whose corners carry places; departures, glass a pack cuts out
+in a part of its own casting no shadow, one draw more where a section has it, leaves and door
+windows keeping their whole-face shadow, the engine's F2 and F3 turned off by SetScreenshotKey and
+SetProfileWindowKey since the game takes those keys until item 54, and plants in the depth the
+ambient occlusion reads; the check inside the pillar frames reading a poppy's shadow line, 7 of 49
+points under 100 against 15 uncut, asking 1 to 10; the cost on the 4070 2.3 ms of GPU and 3.4 of
+recording, the frame 17.2 ms against 16.8, said in the README, a shadow reach for plants an option
+not taken since blades' shadows would pop; the capture plant-shadows.webp in the README's Shadows
+section; 235 tests, the strict build clean, play.sh clean on the GPU. Read at 02:15 on 2026-10-24
+and pushed at once, the run of `7a0d61d` having ended green. Next item 58's curve on 5.2.215, then
+83, 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then
+26 and the items in order; items 38's second part and 54 when their packages come; the AGENTS.md
+rows for the Ui and build folders wait on the owner's word.
+
+Before it, `7a0d61d` came, item 76, pushed at 01:25 on 2026-10-24, its run green, the play job 30.0
+minutes.
 
 Before it, `b730088` came, item 88, the play job's time, and nothing else. Pushed at 00:54 on
 2026-10-24, its run green, the play job 28.8 minutes.
-
-Before it, `532e45c` came, item 77, the fog's color by height, and nothing else. Pushed at 21:34 on
-2026-10-23, its build run green with the play job at 57 minutes 38 seconds.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -159,7 +157,8 @@ full.
     shadow pass does not cut a masked surface drawn through a program's shader, so the entry is in
     the engine's ASKS.md as its item 79 and the game takes the shadows when the package brings the
     cut; the capture committed. The engine's item 79 is in 5.2.215, pushed to the feed at 21:04 on
-    2026-10-23; this item follows item 88 once the feed lists it.
+    2026-10-23; this item follows item 88 once the feed lists it. Done at `d7c4892` on 2026-10-24 on
+    5.2.215, the departures and the cost in the head.
 
 67. **The inventory screens take no player key, draw a dragged stack every frame, and dropped items
     wear the pack's pictures.** The owner wrote on 2026-10-23 (Decision 34) that in the crafting HUD
@@ -901,6 +900,3 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     COMMITS.md says it.
 
 ## Replies
-
-
-

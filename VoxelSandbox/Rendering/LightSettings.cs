@@ -24,9 +24,11 @@ public sealed class LightSettings
     public float Bloom = 0.1f;
     public float Occlusion;
     public bool AutoExposure;
-    // Reinhard's curve takes a light of 1 to a half, so the light is raised by 1.7 before it, which
-    // gives a village's roofs and wheat in the afternoon the brightness of the modpack's pictures.
-    public float Exposure = 1.7f;
+    // The light is raised by 1.6 before the modpack's curve, which gives a village's roofs and wheat in
+    // the afternoon the brightness of the modpack's pictures, the middle levels within 3 of Reinhard's
+    // curve at 1.7, which matched them, the darks deeper by the curve's lower power and the lights
+    // brighter.
+    public float Exposure = 1.6f;
     // The frame graded as vividly as the modpack's pictures, whose shader's warm light and deep shade
     // saturate them, each channel pushed from the middle gray by 1.12 and the color by 1.4.
     public float Contrast = 1.12f, Saturation = 1.4f;
@@ -43,11 +45,9 @@ public sealed class LightSettings
         // blur lays a soft fringe beside the map's edges, which step along the blocks' pixels, and
         // kept past the map, where the land has no other shadow of the sun.
         SetContactShadows(ContactShadows.PastShadowMap);
-        // Reinhard's curve is the nearest of the engine's to the modpack's shader's with the settings
-        // of the owner's modpack, its exposure 0.9, white curve 1.3, lower curve 1.05 and upper 1.0,
-        // within 0.023 of it in sRGB levels at lights from 0.05 to 4 at an exposure of 1.05, where
-        // ACES is 0.055 off and a cut at 1 0.062.
-        SetTonemap(Tonemap.Reinhard);
+        // The modpack's shader's curve with the settings of the owner's modpack, its exposure 0.9,
+        // white curve 1.3, lower curve 1.05 and upper 1.0.
+        SetTonemapCurve(0.9f, 1.3f, 1.05f, 1f);
         SetColorGrading(Contrast, Saturation, Color.White);
     }
 
