@@ -75,6 +75,9 @@ public static class Icons
     /// <summary>Where an item's icon lies in the atlas.</summary>
     public static Rectangle Source(Item item) => new(item.Id % Columns * Cell + 1, item.Id / Columns * Cell + 1, Size, Size);
 
+    /// <summary>Whether an item's icon is a flat picture, a pack's of the item or the game's own drawing of one that places no block, rather than a block seen from above.</summary>
+    public static bool IsFlat(Item item) => item.Block is null || PackTextures.OfItem(item) is { } name && _packs.Texture(name) is not null;
+
     /// <summary>An item's icon alone, <see cref="Size"/> pixels square.</summary>
     public static byte[] Pixels(Item item)
     {

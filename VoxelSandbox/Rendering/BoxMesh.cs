@@ -53,6 +53,40 @@ public sealed class BoxMesh
         }
     }
 
+    /// <summary>
+    /// Adds a box between two corners in one color, each face showing its own part of the texture,
+    /// from its upper left corner to its lower right, in the order +x, -x, +y, -y, +z and -z, laid as
+    /// the terrain shader lays a block's texture on its faces, so a side stands upright.
+    /// </summary>
+    public void Add(Vector3 min, Vector3 max, Color color, ReadOnlySpan<(Vector2 From, Vector2 To)> parts)
+    {
+        var size = max - min;
+        for (int face = 0; face < 6; face++)
+        {
+            var first = (uint)_vertices.Count;
+            var (from, to) = parts[face];
+            for (int i = 0; i < 4; i++)
+            {
+                var corner = Corners[face][i];
+                _vertices.Add(new ModelVertex(min + corner * size, Normals[face], from + Laid(face, corner) * (to - from)));
+                _colors.Add(color);
+            }
+            _indices.AddRange([first, first + 1, first + 2, first, first + 2, first + 3]);
+        }
+    }
+
+    // A corner's place across its face's texture, right and down seen from outside, as the terrain
+    // shader's across lays it.
+    private static Vector2 Laid(int face, Vector3 corner) => face switch
+    {
+        0 => new(1 - corner.Z, 1 - corner.Y),
+        1 => new(corner.Z, 1 - corner.Y),
+        2 => new(corner.X, corner.Z),
+        3 => new(corner.X, 1 - corner.Z),
+        4 => new(corner.X, 1 - corner.Y),
+        _ => new(1 - corner.X, 1 - corner.Y),
+    };
+
     /// <summary>Adds a face of four corners counterclockwise seen from outside, each at its place on the texture, in one color.</summary>
     public void AddFace(ReadOnlySpan<Vector3> corners, ReadOnlySpan<Vector2> places, Color color)
     {

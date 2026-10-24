@@ -86,6 +86,21 @@ public class SlotMovesTests
     }
 
     [Fact]
+    public void A_Drag_Shows_Each_Slots_Share_And_What_Is_Left_Before_It_Is_Let_Go_And_Changes_No_Slot()
+    {
+        var slots = new ItemStack?[4];
+        slots[3] = new ItemStack(Dirt, 1);
+        SlotAt[] over = [new(slots, 0), new(slots, 1), new(slots, 2), new(slots, 3)];
+
+        var (put, left) = SlotMoves.Shares(new ItemStack(Stone, 10), over, one: false);
+        Assert.Equal([over[0], over[1], over[2]], put.Select(p => p.At));
+        Assert.All(put, p => Assert.Equal(new ItemStack(Stone, 3), p.Stack));
+        Assert.Equal(new ItemStack(Stone, 1), left);
+        // The slots stay as they are until the drag is let go and Spread puts the shares in them.
+        Assert.All(slots[..3], s => Assert.Null(s));
+    }
+
+    [Fact]
     public void A_Sort_Puts_Each_Kind_Together_In_Filled_Stacks_And_Keeps_Worn_Tools_Apart()
     {
         var slots = new ItemStack?[8];

@@ -103,20 +103,33 @@ public static class SlotMoves
     /// <returns>What is left held, or null where none is.</returns>
     public static ItemStack? Spread(ItemStack held, IReadOnlyList<SlotAt> over, bool one)
     {
+        var (put, left) = Shares(held, over, one);
+        foreach (var (at, stack) in put) at.Stack = stack;
+        return left;
+    }
+
+    /// <summary>
+    /// What a drag over slots puts in each and leaves held, as <see cref="Spread"/> puts it, read
+    /// while the drag goes on, so the slots it passes show their shares and the pointer what is left
+    /// before the button is let go, as Minecraft shows them.
+    /// </summary>
+    public static (List<(SlotAt At, ItemStack Stack)> Put, ItemStack? Left) Shares(ItemStack held, IReadOnlyList<SlotAt> over, bool one)
+    {
         var most = held.Item.MostInStack;
         var targets = over.Where(at => at.Stack is null || at.Stack is { } there && there.Item == held.Item && there.Wear == held.Wear && there.Count < most).ToList();
-        if (targets.Count == 0) return held;
+        var put = new List<(SlotAt, ItemStack)>();
+        if (targets.Count == 0) return (put, held);
         var each = one ? 1 : Math.Max(1, held.Count / targets.Count);
         var left = held.Count;
         foreach (var at in targets)
         {
             if (left == 0) break;
             var there = at.Stack?.Count ?? 0;
-            var put = Math.Min(Math.Min(each, left), most - there);
-            at.Slots[at.Index] = held with { Count = there + put };
-            left -= put;
+            var share = Math.Min(Math.Min(each, left), most - there);
+            put.Add((at, held with { Count = there + share }));
+            left -= share;
         }
-        return left > 0 ? held with { Count = left } : null;
+        return (put, left > 0 ? held with { Count = left } : null);
     }
 
     /// <summary>

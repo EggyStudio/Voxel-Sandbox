@@ -117,6 +117,7 @@ public sealed class VoxelGame : IDisposable
         var terrain = TerrainAtlas.Build(packs);
         Renderer.Atlas = terrain;
         Icons.Use(terrain, packs);
+        DropRenderer.Use(terrain);
         PackGui.Use(packs);
         InWall.Use(packs);
         Sky.Use(packs);
@@ -428,13 +429,15 @@ public sealed class VoxelGame : IDisposable
         }
         if (_swallowClick && !IsMouseButtonDown(MouseButton.Left)) _swallowClick = false;
 
-        // The number keys choose a hotbar slot unless a window of slots takes them to swap one, the
-        // inventory, a crafting table or a furnace, where the creative window of items leaves them.
-        var slotsShown = InventoryOpen && (Mode.Lives() || AtTable || AtFurnace is not null);
-        Hotbar.Update(keys && !slotsShown, _captured);
+        // A screen open, the inventory, a crafting table's, a furnace's or a menu, takes the keyboard
+        // as the source's screens do, so no key of the player's acts behind it, neither walking,
+        // jumping, crouching and sprinting nor the hotbar's number keys, which a window of slots
+        // takes to swap a slot.
+        var screen = InventoryOpen || Menus.Open != Menu.None;
+        Hotbar.Update(keys && !screen, _captured);
         var alive = !Mode.Lives() || !Vitals.Dead;
         Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
-        Player.Update(World, seconds, look: _captured && alive, move: keys && alive);
+        Player.Update(World, seconds, look: _captured && alive, move: keys && !screen && alive);
         if (Mode.Lives())
         {
             Live(seconds);

@@ -263,10 +263,15 @@ echo "the poppy's shadow, $dark of 49 points dark"
 cmd voxel.hud on
 
 check "the creative window"
-# The window E opens in creative mode, every item's icon in it and the hotbar's below.
+# The window E opens in creative mode, every item's icon in it and the hotbar's below. While it is
+# open W walks the player nowhere, as the source's screens take the keyboard.
 cmd input.key E 1
 cmd frames.wait 2
 capture inventory.png
+before=$(feet "$(ask voxel.state)")
+cmd input.key W 10
+after=$(feet "$(ask voxel.state)")
+[ -n "$before" ] && [ "$before" = "$after" ] || fail "W walked the player with the creative window open, from $before to $after"
 cmd input.key E 1
 
 check "the swim to the bank"
@@ -508,6 +513,18 @@ read -r tr tg tb <<< "$(channels "$top")"
 [ "$br" -gt $((2 * bg)) ] && [ "$ar" -gt $((2 * ag)) ] || fail "the two panes' frames are not left out where they meet, $before and $after"
 [ "$sr" -gt $((2 * sb)) ] || fail "the lit furnace's front does not wear the picture's red, $side"
 [ "$tb" -gt $((2 * tr)) ] || fail "the lit furnace's top does not wear the furnace's top's blue, $top"
+# A furnace dropped on the ground wears the pack's pictures as the block does, its top read from
+# straight above in the picture's blue, where a stack on the ground was a cube of the block's colors.
+cmd voxel.drop furnace 23.5 4.2 4.5
+cmd voxel.tp 23.5 8 4.5
+cmd voxel.look 0 -90
+cmd frames.wait 10
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+dropped=$(ask voxel.pixel 23.5 4.3 4.5)
+echo "the dropped furnace's top $dropped"
+read -r dr dg db <<< "$(channels "$dropped")"
+[ -n "$db" ] && [ "$db" -gt $((2 * dr)) ] && [ "$db" -gt $((2 * dg)) ] || fail "the dropped furnace's top does not wear the furnace's top's blue, $dropped"
 # A pool of water a block across shows the written water's frames in turn, read eight times three
 # tenths of a second apart, at least once white under the water's tint and once black.
 cmd voxel.set 26 3 2 water

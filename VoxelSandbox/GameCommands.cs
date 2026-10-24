@@ -270,6 +270,15 @@ public static class GameCommands
         return $"{Math.Max(1, count) - left} {found.Key} put in{(left > 0 ? $", {left} did not fit" : "")}";
     }
 
+    [Command("voxel.drop", "Lays one of an item on the ground at a place, as a block broken there drops it: voxel.drop <item> <x> <y> <z>")]
+    internal static string Drop(string item, float x, float y, float z)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        if (Items.Find(item) is not { } found) return $"no item is called {item}, and voxel.items lists them";
+        game.Drops.Spawn(found, 1, new Vector3(x, y, z), Vector3.Zero);
+        return $"one {found.Key} lies at {x:0.00}, {y:0.00}, {z:0.00}";
+    }
+
     [Command("voxel.inventory", "Each slot of the inventory that holds something, the hotbar's 1 to 9 and the rest's 10 to 36")]
     internal static string ListInventory()
     {

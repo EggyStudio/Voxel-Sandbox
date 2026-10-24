@@ -136,9 +136,10 @@ left button does, `voxel.still` stops them where they stand and holds the clouds
 `voxel.kill` takes them away. `voxel.mode` plays in creative, survival, adventure or spectator mode,
 `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the inventory,
 `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and reads a
-furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item, and `voxel.throw`
-throws as Q does. `voxel.packs` says or sets the resource packs on, and `voxel.reload` reads them
-again. `voxel.vitals` says or sets the health and food, `voxel.hurt` harms the player, and
+furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item, `voxel.throw`
+throws as Q does, and `voxel.drop` lays one of an item on the ground at a place. `voxel.packs` says
+or sets the resource packs on, and `voxel.reload` reads them again. `voxel.vitals` says or sets the
+health and food, `voxel.hurt` harms the player, and
 `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global
 illumination, the scene's distance field and the sun's shadows, `voxel.hud` hides what is drawn over
 the world for a capture, and `voxel.scale` sets the interface's scale, at which `build/pictures.sh`
@@ -473,10 +474,15 @@ a click moves a stack between the hotbar and the rest, into a furnace by what sm
 out of a grid or a furnace into the inventory, and on what a grid makes crafts as many as the
 inventory has room for. A number key over a slot swaps it with that slot of the hotbar, a
 double-click with a stack held gathers its kind onto it, and a drag over slots with a stack held
-spreads it over them, evenly with the left button and one each with the right. Q over a slot drops
-one of its items and Control with Q its stack, and a middle click on the window or R sorts the 27
-slots above the hotbar, each kind together in filled stacks, as the sorting mods do. With the window
-shut, Q throws one of the chosen slot's items and Control with Q its stack. A stack on the ground
+spreads it over them, evenly with the left button and one each with the right, each slot it passes
+lit and showing its share and the pointer what is left until the button is let go. While a window is
+open no key of the player's acts, neither walking, jumping, crouching and sprinting nor the hotbar's
+number keys, as Minecraft's screens take the keyboard. Q over a slot drops one of its items and
+Control with Q its stack, and a middle click on the window or R sorts the 27 slots above the hotbar,
+each kind together in filled stacks, as the sorting mods do. With the window shut, Q throws one of
+the chosen slot's items and Control with Q its stack. A stack on the ground is a small cube of its
+block wearing its faces' pictures as the packs give them, or their colors where no pack does, or an
+item's icon on a square cut out where it is clear, the pack's picture of it or the game's own, and
 falls, slides to a stop and turns slowly, and is picked up once the player comes within a block of
 it, half a second after it fell or two after it was thrown, joining stacks of its item in the
 inventory first. Two stacks of an item lying together join, and a stack is gone after five minutes.

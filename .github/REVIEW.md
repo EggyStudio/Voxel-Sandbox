@@ -5,24 +5,25 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `2b265f3`, item 58's curve, and nothing else, carrying the review's file:
-LightSettings calls SetTonemapCurve(0.9, 1.3, 1.05, 1) in place of Reinhard, the pre-exposure 1.6
-rather than the item's 1.7 since the curve's middle levels match Reinhard at 1.7 there, sRGB 146
-against 148 at a light of 0.25, the darks deeper and the lights brighter, contrast 1.12 and
-saturation 1.4 kept until the owner chooses; the plains village view captured under the curve at the
-modpack's grade, at 1.06 and 1.2 and at 1.12 and 1.4 beside Reinhard's and the modpack's picture for
-the owner's eye, 1.2 near the look approved; 235 tests, the strict build clean, play.sh clean on the
-GPU, the lantern's pool 249.2 to 88.3, the wool 196 to 199. Read at 02:21 on 2026-10-24. Not pushed,
-the build run of `d7c4892` running; pushed when it ends. Next 83, 67, 68, 79, 78, 80, 81, 69, 75,
-74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order; items
-38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and build folders
-wait on the owner's word.
+Reviewed up to `dd64fd0`, item 83, glass without the streaks and with joined frames, and nothing
+else, carrying the review's files: TerrainAtlas.Unstreaked redraws a glass tile as its wholly
+covered outer rings and the inside's most common pixel, SectionMesher.Joined packing each glass
+face's eight in-plane neighbors of the same block as edge and corner bits in the overlay, the
+shader's joined() taking the middle across a joined edge and keeping the inner L where a corner's
+diagonal is not joined, a nointerpolation block corner giving seam fragments their own cell;
+departures, a pack's own connected-glass pieces not read since no fetched pack has them, said in the
+README, ice not joining and glass with no pack plain; two tests, the play check reading a second
+pane's join as the red wall behind at 20.9 and 21.1 and the frame gray at 20.1; 237 tests, the
+strict build clean, play.sh clean on the GPU, lavapipe not run. Read at 02:37 on 2026-10-24. Not
+pushed, the build run of `d7c4892` running; the two go when it ends. Next 67, 68, 79, 78, 80, 81,
+69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order;
+items 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and build
+folders wait on the owner's word.
+
+Before it, `2b265f3` came, item 58's curve, read at 02:21 on 2026-10-24, held with the head.
 
 Before it, `d7c4892` came, item 55, the plants' shadows on 5.2.215, pushed at 02:15 on 2026-10-24,
 its run in flight.
-
-Before it, `7a0d61d` came, item 76, pushed at 01:25 on 2026-10-24, its run green, the play job 30.0
-minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -283,7 +284,7 @@ full.
     connected borders, a face's edge border left out where the neighbor along that edge is glass of
     the same kind, as the modpack's connected textures do, the pack's border pieces read where the
     pack gives them and the game's own otherwise; a test of two glass blocks side by side showing
-    one border around both. One commit.
+    one border around both. One commit. Done at `dd64fd0` on 2026-10-24, the departures in the head.
 
 26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
     world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's

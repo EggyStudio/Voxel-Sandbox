@@ -223,13 +223,20 @@ public sealed class InventoryWindow
         else Gui.Stretched(GuiArt.Panel, new Rectangle(left, top, Width * s, Height * s));
         pictures(left, top, s, pack is not null);
 
+        // A drag over more than one slot with a stack held shows each slot's share in it, the slot
+        // lit, and what is left under the pointer, before the button is let go.
+        var (shares, kept) = _dragging && _dragged.Count > 1 && Held is { } spread
+            ? SlotMoves.Shares(spread, _dragged, one: _dragButton == MouseButton.Right) : ([], Held);
         SlotView? under = null;
         foreach (var slot in slots)
         {
             int x = left + slot.X * s, y = top + slot.Y * s;
             if (pack is null) Gui.Sprite(GuiArt.Slot, x - s, y - s);
             var stack = slot.Makes is { } grid ? grid.Recipe is { } recipe ? new ItemStack(recipe.Result, recipe.Count) : null : slot.At.Stack;
+            var share = slot.Makes is null ? shares.FindIndex(p => p.At == slot.At) : -1;
+            if (share >= 0) stack = shares[share].Stack;
             if (stack is { } shown) Gui.Item(shown, x, y);
+            if (share >= 0) Lit(x, y);
             if (!Gui.Over(new Rectangle(x, y, 16 * s, 16 * s))) continue;
             Lit(x, y);
             under = slot;
@@ -240,10 +247,10 @@ public sealed class InventoryWindow
         if (Gui.Over(new Rectangle(left, top, Width * s, Height * s)) && IsMouseButtonPressed(MouseButton.Middle) || IsKeyPressed(Key.R))
             SlotMoves.Sort(inventory.Slots, Hotbar.Size, Inventory.Size);
 
-        if (Held is { } held)
+        if (Held is not null)
         {
             var mouse = GetMousePosition();
-            Gui.Item(held, (int)mouse.X - 8 * s, (int)mouse.Y - 8 * s);
+            if (kept is { } held) Gui.Item(held, (int)mouse.X - 8 * s, (int)mouse.Y - 8 * s);
         }
         else if (under is { } named && (named.Makes is { } makes ? makes.Recipe?.Result : named.At.Stack?.Item) is { } item)
         {
