@@ -230,6 +230,13 @@ thin pale streaks falling ten blocks a second or a dozen flakes a block and a ha
 drifting as they go. `voxel.weather` holds the weather turned or clear, which the save keeps, or lets
 it turn by its days again, and the Sky and Visuals screen turns the weather off.
 
+While the weather has more than half turned the snow settles, a layer an eighth of a block deep on
+the highest block of a column whose biome snows, where that block's top is whole or leaves and the
+cell over it open, as the source's snow settles, and once the weather has cleared it melts. Sixty
+columns within 48 blocks of the eye are tried a second at random, as the source ticks its blocks, so
+a column near the eye is tried about once in two minutes and the snow comes and goes over minutes.
+The layer is walked on and goes with the block under it.
+
 ## Plants, woods and colors
 
 <table><tr>

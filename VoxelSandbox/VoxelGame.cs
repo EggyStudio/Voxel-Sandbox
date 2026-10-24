@@ -238,6 +238,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The rain and the snow drawn about the eye while the weather turns.</summary>
     public PrecipitationRenderer Precipitation { get; } = new();
 
+    /// <summary>The snow the weather lays on the tops while it snows and melts once it clears.</summary>
+    public SnowCover Snow { get; } = new();
+
     // How far the weather has turned as the sky and the rain show it, eased toward the weather's own
     // share so a held change comes over a few seconds rather than at once.
     private float _overcast;
@@ -623,6 +626,8 @@ public sealed class VoxelGame : IDisposable
         Lights.Update(Player.Eye - new Vector3(0, HeldLights.UnderEye, 0), Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye);
 
         _overcast += (Weather.Share(Sky.Day, Sky.Hour) - _overcast) * (1 - MathF.Exp(-0.5f * seconds));
+        // Snow settles while the weather has more than half turned, and melts once it has cleared.
+        Snow.Update(World, Player.Eye, _overcast >= 0.5f, _overcast <= 0.01f, seconds, _random);
         Sky.Overcast = _overcast;
         Sky.Update(seconds);
         World.Fluids.Update(seconds);

@@ -34,3 +34,4 @@
 2026-10-24-item-43-saturation.webp | The plains village at noon and at 17 with the grading's saturation of 1.4 on the left, which crushes the dirt's blue to 0, and 1.2 on the right, for the owner to choose.
 2026-10-24-item-42-water.webp | The sea by an island at noon and at 17, a lush cave's pools and a laid pool of three depths seen low, before on the left and after on the right, the sea deep and pale toward the horizon, the seabed's steps gone under it, the cave's pools clear and the shallow lane's bed showing.
 2026-10-24-item-32-weather.webp | Seed 1's forest from over its trees and seed 6's snowy village, clear on the left and under the weather's full turn on the right, rain over the forest and snow on the village under a grayed sky.
+2026-10-25-item-32-snow-layer.webp | Seed 6's snowy village before and after three minutes of snow, the spruces' and the bushes' tops and the ground laid with a layer an eighth deep, the stairs of the roofs taking none.

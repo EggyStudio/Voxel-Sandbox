@@ -249,6 +249,7 @@ public enum BlockId : ushort
     MossCarpet,
     CaveVines,
     CaveVinesLit,
+    SnowLayer,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -597,6 +598,8 @@ public static class Blocks
             Plant(BlockId.CaveVines, "cave_vines", "Cave Vines", BlockShape.Vines(Surfaces.CaveVines), Surfaces.CaveVines),
             new(BlockId.CaveVinesLit, "cave_vines_lit", "Cave Vines", Surfaces.GlowBerryLight, Surfaces.GlowBerryLight, Surfaces.GlowBerryLight, Light: 14,
                 Kind: BlockKind.Shaped, Shape: BlockShape.Vines(Surfaces.CaveVinesLit, Surfaces.GlowBerryLight), HeldAs: BlockId.CaveVines),
+            // The snow the weather lays on the tops, an eighth of a block deep, as the source's first layer.
+            Shaped(BlockId.SnowLayer, "snow_layer", "Snow", BlockShape.SnowLayer(Surfaces.Snow), 0),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");

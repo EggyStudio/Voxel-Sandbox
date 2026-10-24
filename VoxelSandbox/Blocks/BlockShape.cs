@@ -458,6 +458,9 @@ public sealed class BlockShape
     public static BlockShape Door(int wood, Facing facing, bool upper, bool open) => new(facing, Yawed(facing,
         open ? Px(0, 0, 0, 3, 16, 16, wood) : Px(0, 0, 13, 16, 16, 16, wood)), falls: false, solid: true, upper: upper, open: open);
 
+    /// <summary>A layer of snow an eighth of a block deep on the block under it, walked on, and gone when that block is broken.</summary>
+    public static BlockShape SnowLayer(int surface) => new(Facing.Up, [Px(0, 0, 0, 16, 2, 16, surface)], solid: true);
+
     /// <summary>A slab, half a block high, in the lower half of its cell or the <paramref name="upper"/> one.</summary>
     public static BlockShape Slab(int surface, bool upper) => new(Facing.Up,
         [upper ? Px(0, 8, 0, 16, 16, 16, surface) : Px(0, 0, 0, 16, 8, 16, surface)], falls: false, solid: true, upper: upper);
