@@ -5,22 +5,26 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `1eeeeff`, item 73's first commit, TNT, and nothing else, carrying the review's file:
-the TNT block with the source's pictures, flint and flint and steel as items with their recipes,
-gravel dropping flint one in ten as the source's does, a lit TNT following the source's primed
-entity, the pop, the 80-tick fuse, the white flash every other five ticks, the swell over the last
-ten and a blast of power 4 at its feet, a TNT the rays reach lit for 10 to 29 ticks rather than
-broken; departures, the flint and steel recipe shaped in two orientations where the source's is
-shapeless, and the flint drop and the recipes added so survival reaches TNT; tests over three seeds
-of the crater's dirt and stone against a creeper's, the pop's height, the fuse's time and a chained
-fuse, a capture sent to the owner; 256 tests, the strict build clean, play.sh clean on the GPU. Read
-at 04:47 on 2026-10-24. Not pushed, the build run of `bfc4d39` running; pushed when it ends. Next
-the creeper's commit, then fire for 72, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken
-again at 40 degrees, then 26 and the items in order; items 38's second part and 54 when their
-packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `cba35ca`, item 73's creeper part, the swell by the source's numbers with its tremble
+and white, each blast's cloud of the source's huge explosion drawn with the pack's sixteen frames as
+an engine particle sheet, one emitter a blast, and a flash of a point light for a tenth of a second
+casting shadows, no hiss since the game has no sound, said in the README, after `1eeeeff`, its
+first, TNT, and nothing else, carrying the review's file. TNT: the TNT block with the source's
+pictures, flint and flint and steel as items with their recipes, gravel dropping flint one in ten as
+the source's does, a lit TNT following the source's primed entity, the pop, the 80-tick fuse, the
+white flash every other five ticks, the swell over the last ten and a blast of power 4 at its feet,
+a TNT the rays reach lit for 10 to 29 ticks rather than broken; departures, the flint and steel
+recipe shaped in two orientations where the source's is shapeless, and the flint drop and the
+recipes added so survival reaches TNT; tests over three seeds of the crater's dirt and stone against
+a creeper's, the pop's height, the fuse's time and a chained fuse, a capture sent to the owner; 256
+tests, the strict build clean, play.sh clean on the GPU. Read at 04:47 and 04:59 on 2026-10-24; 257
+tests. Pushed at 05:21 after the build run of `bfc4d39` ended green, its play job 33.9 minutes; the
+run watched. Next fire for 72, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at
+40 degrees, then 26 and the items in order; items 38's second part and 54 when their packages come;
+the AGENTS.md rows for the Ui and build folders wait on the owner's word.
 
 Before it, `bfc4d39` came, the devlog and AGENTS.md's rows, with `2aea2bf`, `adefc9d` and `1dce7b7`,
-items 74 and 75, pushed at 04:43 on 2026-10-24, their run in flight.
+items 74 and 75, pushed at 04:43 on 2026-10-24, their run green, the play job 33.9 minutes.
 
 Before it, `45b4b93` came, item 69's felling, with `cc4f29a`, `8da806a`, `9b25aa3` and `b032e76`,
 items 69, 81, 80 and 78, pushed at 04:23 on 2026-10-24, their run green, the play job 18.1 minutes.
@@ -238,7 +242,9 @@ full.
     does, with smoke and flash particles; the blast's light a flash the cascades carry for a frame
     or two. Tests: a TNT's crater's counts, the creeper's swell and blast on the flat world, and a
     capture. Two commits, TNT, then the creeper. TNT at `1eeeeff` on 2026-10-24, the departures in
-    the head; the creeper's commit next, its hiss waiting on the game having sound.
+    the head; the creeper's commit next, its hiss waiting on the game having sound. The creeper at
+    `cba35ca`, the cloud an engine particle sheet of the pack's frames and the flash a point light;
+    item 73 done.
 
 74. **A held light lights the ground around the player.** The owner wrote on 2026-10-23 (Decision
     34) that holding a light should dynamically illuminate the area around. The mend: a torch,

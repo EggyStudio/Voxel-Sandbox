@@ -10,10 +10,21 @@ namespace VoxelSandbox;
 /// A material's emission is one for its whole draw, so an emissive surface is drawn as cubes of its
 /// own rather than as faces of a section, whose one material is not emissive.
 /// </remarks>
-public sealed record Surface(int Id, string Name, Color Color, float Roughness, Color Emissive, float Glow, SurfaceTint Tint)
+public sealed record Surface(int Id, string Name, Color Color, float Roughness, Color Emissive, float Glow, SurfaceTint Tint, bool Unseen = false)
 {
     /// <summary>Whether the surface is emissive.</summary>
     public bool Emits => Glow > 0;
+
+    /// <summary>
+    /// Whether its lamp's cubes are drawn wholly clear, so they show nowhere and cast no shadow and
+    /// the scene's distance field alone takes their light, as a fire's light is given apart from its
+    /// flames, which change with each step of their texture.
+    /// </summary>
+    /// <remarks>
+    /// The field reads a draw's color and emission whatever its alpha, and the model pass and the
+    /// shadows cut out a masked material's clear pixels, so such a cube lights the land around as
+    /// a lamp does and nothing of it is seen.
+    /// </remarks>
 
     /// <summary>The surface's color under a tint, which a tinted surface multiplies its gray by and any other ignores.</summary>
     public Color Under(Color grass, Color foliage) => Tint switch
@@ -51,9 +62,9 @@ public static class Surfaces
 {
     private static readonly List<Surface> _all = [];
 
-    private static int Add(string name, Color color, float roughness = 0.9f, Color emissive = default, float glow = 0, SurfaceTint tint = SurfaceTint.None)
+    private static int Add(string name, Color color, float roughness = 0.9f, Color emissive = default, float glow = 0, SurfaceTint tint = SurfaceTint.None, bool unseen = false)
     {
-        _all.Add(new Surface(_all.Count, name, color, roughness, emissive, glow, tint));
+        _all.Add(new Surface(_all.Count, name, color, roughness, emissive, glow, tint, unseen));
         return _all.Count - 1;
     }
 
@@ -260,6 +271,11 @@ public static class Surfaces
     public static readonly int TntSide = Add("tnt side", new Color(206, 72, 52));
     public static readonly int TntTop = Add("tnt top", new Color(170, 150, 140));
     public static readonly int TntBottom = Add("tnt bottom", new Color(150, 130, 120));
+    // A fire's flames, cut out of its walls and lit by its own cell's light, and the light it gives,
+    // a box inside them that only the scene's distance field sees, as bright as glowstone's over a
+    // room for its smaller box.
+    public static readonly int Fire = Add("fire", new Color(232, 140, 40));
+    public static readonly int FireLight = Add("fire light", new Color(255, 170, 70), emissive: new Color(255, 150, 50), glow: 6, unseen: true);
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

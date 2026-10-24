@@ -10,7 +10,7 @@ namespace VoxelSandbox;
 /// them, so a mask draws its plant at the bottom: a flower's stem in the rows its stem's walls
 /// cover and its petals in the rows above, a mushroom's stem and cap the same, and grass in blades
 /// of heights a hash of their column gives. A lantern's iron takes one too, for its handle's and
-/// chain's crossed walls, which are cut out as a plant's are.
+/// chain's crossed walls, which are cut out as a plant's are, and a fire's flames take one.
 /// </remarks>
 public static class PlantArt
 {
@@ -86,6 +86,9 @@ public static class PlantArt
         string[] links = ["###", "#.#", "#.#", "###", "...", "#.#", "###", "...", "...", "###", "#.#"];
         var iron = Paint((x, y) => x is < 11 or > 13 || y is < 1 or > 11 || links[y - 1][x - 11] == '#');
         (masks[Surfaces.LanternIron], masks[Surfaces.SoulLanternIron]) = (iron, iron);
+        // A fire's tongues of flame, each two columns wide and as high as a hash of its pair gives,
+        // narrowing to a point.
+        masks[Surfaces.Fire] = Paint((x, y) => y >= 16 - (6 + Hash(x / 2, 6) % 9) + (x % 2 == 0 ? 1 : 0) * 2);
         return masks;
     }
 }

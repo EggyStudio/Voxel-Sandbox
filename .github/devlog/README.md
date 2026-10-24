@@ -38,6 +38,7 @@ Done:
   keeps its progress across jumps.
 - Item 69 at `cc4f29a`. Felling a tree takes its logs and leaves, some logs falling, and gravity
   blocks fall (Decision 35).
+- Item 73 at `cba35ca`. TNT and the creeper's blast.
 - Item 74 at `2aea2bf`. A held light lights the ground around the player.
 - Item 75 at `1dce7b7`. The player's hand and held item in view.
 - Item 76 at `7a0d61d`. The stepped shadows move in whole steps as the day passes.

@@ -100,7 +100,7 @@ public sealed class ChunkRenderer : IDisposable
     private readonly ModelMesh _dome;
     private float _fogEnd = float.MaxValue;
     private readonly Shader _shader;
-    private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _atlas, _atlasLayout, _animations, _ticks;
+    private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _atlas, _atlasLayout, _animations, _ticks, _flames;
     private Texture2D _atlasTexture;
     // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with its
     // own texture where a pack has one, which the scene's distance field reads its average of, and
@@ -132,6 +132,7 @@ public sealed class ChunkRenderer : IDisposable
         SetShaderKeepsPositions(_shader, true);
         (_fogColor, _fogStart, _fogEndAt) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
         _atmosphere = GetShaderLocation(_shader, "atmosphere");
+        _flames = GetShaderLocation(_shader, "flames");
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
         (_animations, _ticks) = (GetShaderLocation(_shader, "animations"), GetShaderLocation(_shader, "ticks"));
         _lampCubes = [.. Surfaces.All.Select(s => LampParts[s.Id] is { } shown ? LampCube(shown, new Vector2(16))
@@ -187,6 +188,7 @@ public sealed class ChunkRenderer : IDisposable
             var table = new Vector4[TerrainAtlas.MostAnimations];
             for (int i = 0; i < value.Animations.Count; i++) table[i] = new Vector4(value.Animations[i].First, value.Animations[i].Count, value.Animations[i].Ticks, 0);
             SetShaderValueV<Vector4>(_shader, _animations, table);
+            SetShaderValue(_shader, _flames, new Vector4(value.Tile(Surfaces.Fire) is > 0 and var tile ? tile : -1, FlamesShown, 0, 0));
             foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
                 if (texture.IsValid) UnloadTexture(texture);
             _lampTextures = [.. Surfaces.All.Select(s => !s.Emits ? default
@@ -274,6 +276,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         _lamps = [.. Surfaces.All.Select(s => _lampTextures[s.Id].IsValid
             ? s.Material(_glowScale) with { Color = Color.White, Texture = _lampTextures[s.Id], EmissiveMap = _lampEmission[s.Id] }
+            : s.Unseen ? s.Material(_glowScale) with { AlphaMode = MaterialAlphaMode.Mask, Color = s.Color with { A = 0 } }
             : s.Material(_glowScale))];
         _lampSteps = [.. Surfaces.All.Select(s => _lampStepEmission[s.Id].Length == 0 ? null : _lampStepEmission[s.Id].Select(map => _lamps[s.Id] with { EmissiveMap = map }).ToArray())];
     }
@@ -338,6 +341,9 @@ public sealed class ChunkRenderer : IDisposable
         }
         return UploadMesh(vertices, indices);
     }
+
+    /// <summary>How many times their own color a fire's flames show, whatever light reaches them.</summary>
+    public const float FlamesShown = 2;
 
     /// <summary>How many times its own color a lit piece's bright pixels show, a lantern's glass or a torch's flame.</summary>
     public const float LampShown = 4;

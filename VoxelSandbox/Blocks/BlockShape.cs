@@ -85,7 +85,7 @@ public readonly record struct Box(Vector3 Min, Vector3 Max)
 public sealed class BlockShape
 {
     public BlockShape(Facing facing, Piece[] pieces, bool falls = true, bool solid = false, bool upper = false, bool open = false, Box[]? collision = null, StairForm? form = null,
-        bool cutout = false, PlantOffset offset = PlantOffset.None)
+        bool cutout = false, PlantOffset offset = PlantOffset.None, Box[]? outline = null)
     {
         Facing = facing;
         Form = form;
@@ -109,7 +109,7 @@ public sealed class BlockShape
             (Min, Max) = (Vector3.Min(Min, low), Vector3.Max(Max, high));
             boxes.Add(new Box(low, high));
         }
-        Boxes = [.. boxes];
+        Boxes = outline ?? [.. boxes];
         Collision = !solid ? [] : collision ?? [.. boxes];
     }
 
@@ -143,7 +143,7 @@ public sealed class BlockShape
     /// <summary>The boxes that stop the player, none for one the player walks through.</summary>
     public IReadOnlyList<Box> Collision { get; }
 
-    /// <summary>The box around each of its pieces, which the crosshair meets and the outline is drawn on.</summary>
+    /// <summary>The box around each of its pieces, or the boxes it is given, which the crosshair meets and the outline is drawn on.</summary>
     public IReadOnlyList<Box> Boxes { get; }
 
     /// <summary>
@@ -344,6 +344,44 @@ public sealed class BlockShape
             pieces.Add(Wall(0, from, 16, 16, to, 0, surface));
         }
         return new BlockShape(Facing.Up, [.. pieces], cutout: true, offset: offset);
+    }
+
+    /// <summary>
+    /// A fire as the source's models draw it, toward the sides whose bits are set in
+    /// <paramref name="sides"/>, north 1, east 2, south 4, west 8 and up 16, a wall of flame a block
+    /// and two fifths high against each side, and under the block over it two walls sloping down
+    /// from it; or with none, on the ground, four walls leaning across the cell, crossed in pairs,
+    /// and the four against its sides. The walls show the fire's texture whole, cut out where it
+    /// is clear, and its light is a box inside them that the scene's distance field alone sees. The
+    /// crosshair meets it at a sixteenth over its foot, as the source's, and it stands where it is
+    /// when the block under it goes, burning out at its next tick where nothing holds it.
+    /// </summary>
+    public static BlockShape Fire(int sides)
+    {
+        List<Piece> pieces = [Px(2, 0, 2, 14, 14, 14, Surfaces.FireLight)];
+        // The source's walls in sixteenths, each from its foot's first end to its foot's second and
+        // up to its top, which leans by the last three, the leaning ones its turns by 22.5 degrees
+        // about the cell's middle as its models give them, stretched back across the cell.
+        void Add(float x0, float y0, float z0, float x1, float y1, float z1, float leanX = 0, float leanZ = 0) =>
+            pieces.Add(new Piece(new Vector3(x0, y0, z0) / 16, new Vector3(x1, y1, z1) / 16, Surfaces.Fire, new Vector3(leanX, 0, leanZ) / 16, Plane: true,
+                Parts: Parts.Wall(0, 0, 16, 16)));
+        if (sides == 0)
+        {
+            Add(0, 0.331f, 12.114f, 16, 22.731f, 12.114f, leanZ: -9.279f);
+            Add(0, 0.331f, 3.886f, 16, 22.731f, 3.886f, leanZ: 9.279f);
+            Add(5.486f, -0.331f, 0, 5.486f, 22.069f, 16, leanX: 9.279f);
+            Add(10.514f, -0.331f, 0, 10.514f, 22.069f, 16, leanX: -9.279f);
+        }
+        if (sides == 0 || (sides & 1) != 0) Add(0, 0, 0.01f, 16, 22.4f, 0.01f);
+        if (sides == 0 || (sides & 2) != 0) Add(15.99f, 0, 0, 15.99f, 22.4f, 16);
+        if (sides == 0 || (sides & 4) != 0) Add(0, 0, 15.99f, 16, 22.4f, 15.99f);
+        if (sides == 0 || (sides & 8) != 0) Add(0.01f, 0, 0, 0.01f, 22.4f, 16);
+        if ((sides & 16) != 0)
+        {
+            Add(0, 9.373f, 0, 0, 16, 16, leanX: 16);
+            Add(16, 9.373f, 0, 16, 16, 16, leanX: -16);
+        }
+        return new BlockShape(Facing.Up, [.. pieces], falls: false, outline: [new Box(Vector3.Zero, new Vector3(1, 1 / 16f, 1))]);
     }
 
     // A flat wall from one corner across to another in sixteenths, standing from the lower height to the upper.

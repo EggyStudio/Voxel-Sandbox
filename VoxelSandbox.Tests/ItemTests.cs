@@ -19,10 +19,11 @@ public sealed class ItemTests : IDisposable
     private static Item Of(BlockId block) => Items.Of(block);
 
     [Fact]
-    public void Every_Block_But_Air_Has_An_Item_That_Places_The_Block_It_Is_Held_As()
+    public void Every_Block_But_Air_And_Fire_Has_An_Item_That_Places_The_Block_It_Is_Held_As()
     {
-        foreach (var block in Blocks.All.Where(b => b.Id != BlockId.Air))
+        foreach (var block in Blocks.All.Where(b => b.Id is not (BlockId.Air or BlockId.Fire)))
             Assert.Equal(block.Item, Of(block.Id).Block);
+        Assert.DoesNotContain(Items.All, item => item.Block == BlockId.Fire);
         Assert.Equal(Items.All.Count, Items.All.Select(i => i.Key).Distinct().Count());
         Assert.All(Items.All, item => Assert.Equal(item, Items.All[item.Id]));
     }

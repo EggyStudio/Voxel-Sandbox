@@ -34,6 +34,9 @@ public sealed class VoxelWorld
     /// <summary>Sand and gravel that came loose over what holds nothing up and were taken out of the world, where and which, for the game to let fall and clear.</summary>
     public List<(int X, int Y, int Z, BlockId Block)> Loosened { get; } = [];
 
+    /// <summary>Fires set in the world, by an edit or in a column as it arrives, where, for the game to keep burning and clear.</summary>
+    public List<(int X, int Y, int Z)> Kindled { get; } = [];
+
     /// <summary>Sections a column's arrival left to mesh, which are meshed a few at a time, nearest first.</summary>
     public HashSet<SectionKey> Loaded { get; } = [];
 
@@ -60,6 +63,17 @@ public sealed class VoxelWorld
                 for (int y = 0; y < ChunkColumn.SectionCount; y++)
                     Loaded.Add(new SectionKey(column.X + dx, y, column.Z + dz));
         _light.Join(column);
+        // The fires a saved column holds burn on, found by a search of each section, which is quick
+        // where there are none.
+        for (int s = 0; s < ChunkColumn.SectionCount; s++)
+        {
+            var blocks = column.Sections[s].Blocks;
+            for (int i = Array.IndexOf(blocks, (ushort)BlockId.Fire); i >= 0; i = Array.IndexOf(blocks, (ushort)BlockId.Fire, i + 1))
+            {
+                int x = i & Section.Mask, z = i >> Section.Shift & Section.Mask, y = i >> 2 * Section.Shift;
+                Kindled.Add((column.X * Section.Size + x, s * Section.Size + y, column.Z * Section.Size + z));
+            }
+        }
     }
 
     public bool Remove(int x, int z) => _columns.Remove((x, z));
@@ -107,7 +121,7 @@ public sealed class VoxelWorld
     }
 
     private BlockShape? Joined(BlockId block, int x, int y, int z) =>
-        Blocks.ShapeAmong(block, GetBlock(x, y, z - 1), GetBlock(x + 1, y, z), GetBlock(x, y, z + 1), GetBlock(x - 1, y, z));
+        Blocks.ShapeAmong(block, GetBlock(x, y, z - 1), GetBlock(x + 1, y, z), GetBlock(x, y, z + 1), GetBlock(x - 1, y, z), GetBlock(x, y - 1, z), GetBlock(x, y + 1, z));
 
     /// <summary>
     /// Places a block, spreads the light around it again, and marks the section it is in to mesh
@@ -137,6 +151,7 @@ public sealed class VoxelWorld
         Reshade(x, y, z);
 
         Fluids.Around(x, y, z);
+        if (block == BlockId.Fire) Kindled.Add((x, y, z));
 
         // Tall grass's other half goes with it, as a door's does.
         if (was == BlockId.TallGrass && GetBlock(x, y + 1, z) == BlockId.TallGrassTop) SetBlock(x, y + 1, z, BlockId.Air);

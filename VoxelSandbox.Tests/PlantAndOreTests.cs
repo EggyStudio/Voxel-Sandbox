@@ -11,7 +11,8 @@ public class PlantAndOreTests
     public void Every_Surface_Of_The_New_Blocks_Names_A_Pack_Texture()
     {
         var added = Blocks.All.Where(b => b.Id >= BlockId.JungleLog);
-        var surfaces = added.SelectMany(b => b.Shape is { } shape ? shape.Pieces.Select(p => p.Surface) : [b.Top, b.Side, b.Bottom]).Distinct();
+        // A fire's light is seen by the scene's distance field alone and has no texture.
+        var surfaces = added.SelectMany(b => b.Shape is { } shape ? shape.Pieces.Select(p => p.Surface) : [b.Top, b.Side, b.Bottom]).Distinct().Where(s => !Surfaces.All[s].Unseen);
         Assert.All(surfaces, s => Assert.NotNull(PackTextures.Of(s)));
     }
 

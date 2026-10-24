@@ -293,10 +293,12 @@ public sealed class SectionMesher
                     if (info.Glows.Length > 0) Emitters.Add((Section.Index(x, y, z), block));
                     if (info.Shape is { } shape)
                     {
-                        // A fence joins the fences and whole blocks on its four sides, and stairs
-                        // turn into a corner by the stairs before and behind them.
+                        // A fence joins the fences and whole blocks on its four sides, stairs turn
+                        // into a corner by the stairs before and behind them, and a fire burns
+                        // toward what burns around it.
                         if (Blocks.Joins(block))
-                            shape = Blocks.ShapeAmong(block, (BlockId)_blocks[at + Steps[5]], (BlockId)_blocks[at + Steps[0]], (BlockId)_blocks[at + Steps[4]], (BlockId)_blocks[at + Steps[1]])!;
+                            shape = Blocks.ShapeAmong(block, (BlockId)_blocks[at + Steps[5]], (BlockId)_blocks[at + Steps[0]], (BlockId)_blocks[at + Steps[4]], (BlockId)_blocks[at + Steps[1]],
+                                (BlockId)_blocks[at + Steps[3]], (BlockId)_blocks[at + Steps[2]])!;
                         AddShape(shape, at, new Vector3(x, y, z));
                         continue;
                     }
@@ -495,8 +497,9 @@ public sealed class SectionMesher
         return tiles & 511 | (1 + u + 17 * v) << 9;
     }
 
-    // A flat wall, from its piece's first corner across to its second, drawn from both sides with no
-    // edges, as Minecraft's crossed planes are. Both sides are lit as if they faced up, as Minecraft
+    // A flat wall, from its piece's first corner across to its second, its top moved by the piece's
+    // lean, as a fire's walls lean, drawn from both sides with no edges, as Minecraft's crossed
+    // planes are. Both sides are lit as if they faced up, as Minecraft
     // lights its plants with no shade by the way they face, and show the wall's part of its texture,
     // or for a plant the texture laid along the axis the wall runs most along from the cell's foot,
     // and each side's corners run counterclockwise seen from it.
@@ -514,7 +517,8 @@ public sealed class SectionMesher
             (a, b) = (new Vector3(b.X, a.Y, b.Z), new Vector3(a.X, b.Y, a.Z));
             if (part is { } ends) part = new Vector4(ends.Z, ends.Y, ends.X, ends.W);
         }
-        Span<Vector3> quad = [new(a.X, a.Y, a.Z), new(b.X, a.Y, b.Z), new(b.X, b.Y, b.Z), new(a.X, b.Y, a.Z)];
+        var lean = piece.Lean;
+        Span<Vector3> quad = [new(a.X, a.Y, a.Z), new(b.X, a.Y, b.Z), new Vector3(b.X, b.Y, b.Z) + lean, new Vector3(a.X, b.Y, a.Z) + lean];
         var across = new Vector3(b.Z - a.Z, 0, a.X - b.X);
         foreach (var side in (ReadOnlySpan<float>)[1, -1])
         {

@@ -233,6 +233,7 @@ public enum BlockId : ushort
     MushroomStem,
     TallGrassTop,
     Tnt,
+    Fire,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -549,6 +550,10 @@ public static class Blocks
             Same(BlockId.MushroomStem, "mushroom_stem", "Mushroom Stem", Surfaces.MushroomStem),
             Plant(BlockId.TallGrassTop, "tall_grass_top", "Tall Grass", BlockShape.Plant(Surfaces.TallGrass, 16, offset: PlantOffset.Across), Surfaces.TallGrass) with { HeldAs = BlockId.TallGrass },
             new(BlockId.Tnt, "tnt", "TNT", Surfaces.TntTop, Surfaces.TntSide, Surfaces.TntBottom),
+            // Fire is no item and drops none, as the source's is none, and its faces take its hidden
+            // light's surface, which makes it emissive.
+            new(BlockId.Fire, "fire", "Fire", Surfaces.FireLight, Surfaces.FireLight, Surfaces.FireLight, Light: 15, Kind: BlockKind.Shaped,
+                Shape: BlockShape.Fire(0), HeldAs: BlockId.Air),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");
@@ -585,6 +590,19 @@ public static class Blocks
 
     /// <summary>The shape of a fence joined to the sides whose bits are set, north 1, east 2, south 4 and west 8.</summary>
     public static BlockShape Fence(int arms) => _fences[arms];
+
+    // A fire's shape for each set of the sides it burns toward, north 1, east 2, south 4, west 8 and
+    // up 16, or on the ground for none.
+    private static readonly BlockShape[] _fires = [.. Enumerable.Range(0, 32).Select(BlockShape.Fire)];
+
+    /// <summary>
+    /// The shape of a fire among the blocks around it, as the source's fire takes its sides, on the
+    /// ground where the block under it is whole or burns, and otherwise toward each block beside or
+    /// over it that burns.
+    /// </summary>
+    public static BlockShape FireAmong(BlockId below, BlockId north, BlockId east, BlockId south, BlockId west, BlockId above) =>
+        IsSturdy(below) || Fires.Burns(below) ? _fires[0]
+            : _fires[(Fires.Burns(north) ? 1 : 0) | (Fires.Burns(east) ? 2 : 0) | (Fires.Burns(south) ? 4 : 0) | (Fires.Burns(west) ? 8 : 0) | (Fires.Burns(above) ? 16 : 0)];
 
     /// <summary>Whether a fence beside a block joins it, as it joins a fence or a whole block.</summary>
     public static bool JoinsFence(BlockId neighbor) => neighbor == BlockId.OakFence || IsSturdy(neighbor);
@@ -631,18 +649,20 @@ public static class Blocks
     }
 
     /// <summary>
-    /// The shape of a block among the blocks north, east, south and west of it, a fence's joined to
-    /// the sides it joins and stairs' in the form they take there, and any other's its own.
+    /// The shape of a block among the blocks north, east, south and west of it and under and over
+    /// it, a fence's joined to the sides it joins, stairs' in the form they take there, a fire's
+    /// toward what it burns, and any other's its own.
     /// </summary>
-    public static BlockShape? ShapeAmong(BlockId block, BlockId north, BlockId east, BlockId south, BlockId west)
+    public static BlockShape? ShapeAmong(BlockId block, BlockId north, BlockId east, BlockId south, BlockId west, BlockId below = BlockId.Air, BlockId above = BlockId.Air)
     {
+        if (block == BlockId.Fire) return FireAmong(below, north, east, south, west, above);
         if (block == BlockId.OakFence)
             return Fence((JoinsFence(north) ? 1 : 0) | (JoinsFence(east) ? 2 : 0) | (JoinsFence(south) ? 4 : 0) | (JoinsFence(west) ? 8 : 0));
         return IsStairs(block) ? _stairForms[(int)block, (int)StairFormAmong(block, north, east, south, west)] : Get(block).Shape;
     }
 
-    /// <summary>Whether a block's shape depends on the blocks beside it, as a fence's and stairs' do.</summary>
-    public static bool Joins(BlockId id) => id == BlockId.OakFence || IsStairs(id);
+    /// <summary>Whether a block's shape depends on the blocks around it, as a fence's, stairs' and a fire's do.</summary>
+    public static bool Joins(BlockId id) => id == BlockId.OakFence || IsStairs(id) || id == BlockId.Fire;
 
     private static bool IsNorthSouth(Facing facing) => facing is Facing.North or Facing.South;
 
@@ -761,10 +781,10 @@ public static class BlockGroups
 
     /// <summary>
     /// Whether a block holds nothing up and gives way to a falling block landing in its place, air,
-    /// water and the plants the source lets a block replace, the grasses, the fern and the dead bush.
+    /// water, fire and the plants the source lets a block replace, the grasses, the fern and the dead bush.
     /// </summary>
     public static bool GivesWay(BlockId block) =>
-        block is BlockId.Air or BlockId.ShortGrass or BlockId.TallGrass or BlockId.TallGrassTop or BlockId.Fern or BlockId.DeadBush || Blocks.IsWater(block);
+        block is BlockId.Air or BlockId.Fire or BlockId.ShortGrass or BlockId.TallGrass or BlockId.TallGrassTop or BlockId.Fern or BlockId.DeadBush || Blocks.IsWater(block);
 
     public static readonly HashSet<BlockId> Terracotta = [.. Blocks.All.Where(b => b.Key.EndsWith("terracotta", StringComparison.Ordinal)).Select(b => b.Id)];
 }

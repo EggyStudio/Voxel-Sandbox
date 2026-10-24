@@ -142,6 +142,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The sand and gravel falling where nothing held them up, and a felled tree's logs.</summary>
     public FallingBlocks Falling { get; } = new();
 
+    /// <summary>The fires burning.</summary>
+    public Fires Fires { get; } = new();
+
     /// <summary>The trees being felled, their logs breaking and their leaves decaying.</summary>
     public TreeFelling Felling { get; } = new();
 
@@ -320,6 +323,7 @@ public sealed class VoxelGame : IDisposable
         Mobs = new Mobs(kept, placed);
         Drops.Clear();
         Falling.Clear();
+        Fires.Clear();
         Tnt.Clear();
         Arrows.Clear();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
@@ -522,11 +526,15 @@ public sealed class VoxelGame : IDisposable
         Felling.Broken.Clear();
         foreach (var (x, y, z, block) in Felling.Dropped) Falling.Drop(block, x, y, z);
         Felling.Dropped.Clear();
+        Fires.Take(World);
+        Fires.Update(World, seconds);
+        foreach (var (x, y, z) in Fires.Primed) Tnt.Light(x, y, z);
+        Fires.Primed.Clear();
         Tnt.Update(World, seconds);
         Blasts.Update(seconds);
         var blasts = Tnt.Exploded.ToArray();
         Tnt.Exploded.Clear();
-        foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT");
+        foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT", fiery: true);
         // The hand a third of a block ahead of the eye, to its right and below it.
         var ahead = Player.Look;
         var side = Vector3.Normalize(Vector3.Cross(ahead, Vector3.UnitY));
@@ -619,11 +627,12 @@ public sealed class VoxelGame : IDisposable
     /// its rays reach, drops a third of them in survival, and harms and throws the player and the
     /// mobs near it by its impact, as Minecraft's explosions do.
     /// </summary>
-    public void Explode(Vector3 at, float power, string cause)
+    public void Explode(Vector3 at, float power, string cause, bool fiery = false)
     {
         var survival = Mode.Lives();
         var pickaxe = Items.Find("stone_pickaxe");
-        foreach (var (x, y, z) in Explosion.Breaks(World, at, power, _random))
+        var broken = Explosion.Breaks(World, at, power, _random);
+        foreach (var (x, y, z) in broken)
         {
             var block = World.GetBlock(x, y, z);
             // A TNT the blast reaches is lit on a short fuse rather than broken.
@@ -636,6 +645,11 @@ public sealed class VoxelGame : IDisposable
             if (!World.SetBlock(x, y, z, BlockId.Air) || !survival || _random.NextDouble() >= 1 / power) continue;
             foreach (var (item, count) in Loot.Of(block, _random, pickaxe)) Drops.Pop(item, count, x, y, z);
         }
+        // A fiery blast lights a third of the cells it emptied over a whole block, as the source's
+        // fiery explosions do.
+        if (fiery)
+            foreach (var (x, y, z) in broken)
+                if (_random.Next(3) == 0 && Blocks.IsSturdy(World.GetBlock(x, y - 1, z))) Fires.Light(World, x, y, z);
         var middle = Player.Body.Position + new Vector3(0, Player.Body.Height / 2, 0);
         var distance = Vector3.Distance(middle, at);
         var exposure = Explosion.Exposure(World, at, Player.Body.Min, Player.Body.Max);
@@ -787,8 +801,9 @@ public sealed class VoxelGame : IDisposable
             _placeWait = Repeat;
             if (Use() != BlockId.Air) Hand.Swing();
         }
-        if (IsMouseButtonPressed(MouseButton.Middle) && Target is { } hit)
-            Hotbar.Pick(Items.Of(World.GetBlock(hit.X, hit.Y, hit.Z)), Mode == GameMode.Creative);
+        // Fire is no item, so the middle button picks nothing from it.
+        if (IsMouseButtonPressed(MouseButton.Middle) && Target is { } hit && World.GetBlock(hit.X, hit.Y, hit.Z) is var picked and not BlockId.Fire)
+            Hotbar.Pick(Items.Of(picked), Mode == GameMode.Creative);
     }
 
     // Holding the right button with food while hungry eats it over a second and a half, unless the
@@ -876,6 +891,14 @@ public sealed class VoxelGame : IDisposable
         // In adventure a door opens or shuts and nothing is placed.
         if (!Mode.Builds())
             return Target is { } shut && World.Toggle(shut.X, shut.Y, shut.Z) ? World.GetBlock(shut.X, shut.Y, shut.Z) : BlockId.Air;
+        // Flint and steel lights a fire in the cell against the face it is used on, where a fire can
+        // stand, a use worn in survival.
+        if (!toggles && Hotbar.Current?.Item == Items.FlintAndSteel)
+        {
+            if (Target is not { Inside: false } struck || !Fires.Light(World, struck.Beside.X, struck.Beside.Y, struck.Beside.Z)) return BlockId.Air;
+            if (Mode.Lives()) Wear(1);
+            return BlockId.Fire;
+        }
         var placed = Place(Hotbar.CurrentBlock);
         if (Mode == GameMode.Survival && !toggles && placed != BlockId.Air) Inventory.Take(Hotbar.Selected);
         return placed;
@@ -950,6 +973,8 @@ public sealed class VoxelGame : IDisposable
 
         var (x, y, z) = hit.Beside;
         var there = World.GetBlock(x, y, z);
+        // A block placed into a fire puts it out, as the source's fire gives way to one.
+        if (there == BlockId.Fire) there = BlockId.Air;
         // A door stands two blocks high, shut and facing the way the player looks, on a whole block.
         if (Blocks.Get(block).Toggled is not null)
         {

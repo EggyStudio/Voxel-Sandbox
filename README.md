@@ -133,7 +133,8 @@ for a capture, `voxel.save` saves at once, and `voxel.blocks`
 lists the blocks by number and name. `voxel.mobs` counts the mobs and lists the nearest,
 `voxel.spawn` places one where the crosshair rests, `voxel.attack` hits the one it rests on as the
 left button does, `voxel.still` stops them where they stand and holds the clouds for a capture, and
-`voxel.kill` takes them away. `voxel.mode` plays in creative, survival, adventure or spectator mode,
+`voxel.kill` takes them away. `voxel.fires` counts the fires and lists the nearest with their ages.
+`voxel.mode` plays in creative, survival, adventure or spectator mode,
 `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the inventory,
 `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and reads a
 furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item, `voxel.throw`
@@ -699,6 +700,25 @@ skeleton bones and arrows, a spider string and now and then an eye, and a creepe
 it blew itself up. Their models are boxes of Minecraft's too, a zombie's and a skeleton's arms held
 out ahead and a skeleton's bow upright in its hand, and arrows are thin shafts drawn over the frame,
 which cast no shadow.
+
+## Fire
+
+Flint and steel used on a block's face lights a fire in the cell before it, where the block under
+it is whole or a block beside it burns, as Minecraft's does, and a TNT's blast lights a third of the
+cells it empties over a whole block, as Minecraft's fiery blasts do. A fire burns by Minecraft's
+numbers. It ticks every one and a half to two seconds, growing older, burns away a block beside it
+that burns or turns it to fire, at Minecraft's odds for planks, logs, leaves, wool, hay, TNT, which
+it lights, and the flowers and grasses, and catches the air near them, up to four blocks over it and
+one to each side. One with nothing that burns around it goes out once it is older than 3, about
+twenty seconds on stone, and one over magma burns on. A house of planks burns down, and a hand,
+a block placed in its cell or a blast puts a fire out.
+
+Its flames are Minecraft's walls of the pack's animated `fire_0`, four leaning across the cell and
+four at its sides on the ground, or toward each block beside and over it that burns where it hangs
+on a wall, drawn at twice their color whatever light falls on them, as Minecraft draws fire at full
+light. Its light is level 15, and global illumination takes it from a box inside the walls that
+only the scene's distance field sees, so it lights a room as glowstone does, while the flames'
+texture steps freely.
 
 ## Resource packs
 

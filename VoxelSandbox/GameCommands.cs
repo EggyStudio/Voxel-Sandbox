@@ -369,6 +369,19 @@ public static class GameCommands
         return used is not BlockId.Air ? $"{Blocks.Get(used).Key} is placed" : "nothing can be placed there";
     }
 
+    [Command("voxel.fires", "How many fires burn and the nearest few, each where it burns and its age from 0 to 15: voxel.fires [count]")]
+    internal static string ListFires(int count = 5)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        // A fire put out by a hand, a blast or water is let go at its next tick, and is not counted.
+        var all = game.Fires.All.Where(f => game.World.GetBlock(f.At.X, f.At.Y, f.At.Z) == BlockId.Fire).ToList();
+        if (all.Count == 0) return "no fire burns";
+        var eye = game.Player.Eye;
+        var nearest = all.OrderBy(f => Vector3.DistanceSquared(new Vector3(f.At.X + 0.5f, f.At.Y, f.At.Z + 0.5f), eye)).Take(count)
+            .Select(f => $"{f.At.X}, {f.At.Y}, {f.At.Z} at age {f.Age}");
+        return $"{all.Count} {(all.Count == 1 ? "fire burns" : "fires burn")}, the nearest at {string.Join("; ", nearest)}";
+    }
+
     [Command("voxel.mobs", "How many mobs of each kind are loaded and kept, and the nearest few, each with its number, where it stands, what it does and its health: voxel.mobs [count]")]
     internal static string ListMobs(int count = 5)
     {

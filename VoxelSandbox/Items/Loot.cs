@@ -177,6 +177,8 @@ public static class Loot
     /// <summary>A block's hardness, Minecraft's, by the item that places it.</summary>
     public static float Hardness(BlockId block) => Blocks.Get(block).Item switch
     {
+        // Fire, which places as no item, breaks at once and stops no blast, as the source's does.
+        BlockId.Air => 0,
         BlockId.Torch or BlockId.SoulTorch or BlockId.EndRod or BlockId.Wheat or BlockId.Tnt => 0,
         var plant when BlockGroups.Plants.Contains(plant) => 0,
         var leaves when BlockGroups.Leaves.ContainsKey(leaves) => 0.2f,

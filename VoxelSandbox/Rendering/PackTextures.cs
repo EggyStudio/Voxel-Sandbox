@@ -163,6 +163,7 @@ public static class PackTextures
         [Surfaces.TntSide] = new("block/tnt_side"),
         [Surfaces.TntTop] = new("block/tnt_top"),
         [Surfaces.TntBottom] = new("block/tnt_bottom"),
+        [Surfaces.Fire] = new("block/fire_0"),
         [Surfaces.Fern] = new("block/fern"),
         [Surfaces.DeadBush] = new("block/dead_bush"),
         [Surfaces.BrownMushroomStem] = new("block/brown_mushroom"),
