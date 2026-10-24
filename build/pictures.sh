@@ -154,10 +154,12 @@ view snowy-taiga 228.4 70 1312 15 90 -6.3 0
 # took it, since a step back stands in its crowns, and the jungle's giant trees from over its canopy.
 view cherry-grove -736 79 -960 16 345 -12 0
 view jungle -928 98 -1349 15 0 -6.3 0
-# The plants at a patch of flowers on the plains' terraces, seen from a few steps away, and a ravine
-# on the plains at noon, the sun down its walls and its magma on its floor.
+# The plants at a patch of flowers on the plains' terraces, seen from a few steps away, a ravine on
+# the plains at noon, the sun down its walls and its magma on its floor, and a lake of lava under -54
+# far under a forest, lighting the deepslate of its cave.
 view meadow -233 72 72.5 15 0 -30 0
 view ravine -176.3 74 210.4 12 253 -16.7 0
+view lava-lake -126 -50 -520 12 120 -20 0
 
 # Three villages, the desert's in the evening from the south of its well, the snowy plains', and the
 # plains' by its river with two sheep, a cow, a pig and a villager set down in the meadow before it,

@@ -24,7 +24,8 @@ uniform float4 atmosphere;
 // One more than the atlas's tile of a fire's flames, 0 for none, so a copy of the shader that sets
 // nothing, as the clouds' does, draws no face as flames, and how many times their color they are
 // drawn at whatever light reaches them, as the source draws fire at its full light, where the light
-// a wall of them takes from the fire's own light inside would leave the walls facing out dark.
+// a wall of them takes from the fire's own light inside would leave the walls facing out dark; and
+// the same two of lava, which the source draws at its full light too.
 uniform float4 flames;
 
 // How much of the haze the dome shows at a height above the horizon in degrees, between the rings of
@@ -291,7 +292,9 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     ModelVertexOutput lighting = streams.base;
     if (surface.x >= 6)
         lighting.toEye = float3(0.0, length(streams.base.toEye), 0.0);
-    float3 shown = int(surface.y) + 1 == int(flames.x) ? color.rgb * flames.y : litStepped(color.rgb, lighting);
+    float3 shown = int(surface.y) + 1 == int(flames.x) ? color.rgb * flames.y
+        : int(surface.y) + 1 == int(flames.z) ? color.rgb * flames.w
+        : litStepped(color.rgb, lighting);
     // The land's edge fades into the haze, and the atmosphere hazes it from near on as the modpack's
     // shader's does, its share growing as one less e to the minus the cube of the distance.
     float distance = length(streams.base.toEye);

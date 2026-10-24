@@ -27,6 +27,7 @@ public sealed class Overworld : IWorldGenerator
     private readonly Noise _hills, _mountains, _sand, _gravel, _basins, _rivers, _mesas, _swampFloor, _mottle, _clay;
     private readonly Climate _climate;
     private readonly Caves _caves;
+    private readonly Aquifers _aquifers;
     // The badlands' terracotta's color at each height, bands one to three high, the same for a seed.
     private readonly BlockId[] _bands;
 
@@ -45,6 +46,7 @@ public sealed class Overworld : IWorldGenerator
         _clay = new Noise(seed + 16);
         _climate = new Climate(seed);
         _caves = new Caves(seed);
+        _aquifers = new Aquifers(seed, SeaLevel);
         _bands = Bands(seed);
     }
 
@@ -203,6 +205,7 @@ public sealed class Overworld : IWorldGenerator
         var villages = Structures.Village.GroundIn(minX, minZ, minX + Section.Mask, minZ + Section.Mask, this);
         var grounds = new (int Height, Biome Biome, BlockId Top)[Section.Size * Section.Size];
         var caves = _caves.Carve(columnX, columnZ, (x, z) => At(x, z).Height);
+        var aquifers = _aquifers.For((x, z) => At(x, z).Height);
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
@@ -235,8 +238,13 @@ public sealed class Overworld : IWorldGenerator
                     }
                     // The caves stay three blocks under the ground where they may not open, and
                     // elsewhere open where the source's entrances reach the top, a mouth the sun
-                    // shines into.
-                    if ((y < height - 3 || open) && caves.IsCave(x, y, z)) continue;
+                    // shines into. A cave holds its aquifer's water or lava under its level and air
+                    // over it, or keeps the ground as a wall between two aquifers.
+                    if ((y < height - 3 || open) && caves.DensityAt(x, y, z) is var density and <= 0 && aquifers.At(wx, y, wz, density) is { } held)
+                    {
+                        if (held != BlockId.Air) column.Set(x, y, z, held);
+                        continue;
+                    }
                     column.Set(x, y, z, block);
                 }
                 // Water over lower ground, its top frozen where the climate is cold.

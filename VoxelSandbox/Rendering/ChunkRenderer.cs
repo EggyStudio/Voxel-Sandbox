@@ -78,7 +78,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         public readonly Matrix4x4 Transform = transform;
         public readonly Vector3 Middle = middle;
-        public readonly Part Solid = new(), SeeThrough = new(), Cutout = new(), CutoutGlass = new(), SolidCutout = new();
+        public readonly Part Solid = new(), SeeThrough = new(), Cutout = new(), CutoutGlass = new(), SolidCutout = new(), Molten = new();
         public readonly List<(int Surface, Matrix4x4 At)> Emitters = [];
     }
 
@@ -94,8 +94,12 @@ public sealed class ChunkRenderer : IDisposable
     // distance field holds no grass. Glass a pack cuts out is a fourth, casting no shadow, so a
     // window lets the sun through as glass the pack leaves whole does. The faces a pack cuts out that
     // cast a shadow of the whole face, a door's window and a pack's leaves clear between them, are a
-    // fifth. All five are drawn through the game's terrain shader, the engine's light with a haze.
+    // fifth. A section's lava is a sixth, drawn with lava's emission, which the field takes from the
+    // mesh, so a lake lights its cave with one draw where a lamp's cube for each block would be
+    // thousands; the field reads a mesh made again without its light for a few frames, which a lake
+    // seldom is. All six are drawn through the game's terrain shader, the engine's light with a haze.
     private readonly ModelMaterial _terrain, _clear, _cutout, _cutoutGlass, _solidCutout, _haze;
+    private ModelMaterial _molten;
 
     /// <summary>The far land's material, the terrain's through its shader and haze, casting no shadow and kept out of the scene's distance field.</summary>
     public ModelMaterial FarMaterial { get; }
@@ -197,7 +201,8 @@ public sealed class ChunkRenderer : IDisposable
             var table = new Vector4[TerrainAtlas.MostAnimations];
             for (int i = 0; i < value.Animations.Count; i++) table[i] = new Vector4(value.Animations[i].First, value.Animations[i].Count, value.Animations[i].Ticks, 0);
             SetShaderValueV<Vector4>(_shader, _animations, table);
-            SetShaderValue(_shader, _flames, new Vector4(value.Tile(Surfaces.Fire) is > 0 and var tile ? tile + 1 : 0, FlamesShown, 0, 0));
+            SetShaderValue(_shader, _flames, new Vector4(value.Tile(Surfaces.Fire) is > 0 and var flames ? flames + 1 : 0, FlamesShown,
+                value.Tile(Surfaces.Lava) is > 0 and var lava ? lava + 1 : 0, LavaShown));
             foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
                 if (texture.IsValid) UnloadTexture(texture);
             _lampTextures = [.. Surfaces.All.Select(s => !s.Emits ? default
@@ -280,9 +285,15 @@ public sealed class ChunkRenderer : IDisposable
         set => _mesher.CornerStrength = Math.Clamp(value, 0, 1);
     }
 
-    // Each surface's material for the cubes of its emissive blocks, white under a pack's texture.
+    // Each surface's material for the cubes of its emissive blocks, white under a pack's texture,
+    // and lava's, its color in its vertices.
     private void BuildLamps()
     {
+        var lava = Surfaces.All[Surfaces.Lava];
+        _molten = new ModelMaterial(Color.White)
+        {
+            AlphaMode = MaterialAlphaMode.Opaque, Roughness = lava.Roughness, Shader = _shader, Emissive = lava.Emissive, EmissiveIntensity = lava.Glow * _glowScale,
+        };
         _lamps = [.. Surfaces.All.Select(s => _lampTextures[s.Id].IsValid
             ? s.Material(_glowScale) with { Color = Color.White, Texture = _lampTextures[s.Id], EmissiveMap = _lampEmission[s.Id] }
             : s.Unseen ? s.Material(_glowScale) with { AlphaMode = MaterialAlphaMode.Mask, Color = s.Color with { A = 0 } }
@@ -353,6 +364,9 @@ public sealed class ChunkRenderer : IDisposable
 
     /// <summary>How many times their own color a fire's flames show, whatever light reaches them.</summary>
     public const float FlamesShown = 2;
+
+    /// <summary>How many times its own color a pack's lava shows, whatever light reaches it, where without a pack it shows its surface's emission over its light.</summary>
+    public const float LavaShown = 2;
 
     /// <summary>How many times its own color a lit piece's bright pixels show, a lantern's glass or a torch's flame.</summary>
     public const float LampShown = 4;
@@ -452,7 +466,8 @@ public sealed class ChunkRenderer : IDisposable
         }
         if (!_mesher.Mesh(world, key)) return false;
 
-        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.CutoutGlass.Count == 0 && _mesher.SolidCutout.Count == 0 && _mesher.Emitters.Count == 0)
+        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.CutoutGlass.Count == 0 && _mesher.SolidCutout.Count == 0
+            && _mesher.Molten.Count == 0 && _mesher.Emitters.Count == 0)
         {
             Forget(key);
             return true;
@@ -465,6 +480,7 @@ public sealed class ChunkRenderer : IDisposable
         entry.Cutout.Take(_mesher.Cutout);
         entry.CutoutGlass.Take(_mesher.CutoutGlass);
         entry.SolidCutout.Take(_mesher.SolidCutout);
+        entry.Molten.Take(_mesher.Molten);
 
         entry.Emitters.Clear();
         foreach (var (index, block) in _mesher.Emitters)
@@ -483,6 +499,7 @@ public sealed class ChunkRenderer : IDisposable
         entry.Cutout.Forget();
         entry.CutoutGlass.Forget();
         entry.SolidCutout.Forget();
+        entry.Molten.Forget();
     }
 
     /// <summary>Lets go of the meshes of a column's sections, as it unloads.</summary>
@@ -555,6 +572,12 @@ public sealed class ChunkRenderer : IDisposable
                 DrawMesh(entry.SolidCutout.Mesh, _solidCutout, entry.Transform);
                 draws++;
                 triangles += entry.SolidCutout.Mesh.TriangleCount;
+            }
+            if (entry.Molten.Mesh.IsValid)
+            {
+                DrawMesh(entry.Molten.Mesh, _molten, entry.Transform);
+                draws++;
+                triangles += entry.Molten.Mesh.TriangleCount;
             }
             if (entry.SeeThrough.Mesh.IsValid) _seeThrough.Add((Vector3.DistanceSquared(entry.Middle, eye), entry));
         }

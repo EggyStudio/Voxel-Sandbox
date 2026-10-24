@@ -5,32 +5,31 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `3a99729`, the README's world pictures taken again with far land at its default,
-every horizon going on past the near land, the pictures and the README's text alone with no code
-since the checks, after `ba60ae4`, item 90, the frame at a render distance of 12 back at the 60 Hz
-pace, and nothing else, carrying the review's file, DEVLOG.md and the devlog's pictures. Item 90:
-the reading at the cherry grove view, 1,824 draws and 1.32 million triangles, the game's drawing 7.5
-ms of a 19.0 ms frame, the visibility flood 4.8 of it walking 24 sections a column every frame, the
-sections' draw loop 1.9, the engine's graph 10.6 with the scene pass 3.0, the window depth 2.5, the
-shadows 2.1 and the global illumination 1.4; the mend keeping the flood until its key changes, the
-eye's section and the faces its cell leaves by, the world's openings count moved by a column added
-or removed or an opaque block set, the distance and the atlas, the flood 4.8 to 0.004 ms and the
-game's drawing to 2.4 to 2.8, the frame 16.7 to 17.0 ms at the 60 Hz pace with the main thread
-waiting 2.4 to 4.3 ms, the GPU at about 14.5 the bound; no merge of the draws, the package having no
-call for one and the main thread spare; the play check bounding the draws at 400 at the land edge's
-view, reading 277, and the water frames check's waits alternating six and seven ticks so its
-readings fall on two frames; 269 tests, the strict build clean, play.sh 151 s on the GPU. Read at
-08:56 and 09:08 on 2026-10-24. Not pushed, the build run of `a528c79` running; the two go when it
-ends. The README's long lines of today reflowed in the next commit. Next item 27, the caves, then
-42, 43 and 70, then 28 to 36 in order; items 38's second part and 54 when their packages come, and
-the deep caves' sky light under 27 with the engine's next package; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+Reviewed up to `d8a05a1`, item 27's part A, the caves and the ores as the source's, with the
+README's reflow, after `3a99729`, the pictures with far land, and `ba60ae4`, item 90, and nothing
+else, carrying the review's file: the source's noise ported with its gradients, octave sums and the
+second sum at 1.0181, seeded by the world seed and the noise's name, the cheese, entrance,
+spaghetti, roughness, pillar and noodle density functions with their constants on the source's cells
+of 4 by 8 by 4 with interpolation, the ores by the source's placed features with eight deepslate
+ores dropping what their stone ores drop; departures, each noise scaled by the older published rule
+since the newer data's amplitude gave a spread of 0.14 against 0.36, the terrain density the caves
+read stood in by the depth under the ground's top times 0.156 so a straddling cell stays shut,
+entrances alone reaching the top ten blocks and never under water or on village ground, the old
+tunnels and caverns gone; a column generating in 11 to 16 ms against 24 to 29, air 0.4 to 8 percent
+across the depth bands; four cave tests, 272 passing, the strict build clean, play.sh 147 s on the
+GPU. Read at 09:27 on 2026-10-24, its report arriving as the push went: pushed at 09:26 with the two
+after the build run of `a528c79` ended green, its play job 35.5 minutes, five under item 88's 40 and
+climbing since the taller world; its own run green at 09:50 with the play job at 18.3 minutes, the
+caves' faster generation giving back what far land took. Next item 27's part B, the aquifers and the
+lush caves, then 42, 43 and 70, then 28 to 36 in order; items 38's second part and 54 when their
+packages come, and the deep caves' sky light under 27 with the engine's next package; the AGENTS.md
+rows for the Ui and build folders wait on the owner's word.
+
+Before it, `3a99729` and `ba60ae4` came, the pictures with far land and item 90, pushed at 09:26 on
+2026-10-24 with the head, their run green, the play job 18.3 minutes.
 
 Before it, `a528c79` came, item 26's fourth part with the devlog's move, pushed at 08:48 on
-2026-10-24, its run in flight.
-
-Before it, `3d7b1ed` came, item 26's third part, pushed at 08:10 on 2026-10-24, its run green, the
-play job 32.6 minutes.
+2026-10-24, its run green, the play job 35.5 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -366,7 +365,13 @@ full.
     2026-10-24, the costs in the head. Part 2 at `1b53cee`, the numbers in the head. Part 3 at
     `3d7b1ed`, off by default until part 4. Part 4 at `a528c79`, far land on at 32 by default, the
     readings in the head; item 26 done, held for the push. The world pictures are taken again with
-    far land in a small commit after item 90's reading. The pictures at `3a99729`.
+    far land in a small commit after item 90's reading. The pictures at `3a99729`. The play job's
+    climb read at 09:4x from the runs' logs: the 31 checks took 2,090 s with far land against 1,452
+    without, every check 30 to 45 percent slower, since far land's tiles are drawn every frame by
+    lavapipe's software rasterizer with the near land at two to four columns; so with item 27's part
+    B play.sh keeps far land off from the start and a short check turns it on at 6 over the last
+    biome and reads tiles drawn within 300 frames, the other checks' readings unchanged, 145 to 115
+    s locally.
 
 90. **The frame at a render distance of 12 comes back under 16.7 ms with the taller world, the main
     thread's draws read first.** Item 26's readings on 2026-10-24: at 12 the frame stands at 17.5 ms
@@ -394,7 +399,8 @@ full.
     global illumination, its floor reading 13 to 26 at noon against 0 to 11 at midnight, since the
     engine's field reaches 64 up from the eye and a ray leaving it counts as sky; the engine's item
     72 gives the field a far cascade a ray reads before the sky, in the package after 5.2.215, so
-    this item takes it when that package comes and reads the cave again.
+    this item takes it when that package comes and reads the cave again. Part A at `d8a05a1` on
+    2026-10-24, the caves and the ores, the departures in the head.
 
 28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
     emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the

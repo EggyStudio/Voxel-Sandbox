@@ -175,6 +175,7 @@ public static class PackTextures
         [Surfaces.DeepslateLapisOre] = new("block/deepslate_lapis_ore"),
         [Surfaces.DeepslateDiamondOre] = new("block/deepslate_diamond_ore"),
         [Surfaces.DeepslateEmeraldOre] = new("block/deepslate_emerald_ore"),
+        [Surfaces.Lava] = new("block/lava_still"),
         [Surfaces.Fern] = new("block/fern"),
         [Surfaces.DeadBush] = new("block/dead_bush"),
         [Surfaces.BrownMushroomStem] = new("block/brown_mushroom"),

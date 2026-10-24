@@ -289,6 +289,10 @@ public static class Surfaces
     public static readonly int DeepslateLapisOre = Add("deepslate lapis ore", new Color(65, 73, 95));
     public static readonly int DeepslateDiamondOre = Add("deepslate diamond ore", new Color(78, 107, 107));
     public static readonly int DeepslateEmeraldOre = Add("deepslate emerald ore", new Color(71, 95, 76));
+    // Lava, emissive through its own faces, which its section's mesh holds, where a whole emissive
+    // block is a lamp's cube apart, as orange as the source's still lava is and as bright over a
+    // cave as glowstone.
+    public static readonly int Lava = Add("lava", new Color(207, 92, 20), emissive: new Color(255, 120, 30), glow: 4);
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

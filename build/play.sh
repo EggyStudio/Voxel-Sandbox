@@ -12,9 +12,9 @@
 # screenshot with F2. It fails where the game does not open or answer, the player did not move or
 # did not climb out onto the bank, the wool in shade is not a gray, a cloud's underside overhead at
 # noon is dark, a biome is not found or not where it was found, the land's edge steps to the sky
-# beyond it, more than 400 draws of sections are recorded there, the layer reported an error, or F2
-# left no screenshot of the window's size, and says why in an error annotation, so the run's page
-# names it.
+# beyond it, more than 400 draws of sections are recorded there, no far land is drawn past the
+# render distance, the layer reported an error, or F2 left no screenshot of the window's size, and
+# says why in an error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -108,8 +108,11 @@ pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; 
 # columns, where the default of twelve would stream and draw about 650 columns on lavapipe. A check
 # that reads light waits 20 or 30 frames, since lavapipe settles the lantern's pool in 14 and the
 # sheep's wool, the creeper's front and the pool's water in 12, and one that captures the land waits
-# for the land in reach to be meshed and 10 frames more.
+# for the land in reach to be meshed and 10 frames more. Far land is kept off, since lavapipe draws
+# its tiles every frame, which took each check's frames about a third longer, and the check of the
+# far land alone turns it on.
 cmd voxel.distance 4
+cmd voxel.far 0
 stood
 
 check "the lamp's room"
@@ -606,11 +609,10 @@ check "the far pillar"
 # A far pillar high against the sky fades into the sky drawn behind it rather than the horizon's
 # color, read at a height of 60 on its face and on the sky four blocks east of it, the two within a
 # few levels and both the sky's deep blue, far from the horizon's paler color. It stands 59 blocks
-# out, inside the four columns drawn and past the haze's end at 61, far land being turned off, which
-# carries the haze out to its own edge.
+# out, inside the four columns drawn and past the haze's end at 61, with far land off, which would
+# carry the haze out to its own edge.
 cmd voxel.hud off
 cmd voxel.time 12
-cmd voxel.far 0
 cmd voxel.fill -1 4 -61 1 80 -59 stone
 cmd voxel.fly on
 cmd voxel.tp 0.5 5 0.5
@@ -625,7 +627,6 @@ read -r sr sg sb <<< "$(channels "$beside")"
 [ -n "$pb" ] && [ -n "$sb" ] || fail "voxel.pixel read no far pillar or sky, saying $pillar and $beside"
 awk -v p="$pr $pg $pb" -v s="$sr $sg $sb" 'BEGIN { split(p, a); split(s, b); for (i = 1; i <= 3; i++) if (a[i] - b[i] > 4 || b[i] - a[i] > 4) exit 1; exit !(a[3] - a[1] > 100) }' \
   || fail "the far pillar high against the sky is not the sky's color beside it, $pillar against $beside"
-cmd voxel.far 32
 
 check "the overworld's loading"
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
@@ -674,6 +675,21 @@ for biome in swamp savanna jungle dark_forest badlands beach river cherry_grove;
   [[ "$state" == *" in ${biome//_/ }, facing"* ]] || fail "the player over the $biome found at $bx, $bz stands in another biome, $state"
   capture "biomes/$biome.png"
 done
+check "the far land"
+# Far land past the two columns drawn, out to six, its tiles sampled from the generator's surface on
+# the workers and meshed, some drawn within 300 frames, and then turned off again.
+cmd voxel.far 6
+tiles=0
+for i in $(seq 1 60); do
+  far=$(ask voxel.far 6)
+  tiles=$(printf '%s\n' "$far" | sed -nE 's/.*, ([0-9]+) tiles of .*/\1/p')
+  [ -n "$tiles" ] && [ "$tiles" -gt 0 ] && break
+  cmd frames.wait 5
+done
+echo "$far"
+[ -n "$tiles" ] && [ "$tiles" -gt 0 ] || fail "no far land is drawn past the render distance, $far"
+cmd voxel.far 0
+
 check "the meadow"
 # A meadow of the plains up close, its grass and flowers cut out of their crossed walls.
 found=$(ask voxel.biome plains)
@@ -703,7 +719,6 @@ check "the land's edge"
 # columns, the land within them generated and meshed first, so the edge lies past the haze's start,
 # with far land off, whose trees stop where the near land's do and would read as a step.
 cmd voxel.distance 4
-cmd voxel.far 0
 cmd voxel.tp "$bx" 120 "$bz"
 meshed
 cmd voxel.look 0 -20
@@ -756,4 +771,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, drew far land, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"

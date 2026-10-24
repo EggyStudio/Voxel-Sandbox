@@ -36,7 +36,7 @@ public static class Loot
         // An ore in deepslate drops what its ore in stone does, or itself where that drops itself.
         switch (Ores.Plain(item))
         {
-            case BlockId.Air or BlockId.Water or BlockId.Bedrock or BlockId.Ice:
+            case BlockId.Air or BlockId.Water or BlockId.Lava or BlockId.Bedrock or BlockId.Ice:
                 yield break;
             case BlockId.ShortGrass or BlockId.TallGrass or BlockId.Fern:
                 if (random.Next(8) == 0) yield return (Items.Of(BlockId.Wheat), 1);
@@ -170,7 +170,7 @@ public static class Loot
         var wood when BlockGroups.Logs.Contains(wood) || BlockGroups.Planks.Contains(wood) => 3,
         var clay when BlockGroups.Terracotta.Contains(clay) => 4.2f,
         BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
-        BlockId.Water => 100,
+        BlockId.Water or BlockId.Lava => 100,
         BlockId.Stone or BlockId.Cobblestone or BlockId.StoneBricks or BlockId.StoneSlab or BlockId.CobblestoneSlab
             or BlockId.CobblestoneStairs or BlockId.StoneBrickStairs or BlockId.Deepslate or BlockId.CobbledDeepslate => 6,
         BlockId.OakLog or BlockId.BirchLog or BlockId.SpruceLog or BlockId.OakPlanks or BlockId.SprucePlanks or BlockId.BirchPlanks

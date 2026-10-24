@@ -240,13 +240,13 @@ public sealed class FirstPersonController
 
     // How far the water's top stands above the feet, up through the water over them, the top of
     // still water an eighth under its cell's and flowing water's lower, and nothing where the feet
-    // are above it or their cell holds none.
+    // are above it or their cell holds none. Lava is swum through as water is.
     private static float WaterDepth(VoxelWorld world, Vector3 feet)
     {
         int x = (int)MathF.Floor(feet.X), y = (int)MathF.Floor(feet.Y), z = (int)MathF.Floor(feet.Z);
         var at = world.GetBlock(x, y, z);
-        if (!Blocks.IsWater(at)) return 0;
-        for (var above = world.GetBlock(x, y + 1, z); Blocks.IsWater(above); above = world.GetBlock(x, y + 1, z)) (at, y) = (above, y + 1);
+        if (!Blocks.IsFluid(at)) return 0;
+        for (var above = world.GetBlock(x, y + 1, z); Blocks.SameFluid(at, above); above = world.GetBlock(x, y + 1, z)) (at, y) = (above, y + 1);
         return MathF.Max(0, y + Blocks.WaterHeight(at, waterAbove: false) - feet.Y);
     }
 }

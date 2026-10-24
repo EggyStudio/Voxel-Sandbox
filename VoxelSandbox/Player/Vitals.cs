@@ -97,7 +97,7 @@ public sealed class Vitals
     private void Fall(VoxelWorld world, Body body, Vector3 moved, bool flying, bool swimming)
     {
         var feet = world.GetBlock((int)MathF.Floor(body.Position.X), (int)MathF.Floor(body.Position.Y), (int)MathF.Floor(body.Position.Z));
-        if (flying || swimming || Blocks.IsWater(feet))
+        if (flying || swimming || Blocks.IsFluid(feet))
         {
             Fallen = 0;
             return;
@@ -132,11 +132,13 @@ public sealed class Vitals
         Damage(2, "drowned");
     }
 
-    // A cactus beside the body's box, or a solid block where the eye is, harms every half second.
+    // Lava in the body's box, a solid block where the eye is, or a cactus beside the box harms
+    // every half second, lava by 4 as the source's does and the others by 1.
     private void Prick(VoxelWorld world, Body body, Vector3 eye, float seconds)
     {
-        var cause = Blocks.IsOpaque(world.GetBlock((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z))) ? "suffocated in a wall"
-            : TouchesCactus(world, body) ? "were pricked to death" : null;
+        var (cause, harm) = Touches(world, body, BlockId.Lava, -0.001f) ? ("tried to swim in lava", 4)
+            : Blocks.IsOpaque(world.GetBlock((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z))) ? ("suffocated in a wall", 1)
+            : Touches(world, body, BlockId.Cactus, 0.05f) ? ("were pricked to death", 1) : ((string?)null, 0);
         if (cause is null)
         {
             _prick = 0;
@@ -145,16 +147,17 @@ public sealed class Vitals
         _prick += seconds;
         if (_prick < Unharmed) return;
         _prick = 0;
-        Damage(1, cause);
+        Damage(harm, cause);
     }
 
-    private static bool TouchesCactus(VoxelWorld world, Body body)
+    // Whether a block lies within the body's box grown by a margin, or shrunk where it is under 0.
+    private static bool Touches(VoxelWorld world, Body body, BlockId block, float margin)
     {
-        Vector3 min = body.Min - new Vector3(0.05f), max = body.Max + new Vector3(0.05f);
+        Vector3 min = body.Min - new Vector3(margin), max = body.Max + new Vector3(margin);
         for (int y = (int)MathF.Floor(min.Y); y <= (int)MathF.Floor(max.Y); y++)
             for (int z = (int)MathF.Floor(min.Z); z <= (int)MathF.Floor(max.Z); z++)
                 for (int x = (int)MathF.Floor(min.X); x <= (int)MathF.Floor(max.X); x++)
-                    if (world.GetBlock(x, y, z) == BlockId.Cactus) return true;
+                    if (world.GetBlock(x, y, z) == block) return true;
         return false;
     }
 

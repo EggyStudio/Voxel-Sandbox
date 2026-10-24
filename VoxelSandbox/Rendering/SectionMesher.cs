@@ -195,6 +195,9 @@ public sealed class SectionMesher
     /// </summary>
     public Faces SolidCutout { get; } = new();
 
+    /// <summary>The last section's faces of lava, which are drawn with its surface's emission, so the scene's distance field takes their light from the mesh.</summary>
+    public Faces Molten { get; } = new();
+
     /// <summary>The emissive blocks of the last section, by their index in it.</summary>
     public List<(int Index, BlockId Block)> Emitters { get; } = [];
 
@@ -259,7 +262,7 @@ public sealed class SectionMesher
         return 1 - 0.98f * dark * dark * dark * dark;
     }
 
-    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/>, <see cref="Cutout"/>, <see cref="CutoutGlass"/>, <see cref="SolidCutout"/> and <see cref="Emitters"/>.</summary>
+    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/>, <see cref="Cutout"/>, <see cref="CutoutGlass"/>, <see cref="SolidCutout"/>, <see cref="Molten"/> and <see cref="Emitters"/>.</summary>
     /// <returns>False when one of the eight columns around it is not loaded, so its edges cannot be told yet, and nothing is meshed.</returns>
     public bool Mesh(VoxelWorld world, SectionKey key)
     {
@@ -268,6 +271,7 @@ public sealed class SectionMesher
         Cutout.Clear();
         CutoutGlass.Clear();
         SolidCutout.Clear();
+        Molten.Clear();
         Emitters.Clear();
         _origin = (key.X * Section.Size, key.Y * Section.Size, key.Z * Section.Size);
 
@@ -302,20 +306,20 @@ public sealed class SectionMesher
                         AddShape(shape, at, new Vector3(x, y, z));
                         continue;
                     }
-                    if (info.Emits) continue;
-                    // Water stands lower the further it has flowed, a source's top an eighth low, and
-                    // fills its cell under more water. Beside lower water its side shows above the
-                    // other's top, and beside water as high it shows nothing.
-                    var water = Blocks.IsWater(block);
-                    var top = water ? Blocks.WaterHeight(block, Blocks.IsWater((BlockId)_blocks[at + Steps[2]])) : 1;
+                    if (info.Emits && !info.Molten) continue;
+                    // Water stands lower the further it has flowed, a source's top an eighth low, as
+                    // lava's is, and fills its cell under more of it. Beside lower water its side shows
+                    // above the other's top, and beside water as high it shows nothing.
+                    var fluid = info.Kind == BlockKind.Water;
+                    var top = fluid ? Blocks.WaterHeight(block, Blocks.SameFluid(block, (BlockId)_blocks[at + Steps[2]])) : 1;
                     for (int face = 0; face < 6; face++)
                     {
                         var neighbor = (BlockId)_blocks[at + Steps[face]];
                         var bottom = 0f;
-                        if (water && Blocks.IsWater(neighbor))
+                        if (fluid && Blocks.SameFluid(block, neighbor))
                         {
                             if (face is 2 or 3) continue;
-                            bottom = Blocks.WaterHeight(neighbor, Blocks.IsWater((BlockId)_blocks[at + Steps[face] + Steps[2]]));
+                            bottom = Blocks.WaterHeight(neighbor, Blocks.SameFluid(neighbor, (BlockId)_blocks[at + Steps[face] + Steps[2]]));
                             if (bottom >= top) continue;
                         }
                         else if (!Shows(block, info.Kind, neighbor)) continue;
@@ -339,11 +343,12 @@ public sealed class SectionMesher
         return kind == BlockKind.Opaque || neighbor != block;
     }
 
-    // The faces a face of a surface goes with, cut out where a pack's texture is clear and the block
-    // may be cut out, casting a shadow for an opaque block's and a smaller block's and none for
-    // glass's, or else see-through where the surface's own color is, and solid.
+    // The faces a face of a surface goes with, lava's its own, cut out where a pack's texture is
+    // clear and the block may be cut out, casting a shadow for an opaque block's and a smaller
+    // block's and none for glass's, or else see-through where the surface's own color is, and solid.
     private Faces FacesOf(int surface, bool cuttable, BlockKind kind) =>
-        cuttable && Atlas.Cuts(surface) ? kind == BlockKind.Glass ? CutoutGlass : SolidCutout
+        kind == BlockKind.Water && Surfaces.All[surface].Emits ? Molten
+            : cuttable && Atlas.Cuts(surface) ? kind == BlockKind.Glass ? CutoutGlass : SolidCutout
             : Surfaces.All[surface].Color.A < 255 ? SeeThrough : Solid;
 
     // The directions a face's texture runs across it, toward its right and toward its bottom as the

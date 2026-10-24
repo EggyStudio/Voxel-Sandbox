@@ -107,18 +107,17 @@ public sealed class Caves
     /// <summary>The density at the corners of a column's cells, rows of corners along x, then along z, then up.</summary>
     public readonly record struct Grid(double[] Values)
     {
-        /// <summary>Whether a place of the column, x and z from 0 to 15 and y within the world, is a cave, the density interpolated between its cell's corners.</summary>
-        public bool IsCave(int x, int y, int z)
+        /// <summary>The density at a place of the column, x and z from 0 to 15 and y within the world, interpolated between its cell's corners.</summary>
+        public double DensityAt(int x, int y, int z)
         {
             int cx = x / CellWidth, cz = z / CellWidth, level = (y - ChunkColumn.Bottom) / CellHeight;
             double fx = x % CellWidth / (double)CellWidth, fz = z % CellWidth / (double)CellWidth, fy = (y - ChunkColumn.Bottom) % CellHeight / (double)CellHeight;
             var values = Values;
             double At(int dx, int dy, int dz) => values[((level + dy) * Across + cz + dz) * Across + cx + dx];
             double Lerp(double t, double a, double b) => a + t * (b - a);
-            var density = Lerp(fy,
+            return Lerp(fy,
                 Lerp(fz, Lerp(fx, At(0, 0, 0), At(1, 0, 0)), Lerp(fx, At(0, 0, 1), At(1, 0, 1))),
                 Lerp(fz, Lerp(fx, At(0, 1, 0), At(1, 1, 0)), Lerp(fx, At(0, 1, 1), At(1, 1, 1))));
-            return density <= 0;
         }
     }
 

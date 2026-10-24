@@ -319,6 +319,7 @@ down.
 
 <table><tr>
 <td><img src=".github/assets/world/ravine.webp" width="400" height="225" alt="A ravine cutting the plains of seed 1 at noon, magma on its floor"></td>
+<td><img src=".github/assets/world/lava-lake.webp" width="400" height="225" alt="A lake of lava under -54 far under a forest of seed 1, lighting the deepslate of its cave"></td>
 </tr></table>
 
 The world stands on Minecraft's floor of bedrock at -64, whole there and thinning out over the five
@@ -333,12 +334,28 @@ high, and interpolated between, which shapes the caves smoothly and asks a tenth
 block, and the ground closes toward the floor from -40. Minecraft's terrain density, which the
 caves read for how deep a place lies, is the depth under the ground's top, so only an entrance
 reaches the top ten blocks, and never in the top three under water, which it would drain, nor on a
-village's ground. A ravine cuts the
-ground open along a swaying line about 48 blocks long, up to seven wide at its middle and narrowing
-to its ends, its floor up to 30 blocks down with a few emissive magma blocks on it, so the sun's
-light falls down its walls and the magma's lights its depths at night. No ravine is cut beside the
-sea, so no water stands beside its air, nor across a village's ground, where a road or a footing
-laid at the ground's height would hang over it. `voxel.find ravine` gives the nearest.
+village's ground.
+
+The caves hold Minecraft's aquifers. The ground is cut into cells 16 blocks across and 12 high, each
+with a place of its own within it, and a cave's block takes the fluid of the nearest place's aquifer
+under its level and air over it. Under -54 every cave holds lava, as Minecraft's do. An aquifer
+whose ground lies under the sea is the sea's, to the sea level, and elsewhere a slow noise leaves it
+dry, floods it to the sea level, or sets it a level of its own near the middle of its band of 40
+blocks, never over the lowest ground around, so one cave holds a lake at one height and the next a
+dry floor or a lake at another. A level of -10 or under is lava where a third noise has it. Between
+two aquifers that differ the ground stands as a wall where the pressure of their difference
+outweighs how open the cave is, so no water stands over a cave's air. Lava lights the blocks around
+it to 15, a pack's lava shows twice its color whatever light reaches it, as Minecraft draws lava at
+its full light, and its faces' emission lights the cave through global illumination, one draw for a
+section's lava where a lamp's cube for each block would be thousands. The player swims through lava
+as through water, losing 4 of health every half second. A column with its aquifers is generated in
+about 17 ms against 15 to 16 without them.
+
+A ravine cuts the ground open along a swaying line about 48 blocks long, up to seven wide at its
+middle and narrowing to its ends, its floor up to 30 blocks down with a few emissive magma blocks on
+it, so the sun's light falls down its walls and the magma's lights its depths at night. No ravine is
+cut beside the sea, so no water stands beside its air, nor across a village's ground, where a road
+or a footing laid at the ground's height would hang over it. `voxel.find ravine` gives the nearest.
 
 ## Trees and structures
 

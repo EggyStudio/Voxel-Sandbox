@@ -29,6 +29,21 @@ public class MesherTests
     }
 
     [Fact]
+    public void Lava_Shows_Its_Faces_In_A_Mesh_Of_Its_Own_And_None_Between_Two_Blocks_Of_It()
+    {
+        var world = Floor();
+        world.SetBlock(8, 20, 8, BlockId.Lava);
+        world.SetBlock(9, 20, 8, BlockId.Lava);
+
+        var mesher = Meshed(world);
+        Assert.Equal(10 * 4, mesher.Molten.Count);
+        Assert.Equal(0, mesher.Solid.Count);
+        Assert.Empty(mesher.Emitters);
+        // A source's top stands an eighth under its cell's, as water's does.
+        Assert.Equal(4.875f, mesher.Molten.Positions.Max(p => p.Y));
+    }
+
+    [Fact]
     public void Two_Blocks_Side_By_Side_Hide_The_Faces_Between_Them()
     {
         var world = Floor();

@@ -244,6 +244,7 @@ public enum BlockId : ushort
     DeepslateLapisOre,
     DeepslateDiamondOre,
     DeepslateEmeraldOre,
+    Lava,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -258,7 +259,10 @@ public enum BlockKind
     /// <summary>A solid block light passes through, drawn see-through, as glass and ice are.</summary>
     Glass,
 
-    /// <summary>A block the player swims through, drawn see-through, which dims light a level more for each block of it.</summary>
+    /// <summary>
+    /// A fluid the player swims through, water drawn see-through, which dims light a level more for
+    /// each block of it, and lava drawn by its faces' own light, which passes light as air does.
+    /// </summary>
     Water,
 
     /// <summary>A block smaller than its cell, made of the boxes of its <see cref="BlockShape"/>, which light and the player pass and which hides no face beside it.</summary>
@@ -282,6 +286,9 @@ public sealed record BlockInfo(BlockId Id, string Key, string Name, int Top, int
     /// <summary>Whether it is emissive, as one of its faces' surfaces is, which a block smaller than its cell takes from its emissive piece.</summary>
     public bool Emits => Surfaces.All[Top].Emits || Surfaces.All[Side].Emits || Surfaces.All[Bottom].Emits;
 
+    /// <summary>Whether it is an emissive fluid, lava, whose faces its section's mesh holds and draws with its surface's emission, where a whole emissive block is a lamp's cube apart.</summary>
+    public bool Molten => Kind == BlockKind.Water && Emits;
+
     /// <summary>The surface of its faces that is emissive, its top's where all are, its sides' where they alone are, as a lit furnace's front is.</summary>
     public int Lit => Surfaces.All[Top].Emits ? Top : Surfaces.All[Side].Emits ? Side : Bottom;
 
@@ -295,7 +302,7 @@ public sealed record BlockInfo(BlockId Id, string Key, string Name, int Top, int
     /// </summary>
     public (Matrix4x4 Local, int Surface)[] Glows { get; } = Shape is { } shape
         ? [.. shape.Pieces.Where(p => p.Glows).Select(p => (Matrix4x4.CreateScale(p.To - p.From) * Matrix4x4.CreateTranslation((p.From + p.To) / 2), p.Surface))]
-        : Surfaces.All[Top].Emits || Surfaces.All[Side].Emits || Surfaces.All[Bottom].Emits
+        : Kind != BlockKind.Water && (Surfaces.All[Top].Emits || Surfaces.All[Side].Emits || Surfaces.All[Bottom].Emits)
             ? [(Matrix4x4.CreateTranslation(new Vector3(0.5f)), Surfaces.All[Top].Emits ? Top : Surfaces.All[Side].Emits ? Side : Bottom)] : [];
 
     /// <summary>The color its item takes, its top's as it looks in the plains, which the item's cube on the ground shows.</summary>
@@ -574,6 +581,9 @@ public static class Blocks
             Same(BlockId.DeepslateLapisOre, "deepslate_lapis_ore", "Deepslate Lapis Ore", Surfaces.DeepslateLapisOre),
             Same(BlockId.DeepslateDiamondOre, "deepslate_diamond_ore", "Deepslate Diamond Ore", Surfaces.DeepslateDiamondOre),
             Same(BlockId.DeepslateEmeraldOre, "deepslate_emerald_ore", "Deepslate Emerald Ore", Surfaces.DeepslateEmeraldOre),
+            // Lava is no item, as fire is none, since a bucket would carry it, and it cannot be broken or
+            // aimed at, as water cannot.
+            Same(BlockId.Lava, "lava", "Lava", Surfaces.Lava, breakable: false, light: 15, kind: BlockKind.Water) with { HeldAs = BlockId.Air },
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");
@@ -591,7 +601,7 @@ public static class Blocks
     private static readonly bool[] _opaque = [.. _all.Select(b => b.Kind == BlockKind.Opaque)];
     private static readonly bool[] _collides = [.. _all.Select(b => b.Kind is BlockKind.Opaque or BlockKind.Glass)];
     private static readonly bool[] _seeThrough = [.. _all.Select(b => b.Kind is BlockKind.Glass or BlockKind.Water)];
-    private static readonly bool[] _lamp = [.. _all.Select(b => b.Shape is null && b.Emits)];
+    private static readonly bool[] _lamp = [.. _all.Select(b => b.Shape is null && b.Emits && !b.Molten)];
     private static readonly bool[] _leaves = [.. _all.Select(b => b.Key.EndsWith("_leaves", StringComparison.Ordinal))];
 
     // The block each item places facing each way in each half, or air where it has no such block.
@@ -709,7 +719,7 @@ public static class Blocks
     /// <summary>Whether a block is leaves, which take a level of the light passing through each of them, as Minecraft's do.</summary>
     public static bool IsLeaves(BlockId id) => _leaves[(int)id];
 
-    /// <summary>Whether a body stands on and walks into a block, which it does all but air and water.</summary>
+    /// <summary>Whether a body stands on and walks into a block, which it does all but air, water and lava.</summary>
     public static bool Collides(BlockId id) => _collides[(int)id];
 
     /// <summary>Whether a block is drawn see-through, in its section's second mesh.</summary>
@@ -727,11 +737,17 @@ public static class Blocks
     /// <summary>The block an item places facing a way, in the upper half where asked, or air where it is not placed that way.</summary>
     public static BlockId Variant(BlockId item, Facing facing, bool upper = false) => _variants[(int)item, (int)facing, upper ? 1 : 0];
 
-    /// <summary>Whether the crosshair rests on a block, which it does on all but air and water, as Minecraft's does.</summary>
-    public static bool IsTarget(BlockId id) => id != BlockId.Air && !IsWater(id);
+    /// <summary>Whether the crosshair rests on a block, which it does on all but air, water and lava, as Minecraft's does.</summary>
+    public static bool IsTarget(BlockId id) => id != BlockId.Air && !IsFluid(id);
 
     /// <summary>Whether a block is water, still, flowing or falling.</summary>
     public static bool IsWater(BlockId id) => id == BlockId.Water || id >= BlockId.Water1 && id <= BlockId.FallingWater;
+
+    /// <summary>Whether a block is a fluid, water or lava.</summary>
+    public static bool IsFluid(BlockId id) => IsWater(id) || id == BlockId.Lava;
+
+    /// <summary>Whether two blocks are the same fluid, any two of water's or lava twice, whose faces meet unseen.</summary>
+    public static bool SameFluid(BlockId a, BlockId b) => IsWater(a) ? IsWater(b) : a == BlockId.Lava && b == BlockId.Lava;
 
     /// <summary>
     /// How far water has flowed from its source, as Minecraft's level counts it. A source is 0,
@@ -744,11 +760,11 @@ public static class Blocks
     public static BlockId FlowingWater(int level) => (BlockId)((int)BlockId.Water1 + level - 1);
 
     /// <summary>
-    /// The height of water's top in its cell, a source's an eighth low, flowing water's lower for each
-    /// block it has flowed, and the whole cell under more water or falling.
+    /// The height of a fluid's top in its cell, a source's an eighth low, as lava's is, flowing
+    /// water's lower for each block it has flowed, and the whole cell under more of it or falling.
     /// </summary>
     public static float WaterHeight(BlockId id, bool waterAbove) =>
-        waterAbove || id == BlockId.FallingWater ? 1 : id == BlockId.Water ? 0.875f : (8 - WaterLevel(id)) / 9f;
+        waterAbove || id == BlockId.FallingWater ? 1 : id is BlockId.Water or BlockId.Lava ? 0.875f : (8 - WaterLevel(id)) / 9f;
 
     /// <summary>Finds a block by its key, its name or its number, as a command gives it.</summary>
     public static bool TryFind(string text, out BlockId id)
@@ -801,10 +817,11 @@ public static class BlockGroups
 
     /// <summary>
     /// Whether a block holds nothing up and gives way to a falling block landing in its place, air,
-    /// water, fire and the plants the source lets a block replace, the grasses, the fern and the dead bush.
+    /// water, lava, fire and the plants the source lets a block replace, the grasses, the fern and the
+    /// dead bush.
     /// </summary>
     public static bool GivesWay(BlockId block) =>
-        block is BlockId.Air or BlockId.Fire or BlockId.ShortGrass or BlockId.TallGrass or BlockId.TallGrassTop or BlockId.Fern or BlockId.DeadBush || Blocks.IsWater(block);
+        block is BlockId.Air or BlockId.Fire or BlockId.ShortGrass or BlockId.TallGrass or BlockId.TallGrassTop or BlockId.Fern or BlockId.DeadBush || Blocks.IsFluid(block);
 
     public static readonly HashSet<BlockId> Terracotta = [.. Blocks.All.Where(b => b.Key.EndsWith("terracotta", StringComparison.Ordinal)).Select(b => b.Id)];
 }
