@@ -30,3 +30,5 @@
 2026-10-24-item-94-fires.webp | A block of planks forty seconds into a burn from three fires, each fire an entity of the engine's ECS, its top's 41 fires out of the view but for one.
 2026-10-24-item-70-plains-village.webp | The plains village as the README showed it beside the same view taken again, its shadows the ground's darker color and its river's banks widened since.
 2026-10-24-item-70-grass-wall.webp | A wall of grass blocks at noon seen from the player's height, as bright above the eye's line as below it, the same texel of each block reading 186 to 192 in red from the line up.
+2026-10-24-item-43-haze.webp | The plains village at a quarter past six, at noon and at half past five in the evening, above before the haze thinned with height and thickened toward dawn and below after, the dawn's mist hiding more of the island.
+2026-10-24-item-43-saturation.webp | The plains village at noon and at 17 with the grading's saturation of 1.4 on the left, which crushes the dirt's blue to 0, and 1.2 on the right, for the owner to choose.

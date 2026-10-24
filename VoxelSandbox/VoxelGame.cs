@@ -324,6 +324,12 @@ public sealed class VoxelGame : IDisposable
     /// <summary>Whether the world fades into the sky's color toward the render distance, as Minecraft's fog hides where the world ends.</summary>
     public bool Fog { get; set; } = true;
 
+    /// <summary>Whether the haze thins with the height above the sea, so a valley holds it and a peak shows clear.</summary>
+    public bool HazeByHeight { get; set; } = true;
+
+    /// <summary>Whether the haze thickens about sunrise, as the land's mist at dawn.</summary>
+    public bool MorningHaze { get; set; } = true;
+
     /// <summary>Whether the window E opens is open, the inventory in survival and every item in creative, or a crafting table's.</summary>
     public bool InventoryOpen { get; private set; }
 
@@ -1090,7 +1096,10 @@ public sealed class VoxelGame : IDisposable
         // 0.325 of that under its altitude of 300, which lies over the whole world, so a share of
         // 0.23 at most, growing half as fast as at its distance setting of 100, and as much slower
         // as the render distance is past twelve columns.
-        else if (Fog) Renderer.Fog(Sky.Horizon, reach * 0.65f, reach * 0.95f, (0.95f - 0.25f) * 0.325f, 0.5f * MathF.Min(1, 192 / reach), sky: true);
+        // The haze thins over the land high above the sea and thickens about sunrise, each as its
+        // setting says.
+        else if (Fog) Renderer.Fog(Sky.Horizon, reach * 0.65f, reach * 0.95f, (0.95f - 0.25f) * 0.325f,
+            0.5f * MathF.Min(1, 192 / reach) * (MorningHaze ? Haze.Dawn(Sky.Hour) : 1), sky: true, byHeight: HazeByHeight);
         else Renderer.Fog(Sky.Horizon, float.MaxValue, float.MaxValue);
 
         _laps.Restart();

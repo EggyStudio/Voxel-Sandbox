@@ -1502,6 +1502,24 @@ before a batch.
     the states, four engine states and the ifs as attributes, the ordered ones inside Play until the
     engine's item 110 gives the order.
 
+70. **The land's light is the same above the eye's height as below it.** The owner wrote on
+    2026-10-23 (Decision 34) of a visual fault with the height, the land lighter below a line and
+    darker above, related to the horizon, the top of it taking the dirt texture's color with the
+    grass about orange or more teal, nearly black at points and flickering as the owner moves, which
+    the owner read as the same fault the mobs had from the lips up. The cause is read as item 63's:
+    the engine's model pass turns a normal that points away from the eye over, so a sample the
+    terrain shader takes with a turned-up normal above the eye is lit as a face turned down, and the
+    overlay's choice of the grass top's color over the dirt side may ride on the same normal. The
+    mend: every sample the terrain and plant shaders take with a normal of their own sees it from
+    straight above or along the face as item 63's does, and the overlay's color is chosen by the
+    face's own side; a play-script check reading a grass wall's side from the player's height across
+    the eye's line for no step over 2 levels, and the plains village picture taken again. One
+    commit, small, first of the owner's list; the engine's item 82 removes the trap. Done at
+    `22616f4` on 2026-10-23, the plants' walls, as the head says; the land's own faces were never
+    turned. Done at `8bcbfde` on 2026-10-24 as a reading, the land's faces showing no step across
+    the eye's height, the grass wall check added and the village capture taken again; the dirt's
+    crushed blue read under item 43.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

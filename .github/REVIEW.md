@@ -5,21 +5,33 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `2926dda`, item 96's second commit, the states, read at 22:08 on 2026-10-24, carrying
-the review's files. WorldState of Loading and Playing, GameMode, a computed Living.Yes for survival
-and adventure, and Menu are engine states, the game's properties keeping the value at once since the
-engine applies a transition after PreUpdate; Steer and Play run in Playing, the vitals and the HUD's
-fade split out as GameFrame.Live under Living.Yes and Playing, the hostile spawning as MobMind.Spawn
-under the same, the HUD's reset on leaving Living.Yes, and the cursor freed on leaving Menu.None and
-taken back on entering it, the Capture calls gone; the ordered ifs stay inside Play, the aim before
-the hand's work, the player's move before either and the answering of the mobs, since no behavior
-attribute reaches a system's After or Before and InState is one to a method, the engine's item 110.
-Live the states start as Playing, Creative and None with the cursor captured, Escape gives Pause
-with it free and None with it back, survival gives Living.Yes with exhaustion rising at a sprint,
-and a creeper spawns at night in survival and none in creative; the play readings hold as at the
-first commit; the grove reads the frame 20.6 and 21.1 ms against 21.2 and 24.5, the game's cost
-0.105 ms against 0.11 to 0.135. 294 tests, play.sh 324 s on the GPU. Pushed at 22:15 on 2026-10-24
-after the run of `e77030b` went green; the run watched.
+Reviewed up to `8bcbfde`, item 70 as a reading, read at 22:25 on 2026-10-24, carrying the review's
+files, the village capture taken again and the devlog's pair. The land's own faces show no fault
+across the eye's height, a wall of grass blocks 6.5 blocks off with the eye at 5.62 reading the same
+dirt texel from y5 to y10 at 186 to 192 red at noon with the packs and 194 to 200 at 17, 179 to 185
+and 187 to 193 without, green following with no step at the line, the slow rise the floor's shade
+fading, and bands of the whole wall 30 rows each 115 to 120 down to the foot's 106, a dirt wall the
+same, which agrees with `22616f4` that the land's faces are never turned and the plants' mend there
+holds; play.sh gains the grass wall check, five texels from the eye's line up read as luminance,
+failing on a neighbor step over 2 levels, 125.6 to 128.1 without packs; plains-village.webp is taken
+again through pictures.sh's own steps with today's shadows and river. A dirt texel at noon reads
+186, 104, 0, the blue crushed to 0 by the grading and the warm light, which may be the orange the
+owner described, read under item 43. 294 tests, play.sh 288 s on the GPU. Held until the run of
+`2926dda` ends, then pushed. After `2926dda`, item 96's second commit, the states, read at 22:08 on
+2026-10-24, carrying the review's files. WorldState of Loading and Playing, GameMode, a computed
+Living.Yes for survival and adventure, and Menu are engine states, the game's properties keeping the
+value at once since the engine applies a transition after PreUpdate; Steer and Play run in Playing,
+the vitals and the HUD's fade split out as GameFrame.Live under Living.Yes and Playing, the hostile
+spawning as MobMind.Spawn under the same, the HUD's reset on leaving Living.Yes, and the cursor
+freed on leaving Menu.None and taken back on entering it, the Capture calls gone; the ordered ifs
+stay inside Play, the aim before the hand's work, the player's move before either and the answering
+of the mobs, since no behavior attribute reaches a system's After or Before and InState is one to a
+method, the engine's item 110. Live the states start as Playing, Creative and None with the cursor
+captured, Escape gives Pause with it free and None with it back, survival gives Living.Yes with
+exhaustion rising at a sprint, and a creeper spawns at night in survival and none in creative; the
+play readings hold as at the first commit; the grove reads the frame 20.6 and 21.1 ms against 21.2
+and 24.5, the game's cost 0.105 ms against 0.11 to 0.135. 294 tests, play.sh 324 s on the GPU.
+Pushed at 22:15 on 2026-10-24 after the run of `e77030b` went green; the run watched.
 
 Before it, `e77030b` came, item 96's first commit, pushed at 21:47 on 2026-10-24, its run green, the
 play job 24.0 minutes.
@@ -82,7 +94,19 @@ full.
     beside the modpack's. Tests: the sun's color at four hours and the haze's density by distance
     and height. After item 26. One or two commits. Item 58 takes the sun's color by hour and the
     haze's strength from the modpack's settings; this item keeps the shadows' softness, the haze by
-    height and the captures at three hours.
+    height and the captures at three hours. The reading at 22:29 on 2026-10-24, a dirt wall at noon
+    with the packs, the same texel with one step of the frame taken out after another, the pack's
+    dirt averaging 155, 101, 49 and drawn 190, 105, 0, saturation 1 giving 174, 111, 46, contrast 1
+    then 169, 113, 55, the engine's curve 205, 127, 59, a white noon sun 205, 138, 73, exposure 1
+    166, 111, 58 and no global illumination 174, 108, 59, so the crush is the grading's saturation
+    of 1.4 pushing the dirt's low blue under 0, the rest moving it little; the village at noon and
+    17 at 1.4 and 1.2 sent to the owner, the lower half's blue averaging 2.7 and 1.4 at 1.4 against
+    41.7 and 14.8 at 1.2, the default changing on the owner's word alone. The package has no
+    soft-shadow call, so the penumbra widening with the distance from the caster goes to the engine
+    as its item 111 through ASKS.md; the haze grows by distance alone in the terrain shader and
+    gains the haze by height and its thickening toward dawn, each a setting under Sky and Visuals on
+    by default; captures at dawn, noon and dusk of one view, tests of the sun's color at four hours
+    and the haze's density by distance and height through a twin of the shader's formula.
 
 44. **The clouds cover the area about the player and do not reach the horizon.** The owner wrote to
     the game's session at about 15:00 on 2026-10-24, on item 108's try, not to stretch the clouds so
@@ -238,22 +262,6 @@ full.
     tree's logs and leaves gone after the cut with the drops counted, a falling log landing, and a
     sand column falling onto a floor. Two commits, the gravity blocks, then the felling. Done at
     `cc4f29a` and `45b4b93` on 2026-10-24, the departures in the head.
-
-70. **The land's light is the same above the eye's height as below it.** The owner wrote on
-    2026-10-23 (Decision 34) of a visual fault with the height, the land lighter below a line and
-    darker above, related to the horizon, the top of it taking the dirt texture's color with the
-    grass about orange or more teal, nearly black at points and flickering as the owner moves, which
-    the owner read as the same fault the mobs had from the lips up. The cause is read as item 63's:
-    the engine's model pass turns a normal that points away from the eye over, so a sample the
-    terrain shader takes with a turned-up normal above the eye is lit as a face turned down, and the
-    overlay's choice of the grass top's color over the dirt side may ride on the same normal. The
-    mend: every sample the terrain and plant shaders take with a normal of their own sees it from
-    straight above or along the face as item 63's does, and the overlay's color is chosen by the
-    face's own side; a play-script check reading a grass wall's side from the player's height across
-    the eye's line for no step over 2 levels, and the plains village picture taken again. One
-    commit, small, first of the owner's list; the engine's item 82 removes the trap. Done at
-    `22616f4` on 2026-10-23, the plants' walls, as the head says; the land's own faces were never
-    turned.
 
 72. **Fire, a block that burns, animated and emissive (Decision 34).** The owner wrote on 2026-10-23
     (Decision 34) that fire is missing and could show the radiance cascades. The mend: a fire block

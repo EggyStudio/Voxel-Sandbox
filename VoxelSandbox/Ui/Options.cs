@@ -258,6 +258,8 @@ public sealed class OptionScreens
             }) { High = 400, Step = 10, Format = Option.Percent },
             Option.Toggle("Clouds", () => game.Clouds.Shown, on => game.Clouds.Shown = on),
             Option.Toggle("Fog", () => game.Fog, on => game.Fog = on),
+            Option.Toggle("Haze by Height", () => game.HazeByHeight, on => game.HazeByHeight = on),
+            Option.Toggle("Morning Haze", () => game.MorningHaze, on => game.MorningHaze = on),
         ], [("Sky Colors...", Menu.SkyColors)]);
 
         Colors = SkyColorsOf(colors);

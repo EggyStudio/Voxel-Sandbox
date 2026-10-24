@@ -700,6 +700,7 @@ costs, the toggles of debugging and the world's kind, seed and mode.
 | | Moon, its phase, set by moving the days on to the next night of it | the eight phases | the world's |
 | | Sun Strength and Moon Strength | 0 to 200% by 5 and 0 to 400% by 10 | 100% |
 | | Clouds and Fog | Off, On | On |
+| | Haze by Height, the haze thinning over land high above the sea, and Morning Haze, the haze thickening about sunrise | Off, On | On |
 | Sky Colors, from Sky and Visuals | Noon Sunlight, Low Sunlight, Moonlight and Night Tint, each a light by its hue | red, green and blue from 0 to 255 | the modpack's shader's |
 | | Day Sky, Day Horizon, Sunset Horizon, Night Sky and Night Horizon | red, green and blue from 0 to 255 | the modpack's shader's |
 
@@ -1187,20 +1188,24 @@ with the owner's settings, toward the same color by a share that grows as one le
 half a millionth of the cube of the distance in blocks, as much slower as the render distance is
 past twelve columns, to 0.23 at most, its fog's strength of 0.95 less the 0.25 it keeps in clear
 weather, held to 0.325 of that under its altitude of 300, so about a tenth of the land's color at
-100 blocks and a fifth at 150. Under water the haze is the water's blue and covers the view within
-16 blocks. Past the last section the world ends, so a dome about the eye below the horizon is drawn
-in the haze's color, as Minecraft draws what lies below its horizon in its fog's color, fading into
-the sky over six degrees above the horizon. It is drawn through the same shader beyond the haze's
-end, which gives it the haze's color itself, so the land's fading edge meets it with no step at any
-render distance and under water, while the sky's image keeps its darker lower half for the light it
-gives the world. It lies 3,600 blocks out, beyond the sun, the moon and the stars and inside the
-engine's far plane, since it writes depth over its whole band, so a sun drawn behind it would end in
-a line six degrees up, where its band begins clear. They are drawn over it instead, the sun and the
-moon as a grid of a quad to each pixel of their pictures, and each corner takes the share of the
-haze left clear at its height, so a low sun dims into the haze as the dome blended over it would
-show it. `voxel.edge` reads where the drawn land ends up a column of pixels and how it meets what
-lies above it. The Sky and Visuals screen turns the fog off, and the dome with it. The lamps' cubes
-are drawn with the engine's own shader and take no haze.
+100 blocks and a fifth at 150. Its growth is taken by its density along the way from the eye, whole
+at and under the sea's level and falling by e over each 40 blocks above it, so a valley holds its
+haze and a peak eighty blocks over the sea about two fifths of it, and the morning thickens it as a
+dawn's mist, growing two and a half times as fast at a quarter past six and back to its noon's by
+nine, the Sky and Visuals screen turning each off. Under water the haze is the water's blue and
+covers the view within 16 blocks. Past the last section the world ends, so a dome about the eye
+below the horizon is drawn in the haze's color, as Minecraft draws what lies below its horizon in
+its fog's color, fading into the sky over six degrees above the horizon. It is drawn through the
+same shader beyond the haze's end, which gives it the haze's color itself, so the land's fading edge
+meets it with no step at any render distance and under water, while the sky's image keeps its darker
+lower half for the light it gives the world. It lies 3,600 blocks out, beyond the sun, the moon and
+the stars and inside the engine's far plane, since it writes depth over its whole band, so a sun
+drawn behind it would end in a line six degrees up, where its band begins clear. They are drawn over
+it instead, the sun and the moon as a grid of a quad to each pixel of their pictures, and each
+corner takes the share of the haze left clear at its height, so a low sun dims into the haze as the
+dome blended over it would show it. `voxel.edge` reads where the drawn land ends up a column of
+pixels and how it meets what lies above it. The Sky and Visuals screen turns the fog off, and the
+dome with it. The lamps' cubes are drawn with the engine's own shader and take no haze.
 
 ## What is not here yet
 

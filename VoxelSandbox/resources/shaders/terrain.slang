@@ -22,6 +22,9 @@ uniform float fogEnd;
 // where the haze takes the sky's color behind each point and 0 where it is the haze's color alone,
 // and the distance past which a point is the haze dome's.
 uniform float4 atmosphere;
+// The haze's thinning with height, the height it is whole at and under, the blocks over it it thins
+// by e in, and 1 where it thins so and 0 where it is as thick at every height, as Haze reckons it.
+uniform float4 hazeHeight;
 // One more than the atlas's tile of a fire's flames, 0 for none, so a copy of the shader that sets
 // nothing, as the clouds' does, draws no face as flames, and how many times their color they are
 // drawn at whatever light reaches them, as the source draws fire at its full light, where the light
@@ -38,6 +41,17 @@ float domeShown(float degrees)
     if (degrees >= 1.5) return lerp(0.75, 0.35, (degrees - 1.5) / 1.5);
     if (degrees >= 0.0) return lerp(1.0, 0.75, degrees / 1.5);
     return 1.0;
+}
+
+// The mean of the haze's density along the ray from the eye to a point, whole at and under its
+// height and falling by e over each of its blocks above, as Haze.HeightShare reckons it.
+float heightShare(float eyeY, float pointY)
+{
+    if (hazeHeight.z == 0.0) return 1.0;
+    float h0 = max(eyeY - hazeHeight.x, 0.0) / hazeHeight.y;
+    float h1 = max(pointY - hazeHeight.x, 0.0) / hazeHeight.y;
+    float across = h1 - h0;
+    return abs(across) < 1e-3 ? exp(-h0) : (exp(-h0) - exp(-h1)) / across;
 }
 
 // The color a point fades into, the sky drawn behind it as the engine's sky shader draws it along the
@@ -335,9 +349,11 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
         : int(surface.y) + 1 == int(flames.z) ? color.rgb * flames.w
         : litStepped(color.rgb, lighting, streams.uv2.y);
     // The land's edge fades into the haze, and the atmosphere hazes it from near on as the modpack's
-    // shader's does, its share growing as one less e to the minus the cube of the distance.
+    // shader's does, its share growing as one less e to the minus the cube of the distance, by the
+    // haze's density along the ray, thinner over the land high above the sea.
     float distance = length(streams.base.toEye);
-    float aerial = atmosphere.x * (1.0 - exp(-distance * distance * distance * 1e-6 * atmosphere.y));
+    float density = heightShare(streams.base.world.y + streams.base.toEye.y, streams.base.world.y);
+    float aerial = atmosphere.x * (1.0 - exp(-distance * distance * distance * 1e-6 * atmosphere.y * density));
     float haze = 1.0 - (1.0 - smoothstep(fogStart, fogEnd, distance)) * (1.0 - aerial);
     return float4(lerp(shown, hazeColor(streams.base.toEye, distance), haze), color.a);
 }
