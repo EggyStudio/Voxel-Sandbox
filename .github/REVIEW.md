@@ -5,30 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `9cb81ad`, item 27's part B, the aquifers with lava, and nothing else, carrying the
-review's file and play.sh's far land cut: the source's noise-based aquifer with its cells of 16 by
-12 by 16, the nearest three cells' similarity, the barrier pressure, the floodedness and the
-randomized levels, lava at and under its level where the lava noise says and everywhere under minus
-54; departures, the ground's top sampled at the chunks' middles at the source's offsets and cached
-per column, no deep dark exception, no fluid updates at generation since no water lies over air, and
-lava still, unbreakable and without an item, swum in at a loss of 4 a half second; lava a fluid
-block of light 15 in a sixth per-section mesh drawn with its emission so the field takes its light
-from one draw a section, a pack's lava at twice its color; over 121 columns every cave under minus
-54 is lava, water 0.2 to 1.7 percent of the deep bands against 5 to 6 air, none over air, a column
-17.5 to 18.4 ms against 15 to 16.2; three tests, 275 passing, the strict build clean, play.sh 134 s
-on the GPU, the capture lava-lake.webp in. Read at 09:53 on 2026-10-24 and pushed at once, the run
-of `d8a05a1` having ended green; its run watched, its play job the far land cut's proof. The owner's
-words of 10:11 come first: item 91, the screen probes off by default, then 92, far land removed,
-then 93, the frame's cost read and brought down; then item 27's part C, the lush caves, then 42, 43
-and 70, then 28 to 36 in order; items 38's second part and 54 when their packages come, and the deep
-caves' sky light under 27 with the engine's next package; the AGENTS.md rows for the Ui and build
-folders wait on the owner's word.
+Reviewed up to `c8dbbee`, item 27's part C, the lush caves, and nothing else, carrying the review's
+file with items 91 to 93, committed as it stood done when the owner's words came: lush caves where
+the climate's humidity is 0.75 or more, 6.8 percent of the land, from 26 to 115 blocks under the
+top, four in five floor and roof blocks moss, the floor's mosses bearing short grass, carpets and
+tall grass by the source's weights, a roof in seven with cave vines by the source's lengths and glow
+berries one block in five at light 14 as an unseen emissive box, three clay pools tried a column;
+departures, the pools' radius 2 to 3 within the column against the source's 4 to 7, no azaleas,
+spore blossoms or dripleaves, the berries' light pale since the fire's orange browned the leaves,
+glow berries an item feeding 2 and hanging a vine from an underside, vines falling with their
+support; rich columns up to 800 moss, 160 vines and 106 clay, no water over or beside air, a lush
+column in 13 to 24 ms; two tests added and two changed for the new blocks, 277 passing, the strict
+build clean, play.sh 133 s on the GPU, the capture lush-cave.webp in. Read at 10:12 on 2026-10-24.
+Not pushed, the build run of `9cb81ad` running; pushed when it ends. The owner's words come next,
+item 91, the screen probes off by default, then 92, far land removed, then 93, the frame's cost read
+and brought down; then 42, 43 and 70, then 28 to 36 in order; items 38's second part and 54 when
+their packages come, and the deep caves' sky light under 27 with the engine's next package; the
+AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `9cb81ad` came, item 27's part B, pushed at 09:53 on 2026-10-24, its run in flight.
 
 Before it, `d8a05a1` came, item 27's part A, pushed at 09:26 on 2026-10-24 with `3a99729` and
 `ba60ae4`, its run green, the play job 18.3 minutes.
-
-Before it, `3a99729` and `ba60ae4` came, the pictures with far land and item 90, pushed at 09:26 on
-2026-10-24 with the head, their run green, the play job 18.3 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -435,7 +433,9 @@ full.
     72 gives the field a far cascade a ray reads before the sky, in the package after 5.2.215, so
     this item takes it when that package comes and reads the cave again. Part A at `d8a05a1` on
     2026-10-24, the caves and the ores, the departures in the head. Part B at `9cb81ad`, the
-    aquifers with lava, the departures in the head; the lush caves part C.
+    aquifers with lava, the departures in the head; the lush caves part C. Part C at `c8dbbee`, the
+    departures in the head; item 27 done, the deep caves' sky light read again when the engine's
+    package comes.
 
 28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
     emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the

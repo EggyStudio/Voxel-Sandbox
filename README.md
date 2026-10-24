@@ -941,7 +941,11 @@ sections shaded again when it changes.
 The settings window turns the light levels and the shaded corners off, each on its own, to see
 global illumination alone, and opens the engine's windows of what global illumination holds, of the
 frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
-depth of field, motion blur and bloom, each set at once as it is changed.
+depth of field, motion blur and bloom, each set at once as it is changed. Global illumination leaves
+out the engine's screen probes, so every face reads the light of its cascades through the scene
+alone, smoother and coarser, since the screen's probes spotted the light and moved it as the eye
+moved, and a non-number one of them kept spread black across the frame; the settings window turns
+them on.
 
 The frame is tonemapped by the curve of the owner's modpack's shader with the owner's settings, its
 exposure 0.9, white curve 1.3, lower curve 1.05 and upper 1.0, which the engine's `SetTonemapCurve`

@@ -9,6 +9,11 @@ public sealed class LightSettings
     /// <summary>The quality of global illumination, the highest by default, since the game is made to show it.</summary>
     public GlobalIllumination Quality = GlobalIllumination.High;
 
+    // The screen's probes are left out, so every face reads the cascades' light alone, smoother and
+    // coarser, since theirs moved and spotted the light as the eye moved, and a glow light's
+    // non-number their history kept spread black across the frame, both of the engine's.
+    public bool ScreenProbes;
+
     // Four cascades of 0.25 cover 128 blocks across around the eye, a third of the 384 drawn at the
     // default render distance, with four cells to a block, so the middle of a tunnel one block wide
     // is two cells clear of its walls.
@@ -37,6 +42,7 @@ public sealed class LightSettings
     {
         ApplyField();
         SetGlobalIllumination(Quality);
+        SetGlobalIlluminationScreenProbes(ScreenProbes);
         SetBloom(Bloom);
         SetAmbientOcclusion(Occlusion);
         ApplyExposure();

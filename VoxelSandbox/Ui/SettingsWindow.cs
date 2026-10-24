@@ -87,6 +87,7 @@ public sealed class SettingsWindow
             light.Quality = (GlobalIllumination)quality;
             SetGlobalIllumination(light.Quality);
         }
+        if (ImGui.Checkbox("Screen probes", ref light.ScreenProbes)) SetGlobalIlluminationScreenProbes(light.ScreenProbes);
 
         var field = false;
         field |= ImGui.SliderInt("Field cascades", ref light.Cascades, 1, 8);
