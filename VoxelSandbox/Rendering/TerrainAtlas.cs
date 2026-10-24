@@ -45,6 +45,9 @@ public sealed class TerrainAtlas
     /// <summary>The most animated textures the atlas steps, as many as the terrain shader's table holds.</summary>
     public const int MostAnimations = 16;
 
+    // Ahead of None, which reads it as it is built. The surfaces of the glass that joins its own kind, whose pictures are drawn without streaks.
+    private static readonly HashSet<int> GlassSurfaces = [.. BlockGroups.Glass.Select(b => Blocks.Get(b).Side)];
+
     /// <summary>The atlas of no pack, its one white tile for every surface.</summary>
     public static readonly TerrainAtlas None = Build(ResourcePacks.None);
 
@@ -110,7 +113,7 @@ public sealed class TerrainAtlas
         // A texture's tile, turned by so many quarter turns, each turned texture a tile of its own.
         // An animated one lays its steps in tiles one after another from its first, each step held
         // the frames' shortest time, as long as there is room for them, and its first alone after.
-        int Number(string name, int turns = 0)
+        int Number(string name, int turns = 0, bool framed = false)
         {
             var key = turns == 0 ? name : $"{name}@{turns}";
             if (numbers.TryGetValue(key, out var number)) return number;
@@ -126,21 +129,21 @@ public sealed class TerrainAtlas
                     return numbers[key] = found.Count - steps.Length;
                 }
             }
-            found.Add(Turned(image, turns));
+            found.Add(framed ? Unstreaked(image) : Turned(image, turns));
             return numbers[key] = found.Count - 1;
         }
         static int Gcd(int a, int b) => b == 0 ? a : Gcd(b, a % b);
 
         for (int surface = 0; surface < count; surface++)
         {
-            if (PackTextures.Of(surface) is { } look && (tile[surface] = Number(look.Texture)) != 0)
+            if (PackTextures.Of(surface) is { } look && (tile[surface] = Number(look.Texture, framed: GlassSurfaces.Contains(surface))) != 0)
             {
                 tint[surface] = look.Tint;
                 if (look.Overlay is { } over) overlay[surface] = Number(over);
             }
             // The grass's top takes the game's own looks, over its pack's tile or over the white one.
             if (PackTextures.Of(surface) is { Looks: true } grassy && found.Count + 4 * GroundArt.Looks.Count < MostTiles)
-                variants[surface] = OwnLooks(found, tile[surface], grassy.Texture, Number);
+                variants[surface] = OwnLooks(found, tile[surface], grassy.Texture, (name, turns) => Number(name, turns));
             // A plant no pack has takes the game's own mask, each mask one tile however many plants share it.
             else if (tile[surface] == 0 && PlantArt.Mask(surface) is { } mask && found.Count < MostTiles)
             {
@@ -186,6 +189,43 @@ public sealed class TerrainAtlas
             }
         }
         return [.. picked];
+    }
+
+    // Glass's picture with its frame kept and everything inside the frame the inside's most common
+    // pixel, so the streaks a pack draws across the pane are gone, the pane is the same everywhere and
+    // a frame left out toward a neighbor of the same glass shows the pane there. The frame is as many
+    // rings in from the edge as are wholly covered, and a picture covered nowhere or everywhere is
+    // kept as it is.
+    private static Image Unstreaked(Image image)
+    {
+        int n = image.Width;
+        if (n != image.Height) return image;
+        var pixels = image.Data;
+        bool Covered(int ring)
+        {
+            for (int i = ring; i < n - ring; i++)
+                if (pixels[(ring * n + i) * 4 + 3] < 255 || pixels[((n - 1 - ring) * n + i) * 4 + 3] < 255
+                    || pixels[(i * n + ring) * 4 + 3] < 255 || pixels[(i * n + n - 1 - ring) * 4 + 3] < 255)
+                    return false;
+            return true;
+        }
+        var rings = 0;
+        while (rings < n / 2 && Covered(rings)) rings++;
+        if (rings == 0 || rings == n / 2) return image;
+
+        var counts = new Dictionary<uint, int>();
+        for (int y = rings; y < n - rings; y++)
+            for (int x = rings; x < n - rings; x++)
+            {
+                var pixel = BitConverter.ToUInt32(pixels, (y * n + x) * 4);
+                counts[pixel] = counts.GetValueOrDefault(pixel) + 1;
+            }
+        var pane = counts.MaxBy(c => c.Value).Key;
+        var drawn = (byte[])pixels.Clone();
+        for (int y = rings; y < n - rings; y++)
+            for (int x = rings; x < n - rings; x++)
+                BitConverter.TryWriteBytes(drawn.AsSpan((y * n + x) * 4, 4), pane);
+        return new Image(drawn, n, n);
     }
 
     // A square image turned by so many quarter turns clockwise about the upright.

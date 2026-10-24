@@ -87,6 +87,48 @@ public sealed class CutoutTests : IDisposable
     }
 
     [Fact]
+    public void Glass_Keeps_Its_Frame_And_Loses_The_Streaks_Across_Its_Pane()
+    {
+        // A frame a pixel wide about a clear pane with a streak across it, as Bare Bones draws its glass.
+        var streaked = new Image([.. Enumerable.Range(0, 256).SelectMany(i =>
+        {
+            int x = i % 16, y = i / 16;
+            return x is 0 or 15 || y is 0 or 15 || (x == y && x is >= 2 and <= 4) ? new byte[] { 220, 230, 235, 255 } : new byte[] { 0, 0, 0, 0 };
+        })], 16, 16);
+        var picture = Atlas(("block/glass", streaked)).Picture(Surfaces.Glass)!.Value;
+        byte Alpha(int x, int y) => picture.Data[(y * picture.Width + x) * 4 + 3];
+        Assert.Equal(255, Alpha(7, 0));
+        Assert.Equal(255, Alpha(15, 9));
+        Assert.Equal(0, Alpha(3, 3));
+        Assert.Equal(0, Alpha(8, 8));
+        // A frame four pixels wide about a clear pane, streaked nowhere, is kept as it is.
+        var framed = Atlas(("block/glass", Framed())).Picture(Surfaces.Glass)!.Value;
+        Assert.Equal(Framed().Data, framed.Data);
+    }
+
+    [Fact]
+    public void Two_Panes_Side_By_Side_Join_So_One_Frame_Goes_About_Both()
+    {
+        var world = Floor();
+        world.SetBlock(5, 20, 5, BlockId.Glass);
+        world.SetBlock(6, 20, 5, BlockId.Glass);
+        // Glass of another kind above the left pane joins neither.
+        world.SetBlock(5, 21, 5, BlockId.WhiteStainedGlass);
+        var mesher = new SectionMesher { Atlas = Atlas(("block/glass", Framed()), ("block/white_stained_glass", Framed())) };
+        Assert.True(mesher.Mesh(world, new SectionKey(0, 1, 0)));
+        var faces = mesher.CutoutGlass;
+        // A pane's face toward +z, its texture's right toward +x, by its lowest corner in the section.
+        uint? FrontJoins(int x, int y) => Enumerable.Range(0, faces.Count / 4)
+            .Where(q => faces.Unpack(4 * q).Face == 4
+                && Enumerable.Range(4 * q, 4).Min(i => faces.Positions[i].X) == x && Enumerable.Range(4 * q, 4).Min(i => faces.Positions[i].Y) == y)
+            .Select(q => SectionMesher.Joins(faces.Packed[8 * q]))
+            .Single();
+        Assert.Equal(1u, FrontJoins(5, 20 - 16));
+        Assert.Equal(2u, FrontJoins(6, 20 - 16));
+        Assert.Equal(0u, FrontJoins(5, 21 - 16));
+    }
+
+    [Fact]
     public void Glass_A_Pack_Cuts_Out_Casts_No_Shadow_And_Meets_Its_Kind_With_No_Face()
     {
         var world = Floor();

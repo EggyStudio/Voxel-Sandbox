@@ -5,28 +5,24 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `d7c4892`, item 55, the plants' shadows cut by their picture on 3DEngine 5.2.215, and
-nothing else, carrying the review's files: the pin and the csproj moved to 5.2.215, the plants'
-material casting with BouncesLight off so the field holds no plants, terrain.slang's shadowMain
-cutting by the tile's alpha only faces whose corners carry places; departures, glass a pack cuts out
-in a part of its own casting no shadow, one draw more where a section has it, leaves and door
-windows keeping their whole-face shadow, the engine's F2 and F3 turned off by SetScreenshotKey and
-SetProfileWindowKey since the game takes those keys until item 54, and plants in the depth the
-ambient occlusion reads; the check inside the pillar frames reading a poppy's shadow line, 7 of 49
-points under 100 against 15 uncut, asking 1 to 10; the cost on the 4070 2.3 ms of GPU and 3.4 of
-recording, the frame 17.2 ms against 16.8, said in the README, a shadow reach for plants an option
-not taken since blades' shadows would pop; the capture plant-shadows.webp in the README's Shadows
-section; 235 tests, the strict build clean, play.sh clean on the GPU. Read at 02:15 on 2026-10-24
-and pushed at once, the run of `7a0d61d` having ended green. Next item 58's curve on 5.2.215, then
-83, 67, 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then
-26 and the items in order; items 38's second part and 54 when their packages come; the AGENTS.md
-rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `2b265f3`, item 58's curve, and nothing else, carrying the review's file:
+LightSettings calls SetTonemapCurve(0.9, 1.3, 1.05, 1) in place of Reinhard, the pre-exposure 1.6
+rather than the item's 1.7 since the curve's middle levels match Reinhard at 1.7 there, sRGB 146
+against 148 at a light of 0.25, the darks deeper and the lights brighter, contrast 1.12 and
+saturation 1.4 kept until the owner chooses; the plains village view captured under the curve at the
+modpack's grade, at 1.06 and 1.2 and at 1.12 and 1.4 beside Reinhard's and the modpack's picture for
+the owner's eye, 1.2 near the look approved; 235 tests, the strict build clean, play.sh clean on the
+GPU, the lantern's pool 249.2 to 88.3, the wool 196 to 199. Read at 02:21 on 2026-10-24. Not pushed,
+the build run of `d7c4892` running; pushed when it ends. Next 83, 67, 68, 79, 78, 80, 81, 69, 75,
+74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in order; items
+38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and build folders
+wait on the owner's word.
+
+Before it, `d7c4892` came, item 55, the plants' shadows on 5.2.215, pushed at 02:15 on 2026-10-24,
+its run in flight.
 
 Before it, `7a0d61d` came, item 76, pushed at 01:25 on 2026-10-24, its run green, the play job 30.0
 minutes.
-
-Before it, `b730088` came, item 88, the play job's time, and nothing else. Pushed at 00:54 on
-2026-10-24, its run green, the play job 28.8 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is

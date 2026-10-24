@@ -112,7 +112,8 @@ public sealed class SectionMesher
     /// as a vertex color is, and the shade multiplies it in that space. A shade of 128 levels holds
     /// the light's sixteen levels and the corners' four darkenings with room to spare. A face with no
     /// overlay and neither flag may carry its corner's place on its texture in the overlay's bits
-    /// instead, as <see cref="PlaceOf"/> reads it.
+    /// instead, as <see cref="PlaceOf"/> reads it, and a face of glass with both flags which of its
+    /// neighbors are the same glass, as <see cref="Joins"/> reads it.
     /// </summary>
     public static (uint First, uint Second) Pack(int face, int corner, float shade, Color tint, uint tiles = 0)
     {
@@ -120,6 +121,13 @@ public sealed class SectionMesher
         return ((uint)face | (uint)corner << 3 | level << 5 | (tiles >> 19 & 1) << 12 | (tiles & 0x7FFFF) << 13,
             tint.R | (uint)tint.G << 8 | (uint)tint.B << 16 | (uint)tint.A << 24);
     }
+
+    /// <summary>
+    /// Which of a glass face's eight neighbors in its plane are the same glass, read back from the first
+    /// of a corner's uints, the right, left, lower and upper as its texture lies and then the lower
+    /// right, lower left, upper right and upper left, or null for a face that carries none.
+    /// </summary>
+    public static uint? Joins(uint first) => (first >> 31 & 1) != 0 && (first >> 12 & 1) != 0 ? first >> 22 & 255 : null;
 
     /// <summary>A corner's tiles read back from the first of its uints, as <see cref="TerrainAtlas.Paint"/> packs them.</summary>
     public static uint TilesOf(uint first) => first >> 13 | (first >> 12 & 1) << 19;
@@ -336,6 +344,28 @@ public sealed class SectionMesher
         cuttable && Atlas.Cuts(surface) ? kind == BlockKind.Glass ? CutoutGlass : SolidCutout
             : Surfaces.All[surface].Color.A < 255 ? SeeThrough : Solid;
 
+    // The directions a face's texture runs across it, toward its right and toward its bottom as the
+    // terrain shader lays a texture on a face of each direction, by their numbers in Steps.
+    private static readonly (int Right, int Down)[] TextureWays = [(5, 3), (4, 3), (0, 4), (0, 5), (0, 3), (1, 3)];
+
+    // A face of glass a pack draws in a frame carries which of its eight neighbors in the face's plane
+    // are the same glass, in its overlay's bits with both untinted flags, so the terrain shader leaves
+    // out the frame's edges and corners toward them and two panes side by side show one frame about
+    // both, as the modpack's connected textures draw them. The bits are the right, left, lower and
+    // upper neighbors as the texture lies on the face, then the lower right, lower left, upper right
+    // and upper left.
+    private uint Joined(uint tiles, int face, int at)
+    {
+        var (right, down) = TextureWays[face];
+        int r = Steps[right], l = Steps[right ^ 1], d = Steps[down], u = Steps[down ^ 1];
+        var glass = _blocks[at];
+        ReadOnlySpan<int> neighbors = [r, l, d, u, r + d, l + d, r + u, l + u];
+        uint joins = 0;
+        for (int i = 0; i < neighbors.Length; i++)
+            if (_blocks[at + neighbors[i]] == glass) joins |= 1u << i;
+        return tiles & 511 | joins << 9 | 3u << 18;
+    }
+
     // A face of a block, its corners on the cell's floor raised to bottom and those on its ceiling
     // lowered to top, for water and for a side shown only above the water beside it.
     private void Add(int surface, bool cuttable, BlockKind kind, int face, int at, Vector3 block, float bottom, float top)
@@ -344,6 +374,7 @@ public sealed class SectionMesher
         var place = (int)block.Z * Section.Size + (int)block.X;
         var spot = PlaceHash.Of(_origin.X + (int)block.X, _origin.Z + (int)block.Z, _origin.Y + (int)block.Y);
         var (tiles, color, albedo) = Atlas.Paint(surface, _column.GrassTint[place], _column.FoliageTint[place], spot);
+        if (kind == BlockKind.Glass && Atlas.Tile(surface) != 0 && BlockGroups.Glass.Contains((BlockId)_blocks[at])) tiles = Joined(tiles, face, at);
         var faces = FacesOf(surface, cuttable, kind);
         var first = (uint)faces.Count;
         var front = at + Steps[face];

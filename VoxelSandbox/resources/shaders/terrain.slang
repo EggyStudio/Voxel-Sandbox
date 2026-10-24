@@ -77,9 +77,25 @@ struct TerrainOutput
     ModelStreamsOutput streams;
     // The face, the surface's tile, its overlay's tile, and 1 where the tile under the overlay is
     // left untinted, as the grass block's side is, 2 where the overlay is, as a look's decor of
-    // flowers on the grass is, or 3 where the face's corners carry their places on the texture, the
-    // same over the face.
+    // flowers on the grass is, 3 where the face's corners carry their places on the texture, the
+    // same over the face, or 4 where the face is of glass and the overlay's bits say which of its
+    // neighbors are the same glass, as SectionMesher.Joined packs them.
     nointerpolation uint4 surface : TEXCOORD4;
+    // The corner of the block a face bounds, the same at its four corners, so a point of glass at the
+    // seam between two panes, whose place may fall a hair into its neighbor's block, reads its own
+    // pane's joins.
+    nointerpolation float3 block : TEXCOORD5;
+};
+
+// The corners of each of the six faces of a block, in the order SectionMesher's Corners lays them,
+// so a corner's place less its own gives the block's.
+static const float3 FaceCorners[24] = {
+    float3(1, 0, 0), float3(1, 1, 0), float3(1, 1, 1), float3(1, 0, 1),
+    float3(0, 0, 0), float3(0, 0, 1), float3(0, 1, 1), float3(0, 1, 0),
+    float3(0, 1, 0), float3(0, 1, 1), float3(1, 1, 1), float3(1, 1, 0),
+    float3(0, 0, 0), float3(1, 0, 0), float3(1, 0, 1), float3(0, 0, 1),
+    float3(0, 0, 1), float3(1, 0, 1), float3(1, 1, 1), float3(0, 1, 1),
+    float3(0, 0, 0), float3(0, 1, 0), float3(1, 1, 0), float3(1, 0, 0),
 };
 
 // The six faces' outward normals in the order +x, -x, +y, -y, +z, -z, as SectionMesher's Normals
@@ -112,7 +128,8 @@ TerrainOutput vertexMain(float3 position : POSITION, uint2 packed : CUSTOM0, Mod
     bool placed = kind == 0 && over > 0;
     float2 place = placed ? float2(float((over - 1) % 17), float((over - 1) / 17)) / 16.0 : float2(0, 0);
     output.streams = transformModelVertex(position, Normals[face], place, float4(tint.rgb * shade, tint.a), float2(shade, 0), instance);
-    output.surface = uint4(face, (packed.x >> 13) & 511, placed ? 0 : over, placed ? 3 : kind);
+    output.surface = uint4(face, (packed.x >> 13) & 511, placed ? 0 : over, placed ? 3 : kind == 3 ? 4 : kind);
+    output.block = output.streams.base.world - FaceCorners[min(face, 5u) * 4 + ((packed.x >> 3) & 3)];
     return output;
 }
 
@@ -197,6 +214,42 @@ float3 litStepped(float3 albedo, ModelVertexOutput input)
     return toDisplay(shown);
 }
 
+// Whether a sample of a picture differs from another, as a point of glass's frame does from its
+// pane.
+bool differs(float4 a, float4 b)
+{
+    float4 d = abs(a - b);
+    return max(max(d.r, d.g), max(d.b, d.a)) > 0.02;
+}
+
+// Glass's place on its picture with its frame left out toward its neighbors of the same glass, the
+// joins' bits saying which. A point lies in the frame along the right or left edge where the
+// picture across its row's place at the middle height differs from the middle, and along the lower
+// or upper edge likewise down its column, the picture's pane being the same everywhere inside its
+// frame. A point in the frame toward a joined neighbor takes the picture's middle across that edge,
+// so it shows the pane, or in a corner the frame's other edge running on straight past the join, and
+// a corner whose two neighbors are joined and the one across it not keeps its corner, so the frame
+// turns inside an L of three panes.
+float2 joined(float2 place, uint tile, uint joins, float3 block, uint face, float level)
+{
+    float2 cell = floor(across(block + 0.5, face));
+    float2 at = clamp(place - cell, float2(0.0), float2(0.99999));
+    float4 middle = tileColor(tile, cell + 0.5, level);
+    bool acrossRow = differs(tileColor(tile, cell + float2(at.x, 0.5), level), middle);
+    bool downColumn = differs(tileColor(tile, cell + float2(0.5, at.y), level), middle);
+    bool joinedAcross = (joins & (at.x >= 0.5 ? 1u : 2u)) != 0;
+    bool joinedDown = (joins & (at.y >= 0.5 ? 4u : 8u)) != 0;
+    uint corner = at.x >= 0.5 ? (at.y >= 0.5 ? 16u : 64u) : (at.y >= 0.5 ? 32u : 128u);
+    float2 shown = at;
+    if (acrossRow && joinedAcross)
+        shown.x = 0.5;
+    if (downColumn && joinedDown)
+        shown.y = 0.5;
+    if (acrossRow && downColumn && joinedAcross && joinedDown && (joins & corner) == 0)
+        shown = at;
+    return cell + shown;
+}
+
 [shader("fragment")]
 float4 fragmentMain(TerrainOutput input) : SV_Target
 {
@@ -212,6 +265,8 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     float spans = max(length(ddx(texels)), length(ddy(texels)));
     float level = clamp(log2(max(spans, 1e-6)), 0.0, log2(pixels) + 1.0);
 
+    if (surface.w == 4)
+        place = joined(place, surface.y, surface.z, input.block, surface.x, level);
     float4 tile = tileColor(surface.y, place, level);
     float3 tinted = tile.rgb * streams.vertexColor.rgb;
     if (surface.w == 1)

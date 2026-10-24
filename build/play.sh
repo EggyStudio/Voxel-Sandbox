@@ -474,12 +474,14 @@ read -r br bg bb <<< "$(printf '%s\n' "$body" | sed -nE 's/^red ([0-9]+), green 
 [ -n "$fb" ] && [ -n "$bb" ] || fail "voxel.pixel read no zombie, saying $front and $body"
 [ "$fr" -gt $((2 * fb)) ] && [ "$fr" -gt $((2 * fg)) ] || fail "the zombie's face does not wear the picture's red, $front"
 [ "$bb" -gt $((2 * br)) ] || fail "the zombie's body does not wear the picture's blue, $body"
-# A pane of glass before a wall of red concrete shows the wall through its clear middle and its gray
-# frame around it, and a lit furnace beside it its blue top above its red front.
-# The eye stands level with the glass, straight before it, so the line through its middle meets the
-# wall and no other face of it.
+# Two panes of glass side by side before a wall of red concrete show the wall through their clear
+# middles and one gray frame about both, the frame left out where they meet, so the wall shows a
+# tenth of a block to either side of the join, and a lit furnace below them its blue top above its
+# red front. The eye stands level with the glass, straight before the first pane, so the line
+# through its middle meets the wall and no other face of it.
 cmd voxel.fill 19 5 0 22 8 0 red_concrete
 cmd voxel.set 20 6 2 glass
+cmd voxel.set 21 6 2 glass
 cmd voxel.set 21 4 2 lit_furnace
 cmd voxel.tp 20.5 4.88 5.5
 cmd voxel.look 0 -15
@@ -487,18 +489,23 @@ cmd frames.wait 20
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 middle=$(ask voxel.pixel 20.5 6.5 3.001)
-frame=$(ask voxel.pixel 20.9 6.5 3.001)
+frame=$(ask voxel.pixel 20.1 6.5 3.001)
+before=$(ask voxel.pixel 20.9 6.5 3.001)
+after=$(ask voxel.pixel 21.1 6.5 3.001)
 side=$(ask voxel.pixel 21.5 4.5 3.001)
 top=$(ask voxel.pixel 21.5 5.001 2.5)
-echo "glass's middle $middle, its frame $frame, the lit furnace's front $side, its top $top"
+echo "glass's middle $middle, its frame $frame, the join $before and $after, the lit furnace's front $side, its top $top"
 channels() { printf '%s\n' "$1" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p'; }
 read -r mr mg mb <<< "$(channels "$middle")"
 read -r gr gg gb <<< "$(channels "$frame")"
+read -r br bg bb <<< "$(channels "$before")"
+read -r ar ag ab <<< "$(channels "$after")"
 read -r sr sg sb <<< "$(channels "$side")"
 read -r tr tg tb <<< "$(channels "$top")"
-[ -n "$mb" ] && [ -n "$gb" ] && [ -n "$sb" ] && [ -n "$tb" ] || fail "voxel.pixel read no glass or furnace, saying $middle, $frame, $side and $top"
+[ -n "$mb" ] && [ -n "$gb" ] && [ -n "$bb" ] && [ -n "$ab" ] && [ -n "$sb" ] && [ -n "$tb" ] || fail "voxel.pixel read no glass or furnace, saying $middle, $frame, $before, $after, $side and $top"
 [ "$mr" -gt $((2 * mg)) ] && [ "$mr" -gt $((2 * mb)) ] || fail "the glass's clear middle does not show the red wall behind it, $middle"
 [ $((gr > gb ? gr - gb : gb - gr)) -le 40 ] && [ "$gr" -gt 60 ] || fail "the glass's frame does not show its gray, $frame"
+[ "$br" -gt $((2 * bg)) ] && [ "$ar" -gt $((2 * ag)) ] || fail "the two panes' frames are not left out where they meet, $before and $after"
 [ "$sr" -gt $((2 * sb)) ] || fail "the lit furnace's front does not wear the picture's red, $side"
 [ "$tb" -gt $((2 * tr)) ] || fail "the lit furnace's top does not wear the furnace's top's blue, $top"
 # A pool of water a block across shows the written water's frames in turn, read eight times three

@@ -721,7 +721,9 @@ before a batch.
     second word, the two entries in the engine's ASKS.md for its items 80 and 81; part b done at
     `293a5d1` and parts d and e at `b56fa0b` on 2026-10-21, the shadows' grid eight a block on the
     owner's word, Decision 29; the ambient's share waits on the engine's item 81 as said. Done at
-    `b56fa0b`.
+    `b56fa0b`. The curve at `2b265f3` on 2026-10-24, SetTonemapCurve(0.9, 1.3, 1.05, 1) with the
+    pre-exposure at 1.6 for the middle levels, contrast 1.12 and saturation 1.4 kept until the owner
+    chooses from the pictures, 1.2 near the look approved.
 
 59. **Each biome's grass and foliage color from the source's fixed values, not a blend of the game's
     own climate (Decision 28).** The owner wrote shortly before 08:01 on 2026-10-21 that the game's

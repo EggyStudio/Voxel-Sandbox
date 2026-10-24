@@ -697,7 +697,14 @@ covered in the rest is cut out where it is clear, as Minecraft cuts out its glas
 and its leaves, the shader dropping those pixels. Glass goes in a mesh of each section that casts
 no shadow, as the see-through faces cast none, and a door's window and a pack's leaves in one that
 casts the whole face's, the terrain shader's `shadowMain` cutting only the faces whose corners carry
-their places on the texture, so a canopy's shade stays whole.
+their places on the texture, so a canopy's shade stays whole. Glass a pack draws in a frame keeps
+the frame and loses the streaks the pack lays across its pane, everything inside the frame taking
+the pane's most common pixel, and two panes of the same glass side by side show one frame about
+both, as the modpack's connected textures draw them. The mesher packs which of a glass face's eight
+neighbors in its plane are the same glass, and the terrain shader leaves out the frame toward them,
+running the frame's other edge on straight past a join and keeping a corner inside an L of three
+panes, as `build/play.sh` reads where two panes meet. A pack's own pieces of connected glass are
+not read, since none of the packs the game fetches has them.
 Leaves cut out hide nothing behind them, so they keep their faces against each other and the faces
 beside them, as Minecraft draws its leaves, and the sections seen through them are drawn. Bare
 Bones' leaves are covered in every pixel and so stay whole. A texture partly clear, as ice's is,
