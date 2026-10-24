@@ -84,6 +84,26 @@ public class GenerationTests
     }
 
     [Fact]
+    public void Desert_Pyramids_Stand_As_The_Source_Spaces_Them_One_To_A_Square_Of_32_Chunks()
+    {
+        // A square of 512 chunks about the origin reaches into 17 by 17 of the source's squares of 32
+        // chunks at most, each holding one pyramid at most, at a chunk among its first 24 each way,
+        // and only where the desert holds it. Seed 1's square holds six, where a pyramid in nearly
+        // half the cells of 64 blocks over desert put 128, seven of them within 1024 blocks of the
+        // desert about 704, -704, which holds none now.
+        var land = new Overworld(1);
+        var pyramid = Structures.Find("pyramid")!;
+        Assert.Empty(pyramid.StartsIn(704 - 1024, -704 - 1024, 704 + 1023, -704 + 1023, land));
+        var starts = pyramid.StartsIn(-4096, -4096, 4095, 4095, land).ToList();
+        Assert.True(starts.Count is >= 1 and <= 17 * 17, $"{starts.Count} pyramids");
+        Assert.All(starts, s => Assert.True(s.X % Section.Size == 0 && s.Z % Section.Size == 0, $"{s} stands off its chunk's corner"));
+        Assert.All(starts, s => Assert.Equal(Biomes.Desert, land.At(s.X + pyramid.Size / 2, s.Z + pyramid.Size / 2).Biome));
+        foreach (var a in starts)
+            foreach (var b in starts.Where(b => b != a))
+                Assert.True(Math.Max(Math.Abs(a.X - b.X), Math.Abs(a.Z - b.Z)) >= 8 * Section.Size, $"{a} and {b} stand within eight chunks");
+    }
+
+    [Fact]
     public void Every_Torch_And_Lantern_Of_A_Village_Holds_To_A_Block_And_No_Tree_Stands_In_It()
     {
         var land = new Overworld(1);

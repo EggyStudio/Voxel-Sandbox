@@ -5,44 +5,56 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `f00f649`, item 111, a felled tree's crown going with its logs, read at 15:19 on
-2026-10-24, carrying the review's files. TreeFelling.Fell reads the crown at once, Loose seeding its
-search from every log in the box but the tree's own felled logs, taken as gone; the loose leaves are
-shuffled and scheduled from the tick the first log goes, spaced evenly over CrownSeconds of 1, the
-first leaf in that tick after the first log, item 100's spread kept; the Leaves step and the step
-tuple's box fields gone. FallingTests' second felling test records the first log, the first leaf and
-the last leaf, the first leaf in the same frame as the first log and the last 0.5 to 1 s after, the
-trees beside and the lower branch-joined tree holding as before; 280 tests, play.sh 182 s on the
-GPU; the capture shows the crown mostly gone with its bits in the air where it hung whole. Held with
-`2a399af` until the run of `02abb9d` ends, then pushed. After `2a399af`, item 110, the bits taking
-the biome's tint, read at 15:12 on 2026-10-24, carrying the review's files. VoxelWorld.TintsAt gives
-a column's grass and foliage colors, the plains' where it is not loaded; BlockBits.Break and Hit
-take a climate, the plains' by default, and the game passes the block's for the player's breaks, the
-hits and the felled trees' logs and leaves; each bit carries its climate and its picture is keyed by
-the surface, the piece and the tint Paint gives the surface there, so untinted blocks share one
-picture, a bit with no pack picture taking the surface's own color in that climate, and the pictures
-past 256 no bit wears let go with their materials; BlockBits.Picture public and static for a test
-without a GPU. The test in PackTests breaks a grass block at seed 1's plains and savanna under a
-pack with a gray top and a brown side under a gray overlay, the bits from the side's upper quarters
-within three levels of the top's color there and the savanna's top more than 20 redder than the
-plains'; 280 tests, play.sh 184 s on the GPU, the tunnel's bits 19 to 20. The capture shows the
-savanna's bits yellow where they were the plains' green, the plains unchanged. After `02abb9d`, item
-109, the cactus as the source's model, pushed at 15:01 on 2026-10-24 after the run of `f480dbf` went
-green, the run watched, carrying the review's files. A Piece gains Faces, a bit a face, all six by
-default; BlockShape.Cactus is the top and the bottom (cactus_bottom, a new surface) across the whole
-cell and the four side faces at a sixteenth and fifteen sixteenths spanning the cell, the cactus
-Shaped so it hides no face beside it, its collision box 1, 0, 1 to 15, 15, 15 and its outline to 15,
-16, 15 in sixteenths, the source's. Departures, the top and the bottom span the whole cell as the
-source's first element does rather than the inset square, the pack's cactus_top clear on its border
-but for the thorns at its corners and edges, so the inset square shows with the border thorns kept;
-every face shows its whole picture as a part so its corners carry their places and the shadow pass
-cuts its shadow where the picture is clear, without which the top's overhang cast a dark band down
-the sides under every seam at noon. A new BlockShape.Whole flag keeps the cactus's item, on the
-ground, in the hand and as an icon, the whole cube of its pictures, the drop's bottom wearing
-cactus_bottom. The mesher's test reads a cactus on stone as the up face across the cell and the four
-sides at their sixteenths with no bottom, and its box the source's; 279 tests, play.sh 177 s on the
-GPU; the capture at 1.6 blocks off shows the white corners gone and the thorns standing out. The
-README's cutout paragraph describes the model and its box.
+Reviewed up to `fd17371`, item 112, felling wearing the axe by the logs it drops as items, read at
+15:24 on 2026-10-24, carrying the review's files. TreeFelling.Fell takes the axe's uses left after
+the cut's own, or none counted, each felling a Tree carrying its Uses and its crown's box; a log
+dropping as an item takes one use and adds to Worn, a falling log none; the use bringing Uses to 0
+leaves the later logs standing, the crown read again with those logs counted so only the leaves
+loose of them still decay, and an axe whose last use was the cut fells nothing. In survival the game
+passes the axe's durability less its wear less the cut's use and wears the slot by Felling.Worn each
+frame. Departure, once the axe runs out every log still to go stays standing, those that would have
+fallen as blocks included, the felling stopping with the axe. FallingTests fells the oak's four logs
+over the cut with 100 uses, 3 items and 1 falling log with Worn 3, with 1 use one item log and the
+log at y 8 standing with its leaves kept and nothing pending, with 0 nothing; 281 tests, play.sh 176
+s on the GPU; the README's felling paragraph gives the wear and the eight-log example. Held with
+`f00f649` and `2a399af` until the run of `02abb9d` ends, then pushed. After `f00f649`, item 111, a
+felled tree's crown going with its logs, read at 15:19 on 2026-10-24, carrying the review's files.
+TreeFelling.Fell reads the crown at once, Loose seeding its search from every log in the box but the
+tree's own felled logs, taken as gone; the loose leaves are shuffled and scheduled from the tick the
+first log goes, spaced evenly over CrownSeconds of 1, the first leaf in that tick after the first
+log, item 100's spread kept; the Leaves step and the step tuple's box fields gone. FallingTests'
+second felling test records the first log, the first leaf and the last leaf, the first leaf in the
+same frame as the first log and the last 0.5 to 1 s after, the trees beside and the lower
+branch-joined tree holding as before; 280 tests, play.sh 182 s on the GPU; the capture shows the
+crown mostly gone with its bits in the air where it hung whole. After `2a399af`, item 110, the bits
+taking the biome's tint, read at 15:12 on 2026-10-24, carrying the review's files.
+VoxelWorld.TintsAt gives a column's grass and foliage colors, the plains' where it is not loaded;
+BlockBits.Break and Hit take a climate, the plains' by default, and the game passes the block's for
+the player's breaks, the hits and the felled trees' logs and leaves; each bit carries its climate
+and its picture is keyed by the surface, the piece and the tint Paint gives the surface there, so
+untinted blocks share one picture, a bit with no pack picture taking the surface's own color in that
+climate, and the pictures past 256 no bit wears let go with their materials; BlockBits.Picture
+public and static for a test without a GPU. The test in PackTests breaks a grass block at seed 1's
+plains and savanna under a pack with a gray top and a brown side under a gray overlay, the bits from
+the side's upper quarters within three levels of the top's color there and the savanna's top more
+than 20 redder than the plains'; 280 tests, play.sh 184 s on the GPU, the tunnel's bits 19 to 20.
+The capture shows the savanna's bits yellow where they were the plains' green, the plains unchanged.
+After `02abb9d`, item 109, the cactus as the source's model, pushed at 15:01 on 2026-10-24 after the
+run of `f480dbf` went green, the run watched, carrying the review's files. A Piece gains Faces, a
+bit a face, all six by default; BlockShape.Cactus is the top and the bottom (cactus_bottom, a new
+surface) across the whole cell and the four side faces at a sixteenth and fifteen sixteenths
+spanning the cell, the cactus Shaped so it hides no face beside it, its collision box 1, 0, 1 to 15,
+15, 15 and its outline to 15, 16, 15 in sixteenths, the source's. Departures, the top and the bottom
+span the whole cell as the source's first element does rather than the inset square, the pack's
+cactus_top clear on its border but for the thorns at its corners and edges, so the inset square
+shows with the border thorns kept; every face shows its whole picture as a part so its corners carry
+their places and the shadow pass cuts its shadow where the picture is clear, without which the top's
+overhang cast a dark band down the sides under every seam at noon. A new BlockShape.Whole flag keeps
+the cactus's item, on the ground, in the hand and as an icon, the whole cube of its pictures, the
+drop's bottom wearing cactus_bottom. The mesher's test reads a cactus on stone as the up face across
+the cell and the four sides at their sixteenths with no bottom, and its box the source's; 279 tests,
+play.sh 177 s on the GPU; the capture at 1.6 blocks off shows the white corners gone and the thorns
+standing out. The README's cutout paragraph describes the model and its box.
 
 Before it, `f480dbf` came, items 107 and 117 with `aaeaa2a`, pushed at 14:33 on 2026-10-24, its run
 green, the play job 22.0 minutes.
@@ -657,16 +669,6 @@ full.
     from the caller; the game's `litStepped` then hands the step's read in and reads the shadow
     once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
     again. One commit, small, with the package carrying the engine's item 99.
-
-112. **Felling wears the axe by the logs it drops as items, the falling logs not counted.** The
-    owner wrote at 13:36 on 2026-10-24 that the axe's use should drop by the number of logs felling
-    breaks, a tree of eight logs taking eight, and where three of the eight drop as items and the
-    rest fall as blocks, three, the falling logs not counted. Felling takes one use of the axe for
-    each log it turns into a dropped item, none for a log that falls as a block, and the axe that
-    runs out mid-tree breaks the logs it had uses for and leaves the rest standing or falling as the
-    source does; the felling test reads the axe's uses after a tree of known logs with a known share
-    falling, and the README's felling paragraph says the wear. One commit, small, after item 111 and
-    before item 94.
 
 113. **Pyramids are as rare as the source's.** The owner wrote at 13:36 on 2026-10-24 that there are
     far too many pyramids. The desert pyramid is placed at the source's spacing, one at most in each

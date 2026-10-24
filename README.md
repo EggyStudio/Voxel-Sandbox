@@ -408,7 +408,9 @@ A structure has at most one start in each cell of 64 by 64 blocks, where its cha
 land at its start suits it. An igloo of snow with a shroomlight inside stands on the snowy plains, a
 stepped sandstone pyramid in the desert, a dark chamber at its heart with a floor of blue and red,
 and a cobblestone dungeon deep under any ground, a magma block at its middle where Minecraft's has
-its spawner. `voxel.find <village|igloo|pyramid|dungeon|ravine>` gives the nearest one's place.
+its spawner. The pyramid is as rare as the source's, one at most to each square of 32 chunks, at a
+chunk among its first 24 each way and only where that falls in the desert, so a desert holds one or
+none. `voxel.find <village|igloo|pyramid|dungeon|ravine>` gives the nearest one's place.
 
 A village stands where the plains, the taiga, the snowy plains or the desert lie nearly level across
 48 blocks, built of that biome's wood or sandstone. Villages are spaced as the source spaces them,

@@ -144,8 +144,13 @@ public sealed class DesertPyramid : Structure
 {
     public override string Name => "pyramid";
     public override int Size => 15;
-    protected override int Chance => 45;
+    // The source's desert pyramids, one to each square of 32 chunks, at a chunk among its first 24
+    // each way, so two stand at least eight chunks apart, built only where the desert holds it.
+    public override int CellSize => 32 * Section.Size;
+    protected override int Chance => 100;
     protected override int Salt => 0x7e3a;
+
+    protected override (int X, int Z) Within(uint hash) => ((int)(hash / 100 % 24) * Section.Size, (int)(hash / 10000 % 24) * Section.Size);
 
     protected override bool Suits(Biome biome, int ground, uint hash, out int y)
     {

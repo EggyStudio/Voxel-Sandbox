@@ -1302,6 +1302,17 @@ before a batch.
     One commit, small, after item 110 and before item 94. Done at `f00f649` on 2026-10-24, the crown
     read at once and its leaves going from the first log's tick.
 
+112. **Felling wears the axe by the logs it drops as items, the falling logs not counted.** The
+    owner wrote at 13:36 on 2026-10-24 that the axe's use should drop by the number of logs felling
+    breaks, a tree of eight logs taking eight, and where three of the eight drop as items and the
+    rest fall as blocks, three, the falling logs not counted. Felling takes one use of the axe for
+    each log it turns into a dropped item, none for a log that falls as a block, and the axe that
+    runs out mid-tree breaks the logs it had uses for and leaves the rest standing or falling as the
+    source does; the felling test reads the axe's uses after a tree of known logs with a known share
+    falling, and the README's felling paragraph says the wear. One commit, small, after item 111 and
+    before item 94. Done at `fd17371` on 2026-10-24, one use a dropped log and none a falling one,
+    the felling stopping with the axe, the departure in the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
