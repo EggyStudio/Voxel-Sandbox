@@ -418,12 +418,21 @@ public static class GameCommands
         return mob.Dying >= 0 ? $"{mob.Kind.Name} {mob.Id} dies" : $"{mob.Kind.Name} {mob.Id} is hit, its health {mob.Health}";
     }
 
-    [Command("voxel.still", "Stops the mobs where they stand and the clouds where they have drifted, or lets them move again, for a capture: voxel.still <on>")]
+    [Command("voxel.still", "Stops the mobs where they stand, the clouds where they have drifted and the bits of broken blocks where they fly, or lets them move again, for a capture: voxel.still <on>")]
     internal static string Still(bool on)
     {
         if (Game is not { } game) return "no world is loaded";
-        (game.Mobs.Still, game.Clouds.Held) = (on, on);
-        return on ? "the mobs stand still and the clouds hold" : "the mobs move and the clouds drift";
+        (game.Mobs.Still, game.Clouds.Held, game.Bits.Held) = (on, on, on);
+        return on ? "the mobs stand still and the clouds and the bits hold" : "the mobs move and the clouds and the bits drift";
+    }
+
+    [Command("voxel.bits", "How many bits of broken blocks fly and the middle of the one nearest the eye")]
+    internal static string BitsAround()
+    {
+        if (Game is not { } game) return "no world is loaded";
+        var eye = game.Player.Eye;
+        var nearest = game.Bits.All.Select(b => b.Body.Position + new Vector3(0, b.Size / 2, 0)).OrderBy(p => Vector3.DistanceSquared(p, eye)).FirstOrDefault();
+        return game.Bits.All.Count == 0 ? "no bits fly" : $"{game.Bits.All.Count} bits, the nearest at {nearest.X:F2}, {nearest.Y:F2}, {nearest.Z:F2}";
     }
 
     [Command("voxel.loading", "Keeps the loading screen up over a world that has loaded, so its pixels are read, or lets it go: voxel.loading <hold>")]

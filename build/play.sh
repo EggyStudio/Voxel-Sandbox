@@ -624,6 +624,40 @@ read -r sr sg sb <<< "$(channels "$beside")"
 awk -v p="$pr $pg $pb" -v s="$sr $sg $sb" 'BEGIN { split(p, a); split(s, b); for (i = 1; i <= 3; i++) if (a[i] - b[i] > 4 || b[i] - a[i] > 4) exit 1; exit !(a[3] - a[1] > 100) }' \
   || fail "the far pillar high against the sky is not the sky's color beside it, $pillar against $beside"
 
+check "the block's bits"
+# The bits a broken block throws, held where they were thrown, read from eight headings around the
+# nearest three blocks off under the morning's low sun, all within 6 levels, since each square is lit
+# as if it faced up whichever way it turns toward the eye, where lit by its own way it went dark with
+# the sun behind it.
+cmd voxel.time 8
+cmd voxel.set 0 12 -6 white_concrete
+cmd voxel.tp 0.5 10.88 -3.5
+cmd voxel.look 0 0
+cmd frames.wait 2
+cmd voxel.still on
+cmd voxel.break
+bits=$(ask voxel.bits)
+read -r bx by bz <<< "$(printf '%s\n' "$bits" | sed -nE 's/.* the nearest at (-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+)$/\1 \2 \3/p')"
+[ -n "$bz" ] || fail "breaking a block threw no bits, $bits"
+ask voxel.pixel "$bx" "$by" "$bz" > /dev/null
+cmd frames.wait 2
+levels=""
+for heading in 0 45 90 135 180 225 270 315; do
+  # The eye three blocks back from the bit along the heading it looks down, at the bit's height.
+  read -r ex ez <<< "$(awk -v x="$bx" -v z="$bz" -v h="$heading" 'BEGIN { a = h * 3.14159265 / 180; printf "%.3f %.3f", x - 3 * sin(a), z + 3 * cos(a) }')"
+  cmd voxel.tp "$ex" "$(awk -v y="$by" 'BEGIN { printf "%.3f", y - 1.62 }')" "$ez"
+  cmd voxel.look "$heading" 0
+  cmd frames.wait 10
+  bit=$(ask voxel.pixel "$bx" "$by" "$bz")
+  read -r r g b <<< "$(channels "$bit")"
+  [ -n "$b" ] || fail "voxel.pixel read no bit from heading $heading, saying $bit"
+  levels="$levels $(( (r + g + b) / 3 ))"
+done
+cmd voxel.still off
+echo "a bit's levels from the eight headings:$levels"
+printf '%s\n' $levels | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low <= 6) }' \
+  || fail "a broken block's bit is lit by the way the eye looks at it, its levels$levels"
+
 check "the overworld's loading"
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
@@ -751,4 +785,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a broken block's bits lit alike from eight headings, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"

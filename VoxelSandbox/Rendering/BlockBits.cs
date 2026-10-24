@@ -23,6 +23,12 @@ namespace VoxelSandbox;
 /// tinted as in the plains as the block's icon is, or the side's own color where no pack gives one,
 /// each turned toward the eye. They cast no shadow and global illumination holds none of them.
 /// </para>
+/// <para>
+/// A square is lit through the game's bits shader as a block's top is lit at its place, the sun's
+/// light and the light from all around taken by a face turned up and seen from straight above, as
+/// Minecraft lights its bits by the light where they are and by no way they face. Lit by its own
+/// way, a square turned toward the eye went dark wherever the sun stood behind it.
+/// </para>
 /// </remarks>
 public sealed class BlockBits : IDisposable
 {
@@ -56,7 +62,11 @@ public sealed class BlockBits : IDisposable
     private readonly List<Texture2D> _textures = [];
     private TerrainAtlas _terrain = TerrainAtlas.None;
     private ModelMesh? _square;
+    private Shader? _shader;
     private float _hitTime;
+
+    /// <summary>Whether the bits hold where they are and age no more, for a capture, as the mobs and the clouds hold.</summary>
+    public bool Held { get; set; }
 
     /// <summary>The bits alive.</summary>
     public IReadOnlyList<Bit> All => _bits;
@@ -132,6 +142,7 @@ public sealed class BlockBits : IDisposable
     /// <summary>Moves the bits on by so many seconds, falling and resting on what they land on, and lets go of those whose lives are over.</summary>
     public void Update(VoxelWorld world, float seconds)
     {
+        if (Held) return;
         var drag = MathF.Pow(0.98f, seconds / Tick);
         var ground = MathF.Pow(0.7f, seconds / Tick);
         foreach (var bit in _bits)
@@ -185,7 +196,11 @@ public sealed class BlockBits : IDisposable
         var texture = LoadTextureFromImage(new Image(pixels, n, n));
         SetTextureFilter(texture, TextureFilter.Point);
         _textures.Add(texture);
-        return new ModelMaterial(Color.White, texture) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 1, CastsShadows = false, BouncesLight = false, DoubleSided = true };
+        return new ModelMaterial(Color.White, texture)
+        {
+            AlphaMode = MaterialAlphaMode.Mask, Roughness = 1, CastsShadows = false, BouncesLight = false, DoubleSided = true,
+            Shader = _shader ??= LoadShader("resources/shaders/bits.slang"),
+        };
     }
 
     // A square a block across about its middle, facing +z, which a billboard turns toward the eye.
@@ -209,5 +224,7 @@ public sealed class BlockBits : IDisposable
         Forget();
         if (_square is { } square) UnloadMesh(square);
         _square = null;
+        if (_shader is { } shader) UnloadShader(shader);
+        _shader = null;
     }
 }

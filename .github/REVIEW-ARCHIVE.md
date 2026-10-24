@@ -1065,6 +1065,25 @@ before a batch.
     on 2026-10-24, pushed at 00:54, the departures and the two open points in the head; settles on
     its play job's time. The run of `b730088` ended green, its play job 28.8 minutes, under 40.
 
+104. **The sun's map and the field see every section the eye could, whichever way it looks.** The
+    owner, playing in a cave at about 10:5x on 2026-10-24, looked down and saw the ceiling go, blue
+    coming from the top and the sun's light on the floor. Every draw the game makes goes to the
+    engine's shadow pass and its field as well as the camera's pass, and ChunkRenderer's flood walks
+    open cells rather than the view's frustum, so the ceiling's sections should be in the draw set;
+    read first that they are, looking down in the flat world's stone room with an opening, the draw
+    set listed. If they are, the fault is the engine's, its cascades culling the casters to the
+    sphere about the view's slice, which is item 94's reading there, and its field's top counting as
+    sky, which item 72's far cascade answers with the package, and this item closes with the reading
+    written under the engine's item 94. If they are not, the flood walks every open way with no
+    bound to the way the eye looks and the reached sections are drawn whether the camera sees them
+    or not, the cost read under item 93 and a test that looking down keeps the ceiling's sections.
+    One commit at most, small, first. The cave reading of 10:59 shows nothing leaking near the eye
+    and the far leaks the map's and the field's, so the draw set is not the cause; the reading of
+    the draw set looking down closes this item. Confirmed at 11:0x, the deep cave's draw set reading
+    2,277 sections, 83 draws and 2,031 culled the same at pitches of 60, 0 and minus 89, the flood
+    reading neither the look nor the frustum, its one bound beside the joins and the reach the
+    source's never-back rule, the same whichever way the eye looks; closed, no change.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

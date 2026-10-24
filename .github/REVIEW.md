@@ -5,33 +5,31 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `23aa4ff`, item 91, the screen probes off by default, LightSettings.ScreenProbes
-false and applied at the start, gi.state saying so, a checkbox in the settings window turning them
-on, the README's light paragraph saying why, room.webp taken again with them off and a little
-smoother, no e3d verb for them, play.sh clean on the GPU in 127 s with its checks unchanged, after
-`c8dbbee`, item 27's part C, the lush caves, and nothing else, carrying the review's file. Part C:
-lush caves where the climate's humidity is 0.75 or more, 6.8 percent of the land, from 26 to 115
-blocks under the top, four in five floor and roof blocks moss, the floor's mosses bearing short
-grass, carpets and tall grass by the source's weights, a roof in seven with cave vines by the
-source's lengths and glow berries one block in five at light 14 as an unseen emissive box, three
-clay pools tried a column; departures, the pools' radius 2 to 3 within the column against the
-source's 4 to 7, no azaleas, spore blossoms or dripleaves, the berries' light pale since the fire's
-orange browned the leaves, glow berries an item feeding 2 and hanging a vine from an underside,
-vines falling with their support; rich columns up to 800 moss, 160 vines and 106 clay, no water over
-or beside air, a lush column in 13 to 24 ms; two tests added and two changed for the new blocks, 277
-passing, the strict build clean, play.sh 133 s on the GPU, the capture lush-cave.webp in. Read at
-10:12 and 10:17 on 2026-10-24. Pushed at 10:22 after the build run of `9cb81ad` ended green, its
-play job 24.3 minutes with far land off, the cut's proof; the run watched. Next item 92, far land
-removed, then 93, the frame's cost read and brought down; then the ECS, items 94, 95 and 96 in
-order, a piece a commit; then 42, 43 and 70, then 28 to 36 in order; items 38's second part and 54
-when their packages come, and the deep caves' sky light under 27 with the engine's next package; the
-AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `2263618`, item 92, far land removed, and nothing else, carrying the review's file
+and DEVLOG.md. FarLand, FarCache, their tests, voxel.far, the slider, the far material, the save's
+surface records and the generator's Surface go, the haze's reach back at the render distance as
+before item 26's third part, play.sh's far check and toggle gone, the README's paragraph, mention
+and far columns gone with its three rows kept, every picture taken again and checked on a sheet, the
+land fading into the haze at 192 blocks, the lush cave view moved where the first spot read nearly
+black offscreen; the departure, old saves keeping their far folder unread; the message amended
+before any push to give the reason in place of naming who asked; 274 tests, the strict build clean,
+play.sh 125 s on the GPU. Read at 10:36 on 2026-10-24. Pushed at 10:44 after the build run of
+`23aa4ff` ended green, its play job 21.8 minutes; its run green at 11:18, the play job 29.0 minutes
+with far land gone. Item 97 done ahead in the engine's tree while the machine was loud, the owner
+playing and the engine's suite running. Item 104 closed by its reading, the draw set the same at
+every pitch. Next item 93, the frame's cost read once the machine is quiet, then 98, the particles'
+light at every angle, then 99, trees whole over carved ground, then 100, felling's last log and the
+crown's pace, then 101, plants giving way to a placed block, then 102, the held light at the player,
+then 103, the flames' top row, then the ECS, items 94, 95 and 96 in order, a piece a commit; then
+42, 43 and 70, then 28 to 36 in order; items 38's second part and 54 when their packages come, and
+the deep caves' sky light under 27 with the engine's next package; the AGENTS.md rows for the Ui and
+build folders wait on the owner's word.
+
+Before it, `23aa4ff` and `c8dbbee` came, item 91 and item 27's part C, pushed at 10:22 on
+2026-10-24, their run green, the play job 21.8 minutes.
 
 Before it, `9cb81ad` came, item 27's part B, pushed at 09:53 on 2026-10-24, its run green, the play
 job 24.3 minutes.
-
-Before it, `d8a05a1` came, item 27's part A, pushed at 09:26 on 2026-10-24 with `3a99729` and
-`ba60ae4`, its run green, the play job 18.3 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -409,7 +407,8 @@ full.
     slider, the play check of the far land and the README's words and costs table go, the taller
     world and the sections by reach of item 26's first two parts staying; the haze ends at the near
     land as before item 26's third part; the README's world pictures taken again through pictures.sh
-    without far land. One commit, after item 91.
+    without far land. One commit, after item 91. Done at `2263618` on 2026-10-24, the pictures taken
+    again, old saves' far folder left unread.
 
 93. **The frame's cost on the development machine with the taller world, read and brought down.**
     The owner played on 2026-10-24 and found the performance bad. Read first at the owner's
@@ -422,7 +421,103 @@ full.
     shadow distance, the deep sections drawn only where a cave opens to the eye's reach, the meshing
     of sections the eye cannot see held back, and whatever else the reading names; the frame held
     under 16.7 ms at 12 on the 4070 as item 90's draw test holds the draws. After item 92, before
-    item 27's part C.
+    item 27's part C. The reading at 11:18 on 2026-10-24, Release, offscreen, the three packs, 12,
+    High, the probes off, 300 frames, the cherry grove and the plains village at hour 16. At 1280 by
+    720 the frame is 14.9 and 15.3 ms, the GPU's scene pass 8.3 to 9.6, the global illumination 2.1
+    to 2.6, the shadows 1.8 to 2.3 and the window depth 1.5, the graph's recording 8.9 to 9.9 ms of
+    CPU with the game's drawing 1.6, 1,683 draws and 1.18 million triangles; at 1920 by 1080 the
+    frame is 19.0 and 19.2, the scene pass 12.2 to 13.3 and the rest unchanged, so the GPU and its
+    scene pass bound the frame. With global illumination off the frame is 11.9 against 18.6 at
+    1080p, 2.9 of it the pass and 5.6 the cascades read per pixel inside the scene pass, which is
+    the engine's. The owner's build is Debug through dotnet run, standing still 13.4 to 13.7 ms, in
+    a sprinting flight over unloaded land 17.7 to 26.1 with the game's update at 4.2 to 7.8 ms of
+    joining and meshing, where Release reads 11.6 to 17.8 with the update at 1.0 to 1.3. The mends
+    by gain for cost, each with its before and after when the GPU is quiet, are the terrain shader's
+    stepped light reading the sun's shadow once per pixel rather than twice, then the shadow
+    distance from 96 toward 64 or 48, about 1 to 1.4 ms of GPU at 48 with the shadow line nearer,
+    then the deep sections drawn only where a cave opens within reach, about 0.6 ms of CPU for a
+    hundred draws fewer and the GPU's share read then, then the meshing of unseen sections held
+    back, the flight's update; and the engine's per-pixel read of the cascades in the scene pass,
+    5.6 ms at 1080p, goes to the engine as an entry in its ASKS.md. The owner runs Release, dotnet
+    run -c Release or a published build, which the record says to them.
+
+97. **The game's entries in the engine's ASKS.md hold no colon inside a running sentence.** The
+    owner wrote at about 10:3x on 2026-10-24 that some documents join sentences with a colon and
+    that STYLE.md forbids it; the entries this session wrote in the engine's ASKS.md hold 24 such
+    lines, found by STYLE.md's awk over the Markdown files outside their code. Each is recast as
+    STYLE.md says, a sentence of its own or the same sentence recast, a label at a line's end left
+    as it is, the Review lines being the reviewing session's; the recast goes into the engine's tree
+    as the entries do and the engine's next batch carries it. Small, after items 92 and 93 and
+    before item 94. Done in the engine's tree at 10:4x on 2026-10-24, 21 lines recast, the 15
+    headings with a comma after the game's name and six sentences split or recast, the engine's next
+    batch carrying it; the file's header lines are the engine's sweep's, item 93 there.
+
+98. **The particles keep their light at every angle of looking.** The owner played at about 10:51 on
+    2026-10-24 and saw the particles showing only the ambient color at some angles of looking. Read
+    first which particles, the game's own bits cut from a block's side, the engine's particle sheets
+    of the blasts' clouds, or the flames, and at which angles between the eye, the sun and the
+    billboard, with the readings of one particle from eight headings around it under the sun; then
+    the mend where the cause lies. A billboard's face follows the eye, so a lighting that takes its
+    normal against the sun goes dark where the sun stands behind the eye's side of it, and the right
+    light for a particle is the sun's reaching its center through the shadow map with no normal
+    term, or the normal's dot taken on both sides, with the probes' light gathered about its center;
+    where the cause is the game's bits shader the game mends it, and where it is the engine's
+    particle sheet the gap goes into the engine's ASKS.md as an entry and the game waits on the
+    package. A test reading the same particle from eight headings within a few levels of each other.
+    One commit, after item 93.
+
+99. **No tree stands cut by a cave or a cliff, and no leaves hang with no trunk.** The owner played
+    at about 10:51 on 2026-10-24 and saw trees cut off where caves and cliffs carved the terrain
+    after the tree was placed, some leaves staying in the air, as the grass over carved caves did
+    before item 82. The source carves before it places its features, so the caves of item 27, the
+    entrances among them, and the cliffs' cuts run before the trees and the plants in the column's
+    pipeline, the neighbors a tree spills into carved first as well; and a tree whose base would
+    stand on air or whose trunk a cut would cross is not placed there. Tests, over a seeded region,
+    that no log has air under the trunk's base, that no leaf stands with no log within the crown's
+    reach, and that the trees' count stays within the source's range for the biome, failing without
+    the mend; a capture of a cliff's edge and a cave's mouth under trees. One commit, after item 98
+    and before item 94.
+
+100. **Felling takes every log of the tree, and the crown decays within a second or two.** The owner
+    felled trees at about {now} on 2026-10-24 and found it working but for one tree whose single log
+    stayed disconnected, its leaves hanging until that log was broken by hand, and found the leaves
+    decaying too slowly. So the felling's flood follows a log to every one of its 26 neighbors, the
+    corners across two axes among them, as the branch logs of the bigger trees stand, and counts the
+    trunk's logs under the cut as the tree's where the cut was made above the base; and the crown's
+    leaves decay each at its own time within one to two seconds of the last log, where item 69
+    spread them over half a second to four. Tests, over the game's tree kinds, that felling leaves
+    no log and no leaf within the crown's reach, and that the last leaf goes within two seconds; the
+    play check as it stands. One commit, small, after item 99.
+
+101. **Grass and the other plants give way to a block placed where they stand.** The owner placed
+    blocks at about {now} on 2026-10-24 and found that aiming at a plant, the plant highlighted,
+    placed the block in front of it rather than in its place, and that a block placed beside another
+    was refused where a plant stood in the cell. The source's plants are replaceable, so a placement
+    whose cell holds one of BlockGroups.GivesWay, short and tall grass, ferns, dead bushes and their
+    kin, replaces the plant, and aiming at such a plant places the block in the plant's own cell
+    rather than on its face; the plant drops nothing. Tests of a block placed on a plant's face
+    landing in the plant's cell and of a block placed beside another into a cell a plant holds; the
+    play check as it stands. One commit, small, after item 100.
+
+102. **A held light shines from the player, not from the hand.** The owner played at about 10:53 on
+    2026-10-24 and found the held light standing at the hand, a third of a block ahead of the eye
+    and to the right, where it clips into a wall the player faces and turns with the camera, so the
+    light about the player swings as the eye turns. Item 74's light moves to the player's own place,
+    the body's middle at the eye's height, so the camera's turn has no part in it and no wall takes
+    it inside; its color, strength and range stay as item 74 set them. A test that the ground's
+    light about the player reads the same at four headings with a torch held, and the play check of
+    the lamp room's roof as it stands. One commit, small, after item 101.
+
+103. **The flames' top row is the picture's own, with no stair-stepped line.** The owner played at
+    about 10:55 on 2026-10-24 and saw at the top of a fire a line one pixel wide with stair-stepped
+    edges, a texture coordinate that is not pixel-exact the likely cause. The flames' pictures are
+    the pack's animated fire, frames stacked in one image, and the source's fire models stretch
+    their faces over a frame; a coordinate reaching the frame's edge reads the next frame's bottom
+    row or the atlas's neighbor through the filter, so the row shows as a line that steps with the
+    face's slant. The mend by the reading, the frame's coordinates inset by half a texel, or the
+    frame sampled nearest and clamped within its own rows, as the terrain's tiles are kept within
+    theirs; a test reading the flame's top row against the frame's own and a capture of a fire at a
+    slant. One commit, small, after item 102.
 
 94. **The things that move become entities with behaviors (Decision 43).** The mobs, the drops, the
     arrows, the primed TNT, the falling blocks, the fires and the blasts, which the game keeps in
@@ -474,7 +569,22 @@ full.
     2026-10-24, the caves and the ores, the departures in the head. Part B at `9cb81ad`, the
     aquifers with lava, the departures in the head; the lush caves part C. Part C at `c8dbbee`, the
     departures in the head; item 27 done, the deep caves' sky light read again when the engine's
-    package comes.
+    package comes. The owner saw at about 10:5x on 2026-10-24 the sun's light leaking onto the tops
+    of blocks in caves; the engine's item 94 reads whether it is the sun's map, whose cascades may
+    leave the ground above a cave's view out of their depth, or the field's top, which item 72's far
+    cascade answers; the game reads it first at a cave of the owner's kind, the tops' light with the
+    shadows off and on and with global illumination off and on, and when the package comes it sets
+    SetSceneField's far cascade so a cave's rays meet the ground above before the sky. The owner
+    added at 10:51 that the sun shows in a cave at a distance, an opening far off the likely way in;
+    past the engine's shadow distance of 150 nothing casts a shadow until item 72's fill cascade, in
+    the package after 5.2.215, so the far parts of a cave are sunlit on 5.2.215 whatever the map's
+    range near the eye, and the game's reading tells the near from the far. The cave reading of
+    10:59 is written under the engine's item 94, the near sun the map's and the far sun and the blue
+    item 72's. The owner added that the global illumination's qualities move where a black cave's
+    ambient fog color begins, near at Low and far at High, and that it shows at a distance even at
+    High; that is the counted cascades' reach and the sky past them, and the game sets the engine's
+    far cascade through SetSceneField when the package comes, so the far rays of a cave meet the
+    ground before the sky at every quality, read again then.
 
 28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
     emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the

@@ -133,11 +133,12 @@ world and opens or begins another of a kind and seed, `voxel.loading` holds its 
 for a capture, `voxel.save` saves at once, and `voxel.blocks` lists the blocks by number and name.
 `voxel.mobs` counts the mobs and lists the nearest, `voxel.spawn` places one where the crosshair
 rests, `voxel.attack` hits the one it rests on as the left button does, `voxel.still` stops them
-where they stand and holds the clouds for a capture, and `voxel.kill` takes them away. `voxel.fires`
-counts the fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival,
-adventure or spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items
-in the inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills
-and reads a furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
+where they stand and holds the clouds and the bits of broken blocks for a capture, `voxel.bits` says
+where the nearest bit flies, and `voxel.kill` takes the mobs away. `voxel.fires` counts the fires
+and lists the nearest with their ages. `voxel.mode` plays in creative, survival, adventure or
+spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the
+inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and
+reads a furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
 `voxel.throw` throws as Q does, and `voxel.drop` lays one of an item on the ground at a place.
 `voxel.packs` says or sets the resource packs on, and `voxel.reload` reads them again.
 `voxel.vitals` says or sets the health and food, `voxel.hurt` harms the player, and `voxel.respawn`
@@ -525,7 +526,8 @@ picture from the face hit each tick, and then drops what it leaves. The progress
 button stays held and the aim is lost for up to a second, as over a jump, so a block above reach
 breaks over a few jumps, and begins again on another block. A block broken in any mode throws 64
 bits, each a quarter of its side's picture, which fall, land and are gone within two seconds, as
-Minecraft's do. Grass, farmland and a path drop their dirt, stone its cobblestone, coal ore its
+Minecraft's do, each lit as a block's top is lit where it flies, so it reads the same whichever way
+the eye looks at it. Grass, farmland and a path drop their dirt, stone its cobblestone, coal ore its
 coal, diamond and emerald ore their gem, lapis ore four to nine lapis and redstone ore four or five
 redstone, wheat its wheat and seeds, the grasses a seed one time in eight, a dead bush up to two
 sticks, leaves their sapling one time in twenty, glass and ice nothing, and any other block itself.
