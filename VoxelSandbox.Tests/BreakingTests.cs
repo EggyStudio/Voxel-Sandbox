@@ -77,4 +77,32 @@ public sealed class BreakingTests : IDisposable
             Assert.True(b.Size <= 0.2f * 0.6f);
         });
     }
+
+    [Fact]
+    public void A_Blocks_Progress_Is_Kept_While_The_Aim_Is_Lost_For_A_Jump_And_Begun_Again_On_Another()
+    {
+        var breaking = new Breaking();
+        Assert.False(breaking.Step((2, 6, 2), 0.5f, 2));
+        Assert.Equal(0.25f, breaking.Progress, 3);
+        // Out of reach for most of a jump, the button held, the progress stays.
+        for (int i = 0; i < 32; i++) Assert.False(breaking.Step(null, 1 / 60f, 2));
+        Assert.Equal((2, 6, 2), breaking.At);
+        Assert.False(breaking.Step((2, 6, 2), 0.5f, 2));
+        Assert.Equal(0.5f, breaking.Progress, 3);
+        // Another block begins again, and an aim lost longer than a jump lets the progress go.
+        breaking.Step((3, 6, 2), 0.5f, 2);
+        Assert.Equal(0.25f, breaking.Progress, 3);
+        for (int i = 0; i < 61; i++) breaking.Step(null, 1 / 60f, 2);
+        Assert.Null(breaking.At);
+
+        // A block of a second, in reach for 16 frames at the top of each jump, breaks on the fourth.
+        var broke = 0;
+        for (int jump = 1; jump <= 4; jump++)
+        {
+            for (int i = 0; i < 16; i++)
+                if (breaking.Step((2, 6, 2), 1 / 60f, 1)) broke = jump;
+            for (int i = 0; i < 24; i++) breaking.Step(null, 1 / 60f, 1);
+        }
+        Assert.Equal(4, broke);
+    }
 }

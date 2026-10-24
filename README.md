@@ -460,7 +460,9 @@ block uses nothing up, and Space pressed twice flies. In survival there is no fl
 takes its hardness times one and a half seconds to break with the button held, as by hand in
 Minecraft, cracking as it goes through Minecraft's ten stages, a pack's destroy stages or the game's
 own cracks branching out from its middle where no pack has them, and throwing a bit of its side's
-picture from the face hit each tick, and then drops what it leaves. A block broken in any mode
+picture from the face hit each tick, and then drops what it leaves. The progress is kept while the
+button stays held and the aim is lost for up to a second, as over a jump, so a block above reach
+breaks over a few jumps, and begins again on another block. A block broken in any mode
 throws 64 bits, each a quarter of its side's picture, which fall, land and are gone within two
 seconds, as Minecraft's do. Grass, farmland and a path drop their dirt, stone its cobblestone, coal
 ore its coal, diamond and emerald ore their gem, lapis ore four to nine lapis and redstone ore four

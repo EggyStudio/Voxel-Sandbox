@@ -5,26 +5,17 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `073d84b`, item 67, the inventory screens, and nothing else, carrying the review's
-files: a screen open gates the player's and the hotbar's keys so nothing moves behind a window while
-Q and the numbers act over a slot; a drag over several slots draws each passed slot's share lit and
-the remainder under the pointer, SlotMoves.Shares the pure part with its test; a dropped plain block
-a cube of its side, top and bottom tiles tinted as in the plains, a flat icon a double-sided masked
-square, shaped blocks small colored boxes still; departures, the held stack's lag the owner saw does
-not reproduce through e3d since input.* skips SDL, a right press opening the table and freeing the
-cursor the likely cause on a real mouse, unconfirmed, so the shares test stands in for the frame
-test, and voxel.drop added; the play check holding W ten frames on a screen for feet unchanged and a
-dropped furnace's top read as the test pack's blue, about 25 lavapipe frames more; 238 tests, the
-strict build clean, play.sh clean on the GPU. Read at 02:48 on 2026-10-24. Pushed at 02:49 with
-`dd64fd0` and `2b265f3` after the build run of `d7c4892` ended green, its play job 29.7 minutes; the
-run watched. Next 68, 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40
-degrees, then 26 and the items in order; items 38's second part and 54 when their packages come; the
+Reviewed up to `8bc0796`, item 68, the breaking block's cracks and particles, and nothing else,
+carrying the review's file, read at 03:01 on 2026-10-24 from the log before the coder's report,
+whose departures and counts follow here. Not pushed, the build run of `073d84b` running; pushed when
+it ends. Next 79, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees,
+then 26 and the items in order; items 38's second part and 54 when their packages come; the
 AGENTS.md rows for the Ui and build folders wait on the owner's word.
 
-Before it, `dd64fd0` came, item 83, read at 02:37 on 2026-10-24, pushed at 02:49 with the head.
+Before it, `073d84b` came, item 67, pushed at 02:49 on 2026-10-24 with `dd64fd0` and `2b265f3`, its
+run in flight.
 
-Before it, `2b265f3` came, item 58's curve, read at 02:21 on 2026-10-24, pushed at 02:49 with the
-head.
+Before it, `dd64fd0` came, item 83, read at 02:37 on 2026-10-24, pushed at 02:49 with the head.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is

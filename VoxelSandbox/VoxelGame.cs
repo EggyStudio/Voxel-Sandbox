@@ -198,7 +198,7 @@ public sealed class VoxelGame : IDisposable
             if (value == GameMode.Spectator) Player.Flying = true;
             else if (value != GameMode.Creative) Player.Flying = false;
             if (!value.Touches() && InventoryOpen) CloseInventory();
-            (BreakingAt, BreakProgress) = (null, 0);
+            _breaking.Stop();
         }
     }
 
@@ -214,10 +214,12 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The menu Escape opens and its options, which hold the world still while open.</summary>
     public Menus Menus { get; } = new();
 
-    /// <summary>The block being broken in survival, and how far from 0 to 1, as of this frame.</summary>
-    public (int X, int Y, int Z)? BreakingAt { get; private set; }
+    private readonly Breaking _breaking = new();
 
-    public float BreakProgress { get; private set; }
+    /// <summary>The block being broken in survival, and how far from 0 to 1, as of this frame.</summary>
+    public (int X, int Y, int Z)? BreakingAt => _breaking.At;
+
+    public float BreakProgress => _breaking.Progress;
 
     public SettingsWindow Settings { get; } = new();
 
@@ -458,7 +460,11 @@ public sealed class VoxelGame : IDisposable
         Answer(seconds);
         Aim();
         if (_captured && !_swallowClick && alive && Mode.Touches()) Interact(seconds);
-        else (BreakingAt, BreakProgress, Eating) = (null, 0, 0);
+        else
+        {
+            _breaking.Stop();
+            Eating = 0;
+        }
         if (_captured && keys && Mode.Touches() && IsKeyPressed(Key.Q)) Throw(IsKeyDown(Key.LeftControl));
         // What Q dropped from a slot of the window E opens is thrown ahead, as from the hotbar.
         foreach (var stack in InventoryWindow.Dropped)
@@ -740,28 +746,31 @@ public sealed class VoxelGame : IDisposable
     }
 
     // In survival a click hits a mob, and holding the button on a block breaks it over the time its
-    // hardness takes, from the start again where the crosshair leaves it, and waits a quarter
-    // second before the next, as Minecraft's does.
+    // hardness takes, from the start again on another block, the progress kept while the aim is lost
+    // for a moment, as over a jump toward a block above reach, and waits a quarter second before the
+    // next, as Minecraft's does.
     private void Dig(float seconds)
     {
         if (!IsMouseButtonDown(MouseButton.Left))
         {
-            (BreakingAt, BreakProgress) = (null, 0);
+            _breaking.Stop();
             return;
         }
         if (IsMouseButtonPressed(MouseButton.Left) && Attack() || TargetMob is not null || _breakWait > 0) return;
-        if (Target is not { } hit || !Blocks.Get(World.GetBlock(hit.X, hit.Y, hit.Z)).Breakable)
+        if (Target is { } solid && !Blocks.Get(World.GetBlock(solid.X, solid.Y, solid.Z)).Breakable)
         {
-            (BreakingAt, BreakProgress) = (null, 0);
+            _breaking.Stop();
             return;
         }
-        if (BreakingAt != (hit.X, hit.Y, hit.Z)) (BreakingAt, BreakProgress) = ((hit.X, hit.Y, hit.Z), 0);
-        var time = Loot.BreakSeconds(World.GetBlock(hit.X, hit.Y, hit.Z), Hotbar.Current?.Item);
-        BreakProgress += time <= 0 ? 1 : seconds / time;
-        Bits.Hit(World.GetBlock(hit.X, hit.Y, hit.Z), hit, seconds);
-        if (BreakProgress < 1) return;
+        var time = 0f;
+        if (Target is { } hit)
+        {
+            time = Loot.BreakSeconds(World.GetBlock(hit.X, hit.Y, hit.Z), Hotbar.Current?.Item);
+            Bits.Hit(World.GetBlock(hit.X, hit.Y, hit.Z), hit, seconds);
+        }
+        if (!_breaking.Step(Target is { } at ? (at.X, at.Y, at.Z) : null, seconds, time)) return;
         Break();
-        (BreakingAt, BreakProgress, _breakWait) = (null, 0, Repeat);
+        _breakWait = Repeat;
     }
 
     /// <summary>
