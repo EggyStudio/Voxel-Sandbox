@@ -5,57 +5,31 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `5bfafef`, item 94's mobs, the second commit, read at 21:12 on 2026-10-24, carrying
-the review's files. MobLife is a struct component holding Health, Hurt and Dying with Unhurt,
-DeathTime, Gone, Hit and Harm, Age on update fading the red and counting the time dying, Vanish
-reading Gone through a query of Mob and MobLife; a Mob spawns its own entity of Mob, Body and
-MobLife in the world it is given or one of its own for the single-mob tests, its Health, Hurt, Dying
-and Gone reading the component through GetRef, Hit and Harm writing it, Hit then knocking the mob
-back and angering or panicking it as before, the creeper's blast setting the health to 0; the tests'
-frame loops call Age beside the update as the stages do. Live offscreen a pig hit once read 9 and
-still red at a second hit, a pig harmed to death left its drop, a zombie took the player to 3 and a
-creeper's blast to 4; the play readings unchanged. 294 tests, play.sh 305 s on the GPU. The third
-commit waits for the package with the wide queries, item 95 taken meanwhile. The four pushed at
-21:19 on 2026-10-24 after the run of `e0d9788` went green; the run watched. After `75be580`, item
-94's mobs, the first of three commits, read at 21:00 on 2026-10-24, carrying the review's files.
-Each mob is an entity with Body and the Mob class as a component, its mind unchanged; MobMind holds
-three static systems, Think on update per mob within the loaded columns, Crowd after it pushing mobs
-apart and off the player, and Vanish despawning the gone, all reading GameStep, which gained the
-eye, the hour, the hunted and the mobs' stillness, stepping only when seconds pass and the mobs are
-not still; MobStrike, MobShot and MobBlast go out as MobEvent and a death as MobDied, drained where
-the game read Mobs.Events and Mobs.Died and cleared on a world switch, the old world's mob entities
-despawned before the new facade; the facade keeps spawn, the far hostiles' despawning, Cast,
-Overlaps, Columns and the joined and leaving over queries. Live offscreen 209 mobs wandered, a
-zombie took the player from 20 to 6 at night, a creeper's blast to 4 with the floor hollowed, and a
-pig and a cow harmed to death were gone a second later leaving their drops; the play readings hold,
-the creeper's front 158.4 to 158.2 and the zombie's face 148.1 to 147.0. 294 tests, play.sh 324 s on
-the GPU. After `9a70f28`, item 94's fires and blasts piece, read at 20:47 on 2026-10-24, carrying
-the review's files. Each fire is an entity with one Fire component holding its cell, age and wait,
-Spread on update counting the waits down and burning the fires due by the source's numbers, a burned
-TNT going out as a TntCaught event the game drains into Tnt.Light, Light and Take still spawning
-from the game; the world names every fire cell it sets, the spread's own among them, so Take skips a
-cell with its fire by walking the fires into a set each frame the world names one, the ECS having no
-lookup by cell, asked of the engine as its item 107; the first build changed the order of random
-draws so seed 1 burned its plank away, and Take draws a delay for every cell named as the old TryAdd
-did, with a comment. The flash ball is a Blast entity holding its place, power and age, Fade on
-update despawning it at half a second and the game drawing them by query, the cloud emitters and the
-flash lights staying in BlastEffects' pool as engine handles outside the systems, which stands. Live
-offscreen three fires on planks grew to 41 over 40 s and a TNT's flash showed on one entity then
-none. 294 tests, play.sh 303 s on the GPU. The mobs come last, their plan before the code. After
-`299aa33`, item 94's events commit, read at 20:33 on 2026-10-24, carrying the review's files.
-ArrowStrike, TntBlast and FallingBroke are record structs the three behaviors send with
-World.SendEvent, the game taking them with DrainEvents where it read the lists and clearing the
-three types on a world switch; GameStep.Hits, PrimedTnt.Exploded, FallingBlocks.Broken and the
-facades as resources are gone, the facades' Update for tests returning what it set off or broke.
-Live offscreen a TNT left air under it, sand over a torch broke into a stack with the torch
-standing, and a skeleton's arrows took the health from 20 to 10 in 300 frames. 294 tests, play.sh
-295 s on the GPU.
+Reviewed up to `e77030b`, item 96's first commit, the player and the frame's order, read at 21:43 on
+2026-10-24, carrying the review's files. The player is an entity with FirstPersonController, Body,
+Vitals and HandRenderer, VoxelGame, its step and the Inventory are resources and the drops' PickUp
+reads the Inventory, the program's loop calls Draw alone; GameFrame.Begin on First covers the world
+switch, the loading stand, the seconds, the save timer, the toggles, the cursor and the hotbar and
+sets the step's Playing, Look and Move, PlayerControl.Steer on PreUpdate queries the controller and
+the hand, moves the player from the engine's input, swings the hand by the distance walked and sets
+the step's eye, GameFrame.Play on Update runs the rest of the old update in order, and Draw chooses
+the loading screen after BeginDrawing since First may open a world, the engine answering commands at
+the top of First. The play readings hold, the walk landing at 16.50, 5.00 at minus 11.80 and minus
+13.94 and the creeper, zombie, sheep and light readings identical, the streaming counts, the swim's
+end and the frames that follow the clock varying as between runs; the grove at 1920 by 1080 at High
+reads the frame 23.5 and 19.8 ms against 21.3 and 20.2, Begin, Steer and Play 0.017, 0.031 and 0.110
+ms where the old update was 0.12 to 0.14. Live, W for 60 frames went 6.82 blocks against the base's
+6.15, read after as the frame time's spread with the speed unchanged under a fixed frame time, a
+mouse drag turned the view 14 degrees, a world switch loaded and Escape opened Pause. 294 tests,
+play.sh 300 s on the GPU, no gap found. Pushed at 21:47 on 2026-10-24 after the run of `5bfafef`
+went green; the run watched.
+
+Before it, `5bfafef` came, item 94's events, fires, blasts and the mobs' first two commits with
+`75be580`, `9a70f28` and `299aa33`, pushed at 21:19 on 2026-10-24, its run green, the play job 25.6
+minutes.
 
 Before it, `e0d9788` came, items 127 and 94's arrows, TNT and falling blocks with `c0dd6e4` and
 `d6532d1`, pushed at 20:31 on 2026-10-24, its run green, the play job 44.8 minutes.
-
-Before it, `80d149e` came, items 124 and 126 with `5f7bad8` and `a82e342`, pushed at 20:03 on
-2026-10-24, its run green, the play job 25.0 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -546,7 +520,11 @@ full.
     OnExit None stopping the breaking, the loading screen's draw keyed off the state; the order
     within Update between Play and the entities' systems as loose as it is, their events drained the
     frame after. Risks, the commands' timing against Begin within First and play's input checks if
-    input lands a frame earlier, read against today's readings. Taken as planned.
+    input lands a frame earlier, read against today's readings. Taken as planned. The first commit
+    at `e77030b`, the player an entity and the update in the stages, the readings held; the walk's
+    6.82 blocks in 60 frames against 6.15 read at 21:49 as the frame time's spread, both builds
+    ending at the same place under a fixed frame time of a sixtieth, 4.30 blocks each, W seen for 60
+    frames in both and one frame earlier now, nothing to mend.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where

@@ -55,8 +55,26 @@ public sealed class Menus
     // The sky's color the color's screen sets.
     private int _color;
 
-    /// <summary>The menu open, or none.</summary>
-    public Menu Open { get; set; }
+    private Menu _open;
+    private bool _stated;
+
+    /// <summary>The menu open, or none, the engine's state of it following, so the behaviors it gates follow it.</summary>
+    public Menu Open
+    {
+        get => _open;
+        set
+        {
+            _open = value;
+            if (_stated) SetState(value);
+        }
+    }
+
+    /// <summary>Makes the menu open a state of the engine's, which it follows from then on.</summary>
+    public void MakeState()
+    {
+        E3D.AddState(_open);
+        _stated = true;
+    }
 
     /// <summary>The options' screens of the game's settings, made the first time they are asked for.</summary>
     public OptionScreens Screens(VoxelGame game) => _screens ??= new OptionScreens(game);

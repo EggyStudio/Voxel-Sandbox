@@ -31,6 +31,19 @@ public partial struct MobMind
         foreach (var e in events) ctx.World.SendEvent(e);
     }
 
+    /// <summary>The hostile mobs spawned in the dark about the player and taken away far from it, while the player lives in a world that stands.</summary>
+    [OnUpdate]
+    [InState(Living.Yes)]
+    [RunIf(nameof(Playing))]
+    public static void Spawn(BehaviorContext ctx)
+    {
+        if (ctx.World.TryGetResource<VoxelGame>(out var game) && ctx.World.TryGetResource<GameStep>(out var step))
+            game.Mobs.Spawn(step.World, step.Player.Position, step.Hour, step.Seconds);
+    }
+
+    /// <summary>Whether the world stands to be played.</summary>
+    public static bool Playing(World world) => world.TryGetResource<State<WorldState>>(out var state) && state.Current == WorldState.Playing;
+
     [OnPostUpdate]
     public static void Crowd(BehaviorContext ctx)
     {

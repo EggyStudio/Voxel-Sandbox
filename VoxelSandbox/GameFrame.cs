@@ -2,6 +2,19 @@ using Engine;
 
 namespace VoxelSandbox;
 
+/// <summary>The world's state, loading behind its screen or standing to be played, an engine state the game's frame is gated on.</summary>
+public enum WorldState
+{
+    Loading,
+    Playing,
+}
+
+/// <summary>Whether the player lives and dies, as in survival and adventure, a state the engine computes from the game mode, present only while the player does.</summary>
+public enum Living
+{
+    Yes,
+}
+
 /// <summary>
 /// The game's frame in the engine's stages, begun in the first after the frame's commands and played
 /// in the update once the player has moved, so what the game does each frame runs in the order the
@@ -22,10 +35,44 @@ public partial struct GameFrame
     }
 
     [OnUpdate]
+    [InState(WorldState.Playing)]
     public static void Play(BehaviorContext ctx)
     {
         if (ctx.World.TryGetResource<VoxelGame>(out var game)) game.Play();
     }
+
+    /// <summary>The player's health, food and breath taken while the player lives in a world that stands, and the HUD faded by them.</summary>
+    [OnUpdate]
+    [InState(Living.Yes)]
+    [RunIf(nameof(Playing))]
+    public static void Live(BehaviorContext ctx)
+    {
+        if (ctx.World.TryGetResource<VoxelGame>(out var game)) game.TakeVitals();
+    }
+
+    /// <summary>The HUD shown whole once the player no longer lives, as in creative.</summary>
+    [OnExit(Living.Yes)]
+    public static void ShowHud(BehaviorContext ctx)
+    {
+        if (ctx.World.TryGetResource<VoxelGame>(out var game)) game.Fade.Reset();
+    }
+
+    /// <summary>The cursor freed as a menu opens over the game.</summary>
+    [OnExit(Menu.None)]
+    public static void FreeCursor(BehaviorContext ctx)
+    {
+        if (ctx.World.TryGetResource<VoxelGame>(out var game)) game.Capture(false);
+    }
+
+    /// <summary>The cursor taken back as the last menu shuts, unless a window of the game's or the settings are open.</summary>
+    [OnEnter(Menu.None)]
+    public static void TakeCursor(BehaviorContext ctx)
+    {
+        if (ctx.World.TryGetResource<VoxelGame>(out var game)) game.Capture(!game.Settings.Open && !game.InventoryOpen);
+    }
+
+    /// <summary>Whether the world stands to be played.</summary>
+    public static bool Playing(World world) => world.TryGetResource<State<WorldState>>(out var state) && state.Current == WorldState.Playing;
 }
 
 /// <summary>
@@ -36,9 +83,10 @@ public partial struct GameFrame
 public partial struct PlayerControl
 {
     [OnPreUpdate]
+    [InState(WorldState.Playing)]
     public static void Steer(BehaviorContext ctx)
     {
-        if (!ctx.World.TryGetResource<GameStep>(out var step) || !step.Playing) return;
+        if (!ctx.World.TryGetResource<GameStep>(out var step)) return;
         foreach (var (_, player, hand) in ctx.Ecs.Query<FirstPersonController, HandRenderer>())
         {
             var before = player.Body.Position;

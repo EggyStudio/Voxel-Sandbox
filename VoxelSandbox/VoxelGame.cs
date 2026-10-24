@@ -65,6 +65,12 @@ public sealed class VoxelGame : IDisposable
         ecs.Add(player, Player.Body);
         ecs.Add(player, Vitals);
         ecs.Add(player, Hand);
+        // The world's loading, the game mode, whether the player lives by it and the menu open are
+        // the engine's states, which the game's behaviors are gated on.
+        AddState(WorldState.Loading);
+        AddState(GameMode.Creative);
+        AddComputedState<Living, GameMode>(mode => mode.Lives() ? Living.Yes : null);
+        Menus.MakeState();
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer();
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
@@ -243,6 +249,7 @@ public sealed class VoxelGame : IDisposable
         {
             if (value != _mode) PreviousMode = _mode;
             _mode = value;
+            SetState(value);
             Player.MayFly = value == GameMode.Creative;
             Player.Spectating = value == GameMode.Spectator;
             if (value == GameMode.Spectator) Player.Flying = true;
@@ -401,7 +408,17 @@ public sealed class VoxelGame : IDisposable
     /// Whether the world opened is still loading behind its screen, until the player's column and its
     /// neighbors are generated and meshed, the player held and the world's time still meanwhile.
     /// </summary>
-    public bool Loading { get; private set; }
+    public bool Loading
+    {
+        get => _loading;
+        private set
+        {
+            _loading = value;
+            SetState(value ? WorldState.Loading : WorldState.Playing);
+        }
+    }
+
+    private bool _loading;
 
     /// <summary>Keeps the loading screen up over a world that has loaded, so a check reads its pixels, until it is let go.</summary>
     public bool HoldLoading { get; set; }
@@ -475,7 +492,7 @@ public sealed class VoxelGame : IDisposable
     public void Begin()
     {
         // The behaviors step nothing in a frame the game does not step, as while the world loads.
-        (Step.Seconds, Step.Playing) = (0, false);
+        (Step.Seconds, _seconds) = (0, 0);
         TakeDefaults();
         if (NextWorld is { } next)
         {
@@ -518,7 +535,7 @@ public sealed class VoxelGame : IDisposable
         Hotbar.Follow(seconds);
         var alive = _alive = !Mode.Lives() || !Vitals.Dead;
         Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
-        (Step.World, Step.Player, Step.Seconds, Step.PickUp, Step.Playing) = (World, Player.Body, seconds, alive && Mode.Touches(), true);
+        (Step.World, Step.Player, Step.Seconds, Step.PickUp) = (World, Player.Body, seconds, alive && Mode.Touches());
         (Step.Look, Step.Move) = (_captured && alive, keys && !screen && alive);
         (Step.Eye, Step.Hour, Step.Hunted, Step.MobsStill) = (Player.Eye, Sky.Hour, Mode.Lives() && !Vitals.Dead, Mobs.Still);
     }
@@ -531,15 +548,7 @@ public sealed class VoxelGame : IDisposable
     /// </summary>
     public void Play()
     {
-        if (!Step.Playing) return;
         var (seconds, keys, alive) = (_seconds, _keys, _alive);
-        if (Mode.Lives())
-        {
-            Live(seconds);
-            Fade.Update(Vitals, seconds);
-        }
-        else Fade.Reset();
-        if (Mode.Lives()) Mobs.Spawn(World, Player.Body.Position, Sky.Hour, seconds);
         Answer(seconds);
         Aim();
         if (_captured && !_swallowClick && alive && Mode.Touches()) Interact(seconds);
@@ -599,6 +608,13 @@ public sealed class VoxelGame : IDisposable
         Clouds.Update(seconds);
         Streamer.Update(Player.Body.Position, RenderDistance);
         Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
+    }
+
+    /// <summary>Takes the player's vitals for the frame and fades the HUD by them, as the game's behavior does while the player lives.</summary>
+    public void TakeVitals()
+    {
+        Live(_seconds);
+        Fade.Update(Vitals, _seconds);
     }
 
     // The vitals' frame in survival, reckoned afresh after a teleport, and on death the inventory
@@ -752,16 +768,9 @@ public sealed class VoxelGame : IDisposable
                 CloseInventory();
                 Capture(!Settings.Open);
             }
-            else if (Menus.Open != Menu.None)
-            {
-                Menus.Back();
-                Capture(Menus.Open == Menu.None && !Settings.Open);
-            }
-            else
-            {
-                Menus.Open = Menu.Pause;
-                Capture(false);
-            }
+            // The cursor follows the menu's state, freed as one opens and taken back as the last shuts.
+            else if (Menus.Open != Menu.None) Menus.Back();
+            else Menus.Open = Menu.Pause;
         }
         if (IsKeyPressed(Key.E) && Mode.Touches() && Menus.Open == Menu.None)
         {
@@ -803,7 +812,7 @@ public sealed class VoxelGame : IDisposable
         }
     }
 
-    private void Capture(bool captured)
+    internal void Capture(bool captured)
     {
         _captured = captured;
         if (captured) DisableCursor();
@@ -1157,10 +1166,7 @@ public sealed class VoxelGame : IDisposable
             CloseInventory();
             Capture(!Settings.Open);
         }
-        var menu = Menus.Open;
         Menus.Draw(this);
-        // A button that shut the menu gives the cursor back to the game.
-        if (menu != Menu.None && Menus.Open == Menu.None) Capture(!Settings.Open);
         // A screen of the menu left, by a button or by Escape, writes the settings as they stand.
         if (Menus.Open != _menuSeen)
         {
@@ -1267,9 +1273,6 @@ public sealed class GameStep
     public float Seconds { get; set; }
 
     public bool PickUp { get; set; }
-
-    /// <summary>Whether the game steps this frame, as it does once its world stands, if with no seconds while a menu holds it.</summary>
-    public bool Playing { get; set; }
 
     /// <summary>Whether the mouse turns the player's view, as while the cursor is held, and the keys move the player, as while no screen has them.</summary>
     public bool Look { get; set; }

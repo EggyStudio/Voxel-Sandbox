@@ -109,9 +109,12 @@ with its history.
 
 The player is an entity of the engine's ECS, its controller, its body, its vitals and its hand its
 components, and the controller a behavior that turns and moves it from the frame's input. The game's
-frame runs in the engine's stages, begun in the first after the frame's commands, the player moved in
-the one before the update and the rest of the game played in the update, so the player is drawn in
-the frame it moved in.
+frame runs in the engine's stages, begun in the first after the frame's commands, the player moved
+in the one before the update and the rest of the game played in the update, so the player is drawn
+in the frame it moved in. The world's loading, the game mode, whether the player lives by it and the
+menu open are the engine's states, and the behaviors run by them, the frame played while the world
+stands, the vitals and the hostile mobs' spawning while the player lives, and the cursor freed as a
+menu opens and taken back as the last shuts.
 
 ## Commands
 
