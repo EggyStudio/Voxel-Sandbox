@@ -3,16 +3,17 @@
 # workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it builds a
 # closed room of stone with a glowstone block in it, puts the player in the room facing the lamp at
 # night, walks toward it and captures the frame, then captures the night sky from the room's roof,
-# the full moon and the stars over the flat land from two places and headings, the sun and its glow
-# at noon and at dusk, a pillar's shadow under the morning sun, and the window of every item's icon,
-# then swims the player out of a pool onto its bank and reads a white sheep's wool in the shade, and
-# over seed 1's overworld stands the player over each of the eight biomes the climate gained and
-# captures it and reads the drawn land's edge against the sky. A second run that keeps its files, in
-# a data folder of its own, then takes a screenshot with F2. It fails where the game does not open
-# or answer, the player did not move or did not climb out onto the bank, the wool in shade is not a
-# gray, a biome is not found or not where it was found, the land's edge steps to the sky beyond it,
-# the layer reported an error, or F2 left no screenshot of the window's size, and says why in an
-# error annotation, so the run's page names it.
+# the full moon and the stars over the flat land from two places and headings, reads a cloud's
+# underside overhead at noon, captures the sun and its glow at noon and at dusk, a pillar's shadow
+# under the morning sun, and the window of every item's icon, then swims the player out of a pool
+# onto its bank and reads a white sheep's wool in the shade, and over seed 1's overworld stands the
+# player over each of the eight biomes the climate gained and captures it and reads the drawn land's
+# edge against the sky. A second run that keeps its files, in a data folder of its own, then takes a
+# screenshot with F2. It fails where the game does not open or answer, the player did not move or
+# did not climb out onto the bank, the wool in shade is not a gray, a cloud's underside overhead at
+# noon is dark, a biome is not found or not where it was found, the land's edge steps to the sky
+# beyond it, the layer reported an error, or F2 left no screenshot of the window's size, and says
+# why in an error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -214,6 +215,22 @@ read -r darker lighter <<< "$(printf '%s\n' "$spots" | sed -nE 's/^([0-9]+) dark
 [ -n "$lighter" ] || fail "voxel.spots read nothing of the dawn sky, saying $spots"
 [ "$darker" -le 20 ] && [ "$lighter" -ge 100 ] || fail "the stars at dawn darken the sky or do not show, $spots"
 cmd voxel.clouds on
+
+check "a cloud's underside"
+# A cloud's underside at noon takes the sky's light, read from 20 blocks under it, nearer than the
+# haze begins, where the clouds placed at a drift of none hold one over the eye. Its red stands at
+# least 100 in sRGB levels, where it read 146, the sky beside it 45 and an underside drawn black 9.
+cmd voxel.fly on
+cmd voxel.tp 0.5 100 0.5
+cmd voxel.time 12
+cmd voxel.look 0 90
+cmd voxel.clouds on 0
+cmd frames.wait 10
+under=$(ask voxel.color 590 310 100 100)
+echo "a cloud's underside overhead, $under"
+red=$(printf '%s\n' "$under" | sed -nE 's/^red ([0-9]+).*/\1/p')
+[ -n "$red" ] && [ "$red" -ge 100 ] || fail "a cloud's underside overhead at noon is dark, $under"
+cmd voxel.tp 0.5 10 0.5
 
 check "the sun's glow"
 # The sun high in the south at noon and low in the west at dusk, its glow's rings stepping along
@@ -722,4 +739,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, drew with no validation error and wrote $name on F2"

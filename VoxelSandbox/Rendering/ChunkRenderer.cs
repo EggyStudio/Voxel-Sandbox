@@ -188,7 +188,7 @@ public sealed class ChunkRenderer : IDisposable
             var table = new Vector4[TerrainAtlas.MostAnimations];
             for (int i = 0; i < value.Animations.Count; i++) table[i] = new Vector4(value.Animations[i].First, value.Animations[i].Count, value.Animations[i].Ticks, 0);
             SetShaderValueV<Vector4>(_shader, _animations, table);
-            SetShaderValue(_shader, _flames, new Vector4(value.Tile(Surfaces.Fire) is > 0 and var tile ? tile : -1, FlamesShown, 0, 0));
+            SetShaderValue(_shader, _flames, new Vector4(value.Tile(Surfaces.Fire) is > 0 and var tile ? tile + 1 : 0, FlamesShown, 0, 0));
             foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
                 if (texture.IsValid) UnloadTexture(texture);
             _lampTextures = [.. Surfaces.All.Select(s => !s.Emits ? default

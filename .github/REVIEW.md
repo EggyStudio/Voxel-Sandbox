@@ -5,24 +5,25 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `ee557b3`, item 72, fire, and nothing else, carrying the review's file and the
-devlog: the source's fire tick, its aging, burn-out, spread odds and the blocks that burn, flint and
-steel lighting a cell before any face where fire stands, the flames the source's floor, side and up
-models chosen by neighbors with the pack's animated fire, a hand putting a fire out and a block
-placed replacing it; departures, TNT's blast lighting a third of the cells it empties by the
-source's fiery-explosion rule where the source's own TNT lights none, to go, the light a lamp box in
-a clear masked material the field reads and every pass cuts so the flames step without restamping,
-the flames drawn at twice their color as the source draws fire at full light, and one fire texture,
-no humid burnout, rain or fire damage; voxel.fires added, three tests, two captures in the devlog;
-260 tests, the strict build clean, play.sh clean on the GPU twice and unchanged. Read at 05:28 on
-2026-10-24. Not pushed, the build run of `cba35ca` running; pushed when it ends. Next TNT's fires
-out in a small commit, then item 46's pictures at 40 degrees with the village views moved, 78, 80,
-81, 69, 75, 74, 72 and 73, then the pictures taken again at 40 degrees, then 26 and the items in
-order; items 38's second part and 54 when their packages come; the AGENTS.md rows for the Ui and
-build folders wait on the owner's word.
+Reviewed up to `edbc3b2`, the fiery-blast rule out so a blast lights none as the source's TNT and
+creepers light none, carrying the review's file and the devlog with its two fire pictures, after
+`ee557b3`, item 72, fire, and nothing else. Fire: the source's fire tick, its aging, burn-out,
+spread odds and the blocks that burn, flint and steel lighting a cell before any face where fire
+stands, the flames the source's floor, side and up models chosen by neighbors with the pack's
+animated fire, a hand putting a fire out and a block placed replacing it; departures, TNT's blast
+lighting a third of the cells it empties by the source's fiery-explosion rule where the source's own
+TNT lights none, to go, the light a lamp box in a clear masked material the field reads and every
+pass cuts so the flames step without restamping, the flames drawn at twice their color as the source
+draws fire at full light, and one fire texture, no humid burnout, rain or fire damage; voxel.fires
+added, three tests, two captures in the devlog; 260 tests, the strict build clean, play.sh clean on
+the GPU twice and unchanged. Read at 05:28 and 05:33 on 2026-10-24. Pushed at 05:47 after the build
+run of `cba35ca` ended green, its play job 24.5 minutes; the run watched. Next item 46's pictures at
+40 degrees with the village views moved, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken
+again at 40 degrees, then 26 and the items in order; items 38's second part and 54 when their
+packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
 
-Before it, `cba35ca` and `1eeeeff` came, item 73, pushed at 05:21 on 2026-10-24, their run in
-flight.
+Before it, `cba35ca` and `1eeeeff` came, item 73, pushed at 05:21 on 2026-10-24, their run green,
+the play job 24.5 minutes.
 
 Before it, `bfc4d39` came, the devlog and AGENTS.md's rows, with `2aea2bf`, `adefc9d` and `1dce7b7`,
 items 74 and 75, pushed at 04:43 on 2026-10-24, their run green, the play job 33.9 minutes.
@@ -123,6 +124,17 @@ full.
     576, minus 432 the nearest, and the snowy one to another seed or a village found with
     voxel.find, none standing within 1,600 blocks on seed 1; the plains-village.webp of `b032e76`
     shows a village that no longer stands there until then.
+
+89. **The clouds are not drawn black by the fire's uniform.** Found at item 46's retake on
+    2026-10-24: in every daytime view the clouds' undersides drew a dark navy near black, where the
+    pictures of `7039d5a` from 2026-10-21 showed them light gray. The cause, read by the coder:
+    `ee557b3` gave the terrain shader a `flames` uniform naming the fire's tile, whose faces draw at
+    twice their color, and the clouds' own copy of the shader never sets it, so it reads 0, the
+    clouds' tile, and every cloud face drew at nought times its color, black, hazed to navy, tops
+    and undersides alike. The mend: the uniform holds the tile plus one, 0 naming none, so a copy
+    that sets nothing matches no face, and the clouds keep their own shading; a test reading a
+    cloud's underside at a known daytime view against a bound, failing without the mend. One commit,
+    small, before item 46's final run so the README's pictures show lit clouds.
 
 54. **The game takes the engine's F1 and F3, its HUD in the hidden scope and its developer's parts
     as overlay sections (Decision 26).** The owner asked shortly before 07:05 on 2026-10-21 for F1
@@ -230,8 +242,7 @@ full.
     neighbor at the source's chance within a small radius, so a house burns and a stone floor does
     not; a test of a fire placed on planks spreading and one on stone dying, and a night capture of
     a fire lighting a room. One commit, after item 73. Done at `ee557b3` on 2026-10-24, the
-    departures in the head; TNT's blast lights nothing as the source's does not, in a small commit
-    after.
+    departures in the head; TNT's blast lights nothing as the source's does not, at `edbc3b2`.
 
 73. **TNT and the creeper's blast.** The owner wrote on 2026-10-23 (Decision 34) asking for TNT and
     the creeper's explosion. The mend: a TNT block primed by a hit with flint and steel or by a
