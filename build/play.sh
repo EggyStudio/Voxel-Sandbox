@@ -685,6 +685,29 @@ echo "aimed at the grass, ${aimed%%,*} in its cell and ${before%%,*} before it; 
 [[ "$aimed" == stone* && "$before" == air* ]] || fail "a block placed aimed at a plant did not take the plant's cell, $aimed and before it $before"
 [[ "$beside" == stone* ]] || fail "a block placed against a block's side into a plant's cell did not take it, $beside"
 
+check "the held torch"
+# At midnight with a torch held, the ground's light about the player reads the same from four
+# headings, every sample the frame shows of a ring two blocks out within 3 levels, since the light
+# stands at the player's own place, where at the hand it swung with each turn of the view.
+cmd voxel.time 0
+cmd voxel.fly off
+cmd voxel.select torch
+cmd voxel.tp 20.5 4 -40.5
+cmd frames.wait 60
+ask voxel.ring 20.5 4.001 -40.5 2 8 > /dev/null
+samples=""
+for heading in 0 90 180 270; do
+  cmd voxel.look "$heading" -60
+  cmd frames.wait 40
+  ring=$(ask voxel.ring 20.5 4.001 -40.5 2 8)
+  samples="$samples $(printf '%s\n' "$ring" | sed -nE 's/.*by angle (.*)$/\1/p' | tr ' ' '\n' | grep -v NaN | tr '\n' ' ')"
+done
+cmd voxel.fly on
+echo "the ground's light about a held torch from four headings:$samples"
+[ -n "${samples// /}" ] || fail "voxel.ring read no ground about the player holding a torch"
+printf '%s\n' $samples | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low <= 3) }' \
+  || fail "a held torch's light on the ground turns with the view, reading$samples"
+
 check "the overworld's loading"
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured
@@ -812,4 +835,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a broken block's bits lit alike from eight headings, placed blocks into plants' cells, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a broken block's bits lit alike from eight headings, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"

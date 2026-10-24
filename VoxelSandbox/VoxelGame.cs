@@ -535,11 +535,7 @@ public sealed class VoxelGame : IDisposable
         var blasts = Tnt.Exploded.ToArray();
         Tnt.Exploded.Clear();
         foreach (var at in blasts) Explode(at, PrimedTnt.Power, "was blown up by TNT");
-        // The hand a third of a block ahead of the eye, to its right and below it.
-        var ahead = Player.Look;
-        var side = Vector3.Normalize(Vector3.Cross(ahead, Vector3.UnitY));
-        var hand = Player.Eye + 0.3f * (ahead + side - Vector3.Cross(side, ahead));
-        Lights.Update(hand, Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye);
+        Lights.Update(Player.Eye, Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye);
 
         Sky.Update(seconds);
         World.Fluids.Update(seconds);

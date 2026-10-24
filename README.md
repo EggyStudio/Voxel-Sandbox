@@ -559,11 +559,12 @@ a block before the eye and drawn at a quarter of that size toward it, which show
 keeps it inside the player's own box, so no wall the player stands against cuts into it, and it is
 hidden with the HUD. A stack on the ground of an item drawn flat is its picture a pixel deep too. A
 block that gives light, a torch, a lantern or glowstone, lights the ground about the player while it
-is in the hand, and about itself where it lies dropped, a point light of its own color at the hand
-or the stack reaching as many blocks as its level of light, which casts shadows, so it lights no
-room through a wall, and which global illumination carries on to the walls around as it carries a
-placed one's. The hand's and the nearest three dropped lights shine, and a torch in the hand lights
-the ground a block off about as a torch standing there does.
+is in the hand, and about itself where it lies dropped, a point light of its own color at the
+player's own place, the body's middle at the eye's height, so no turn of the view swings it and no
+wall the player faces takes it in, or at the stack reaching as many blocks as its level of light,
+which casts shadows, so it lights no room through a wall, and which global illumination carries on
+to the walls around as it carries a placed one's. The held and the nearest three dropped lights
+shine, and a torch in the hand lights the ground a block off about as a torch standing there does.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in
 survival and adventure, where a left click takes up a stack, puts it down, joins it to a stack of
