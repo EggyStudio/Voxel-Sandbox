@@ -11,10 +11,10 @@ namespace VoxelSandbox;
 /// <para>
 /// Its behaviors run in the engine's frame, each a concern of its own in the stage that orders it:
 /// the stacks fall and age first, the player picks up those within reach next, and stacks of one
-/// item lying together join and the empty and the old vanish last. They read the voxel world, the
-/// player and the inventory from the game's <see cref="GameStep"/>, and run on the main thread,
-/// which alone may read the world. Each also takes its world and its inputs as arguments, so a
-/// test steps the stacks of an ECS world of its own as the frame steps the game's.
+/// item lying together join and the empty and the old vanish last. They read the voxel world and the
+/// player from the game's <see cref="GameStep"/> and the inventory as a resource, and run on the main
+/// thread, which alone may read the world. Each also takes its world and its inputs as arguments, so
+/// a test steps the stacks of an ECS world of its own as the frame steps the game's.
 /// </para>
 /// <para>
 /// A stack can be picked up half a second after it is dropped, two seconds after the player throws
@@ -53,7 +53,8 @@ public partial struct ItemDrop
     [OnUpdate]
     public static void PickUp(BehaviorContext ctx)
     {
-        if (ctx.World.TryGetResource<GameStep>(out var step) && step.PickUp && step.Seconds > 0) PickUp(ctx.Ecs, step.Player, step.Inventory);
+        if (ctx.World.TryGetResource<GameStep>(out var step) && step.PickUp && step.Seconds > 0 && ctx.World.TryGetResource<Inventory>(out var inventory))
+            PickUp(ctx.Ecs, step.Player, inventory);
     }
 
     [OnPostUpdate]

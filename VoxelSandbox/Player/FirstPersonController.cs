@@ -98,13 +98,14 @@ public sealed class FirstPersonController
     /// <summary>
     /// Turns, steers and moves the body for a frame of so many seconds, the mouse turning the view
     /// where <paramref name="look"/> is set, as while the cursor is held, and the keys moving the
-    /// player where <paramref name="move"/> is, as unless a text field has them.
+    /// player where <paramref name="move"/> is, as unless a text field has them, each read from the
+    /// frame's input.
     /// </summary>
-    public void Update(VoxelWorld world, float seconds, bool look, bool move)
+    public void Update(VoxelWorld world, float seconds, Input input, bool look, bool move)
     {
         if (look)
         {
-            var mouse = GetMouseDelta();
+            var mouse = input.MouseDelta;
             Yaw -= mouse.X * Sensitivity;
             Pitch = Math.Clamp(Pitch - mouse.Y * Sensitivity, -1.55f, 1.55f);
         }
@@ -112,9 +113,9 @@ public sealed class FirstPersonController
         var controls = new Controls();
         if (move)
         {
-            controls = new Controls((IsKeyDown(Key.W) ? 1 : 0) - (IsKeyDown(Key.S) ? 1 : 0), (IsKeyDown(Key.D) ? 1 : 0) - (IsKeyDown(Key.A) ? 1 : 0),
-                IsKeyDown(Key.Space), IsKeyDown(Key.LeftShift), IsKeyDown(Key.LeftControl));
-            if (IsKeyPressed(Key.Space))
+            controls = new Controls((input.KeyDown(Key.W) ? 1 : 0) - (input.KeyDown(Key.S) ? 1 : 0), (input.KeyDown(Key.D) ? 1 : 0) - (input.KeyDown(Key.A) ? 1 : 0),
+                input.KeyDown(Key.Space), input.KeyDown(Key.LeftShift), input.KeyDown(Key.LeftControl));
+            if (input.KeyPressed(Key.Space))
             {
                 // Two presses of Space in quick succession start or stop flying, as in creative mode.
                 if (MayFly && GetTime() - _lastSpace < DoubleTap)

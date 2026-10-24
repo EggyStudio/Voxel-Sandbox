@@ -36,11 +36,8 @@ SetDebugOverlayKey(Key.Null);
 using (var game = new VoxelGame(flat ? "flat" : "overworld", seed, name, transient, packs))
 {
     GameCommands.Game = game;
-    while (!WindowShouldClose() && !game.Menus.QuitAsked)
-    {
-        game.Update();
-        game.Draw();
-    }
+    // The game's frame runs in the engine's stages, which Draw's BeginDrawing and EndDrawing run.
+    while (!WindowShouldClose() && !game.Menus.QuitAsked) game.Draw();
     GameCommands.Game = null;
 }
 

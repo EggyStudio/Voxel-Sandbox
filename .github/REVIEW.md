@@ -5,86 +5,57 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `75be580`, item 94's mobs, the first of three commits, read at 21:00 on 2026-10-24,
-carrying the review's files. Each mob is an entity with Body and the Mob class as a component, its
-mind unchanged; MobMind holds three static systems, Think on update per mob within the loaded
-columns, Crowd after it pushing mobs apart and off the player, and Vanish despawning the gone, all
-reading GameStep, which gained the eye, the hour, the hunted and the mobs' stillness, stepping only
-when seconds pass and the mobs are not still; MobStrike, MobShot and MobBlast go out as MobEvent and
-a death as MobDied, drained where the game read Mobs.Events and Mobs.Died and cleared on a world
-switch, the old world's mob entities despawned before the new facade; the facade keeps spawn, the
-far hostiles' despawning, Cast, Overlaps, Columns and the joined and leaving over queries. Live
-offscreen 209 mobs wandered, a zombie took the player from 20 to 6 at night, a creeper's blast to 4
-with the floor hollowed, and a pig and a cow harmed to death were gone a second later leaving their
-drops; the play readings hold, the creeper's front 158.4 to 158.2 and the zombie's face 148.1 to
-147.0. 294 tests, play.sh 324 s on the GPU. Held with `9a70f28` and `299aa33` until the run of
-`e0d9788` ends, then pushed. After `9a70f28`, item 94's fires and blasts piece, read at 20:47 on
-2026-10-24, carrying the review's files. Each fire is an entity with one Fire component holding its
-cell, age and wait, Spread on update counting the waits down and burning the fires due by the
-source's numbers, a burned TNT going out as a TntCaught event the game drains into Tnt.Light, Light
-and Take still spawning from the game; the world names every fire cell it sets, the spread's own
-among them, so Take skips a cell with its fire by walking the fires into a set each frame the world
-names one, the ECS having no lookup by cell, asked of the engine as its item 107; the first build
-changed the order of random draws so seed 1 burned its plank away, and Take draws a delay for every
-cell named as the old TryAdd did, with a comment. The flash ball is a Blast entity holding its
-place, power and age, Fade on update despawning it at half a second and the game drawing them by
-query, the cloud emitters and the flash lights staying in BlastEffects' pool as engine handles
-outside the systems, which stands. Live offscreen three fires on planks grew to 41 over 40 s and a
-TNT's flash showed on one entity then none. 294 tests, play.sh 303 s on the GPU. The mobs come last,
-their plan before the code. After `299aa33`, item 94's events commit, read at 20:33 on 2026-10-24,
-carrying the review's files. ArrowStrike, TntBlast and FallingBroke are record structs the three
-behaviors send with World.SendEvent, the game taking them with DrainEvents where it read the lists
-and clearing the three types on a world switch; GameStep.Hits, PrimedTnt.Exploded,
-FallingBlocks.Broken and the facades as resources are gone, the facades' Update for tests returning
-what it set off or broke. Live offscreen a TNT left air under it, sand over a torch broke into a
-stack with the torch standing, and a skeleton's arrows took the health from 20 to 10 in 300 frames.
-294 tests, play.sh 295 s on the GPU. After `e0d9788`, item 94's third piece, the lit TNT and the
-falling blocks as entities, read at 20:25 on 2026-10-24, carrying the review's files and the
-devlog's lit TNT. Each is an entity with a behavior struct and the Body, LitTnt holding Left with
-Flashing and Size read from it and FallingBlock holding Block and Age; two systems on update, Burn
-and Drop, static on the main thread, Drop still moving the lowest block first by sorted pairs
-reached through GetRef; the PrimedTnt and FallingBlocks facades are resources, the behaviors leaving
-blasts in Tnt.Exploded and blocks that could not stand in Falling.Broken, which the game sets off
-and drops in its next update a frame later, each Clear emptying its pending list since events wait a
-frame across a world switch; the tests step bare EcsWorlds, the TNT test reading its stack afresh
-each frame since the struct read is a copy. Live offscreen a lit TNT burned and left air under it
-and sand over air fell onto a pillar and stood a block lower. No new gap; results handed back
-through a list on a resource, an event channel the better fit, which the engine has in
-World.SendEvent, ReadEvents and DrainEvents with a typed queue an event type the engine never clears
-for a game's own, missed at first; the strikes, the blasts and the landed blocks become events the
-behaviors send and the game drains in a small commit before the fires, no ask. 294 tests, play.sh
-307 s on the GPU. The three pushed at 20:31 on 2026-10-24 after the run of `80d149e` went green; the
-run watched. After `c0dd6e4`, item 94's second piece, the arrows as entities, read at 20:14 on
-2026-10-24, carrying the review's files and the devlog's capture. Each arrow is an entity with one
-Arrow behavior struct holding its position, velocity, stuck and age, no Body, the old Arrow class
-gone; one system, Fly on update, static on the main thread, reads GameStep's world, player and
-seconds, flies only when seconds pass and despawns an arrow on a hit or after 60 s; strikes go into
-GameStep.Hits, which the game deals and clears one frame after the strike when its next frame
-answers the mobs, and GameStep holds a Random for the extra point of damage since E3D006 keeps a
-class out of the behavior; the Arrows facade wraps the EcsWorld as ItemDrops does, the hostile test
-stepping a bare EcsWorld. In an offscreen flat world at hour 0 a skeleton 10 blocks off took the
-player's health from 20 to 12 in 300 frames. No new gap. 294 tests, play.sh 322 s on the GPU. After
-`d6532d1`, item 127, the options file, read at 20:05 on 2026-10-24, carrying the review's files.
-options.txt sits beside the saves next to resourcepacks.txt, one line a setting as the screen, a
-dot, the name with underscores, a colon and the value, a choice by its name; it is read once the
-world opens, each value applied through its setter with Settled run, and written when a screen is
-left by a button or Escape or when voxel.options or G changes a setting, written beside and moved
-over, only when the text differs; a bad line keeps the default, an unknown key, no colon, a value
-that is no number, NaN, out of reach or an unknown choice; the time, the daylight cycle and the moon
-belong to the world's save and stay out, and a transient run neither reads nor writes it; the
-options' own four settings are Option objects on a general screen, their labels unchanged. Two unit
-tests, the file written and read back into fresh settings with a second write of nothing changed
-writing nothing and the unkept hour out, and seven kinds of bad line each leaving the default with
-the good line beside read; play.sh's kept run starts on a file with the render distance at 5 and an
-unreadable corner shade line, reads 5 and 50 percent, sets the corner shade to 30 and finds both
-lines rewritten, the walk at 37 settings and about 20 s on the GPU, kept as it is. 294 tests,
-play.sh 315 s on the GPU.
+Reviewed up to `5bfafef`, item 94's mobs, the second commit, read at 21:12 on 2026-10-24, carrying
+the review's files. MobLife is a struct component holding Health, Hurt and Dying with Unhurt,
+DeathTime, Gone, Hit and Harm, Age on update fading the red and counting the time dying, Vanish
+reading Gone through a query of Mob and MobLife; a Mob spawns its own entity of Mob, Body and
+MobLife in the world it is given or one of its own for the single-mob tests, its Health, Hurt, Dying
+and Gone reading the component through GetRef, Hit and Harm writing it, Hit then knocking the mob
+back and angering or panicking it as before, the creeper's blast setting the health to 0; the tests'
+frame loops call Age beside the update as the stages do. Live offscreen a pig hit once read 9 and
+still red at a second hit, a pig harmed to death left its drop, a zombie took the player to 3 and a
+creeper's blast to 4; the play readings unchanged. 294 tests, play.sh 305 s on the GPU. The third
+commit waits for the package with the wide queries, item 95 taken meanwhile. The four pushed at
+21:19 on 2026-10-24 after the run of `e0d9788` went green; the run watched. After `75be580`, item
+94's mobs, the first of three commits, read at 21:00 on 2026-10-24, carrying the review's files.
+Each mob is an entity with Body and the Mob class as a component, its mind unchanged; MobMind holds
+three static systems, Think on update per mob within the loaded columns, Crowd after it pushing mobs
+apart and off the player, and Vanish despawning the gone, all reading GameStep, which gained the
+eye, the hour, the hunted and the mobs' stillness, stepping only when seconds pass and the mobs are
+not still; MobStrike, MobShot and MobBlast go out as MobEvent and a death as MobDied, drained where
+the game read Mobs.Events and Mobs.Died and cleared on a world switch, the old world's mob entities
+despawned before the new facade; the facade keeps spawn, the far hostiles' despawning, Cast,
+Overlaps, Columns and the joined and leaving over queries. Live offscreen 209 mobs wandered, a
+zombie took the player from 20 to 6 at night, a creeper's blast to 4 with the floor hollowed, and a
+pig and a cow harmed to death were gone a second later leaving their drops; the play readings hold,
+the creeper's front 158.4 to 158.2 and the zombie's face 148.1 to 147.0. 294 tests, play.sh 324 s on
+the GPU. After `9a70f28`, item 94's fires and blasts piece, read at 20:47 on 2026-10-24, carrying
+the review's files. Each fire is an entity with one Fire component holding its cell, age and wait,
+Spread on update counting the waits down and burning the fires due by the source's numbers, a burned
+TNT going out as a TntCaught event the game drains into Tnt.Light, Light and Take still spawning
+from the game; the world names every fire cell it sets, the spread's own among them, so Take skips a
+cell with its fire by walking the fires into a set each frame the world names one, the ECS having no
+lookup by cell, asked of the engine as its item 107; the first build changed the order of random
+draws so seed 1 burned its plank away, and Take draws a delay for every cell named as the old TryAdd
+did, with a comment. The flash ball is a Blast entity holding its place, power and age, Fade on
+update despawning it at half a second and the game drawing them by query, the cloud emitters and the
+flash lights staying in BlastEffects' pool as engine handles outside the systems, which stands. Live
+offscreen three fires on planks grew to 41 over 40 s and a TNT's flash showed on one entity then
+none. 294 tests, play.sh 303 s on the GPU. The mobs come last, their plan before the code. After
+`299aa33`, item 94's events commit, read at 20:33 on 2026-10-24, carrying the review's files.
+ArrowStrike, TntBlast and FallingBroke are record structs the three behaviors send with
+World.SendEvent, the game taking them with DrainEvents where it read the lists and clearing the
+three types on a world switch; GameStep.Hits, PrimedTnt.Exploded, FallingBlocks.Broken and the
+facades as resources are gone, the facades' Update for tests returning what it set off or broke.
+Live offscreen a TNT left air under it, sand over a torch broke into a stack with the torch
+standing, and a skeleton's arrows took the health from 20 to 10 in 300 frames. 294 tests, play.sh
+295 s on the GPU.
+
+Before it, `e0d9788` came, items 127 and 94's arrows, TNT and falling blocks with `c0dd6e4` and
+`d6532d1`, pushed at 20:31 on 2026-10-24, its run green, the play job 44.8 minutes.
 
 Before it, `80d149e` came, items 124 and 126 with `5f7bad8` and `a82e342`, pushed at 20:03 on
 2026-10-24, its run green, the play job 25.0 minutes.
-
-Before it, `e643539` came, items 122, 125, 94's drops and 27's pin of 5.2.283 with `3d70b20`,
-`5113176` and `e04a1a5`, pushed at 19:14 on 2026-10-24, its run green, the play job 43.1 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -529,7 +500,8 @@ full.
     so its queries over Body, the identity, the life, the pose and the hostile state take the
     four-to-six-component forms rather than GetRef beside a narrower query, and the column
     bookkeeping taking item 107's lookup when it lands, the walk meanwhile. The mobs' first commit
-    at `75be580`, the Mob class a component with three systems by stage and its events.
+    at `75be580`, the Mob class a component with three systems by stage and its events. The second
+    at `5bfafef`, MobLife as a struct with its behavior; the third with the package.
 
 95. **The world's sections become mesh entities the engine draws (Decision 43).** Each meshed
     section becomes an entity with the engine's Mesh, Material and Transform and a component of the
@@ -539,7 +511,13 @@ full.
     section, with item 90's kept flood, goes; the lava's and the plants' parts as entities of their
     own materials. The frame read before and after at item 93's views and the draw count test kept
     on the engine's count. Generation and meshing stay on the workers. One or two commits, after
-    item 94.
+    item 94. The coder's reading at 21:19 on 2026-10-24 found the engine's mesh entity path short of
+    a section in six ways, no shader on the ECS Material, a Mesh of positions, normals and uvs
+    alone, looks forgotten past 4,096, a mesh not drawn in a frame freed, no visibility or
+    shadow-only component and the entity draws not in the profile, which the engine takes as its
+    item 108 through ASKS.md; the flood stays as the game's visibility, a Visible component the
+    engine honors once it has one, and the shadow-only draw of item 123 the ShadowOnly component.
+    Waits on the package carrying the engine's item 108; item 96 taken before it.
 
 96. **The player and the game's states live in the ECS (Decision 43).** The player an entity with
     its body, its vitals and its hand as components, the inventory a resource, the first person
@@ -547,7 +525,28 @@ full.
     loading screen as ECS states, with InState, OnEnter and OnExit on the behaviors they gate and a
     run condition where VoxelGame.Update holds an if, so what runs when is read from the attributes
     rather than the one long Update. One or two commits, after item 95; the commands of voxel.* and
-    the interface's immediate drawing stay as they are.
+    the interface's immediate drawing stay as they are. The plan, read at 21:22 on 2026-10-24, two
+    commits. The frame today runs the game's update before BeginDrawing, which pumps input and runs
+    First through Update, the game's Draw sets the camera and EndDrawing runs PostUpdate through
+    Last, so a controller in PreUpdate moves the player before the camera is set with no lag while
+    Aim and Interact left in the update would read the frame before's eye; so the game's update
+    moves into the stages in its present order, the program loop calling Draw alone and VoxelGame a
+    resource the systems reach. First, the player an entity with its FirstPersonController, Body,
+    Vitals and HandRenderer, the VoxelGame properties pointing at the same objects so voxel.* and
+    the interface stand, the inventory a resource the drops' PickUp reads; GameFrame.Begin on First
+    for the world switch, the loading stand, the frame's seconds, the save timer, the toggles, the
+    cursor and the hotbar keys, setting GameStep's seconds and the player's look and move flags;
+    PlayerControl.Steer on PreUpdate, the controller reading the engine's input in place of the flat
+    calls and the hand's swing from the distance walked; GameFrame.Play on Update with the rest of
+    the update in order; input pumped before the stages, the game reading this frame's keys where it
+    read the frame before's. Second, the states, GameMode, Menu and a WorldState of Loading and
+    Playing as engine states through AddState, read and written through GetState and SetState, each
+    if an attribute, InState Playing on Steer and Play and RunIf Lives on a Live system split out of
+    Play, Lives a computed state of survival and adventure, OnEnter Pause freeing the cursor and
+    OnExit None stopping the breaking, the loading screen's draw keyed off the state; the order
+    within Update between Play and the entities' systems as loose as it is, their events drained the
+    frame after. Risks, the commands' timing against Begin within First and play's input checks if
+    input lands a frame earlier, read against today's readings. Taken as planned.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where

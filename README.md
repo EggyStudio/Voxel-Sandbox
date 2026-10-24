@@ -107,6 +107,12 @@ with its history.
 | F1 | Hide the crosshair, the hotbar and the outline |
 | Escape | Shut the window open, go back a menu, or open the menu, which holds the world still |
 
+The player is an entity of the engine's ECS, its controller, its body, its vitals and its hand its
+components, and the controller a behavior that turns and moves it from the frame's input. The game's
+frame runs in the engine's stages, begun in the first after the frame's commands, the player moved in
+the one before the update and the rest of the game played in the update, so the player is drawn in
+the frame it moved in.
+
 ## Commands
 
 Each is a line of `./e3d list` and runs with `./e3d command`, so a test of the light is built and

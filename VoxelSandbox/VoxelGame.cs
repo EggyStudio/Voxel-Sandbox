@@ -22,6 +22,10 @@ public sealed class VoxelGame : IDisposable
     private const float SaveSeconds = 30;
 
     private readonly bool _transient;
+    // The frame's seconds, whether the keys are the game's and whether the player lives, as Begin
+    // took them for Play.
+    private float _seconds;
+    private bool _keys, _alive;
     private readonly OptionsFile? _options;
     // The menu open as the last frame was drawn, so leaving a screen of it writes the settings.
     private Menu _menuSeen;
@@ -49,7 +53,18 @@ public sealed class VoxelGame : IDisposable
     public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null)
     {
         _transient = transient;
-        GetApp().World.InsertResource(Step);
+        // The game, its step and the inventory are the engine's resources, and the player an entity
+        // of its controller, its body, its vitals and its hand, which the behaviors reach.
+        var app = GetApp().World;
+        app.InsertResource(this);
+        app.InsertResource(Step);
+        app.InsertResource(Inventory);
+        var ecs = app.Resource<EcsWorld>();
+        var player = ecs.Spawn();
+        ecs.Add(player, Player);
+        ecs.Add(player, Player.Body);
+        ecs.Add(player, Vitals);
+        ecs.Add(player, Hand);
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer();
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
@@ -452,10 +467,15 @@ public sealed class VoxelGame : IDisposable
         _sinceSave = 0;
     }
 
-    public void Update()
+    /// <summary>
+    /// Begins the game's frame in the engine's first stage, after the commands of the frame: a world
+    /// asked for is opened, a loading world stands, and the frame's seconds, the toggles, the cursor
+    /// and the hotbar are taken, and the step the behaviors read is set.
+    /// </summary>
+    public void Begin()
     {
         // The behaviors step nothing in a frame the game does not step, as while the world loads.
-        Step.Seconds = 0;
+        (Step.Seconds, Step.Playing) = (0, false);
         TakeDefaults();
         if (NextWorld is { } next)
         {
@@ -474,10 +494,11 @@ public sealed class VoxelGame : IDisposable
         // The menu holds the world still, as Minecraft's does when played alone, the frame taking
         // no time, as the game's first does.
         if (Menus.Open != Menu.None) seconds = 0;
+        _seconds = seconds;
         _sinceSave += seconds;
         if (_sinceSave > SaveSeconds) SaveWorld();
         var io = ImGui.GetIO();
-        var keys = !io.WantTextInput;
+        var keys = _keys = !io.WantTextInput;
 
         if (keys) Toggles();
         // A click takes the cursor back unless it falls on a window of the game's own or of ImGui's.
@@ -495,12 +516,23 @@ public sealed class VoxelGame : IDisposable
         var screen = InventoryOpen || Menus.Open != Menu.None;
         Hotbar.Update(keys && !screen, _captured);
         Hotbar.Follow(seconds);
-        var alive = !Mode.Lives() || !Vitals.Dead;
+        var alive = _alive = !Mode.Lives() || !Vitals.Dead;
         Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
-        var before = Player.Body.Position;
-        Player.Update(World, seconds, look: _captured && alive, move: keys && !screen && alive);
-        var walked = new Vector2(Player.Body.Position.X - before.X, Player.Body.Position.Z - before.Z).Length();
-        Hand.Update(seconds, Player.Flying ? 0 : walked, Player.Body.OnGround);
+        (Step.World, Step.Player, Step.Seconds, Step.PickUp, Step.Playing) = (World, Player.Body, seconds, alive && Mode.Touches(), true);
+        (Step.Look, Step.Move) = (_captured && alive, keys && !screen && alive);
+        (Step.Eye, Step.Hour, Step.Hunted, Step.MobsStill) = (Player.Eye, Sky.Hour, Mode.Lives() && !Vitals.Dead, Mobs.Still);
+    }
+
+    /// <summary>
+    /// Plays the game's frame in the engine's update stage, once the player has moved in the stage
+    /// before: the vitals, the mobs' spawning and what they did, the block aimed at and the hand's
+    /// work on it, the stacks thrown and left, the furnaces, the felling, the fires and the blasts,
+    /// the sky, the water, the clouds and the columns and sections in reach.
+    /// </summary>
+    public void Play()
+    {
+        if (!Step.Playing) return;
+        var (seconds, keys, alive) = (_seconds, _keys, _alive);
         if (Mode.Lives())
         {
             Live(seconds);
@@ -530,8 +562,6 @@ public sealed class VoxelGame : IDisposable
             if (AtFurnace == (x, y, z)) CloseInventory();
             Drops.Spawn(stack.Item, stack.Count, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
-        (Step.World, Step.Player, Step.Inventory, Step.Seconds, Step.PickUp) = (World, Player.Body, Inventory, seconds, alive && Mode.Touches());
-        (Step.Eye, Step.Hour, Step.Hunted, Step.MobsStill) = (Player.Eye, Sky.Hour, Mode.Lives() && !Vitals.Dead, Mobs.Still);
         Bits.Update(World, seconds);
         // The blocks the world loosened start to fall, and those that landed where they could not
         // stand as the engine's frame let them fall drop as items.
@@ -1040,11 +1070,6 @@ public sealed class VoxelGame : IDisposable
 
     public void Draw()
     {
-        if (Loading)
-        {
-            DrawLoading();
-            return;
-        }
         // The haze begins two thirds of the way to the render distance and covers the world at it,
         // each point fading into the sky drawn behind it, so a mountain's top high against the sky
         // fades into the sky's blue, and under water it is the water's blue and covers it within 16
@@ -1061,6 +1086,14 @@ public sealed class VoxelGame : IDisposable
 
         _laps.Restart();
         BeginDrawing();
+        // The frame's first stage may have opened a world, so the loading screen is chosen once the
+        // frame has begun.
+        if (Loading)
+        {
+            DrawLoading();
+            EndDrawing();
+            return;
+        }
         ClearBackground(Sky.Horizon);
         BeginMode3D(Player.Camera);
         DrawSkybox();
@@ -1156,7 +1189,6 @@ public sealed class VoxelGame : IDisposable
     // default packs' fetch under it with a bar of its own while it runs.
     private void DrawLoading()
     {
-        BeginDrawing();
         ClearBackground(LoadingBackground);
         int width = GetScreenWidth(), middle = GetScreenHeight() / 2, line = Gui.LineHeight;
         var title = $"Loading {WorldName}";
@@ -1168,7 +1200,6 @@ public sealed class VoxelGame : IDisposable
             Gui.Text(fetch, (width - Gui.TextWidth(fetch)) / 2, middle + 3 * line, new Color(170, 170, 170));
             Bar(middle + 5 * line, Defaults.Fetched / (float)Defaults.Packs.Count);
         }
-        EndDrawing();
 
         // A bar across the middle of the window, outlined in white and filled in green to a share.
         static void Bar(int y, float share)
@@ -1233,11 +1264,17 @@ public sealed class GameStep
 
     public Body Player { get; set; } = null!;
 
-    public Inventory Inventory { get; set; } = null!;
-
     public float Seconds { get; set; }
 
     public bool PickUp { get; set; }
+
+    /// <summary>Whether the game steps this frame, as it does once its world stands, if with no seconds while a menu holds it.</summary>
+    public bool Playing { get; set; }
+
+    /// <summary>Whether the mouse turns the player's view, as while the cursor is held, and the keys move the player, as while no screen has them.</summary>
+    public bool Look { get; set; }
+
+    public bool Move { get; set; }
 
     /// <summary>The player's eye, which the mobs watch and hunt toward.</summary>
     public Vector3 Eye { get; set; }
