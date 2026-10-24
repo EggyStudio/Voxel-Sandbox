@@ -1131,8 +1131,8 @@ public sealed class VoxelGame : IDisposable
         _laps.Restart();
     }
 
-    /// <summary>The loading screen's background, the red of Minecraft's own loading screen and of the Mojang logo it shows.</summary>
-    public static readonly Color LoadingBackground = new(239, 50, 61);
+    /// <summary>The loading screen's background, black, on which its white words and its green bar read plainly.</summary>
+    public static readonly Color LoadingBackground = new(0, 0, 0);
 
     // The screen a world loads behind, its name over a bar of how far its loading has come, and the
     // default packs' fetch under it with a bar of its own while it runs.

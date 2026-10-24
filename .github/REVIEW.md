@@ -5,10 +5,20 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `5113176`, item 94's first piece, the drops as entities, read at 18:53 on 2026-10-24,
-carrying the review's files and, under N 4.8, the day's 24 pictures from 11:45 on under
-.github/devlog, 1.5 MB. Each stack is an entity with an ItemDrop behavior struct and the Body,
-reading the world, the player and the inventory from a GameStep resource, the systems Fall in
+Reviewed up to `3d70b20`, item 27's pin of 5.2.283, read at 19:06 on 2026-10-24, carrying REVIEW.md
+and NORM.md. The grove at 1920 by 1080 at High, read back to back twice each, the frame 22.1 and
+19.0 ms where 5.2.281 read 34.5 and 33.4, the scene pass 12.8 and 10.5 where 24.3, the shadows, the
+global illumination and the window depth unchanged at about 4.5 to 5.3, 2.4 to 3.0 and 1.4 to 1.6,
+the two pictures matching but for 324 pixels at a fuzz of 3 percent; the cave as on 5.2.281, the
+tops at 45 blocks 35, 29, 20 with the shadows at 150 and 0 at 1, the 90-block tops 19, 20, 22 at
+High, so item 123 stands; the desert village 0 black pixels in the three readings. captions.md has a
+line a picture, two of the 24 pure black and removed, held-light-cave and item-98-tunnel, and
+item-27-grove-283 added as the pin's pair; the three ECS gaps stand in the engine's ASKS.md
+uncommitted. 288 tests, play.sh 280 s on the GPU. Held with `5113176` and `e04a1a5` until the run of
+`4142a32` ends, then pushed. After `5113176`, item 94's first piece, the drops as entities, read at
+18:53 on 2026-10-24, carrying the review's files and, under N 4.8, the day's 24 pictures from 11:45
+on under .github/devlog, 1.5 MB. Each stack is an entity with an ItemDrop behavior struct and the
+Body, reading the world, the player and the inventory from a GameStep resource, the systems Fall in
 PreUpdate, PickUp in Update and Gather in PostUpdate, all static on the main thread, each with a
 twin taking the EcsWorld for the tests; a dirt stack broken in survival was picked up as before. The
 ECS gave sparse-set storage, ref access through GetRef, Query over pairs, resources and the stage
@@ -16,32 +26,31 @@ attributes, and lacked three things that go to the engine, a public way to run b
 since App.AddPlugin and Frame are internal in the package, a Query past three components, and a
 reference-type field in a behavior, which E3D006 forbids, so the stack keeps an ItemId; 288 tests,
 play.sh 307 s on the GPU. The owner wrote two words to the game's session at about 18:5x, taken as
-items 124 and 125. Held with `e04a1a5` until the run of `4142a32` ends, then pushed. After
-`e04a1a5`, item 122, the loading screen in the source's red, read at 18:44 on 2026-10-24, carrying
-the review's files. At HEAD the one screen shown while a world loads was dark gray,
-VoxelGame.LoadingBackground at 24, 24, 28, cleared by DrawLoading behind the world's name and its
-bar, so it was the screen the owner saw; it is 239, 50, 61, filling the bar's empty part too, the
-white title and the green bar in its white outline reading clearly on it, and the play check reads
-the corner at that red; 288 tests, play.sh 292 s on the GPU. The owner asked the game's session why
-the F3 window and the global illumination window each hold a screen probes checkbox, which is the
-engine's item 103. After `4142a32`, item 121, shadows taking the ground's color and not the sky's
-blue, read at 18:34 on 2026-10-24, carrying the review's files; the owner wrote at about 18:4x that
-the after images look nice. The near tree's shadow on the village's grass at noon read 6.5, 73.9,
-57.9 at High against the sunlit grass 155, 187, 56, 9.9, 82.4, 67.5 with global illumination off,
-and 3.2, 43.0, 27.8 with SetEnvironmentLight at 0, so the blue is the sky's light, which the
-engine's environmentLight scales for the probes' sky too. Each time Sky.cs paints the sky it takes
-the light the painted sky gives a face turned up, the upper half weighted by cos theta sin theta,
-draws it toward a white of the same brightness as far as DayShare reaches, unchanged at night, and
-passes it to SetEnvironmentLight(share, tint), at noon 2.79 and 254, 161, 99, at hour 0 one and
-white; terrain.slang's and bits.slang's floor multiply by environmentLight as the engine does.
-After, the shadow reads 48.4, 73.0, 13.6 at brightness 63.5 against 58.4 and the sunlit grass 161,
-187, 10, midnight identical but for 36 pixels at the lanterns. Departure, the engine's tint scales
-what the sky's light reflects too, the lake's mean 150, 181, 227 to 155, 181, 215 and the clouds'
-undersides 204, 209, 227 to 209, 209, 212, a tint of the diffuse alone an engine ask if the owner
-minds; the play check's glass frame reads 212, 195, 155 and is read red against green. 288 tests,
-play.sh 417 s on the GPU. The three pushed at 18:36 on 2026-10-24 after the run of `758e9df` went
-green; the run watched. After `7ece2c1`, item 120, the chosen item's name fading, read at 18:05 on
-2026-10-24, carrying the review's files. Hotbar.Follow runs each frame on the game's seconds,
+items 124 and 125. After `e04a1a5`, item 122, the loading screen in the source's red, read at 18:44
+on 2026-10-24, carrying the review's files. At HEAD the one screen shown while a world loads was
+dark gray, VoxelGame.LoadingBackground at 24, 24, 28, cleared by DrawLoading behind the world's name
+and its bar, so it was the screen the owner saw; it is 239, 50, 61, filling the bar's empty part
+too, the white title and the green bar in its white outline reading clearly on it, and the play
+check reads the corner at that red; 288 tests, play.sh 292 s on the GPU. The owner asked the game's
+session why the F3 window and the global illumination window each hold a screen probes checkbox,
+which is the engine's item 103. After `4142a32`, item 121, shadows taking the ground's color and not
+the sky's blue, read at 18:34 on 2026-10-24, carrying the review's files; the owner wrote at about
+18:4x that the after images look nice. The near tree's shadow on the village's grass at noon read
+6.5, 73.9, 57.9 at High against the sunlit grass 155, 187, 56, 9.9, 82.4, 67.5 with global
+illumination off, and 3.2, 43.0, 27.8 with SetEnvironmentLight at 0, so the blue is the sky's light,
+which the engine's environmentLight scales for the probes' sky too. Each time Sky.cs paints the sky
+it takes the light the painted sky gives a face turned up, the upper half weighted by cos theta sin
+theta, draws it toward a white of the same brightness as far as DayShare reaches, unchanged at
+night, and passes it to SetEnvironmentLight(share, tint), at noon 2.79 and 254, 161, 99, at hour 0
+one and white; terrain.slang's and bits.slang's floor multiply by environmentLight as the engine
+does. After, the shadow reads 48.4, 73.0, 13.6 at brightness 63.5 against 58.4 and the sunlit grass
+161, 187, 10, midnight identical but for 36 pixels at the lanterns. Departure, the engine's tint
+scales what the sky's light reflects too, the lake's mean 150, 181, 227 to 155, 181, 215 and the
+clouds' undersides 204, 209, 227 to 209, 209, 212, a tint of the diffuse alone an engine ask if the
+owner minds; the play check's glass frame reads 212, 195, 155 and is read red against green. 288
+tests, play.sh 417 s on the GPU. The three pushed at 18:36 on 2026-10-24 after the run of `758e9df`
+went green; the run watched. After `7ece2c1`, item 120, the chosen item's name fading, read at 18:05
+on 2026-10-24, carrying the review's files. Hotbar.Follow runs each frame on the game's seconds,
 holding while a menu stops the world and resetting on a change of the chosen slot or of its item;
 NameShown is 1 for 1.5 s and falls to 0 over 0.5, the source's 30 ticks and 10, an empty slot
 showing no name, and Hud.DrawHotbar draws the name and its shadow at that alpha, the vitals' own
@@ -542,7 +551,8 @@ full.
     ground before the sky at every quality, read again then. The package part at `758e9df` on
     2026-10-24, 5.2.281 pinned with the keys renamed, the far cascade left off and the cave's
     readings unchanged, said in the head; the far cascade set once the engine's item 102 mends its
-    slab, and the cave read again with the engine's item 101.
+    slab, and the cave read again with the engine's item 101. The pin of 5.2.283 at `3d70b20`, the
+    grove's frame 19 to 22 ms where 5.2.281 read 33 to 35 and 5.2.215 15 to 18, the cave unchanged.
 
 28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
     emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the

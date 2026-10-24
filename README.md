@@ -656,13 +656,12 @@ automatic or 1 to 4, whether full rows of the HUD fade, how far corners darken, 
 global illumination, and the resource packs. The settings window F3 opens is the engine's ImGui, a
 tool for the developer.
 
-A world opens behind a loading screen, in the red of Minecraft's own loading screen and its Mojang
-logo, with the world's name over a bar of how far its loading has come, and under it, while the
-default packs are fetched, a line and a bar of their own. Half the bar is the columns within two of
-the player's generated and half the sections of the player's column and its neighbors meshed, the
-columns asked for only within three meanwhile, so the nearest come first. The player is held and the
-world's time still until those sections stand, and then the world is shown, a new world's player set
-on the highest block at the origin.
+A world opens behind a black loading screen, with the world's name over a bar of how far its loading
+has come, and under it, while the default packs are fetched, a line and a bar of their own. Half the
+bar is the columns within two of the player's generated and half the sections of the player's column
+and its neighbors meshed, the columns asked for only within three meanwhile, so the nearest come
+first. The player is held and the world's time still until those sections stand, and then the world
+is shown, a new world's player set on the highest block at the origin.
 
 ## Tools and crafting
 
