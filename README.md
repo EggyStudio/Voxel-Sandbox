@@ -569,7 +569,8 @@ which three drop as items takes three besides the cut's own, and an axe that run
 leaves the logs still to go standing, with the leaves about them. What the player's right hand
 holds stands at the window's lower right as the source draws it, the block's cube turned by 45
 degrees or the item's picture a pixel deep, as the source's item models make it, in the source's
-places for the right hand, swinging on a hit, a break or a use and bobbing with the walk, and an
+places for the right hand, a tool's picture turned half about its handle so an axe's blade faces
+ahead, swinging on a hit, a break or a use and bobbing with the walk, and an
 empty hand shows nothing. It is posed as the source poses it about a block before the eye and drawn
 at a quarter of that size toward it, which shows it the same and keeps it inside the player's own
 box, so no wall the player stands against cuts into it, and it is hidden with the HUD. A stack on

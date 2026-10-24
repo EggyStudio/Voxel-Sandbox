@@ -171,4 +171,21 @@ public sealed class ItemTests : IDisposable
         Assert.Equal("creative", old.Mode);
         Assert.Null(old.Inventory);
     }
+
+    [Fact]
+    public void A_Held_Axes_Blade_Stands_Ahead_Of_Its_Handles_End_Which_Stands_Where_Any_Picture_Has_It()
+    {
+        // The source's tool pictures, and the game's own, run the handle from the lower left to the
+        // upper right, an axe's blade left of the handle's upper end. A point of the picture a pixel
+        // deep and 0.3 across, from its left and down from its top, where the hand holds it, the eye
+        // looking toward -z.
+        Vector3 At(float across, float down, bool tool) => Vector3.Transform(new Vector3((across - 0.5f) * 0.3f, (0.5f - down) * 0.3f, 0), HandRenderer.Turn(flat: true, tool));
+        var blade = At(0.4f, 0.3f, tool: true);
+        var end = At(0.65f, 0.35f, tool: true);
+        Assert.True(blade.Z < end.Z - 0.05f, $"the blade at {blade}, the handle's end at {end}");
+        // The handle stands where it stands for a picture that is no tool, its end ahead of its grip.
+        var grip = At(0.15f, 0.85f, tool: true);
+        Assert.True(Vector3.Distance(end, At(0.65f, 0.35f, tool: false)) < 1e-5f && Vector3.Distance(grip, At(0.15f, 0.85f, tool: false)) < 1e-5f);
+        Assert.True(end.Z < grip.Z, $"the handle's end at {end}, its grip at {grip}");
+    }
 }

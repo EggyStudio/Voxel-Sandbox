@@ -1322,6 +1322,17 @@ before a batch.
     112 and before item 94. Done at `031d169` on 2026-10-24, 6 pyramids on seed 1's 8,192-block
     square where 128 stood.
 
+115. **A wall torch's wood leans up to its head's foot, and the lit head alone stands straight.**
+    The owner wrote at 13:41 on 2026-10-24 that the torch on a wall goes straight a pixel too early,
+    the wood bending to straight where only the lit part should stand straight up. The wall torch is
+    a leaning stick piece, its top's corners moved out by the lean, and a lit head piece standing
+    straight on it; the stick's lean reaches the head's foot, the head the picture's own two rows of
+    coal and nothing of the wood, one pixel higher than it stands, read against the source's torch
+    picture and its wall torch model; a capture of a wall torch up close before and after, and the
+    mesher's test of the wall torch's pieces reading the stick's top at the head's foot. One commit,
+    small, after item 114 and before item 94. Done at `65eec11` on 2026-10-24, the split at row 8,
+    the head's glow scaled so the light stays.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

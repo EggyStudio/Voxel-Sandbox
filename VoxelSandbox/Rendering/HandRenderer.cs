@@ -79,12 +79,35 @@ public sealed class HandRenderer
             * Matrix4x4.CreateTranslation(-0.4f * h, 0.2f * MathF.Sin(root * MathF.Tau), -0.2f * MathF.Sin(swing * MathF.PI))
             * pose;
         var (mesh, material, flat) = drops.Model(item);
-        var model = flat
-            ? Matrix4x4.CreateScale(0.68f / 0.3f) * Matrix4x4.CreateRotationZ(Degrees(25)) * Matrix4x4.CreateRotationY(Degrees(90))
-                * Matrix4x4.CreateTranslation(1.13f / 16, 3.2f / 16, 1.13f / 16)
-            : Matrix4x4.CreateScale(0.4f / 0.25f) * Matrix4x4.CreateRotationY(Degrees(45));
-        DrawMesh(mesh, material, model * pose * toWorld);
+        DrawMesh(mesh, material, Turn(flat, item.Tool != ToolKind.None) * pose * toWorld);
     }
+
+    /// <summary>
+    /// How a held item's model stands in the right hand, as the source's display for the first
+    /// person's right hand places it, a block's cube turned by 45 degrees at four tenths of its size,
+    /// or an item's picture, a pixel deep and centered on the origin facing +z, at 0.68 of its size,
+    /// tilted by 25 degrees and turned by a quarter about the upright axis, its handle's end ahead of
+    /// the hand and leaning toward the view's middle.
+    /// </summary>
+    /// <remarks>
+    /// A tool's picture is first turned by a half about its handle, the diagonal from the picture's
+    /// lower left to its upper right, which keeps the handle where the quarter turn puts it and
+    /// brings an axe's blade, left of the handle's end in the picture, ahead of the handle rather than
+    /// toward the eye. A pick's head, a shovel's and a sword's blade lie alike on both sides of the
+    /// handle and look the same either way.
+    /// </remarks>
+    public static Matrix4x4 Turn(bool flat, bool tool = false) => flat
+        ? (tool ? AboutHandle : Matrix4x4.Identity) * Matrix4x4.CreateScale(0.68f / 0.3f) * Matrix4x4.CreateRotationZ(Degrees(25))
+            * Matrix4x4.CreateRotationY(Degrees(90)) * Matrix4x4.CreateTranslation(1.13f / 16, 3.2f / 16, 1.13f / 16)
+        : Matrix4x4.CreateScale(0.4f / 0.25f) * Matrix4x4.CreateRotationY(Degrees(45));
+
+    // A half turn about the line where x and y are equal, which swaps them and turns the picture's
+    // front to its back.
+    private static readonly Matrix4x4 AboutHandle = new(
+        0, 1, 0, 0,
+        1, 0, 0, 0,
+        0, 0, -1, 0,
+        0, 0, 0, 1);
 
     private static float Degrees(float degrees) => float.DegreesToRadians(degrees);
 }
