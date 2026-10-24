@@ -86,12 +86,12 @@ public sealed class SectionMesher
 
         /// <summary>
         /// A corner of a face, the color it carries under the shade from 0 to 1, its tiles as
-        /// <see cref="TerrainAtlas.Paint"/> packs them, and the face's color as the scene's light
-        /// field reads it, the carried color where none is given.
+        /// <see cref="TerrainAtlas.Paint"/> packs them, the face's color as the scene's light field
+        /// reads it, the carried color where none is given, and the sky's light level at the corner.
         /// </summary>
-        public void Add(Vector3 position, int face, int corner, float shade, Color tint, uint tiles = 0, Color? albedo = null)
+        public void Add(Vector3 position, int face, int corner, float shade, Color tint, uint tiles = 0, Color? albedo = null, int sky = 0)
         {
-            var (first, second) = Pack(face, corner, shade, tint, tiles);
+            var (first, second) = Pack(face, corner, shade, tint, tiles, sky);
             Positions.Add(position);
             Packed.Add(first);
             Packed.Add(second);
@@ -101,6 +101,9 @@ public sealed class SectionMesher
 
         /// <summary>The face, corner, shade and tint packed into a corner's eight bytes.</summary>
         public (int Face, int Corner, float Shade, Color Tint) Unpack(int corner) => SectionMesher.Unpack(Packed[2 * corner], Packed[2 * corner + 1]);
+
+        /// <summary>The sky's light level packed into a corner's eight bytes.</summary>
+        public int SkyOf(int corner) => SectionMesher.SkyOf(Packed[2 * corner + 1]);
     }
 
     /// <summary>
@@ -109,19 +112,30 @@ public sealed class SectionMesher
     /// next 2, its shade from 0 to 127 at the 7 above, whether its overlay is left untinted at bit
     /// 12, and its tiles in the 19 bits from bit 13, the surface's tile, its overlay's and whether
     /// the tile under the overlay is left untinted, and the second the color it carries, red, green
-    /// and blue a byte each from the lowest, and its alpha in the highest byte. The color is sRGB,
-    /// as a vertex color is, and the shade multiplies it in that space. A shade of 128 levels holds
+    /// and blue a byte each from the lowest, and its alpha in the highest byte. An alpha from 240 up
+    /// is kept as 1, with the sky's light level at the corner in its low four bits for the terrain
+    /// shader's floor of the sky's light, and one below 240 as it is, with no sky level, as the color
+    /// of a see-through surface that no pack gives a texture carries it, a pack's textures holding
+    /// their alpha in their pixels with 1 in the color. The color is sRGB, as a vertex color is, and
+    /// the shade multiplies it in that space. A shade of 128 levels holds
     /// the light's sixteen levels and the corners' four darkenings with room to spare. A face with no
     /// overlay and neither flag may carry its corner's place on its texture in the overlay's bits
     /// instead, as <see cref="PlaceOf"/> reads it, and a face of glass with both flags which of its
     /// neighbors are the same glass, as <see cref="Joins"/> reads it.
     /// </summary>
-    public static (uint First, uint Second) Pack(int face, int corner, float shade, Color tint, uint tiles = 0)
+    public static (uint First, uint Second) Pack(int face, int corner, float shade, Color tint, uint tiles = 0, int sky = 0)
     {
         var level = (uint)Math.Clamp(MathF.Round(shade * 127), 0, 127);
+        var top = tint.A >= Opaque ? Opaque | (uint)Math.Clamp(sky, 0, Lighting.Max) : tint.A;
         return ((uint)face | (uint)corner << 3 | level << 5 | (tiles >> 19 & 1) << 12 | (tiles & 0x7FFFF) << 13,
-            tint.R | (uint)tint.G << 8 | (uint)tint.B << 16 | (uint)tint.A << 24);
+            tint.R | (uint)tint.G << 8 | (uint)tint.B << 16 | top << 24);
     }
+
+    // The least of a corner's highest byte that reads as an alpha of 1 with a sky level beside it.
+    private const uint Opaque = 240;
+
+    /// <summary>The sky's light level read back from the second of a corner's uints, 0 for a see-through color that carries none.</summary>
+    public static int SkyOf(uint second) => second >> 24 >= Opaque ? (int)(second >> 24 & 15) : 0;
 
     /// <summary>
     /// Which of a glass face's eight neighbors in its plane are the same glass, read back from the first
@@ -136,7 +150,7 @@ public sealed class SectionMesher
     /// <summary>A corner's eight bytes read back, as the terrain shader reads them.</summary>
     public static (int Face, int Corner, float Shade, Color Tint) Unpack(uint first, uint second) =>
         ((int)(first & 7), (int)(first >> 3 & 3), (first >> 5 & 127) / 127f,
-            new Color((byte)second, (byte)(second >> 8), (byte)(second >> 16), (byte)(second >> 24)));
+            new Color((byte)second, (byte)(second >> 8), (byte)(second >> 16), second >> 24 >= Opaque ? (byte)255 : (byte)(second >> 24)));
 
     /// <summary>The outward normal of a face by its number, as the terrain shader's table holds it.</summary>
     public static Vector3 Normal(int face) => Normals[face];
@@ -405,7 +419,7 @@ public sealed class SectionMesher
             var shade = kept * (CornerShade ? 1 - CornerStrength * (1 - Occlusion[occlusion[i]]) : 1);
             var corner = Corners[face][i];
             corner.Y = corner.Y == 1 ? top : bottom;
-            faces.Add(block + corner, face, i, shade, color, tiles, albedo);
+            faces.Add(block + corner, face, i, shade, color, tiles, albedo, (int)MathF.Round((float)sky / open));
         }
 
         // The quad is split along the diagonal whose corners are less closed, so a closed corner
@@ -451,7 +465,7 @@ public sealed class SectionMesher
             var (tiles, color, albedo) = Atlas.Paint(piece.Surface, _column.GrassTint[place], _column.FoliageTint[place]);
             if (piece.Plane)
             {
-                AddWall(faces, piece, block + offset, kept, color, tiles, albedo);
+                AddWall(faces, piece, block + offset, kept, sky, color, tiles, albedo);
                 continue;
             }
             var size = piece.To - piece.From;
@@ -468,7 +482,7 @@ public sealed class SectionMesher
                 {
                     var corner = Corners[face][i];
                     var shown = piece.Parts is { } parts ? WithPlace(tiles, Place(parts, face, corner)) : tiles;
-                    faces.Add(block + piece.From + corner * size + corner.Y * piece.Lean, face, i, kept, color, shown, albedo);
+                    faces.Add(block + piece.From + corner * size + corner.Y * piece.Lean, face, i, kept, color, shown, albedo, sky);
                 }
                 faces.Indices.Add(first);
                 faces.Indices.Add(first + 1);
@@ -509,7 +523,7 @@ public sealed class SectionMesher
     // lights its plants with no shade by the way they face, and show the wall's part of its texture,
     // or for a plant the texture laid along the axis the wall runs most along from the cell's foot,
     // and each side's corners run counterclockwise seen from it.
-    private static void AddWall(Faces faces, Piece piece, Vector3 block, float kept, Color color, uint tiles, Color albedo)
+    private static void AddWall(Faces faces, Piece piece, Vector3 block, float kept, int sky, Color color, uint tiles, Color albedo)
     {
         var (a, b) = (piece.From, piece.To);
         var face = MathF.Abs(b.X - a.X) >= MathF.Abs(b.Z - a.Z) ? WallAlongX : WallAlongZ;
@@ -537,7 +551,7 @@ public sealed class SectionMesher
                 var at = quad[corner];
                 var place = part is { } shown ? new Vector2(corner is 0 or 3 ? shown.X : shown.Z, corner < 2 ? shown.W : shown.Y)
                     : new Vector2(face == WallAlongX ? at.X : at.Z, 1 - at.Y) * 16;
-                faces.Add(block + at, face, corner, kept, color, WithPlace(tiles, place), albedo);
+                faces.Add(block + at, face, corner, kept, color, WithPlace(tiles, place), albedo, sky);
             }
             faces.Indices.Add(first);
             faces.Indices.Add(first + 1);

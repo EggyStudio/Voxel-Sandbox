@@ -956,6 +956,17 @@ closed counted as three, as Minecraft's does, and the corner shade's strength, f
 settings window and through `voxel.corners`, takes each level that far from 1, half by default, so a
 corner where three cells close keeps 0.725 of its color, the sections shaded again when it changes.
 
+Each corner also carries its sky level to the terrain shader, which keeps a face's light no less
+than the sky's light from all around at the hour, as the engine lights an open face by the
+environment the game gives the sky, under that level on the source's brightness curve at its default
+brightness setting, so level 13 reads 0.80 of 15 on the screen. The scene's distance field holds
+leaves solid, so the engine's own light leaves the floor under a canopy at noon at 20 where the
+shade of a wall on open ground reads 42, and the floor lifts it to 42, as the source lights it at
+13. A face at level 15 has open sky over it, which the field sees, and takes no floor, which keeps
+the field's shade beside a wall, and at night the sky's light is next to nothing, so the floor holds
+by day under leaves, in a cave's mouth and inside a house by its windows, as the source's levels
+light them. The plants and a broken block's bits take the same floor at their cells' levels.
+
 The settings window turns the light levels and the shaded corners off, each on its own, to see
 global illumination alone, and opens the engine's windows of what global illumination holds, of the
 frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,

@@ -742,6 +742,40 @@ echo "the ground's light about a held torch from four headings:$samples"
 printf '%s\n' $samples | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low <= 3) }' \
   || fail "a held torch's light on the ground turns with the view, reading$samples"
 
+check "the jungle's floor"
+# The grass under a canopy of jungle leaves two deep at noon, at the sky level of 13 the leaves leave
+# it, read from straight above against the grass in the shade of a wall on open ground, at sky level
+# 15, the two within three of the source's levels of each other, either at least 0.72 of the other's
+# light, since the terrain's floor of the sky's light lifts the canopy's floor, which the scene's
+# field holds the leaves solid over, where it read half the shade's light, 20 against 42. The torch
+# held before is put away, since its light would fall on both.
+cmd voxel.time 12
+cmd voxel.kill all
+cmd voxel.select stone
+cmd voxel.hud off
+cmd voxel.fly on
+cmd voxel.fill -60 9 20 -40 10 40 jungle_leaves
+cmd voxel.fill -40 4 60 -30 14 60 stone
+lit=""
+for place in "-50.5 30.5" "-34.5 59.5"; do
+  read -r x z <<< "$place"
+  cmd voxel.tp "$x" 6.5 "$z"
+  cmd voxel.look 0 -89
+  meshed
+  cmd frames.wait 40
+  ask voxel.pixel 1 1 1 > /dev/null
+  cmd frames.wait 2
+  read -r r g b <<< "$(channels "$(ask voxel.pixel "$x" 4.001 "$z")")"
+  [ -n "$b" ] || fail "voxel.pixel read no grass at $x, 4, $z"
+  lit="$lit $(awk -v r="$r" -v g="$g" -v b="$b" 'BEGIN { printf "%.1f", 0.2126 * r + 0.7152 * g + 0.0722 * b }')"
+done
+read -r floor shade <<< "$lit"
+sky=$(ask voxel.light -51 4 30)
+echo "the jungle's floor at noon $floor against the open ground's shade $shade, $sky"
+[[ "$sky" == *", sky 13, "* ]] || fail "the grass under jungle leaves two deep is not at sky level 13, $sky"
+awk -v f="$floor" -v s="$shade" 'BEGIN { exit !(s > 10 && f >= 0.72 * s && s >= 0.72 * f) }' \
+  || fail "the jungle's floor at noon reads $floor against the open ground's shade $shade, more than three of the source's levels apart"
+
 check "the overworld's loading"
 # Seed 1's overworld, the player standing over each of the eight biomes the climate gained, the
 # nearest of each that voxel.biome finds, its name read back from voxel.state and its land captured

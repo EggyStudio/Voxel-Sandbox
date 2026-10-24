@@ -27,7 +27,8 @@ namespace VoxelSandbox;
 /// A square is lit by the engine's light as its face toward the eye takes it, through the game's
 /// bits shader, which reads the shadow and the probes at the bit's middle, which its body keeps in
 /// the open, where a square clipped into the wall beside it read the sun's and the sky's light from
-/// inside the wall at its clipped part.
+/// inside the wall at its clipped part, and no less than the terrain's floor of the sky's light at
+/// the sky level of the bit's cell.
 /// </para>
 /// </remarks>
 public sealed class BlockBits : IDisposable
@@ -53,12 +54,16 @@ public sealed class BlockBits : IDisposable
         public float Life { get; } = life;
         public float Age { get; set; }
         public float Size { get; } = size;
+
+        /// <summary>The sky's light level in the cell of the bit's middle, as its last move left it.</summary>
+        public int Sky { get; set; }
     }
 
     private readonly List<Bit> _bits = [];
     private readonly Random _random = new(1);
-    private readonly Dictionary<(int Surface, int Piece), ModelMaterial> _materials = [];
-    private readonly Dictionary<(int Surface, int Piece), List<Matrix4x4>> _draws = [];
+    private readonly Dictionary<(int Surface, int Piece), Texture2D> _pictures = [];
+    private readonly Dictionary<(int Surface, int Piece, int Sky), ModelMaterial> _materials = [];
+    private readonly Dictionary<(int Surface, int Piece, int Sky), List<Matrix4x4>> _draws = [];
     private readonly List<Texture2D> _textures = [];
     private TerrainAtlas _terrain = TerrainAtlas.None;
     private ModelMesh? _square;
@@ -153,6 +158,8 @@ public sealed class BlockBits : IDisposable
             body.Velocity *= drag;
             if (body.OnGround) (body.Velocity.X, body.Velocity.Z) = (body.Velocity.X * ground, body.Velocity.Z * ground);
             body.Move(world, body.Velocity * seconds, keepToEdges: false);
+            var middle = body.Position + new Vector3(0, bit.Size / 2, 0);
+            bit.Sky = world.GetLight((int)MathF.Floor(middle.X), (int)MathF.Floor(middle.Y), (int)MathF.Floor(middle.Z)).Sky;
         }
         _bits.RemoveAll(b => b.Age >= b.Life);
     }
@@ -164,7 +171,7 @@ public sealed class BlockBits : IDisposable
         foreach (var list in _draws.Values) list.Clear();
         foreach (var bit in _bits)
         {
-            var key = (bit.Surface, bit.Piece);
+            var key = (bit.Surface, bit.Piece, bit.Sky);
             if (!_draws.TryGetValue(key, out var list)) _draws[key] = list = [];
             var middle = bit.Body.Position + new Vector3(0, bit.Size / 2, 0);
             list.Add(Matrix4x4.CreateScale(bit.Size) * Matrix4x4.CreateBillboard(middle, eye, Vector3.UnitY, forward));
@@ -173,32 +180,39 @@ public sealed class BlockBits : IDisposable
         foreach (var (key, list) in _draws)
         {
             if (list.Count == 0) continue;
-            if (!_materials.TryGetValue(key, out var material)) _materials[key] = material = Pictured(key.Surface, key.Piece);
+            if (!_materials.TryGetValue(key, out var material)) _materials[key] = material = Pictured(key.Surface, key.Piece, key.Sky);
             DrawMeshInstanced(square, material, CollectionsMarshal.AsSpan(list));
         }
     }
 
     // A quarter of a surface's picture, at one of four places a quarter of the picture in from its
-    // corners, each texel as the block's icon takes it, or the surface's own color.
-    private ModelMaterial Pictured(int surface, int piece)
+    // corners, each texel as the block's icon takes it, or the surface's own color, with the sky's
+    // light level of the bits drawn with it as its occlusion strength, which the bits' shader reads for
+    // its floor of the sky's light, a bit having no occlusion map for the strength to darken.
+    private ModelMaterial Pictured(int surface, int piece, int sky)
     {
-        var n = Math.Max(1, _terrain.Pixels / 4);
-        var (left, top) = (_terrain.Pixels / 8 + piece % 2 * _terrain.Pixels / 2, _terrain.Pixels / 8 + piece / 2 * _terrain.Pixels / 2);
-        var pixels = new byte[n * n * 4];
-        for (int y = 0; y < n; y++)
-            for (int x = 0; x < n; x++)
-            {
-                var texel = _terrain.Texel(surface, (left + x + 0.5f) / _terrain.Pixels, (top + y + 0.5f) / _terrain.Pixels, Biomes.Plains.GrassColor, Biomes.Plains.FoliageColor)
-                    ?? Surfaces.All[surface].Plain;
-                var at = (y * n + x) * 4;
-                (pixels[at], pixels[at + 1], pixels[at + 2], pixels[at + 3]) = (texel.R, texel.G, texel.B, texel.A);
-            }
-        var texture = LoadTextureFromImage(new Image(pixels, n, n));
-        SetTextureFilter(texture, TextureFilter.Point);
-        _textures.Add(texture);
+        if (!_pictures.TryGetValue((surface, piece), out var texture))
+        {
+            var n = Math.Max(1, _terrain.Pixels / 4);
+            var (left, top) = (_terrain.Pixels / 8 + piece % 2 * _terrain.Pixels / 2, _terrain.Pixels / 8 + piece / 2 * _terrain.Pixels / 2);
+            var pixels = new byte[n * n * 4];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    var texel = _terrain.Texel(surface, (left + x + 0.5f) / _terrain.Pixels, (top + y + 0.5f) / _terrain.Pixels, Biomes.Plains.GrassColor, Biomes.Plains.FoliageColor)
+                        ?? Surfaces.All[surface].Plain;
+                    var at = (y * n + x) * 4;
+                    (pixels[at], pixels[at + 1], pixels[at + 2], pixels[at + 3]) = (texel.R, texel.G, texel.B, texel.A);
+                }
+            texture = LoadTextureFromImage(new Image(pixels, n, n));
+            SetTextureFilter(texture, TextureFilter.Point);
+            _textures.Add(texture);
+            _pictures[(surface, piece)] = texture;
+        }
         return new ModelMaterial(Color.White, texture)
         {
             AlphaMode = MaterialAlphaMode.Mask, Roughness = 1, CastsShadows = false, BouncesLight = false, DoubleSided = true,
+            OcclusionStrength = sky / (float)Lighting.Max,
             Shader = _shader ??= LoadShader("resources/shaders/bits.slang"),
         };
     }
@@ -216,6 +230,7 @@ public sealed class BlockBits : IDisposable
     {
         foreach (var texture in _textures) UnloadTexture(texture);
         _textures.Clear();
+        _pictures.Clear();
         _materials.Clear();
     }
 

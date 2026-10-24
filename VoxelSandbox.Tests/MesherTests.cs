@@ -175,6 +175,42 @@ public class MesherTests
     }
 
     [Fact]
+    public void A_Corners_Alpha_From_240_Up_Reads_As_One_With_Its_Sky_Level_And_One_Below_As_It_Is_With_None()
+    {
+        var (_, opaque) = SectionMesher.Pack(2, 0, 1, new Color(10, 20, 30, 255), sky: 13);
+        Assert.Equal((13, (byte)255), (SectionMesher.SkyOf(opaque), SectionMesher.Unpack(0, opaque).Tint.A));
+        var (_, water) = SectionMesher.Pack(2, 0, 1, new Color(44, 84, 162, 191), sky: 13);
+        Assert.Equal((0, (byte)191), (SectionMesher.SkyOf(water), SectionMesher.Unpack(0, water).Tint.A));
+    }
+
+    [Fact]
+    public void A_Face_And_A_Plant_Under_Two_Leaves_Carry_Sky_Level_13_And_A_Face_In_The_Open_15()
+    {
+        // The terrain shader's floor of the sky's light reads the level each corner carries, which
+        // under a canopy two leaves deep is the source's 13.
+        var world = Floor();
+        for (int x = 4; x <= 12; x++)
+            for (int z = 4; z <= 12; z++)
+                for (int y = 26; y <= 27; y++)
+                    world.SetBlock(x, y, z, BlockId.OakLeaves);
+        world.SetBlock(8, 20, 8, BlockId.Stone);
+        world.SetBlock(10, 20, 10, BlockId.Stone);
+        world.SetBlock(10, 21, 10, BlockId.ShortGrass);
+        world.SetBlock(1, 20, 1, BlockId.Stone);
+
+        var mesher = Meshed(world);
+        var faces = mesher.Solid;
+        int[] Top(int x, int z) => [.. Enumerable.Range(0, faces.Count).Where(i => faces.Unpack(i).Face == 2 && faces.Positions[i].Y == 5
+            && faces.Positions[i].X is var px && px >= x && px <= x + 1 && faces.Positions[i].Z is var pz && pz >= z && pz <= z + 1)];
+        Assert.Equal(4, Top(8, 8).Length);
+        Assert.All(Top(8, 8), i => Assert.Equal(13, faces.SkyOf(i)));
+        Assert.All(Top(1, 1), i => Assert.Equal(15, faces.SkyOf(i)));
+        Assert.NotEmpty(Top(1, 1));
+        Assert.NotEqual(0, mesher.Cutout.Count);
+        Assert.All(Enumerable.Range(0, mesher.Cutout.Count), i => Assert.Equal(13, mesher.Cutout.SkyOf(i)));
+    }
+
+    [Fact]
     public void Each_Corner_Of_A_Face_Lies_Toward_The_Faces_Normal_From_The_Blocks_Middle()
     {
         // The face a corner's packed bytes name is the one its position lies on, so the shader's

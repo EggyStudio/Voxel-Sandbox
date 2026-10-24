@@ -1217,6 +1217,21 @@ before a batch.
     reads it. One commit, small, after item 98 and before item 94. Done at `e82d965` on 2026-10-24,
     the default a half, no saved setting since the game saves none.
 
+107. **The rain forest's floor is shaded, not dark, the canopy taking its levels at its edges.** The
+    owner wrote at 13:26 on 2026-10-24 that the rain forest is too dark in the middle and asked for
+    a better balance, with the example that the light level should not drop by one with each block
+    of leaves but at the way in and the way out, a canopy five deep dropping two and the blocks
+    between ignored. `Lighting.cs` takes one level for each block of leaves, the way down too, so
+    the rain forest's layered canopy darkens its floor as a cave is darkened. The mend by the
+    owner's example or a better balance the coder finds and says in the commit, a leaf lit from a
+    leaf taking nothing and the canopy's outer layers taking the levels, so a canopy five deep takes
+    two, one deep still one, sideways spread under it as before; a capture of a rain forest's floor
+    at noon before and after, the forests and the other biomes read for no change beyond the
+    canopies, and a test of a column under five leaves reading two levels under the open sky's and
+    under one leaf reading one. One commit, after item 106 and before item 94. Done at `aaeaa2a` on
+    2026-10-24, the levels' balance in; the floor's darkness found to be the engine's light under a
+    canopy the field holds solid, taken on as item 117 and an engine entry.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

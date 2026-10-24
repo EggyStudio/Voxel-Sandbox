@@ -7,8 +7,9 @@
 // one, and tinted by the carried color, a surface no pack gives a texture having the white tile and
 // its own color. The model pass's own light falls over that color, as the engine draws a mesh with
 // colors at its vertices, the sun's shadow taken at the middle of the step of a grid each point lies
-// in, so the sun's shadows step along it, then a haze toward the color of the sky behind the point as
-// the distance from the eye grows, as Minecraft's fog hides where the world ends.
+// in, so the sun's shadows step along it, and no less than a floor of the sky's light by the point's
+// sky level, then a haze toward the color of the sky behind the point as the distance from the eye
+// grows, as Minecraft's fog hides where the world ends.
 import modelpass;
 // The sun's light and its shadow, which modelpass keeps to itself.
 import lights;
@@ -115,8 +116,9 @@ static const float3 Normals[8] = {
 // bits, the corner at the next 2, the shade from 0 to 127 at the 7 above, the overlay's untinted
 // flag at bit 12, the tile at the 9 above that, the overlay's tile at the next 9 and the base's
 // untinted flag at the top bit, and the second the color's red, green and blue a byte each from the
-// lowest and its alpha in the highest. The shade alone rides in the second texture coordinate, for
-// a tile or an overlay left untinted.
+// lowest and its alpha in the highest, an alpha from 240 up being 1 with the corner's sky level in
+// its low four bits. The shade rides in the second texture coordinate, for a tile or an overlay left
+// untinted, with the sky level beside it.
 //
 // A face with no overlay and neither flag may carry its corner's place on the texture in sixteenths
 // in the overlay's bits, one more than across and seventeen times down, as a plant's wall and the
@@ -127,13 +129,15 @@ TerrainOutput vertexMain(float3 position : POSITION, uint2 packed : CUSTOM0, Mod
 {
     uint face = packed.x & 7;
     float shade = float((packed.x >> 5) & 127) / 127.0;
-    float4 tint = float4(float(packed.y & 255), float((packed.y >> 8) & 255), float((packed.y >> 16) & 255), float(packed.y >> 24)) / 255.0;
+    uint top = packed.y >> 24;
+    float4 tint = float4(float(packed.y & 255), float((packed.y >> 8) & 255), float((packed.y >> 16) & 255), top >= 240 ? 255.0 : float(top)) / 255.0;
+    float sky = top >= 240 ? float(top & 15) : 0.0;
     TerrainOutput output;
     uint over = (packed.x >> 22) & 511;
     uint kind = (packed.x >> 31) | ((packed.x >> 12) & 1) << 1;
     bool placed = kind == 0 && over > 0;
     float2 place = placed ? float2(float((over - 1) % 17), float((over - 1) / 17)) / 16.0 : float2(0, 0);
-    output.streams = transformModelVertex(position, Normals[face], place, float4(tint.rgb * shade, tint.a), float2(shade, 0), instance);
+    output.streams = transformModelVertex(position, Normals[face], place, float4(tint.rgb * shade, tint.a), float2(shade, sky), instance);
     output.surface = uint4(face, (packed.x >> 13) & 511, placed ? 0 : over, placed ? 3 : kind == 3 ? 4 : kind);
     output.block = output.streams.base.world - FaceCorners[min(face, 5u) * 4 + ((packed.x >> 3) & 3)];
     return output;
@@ -184,6 +188,35 @@ float3 pixelMiddle(float3 world, float3 normal)
     return lerp(world, (floor(world * LightSteps) + 0.5) / LightSteps, across);
 }
 
+// The source's brightness of a sky light level by day at its default brightness setting, 0 at level
+// 0 and 1 at 15, its curve, the level's share f over 4 less three times f, taken halfway to one less
+// the fourth power of what the curve leaves, as the setting takes it, with the grey the source mixes
+// into every level left out, so a face the sky never reaches takes none. Level 13 reads 0.80 of 15 on
+// the screen.
+float skyBrightness(float level)
+{
+    float f = level / 15.0;
+    float curve = f / (4.0 - 3.0 * f);
+    float left = 1.0 - curve;
+    return lerp(curve, 1.0 - left * left * left * left, 0.5);
+}
+
+// The least light a face takes, the sky's light from all around as the engine lights an open face by
+// it, the environment's at its strength, under the face's sky level on the source's brightness curve
+// in linear light. The scene's field holds leaves solid, so without the floor a canopy's shade at
+// sky level 13 takes next to none of the sky's light, where the source lights it at 13. A face at sky
+// level 15 has nothing over it, and the field sees the sky above it itself, so the floor fades out
+// from 14 to 15, which keeps the field's shade beside a wall on open ground, where the whole sky's
+// light lifted it by 12 levels. Sunlit ground takes more than the floor from the engine and keeps its
+// own, and at night the sky's light is next to nothing.
+float3 skyFloor(float3 albedo, ModelVertexOutput input, float level)
+{
+    if (lighting.environment.z <= 0.0 || level <= 0.0 || level >= 15.0)
+        return float3(0.0);
+    float3 sky = environmentIrradiance(surfaceNormal(input)) * lighting.environment.x * screenOcclusion(input);
+    return albedo * sky * srgbToLinear(float3(skyBrightness(level))) * saturate(15.0 - level);
+}
+
 // A color lit at a point as the engine's lit lights it, all its light taken at the point itself but
 // the sun's shadow, taken at the middle of the point's step (pixelMiddle), so the sun's shadows step
 // along the grid and a lamp's light and the light from all around fall smoothly, where taking all of
@@ -191,7 +224,8 @@ float3 pixelMiddle(float3 world, float3 normal)
 // light, which litLight cuts by its shadow at the point, is cut by the step's instead, the light
 // reaching a flat face the same at both and the contact shadow, read from the screen's pixel, the
 // same for both. The terrain's material has no metallic-roughness map, so its factors are its own.
-float3 litStepped(float3 albedo, ModelVertexOutput input)
+// The light is no less than the sky's floor at the point's sky level (skyFloor).
+float3 litStepped(float3 albedo, ModelVertexOutput input, float sky)
 {
     if (drawnUnlit(input))
         return lit(albedo, input);
@@ -217,7 +251,7 @@ float3 litStepped(float3 albedo, ModelVertexOutput input)
             shown += arriving(sun, input.world, n) * reflected * sunContact(input, held) * (there - here);
         }
     }
-    return toDisplay(shown);
+    return toDisplay(max(shown, skyFloor(albedo, input, sky)));
 }
 
 // Whether a sample of a picture differs from another, as a point of glass's frame does from its
@@ -299,7 +333,7 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
         lighting.toEye = float3(0.0, length(streams.base.toEye), 0.0);
     float3 shown = int(surface.y) + 1 == int(flames.x) ? color.rgb * flames.y
         : int(surface.y) + 1 == int(flames.z) ? color.rgb * flames.w
-        : litStepped(color.rgb, lighting);
+        : litStepped(color.rgb, lighting, streams.uv2.y);
     // The land's edge fades into the haze, and the atmosphere hazes it from near on as the modpack's
     // shader's does, its share growing as one less e to the minus the cube of the distance.
     float distance = length(streams.base.toEye);
