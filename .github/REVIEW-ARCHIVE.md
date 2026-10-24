@@ -1458,6 +1458,15 @@ before a batch.
     and before item 127. Done at `80d149e` on 2026-10-24, the four settings read back live, VSync
     through the package.
 
+127. **The settings are kept across runs.** From item 124's first commit on 2026-10-24, no setting
+    is saved, the game having had no options file. The settings of every screen are written to an
+    options file in the save root as the source's options.txt is, one line a setting by screen and
+    name as voxel.options names them, written on a change and read at start before the world opens,
+    a missing or malformed line taking the default; a test writing, reading back and ignoring a bad
+    line, and the play check reading a setting after a restart. One commit, small, after item 126
+    and before item 94's arrows. Done at `d6532d1` on 2026-10-24, options.txt beside the saves, the
+    world's own settings left to its save.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

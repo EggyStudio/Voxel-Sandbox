@@ -5,45 +5,59 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `80d149e`, item 126, the Video Settings screen, read at 19:55 on 2026-10-24, carrying
-the review's files and the devlog's pair of Options and Video. Options lists it first among the
-areas' screens, Resource Packs on a full-width row; the window mode is Windowed, Fullscreen or
-Borderless read back through IsWindowFullscreen and IsWindowState, the resolution Current and then
-the monitor's sizes from GetMonitorModes at their highest refresh rate, 38 on the machine, setting
-the window's size or the fullscreen mode when the slider is let go, the frame limit 10 to 250 by 10
-and Unlimited through SetTargetFPS with Unlimited the default, and VSync through the window state,
-the package exposing it. Read live in a hidden window each mode read back as set, a resolution
-resized the window to 2880 by 1620 and Current put it back, VSync read off then on, and a limit of
-60 read 57; play.sh walks the resolution and the frame limit offscreen, 33 settings in all, the
-window mode and VSync left out since the engine reports them for a real window alone. 292 tests,
-play.sh 288 s on the GPU. The three pushed at 20:03 on 2026-10-24 after the run of `e643539` went
-green; the run watched. After `5f7bad8`, item 124's second commit, the moves out of F3, read at
-19:44 on 2026-10-24, carrying the review's files and the devlog's pair of F3. The F3 window holds
-three parts, Readings with the old lines and the clouds' face count and the hour, day and cycle
-added, Debugging with the light levels, the shaded corners, cull, mobs still and the global
-illumination, profile and effects windows, and World with the mode, save, and kind, seed and open,
-kept since no title screen holds a world's choice; moved off F3 are the quality, the probes, the
-field, the corner shade, the emission, bloom, occlusion, exposure, the hour, the day as the moon's
-phase, the cycle, the minutes, the fog, the clouds and the render distance; the README's F3 row says
-the F3 window and its eight mentions of the settings window point to the screen holding each
-setting. 292 tests, play.sh 322 s on the GPU. After `a82e342`, item 124's first commit, the screens,
-read at 19:34 on 2026-10-24, carrying the review's files and the devlog's sheet of the six screens.
-Options holds the field of view, the sensitivity, the GUI scale and the fading HUD with buttons to
-Render Settings, Post Processing, Sky and Visuals and Resource Packs; Render Settings holds nine,
-the render distance, the quality, the screen probes, the shadow distance, the corner shade, the
-emission, the field's cascades, cell and cascades a frame; Post Processing fourteen, bloom,
-occlusion, auto exposure, exposure, contrast, saturation, the engine's twelve tonemaps, the curve's
-four numbers, vignette, FXAA and motion blur; Sky and Visuals eight, the time, the daylight cycle,
-the day's length, the moon's phase, the sun's and the moon's strength, the clouds and the fog, with
-Sky Colors, nine colors that were constants in Sky.cs and live in a SkyColors class, each with R, G
-and B sliders, a swatch and Reset, and a Reset All, a change repainting and relighting the sky at
-once; the values read from the engine's getters where it has them, and voxel.options lists or sets
-any setting by screen and name. Departure, a test cannot build VoxelGame without the engine's app,
-the first ECS entry's gap, so the unit tests cover the option model and the 27 color channels
-against SkyColors and play.sh walks the 31 settings live, each set to mid-reach or the next choice,
-read back and set back, about 15 s on the GPU; no setting is saved yet, item 127. 292 tests, play.sh
-305 s on the GPU. The owner wrote to the game's session at about 19:2x that video settings are
-needed too, for the resolution and the window mode, item 126.
+Reviewed up to `d6532d1`, item 127, the options file, read at 20:05 on 2026-10-24, carrying the
+review's files. options.txt sits beside the saves next to resourcepacks.txt, one line a setting as
+the screen, a dot, the name with underscores, a colon and the value, a choice by its name; it is
+read once the world opens, each value applied through its setter with Settled run, and written when
+a screen is left by a button or Escape or when voxel.options or G changes a setting, written beside
+and moved over, only when the text differs; a bad line keeps the default, an unknown key, no colon,
+a value that is no number, NaN, out of reach or an unknown choice; the time, the daylight cycle and
+the moon belong to the world's save and stay out, and a transient run neither reads nor writes it;
+the options' own four settings are Option objects on a general screen, their labels unchanged. Two
+unit tests, the file written and read back into fresh settings with a second write of nothing
+changed writing nothing and the unkept hour out, and seven kinds of bad line each leaving the
+default with the good line beside read; play.sh's kept run starts on a file with the render distance
+at 5 and an unreadable corner shade line, reads 5 and 50 percent, sets the corner shade to 30 and
+finds both lines rewritten, the walk at 37 settings and about 20 s on the GPU, kept as it is. 294
+tests, play.sh 315 s on the GPU. Held until the run of `80d149e` ends, then pushed. After `80d149e`,
+item 126, the Video Settings screen, read at 19:55 on 2026-10-24, carrying the review's files and
+the devlog's pair of Options and Video. Options lists it first among the areas' screens, Resource
+Packs on a full-width row; the window mode is Windowed, Fullscreen or Borderless read back through
+IsWindowFullscreen and IsWindowState, the resolution Current and then the monitor's sizes from
+GetMonitorModes at their highest refresh rate, 38 on the machine, setting the window's size or the
+fullscreen mode when the slider is let go, the frame limit 10 to 250 by 10 and Unlimited through
+SetTargetFPS with Unlimited the default, and VSync through the window state, the package exposing
+it. Read live in a hidden window each mode read back as set, a resolution resized the window to 2880
+by 1620 and Current put it back, VSync read off then on, and a limit of 60 read 57; play.sh walks
+the resolution and the frame limit offscreen, 33 settings in all, the window mode and VSync left out
+since the engine reports them for a real window alone. 292 tests, play.sh 288 s on the GPU. The
+three pushed at 20:03 on 2026-10-24 after the run of `e643539` went green; the run watched. After
+`5f7bad8`, item 124's second commit, the moves out of F3, read at 19:44 on 2026-10-24, carrying the
+review's files and the devlog's pair of F3. The F3 window holds three parts, Readings with the old
+lines and the clouds' face count and the hour, day and cycle added, Debugging with the light levels,
+the shaded corners, cull, mobs still and the global illumination, profile and effects windows, and
+World with the mode, save, and kind, seed and open, kept since no title screen holds a world's
+choice; moved off F3 are the quality, the probes, the field, the corner shade, the emission, bloom,
+occlusion, exposure, the hour, the day as the moon's phase, the cycle, the minutes, the fog, the
+clouds and the render distance; the README's F3 row says the F3 window and its eight mentions of the
+settings window point to the screen holding each setting. 292 tests, play.sh 322 s on the GPU. After
+`a82e342`, item 124's first commit, the screens, read at 19:34 on 2026-10-24, carrying the review's
+files and the devlog's sheet of the six screens. Options holds the field of view, the sensitivity,
+the GUI scale and the fading HUD with buttons to Render Settings, Post Processing, Sky and Visuals
+and Resource Packs; Render Settings holds nine, the render distance, the quality, the screen probes,
+the shadow distance, the corner shade, the emission, the field's cascades, cell and cascades a
+frame; Post Processing fourteen, bloom, occlusion, auto exposure, exposure, contrast, saturation,
+the engine's twelve tonemaps, the curve's four numbers, vignette, FXAA and motion blur; Sky and
+Visuals eight, the time, the daylight cycle, the day's length, the moon's phase, the sun's and the
+moon's strength, the clouds and the fog, with Sky Colors, nine colors that were constants in Sky.cs
+and live in a SkyColors class, each with R, G and B sliders, a swatch and Reset, and a Reset All, a
+change repainting and relighting the sky at once; the values read from the engine's getters where it
+has them, and voxel.options lists or sets any setting by screen and name. Departure, a test cannot
+build VoxelGame without the engine's app, the first ECS entry's gap, so the unit tests cover the
+option model and the 27 color channels against SkyColors and play.sh walks the 31 settings live,
+each set to mid-reach or the next choice, read back and set back, about 15 s on the GPU; no setting
+is saved yet, item 127. 292 tests, play.sh 305 s on the GPU. The owner wrote to the game's session
+at about 19:2x that video settings are needed too, for the resolution and the window mode, item 126.
 
 Before it, `e643539` came, items 122, 125, 94's drops and 27's pin of 5.2.283 with `3d70b20`,
 `5113176` and `e04a1a5`, pushed at 19:14 on 2026-10-24, its run green, the play job 43.1 minutes.
@@ -684,14 +698,6 @@ full.
     bounds, kept meshed as the drawn ones are and counted in the profile as draw.sections.shadow;
     the deep cave's tops and edge lines read again at the entry's place, and the cost at the grove
     and in the cave before and after. One commit, with the package carrying the engine's item 101.
-
-127. **The settings are kept across runs.** From item 124's first commit on 2026-10-24, no setting
-    is saved, the game having had no options file. The settings of every screen are written to an
-    options file in the save root as the source's options.txt is, one line a setting by screen and
-    name as voxel.options names them, written on a change and read at start before the world opens,
-    a missing or malformed line taking the default; a test writing, reading back and ignoring a bad
-    line, and the play check reading a setting after a restart. One commit, small, after item 126
-    and before item 94's arrows.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the

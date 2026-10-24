@@ -169,7 +169,7 @@ public sealed class VoxelGame : IDisposable
     public BlastEffects Blasts { get; } = new();
 
     /// <summary>The arrows skeletons have loosed.</summary>
-    public Arrows Arrows { get; } = new();
+    public Arrows Arrows { get; } = new(GetApp().World.Resource<EcsWorld>());
 
     /// <summary>The world's furnaces by the place of their block.</summary>
     public Furnaces Furnaces { get; private set; } = new();
@@ -340,6 +340,7 @@ public sealed class VoxelGame : IDisposable
         Fires.Clear();
         Tnt.Clear();
         Arrows.Clear();
+        Step.Hits.Clear();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
         _blasts.Clear();
         // The mode and the inventory are the world's own, a new world's in creative with its hotbar of blocks.
@@ -622,7 +623,9 @@ public sealed class VoxelGame : IDisposable
                     break;
             }
         Mobs.Events.Clear();
-        foreach (var (damage, from) in Arrows.Update(World, Player.Body, seconds)) Harm(damage, from, "were shot by a skeleton");
+        // The arrows that struck the player as the engine's frame flew them.
+        foreach (var (damage, from) in Step.Hits) Harm(damage, from, "were shot by a skeleton");
+        Step.Hits.Clear();
         for (int i = _blasts.Count - 1; i >= 0; i--)
         {
             _blasts[i] = _blasts[i] with { Age = _blasts[i].Age + seconds };
@@ -1240,4 +1243,10 @@ public sealed class GameStep
     public float Seconds { get; set; }
 
     public bool PickUp { get; set; }
+
+    /// <summary>The arrows' strikes on the player, each its damage and where it came from, which the game deals and clears.</summary>
+    public List<(int Damage, Vector3 From)> Hits { get; } = [];
+
+    /// <summary>The chances the behaviors draw, as of an arrow's extra point of damage.</summary>
+    public Random Random { get; } = new();
 }

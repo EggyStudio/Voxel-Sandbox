@@ -96,7 +96,7 @@ public class HostileTests
         var shots = Hunt(skeleton, world, player, hour: 0, seconds: 5).OfType<MobShot>().ToList();
         Assert.InRange(shots.Count, 2, 3);
 
-        var arrows = new Arrows();
+        var arrows = new Arrows(new Engine.EcsWorld());
         arrows.Shoot(shots[0].From, shots[0].Velocity);
         var hits = new List<(int Damage, Vector3 From)>();
         for (float t = 0; t < 2; t += Step) hits.AddRange(arrows.Update(world, player, Step));
