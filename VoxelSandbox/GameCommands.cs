@@ -496,6 +496,14 @@ public static class GameCommands
         return $"the interface is drawn at {Gui.Scale} of the screen's pixels to each of its own";
     }
 
+    [Command("voxel.fov", "Sets the vertical field of view in degrees, 30 to 110 as the options' FOV, as a zoom narrows it for a screenshot: voxel.fov <degrees>")]
+    internal static string SetFieldOfView(float degrees)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        game.Player.FieldOfView = Math.Clamp(degrees, 30, 110);
+        return $"the field of view is {game.Player.FieldOfView:0.#} degrees";
+    }
+
     [Command("voxel.flicker", "Records each frame's change in the picture from the one before for some frames, the player turning some degrees and stepping some blocks ahead in equal parts over some frames from the tenth, into a file: voxel.flicker <frames> <turn> <step> <over> <path>")]
     internal static string Flicker(int frames, float turn, float step, int over, string path)
     {

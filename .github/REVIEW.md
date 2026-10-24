@@ -5,28 +5,22 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `edbc3b2`, the fiery-blast rule out so a blast lights none as the source's TNT and
-creepers light none, carrying the review's file and the devlog with its two fire pictures, after
-`ee557b3`, item 72, fire, and nothing else. Fire: the source's fire tick, its aging, burn-out,
-spread odds and the blocks that burn, flint and steel lighting a cell before any face where fire
-stands, the flames the source's floor, side and up models chosen by neighbors with the pack's
-animated fire, a hand putting a fire out and a block placed replacing it; departures, TNT's blast
-lighting a third of the cells it empties by the source's fiery-explosion rule where the source's own
-TNT lights none, to go, the light a lamp box in a clear masked material the field reads and every
-pass cuts so the flames step without restamping, the flames drawn at twice their color as the source
-draws fire at full light, and one fire texture, no humid burnout, rain or fire damage; voxel.fires
-added, three tests, two captures in the devlog; 260 tests, the strict build clean, play.sh clean on
-the GPU twice and unchanged. Read at 05:28 and 05:33 on 2026-10-24. Pushed at 05:47 after the build
-run of `cba35ca` ended green, its play job 24.5 minutes; the run watched. Next item 46's pictures at
-40 degrees with the village views moved, 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken
-again at 40 degrees, then 26 and the items in order; items 38's second part and 54 when their
-packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `cfdc298`, item 89, the clouds no longer drawn black by the fire's uniform, and
+nothing else, carrying the review's file: the fire's tile kept as one more than its number, 0 for
+none, so the clouds' own shader copy that sets nothing draws no face as flames; the play check
+reading a cloud's underside from 20 blocks under at noon, red 146 against a bound of 100 where a
+black underside read about 9, two seconds of the play job; 260 tests, the strict build clean,
+play.sh clean on the GPU. Read at 06:20 on 2026-10-24. Pushed at 06:20 after the build run of
+`edbc3b2` ended green, its play job 32.3 minutes; the run watched. Next item 46's final run at 40
+degrees with the village views moved and voxel.fov, 78, 80, 81, 69, 75, 74, 72 and 73, then the
+pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part and 54
+when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `edbc3b2` and `ee557b3` came, item 72, fire, pushed at 05:47 on 2026-10-24, their run
+green, the play job 32.3 minutes.
 
 Before it, `cba35ca` and `1eeeeff` came, item 73, pushed at 05:21 on 2026-10-24, their run green,
 the play job 24.5 minutes.
-
-Before it, `bfc4d39` came, the devlog and AGENTS.md's rows, with `2aea2bf`, `adefc9d` and `1dce7b7`,
-items 74 and 75, pushed at 04:43 on 2026-10-24, their run green, the play job 33.9 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -134,7 +128,8 @@ full.
     and undersides alike. The mend: the uniform holds the tile plus one, 0 naming none, so a copy
     that sets nothing matches no face, and the clouds keep their own shading; a test reading a
     cloud's underside at a known daytime view against a bound, failing without the mend. One commit,
-    small, before item 46's final run so the README's pictures show lit clouds.
+    small, before item 46's final run so the README's pictures show lit clouds. Done at `cfdc298` on
+    2026-10-24.
 
 54. **The game takes the engine's F1 and F3, its HUD in the hidden scope and its developer's parts
     as overlay sections (Decision 26).** The owner asked shortly before 07:05 on 2026-10-21 for F1

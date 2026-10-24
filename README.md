@@ -1,6 +1,6 @@
 # Voxel Sandbox
 
-<img src=".github/assets/head.gif" width="800" height="450" alt="Ten views of seed 1 two seconds each, a desert village by its pyramid, the badlands, a cherry grove, a plains village by its river, a swamp, the jungle, a snowy village by day and by night, a room lit by a lantern and torches, and the sun rising over the sea">
+<img src=".github/assets/head.gif" width="800" height="450" alt="Ten views of seeds 1 and 6 two seconds each, a desert village, the badlands, a cherry grove, a plains village by its river, a swamp, the jungle, a snowy village by day and by night, a room lit by a lantern and torches, and the sun rising over the sea">
 
 A voxel game written in C# on [3DEngine](https://github.com/EggyStudio/3DEngine) through its
 package on nuget.org, set in an endless generated world whose blocks are placed and broken, with its
@@ -143,8 +143,9 @@ or sets the resource packs on, and `voxel.reload` reads them again. `voxel.vital
 health and food, `voxel.hurt` harms the player, and
 `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global
 illumination, the scene's distance field and the sun's shadows, `voxel.hud` hides what is drawn over
-the world for a capture, and `voxel.scale` sets the interface's scale, at which `build/pictures.sh`
-takes the windows. Three measure the light. `voxel.flicker` records each frame's change in the
+the world for a capture, `voxel.scale` sets the interface's scale, at which `build/pictures.sh`
+takes the windows, and `voxel.fov` sets the field of view, which the script narrows to 40 degrees
+for its views of the world, as a zoom does for a screenshot. Three measure the light. `voxel.flicker` records each frame's change in the
 picture around a turn or a step into a file, with the first frame after it, the settled one and
 their difference beside it, `voxel.ring` reads the last frame's light around a circle on the ground
 by angle, and `voxel.depth` says how far the block under a pixel is. The engine's own `gi.*` and
@@ -200,8 +201,8 @@ nearest place of a biome.
 ## Plants, woods and colors
 
 <table><tr>
-<td><img src=".github/assets/world/meadow.webp" width="400" height="225" alt="Short grass, a poppy and the grass's own looks in a meadow of seed 1"></td>
-<td><img src=".github/assets/world/cherry-grove.webp" width="400" height="225" alt="A cherry grove of seed 1 from under the edge of its pink crowns, a lantern hanging from one"></td>
+<td><img src=".github/assets/world/meadow.webp" width="400" height="225" alt="Short grass, dandelions, an oxeye daisy and an azure bluet on the terraced plains of seed 1"></td>
+<td><img src=".github/assets/world/cherry-grove.webp" width="400" height="225" alt="A cherry grove of seed 1 from under the edge of its pink crowns, petals on its grass"></td>
 </tr></table>
 
 The ground grows Minecraft's plants by biome, short grass, tall grass two blocks high and ferns,
@@ -273,7 +274,7 @@ stands as it was until then.
 
 <table><tr>
 <td><img src=".github/assets/world/room.webp" width="400" height="225" alt="A closed room of oak planks at night lit by a hanging lantern and two torches, wool, a crafting table and a furnace on its floor"></td>
-<td><img src=".github/assets/world/village-night.webp" width="400" height="225" alt="A snowy village of seed 1 at night, its lanterns and torches lit"></td>
+<td><img src=".github/assets/world/village-night.webp" width="400" height="225" alt="A snowy village of seed 6 at night, its lanterns and torches lit"></td>
 </tr></table>
 
 A torch, a lantern, an end rod, and the soul torch and soul lantern of blue fire are smaller than a
@@ -332,7 +333,7 @@ laid at the ground's height would hang over it. `voxel.find ravine` gives the ne
 ## Trees and structures
 
 <table><tr>
-<td><img src=".github/assets/world/desert-village.webp" width="400" height="225" alt="A desert village of seed 1 beside its stepped pyramid in the evening"></td>
+<td><img src=".github/assets/world/desert-village.webp" width="400" height="225" alt="A desert village of seed 1 in the evening"></td>
 <td><img src=".github/assets/world/jungle.webp" width="400" height="225" alt="The jungle of seed 1 from over its canopy, its giant trees standing out of it"></td>
 </tr></table>
 

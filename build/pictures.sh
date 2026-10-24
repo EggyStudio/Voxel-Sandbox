@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Takes the README's pictures through ./e3d, each from the seed, the place, the hour and the heading
 # written below, so a change to how the world is drawn is shown again by running it. The game opens
-# offscreen on the overworld of seed 1, saving nothing, at its own render distance and light, with
-# every mob held where the land placed it and the clouds held where each picture places them, and
-# drawn with the three default resource packs resources/packs.json names, in its order, as the game
-# is drawn once it has fetched them at its first start. Each picture is captured at 1280 by 720 once
-# every column in reach is meshed. A view of the world is taken with the HUD hidden and encoded at
-# 800 by 450 by the engine checkout's build/webp.sh. A view of the interface is drawn at 2 of the
+# offscreen on the overworld of seed 1, and of seed 6 for a snowy village, saving nothing, at its
+# own render distance and light, with every mob held where the land placed it and the clouds held
+# where each picture places them, and drawn with the three default resource packs
+# resources/packs.json names, in its order, as the game is drawn once it has fetched them at its
+# first start. Each picture is captured at 1280 by 720 once every column in reach is meshed. A view
+# of the world is taken with the HUD hidden at a field of view of 40 degrees and encoded at 800 by
+# 450 by the engine checkout's build/webp.sh. A view of the interface is drawn at 2 of the
 # screen's pixels to each of its own and cut out at 800 by 450 around what it shows, so its pixels
 # keep their edges. The animation at the README's head is ten of the views, two seconds each, as a
 # GIF with a palette of its own for each frame, which every viewer of a README plays.
@@ -65,6 +66,10 @@ cmd voxel.still on
 cmd voxel.hud off
 cmd voxel.fly on
 cmd voxel.scale 2
+# The views of the world are taken at a field of view of 40 degrees, as a zoom narrows it for a
+# screenshot, each from where the same subject fills the frame, stepped back level from where 70
+# degrees framed it about twice as far off and turned up to keep it in the middle.
+cmd voxel.fov 40
 
 # Puts the player at a place and waits until the world stands and every column in reach of the
 # place is generated and meshed.
@@ -141,47 +146,61 @@ right() { cmd input.move "$@"; cmd input.drag Right 0 0 1 1; }
 
 # The biomes, each from inside it in the afternoon, the badlands' mesas over a river's canyon, a
 # swamp's pools among its oaks, the savanna's acacias over its grass and the snowy taiga's spruces.
-view badlands 1440 69 608 15 0 -12 0
-view swamp -32 63 -1440 15 0 -12 0
-view savanna 352 72 -448 15 90 -12 0
-view snowy-taiga 256 70 1312 15 90 -12 0
-# A cherry grove from under the edge of its crowns, a lantern hanging from one and pink petals on the
-# grass, and the jungle's giant trees from over its canopy.
+view badlands 1440 79 653 15 0 -12 0
+view swamp -32 63 -1404 15 0 -6.3 0
+view savanna 316 72 -448 15 90 -6.3 0
+view snowy-taiga 228.4 70 1312 15 90 -6.3 0
+# A cherry grove from under the edge of its crowns, pink petals on the grass, from where 70 degrees
+# took it, since a step back stands in its crowns, and the jungle's giant trees from over its canopy.
 view cherry-grove -736 79 -960 16 345 -12 0
-view jungle -928 98 -1376 15 0 -12 0
-# The plants at a meadow's patch of flowers, seen from a step away, and a ravine on the plains at
-# noon, the sun down its walls and its magma on its floor.
-view meadow -253.5 69 72.5 15 0 -28 0
-view ravine -195.3 74 216.2 12 253 -30 0
+view jungle -928 98 -1349 15 0 -6.3 0
+# The plants at a patch of flowers on the plains' terraces, seen from a few steps away, and a ravine
+# on the plains at noon, the sun down its walls and its magma on its floor.
+view meadow -233 72 72.5 15 0 -30 0
+view ravine -176.3 74 210.4 12 253 -16.7 0
 
-# The villages: the desert's beside its pyramid in the evening, the snowy plains' among its spruces,
-# and the plains' by its river with two sheep, a cow, a pig and a villager set down in the meadow
-# before it, as the land's herds graze about its villages, so each run shows them where the last did.
-view desert-village 720.4 66 -697.6 17 135 -18 0
-view snowy-village 454.4 69 77.4 15 135 -18 0
-go 15.4 66 700.6
-for mob in "sheep 0 22.5 55 693.5 200" "sheep 0 25.5 55 696.5 150" "cow 0 21.5 54 689.5 250" "pig 0 26.5 54 692.5 120" "villager 0 25.5 54 690.5 30"; do
+# Three villages, the desert's in the evening from the south of its well, the snowy plains', and the
+# plains' by its river with two sheep, a cow, a pig and a villager set down in the meadow before it,
+# as the land's herds graze about its villages, so each run shows them where the last did.
+view desert-village 697 70 -660 17 350 -14 0
+# A snowy village among its spruces by day and by night, its lanterns and torches lit, on seed 6,
+# since seed 1 holds none within 1,600 blocks, then seed 1 again, before the plains village's mobs
+# are set down. A world opened anew lands the player, so the flight is taken again.
+cmd voxel.world overworld 6
+cmd frames.wait 60
+cmd voxel.still on
+cmd voxel.fly on
+view snowy-village -189.1 68 95.2 15 225 -14 0
+view village-night -189.1 68 95.2 21 225 -14 0
+cmd voxel.world overworld 1
+cmd frames.wait 60
+cmd voxel.still on
+cmd voxel.fly on
+go 550.5 72 -356.5
+for mob in "sheep 0 582.5 56 -386.5 200" "sheep 0 585.5 56 -389.5 150" "cow 0 580.5 56 -390.5 250" "pig 0 586.5 56 -385.5 120" "villager 0 584.5 55 -392.5 30"; do
   place $mob
 done
-view plains-village 15.4 66 700.6 16 45 -18 0
-# The same village by night, its lanterns and torches lit.
-view village-night 454.4 69 77.4 21 135 -18 0
+view plains-village 550.5 72 -356.5 16 45 -17 0
 
-# The sea at sunrise from over the water, the sun's square over an island, and the sky at midnight
-# with no moon up, its stars over the island with the clouds out of the way.
-view sunrise -64 72 -416 6.3 90 3 0
+# The sea at sunrise from over the water, the sun's square over an island, stepped back no farther
+# than the island stays within the land drawn, and the sky at midnight with no moon up, its stars
+# over the island with the clouds out of the way.
+view sunrise -104 72 -416 6.3 90 1.6 0
 cmd voxel.day 3
-view night -64 72 -416 0 200 18 off
+view night -64 72 -416 0 200 9 off
 cmd voxel.day 0
 
 # The game's own art beside the packs', the plains village again with every pack off.
 cmd voxel.packs none
-view plains-village-own 15.4 66 700.6 16 45 -18 0
+view plains-village-own 550.5 72 -356.5 16 45 -17 0
 cmd voxel.packs "$(printf '%s; ' "${packs[@]}" | sed 's/--pack; //g; s/; $//')"
+
 
 # A closed room of oak planks in the air at night, lit by a lantern hanging from its ceiling and two
 # torches on its far walls, with blocks of wool, a crafting table and a furnace on its floor to take
-# the light's color, seen from a corner.
+# the light's color, seen from a corner at 70 degrees, since its walls keep the eye from stepping
+# back, as the interface's views are taken at the field of view the game plays at.
+cmd voxel.fov 70
 go 304 103 304
 cmd voxel.room 300 100 300 308 105 308 oak_planks
 cmd voxel.set 304 104 304 hanging_lantern
@@ -196,12 +215,12 @@ view room 301.5 101.4 301.5 21 135 -4 0
 # ground facing the village and its mobs, the hotbar's nine slots set to tools, blocks and food one by
 # one, since the game begins with blocks in them, more in the inventory, health and food down a few
 # points, and the HUD shown.
-go 14.5 70 702.5
+go 576.5 62 -378.5
 cmd voxel.fly off
 cmd frames.wait 120
 cmd voxel.mode survival
 cmd voxel.time 16
-cmd voxel.look 45 -6
+cmd voxel.look 41 -6
 cmd voxel.clouds on 0
 cmd voxel.hud on
 keys=(One Two Three Four Five Six Seven Eight Nine)
@@ -251,7 +270,7 @@ cmd input.move $(slot 116 35)
 window furnace center
 cmd input.key E 1
 cmd voxel.set "$bx" "$by" "$bz" air
-cmd voxel.look 45 -6
+cmd voxel.look 41 -6
 
 # The menu's options over the darkened world.
 cmd input.key Escape 1
