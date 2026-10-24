@@ -698,8 +698,14 @@ A color's screen shows the color under its three sliders, with Reset, which puts
 started, and the screen of the sky's colors has Reset All. A light is set by its hue, each channel a
 share of the largest channel of the color it starts at, so it starts with one channel at 255, and
 its strength by the Sun and Moon Strength sliders. The sky's colors are its top and its horizon by
-day, at sunset and by night, and the night's tint multiplies them as far as the night has come. No
-setting is saved, and each starts as above at every start.
+day, at sunset and by night, and the night's tint multiplies them as far as the night has come. The
+settings are kept across runs in `options.txt` beside the saves, as Minecraft keeps its own, one
+line a setting, its screen, general for the options' own, and its name joined by a point and its
+words by underscores, then a colon and its value, as `render.Render_Distance:12` or
+`video.Window_Mode:Borderless`. The game reads it as it starts and writes it as a screen of the menu
+is left, or as `voxel.options` or G changes a setting, and a line it cannot read leaves its setting
+at the default above. The time, the daylight cycle and the moon are the world's, which its save
+keeps, and a transient run neither reads the file nor writes it.
 
 A world opens behind a black loading screen, with the world's name over a bar of how far its loading
 has come, and under it, while the default packs are fetched, a line and a bar of their own. Half the

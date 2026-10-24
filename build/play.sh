@@ -917,16 +917,16 @@ echo "the draws at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ 
 [ -n "$draws" ] && [ "$draws" -le 400 ] || fail "the frame records more than 400 draws of sections at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ sections, [0-9]+ draws' || echo "$state")"
 
 check "the options"
-# Each setting of the Video, Render, Post Processing and Sky and Visuals screens is set to the
-# middle of its reach, or to its low end where it stands there, or to its next choice, read back as
-# set, through the engine's own state where the setting reads it there, and set back as it was, to
-# its step's nearest where it stood between two, as the hour can. A setting is named in
-# voxel.options by its words joined by underscores. The sky's colors' channels, which change only
-# the game's own numbers, are walked by the tests, and the window's mode and vsync are left out,
-# which the engine says of a window alone and an offscreen run has none.
+# Each setting of the options' own screen and of the Video, Render, Post Processing and Sky and
+# Visuals screens is set to the middle of its reach, or to its low end where it stands there, or to
+# its next choice, read back as set, through the engine's own state where the setting reads it
+# there, and set back as it was, to its step's nearest where it stood between two, as the hour can.
+# A setting is named in voxel.options by its words joined by underscores. The sky's colors'
+# channels, which change only the game's own numbers, are walked by the tests, and the window's mode
+# and vsync are left out, which the engine says of a window alone and an offscreen run has none.
 same() { awk -v a="$1" -v b="$2" 'BEGIN { d = a - b; exit !(d < 0.001 && d > -0.001) }'; }
 walked=0
-for screen in video render post sky; do
+for screen in general video render post sky; do
   mapfile -t lines < <(ask voxel.options "$screen")
   for line in "${lines[@]}"; do
     name=${line%%: *}
@@ -959,23 +959,32 @@ for screen in video render post sky; do
   done
 done
 echo "the options screens' $walked settings each set and set back"
-[ "$walked" -ge 33 ] || fail "the options screens hold $walked settings, where 33 were written"
+[ "$walked" -ge 37 ] || fail "the options screens hold $walked settings, where 37 were written"
 
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
 if grep -F 'Validation Error' "$log"; then fail "the validation layer reported an error"; fi
 
-check "the screenshot"
+check "the screenshot and the options file"
 # F2 in a run that keeps its files writes the frame as a PNG into the screenshots folder beside the
-# saves, named by the time. The list of packs is made empty first, so the run fetches none.
+# saves, named by the time. The list of packs is made empty first, so the run fetches none. The
+# options file beside it is read as the run starts, a render distance of 5 taken and a corner shade
+# it cannot read left at its default, and is written again as a setting changes.
 mkdir -p "$data/VoxelSandbox"
 : > "$data/VoxelSandbox/resourcepacks.txt"
+printf 'render.Render_Distance:5\nrender.Corner_Shade:far\n' > "$data/VoxelSandbox/options.txt"
 keep() { XDG_DATA_HOME="$data" ./e3d "$@"; }
 keep open "$program" --offscreen --flat --world shot --json > captures/opened-kept.json || fail "the run that keeps its files did not open"
 kept=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' captures/opened-kept.json)
 [ -n "$kept" ] || fail "e3d opened the run that keeps its files and did not say its process"
 keep command frames.wait 30 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command frames.wait ended with $?, $(head -n 1 "$said")"
+answer=$(keep command voxel.options render --timeout 600 --session "$kept" 2> "$said") || fail "./e3d command voxel.options ended with $?, $(head -n 1 "$said")"
+grep -q '^Render Distance: 5 chunks, ' <<< "$answer" || fail "the options file's render distance of 5 was not read at the start, $(grep '^Render Distance' <<< "$answer")"
+grep -q '^Corner Shade: 50%, ' <<< "$answer" || fail "the options file's corner shade it cannot read did not leave the default, $(grep '^Corner Shade' <<< "$answer")"
+keep command voxel.options render Corner_Shade 30 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command voxel.options ended with $?, $(head -n 1 "$said")"
+grep -qx 'render.Corner_Shade:30' "$data/VoxelSandbox/options.txt" && grep -qx 'render.Render_Distance:5' "$data/VoxelSandbox/options.txt" \
+  || fail "the options file was not written as the corner shade changed, $(tr '\n' ' ' < "$data/VoxelSandbox/options.txt" | cut -c1-300)"
 keep command input.key F2 1 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command input.key F2 ended with $?, $(head -n 1 "$said")"
 keep command frames.wait 5 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command frames.wait ended with $?, $(head -n 1 "$said")"
 keep stop --session "$kept" --quiet > /dev/null 2> "$said" || fail "./e3d stop of the run that keeps its files ended with $?, $(head -n 1 "$said")"
@@ -988,4 +997,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"

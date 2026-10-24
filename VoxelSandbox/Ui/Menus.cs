@@ -130,12 +130,8 @@ public sealed class Menus
         }
 
         Title("Options", top);
-        game.Player.FieldOfView = MathF.Round(Gui.Slider($"FOV: {game.Player.FieldOfView:0}", Cell(0, 0, top), game.Player.FieldOfView, 30, 110, out _));
-        // The sensitivity in hundredths of the game's own, 100 the 0.0025 radians a pixel it starts at.
-        var sensitivity = Gui.Slider($"Sensitivity: {game.Player.Sensitivity / 0.0025f * 100:0}%", Cell(1, 0, top), game.Player.Sensitivity / 0.0025f * 100, 10, 200, out _);
-        game.Player.Sensitivity = MathF.Round(sensitivity) / 100 * 0.0025f;
-        if (Gui.Button($"GUI Scale: {(Gui.Chosen == 0 ? "Auto" : Gui.Chosen.ToString())}", Cell(0, 1, top))) Gui.Chosen = (Gui.Chosen + 1) % 5;
-        if (Gui.Button($"Fading HUD: {(game.Fade.Enabled ? "On" : "Off")}", Cell(1, 1, top))) game.Fade.Enabled = !game.Fade.Enabled;
+        var general = screens.General.Options;
+        for (int i = 0; i < general.Count; i++) Draw(general[i], Cell(i % 2, i / 2, top));
         if (Gui.Button("Video Settings...", Cell(0, 2, top))) Open = Menu.Video;
         if (Gui.Button("Render Settings...", Cell(1, 2, top))) Open = Menu.Render;
         if (Gui.Button("Post Processing...", Cell(0, 3, top))) Open = Menu.PostProcessing;

@@ -4,8 +4,75 @@ using Xunit;
 
 namespace VoxelSandbox.Tests;
 
-public class OptionTests
+public sealed class OptionTests : IDisposable
 {
+    // A folder of this test's own, removed with it, so no run reads another's options.
+    private readonly string _folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_folder)) Directory.Delete(_folder, recursive: true);
+    }
+
+    // Settings over fields of their own, a slider, a button and one the file leaves out, as a screen holds them.
+    private sealed class Held
+    {
+        public float Distance = 12, Hour = 10;
+        public GlobalIllumination Quality = GlobalIllumination.High;
+
+        public List<(string Name, IReadOnlyList<Option> Options)> Screens() =>
+        [
+            ("render", [
+                new Option("Render Distance", () => Distance, v => Distance = v) { Low = 2, High = 16, Step = 1 },
+                Option.Choice("Global Illumination", () => Quality, q => Quality = q),
+            ]),
+            ("sky", [new Option("Time", () => Hour, v => Hour = v) { High = 24, Kept = false }]),
+        ];
+    }
+
+    [Fact]
+    public void The_Options_File_Keeps_Each_Setting_A_Line_And_A_New_Run_Reads_Them()
+    {
+        var file = new OptionsFile(_folder);
+        var before = new Held { Distance = 6, Quality = GlobalIllumination.Medium, Hour = 3 };
+        Assert.True(file.Write(before.Screens()));
+        Assert.Equal(["render.Render_Distance:6", "render.Global_Illumination:Medium"], File.ReadAllLines(file.File));
+        // Nothing changed, nothing written.
+        Assert.False(file.Write(before.Screens()));
+
+        var after = new Held();
+        Assert.Equal(2, new OptionsFile(_folder).Read(after.Screens()));
+        Assert.Equal(6, after.Distance);
+        Assert.Equal(GlobalIllumination.Medium, after.Quality);
+        // The hour is the world's, which the file leaves alone.
+        Assert.Equal(10, after.Hour);
+    }
+
+    [Fact]
+    public void A_Line_The_Options_File_Cannot_Read_Leaves_Its_Setting_At_Its_Default()
+    {
+        Directory.CreateDirectory(_folder);
+        var file = new OptionsFile(_folder);
+        foreach (var lines in new[]
+        {
+            "render.Render_Distance:far\nrender.Global_Illumination:Low",
+            "render.Render_Distance:40\nrender.Global_Illumination:Low",
+            "render.Render_Distance:NaN\nrender.Global_Illumination:Low",
+            "render.Render_Distanc:6\nrender.Global_Illumination:Low",
+            "render.Render_Distance 6\nrender.Global_Illumination:Low",
+            "render.Render_Distance:8\nrender.Global_Illumination:Brightest",
+            "sky.Time:5\nrender.Global_Illumination:Low",
+        })
+        {
+            File.WriteAllText(file.File, lines);
+            var held = new Held();
+            new OptionsFile(_folder).Read(held.Screens());
+            Assert.Equal(lines.Contains("Distance:8") ? 8 : 12, held.Distance);
+            Assert.Equal(lines.Contains("Brightest") ? GlobalIllumination.High : GlobalIllumination.Low, held.Quality);
+            Assert.Equal(10, held.Hour);
+        }
+    }
+
     [Fact]
     public void A_Slider_Holds_Within_Its_Ends_And_Rounds_To_Its_Step()
     {

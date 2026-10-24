@@ -30,6 +30,9 @@ public sealed class Option(string name, Func<float> get, Action<float> set)
     /// <summary>What is done once a slider is let go or a button pressed, work too slow for every frame a slider moves.</summary>
     public Action? Settled { get; init; }
 
+    /// <summary>Whether the options file keeps the setting across runs, as it does all but the world's own, which its save keeps.</summary>
+    public bool Kept { get; init; } = true;
+
     public float Value => get();
 
     /// <summary>The value as the label shows it, a button's choice by its name.</summary>
@@ -124,6 +127,16 @@ public sealed class OptionScreens
         var light = game.Light;
         var renderer = game.Renderer;
         var sky = game.Sky;
+        var player = game.Player;
+        General = new("Options",
+        [
+            new("FOV", () => player.FieldOfView, v => player.FieldOfView = v) { Low = 30, High = 110, Step = 1, Format = v => $"{v:0}" },
+            // The sensitivity in hundredths of the game's own, 100 the 0.0025 radians a pixel it starts at.
+            new("Sensitivity", () => player.Sensitivity / 0.0025f * 100, v => player.Sensitivity = v / 100 * 0.0025f) { Low = 10, High = 200, Step = 1, Format = Option.Percent },
+            new("GUI Scale", () => Gui.Chosen, v => Gui.Chosen = (int)v) { Choices = ["Auto", "1", "2", "3", "4"] },
+            Option.Toggle("Fading HUD", () => game.Fade.Enabled, on => game.Fade.Enabled = on),
+        ], []);
+
         var video = VideoSettings = new VideoSettings();
         Video = new("Video Settings",
         [
@@ -226,13 +239,13 @@ public sealed class OptionScreens
         var colors = sky.Colors;
         SkyAndVisuals = new("Sky and Visuals",
         [
-            new("Time", () => sky.Hour, v => sky.Hour = v % 24) { High = 24, Step = 0.25f, Format = v => $"{(int)v:00}:{(int)(v % 1 * 60):00}" },
-            Option.Toggle("Daylight Cycle", () => sky.Cycle, on => sky.Cycle = on),
+            new("Time", () => sky.Hour, v => sky.Hour = v % 24) { High = 24, Step = 0.25f, Format = v => $"{(int)v:00}:{(int)(v % 1 * 60):00}", Kept = false },
+            new("Daylight Cycle", () => sky.Cycle ? 1 : 0, v => sky.Cycle = v >= 0.5f) { Choices = ["Off", "On"], Kept = false },
             new("Day Length", () => sky.DayMinutes, v => sky.DayMinutes = v) { Low = 1, High = 60, Step = 1, Format = v => $"{v:0} min" },
             // The phase is set by moving the count of days on to the next day of that phase, so the
             // days counted never go back.
             new("Moon", () => Sky.MoonPhase(sky.Day, 18), v => sky.Day += ((int)v - Sky.MoonPhase(sky.Day, 18) + Phases.Length) % Phases.Length)
-                { Choices = Phases },
+                { Choices = Phases, Kept = false },
             new("Sun Strength", () => colors.SunStrength / SkyColors.DefaultSunStrength * 100, v =>
             {
                 colors.SunStrength = SkyColors.DefaultSunStrength * v / 100;
@@ -251,6 +264,9 @@ public sealed class OptionScreens
         SkyColors = colors;
     }
 
+    /// <summary>The options' own settings, over the buttons to the other screens.</summary>
+    public OptionScreen General { get; }
+
     public OptionScreen Video { get; }
 
     public VideoSettings VideoSettings { get; }
@@ -266,9 +282,10 @@ public sealed class OptionScreens
 
     public SkyColors SkyColors { get; }
 
-    /// <summary>The screens of settings by the name a command gives each, video, render, post, sky and colors, the last every channel of every color.</summary>
+    /// <summary>The screens of settings by the name a command and the options file give each, general, video, render, post, sky and colors, the last every channel of every color.</summary>
     public IEnumerable<(string Name, IReadOnlyList<Option> Options)> All()
     {
+        yield return ("general", General.Options);
         yield return ("video", Video.Options);
         yield return ("render", Render.Options);
         yield return ("post", PostProcessing.Options);

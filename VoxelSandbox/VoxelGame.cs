@@ -22,6 +22,9 @@ public sealed class VoxelGame : IDisposable
     private const float SaveSeconds = 30;
 
     private readonly bool _transient;
+    private readonly OptionsFile? _options;
+    // The menu open as the last frame was drawn, so leaving a screen of it writes the settings.
+    private Menu _menuSeen;
     private readonly Random _random = new();
     // Seconds food takes to eat, as Minecraft's 32 ticks.
     private const float EatSeconds = 1.6f;
@@ -56,8 +59,15 @@ public sealed class VoxelGame : IDisposable
         if (given.Count == 0 && !transient && !File.Exists(PackList.Default.File)) FetchDefaults();
         Light.ApplyAll();
         Open(kind, seed, name);
+        // The settings kept from the run before, read once the world is open, so the corner shade
+        // has sections to shade again; a transient run neither reads nor writes them.
+        _options = transient ? null : OptionsFile.Default;
+        _options?.Read(Menus.Screens(this).All());
         Capture(true);
     }
+
+    /// <summary>Writes the settings of the options' screens to the options file where any has changed, unless the run is transient.</summary>
+    public void KeepOptions() => _options?.Write(Menus.Screens(this).All());
 
     public VoxelWorld World { get; private set; } = null!;
 
@@ -758,7 +768,11 @@ public sealed class VoxelGame : IDisposable
         if (IsKeyPressed(Key.F1)) HudHidden = !HudHidden;
         if (IsKeyPressed(Key.F2)) Screenshot();
         if (_said is var (said, age)) _said = age + GetFrameTime() < Hud.SaidSeconds ? (said, age + GetFrameTime()) : null;
-        if (IsKeyPressed(Key.G)) Light.NextQuality();
+        if (IsKeyPressed(Key.G))
+        {
+            Light.NextQuality();
+            KeepOptions();
+        }
     }
 
     private void Capture(bool captured)
@@ -1116,6 +1130,12 @@ public sealed class VoxelGame : IDisposable
         Menus.Draw(this);
         // A button that shut the menu gives the cursor back to the game.
         if (menu != Menu.None && Menus.Open == Menu.None) Capture(!Settings.Open);
+        // A screen of the menu left, by a button or by Escape, writes the settings as they stand.
+        if (Menus.Open != _menuSeen)
+        {
+            if (_menuSeen != Menu.None) KeepOptions();
+            _menuSeen = Menus.Open;
+        }
         Lap("draw.interface");
         EndDrawing();
         Lap("draw.end");

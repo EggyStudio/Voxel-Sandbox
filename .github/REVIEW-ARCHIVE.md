@@ -1446,6 +1446,18 @@ before a batch.
     at `5f7bad8` on 2026-10-24 with the moves, F3 holding its readings, the debugging toggles and
     the world's choice; the video settings and the saved options follow as items 126 and 127.
 
+126. **A Video Settings screen holds the resolution, the window mode, the frame limit and VSync.**
+    The owner wrote to the game's session at about 19:2x on 2026-10-24 that video settings are
+    needed too, for the resolution and the window mode. The screen, beside the others under Options,
+    holds the resolution from the monitor's modes through GetMonitorModes, the window mode as
+    windowed, fullscreen or borderless through the engine's SetWindowFullscreenMode and
+    ToggleBorderlessWindowed, the frame limit through SetTargetFPS, and VSync where the engine
+    exposes it or an ASKS.md entry where it does not; each applied at once and read back,
+    voxel.options covering them, the README's table gaining the rows; play.sh walks them where the
+    runner allows, the window mode left out offscreen. One commit, after item 124's second commit
+    and before item 127. Done at `80d149e` on 2026-10-24, the four settings read back live, VSync
+    through the package.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
