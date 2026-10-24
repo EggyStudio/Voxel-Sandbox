@@ -62,9 +62,10 @@ and no session.** Documents speak for the game. By review.
 capture sent to the owner, is saved in the repository in the commit of the work it belongs to.** The
 pictures are the devlog's substance, and one left in a session's scratch space is gone with the
 session, as a day's radiance cascade captures were. Each is a WebP under `.github/devlog/`, named by
-the date and the item, as `2026-10-24-item-51-emitters.webp`, and the commit's sentence is its
-caption in DEVLOG.md, which is generated from them; a picture of no item takes the day and a name.
-By review.
+the date and the item, as `2026-10-24-item-51-emitters.webp`, and its caption in DEVLOG.md, which is
+generated from them, is the line the folder's `captions.md` gives it, the file's name then a bar
+then one sentence, or the commit's sentence where the file has none; a picture of no item takes the
+day and a name. By review.
 
 ## 6 Build and package
 
