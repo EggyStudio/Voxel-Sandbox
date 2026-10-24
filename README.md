@@ -854,8 +854,11 @@ Sections are drawn by their distance from the player and by what the eye can see
 visibility graph has it. Each section knows which of its six faces its open cells join, and a flood
 from the eye's section passes into the next only across faces so joined, never turning back, so the
 land under the ground and behind a cave's or a closed room's walls is left out. From the eye's own
-section it leaves by the faces the open cells around the eye reach. `voxel.cull` and the settings
-window turn it off. Sections are not culled to the view's frustum, because a mesh left out of a
+section it leaves by the faces the open cells around the eye reach. The flood is kept until the eye
+enters another section or leaves it by other faces, a column comes or goes, or a block that may hide
+what is behind it is set or taken, since over 24 sections a column it walks thousands and took 4.8
+ms of each frame at seed 1's cherry grove at 12 columns. `voxel.cull` and the settings window turn
+it off. Sections are not culled to the view's frustum, because a mesh left out of a
 frame leaves the field, and the indirect light it reflected or blocked goes with it until the field
 settles again, where the land the flood leaves out lies behind walls the field holds, so a cave
 lit by a glowstone looks the same either way. Each of the engine's passes leaves out on its own the

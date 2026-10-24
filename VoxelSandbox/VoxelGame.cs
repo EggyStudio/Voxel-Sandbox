@@ -1035,13 +1035,17 @@ public sealed class VoxelGame : IDisposable
         else if (Fog) Renderer.Fog(Sky.Horizon, reach * 0.65f, reach * 0.95f, (0.95f - 0.25f) * 0.325f, 0.5f * MathF.Min(1, 192 / reach), sky: true);
         else Renderer.Fog(Sky.Horizon, float.MaxValue, float.MaxValue);
 
+        _laps.Restart();
         BeginDrawing();
         ClearBackground(Sky.Horizon);
         BeginMode3D(Player.Camera);
         DrawSkybox();
         Sky.Draw(Player.Eye, Renderer.Hazed);
+        Lap("draw.sky");
         Renderer.Draw(World, Player.Eye, RenderDistance);
+        Lap("draw.sections");
         Far.Draw(Renderer.FarMaterial);
+        Lap("draw.far");
         MobRenderer.Draw(Mobs.All, Player.Eye);
         DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Size))), Player.Eye, GetTime());
         // A burning TNT shows white every other five ticks, a hair larger than its cube.
@@ -1053,7 +1057,9 @@ public sealed class VoxelGame : IDisposable
         // An explosion's flash, a ball swelling to the power's size and fading over half a second.
         foreach (var (at, power, age) in _blasts)
             DrawSphere(at, power * (0.4f + age), new Color(255, 236, 200, (byte)(220 * (1 - age / 0.5f))));
+        Lap("draw.things");
         Clouds.Draw(Player.Eye, RenderDistance, Sky.Horizon);
+        Lap("draw.clouds");
         // The cracks are the block's own, shown with the interface hidden as the source shows them,
         // and the outline the interface's.
         if (Target is { } hit && Mode.Touches())
@@ -1100,7 +1106,19 @@ public sealed class VoxelGame : IDisposable
         Menus.Draw(this);
         // A button that shut the menu gives the cursor back to the game.
         if (menu != Menu.None && Menus.Open == Menu.None) Capture(!Settings.Open);
+        Lap("draw.interface");
         EndDrawing();
+        Lap("draw.end");
+    }
+
+    // The time each part of the frame's drawing takes, given to the engine's frame profile, which
+    // `e3d command profile` reports beside the engine's own.
+    private readonly System.Diagnostics.Stopwatch _laps = new();
+
+    private void Lap(string name)
+    {
+        SetProfileValue(name, _laps.Elapsed.TotalMilliseconds);
+        _laps.Restart();
     }
 
     /// <summary>The loading screen's background, dark as Minecraft's is.</summary>

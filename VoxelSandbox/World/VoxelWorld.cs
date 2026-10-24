@@ -42,6 +42,13 @@ public sealed class VoxelWorld
 
     public int ColumnCount => _columns.Count;
 
+    /// <summary>
+    /// A count of the changes that may open or shut the way between sections, a column coming or
+    /// going and a block that may hide what is behind it set or taken, by which
+    /// <see cref="Visibility"/> knows to flood again.
+    /// </summary>
+    public int Openings { get; private set; }
+
     public IEnumerable<ChunkColumn> Columns => _columns.Values;
 
     public static int ColumnOf(int block) => block >> Section.Shift;
@@ -58,6 +65,7 @@ public sealed class VoxelWorld
     public void Add(ChunkColumn column)
     {
         _columns[(column.X, column.Z)] = column;
+        Openings++;
         for (int dz = -1; dz <= 1; dz++)
             for (int dx = -1; dx <= 1; dx++)
                 for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++)
@@ -69,7 +77,11 @@ public sealed class VoxelWorld
         _light.Join(column);
     }
 
-    public bool Remove(int x, int z) => _columns.Remove((x, z));
+    public bool Remove(int x, int z)
+    {
+        Openings++;
+        return _columns.Remove((x, z));
+    }
 
     /// <summary>The block at a world position, air above and below the world and in a column not loaded.</summary>
     public BlockId GetBlock(int x, int y, int z)
@@ -130,6 +142,7 @@ public sealed class VoxelWorld
         if (was == block) return false;
         column.Set(lx, y, lz, block);
         column.Changed = true;
+        if (Blocks.IsOpaque(was) || Blocks.IsOpaque(block)) Openings++;
         _light.Changed(x, y, z, block);
 
         var key = new SectionKey(column.X, y >> Section.Shift, column.Z);

@@ -515,7 +515,10 @@ public sealed class ChunkRenderer : IDisposable
         int cx = (int)MathF.Floor(eye.X) >> Section.Shift, cz = (int)MathF.Floor(eye.Z) >> Section.Shift;
         var reach = renderDistance * renderDistance + renderDistance;
         int draws = 0, triangles = 0, lamps = 0, culled = 0;
+        var laps = System.Diagnostics.Stopwatch.StartNew();
         if (Cull) _visibility.Flood(world, eye, renderDistance, Atlas);
+        SetProfileValue("draw.sections.flood", laps.Elapsed.TotalMilliseconds);
+        laps.Restart();
         foreach (var list in _emitterDraws) list.Clear();
         _seeThrough.Clear();
 
@@ -556,6 +559,8 @@ public sealed class ChunkRenderer : IDisposable
             if (entry.SeeThrough.Mesh.IsValid) _seeThrough.Add((Vector3.DistanceSquared(entry.Middle, eye), entry));
         }
 
+        SetProfileValue("draw.sections.opaque", laps.Elapsed.TotalMilliseconds);
+        laps.Restart();
         // See-through sections farthest first, so each blends over what lies behind it. The faces
         // inside one section are drawn in the order they were meshed.
         _seeThrough.Sort((a, b) => b.Distance.CompareTo(a.Distance));

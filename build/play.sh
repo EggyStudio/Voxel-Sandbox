@@ -12,8 +12,9 @@
 # screenshot with F2. It fails where the game does not open or answer, the player did not move or
 # did not climb out onto the bank, the wool in shade is not a gray, a cloud's underside overhead at
 # noon is dark, a biome is not found or not where it was found, the land's edge steps to the sky
-# beyond it, the layer reported an error, or F2 left no screenshot of the window's size, and says
-# why in an error annotation, so the run's page names it.
+# beyond it, more than 400 draws of sections are recorded there, the layer reported an error, or F2
+# left no screenshot of the window's size, and says why in an error annotation, so the run's page
+# names it.
 #
 #   build/play.sh
 #
@@ -580,14 +581,16 @@ echo "the dropped furnace's top $dropped"
 read -r dr dg db <<< "$(channels "$dropped")"
 [ -n "$db" ] && [ "$db" -gt $((2 * dr)) ] && [ "$db" -gt $((2 * dg)) ] || fail "the dropped furnace's top does not wear the furnace's top's blue, $dropped"
 # A pool of water a block across shows the written water's frames in turn, read eight times three
-# tenths of a second apart, at least once white under the water's tint and once black.
+# tenths of a second apart and three and a half by turns, six ticks and seven, so readings that
+# keep time with the frames still fall on each, at least once white under the water's tint and
+# once black.
 cmd voxel.set 26 3 2 water
 cmd voxel.tp 26.5 5 4.5
 cmd voxel.look 0 -50
 cmd frames.wait 10
 greens=""
 for i in $(seq 1 8); do
-  sleep 0.3
+  sleep "0.3$((i % 2 * 5))"
   cmd frames.wait 1
   pool=$(ask voxel.pixel 26.5 3.876 2.5)
   read -r wr wg wb <<< "$(channels "$pool")"
@@ -717,6 +720,15 @@ for pair in "$lr $ar" "$lg $ag" "$lb $ab"; do
 done
 [ "$step" -le 4 ] || fail "the land's edge steps to the sky, $edge"
 
+check "the draws"
+# Over the same land the frame records no more than 400 draws of sections, 277 when this was
+# written, where drawing every section meshed at four columns, or with no flood leaving the land
+# under the ground out, would record well over that.
+state=$(ask voxel.state)
+draws=$(printf '%s\n' "$state" | sed -nE 's/.* ([0-9]+) draws, .*/\1/p')
+echo "the draws at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ sections, [0-9]+ draws, [0-9]+ triangles')"
+[ -n "$draws" ] && [ "$draws" -le 400 ] || fail "the frame records more than 400 draws of sections at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ sections, [0-9]+ draws' || echo "$state")"
+
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
@@ -744,4 +756,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, drew with no validation error and wrote $name on F2"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, drew no more than 400 draws of sections at the land's edge, drew with no validation error and wrote $name on F2"

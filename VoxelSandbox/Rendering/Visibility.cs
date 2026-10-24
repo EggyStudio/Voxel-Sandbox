@@ -116,24 +116,63 @@ public sealed class Visibility
         return joins;
     }
 
+    // What the last flood was worked out for, the eye's section and the faces it leaves by, the
+    // world's openings, the render distance and the atlas.
+    private (SectionKey Start, int Exits, int Openings, int Distance, int Atlas)? _floodedFor;
+
+    // The faces the eye's section is left by from the eye's cell, and the cell, the section's
+    // version and the atlas they were worked out for, the section of a column not loaded having none.
+    private ((int X, int Y, int Z) Cell, Section? Home, int Version, int Atlas) _exitsFor;
+    private int _exits;
+
+    /// <summary>
+    /// The faces of the eye's section the open cells around the eye reach, a bit for each, every
+    /// face where no column holds the eye, and none, as -1, where the eye stands above or below the world.
+    /// </summary>
+    public static int Exits(VoxelWorld world, System.Numerics.Vector3 eye, TerrainAtlas atlas)
+    {
+        var start = Reach.Of(eye);
+        if (start.Y is < ChunkColumn.BottomSection or >= ChunkColumn.CeilingSection) return -1;
+        return world.TryGetColumn(start.X, start.Z, out var home)
+            ? FacesFrom(home.Numbered(start.Y)!, Section.Index((int)MathF.Floor(eye.X) & Section.Mask, (int)MathF.Floor(eye.Y) & Section.Mask, (int)MathF.Floor(eye.Z) & Section.Mask), atlas)
+            : 63;
+    }
+
+    // The eye's exits, worked out again only as the eye enters another cell or a block of its
+    // section changes, since they ask a flood of the section's cells.
+    private int ExitsKept(VoxelWorld world, System.Numerics.Vector3 eye, TerrainAtlas atlas)
+    {
+        var cell = ((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
+        var start = Reach.Of(eye);
+        var home = world.TryGetColumn(start.X, start.Z, out var column) ? column.Numbered(start.Y) : null;
+        var key = (cell, home, home?.Version ?? 0, atlas.Serial);
+        if (key == _exitsFor) return _exits;
+        (_exitsFor, _exits) = (key, Exits(world, eye, atlas));
+        return _exits;
+    }
+
     /// <summary>
     /// Floods from the section holding the eye through the sections of the loaded columns within a
-    /// render distance of it, as <see cref="Seen"/> then holds.
+    /// render distance of it, as <see cref="Seen"/> then holds, unless nothing it depends on
+    /// changed since the last flood, the eye's section, the faces it leaves that section by, the
+    /// world's <see cref="VoxelWorld.Openings"/>, the render distance and the atlas, which keeps
+    /// the last flood's sections.
     /// </summary>
-    public void Flood(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance, TerrainAtlas? atlas = null)
+    /// <returns>Whether it flooded anew.</returns>
+    public bool Flood(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance, TerrainAtlas? atlas = null)
     {
         atlas ??= TerrainAtlas.None;
+        var start = Reach.Of(eye);
+        var exits = ExitsKept(world, eye, atlas);
+        if (_floodedFor == (start, exits, world.Openings, renderDistance, atlas.Serial)) return false;
+        _floodedFor = (start, exits, world.Openings, renderDistance, atlas.Serial);
         _seen.Clear();
         _queue.Clear();
-        var start = new SectionKey((int)MathF.Floor(eye.X) >> Section.Shift, (int)MathF.Floor(eye.Y) >> Section.Shift, (int)MathF.Floor(eye.Z) >> Section.Shift);
-        Culled = start.Y is >= ChunkColumn.BottomSection and < ChunkColumn.CeilingSection;
-        if (!Culled) return;
+        Culled = exits >= 0;
+        if (!Culled) return true;
         var reach = renderDistance * renderDistance + renderDistance;
         _seen.Add(start);
         _queue.Enqueue((start, -1, 0));
-        var exits = world.TryGetColumn(start.X, start.Z, out var home)
-            ? FacesFrom(home.Numbered(start.Y)!, Section.Index((int)MathF.Floor(eye.X) & Section.Mask, (int)MathF.Floor(eye.Y) & Section.Mask, (int)MathF.Floor(eye.Z) & Section.Mask), atlas)
-            : 63;
         while (_queue.TryDequeue(out var at))
         {
             if (!world.TryGetColumn(at.Key.X, at.Key.Z, out var column)) continue;
@@ -151,6 +190,7 @@ public sealed class Visibility
                 _queue.Enqueue((next, d ^ 1, at.Ways | 1 << d));
             }
         }
+        return true;
     }
 
     /// <summary>Whether the last flood reached a section, every one where it left nothing out.</summary>

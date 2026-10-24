@@ -17,7 +17,7 @@ across a poppy's shadow. (`d7c4892`)
 The plains village under the modpack's own tonemap curve at three saturations, beside today's
 Reinhard look and the modpack.
 
-![](.github/devlog/2026-10-24-glass-joined.webp)
+![](captures/glass-joined.png)
 Glass under Bare Bones, the streaks gone, where panes of the same glass join into one frame, with a
 corner kept inside the L at the right end.
 
@@ -36,8 +36,34 @@ animated fire.
 ![](.github/devlog/2026-10-24-use2.webp)
 The fires a TNT's blast leaves in its crater.
 
+![](.github/devlog/2026-10-24-drag-pair.webp)
+A dragged stack over the inventory, its shares lit on the slots it passes (item 67).
+
+![](.github/devlog/2026-10-24-fell-pair.webp)
+An oak before and after felling, its logs taken and a log landed (item 69).
+
+![](.github/devlog/2026-10-24-hand-four.webp)
+The hand in view in four states, with stone, with a stick, empty and with the HUD hidden (item 75).
+
+![](.github/devlog/2026-10-24-tnt-all.webp)
+TNT from its placing to its crater, the fuse, the flash, the swell and the blast (item 73).
+
+![](.github/devlog/2026-10-24-swell-all.webp)
+The creeper's swell and flash before it goes off, and its blast's cloud (item 73).
+
+![](.github/devlog/2026-10-24-fire-all.webp)
+Fire spreading over planks by the source's odds, from the first flame to the burn-out (item 72).
+
+![](.github/devlog/2026-10-24-views-70.webp)
+The world views at a field of view of 70, before the retake (item 46).
+
+![](.github/devlog/2026-10-24-views-40.webp)
+The world views retaken at a field of view of 40, the village views moved (item 46).
+
 Done:
 
+- Item 26 at `a528c79`. The world's layout: sections streamed, meshed and saved in three dimensions
+  with a taller world, and far land drawn at a coarser level by distance, the blocks' size kept.
 - Item 55 at `d7c4892`. The plants cast shadows, cut by their texture (Decision 27).
 - Item 67 at `073d84b`. The inventory screens take no player key, draw a dragged stack every frame,
   and dropped items wear the pack's pictures.
@@ -60,6 +86,21 @@ Done:
 - Item 89 at `cfdc298`. The clouds are not drawn black by the fire's uniform.
 
 ## 2026-10-23
+
+![](.github/devlog/2026-10-23-lamps-crop.webp)
+A lantern beside a glowstone block, the small emitters' light (item 39).
+
+![](.github/devlog/2026-10-23-grass-now-crop.webp)
+![](.github/devlog/2026-10-23-grass-fixed-crop.webp)
+The grass before and after its tint followed the biome (item 70).
+
+![](.github/devlog/2026-10-23-village-ab.webp)
+A village before and after the grass and the paths were mended (item 70).
+
+![](.github/devlog/2026-10-23-pool-before-crop.webp)
+![](.github/devlog/2026-10-23-pool-rough-crop.webp)
+A pool before and after its surface stopped reflecting the scene field, the water rough for the
+present (item 86).
 
 Done:
 
@@ -171,6 +212,60 @@ the jungle floor under its canopy, all with Bare Bones.
 Render distance 4, from high, from low and at night: the land fades into a dome of the haze's color
 below the horizon, with no dark band.
 
+![](.github/devlog/2026-10-21-scenes-sheet.webp)
+Lamps in the open and in a room, the readings of the global illumination's faults (item 38).
+
+![](.github/devlog/2026-10-21-modes-sheet.webp)
+Survival and creative told apart by the HUD, the hearts and the hunger (item 19).
+
+![](.github/devlog/2026-10-21-craft-crop.webp)
+The inventory's crafting grid making planks (item 20).
+
+![](.github/devlog/2026-10-21-outline-sheet.webp)
+The block outline on a stair, a slab and a fence (item 21).
+
+![](.github/devlog/2026-10-21-hud-0-crop.webp)
+The HUD with the hotbar, the hearts and the held block's name (item 23).
+
+![](.github/devlog/2026-10-21-bb-above.webp)
+Bare Bones from above, the cliffs and the sea (item 24).
+
+![](.github/devlog/2026-10-21-room-pair.webp)
+A room's lamps under two packs (item 24).
+
+![](.github/devlog/2026-10-21-own-table-crop.webp)
+The game's own crafting table art with no pack (item 24).
+
+![](.github/devlog/2026-10-21-stars-three.webp)
+The stars at night in three readings against the source's (item 52).
+
+![](.github/devlog/2026-10-21-previews.webp)
+Views of the world as the pictures were first chosen.
+
+![](.github/devlog/2026-10-21-sheet1.webp)
+The README's world pictures as a sheet, the first set at a field of view of 70.
+
+![](.github/devlog/2026-10-21-green-compare.webp)
+The grade compared on the plains village, the greens under the candidate settings (item 58).
+
+![](.github/devlog/2026-10-21-room-before.webp)
+A lantern's room before the lamps' light was read again (item 39).
+
+![](.github/devlog/2026-10-21-creeper-ab.webp)
+The creeper before and after its face was redrawn (item 61).
+
+![](.github/devlog/2026-10-21-faces-crop.webp)
+The zombie and the villager with their faces at a sixteenth (item 62).
+
+![](.github/devlog/2026-10-21-sheets.webp)
+The zombie's and the villager's skin layers as the pack lays them (item 62).
+
+![](.github/devlog/2026-10-21-rows.webp)
+The villagers in their professions' robes (item 65).
+
+![](.github/devlog/2026-10-21-blocks-crop.webp)
+A door, a trapdoor and a furnace among the blocks (item 39).
+
 Done:
 
 - Item 17 at `5cd1521`. Out of the water onto the shore, swimming while any of the body is in it.
@@ -239,6 +334,9 @@ camera. The villager at full size second.
 After the walk fix: each mob in the game with Minecraft 26.3's outline in red, standing and mid-
 stride.
 
+![](.github/devlog/2026-10-20-frame-pair.webp)
+A lamp's light on the walls as the engine's glow light draws it, two frames apart (item 15).
+
 Done:
 
 - Item 10 at `35696e2`. Some of the animals' feet do not show (Decision 6).
@@ -248,6 +346,13 @@ Done:
   distance rises to what the frame then affords (items 12 and 36 of the engine).
 
 ## 2026-10-19
+
+![](.github/devlog/2026-10-19-q-all.webp)
+The sun over the plains at the global illumination's qualities, the halo read against the sky.
+
+![](.github/devlog/2026-10-19-models-side.webp)
+The mobs from the side, the pig, the cow, the sheep, the chicken, the villager, the zombie, the
+skeleton, the creeper and the spider.
 
 Done:
 

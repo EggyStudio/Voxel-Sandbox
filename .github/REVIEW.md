@@ -5,32 +5,31 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `3d7b1ed`, item 26's third part, far land from what was seen, and nothing else,
-carrying the review's file: FarCache keeping each column's surface, the top block, its height and
-the biome at each place in 1.25 KB, as the column unloads, written in files of 32 by 32 columns
-under the save's far folder at each flush and kept in memory in a transient world; FarLand drawing
-rings by doubling past the render distance, 12 to 24, 24 to 48 and 48 to 64 at a far distance of 64,
-with cells of 2, 4 and 8 blocks in tiles of 32 by 32 cells, a cell a box at its own place with its
-top the highest surface rounded down to its width and the top block's albedo under the biome's tint,
-tops merged greedily, walls to lower neighbors and a skirt of two cells beside undrawn ones, each
-ring's tiles meshing the ring's columns alone so rings and near land meet exactly, sampled and
-meshed on two workers and drawn through the terrain shader without shadows and outside the field,
-the haze reaching the far distance, voxel.far and a slider setting it; the departure the default at
-0 until part 4, since unseen land leaves holes and the stretched haze uncovers the near land's edge
-that play.sh reads; at 8 near and 32 far after eight places visited, 103 to 111 tiles and about
-120,000 triangles with no seam; three tests, 271 passing, the strict build clean, play.sh 151 s on
-the GPU. Read at 07:57 on 2026-10-24. Pushed at 08:10 after the build run of `1b53cee` ended green,
-its play job 25.0 minutes with the taller world, under item 88's 40; the run watched, the devlog's
-move going with part 4's commit. Next item 26's fourth part, the generator's surface where nothing
-was seen, with the readings that set the defaults, then 78, 80, 81, 69, 75, 74, 72 and 73, then the
-pictures taken again at 40 degrees, then 26 and the items in order; items 38's second part and 54
-when their packages come; the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+Reviewed up to `a528c79`, item 26's fourth part, far land from the generator's surface where nothing
+was seen, with the devlog's move to DEVLOG.md at the root and AGENTS.md's row, and nothing else,
+carrying the review's file: the generator's Surface giving the ground's top or the water at sea
+level, a far cell no seen column covers sampled at its middle, far land on by default at 32 columns,
+tiles grown to 64 cells since the cost was per draw, 278 tiles to 88 and the frame 25.4 to 21.0 ms.
+The readings at seed 1's spawn at noon from 100 up, one session each, frame, GPU and resident: near
+8 with far 0, 32 and 64 at 16.8, 16.7 and 16.7 ms, the GPU 10.8 to 11.5, about 1.0 GB; near 12 at
+17.5, 23.4 and 18.4, the GPU 14.3 to 15.0, 1.55 to 1.75 GB; near 16 at 40.3, 38.6 and 41.5, the GPU
+18.4 to 18.9, 2.7 GB; far land under a millisecond of GPU at any distance, the frame at 12 over 16.7
+ms without it from the taller world's draws with the main thread bound, single sessions varying by
+up to 6 ms. Departures, play.sh turning far land off for its two haze checks, the far land from the
+generator bare of trees so a step of tone shows where the near forest ends, and the README's
+pictures showing no far land yet. 271 tests, the strict build clean, play.sh 145 s on the GPU. Read
+at 08:19 on 2026-10-24. Pushed at 08:48 after the build run of `3d7b1ed` ended green, its play job
+32.6 minutes; the run watched. Decision 40: far land 32 by default and the render distance kept at
+12, the frame's main thread at 12 read as item 90. Next item 90's reading, then the world pictures
+taken again with far land, then 78, 80, 81, 69, 75, 74, 72 and 73, then the pictures taken again at
+40 degrees, then 26 and the items in order; items 38's second part and 54 when their packages come;
+the AGENTS.md rows for the Ui and build folders wait on the owner's word.
+
+Before it, `3d7b1ed` came, item 26's third part, pushed at 08:10 on 2026-10-24, its run green, the
+play job 32.6 minutes.
 
 Before it, `1b53cee` and `d2f8b0b` came, item 26's first two parts, pushed at 07:42 on 2026-10-24,
 their run green, the play job 25.0 minutes.
-
-Before it, `5556519` came, item 46's retake, pushed at 07:07 on 2026-10-24, its run green, the play
-job 32.7 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -364,7 +363,21 @@ full.
     as said. Deepslate comes with part 1 as the source lays it below 0, its ores and caves with item
     27; the far reach in columns and the rings by doubling as read. Part 1 at `d2f8b0b` on
     2026-10-24, the costs in the head. Part 2 at `1b53cee`, the numbers in the head. Part 3 at
-    `3d7b1ed`, off by default until part 4.
+    `3d7b1ed`, off by default until part 4. Part 4 at `a528c79`, far land on at 32 by default, the
+    readings in the head; item 26 done, held for the push. The world pictures are taken again with
+    far land in a small commit after item 90's reading.
+
+90. **The frame at a render distance of 12 comes back under 16.7 ms with the taller world, the main
+    thread's draws read first.** Item 26's readings on 2026-10-24: at 12 the frame stands at 17.5 ms
+    with far land off and up to 23.4 with it, where the GPU takes 14.3 to 15.0, so the main thread
+    binds the frame, drawing the taller world's sections, 5,064 at the cherry grove view, one draw
+    each. Read first where the main thread's time goes at that view through the engine's profile,
+    the draws' recording, the sections' culling, the far tiles and the rest, and say the numbers;
+    then the mend by the reading, the sections of a column drawn as one through the engine's mesh
+    over buffers with an indirect draw, or the draws recorded once and kept while nothing changes,
+    whichever the reading names, holding the frame under 16.7 ms at 12 with far land at 32 on the
+    development machine's GPU; a test of the draw count at a known view against a bound. One or two
+    commits, before the items in order.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
@@ -970,5 +983,11 @@ No verdict is open. Verdict 1 is settled on the build run of `8261308` on 2026-1
     asked that the devlog be `DEVLOG.md` at the repository's root, the pictures made on the way
     staying under `.github/devlog`; `.github/devlog/README.md` goes and AGENTS.md's row names
     `DEVLOG.md`.
+
+40. **Far land at 32 columns by default, the render distance kept at 12.** On item 26's readings of
+    2026-10-24: far land costs under a millisecond of GPU at any distance, so it stands on at 32;
+    the render distance stays at 12 since the owner set it, and the frame there, over 16.7 ms from
+    the taller world's draws on the main thread, is item 90's to bring back rather than the
+    distance's to give up; near 8 with far 32 holds 60 at 1 GB where a machine needs it.
 
 ## Replies
