@@ -5,46 +5,54 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `e0d9788`, item 94's third piece, the lit TNT and the falling blocks as entities,
-read at 20:25 on 2026-10-24, carrying the review's files and the devlog's lit TNT. Each is an entity
-with a behavior struct and the Body, LitTnt holding Left with Flashing and Size read from it and
-FallingBlock holding Block and Age; two systems on update, Burn and Drop, static on the main thread,
-Drop still moving the lowest block first by sorted pairs reached through GetRef; the PrimedTnt and
-FallingBlocks facades are resources, the behaviors leaving blasts in Tnt.Exploded and blocks that
-could not stand in Falling.Broken, which the game sets off and drops in its next update a frame
-later, each Clear emptying its pending list since events wait a frame across a world switch; the
-tests step bare EcsWorlds, the TNT test reading its stack afresh each frame since the struct read is
-a copy. Live offscreen a lit TNT burned and left air under it and sand over air fell onto a pillar
-and stood a block lower. No new gap; results handed back through a list on a resource, an event
-channel the better fit, which the engine has in World.SendEvent, ReadEvents and DrainEvents with a
-typed queue an event type the engine never clears for a game's own, missed at first; the strikes,
-the blasts and the landed blocks become events the behaviors send and the game drains in a small
-commit before the fires, no ask. 294 tests, play.sh 307 s on the GPU. The three pushed at 20:31 on
-2026-10-24 after the run of `80d149e` went green; the run watched. After `c0dd6e4`, item 94's second
-piece, the arrows as entities, read at 20:14 on 2026-10-24, carrying the review's files and the
-devlog's capture. Each arrow is an entity with one Arrow behavior struct holding its position,
-velocity, stuck and age, no Body, the old Arrow class gone; one system, Fly on update, static on the
-main thread, reads GameStep's world, player and seconds, flies only when seconds pass and despawns
-an arrow on a hit or after 60 s; strikes go into GameStep.Hits, which the game deals and clears one
-frame after the strike when its next frame answers the mobs, and GameStep holds a Random for the
-extra point of damage since E3D006 keeps a class out of the behavior; the Arrows facade wraps the
-EcsWorld as ItemDrops does, the hostile test stepping a bare EcsWorld. In an offscreen flat world at
-hour 0 a skeleton 10 blocks off took the player's health from 20 to 12 in 300 frames. No new gap.
-294 tests, play.sh 322 s on the GPU. After `d6532d1`, item 127, the options file, read at 20:05 on
-2026-10-24, carrying the review's files. options.txt sits beside the saves next to
-resourcepacks.txt, one line a setting as the screen, a dot, the name with underscores, a colon and
-the value, a choice by its name; it is read once the world opens, each value applied through its
-setter with Settled run, and written when a screen is left by a button or Escape or when
-voxel.options or G changes a setting, written beside and moved over, only when the text differs; a
-bad line keeps the default, an unknown key, no colon, a value that is no number, NaN, out of reach
-or an unknown choice; the time, the daylight cycle and the moon belong to the world's save and stay
-out, and a transient run neither reads nor writes it; the options' own four settings are Option
-objects on a general screen, their labels unchanged. Two unit tests, the file written and read back
-into fresh settings with a second write of nothing changed writing nothing and the unkept hour out,
-and seven kinds of bad line each leaving the default with the good line beside read; play.sh's kept
-run starts on a file with the render distance at 5 and an unreadable corner shade line, reads 5 and
-50 percent, sets the corner shade to 30 and finds both lines rewritten, the walk at 37 settings and
-about 20 s on the GPU, kept as it is. 294 tests, play.sh 315 s on the GPU.
+Reviewed up to `299aa33`, item 94's events commit, read at 20:33 on 2026-10-24, carrying the
+review's files. ArrowStrike, TntBlast and FallingBroke are record structs the three behaviors send
+with World.SendEvent, the game taking them with DrainEvents where it read the lists and clearing the
+three types on a world switch; GameStep.Hits, PrimedTnt.Exploded, FallingBlocks.Broken and the
+facades as resources are gone, the facades' Update for tests returning what it set off or broke.
+Live offscreen a TNT left air under it, sand over a torch broke into a stack with the torch
+standing, and a skeleton's arrows took the health from 20 to 10 in 300 frames. 294 tests, play.sh
+295 s on the GPU. Held until the run of `e0d9788` ends, then pushed. After `e0d9788`, item 94's
+third piece, the lit TNT and the falling blocks as entities, read at 20:25 on 2026-10-24, carrying
+the review's files and the devlog's lit TNT. Each is an entity with a behavior struct and the Body,
+LitTnt holding Left with Flashing and Size read from it and FallingBlock holding Block and Age; two
+systems on update, Burn and Drop, static on the main thread, Drop still moving the lowest block
+first by sorted pairs reached through GetRef; the PrimedTnt and FallingBlocks facades are resources,
+the behaviors leaving blasts in Tnt.Exploded and blocks that could not stand in Falling.Broken,
+which the game sets off and drops in its next update a frame later, each Clear emptying its pending
+list since events wait a frame across a world switch; the tests step bare EcsWorlds, the TNT test
+reading its stack afresh each frame since the struct read is a copy. Live offscreen a lit TNT burned
+and left air under it and sand over air fell onto a pillar and stood a block lower. No new gap;
+results handed back through a list on a resource, an event channel the better fit, which the engine
+has in World.SendEvent, ReadEvents and DrainEvents with a typed queue an event type the engine never
+clears for a game's own, missed at first; the strikes, the blasts and the landed blocks become
+events the behaviors send and the game drains in a small commit before the fires, no ask. 294 tests,
+play.sh 307 s on the GPU. The three pushed at 20:31 on 2026-10-24 after the run of `80d149e` went
+green; the run watched. After `c0dd6e4`, item 94's second piece, the arrows as entities, read at
+20:14 on 2026-10-24, carrying the review's files and the devlog's capture. Each arrow is an entity
+with one Arrow behavior struct holding its position, velocity, stuck and age, no Body, the old Arrow
+class gone; one system, Fly on update, static on the main thread, reads GameStep's world, player and
+seconds, flies only when seconds pass and despawns an arrow on a hit or after 60 s; strikes go into
+GameStep.Hits, which the game deals and clears one frame after the strike when its next frame
+answers the mobs, and GameStep holds a Random for the extra point of damage since E3D006 keeps a
+class out of the behavior; the Arrows facade wraps the EcsWorld as ItemDrops does, the hostile test
+stepping a bare EcsWorld. In an offscreen flat world at hour 0 a skeleton 10 blocks off took the
+player's health from 20 to 12 in 300 frames. No new gap. 294 tests, play.sh 322 s on the GPU. After
+`d6532d1`, item 127, the options file, read at 20:05 on 2026-10-24, carrying the review's files.
+options.txt sits beside the saves next to resourcepacks.txt, one line a setting as the screen, a
+dot, the name with underscores, a colon and the value, a choice by its name; it is read once the
+world opens, each value applied through its setter with Settled run, and written when a screen is
+left by a button or Escape or when voxel.options or G changes a setting, written beside and moved
+over, only when the text differs; a bad line keeps the default, an unknown key, no colon, a value
+that is no number, NaN, out of reach or an unknown choice; the time, the daylight cycle and the moon
+belong to the world's save and stay out, and a transient run neither reads nor writes it; the
+options' own four settings are Option objects on a general screen, their labels unchanged. Two unit
+tests, the file written and read back into fresh settings with a second write of nothing changed
+writing nothing and the unkept hour out, and seven kinds of bad line each leaving the default with
+the good line beside read; play.sh's kept run starts on a file with the render distance at 5 and an
+unreadable corner shade line, reads 5 and 50 percent, sets the corner shade to 30 and finds both
+lines rewritten, the walk at 37 settings and about 20 s on the GPU, kept as it is. 294 tests,
+play.sh 315 s on the GPU.
 
 Before it, `80d149e` came, items 124 and 126 with `5f7bad8` and `a82e342`, pushed at 20:03 on
 2026-10-24, its run green, the play job 25.0 minutes.
@@ -476,8 +484,8 @@ full.
     arrows next, after items 27's pin, 125 and 124. The arrows at `c0dd6e4`, one behavior and one
     system, the strikes dealt a frame after through GameStep; the primed TNT and the falling blocks
     next. The lit TNT and the falling blocks at `e0d9788`, their results handed back through
-    resources, which the engine's own event channel takes over in a small commit; then the fires and
-    the blasts on events from the start.
+    resources, which the engine's own event channel took over at `299aa33`, the shared lists gone;
+    the fires and the blasts next, on events from the start.
 
 95. **The world's sections become mesh entities the engine draws (Decision 43).** Each meshed
     section becomes an entity with the engine's Mesh, Material and Transform and a component of the

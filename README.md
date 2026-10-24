@@ -839,13 +839,14 @@ which cast no shadow.
 
 Flint and steel used on a block's face lights a fire in the cell before it, where the block under it
 is whole or a block beside it burns, as Minecraft's does, and a blast lights none, as Minecraft's
-TNT and creepers light none. A fire burns by Minecraft's numbers. It ticks every one and a half to
-two seconds, growing older, burns away a block beside it that burns or turns it to fire, at
-Minecraft's odds for planks, logs, leaves, wool, hay, TNT, which it lights, and the flowers and
-grasses, and catches the air near them, up to four blocks over it and one to each side. One with
-nothing that burns around it goes out once it is older than 3, about twenty seconds on stone, and
-one over magma burns on. A house of planks burns down, and a hand, a block placed in its cell or a
-blast puts a fire out.
+TNT and creepers light none. A fire burns by Minecraft's numbers, each an entity of the engine's ECS
+that a behavior of its own burns in the engine's frame. It ticks every one and a half to two
+seconds, growing older, burns away a block beside it that burns or turns it to fire, at Minecraft's
+odds for planks, logs, leaves, wool, hay, TNT, which it lights, and the flowers and grasses, and
+catches the air near them, up to four blocks over it and one to each side. One with nothing that
+burns around it goes out once it is older than 3, about twenty seconds on stone, and one over magma
+burns on. A house of planks burns down, and a hand, a block placed in its cell or a blast puts a
+fire out.
 
 Its flames are Minecraft's walls of the pack's animated `fire_0`, four leaning across the cell and
 four at its sides on the ground, or toward each block beside and over it that burns where it hangs

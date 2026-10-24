@@ -5,8 +5,42 @@ using static Engine.E3D;
 namespace VoxelSandbox;
 
 /// <summary>
-/// What a blast shows besides the blocks it breaks, the source's cloud of puffs about it and a flash
-/// of light for a tenth of a second, which global illumination carries onto the land around.
+/// A blast's flash, a ball of light swelling to its power's size and fading over half a second, an
+/// entity of the engine's ECS whose behavior ages it in the engine's frame and lets it go.
+/// </summary>
+[Behavior]
+public partial struct Blast
+{
+    public Vector3 At;
+
+    public float Power;
+
+    /// <summary>Seconds since it went off.</summary>
+    public float Age;
+
+    /// <summary>How long a flash shows.</summary>
+    public const float Seconds = 0.5f;
+
+    [OnUpdate]
+    public static void Fade(BehaviorContext ctx)
+    {
+        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds > 0) Fade(ctx.Ecs, step.Seconds);
+    }
+
+    /// <summary>Ages every flash by so many seconds and lets go of those that have faded.</summary>
+    public static void Fade(EcsWorld ecs, float seconds)
+    {
+        var gone = new List<int>();
+        foreach (var (id, _) in ecs.Query<Blast>())
+            if ((ecs.GetRef<Blast>(id).Age += seconds) > Seconds) gone.Add(id);
+        foreach (var id in gone) ecs.Despawn(id);
+    }
+}
+
+/// <summary>
+/// What a blast shows besides the blocks it breaks, the source's cloud of puffs about it, a flash of
+/// light for a tenth of a second, which global illumination carries onto the land around, and the
+/// flash's ball, a <see cref="Blast"/> entity of an ECS world.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -23,7 +57,7 @@ namespace VoxelSandbox;
 /// shadows, so the cascades take it where the scene's distance field lets it through.
 /// </para>
 /// </remarks>
-public sealed class BlastEffects : IDisposable
+public sealed class BlastEffects(EcsWorld ecs) : IDisposable
 {
     private const int Ticks = 8, PuffsATick = 6, Frames = 16;
     private const float Reach = 4, Width = 3, Life = 0.375f, FlashSeconds = 0.1f, FlashStrength = 10;
@@ -44,9 +78,27 @@ public sealed class BlastEffects : IDisposable
         _packs = packs;
     }
 
+    /// <summary>The flashes' balls showing.</summary>
+    public IEnumerable<Blast> All
+    {
+        get
+        {
+            foreach (var (_, blast) in ecs.Query<Blast>()) yield return blast;
+        }
+    }
+
+    /// <summary>Lets go of the flashes' balls, as a world closes.</summary>
+    public void Clear()
+    {
+        var all = new List<int>();
+        foreach (var (id, _) in ecs.Query<Blast>()) all.Add(id);
+        foreach (var id in all) ecs.Despawn(id);
+    }
+
     /// <summary>Shows a blast of a power at a place.</summary>
     public void Add(Vector3 at, float power)
     {
+        ecs.Add(ecs.Spawn(), new Blast { At = at, Power = power });
         var free = _clouds.FindIndex(c => c.Age >= Kept);
         var emitter = free >= 0 ? _clouds[free].Emitter : CreateParticleEmitter(at, Cloud());
         SetParticleEmitterPosition(emitter, at);

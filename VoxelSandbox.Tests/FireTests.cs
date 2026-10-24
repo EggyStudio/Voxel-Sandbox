@@ -11,7 +11,7 @@ public sealed class FireTests
         for (int seed = 1; seed <= 3; seed++)
         {
             var world = Laid.World(c => Laid.Fill(c, 0, 10, BlockId.OakPlanks));
-            var fires = new Fires(new Random(seed));
+            var fires = new Fires(new Engine.EcsWorld(), new Random(seed));
             Assert.True(fires.Light(world, 8, 11, 8));
             var (most, burned) = Burn(world, fires, 120);
             Assert.True(most >= 5, $"seed {seed} burned at most {most} fires");
@@ -25,7 +25,7 @@ public sealed class FireTests
         for (int seed = 1; seed <= 3; seed++)
         {
             var world = Laid.World(c => Laid.Fill(c, 0, 10, BlockId.Stone));
-            var fires = new Fires(new Random(seed));
+            var fires = new Fires(new Engine.EcsWorld(), new Random(seed));
             Assert.True(fires.Light(world, 8, 11, 8));
             var (most, burned) = Burn(world, fires, 120);
             Assert.Equal(1, most);
@@ -39,7 +39,7 @@ public sealed class FireTests
     public void A_Fire_Stands_Over_A_Whole_Block_Or_Beside_One_That_Burns_And_Takes_The_Sides_It_Burns_Toward()
     {
         var world = Laid.World(c => Laid.Fill(c, 0, 10, BlockId.Stone));
-        var fires = new Fires(new Random(1));
+        var fires = new Fires(new Engine.EcsWorld(), new Random(1));
         Assert.False(fires.Light(world, 8, 13, 8));
         world.SetBlock(8, 13, 7, BlockId.OakPlanks);
         Assert.True(fires.Light(world, 8, 13, 8));

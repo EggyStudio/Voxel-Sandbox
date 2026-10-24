@@ -1,4 +1,51 @@
+using Engine;
+
 namespace VoxelSandbox;
+
+/// <summary>A TNT a fire burned, where it stood, an event the game lights.</summary>
+public readonly record struct TntCaught(int X, int Y, int Z);
+
+/// <summary>A fire burning in a cell, an entity of the engine's ECS, its age and the seconds to its next tick.</summary>
+/// <remarks>
+/// Its behavior burns the fires in the engine's frame, reading the voxel world, the seconds and the
+/// chances from the game's <see cref="GameStep"/> on the main thread, which alone may read and change
+/// the world, and sends each TNT a fire burned as a <see cref="TntCaught"/>, which the game lights.
+/// It also takes its world and its inputs as arguments, so a test burns the fires of an ECS world
+/// of its own. <see cref="Fires"/> has the source's numbers.
+/// </remarks>
+[Behavior]
+public partial struct Fire
+{
+    public int X, Y, Z;
+
+    /// <summary>Its age, from 0 to 15.</summary>
+    public int Age;
+
+    /// <summary>Seconds to its next tick.</summary>
+    public float Wait;
+
+    [OnUpdate]
+    public static void Spread(BehaviorContext ctx)
+    {
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
+        var primed = new List<(int, int, int)>();
+        Spread(ctx.Ecs, step.World, step.Seconds, step.Random, primed);
+        foreach (var (x, y, z) in primed) ctx.World.SendEvent(new TntCaught(x, y, z));
+    }
+
+    /// <summary>Goes on by so many seconds, each fire whose tick comes burning as the source's does, and gives where it burned TNT.</summary>
+    public static void Spread(EcsWorld ecs, VoxelWorld world, float seconds, Random random, List<(int X, int Y, int Z)> primed)
+    {
+        var due = new List<int>();
+        foreach (var (id, _) in ecs.Query<Fire>())
+        {
+            ref var fire = ref ecs.GetRef<Fire>(id);
+            if (fire.Wait <= seconds) due.Add(id);
+            else fire.Wait -= seconds;
+        }
+        foreach (var id in due) Fires.Burn(ecs, world, id, random, primed);
+    }
+}
 
 /// <summary>
 /// The fires burning, as the source's fire burns, each ticking now and then, growing older, burning
@@ -19,10 +66,11 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// A fire over magma burns on, as the source's does over its endless burning blocks. Fire placed by
-/// the world, as a column holding some arrives, starts at age 0.
+/// the world, as a column holding some arrives, starts at age 0. Each fire is a <see cref="Fire"/>
+/// entity of an ECS world.
 /// </para>
 /// </remarks>
-public sealed class Fires
+public sealed class Fires(EcsWorld ecs, Random? random = null)
 {
     private const float Tick = 0.05f;
     private const int Difficulty = 2;
@@ -31,17 +79,16 @@ public sealed class Fires
     // source's odds, both none for a block that does not burn.
     private static readonly (int Catches, int Burns)[] _odds = Odds();
 
-    private readonly Dictionary<(int X, int Y, int Z), (int Age, float Wait)> _burning = [];
-    private readonly List<KeyValuePair<(int X, int Y, int Z), (int Age, float Wait)>> _due = [];
-    private readonly Random _random;
-
-    public Fires(Random? random = null) => _random = random ?? new Random();
+    private readonly Random _random = random ?? new Random();
 
     /// <summary>Where each fire burns and its age.</summary>
-    public IEnumerable<((int X, int Y, int Z) At, int Age)> All => _burning.Select(f => (f.Key, f.Value.Age));
-
-    /// <summary>The TNT the fires burned, where it stood, for the game to light and clear.</summary>
-    public List<(int X, int Y, int Z)> Primed { get; } = [];
+    public IEnumerable<((int X, int Y, int Z) At, int Age)> All
+    {
+        get
+        {
+            foreach (var (_, fire) in ecs.Query<Fire>()) yield return ((fire.X, fire.Y, fire.Z), fire.Age);
+        }
+    }
 
     /// <summary>Whether a block burns, as the source's planks, logs, leaves, wool, hay, TNT and plants of the ground do.</summary>
     public static bool Burns(BlockId block) => _odds[(int)block].Burns > 0;
@@ -54,67 +101,83 @@ public sealed class Fires
     public bool Light(VoxelWorld world, int x, int y, int z)
     {
         if (world.GetBlock(x, y, z) != BlockId.Air || !CanStand(world, x, y, z)) return false;
-        return Set(world, x, y, z, 0);
+        return Set(ecs, world, x, y, z, 0, _random);
     }
 
     /// <summary>Takes the fires the world set, by an edit or as a column holding some arrived, to keep them burning.</summary>
+    /// <remarks>
+    /// The world names every fire set, those the fires spread themselves among them, so a cell that
+    /// already has its fire is passed over, found among the fires as they stand, since the ECS has no
+    /// lookup of an entity by its cell.
+    /// </remarks>
     public void Take(VoxelWorld world)
     {
-        foreach (var at in world.Kindled) _burning.TryAdd(at, (0, Delay()));
+        if (world.Kindled.Count == 0) return;
+        var burning = new HashSet<(int, int, int)>();
+        foreach (var (_, fire) in ecs.Query<Fire>()) burning.Add((fire.X, fire.Y, fire.Z));
+        foreach (var at in world.Kindled)
+        {
+            // Each cell named draws its delay, its new fire's or one let go, so the chances drawn after
+            // it are the same whichever of the cells burned already.
+            var wait = Delay(_random);
+            if (burning.Add(at)) ecs.Add(ecs.Spawn(), new Fire { X = at.X, Y = at.Y, Z = at.Z, Wait = wait });
+        }
         world.Kindled.Clear();
     }
 
-    /// <summary>Goes on by so many seconds, each fire whose tick comes burning as the source's does.</summary>
-    public void Update(VoxelWorld world, float seconds)
+    /// <summary>Goes on by so many seconds as a frame goes on, each fire whose tick comes burning as the source's does, and gives where it burned TNT.</summary>
+    public List<(int X, int Y, int Z)> Update(VoxelWorld world, float seconds)
     {
-        _due.Clear();
-        foreach (var fire in _burning)
-            if (fire.Value.Wait <= seconds) _due.Add(fire);
-            else _burning[fire.Key] = (fire.Value.Age, fire.Value.Wait - seconds);
-        foreach (var (at, (age, _)) in _due) Burn(world, at.X, at.Y, at.Z, age);
+        var primed = new List<(int, int, int)>();
+        Fire.Spread(ecs, world, seconds, _random, primed);
+        return primed;
     }
 
     /// <summary>Lets go of every fire, as a world closes.</summary>
     public void Clear()
     {
-        _burning.Clear();
-        Primed.Clear();
+        var all = new List<int>();
+        foreach (var (id, _) in ecs.Query<Fire>()) all.Add(id);
+        foreach (var id in all) ecs.Despawn(id);
     }
 
-    private void Burn(VoxelWorld world, int x, int y, int z, int age)
+    /// <summary>Burns the fire of an entity at its tick.</summary>
+    internal static void Burn(EcsWorld ecs, VoxelWorld world, int id, Random random, List<(int X, int Y, int Z)> primed)
     {
+        var (x, y, z, age) = (ecs.GetRef<Fire>(id).X, ecs.GetRef<Fire>(id).Y, ecs.GetRef<Fire>(id).Z, ecs.GetRef<Fire>(id).Age);
         // A fire put out by a hand, a blast or water is let go at its tick.
         if (world.GetBlock(x, y, z) != BlockId.Fire)
         {
-            _burning.Remove((x, y, z));
+            ecs.Despawn(id);
             return;
         }
         if (!CanStand(world, x, y, z))
         {
-            Out(world, x, y, z);
+            Out(ecs, world, id);
             return;
         }
         var below = world.GetBlock(x, y - 1, z);
-        _burning[(x, y, z)] = (Math.Min(15, age + _random.Next(3) / 2), Delay());
+        ref var fire = ref ecs.GetRef<Fire>(id);
+        (fire.Age, fire.Wait) = (Math.Min(15, age + random.Next(3) / 2), Delay(random));
         if (below != BlockId.Magma)
         {
             if (!BesideFuel(world, x, y, z))
             {
-                if (!Blocks.IsSturdy(below) || age > 3) Out(world, x, y, z);
+                if (!Blocks.IsSturdy(below) || age > 3) Out(ecs, world, id);
                 return;
             }
-            if (age == 15 && _random.Next(4) == 0 && !Burns(below))
+            if (age == 15 && random.Next(4) == 0 && !Burns(below))
             {
-                Out(world, x, y, z);
+                Out(ecs, world, id);
                 return;
             }
         }
-        BurnAway(world, x + 1, y, z, 300, age);
-        BurnAway(world, x - 1, y, z, 300, age);
-        BurnAway(world, x, y - 1, z, 250, age);
-        BurnAway(world, x, y + 1, z, 250, age);
-        BurnAway(world, x, y, z - 1, 300, age);
-        BurnAway(world, x, y, z + 1, 300, age);
+        BurnAway(ecs, world, x + 1, y, z, 300, age, random, primed);
+        BurnAway(ecs, world, x - 1, y, z, 300, age, random, primed);
+        BurnAway(ecs, world, x, y - 1, z, 250, age, random, primed);
+        BurnAway(ecs, world, x, y + 1, z, 250, age, random, primed);
+        BurnAway(ecs, world, x, y, z - 1, 300, age, random, primed);
+        BurnAway(ecs, world, x, y, z + 1, 300, age, random, primed);
         for (int dx = -1; dx <= 1; dx++)
             for (int dz = -1; dz <= 1; dz++)
                 for (int dy = -1; dy <= 4; dy++)
@@ -123,35 +186,37 @@ public sealed class Fires
                     var catches = Catches(world, x + dx, y + dy, z + dz);
                     if (catches <= 0) continue;
                     var odds = (catches + 40 + Difficulty * 7) / (age + 30);
-                    if (odds > 0 && _random.Next(100 + Math.Max(0, dy - 1) * 100) <= odds)
-                        Set(world, x + dx, y + dy, z + dz, Math.Min(15, age + _random.Next(5) / 4));
+                    if (odds > 0 && random.Next(100 + Math.Max(0, dy - 1) * 100) <= odds)
+                        Set(ecs, world, x + dx, y + dy, z + dz, Math.Min(15, age + random.Next(5) / 4), random);
                 }
     }
 
     // Burns a block beside a fire at a chance of its burning odds in so many, into fire or away.
-    private void BurnAway(VoxelWorld world, int x, int y, int z, int chance, int age)
+    private static void BurnAway(EcsWorld ecs, VoxelWorld world, int x, int y, int z, int chance, int age, Random random, List<(int X, int Y, int Z)> primed)
     {
         var block = world.GetBlock(x, y, z);
-        if (_random.Next(chance) >= _odds[(int)block].Burns) return;
-        if (_random.Next(age + 10) < 5) Set(world, x, y, z, Math.Min(15, age + _random.Next(5) / 4));
+        if (random.Next(chance) >= _odds[(int)block].Burns) return;
+        if (random.Next(age + 10) < 5) Set(ecs, world, x, y, z, Math.Min(15, age + random.Next(5) / 4), random);
         else world.SetBlock(x, y, z, BlockId.Air);
-        if (block == BlockId.Tnt) Primed.Add((x, y, z));
+        if (block == BlockId.Tnt) primed.Add((x, y, z));
     }
 
-    private bool Set(VoxelWorld world, int x, int y, int z, int age)
+    // Sets a fire into a cell that has none, which a fire spreading or flint and steel only reach.
+    private static bool Set(EcsWorld ecs, VoxelWorld world, int x, int y, int z, int age, Random random)
     {
         if (!world.SetBlock(x, y, z, BlockId.Fire)) return false;
-        _burning[(x, y, z)] = (age, Delay());
+        ecs.Add(ecs.Spawn(), new Fire { X = x, Y = y, Z = z, Age = age, Wait = Delay(random) });
         return true;
     }
 
-    private void Out(VoxelWorld world, int x, int y, int z)
+    private static void Out(EcsWorld ecs, VoxelWorld world, int id)
     {
-        world.SetBlock(x, y, z, BlockId.Air);
-        _burning.Remove((x, y, z));
+        ref var fire = ref ecs.GetRef<Fire>(id);
+        world.SetBlock(fire.X, fire.Y, fire.Z, BlockId.Air);
+        ecs.Despawn(id);
     }
 
-    private float Delay() => (30 + _random.Next(10)) * Tick;
+    private static float Delay(Random random) => (30 + random.Next(10)) * Tick;
 
     // How readily a cell catches, none but for air, where it is the best of its neighbors'.
     private static int Catches(VoxelWorld world, int x, int y, int z)

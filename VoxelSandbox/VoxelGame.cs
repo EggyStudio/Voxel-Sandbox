@@ -157,7 +157,7 @@ public sealed class VoxelGame : IDisposable
     public FallingBlocks Falling { get; } = new(GetApp().World.Resource<EcsWorld>());
 
     /// <summary>The fires burning.</summary>
-    public Fires Fires { get; } = new();
+    public Fires Fires { get; } = new(GetApp().World.Resource<EcsWorld>());
 
     /// <summary>The trees being felled, their logs breaking and their leaves decaying.</summary>
     public TreeFelling Felling { get; } = new();
@@ -166,7 +166,7 @@ public sealed class VoxelGame : IDisposable
     public PrimedTnt Tnt { get; } = new(GetApp().World.Resource<EcsWorld>());
 
     /// <summary>The smoke and the flash of light of the blasts.</summary>
-    public BlastEffects Blasts { get; } = new();
+    public BlastEffects Blasts { get; } = new(GetApp().World.Resource<EcsWorld>());
 
     /// <summary>The arrows skeletons have loosed.</summary>
     public Arrows Arrows { get; } = new(GetApp().World.Resource<EcsWorld>());
@@ -175,7 +175,6 @@ public sealed class VoxelGame : IDisposable
     public Furnaces Furnaces { get; private set; } = new();
 
     // The explosions of the last half second, where and how long ago, drawn as a fading flash.
-    private readonly List<(Vector3 At, float Power, float Age)> _blasts = [];
 
     public DropRenderer DropRenderer { get; } = new();
 
@@ -344,8 +343,9 @@ public sealed class VoxelGame : IDisposable
         GetApp().World.ClearEvents<ArrowStrike>();
         GetApp().World.ClearEvents<TntBlast>();
         GetApp().World.ClearEvents<FallingBroke>();
+        GetApp().World.ClearEvents<TntCaught>();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
-        _blasts.Clear();
+        Blasts.Clear();
         // The mode and the inventory are the world's own, a new world's in creative with its hotbar of blocks.
         Mode = Enum.TryParse<GameMode>(info?.Mode, ignoreCase: true, out var mode) ? mode : GameMode.Creative;
         PreviousMode = null;
@@ -552,10 +552,10 @@ public sealed class VoxelGame : IDisposable
         Felling.Broken.Clear();
         foreach (var (x, y, z, block) in Felling.Dropped) Falling.Drop(block, x, y, z);
         Felling.Dropped.Clear();
+        // The fires the world set start to burn, and the TNT the fires burned as the engine's frame
+        // burned them is lit.
         Fires.Take(World);
-        Fires.Update(World, seconds);
-        foreach (var (x, y, z) in Fires.Primed) Tnt.Light(x, y, z);
-        Fires.Primed.Clear();
+        foreach (var caught in GetApp().World.DrainEvents<TntCaught>()) Tnt.Light(caught.X, caught.Y, caught.Z);
         Blasts.Update(seconds);
         // The TNT whose fuses ran out as the engine's frame burned them goes off.
         foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(blast.At, PrimedTnt.Power, "was blown up by TNT");
@@ -606,8 +606,8 @@ public sealed class VoxelGame : IDisposable
         Capture(true);
     }
 
-    // Carries out what the hostile mobs did, their strikes, shots and blasts, and flies the arrows,
-    // each striking the player for its damage and a knock away from where it came.
+    // Carries out what the hostile mobs did, their strikes, shots and blasts, and deals the arrows'
+    // strikes, each taking its damage from the player and knocking it away from where it came.
     private void Answer(float seconds)
     {
         foreach (var e in Mobs.Events)
@@ -626,11 +626,6 @@ public sealed class VoxelGame : IDisposable
         Mobs.Events.Clear();
         // The arrows that struck the player as the engine's frame flew them.
         foreach (var strike in GetApp().World.DrainEvents<ArrowStrike>()) Harm(strike.Damage, strike.From, "were shot by a skeleton");
-        for (int i = _blasts.Count - 1; i >= 0; i--)
-        {
-            _blasts[i] = _blasts[i] with { Age = _blasts[i].Age + seconds };
-            if (_blasts[i].Age > 0.5f) _blasts.RemoveAt(i);
-        }
     }
 
     // Harms the player in survival and knocks it away from a place, as a mob's hit does.
@@ -676,7 +671,6 @@ public sealed class VoxelGame : IDisposable
             var harm = Explosion.Damage(near, power, Explosion.Exposure(World, at, mob.Body.Min, mob.Body.Max));
             if (harm > 0) mob.Hit(at, harm);
         }
-        _blasts.Add((at, power, 0));
         Blasts.Add(at, power);
     }
 
@@ -1082,8 +1076,8 @@ public sealed class VoxelGame : IDisposable
         if (!HudHidden && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead)) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer);
         DrawArrows();
         // An explosion's flash, a ball swelling to the power's size and fading over half a second.
-        foreach (var (at, power, age) in _blasts)
-            DrawSphere(at, power * (0.4f + age), new Color(255, 236, 200, (byte)(220 * (1 - age / 0.5f))));
+        foreach (var blast in Blasts.All)
+            DrawSphere(blast.At, blast.Power * (0.4f + blast.Age), new Color(255, 236, 200, (byte)(220 * Math.Clamp(1 - blast.Age / Blast.Seconds, 0, 1))));
         Lap("draw.things");
         Clouds.Draw(Player.Eye, RenderDistance, Sky.Horizon);
         Lap("draw.clouds");
