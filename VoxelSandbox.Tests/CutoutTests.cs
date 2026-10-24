@@ -94,7 +94,8 @@ public sealed class CutoutTests : IDisposable
         world.SetBlock(6, 20, 5, BlockId.Glass);
         var mesher = new SectionMesher { Atlas = Atlas(("block/glass", Framed())) };
         Assert.True(mesher.Mesh(world, new SectionKey(0, 1, 0)));
-        Assert.Equal(10 * 4, mesher.Cutout.Count);
+        Assert.Equal(10 * 4, mesher.CutoutGlass.Count);
+        Assert.Equal(0, mesher.Cutout.Count);
         Assert.Equal(0, mesher.SeeThrough.Count);
     }
 

@@ -173,10 +173,13 @@ public sealed class SectionMesher
     public Faces SeeThrough { get; } = new();
 
     /// <summary>
-    /// The last section's faces cut out where a pack's texture is clear that cast no shadow, a plant's
-    /// and glass's, whose shadow the engine would draw as a whole face.
+    /// The last section's faces cut out where a pack's texture is clear whose shadow is cut by the
+    /// texture too, a plant's and every flat wall's, as a lantern's handle is.
     /// </summary>
     public Faces Cutout { get; } = new();
+
+    /// <summary>The last section's faces of glass cut out where a pack's texture is clear, which cast no shadow, as glass the pack leaves whole casts none.</summary>
+    public Faces CutoutGlass { get; } = new();
 
     /// <summary>
     /// The last section's faces cut out where a pack's texture is clear that cast a shadow, a door's
@@ -248,13 +251,14 @@ public sealed class SectionMesher
         return 1 - 0.98f * dark * dark * dark * dark;
     }
 
-    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/>, <see cref="Cutout"/>, <see cref="SolidCutout"/> and <see cref="Emitters"/>.</summary>
+    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/>, <see cref="Cutout"/>, <see cref="CutoutGlass"/>, <see cref="SolidCutout"/> and <see cref="Emitters"/>.</summary>
     /// <returns>False when one of the eight columns around it is not loaded, so its edges cannot be told yet, and nothing is meshed.</returns>
     public bool Mesh(VoxelWorld world, SectionKey key)
     {
         Solid.Clear();
         SeeThrough.Clear();
         Cutout.Clear();
+        CutoutGlass.Clear();
         SolidCutout.Clear();
         Emitters.Clear();
         _origin = (key.X * Section.Size, key.Y * Section.Size, key.Z * Section.Size);
@@ -329,7 +333,7 @@ public sealed class SectionMesher
     // may be cut out, casting a shadow for an opaque block's and a smaller block's and none for
     // glass's, or else see-through where the surface's own color is, and solid.
     private Faces FacesOf(int surface, bool cuttable, BlockKind kind) =>
-        cuttable && Atlas.Cuts(surface) ? kind == BlockKind.Glass ? Cutout : SolidCutout
+        cuttable && Atlas.Cuts(surface) ? kind == BlockKind.Glass ? CutoutGlass : SolidCutout
             : Surfaces.All[surface].Color.A < 255 ? SeeThrough : Solid;
 
     // A face of a block, its corners on the cell's floor raised to bottom and those on its ceiling

@@ -78,7 +78,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         public readonly Matrix4x4 Transform = transform;
         public readonly Vector3 Middle = middle;
-        public readonly Part Solid = new(), SeeThrough = new(), Cutout = new(), SolidCutout = new();
+        public readonly Part Solid = new(), SeeThrough = new(), Cutout = new(), CutoutGlass = new(), SolidCutout = new();
         public readonly List<(int Surface, Matrix4x4 At)> Emitters = [];
     }
 
@@ -87,14 +87,15 @@ public sealed class ChunkRenderer : IDisposable
     // makes the draw blend, which the vertices' alpha alone does not. The see-through faces cast no
     // shadow, which keeps them out of the scene's distance field too, since the field holds a
     // see-through mesh as solid and a window of glass would then shut out the indirect light
-    // through it. A section's plants and glass a pack cuts out are a third mesh, cut out where the
-    // pack's texture is clear, kept apart so the solid faces keep the depth test that runs before
-    // their pixels are lit, and casting no shadow, so the scene's distance field holds no grass and
-    // no window, and the engine's shadow pass, which reads no texture through the game's shader,
-    // draws no whole face of them. The faces a pack cuts out that still cast a shadow, a door's
-    // window and a pack's leaves clear between them, are a fourth, their shadow the whole face's.
-    // All four are drawn through the game's terrain shader, the engine's light with a haze.
-    private readonly ModelMaterial _terrain, _clear, _cutout, _solidCutout, _haze;
+    // through it. A section's plants are a third mesh, cut out where the pack's texture is clear,
+    // kept apart so the solid faces keep the depth test that runs before their pixels are lit, and
+    // casting the shadow of what the texture keeps, which the shader's shadowMain cuts as its
+    // fragment stage cuts the face, while global illumination holds none of them, so the scene's
+    // distance field holds no grass. Glass a pack cuts out is a fourth, casting no shadow, so a
+    // window lets the sun through as glass the pack leaves whole does. The faces a pack cuts out that
+    // cast a shadow of the whole face, a door's window and a pack's leaves clear between them, are a
+    // fifth. All five are drawn through the game's terrain shader, the engine's light with a haze.
+    private readonly ModelMaterial _terrain, _clear, _cutout, _cutoutGlass, _solidCutout, _haze;
     // The dome under the horizon in the haze's color, drawn while there is a haze to meet it.
     private readonly ModelMesh _dome;
     private float _fogEnd = float.MaxValue;
@@ -140,7 +141,8 @@ public sealed class ChunkRenderer : IDisposable
         // Glass, ice and water are rough, so they reflect neither the land the scene's distance field
         // traces nor the sky, which in the field's coarse cells clashes with the blocks' pixels.
         _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 1, CastsShadows = false, Shader = _shader };
-        _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, CastsShadows = false, Shader = _shader };
+        _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, BouncesLight = false, Shader = _shader };
+        _cutoutGlass = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, CastsShadows = false, Shader = _shader };
         _solidCutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, Shader = _shader };
         _haze = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Blend, CastsShadows = false, Shader = _shader };
         var dome = HazeDome.Build();
@@ -407,7 +409,7 @@ public sealed class ChunkRenderer : IDisposable
         }
         if (!_mesher.Mesh(world, key)) return false;
 
-        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.SolidCutout.Count == 0 && _mesher.Emitters.Count == 0)
+        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.CutoutGlass.Count == 0 && _mesher.SolidCutout.Count == 0 && _mesher.Emitters.Count == 0)
         {
             Forget(key);
             return true;
@@ -418,6 +420,7 @@ public sealed class ChunkRenderer : IDisposable
         entry.Solid.Take(_mesher.Solid);
         entry.SeeThrough.Take(_mesher.SeeThrough);
         entry.Cutout.Take(_mesher.Cutout);
+        entry.CutoutGlass.Take(_mesher.CutoutGlass);
         entry.SolidCutout.Take(_mesher.SolidCutout);
 
         entry.Emitters.Clear();
@@ -435,6 +438,7 @@ public sealed class ChunkRenderer : IDisposable
         entry.Solid.Forget();
         entry.SeeThrough.Forget();
         entry.Cutout.Forget();
+        entry.CutoutGlass.Forget();
         entry.SolidCutout.Forget();
     }
 
@@ -487,6 +491,12 @@ public sealed class ChunkRenderer : IDisposable
                 DrawMesh(entry.Cutout.Mesh, _cutout, entry.Transform);
                 draws++;
                 triangles += entry.Cutout.Mesh.TriangleCount;
+            }
+            if (entry.CutoutGlass.Mesh.IsValid)
+            {
+                DrawMesh(entry.CutoutGlass.Mesh, _cutoutGlass, entry.Transform);
+                draws++;
+                triangles += entry.CutoutGlass.Mesh.TriangleCount;
             }
             if (entry.SolidCutout.Mesh.IsValid)
             {

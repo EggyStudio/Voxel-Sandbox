@@ -239,3 +239,18 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     float haze = 1.0 - (1.0 - smoothstep(fogStart, fogEnd, distance)) * (1.0 - aerial);
     return float4(lerp(shown, hazeColor(streams.base.toEye, distance), haze), color.a);
 }
+
+// A masked face's shadow, cut where its texture is clear as fragmentMain cuts the face, so a blade of
+// grass casts the blade's shadow rather than its wall's. Only a face whose corners carry their places
+// on the texture is cut, a plant's wall or a piece showing a part of its texture, and a face whose
+// texture is laid by where it lies, a pack's leaves or a door's, casts the whole face's shadow.
+[shader("fragment")]
+void shadowMain(TerrainOutput input)
+{
+    uint4 surface = input.surface;
+    if (surface.w != 3)
+        return;
+    float2 place = clamp(input.streams.base.uv, float2(0.0), float2(0.99999));
+    float4 tile = tileColor(surface.y, place, 0.0);
+    alphaTested(float4(1.0, 1.0, 1.0, tile.a * input.streams.vertexColor.a), input.streams.base);
+}

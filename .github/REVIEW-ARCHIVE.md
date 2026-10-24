@@ -981,6 +981,88 @@ before a batch.
     `723e28c`, the seventy blocks, the plants as planes and the ores by depth, and the third at
     `c54f362`, the nine trees with the cherry's lanterns, as the heads say; item 25 done.
 
+71. **The stars are points of light with no dark backing, faded by the sky's light.** The owner
+    wrote on 2026-10-23 (Decision 34) that the stars are visible at dusk and dawn with half of them
+    black, and at night some black or dark. The cause to read: a star drawn as a quad whose dark
+    corners or backing write over the sky, or blended with the wrong operator. The mend: stars drawn
+    additive or with an alpha that is zero off the point, their brightness scaled by the sky's
+    darkness so none shows by day and all show at night; a test reading the sky around a star for no
+    pixel darker than the sky at dusk. One commit, small. Done at `fd276d3` on 2026-10-23, additive
+    stars, as the head says.
+
+76. **The stepped shadows move in whole steps as the day passes.** The owner wrote on 2026-10-23
+    (Decision 34) that when timing the day the pixelated shadows flicker, unable to choose between
+    staying and moving to their next place. The cause: the sun's direction moves every frame, so a
+    shadow edge near a step's boundary falls on either side from frame to frame, the engine's texel
+    snapping holding the map against the camera's motion and not against the light's. The mend: the
+    shadow's sun direction steps on a coarse clock, every few game minutes, while the sky's sun
+    moves smoothly, so an edge jumps a step at once and stands still between, the step chosen so no
+    jump is longer than a step at the shadow's reach; a test reading a shadow edge still across the
+    frames between two steps. One commit, small. Done at `7a0d61d` on 2026-10-24, 36 steps an hour
+    rounded to the nearest, the departures in the head.
+
+77. **The distance fog takes the sky's color at the ray's height, so a mountain's top is not the
+    horizon's color.** The owner wrote on 2026-10-23 (Decision 34) that with the chunk-distance fog
+    on mountains the color is the horizon's applied to blocks near the sky, asking for a
+    height-based color or the modpack's way. The mend: the fog's color for a pixel is the sky drawn
+    behind it, read along the view ray's elevation from the sky's gradient, so a block high against
+    the sky fades into that sky's blue and one at the horizon into the horizon's haze, as the
+    modpack's shader does; the haze of item 58 keeping its share. A test reading a far block high in
+    view against the sky's pixel beside it. One commit, small. Done at `532e45c` on 2026-10-23, in
+    the shader from the sky map, as the head says.
+
+82. **No plant stands in the air where a cave was carved.** The owner wrote on 2026-10-23 (Decision
+    34) that grass is placed in the air where a cave was carved at a later stage. The mend: the
+    carving before the decoration in the chunk's stages, as the source orders them, or every plant
+    placed re-checked for the block under it after carving; a test of a carved chunk holding no
+    plant over air. One commit, small. Done at `f9ab3bb` on 2026-10-23, as the head says.
+
+84. **A loading screen while the world generates.** The owner wrote on 2026-10-23 (Decision 34) that
+    the beginning should show a loading screen for the world generation, the window being blank
+    while the world loads in for a second. The mend: a screen with the world's name, a progress bar
+    over the sections generated and meshed around the player and the pack's fetch, shown until the
+    player's column and its neighbors stand, then the world shown; a test reading the screen's
+    pixels in the first frames and the world's after. One commit, small. Done at `a9b0fcf` on
+    2026-10-23, the departures in the head.
+
+85. **No line on a grass plant's top.** The owner wrote on 2026-10-23 (Decision 34) that a thin line
+    of the grass plane's pixels shows on the top of it, a faint cross at the top of some. The cause
+    to read: the crossed quads reaching a texel beyond their picture in the atlas or the atlas's
+    padding, so the row above bleeds in. The mend: the quads' coordinates inset by half a texel or
+    the atlas padded with each tile's edge; a test reading the pixels above a grass plant's picture
+    for the sky alone. One commit, small. Done at `2f9ed14` on 2026-10-23, in shader form, as the
+    head says.
+
+86. **Glass and water reflect nothing for the present (Decision 36).** The owner wrote on 2026-10-23
+    (Decision 34) that the reflections on glass and water show the scene field, clashing with the
+    game's voxel style, and should stay non-reflective for the time being. The mend: the glass's and
+    water's materials set with no reflection, the water keeping its tint and transparency, the
+    field's reflection left off until the owner asks; a test reading a water pixel for the sky's
+    color alone. One commit, small. Done at `10cf3f3` on 2026-10-23, by roughness since the package
+    has no switch, as the head says.
+
+87. **The game's own plant masks show only where no pack gives the plant's picture.** Found by the
+    coder on 2026-10-23 under item 85: TerrainAtlas.Build lays the game's own plant masks over every
+    pack's plant pictures, the branch after the grass looks checking nothing of whether a pack gave
+    the tile though its comment says a plant no pack has, so with Bare Bones every grass, flower and
+    sapling shows the game's own masks. The mend: the one condition, the masks laid where no pack
+    gave the tile alone, and a test of a plant with a pack tile keeping the pack's pixels and one
+    without taking the mask; the plains village picture taken again if it changes. One commit,
+    small, before item 71. Done at `6454b80` on 2026-10-23, as the head says.
+
+88. **The play job comes back under 40 minutes.** On the build run 39996906286 of `22616f4` on
+    2026-10-23 the play job took 53 minutes 16 seconds against its limit of 60, where the walk at a
+    render distance of 2 alone took 24 minutes 39 seconds on the run before; the checks of items 60
+    to 87, each opening the world, waiting frames and reading pixels, grew it by half an hour on
+    lavapipe, and the next few items add theirs. The mend: the play script's log timed check by
+    check from the run's log, the costs named in the commit, and the job brought under 40 minutes by
+    sharing one open world among the checks that can share it, waiting the frames a check needs and
+    no more, and reading at the render distance each check needs; the limit stays at 60 as Decision
+    7 set it. One commit, before item 77. The run of `532e45c` took 57 minutes 38 seconds, within
+    three minutes of the limit, so this item goes out before any check is added. Done at `b730088`
+    on 2026-10-24, pushed at 00:54, the departures and the two open points in the head; settles on
+    its play job's time. The run of `b730088` ended green, its play job 28.8 minutes, under 40.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

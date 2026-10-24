@@ -216,10 +216,12 @@ capture dusk.png
 
 check "the pillar's shadow"
 # A pillar of stone west of the room and its shadow on the grass under the sun of 8.30, the
-# shadow's edges running slantwise and stepping along the pixels of the blocks they cross, seen from
-# the air to the southeast. The mobs are taken away first, so none wanders into the shadow.
+# shadow's edges running slantwise and stepping along the pixels of the blocks they cross, and a
+# poppy's shadow beside it, seen from the air to the southeast. The mobs are taken away first, so
+# none wanders into the shadow.
 cmd voxel.kill all
 cmd voxel.fill 1 4 -9 1 8 -9 stone
+cmd voxel.set -1 4 -5 poppy
 cmd voxel.fly on
 cmd voxel.time 8.5
 cmd voxel.tp 6 9 -1
@@ -237,6 +239,7 @@ cmd frames.wait 20
 ask voxel.line 1 1 1 1 1 1 2 > /dev/null
 cmd frames.wait 2
 before=$(ask voxel.line -2 4.001 -11.5 -2 4.001 -8 57)
+poppy=$(ask voxel.line -1.25 4.001 -6.5 -1.25 4.001 -3.5 49)
 cmd voxel.time 8.51
 cmd frames.wait 6
 ask voxel.line 1 1 1 1 1 1 2 > /dev/null
@@ -251,6 +254,12 @@ printf '%s\n%s\n' "${before#*by place }" "${after#*by place }" | awk '
     for (i = 1; i <= n; i++) { if (a[i] < lo) lo = a[i]; if (a[i] > hi) hi = a[i]; d = a[i] - b[i]; if (d > 1 || d < -1) exit 1 }
     exit !(n == 57 && m == 57 && lo < hi / 2)
   }' || fail "the pillar's shadow is not across the line or moved within one of the light's steps, at 8.49 $before, at 8.51 $after"
+# The poppy's shadow is cut by its picture, as its walls are. Read across it a quarter of a block
+# west of its cell, 1 to 10 of 49 points are under 100, where the shadow of its whole walls there is
+# 15 and the lit grass 154.
+dark=$(printf '%s\n' "${poppy#*by place }" | tr ' ' '\n' | awk '$1 < 100 { n++ } END { print n + 0 }')
+echo "the poppy's shadow, $dark of 49 points dark"
+[ "$dark" -ge 1 ] && [ "$dark" -le 10 ] || fail "the poppy casts no shadow or its walls' whole shadow, $dark of 49 points dark, $poppy"
 cmd voxel.hud on
 
 check "the creative window"

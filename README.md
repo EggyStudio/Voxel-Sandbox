@@ -215,8 +215,8 @@ drawn from both sides and lit as if they faced up and were seen from straight ab
 lights its plants with no shade by the way they face, since the engine lights a face turned from the
 eye as its back, and a plant above the eye's height would take the light of a face turned down, as
 `build/play.sh` reads on a sapling over a pillar. Its walls are a mesh of their own in each section,
-cut out where their texture is clear and casting no shadow, so the scene's distance field holds no
-grass. A pack's texture lies across each wall from its own corners, so it stays whole wherever the
+cut out where their texture is clear and casting the shadow of what the texture keeps, while global
+illumination holds none of them, so the scene's distance field holds no grass. A pack's texture lies across each wall from its own corners, so it stays whole wherever the
 wall stands, and where no pack has one the game's own pixels stand in, blades of grass, a flower's
 stem and its petals, a sapling's crown and a mushroom's cap, white masks tinted by each plant's own
 color. A plant breaks at once and falls when the block under it is broken.
@@ -696,7 +696,8 @@ gives back takes its texture's color. A face whose texture is clear in some pixe
 covered in the rest is cut out where it is clear, as Minecraft cuts out its glass, a door's window
 and its leaves, the shader dropping those pixels. Glass goes in a mesh of each section that casts
 no shadow, as the see-through faces cast none, and a door's window and a pack's leaves in one that
-casts the whole face's, since the engine's shadow pass reads no texture through the game's shader.
+casts the whole face's, the terrain shader's `shadowMain` cutting only the faces whose corners carry
+their places on the texture, so a canopy's shade stays whole.
 Leaves cut out hide nothing behind them, so they keep their faces against each other and the faces
 beside them, as Minecraft draws its leaves, and the sections seen through them are drawn. Bare
 Bones' leaves are covered in every pixel and so stay whole. A texture partly clear, as ice's is,
@@ -887,6 +888,20 @@ where the light turning every frame laid an edge near a step's boundary on eithe
 to frame. A step turns the light by a 36th of the sky's 15 degrees an hour, so the edge of a shadow
 16 blocks from what casts it jumps 0.12 of a block, under one step of the grid, and
 `build/play.sh` reads across a pillar's shadow at two hours of one step and finds it the same.
+
+The plants cast the shadows of their blades and flowers, the terrain shader's `shadowMain` cutting
+each wall's shadow where its picture is clear as its fragment stage cuts the wall, and global
+illumination holds none of them, so they neither send on light nor stand in its way. Glass a pack
+cuts out casts no shadow, as glass the pack leaves whole casts none, and a door's window and a
+pack's leaves clear between them cast the whole face's. `build/play.sh` reads across a poppy's
+shadow at 8.30, where 7 of 49 points along the line are dark and the shadow of its whole walls
+would darken 15. Over seed 1's plains at noon at 12 columns with Bare Bones they cost the GPU 2.3 ms
+a frame, 0.8 in the sun's shadow maps, 0.7 in the depth that ambient occlusion reads, which holds
+them as well, and 0.8 in the model pass, and the CPU 3.4 ms recording the maps and the depth, the
+frame taking 17.2 ms against 16.8, the mean of two sessions each with no validation layer. On
+lavapipe at two columns a frame takes 2.60 s against 2.55.
+
+<img src=".github/assets/world/plant-shadows.webp" width="800" height="450" alt="A row of plants on the flat world at 7.30 under Bare Bones, each casting the shadow of its blades and flowers">
 
 ## Fog
 
