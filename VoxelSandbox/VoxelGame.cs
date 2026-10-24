@@ -470,6 +470,7 @@ public sealed class VoxelGame : IDisposable
         // takes to swap a slot.
         var screen = InventoryOpen || Menus.Open != Menu.None;
         Hotbar.Update(keys && !screen, _captured);
+        Hotbar.Follow(seconds);
         var alive = !Mode.Lives() || !Vitals.Dead;
         Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
         var before = Player.Body.Position;

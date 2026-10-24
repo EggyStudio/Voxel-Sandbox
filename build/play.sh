@@ -764,6 +764,22 @@ echo "a held wooden pickaxe against the sky, $gaps"
 count=$(printf '%s\n' "$gaps" | sed -nE 's/^([0-9]+) gaps .*/\1/p')
 [ -n "$count" ] && [ "$count" -le 60 ] || fail "a held pickaxe lets the sky through between its faces, $gaps"
 
+check "the item's name"
+# The chosen item's name over the hotbar shows as the choice changes and is gone once it has stood a
+# second and a half and faded over half a second, as the source's fades, read over a strip of the
+# sky above the hotbar where it lies, its red raised by the white letters while it shows, by 8 levels
+# for dirt's, and the sky's own after.
+cmd voxel.select dirt
+cmd frames.wait 2
+shown=$(ask voxel.color 520 580 240 32)
+cmd frames.wait 180
+gone=$(ask voxel.color 520 580 240 32)
+echo "the item's name's strip $shown, after the hold $gone"
+sr=$(printf '%s\n' "$shown" | sed -nE 's/^red ([0-9.]+),.*/\1/p')
+gr=$(printf '%s\n' "$gone" | sed -nE 's/^red ([0-9.]+),.*/\1/p')
+awk -v s="${sr:-0}" -v g="${gr:-0}" 'BEGIN { exit !(s - g > 4) }' \
+  || fail "the chosen item's name does not show and then fade, its strip $shown and after the hold $gone"
+
 check "the jungle's floor"
 # The grass under a canopy of jungle leaves two deep at noon, at the sky level of 13 the leaves leave
 # it, read from straight above against the grass in the shade of a wall on open ground, at sky level

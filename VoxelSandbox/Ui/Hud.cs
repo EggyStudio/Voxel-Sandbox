@@ -46,7 +46,8 @@ public static class Hud
 
     /// <summary>
     /// The hotbar at the bottom of the window as Minecraft lays it out, the chosen slot framed, and
-    /// over it the name of what the chosen slot holds, above the hearts and food where they show.
+    /// over it the name of what the chosen slot holds as much as it still shows after the choice
+    /// changed, above the hearts and food where they show.
     /// </summary>
     public static void DrawHotbar(Hotbar hotbar, bool vitals = false)
     {
@@ -57,9 +58,9 @@ public static class Hud
             if (hotbar.Inventory.Slots[i] is { } stack) Gui.Item(stack, x0 + (3 + 20 * i) * s, y + 3 * s);
         Gui.Sprite(GuiArt.Selection, x0 + (20 * hotbar.Selected - 1) * s, y - s);
 
-        if (hotbar.Current is not { } held) return;
+        if (hotbar.Current is not { } held || hotbar.NameShown <= 0) return;
         var name = held.Item.Name;
-        Gui.Text(name, (GetScreenWidth() - Gui.TextWidth(name)) / 2, GetScreenHeight() - (vitals ? 59 : 45) * s, Color.White);
+        Gui.Text(name, (GetScreenWidth() - Gui.TextWidth(name)) / 2, GetScreenHeight() - (vitals ? 59 : 45) * s, Color.White with { A = (byte)MathF.Round(255 * hotbar.NameShown) });
     }
 
     /// <summary>

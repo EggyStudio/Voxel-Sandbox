@@ -124,4 +124,36 @@ public class SlotMovesTests
         Assert.Null(slots[6]);
         Assert.Null(slots[7]);
     }
+
+    [Fact]
+    public void The_Chosen_Items_Name_Shows_Whole_For_A_Second_And_A_Half_Then_Fades_And_Shows_Again_On_The_Next_Choice()
+    {
+        var inventory = new Inventory();
+        inventory.Slots[0] = new ItemStack(Stone, 5);
+        inventory.Slots[1] = new ItemStack(Dirt, 5);
+        var hotbar = new Hotbar(inventory);
+        float After(float seconds)
+        {
+            // A frame of a sixtieth of a second at a time, as the game steps it.
+            for (float run = 0; run < seconds - 1e-4f; run += 1 / 60f) hotbar.Follow(1 / 60f);
+            return hotbar.NameShown;
+        }
+
+        hotbar.Follow(0);
+        Assert.Equal(1, hotbar.NameShown);
+        Assert.Equal(1, After(1.4f));
+        Assert.InRange(After(0.35f), 0.4f, 0.6f);
+        Assert.Equal(0, After(0.3f));
+        Assert.Equal(0, After(5));
+
+        // Another slot, and then another item in the same slot, each show it again.
+        hotbar.Selected = 1;
+        Assert.Equal(1, After(1 / 60f));
+        After(3);
+        inventory.Slots[1] = new ItemStack(Stone, 5);
+        Assert.Equal(1, After(1 / 60f));
+        // An empty slot shows no name.
+        hotbar.Selected = 2;
+        Assert.Equal(0, After(1 / 60f));
+    }
 }

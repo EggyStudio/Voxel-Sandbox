@@ -1365,6 +1365,27 @@ before a batch.
     pieces. Done at `9a3d746` on 2026-10-24, each pixel its own faces from one grid of corners, the
     cracks read as the front's cut edge against the sides' geometry, the departure in the head.
 
+119. **The terrain's faces meet with no crack, so no light shines through a dark cave's walls in
+    pixel-wide lines.** The owner wrote at 16:41 on 2026-10-24 that blocks show the same pixel-wide
+    gap as the held tools, and that it is the complaint from the black cave, the one-pixel
+    stair-stepped lines of light where light shines through, read at 11:0x as item 83's missing mend
+    in the engine. The owner added at 16:42 that the gap is not everywhere but on a lot of edges,
+    which fits cracks where quads of different sizes abut and not a seam at every block. The game's
+    mesher is not greedy, each block face its own quad with corners on the block grid, so the lines
+    are not T-junction cracks of merged quads; the cause is read, the faces' shared corners not the
+    same values, a face's edge against a neighbor's at a different depth, or the shadow map's. Read
+    first on 5.2.281 under item 27, since the engine's item 83 mend was for these lines, in a dark
+    cave at a fixed view with the sun's shadow off and with it on, and with the camera moved by a
+    fraction of a pixel, whether the lines are cracks of the mesh, which stay with the shadow off
+    and move with the camera, or the shadow map's, which go with the shadow off, saying which with a
+    capture; then the mend for the cracks, at the cause the reading finds, said in the commit with
+    the draw counts before and after where the mesh changes; a mesher test over a sample section
+    reading no vertex on the inside of another face's edge, and the cave capture before and after.
+    The shadow map's share, where the reading finds one, goes to the engine's ASKS.md. One commit,
+    after item 27's package pin and before item 120. Done at `ffa7a7b` on 2026-10-24 as a reading,
+    the lines the sun's map's and not the mesh's, the mesher's test added, the map's share the
+    engine's item 101 through ASKS.md.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

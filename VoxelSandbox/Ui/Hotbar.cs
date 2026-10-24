@@ -16,9 +16,18 @@ public sealed class Hotbar(Inventory inventory)
         BlockId.WhiteConcrete, BlockId.RedConcrete,
     ];
 
+    /// <summary>Seconds the chosen item's name stays whole over the hotbar after the choice changes, and seconds it takes to fade, as Minecraft's 30 ticks and 10.</summary>
+    public const float NameHeld = 1.5f, NameFades = 0.5f;
+
+    private (int Slot, Item? Item) _named = (-1, null);
+    private float _namedFor;
+
     public Inventory Inventory => inventory;
 
     public int Selected { get; set; }
+
+    /// <summary>How much of the chosen item's name shows over the hotbar, whole as the chosen slot or what it holds changes and gone two seconds after.</summary>
+    public float NameShown { get; private set; }
 
     /// <summary>The chosen slot's stack, or null where it is empty.</summary>
     public ItemStack? Current => inventory.Slots[Selected];
@@ -30,6 +39,15 @@ public sealed class Hotbar(Inventory inventory)
     public void FillCreative()
     {
         for (int i = 0; i < Size; i++) inventory.Slots[i] = new ItemStack(Items.Of(Creative[i]), 1);
+    }
+
+    /// <summary>Follows the choice over a frame of so many seconds, showing the chosen item's name again where the slot or what it holds changed.</summary>
+    public void Follow(float seconds)
+    {
+        var now = (Selected, Current?.Item);
+        if (now != _named) (_named, _namedFor) = (now, 0);
+        else _namedFor += seconds;
+        NameShown = now.Item is null ? 0 : Math.Clamp(1 - (_namedFor - NameHeld) / NameFades, 0, 1);
     }
 
     public void Update(bool keys, bool wheel)

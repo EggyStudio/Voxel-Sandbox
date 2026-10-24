@@ -631,7 +631,8 @@ of shade below and plain colors, drawn at a whole number of the screen's pixels 
 the largest at which 320 by 240 of them fit the window, 3 at 1280 by 720, as Minecraft scales its
 interface. The hotbar is Minecraft's nine slots 20 apart along the bottom, the chosen one framed in
 green, with the name of what it holds above the hearts and the food, which sit over its two halves
-as Minecraft's do. A window's panel and a button are stretched between edges that keep their size.
+as Minecraft's do. The name shows as the chosen slot or what it holds changes, stays a second and a
+half and fades over half a second, as Minecraft's does. A window's panel and a button are stretched between edges that keep their size.
 With resource packs loaded, their pictures, windows and font take the place of the game's own, as
 the section on resource packs says.
 

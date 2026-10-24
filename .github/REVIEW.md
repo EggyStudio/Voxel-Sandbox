@@ -5,26 +5,37 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `758e9df`, item 27's package part, 5.2.281 pinned, pushed at 17:48 on 2026-10-24
-after the run of `9a3d746` went green, the run watched, carrying the review's files.
-SetProfileWindowKey gives way to SetDebugOverlayKey(Key.Null) and SetUiHiddenKey(Key.Null) is added,
-F1 and F3 being the game's own. Departure, the far cascade is not set, LightSettings carrying the
-reason, since at the far cascade the coarse cells hold the ground as a slab and take the sky's light
-from walls near it, the play check's gray glass frame reading 197, 192, 144 where it reads 197, 195,
-194 without and a red wall's blue 57 against 98, at about 5 ms of the scene pass at the grove, and
-it changed none of the cave's readings at any reach. The deep cave at minus 59.5, minus 4, minus
-91.5 reads digit for digit as on 5.2.215, the deepslate tops at 45 blocks sunlit at noon at High
-with shadows at 150 (35, 29, 20) and 96, the far tops at 90 blocks bluish (9, 13, 18 at High, 25,
-36, 53 with global illumination off or Low), the edge lines and the qualities' ambient fog
-unchanged, so the engine's item 83 mend does not reach this cave; both go to the engine as its items
-101 and 102 through ASKS.md. The black is mended, the desert village at 40 degrees and hour 17
-reading 0 pixels under 1 percent where 422,985 stood, 0 where 188,757 after a magma block and 0
-where 70,170 with the screen probes on, the owner's call on the probes asked with the capture. The
-grove at 1920 by 1080 at High reads the frame 40.7 to 46.4 ms with the far cascade and the shadow
-fill where 5.2.215 reads 15.4 to 18.0, the scene pass 30.9 to 34.6 against 10.2 to 12.2 and the
-shadows 5.2 to 5.9 against 1.0, the far cascade off 33.9 and 24.2, the fill off too 29.9 and 24.3
-with the shadows 1.14, so as committed the frame is about 34 ms with the scene pass about 24, the
-second package bringing the pass back to 5.2.215's. 286 tests, play.sh 290 s on the GPU.
+Reviewed up to `ffa7a7b`, item 119, the cave's lines read as the sun's map and not cracks, read at
+17:55 on 2026-10-24, carrying REVIEW.md. In the deep cave on 5.2.281 at noon at High, the 10:59
+crop's band holds 4,496 to 4,500 pixels lit above 24 levels with the shadows at 96, the eye moved by
+fractions of a pixel changing the count by no more than four and moving no line, and 3,775 to 3,779
+with the shadows at 1, the tan runs on the tops' edges and the vertical lines gone, so the lines are
+the map letting a face's edge rows through, where mesh cracks would stay with the map off and come
+and go with the eye; the mesher is not greedy, each face a quad on the block grid sharing its
+corners. No mesh change; a mesher test over seed 1's ground section at the origin with its eight
+neighbors reads no corner of the solid faces strictly inside another face's edge among over 400
+faces; 287 tests, play.sh 258 s on the GPU. The two ASKS.md entries stand in the engine's tree, the
+cave's sun with the lines and the far cascade's slab. Held until the run of `758e9df` ends, then
+pushed. After `758e9df`, item 27's package part, 5.2.281 pinned, pushed at 17:48 on 2026-10-24 after
+the run of `9a3d746` went green, the run watched, carrying the review's files. SetProfileWindowKey
+gives way to SetDebugOverlayKey(Key.Null) and SetUiHiddenKey(Key.Null) is added, F1 and F3 being the
+game's own. Departure, the far cascade is not set, LightSettings carrying the reason, since at the
+far cascade the coarse cells hold the ground as a slab and take the sky's light from walls near it,
+the play check's gray glass frame reading 197, 192, 144 where it reads 197, 195, 194 without and a
+red wall's blue 57 against 98, at about 5 ms of the scene pass at the grove, and it changed none of
+the cave's readings at any reach. The deep cave at minus 59.5, minus 4, minus 91.5 reads digit for
+digit as on 5.2.215, the deepslate tops at 45 blocks sunlit at noon at High with shadows at 150 (35,
+29, 20) and 96, the far tops at 90 blocks bluish (9, 13, 18 at High, 25, 36, 53 with global
+illumination off or Low), the edge lines and the qualities' ambient fog unchanged, so the engine's
+item 83 mend does not reach this cave; both go to the engine as its items 101 and 102 through
+ASKS.md. The black is mended, the desert village at 40 degrees and hour 17 reading 0 pixels under 1
+percent where 422,985 stood, 0 where 188,757 after a magma block and 0 where 70,170 with the screen
+probes on, the owner's call on the probes asked with the capture. The grove at 1920 by 1080 at High
+reads the frame 40.7 to 46.4 ms with the far cascade and the shadow fill where 5.2.215 reads 15.4 to
+18.0, the scene pass 30.9 to 34.6 against 10.2 to 12.2 and the shadows 5.2 to 5.9 against 1.0, the
+far cascade off 33.9 and 24.2, the fill off too 29.9 and 24.3 with the shadows 1.14, so as committed
+the frame is about 34 ms with the scene pass about 24, the second package bringing the pass back to
+5.2.215's. 286 tests, play.sh 290 s on the GPU.
 
 Before it, `9a3d746` came, items 116 and 118 with `cce1536`, pushed at 17:08 on 2026-10-24, its run
 green, the play job 36.9 minutes.
@@ -642,25 +653,6 @@ full.
     from the caller; the game's `litStepped` then hands the step's read in and reads the shadow
     once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
     again. One commit, small, with the package carrying the engine's item 99.
-
-119. **The terrain's faces meet with no crack, so no light shines through a dark cave's walls in
-    pixel-wide lines.** The owner wrote at 16:41 on 2026-10-24 that blocks show the same pixel-wide
-    gap as the held tools, and that it is the complaint from the black cave, the one-pixel
-    stair-stepped lines of light where light shines through, read at 11:0x as item 83's missing mend
-    in the engine. The owner added at 16:42 that the gap is not everywhere but on a lot of edges,
-    which fits cracks where quads of different sizes abut and not a seam at every block. The game's
-    mesher is not greedy, each block face its own quad with corners on the block grid, so the lines
-    are not T-junction cracks of merged quads; the cause is read, the faces' shared corners not the
-    same values, a face's edge against a neighbor's at a different depth, or the shadow map's. Read
-    first on 5.2.281 under item 27, since the engine's item 83 mend was for these lines, in a dark
-    cave at a fixed view with the sun's shadow off and with it on, and with the camera moved by a
-    fraction of a pixel, whether the lines are cracks of the mesh, which stay with the shadow off
-    and move with the camera, or the shadow map's, which go with the shadow off, saying which with a
-    capture; then the mend for the cracks, at the cause the reading finds, said in the commit with
-    the draw counts before and after where the mesh changes; a mesher test over a sample section
-    reading no vertex on the inside of another face's edge, and the cave capture before and after.
-    The shadow map's share, where the reading finds one, goes to the engine's ASKS.md. One commit,
-    after item 27's package pin and before item 120.
 
 120. **The selected item's name over the hotbar fades away.** The owner wrote at 16:44 on 2026-10-24
     that selecting an item from the hotbar shows its name, which should fade away and not stick
