@@ -1520,6 +1520,36 @@ before a batch.
     the eye's height, the grass wall check added and the village capture taken again; the dirt's
     crushed blue read under item 43.
 
+43. **The sun's look, warm and low with long soft shadows, and a blue haze over distant land
+    (Decision 21).** The look the owner aims at has a warm low sun with long soft shadows and a blue
+    haze over the far land. The game gives the sun a color and a strength by the hour as the
+    source's shader packs do, white at noon, warm at a low sun and red at the edge of night, the
+    sky's ambient turning with it; the shadows' softness read against the engine's, a penumbra
+    widening with the distance from the caster where the engine has it and asked of it in its
+    ASKS.md where not, with the hour's long shadows kept sharp enough to read; and a haze over
+    distant land as fog by distance and by height tinted by the sky, thin at noon and thick at dawn,
+    through the engine's fog where it takes a tint and a height, the far land of item 26 fading into
+    it. A setting for each, on by default. Captures at dawn, noon and dusk of one view in the record
+    beside the modpack's. Tests: the sun's color at four hours and the haze's density by distance
+    and height. After item 26. One or two commits. Item 58 takes the sun's color by hour and the
+    haze's strength from the modpack's settings; this item keeps the shadows' softness, the haze by
+    height and the captures at three hours. The reading at 22:29 on 2026-10-24, a dirt wall at noon
+    with the packs, the same texel with one step of the frame taken out after another, the pack's
+    dirt averaging 155, 101, 49 and drawn 190, 105, 0, saturation 1 giving 174, 111, 46, contrast 1
+    then 169, 113, 55, the engine's curve 205, 127, 59, a white noon sun 205, 138, 73, exposure 1
+    166, 111, 58 and no global illumination 174, 108, 59, so the crush is the grading's saturation
+    of 1.4 pushing the dirt's low blue under 0, the rest moving it little; the village at noon and
+    17 at 1.4 and 1.2 sent to the owner, the lower half's blue averaging 2.7 and 1.4 at 1.4 against
+    41.7 and 14.8 at 1.2, the default changing on the owner's word alone. The package has no
+    soft-shadow call, so the penumbra widening with the distance from the caster goes to the engine
+    as its item 111 through ASKS.md; the haze grows by distance alone in the terrain shader and
+    gains the haze by height and its thickening toward dawn, each a setting under Sky and Visuals on
+    by default; captures at dawn, noon and dusk of one view, tests of the sun's color at four hours
+    and the haze's density by distance and height through a twin of the shader's formula. Done at
+    `4b398bd` on 2026-10-24 but for the penumbra, the engine's item 111, and the saturation default
+    on the owner's word, the haze by height and toward dawn with their settings and the sun's color
+    read at four hours.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

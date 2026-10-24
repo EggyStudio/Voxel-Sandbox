@@ -41,6 +41,7 @@ public sealed class SectionMesher
     private readonly byte[] _light = new byte[P * P * P];
     private readonly Section?[] _around = new Section?[27];
     private ChunkColumn _column = null!;
+    private VoxelWorld _world = null!;
     // The section's lowest corner in the world, so a block's place picks its look from a pack's block state.
     private (int X, int Y, int Z) _origin;
 
@@ -196,6 +197,13 @@ public sealed class SectionMesher
     public Faces SeeThrough { get; } = new();
 
     /// <summary>
+    /// The water's faces, see-through and drawn apart from the rest, their tops carrying the water's
+    /// depth under each corner in the overlay's bits, which water's faces never use, sixteen levels a
+    /// block to 15 blocks, for the terrain shader to darken and clear the water by.
+    /// </summary>
+    public Faces Water { get; } = new();
+
+    /// <summary>
     /// The last section's faces cut out where a pack's texture is clear whose shadow is cut by the
     /// texture too, a plant's and every flat wall's, as a lantern's handle is.
     /// </summary>
@@ -277,18 +285,20 @@ public sealed class SectionMesher
         return 1 - 0.98f * dark * dark * dark * dark;
     }
 
-    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/>, <see cref="Cutout"/>, <see cref="CutoutGlass"/>, <see cref="SolidCutout"/>, <see cref="Molten"/> and <see cref="Emitters"/>.</summary>
+    /// <summary>Meshes a section into <see cref="Solid"/>, <see cref="SeeThrough"/>, <see cref="Water"/>, <see cref="Cutout"/>, <see cref="CutoutGlass"/>, <see cref="SolidCutout"/>, <see cref="Molten"/> and <see cref="Emitters"/>.</summary>
     /// <returns>False when one of the eight columns around it is not loaded, so its edges cannot be told yet, and nothing is meshed.</returns>
     public bool Mesh(VoxelWorld world, SectionKey key)
     {
         Solid.Clear();
         SeeThrough.Clear();
+        Water.Clear();
         Cutout.Clear();
         CutoutGlass.Clear();
         SolidCutout.Clear();
         Molten.Clear();
         Emitters.Clear();
         _origin = (key.X * Section.Size, key.Y * Section.Size, key.Z * Section.Size);
+        _world = world;
 
         for (int dz = -1; dz <= 1; dz++)
             for (int dx = -1; dx <= 1; dx++)
@@ -362,7 +372,7 @@ public sealed class SectionMesher
     // clear and the block may be cut out, casting a shadow for an opaque block's and a smaller
     // block's and none for glass's, or else see-through where the surface's own color is, and solid.
     private Faces FacesOf(int surface, bool cuttable, BlockKind kind) =>
-        kind == BlockKind.Water && Surfaces.All[surface].Emits ? Molten
+        kind == BlockKind.Water ? Surfaces.All[surface].Emits ? Molten : Water
             : cuttable && Atlas.Cuts(surface) ? kind == BlockKind.Glass ? CutoutGlass : SolidCutout
             : Surfaces.All[surface].Color.A < 255 ? SeeThrough : Solid;
 
@@ -418,8 +428,10 @@ public sealed class SectionMesher
             var kept = LightLevels ? MathF.Pow(Lit((float)Math.Max(sky, lit) / open), 1 / 2.2f) : 1;
             var shade = kept * (CornerShade ? 1 - CornerStrength * (1 - Occlusion[occlusion[i]]) : 1);
             var corner = Corners[face][i];
+            // A corner of water's top carries the depth under it where an overlay's tile would be.
+            var carried = faces == Water && face == 2 ? tiles & ~(511u << 9) | (uint)DepthAt(block + corner) << 9 : tiles;
             corner.Y = corner.Y == 1 ? top : bottom;
-            faces.Add(block + corner, face, i, shade, color, tiles, albedo, (int)MathF.Round((float)sky / open));
+            faces.Add(block + corner, face, i, shade, color, carried, albedo, (int)MathF.Round((float)sky / open));
         }
 
         // The quad is split along the diagonal whose corners are less closed, so a closed corner
@@ -444,6 +456,24 @@ public sealed class SectionMesher
             indices.Add(first + 2);
             indices.Add(first + 3);
         }
+    }
+
+    // The water's depth under a corner of its top, the mean of the four columns of cells about the
+    // corner, each the water from the top's cell down to the first block that is not water, to 15
+    // blocks, and none where the cell beside is not water, so the water clears toward its shore, in
+    // sixteenths of a block as a color's alpha carries it.
+    private byte DepthAt(Vector3 corner)
+    {
+        int x = _origin.X + (int)corner.X, y = _origin.Y + (int)corner.Y - 1, z = _origin.Z + (int)corner.Z;
+        var sum = 0;
+        for (int dz = -1; dz <= 0; dz++)
+            for (int dx = -1; dx <= 0; dx++)
+            {
+                var deep = 0;
+                while (deep < 15 && Blocks.IsWater(_world.GetBlock(x + dx, y - deep, z + dz))) deep++;
+                sum += deep;
+            }
+        return (byte)Math.Min(240, sum * 4);
     }
 
     // The pieces of a block smaller than its cell that are not emissive, each a box of six faces,

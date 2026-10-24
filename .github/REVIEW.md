@@ -5,40 +5,40 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `8bcbfde`, item 70 as a reading, read at 22:25 on 2026-10-24, carrying the review's
-files, the village capture taken again and the devlog's pair. The land's own faces show no fault
-across the eye's height, a wall of grass blocks 6.5 blocks off with the eye at 5.62 reading the same
-dirt texel from y5 to y10 at 186 to 192 red at noon with the packs and 194 to 200 at 17, 179 to 185
-and 187 to 193 without, green following with no step at the line, the slow rise the floor's shade
-fading, and bands of the whole wall 30 rows each 115 to 120 down to the foot's 106, a dirt wall the
-same, which agrees with `22616f4` that the land's faces are never turned and the plants' mend there
-holds; play.sh gains the grass wall check, five texels from the eye's line up read as luminance,
-failing on a neighbor step over 2 levels, 125.6 to 128.1 without packs; plains-village.webp is taken
-again through pictures.sh's own steps with today's shadows and river. A dirt texel at noon reads
-186, 104, 0, the blue crushed to 0 by the grading and the warm light, which may be the orange the
-owner described, read under item 43. 294 tests, play.sh 288 s on the GPU. Held until the run of
-`2926dda` ends, then pushed. After `2926dda`, item 96's second commit, the states, read at 22:08 on
-2026-10-24, carrying the review's files. WorldState of Loading and Playing, GameMode, a computed
-Living.Yes for survival and adventure, and Menu are engine states, the game's properties keeping the
-value at once since the engine applies a transition after PreUpdate; Steer and Play run in Playing,
-the vitals and the HUD's fade split out as GameFrame.Live under Living.Yes and Playing, the hostile
-spawning as MobMind.Spawn under the same, the HUD's reset on leaving Living.Yes, and the cursor
-freed on leaving Menu.None and taken back on entering it, the Capture calls gone; the ordered ifs
-stay inside Play, the aim before the hand's work, the player's move before either and the answering
-of the mobs, since no behavior attribute reaches a system's After or Before and InState is one to a
-method, the engine's item 110. Live the states start as Playing, Creative and None with the cursor
-captured, Escape gives Pause with it free and None with it back, survival gives Living.Yes with
-exhaustion rising at a sprint, and a creeper spawns at night in survival and none in creative; the
-play readings hold as at the first commit; the grove reads the frame 20.6 and 21.1 ms against 21.2
-and 24.5, the game's cost 0.105 ms against 0.11 to 0.135. 294 tests, play.sh 324 s on the GPU.
-Pushed at 22:15 on 2026-10-24 after the run of `e77030b` went green; the run watched.
+Reviewed up to `4b398bd`, item 43's rest, the haze by height and toward dawn and the sun's color,
+read at 22:42 on 2026-10-24, carrying the review's files and the devlog's captures. terrain.slang
+takes the aerial growth by the density along the ray from the eye through a hazeHeight uniform of
+base, scale and an on flag, the density whole at and under the sea's level of 48 and falling by e
+over each 40 blocks above, the mean along the ray in closed form, a peak 80 over the sea seen from
+the sea holding 0.38 to 0.48 of the haze, Haze.cs holding the formula for the tests; Haze.Dawn
+multiplies the growth by 2.5 at 6:15 falling to 1 by 9 and before 4, the evening as at noon; Haze by
+Height and Morning Haze stand under Sky and Visuals on by default, in the README's table and walked
+by play. HazeTests read nearer clearer, the whole density at and under the sea, the peak's share,
+higher eyes clearer and never past the most, the dawn factor at six hours, and the sun's color at
+12, 9, 7 and 6.2 with blue to red falling, noon's 0.5 to 0.7, near sunrise under 0.4 and 7 and 17
+mirroring; the village at 6:15, 12 and 17:30 before and after, dawn visibly hazier and the island
+fading more, noon and dusk differing little on land near the sea's level. The penumbra waits on the
+engine's item 111 and the saturation default on the owner's word. 297 tests, play.sh 325 s on the
+GPU. Both pushed at 22:42 on 2026-10-24 after the run of `2926dda` went green; their run green at
+23:28, the play job 45.6 minutes. After `8bcbfde`, item 70 as a reading, read at 22:25 on
+2026-10-24, carrying the review's files, the village capture taken again and the devlog's pair. The
+land's own faces show no fault across the eye's height, a wall of grass blocks 6.5 blocks off with
+the eye at 5.62 reading the same dirt texel from y5 to y10 at 186 to 192 red at noon with the packs
+and 194 to 200 at 17, 179 to 185 and 187 to 193 without, green following with no step at the line,
+the slow rise the floor's shade fading, and bands of the whole wall 30 rows each 115 to 120 down to
+the foot's 106, a dirt wall the same, which agrees with `22616f4` that the land's faces are never
+turned and the plants' mend there holds; play.sh gains the grass wall check, five texels from the
+eye's line up read as luminance, failing on a neighbor step over 2 levels, 125.6 to 128.1 without
+packs; plains-village.webp is taken again through pictures.sh's own steps with today's shadows and
+river. A dirt texel at noon reads 186, 104, 0, the blue crushed to 0 by the grading and the warm
+light, which may be the orange the owner described, read under item 43. 294 tests, play.sh 288 s on
+the GPU.
+
+Before it, `2926dda` came, item 96's second commit, the states, pushed at 22:15 on 2026-10-24, its
+run green, the play job 25.2 minutes.
 
 Before it, `e77030b` came, item 96's first commit, pushed at 21:47 on 2026-10-24, its run green, the
 play job 24.0 minutes.
-
-Before it, `5bfafef` came, item 94's events, fires, blasts and the mobs' first two commits with
-`75be580`, `9a70f28` and `299aa33`, pushed at 21:19 on 2026-10-24, its run green, the play job 25.6
-minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -79,34 +79,18 @@ full.
     as the source's is. Captures of a lake at noon and at a low sun and of a cave pool in the
     record, beside the modpack's own pictures. Tests: the reflection's picture read in a capture's
     pixels where the sky should mirror, and the bed's color darkening with depth in a laid pool.
-    After item 27. Two commits, the reflection, then the depth and the edge.
-
-43. **The sun's look, warm and low with long soft shadows, and a blue haze over distant land
-    (Decision 21).** The look the owner aims at has a warm low sun with long soft shadows and a blue
-    haze over the far land. The game gives the sun a color and a strength by the hour as the
-    source's shader packs do, white at noon, warm at a low sun and red at the edge of night, the
-    sky's ambient turning with it; the shadows' softness read against the engine's, a penumbra
-    widening with the distance from the caster where the engine has it and asked of it in its
-    ASKS.md where not, with the hour's long shadows kept sharp enough to read; and a haze over
-    distant land as fog by distance and by height tinted by the sky, thin at noon and thick at dawn,
-    through the engine's fog where it takes a tint and a height, the far land of item 26 fading into
-    it. A setting for each, on by default. Captures at dawn, noon and dusk of one view in the record
-    beside the modpack's. Tests: the sun's color at four hours and the haze's density by distance
-    and height. After item 26. One or two commits. Item 58 takes the sun's color by hour and the
-    haze's strength from the modpack's settings; this item keeps the shadows' softness, the haze by
-    height and the captures at three hours. The reading at 22:29 on 2026-10-24, a dirt wall at noon
-    with the packs, the same texel with one step of the frame taken out after another, the pack's
-    dirt averaging 155, 101, 49 and drawn 190, 105, 0, saturation 1 giving 174, 111, 46, contrast 1
-    then 169, 113, 55, the engine's curve 205, 127, 59, a white noon sun 205, 138, 73, exposure 1
-    166, 111, 58 and no global illumination 174, 108, 59, so the crush is the grading's saturation
-    of 1.4 pushing the dirt's low blue under 0, the rest moving it little; the village at noon and
-    17 at 1.4 and 1.2 sent to the owner, the lower half's blue averaging 2.7 and 1.4 at 1.4 against
-    41.7 and 14.8 at 1.2, the default changing on the owner's word alone. The package has no
-    soft-shadow call, so the penumbra widening with the distance from the caster goes to the engine
-    as its item 111 through ASKS.md; the haze grows by distance alone in the terrain shader and
-    gains the haze by height and its thickening toward dawn, each a setting under Sky and Visuals on
-    by default; captures at dawn, noon and dusk of one view, tests of the sun's color at four hours
-    and the haze's density by distance and height through a twin of the shader's formula.
+    After item 27. Two commits, the reflection, then the depth and the edge. The reading at 22:47 on
+    2026-10-24 on 5.2.283, the engine's traced reflection for a glossy surface under roughness 0.5
+    going through the frame before's picture, the field's cascades and the GPU's rays, the box
+    reflection probes for a room, and no planar mirror and no reflection call for a surface the
+    transparent pass draws; the water at roughness 0.05 read live looks as it does rough, the river
+    in the haze with no shore or sky in it and the pool by the red wall 143, 128, 183 where the
+    wall's image would lie, a blur and not a mirror. The call is the coder's, the mirror asked of
+    the engine as its item 112, a planar reflection at a height a program's material reads as a
+    texture, and the cheap part built first as this item's second commit, the sky's color in a
+    fresnel by the view's angle from the environment map, the bed seen through the water darkened
+    with depth, the edge and the view from under, with the shore's mirror when the engine's plane
+    lands.
 
 44. **The clouds cover the area about the player and do not reach the horizon.** The owner wrote to
     the game's session at about 15:00 on 2026-10-24, on item 108's try, not to stretch the clouds so

@@ -484,7 +484,9 @@ done
 check "the pool's reflection"
 # A pool beside a wall of red concrete at noon reflects nothing of the wall. Read on the water where
 # the wall's mirror image would lie, its red stays at least 8 levels under its green, where the
-# glossy water reflecting the wall through the scene's distance field read red 134 to green 132.
+# glossy water reflecting the wall through the scene's distance field read red 134 to green 132. Its
+# bed is white concrete, so the red of the dirt a block of water shows does not read as the wall's.
+cmd voxel.fill 60 2 30 66 2 36 white_concrete
 cmd voxel.fill 60 3 30 66 3 36 water
 cmd voxel.fill 60 4 29 66 8 29 red_concrete
 cmd voxel.tp 63.5 4 40
@@ -497,6 +499,47 @@ echo "the water where the wall would mirror, $mirror"
 read -r wr wg wb <<< "$(printf '%s\n' "$mirror" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p')"
 [ -n "$wb" ] || fail "voxel.pixel read no water, saying $mirror"
 [ $((wr + 8)) -le "$wg" ] || fail "the water reflects the red wall beside it, $mirror"
+
+check "the water's depth"
+# A pool lined with red concrete at noon, one lane a block deep and one five, seen from above while
+# flying. The red under a block of water shows plainly, its red at least 40 levels over its green,
+# where water of any depth hid a bed alike behind its own alpha, 16 over, and under five blocks the
+# water's own darker color hides it, its red at least 25 levels under its green. Seen low across the
+# pool, the deep lane's far end, where the eye's mirror reaches the sky over the horizon, is lighter
+# than its near end by at least 32 levels of luminance, where water showing no sky read 23 lighter,
+# as calm water shows the sky the lower the eye looks.
+cmd voxel.fill 80 -3 40 92 3 56 red_concrete
+cmd voxel.fill 80 3 40 84 3 56 water
+cmd voxel.fill 88 -1 40 92 3 56 water
+cmd voxel.fly on
+cmd voxel.tp 86.5 6 60
+cmd voxel.look 0 -35
+cmd frames.wait 30
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+shallow=$(ask voxel.pixel 82.5 3.88 49.5)
+deep=$(ask voxel.pixel 90.5 3.88 49.5)
+echo "the red bed under a block of water $shallow, under five $deep"
+read -r sr sg _ <<< "$(printf '%s\n' "$shallow" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+).*/\1 \2 \3/p')"
+read -r dr dg _ <<< "$(printf '%s\n' "$deep" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+).*/\1 \2 \3/p')"
+[ -n "$sg" ] && [ -n "$dg" ] || fail "voxel.pixel read no water in the pool, saying $shallow and $deep"
+[ "$sr" -ge $((sg + 40)) ] || fail "the red bed under a block of water does not show plainly, $shallow"
+[ $((dr + 25)) -le "$dg" ] || fail "the red bed under five blocks of water shows through, $deep"
+cmd voxel.look 0 -8
+cmd frames.wait 30
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+near=$(ask voxel.pixel 90.5 3.88 55.5)
+far=$(ask voxel.pixel 90.5 3.88 41.5)
+echo "the deep lane seen low, near $near, far $far"
+lum() { printf '%s\n' "$1" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+).*/\1 \2 \3/p' | awk '{ printf "%d", 0.2126 * $1 + 0.7152 * $2 + 0.0722 * $3 }'; }
+nl=$(lum "$near"); fl=$(lum "$far")
+[ -n "$nl" ] && [ -n "$fl" ] || fail "voxel.pixel read no water in the deep lane, saying $near and $far"
+[ $((nl + 32)) -le "$fl" ] || fail "the water does not show the sky the lower the eye looks across it, near $near, far $far"
+cmd voxel.fill 80 -3 40 92 -1 56 air
+cmd voxel.fill 80 0 40 92 0 56 bedrock
+cmd voxel.fill 80 1 40 92 2 56 dirt
+cmd voxel.fill 80 3 40 92 3 56 grass
 
 check "the pack's pictures"
 # A zombie wears a pack's picture of it laid as the source lays it, glass is cut out where its
@@ -1017,4 +1060,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a grass wall as bright above the eye as below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a grass wall as bright above the eye as below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw deep water darker than shallow and the sky in water seen low, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"

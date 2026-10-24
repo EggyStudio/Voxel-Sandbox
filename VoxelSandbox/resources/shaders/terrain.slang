@@ -106,6 +106,9 @@ struct TerrainOutput
     // seam between two panes, whose place may fall a hair into its neighbor's block, reads its own
     // pane's joins.
     nointerpolation float3 block : TEXCOORD5;
+    // The water's depth under a point of its top in blocks, from its corners' as SectionMesher
+    // carries them in the overlay's bits of water's own faces, or less than zero on every other face.
+    float waterDepth : TEXCOORD6;
 };
 
 // The corners of each of the six faces of a block, in the order SectionMesher's Corners lays them,
@@ -118,6 +121,9 @@ static const float3 FaceCorners[24] = {
     float3(0, 0, 1), float3(1, 0, 1), float3(1, 1, 1), float3(0, 1, 1),
     float3(0, 0, 0), float3(0, 1, 0), float3(1, 1, 0), float3(1, 0, 0),
 };
+
+// The alpha of the material water's own faces are drawn with, which tells them from the rest.
+static const float WaterMark = 253.0 / 255.0;
 
 // The six faces' outward normals in the order +x, -x, +y, -y, +z, -z, as SectionMesher's Normals
 // lays them, then a plant's walls along x and along z, lit as if they faced up, as Minecraft lights
@@ -149,6 +155,12 @@ TerrainOutput vertexMain(float3 position : POSITION, uint2 packed : CUSTOM0, Mod
     TerrainOutput output;
     uint over = (packed.x >> 22) & 511;
     uint kind = (packed.x >> 31) | ((packed.x >> 12) & 1) << 1;
+    // Water's own faces, drawn with a material of an alpha of 253, carry its depth in the overlay's
+    // bits, which hold no overlay and no place there.
+    bool water = abs(instance.color.a - WaterMark) < 0.5 / 255.0;
+    output.waterDepth = water && face == 2 ? float(over) / 16.0 : -1.0;
+    if (water)
+        over = 0;
     bool placed = kind == 0 && over > 0;
     float2 place = placed ? float2(float((over - 1) % 17), float((over - 1) / 17)) / 16.0 : float2(0, 0);
     output.streams = transformModelVertex(position, Normals[face], place, float4(tint.rgb * shade, tint.a), float2(shade, sky), instance);
@@ -342,12 +354,33 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     // A plant's wall is lit as if it faced up and seen from straight above, since the engine lights a
     // face turned from the eye as its back, turned over, and a wall above the eye's height facing up
     // would take the light of one facing down, nearly black at noon.
-    ModelVertexOutput lighting = streams.base;
+    ModelVertexOutput facing = streams.base;
     if (surface.x >= 6)
-        lighting.toEye = float3(0.0, length(streams.base.toEye), 0.0);
+        facing.toEye = float3(0.0, length(streams.base.toEye), 0.0);
     float3 shown = int(surface.y) + 1 == int(flames.x) ? color.rgb * flames.y
         : int(surface.y) + 1 == int(flames.z) ? color.rgb * flames.w
-        : litStepped(color.rgb, lighting, streams.uv2.y);
+        : litStepped(color.rgb, facing, streams.uv2.y);
+    // Water's top shows its bed through it darkened and hidden by the way the view takes through the
+    // water, longer the lower the eye looks across it, clears toward its shore so it meets the bank
+    // with no hard line, and shows the sky along the view's mirror by Schlick's fresnel, more of it
+    // the lower the eye looks, as calm water shows the sky.
+    if (input.waterDepth >= 0.0)
+    {
+        float3 v = normalize(streams.base.toEye);
+        float through = input.waterDepth / max(abs(v.y), 0.35);
+        float clear = exp(-0.1 * through);
+        shown *= lerp(0.6, 1.0, clear);
+        float alpha = lerp(1.0, min(color.a, 0.4) * lerp(0.65, 1.0, smoothstep(0.0, 1.0, input.waterDepth)), clear);
+        float fresnel = 0.02 + 0.98 * pow(1.0 - saturate(abs(v.y)), 5.0);
+        // The sky as the frame draws it along the view's mirror, its haze over the horizon too, by as
+        // much of the sky as reaches the water, its sky level where the corner carries one and its
+        // light otherwise, so a pool under the ground mirrors none of it.
+        float open = streams.uv2.y > 0.0 ? streams.uv2.y / 15.0 : streams.uv2.x;
+        float3 sky = hazeColor(-reflect(-v, float3(0.0, 1.0, 0.0)), 1.0) * open;
+        float covered = fresnel + (1.0 - fresnel) * alpha;
+        shown = (fresnel * sky + (1.0 - fresnel) * alpha * shown) / max(covered, 1e-4);
+        color.a = covered;
+    }
     // The land's edge fades into the haze, and the atmosphere hazes it from near on as the modpack's
     // shader's does, its share growing as one less e to the minus the cube of the distance, by the
     // haze's density along the ray, thinner over the land high above the sea.

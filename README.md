@@ -277,6 +277,17 @@ skylight reads the same with glass in it as without. Glass lets the light levels
 takes a level more for each block of it, so the sky fades with depth and a lake's floor darkens as
 it deepens.
 
+Water's own faces are a third see-through mesh of each section, its top carrying the water's depth
+under each corner, the mean of the four columns about it down to the first block that is not
+water, to 15 blocks. The terrain shader clears and darkens the water by the way the view takes
+through it, its depth over how steeply the eye looks down, so a block of water shows its bed and
+five hide it under the water's own darker color, and the water clears toward its shore, where the
+columns beside it hold none, so it meets the bank with no hard line. Over that it shows the sky as
+the frame draws it along the view's mirror, Schlick's fresnel giving more of it the lower the eye
+looks, by as much of the sky as reaches the water, so the sea pales toward the horizon and a pool
+under the ground mirrors none of it. The shore and the land across the water are not mirrored,
+which waits on a planar reflection the engine is asked for.
+
 Water flows as Minecraft's does, a block every quarter second. It falls into the air under it, and
 where it stands on ground or on a source it spreads sideways, a level further from its source for
 each block, up to seven, each level standing lower in its cell, and it dries back when its source is

@@ -73,7 +73,7 @@ public class MesherTests
         var world = Floor();
         world.SetBlock(8, 20, 8, BlockId.Water);
 
-        var tops = Meshed(world).SeeThrough.Positions.Select(p => p.Y).Distinct().Order().ToArray();
+        var tops = Meshed(world).Water.Positions.Select(p => p.Y).Distinct().Order().ToArray();
         Assert.Equal(new[] { 4f, 4.875f }, tops);
     }
 
@@ -322,5 +322,32 @@ public class MesherTests
 
         Assert.NotEmpty(lit);
         Assert.Contains(lit, i => mesher.Solid.Unpack(i).Shade > SectionMesher.Unpack(packed[2 * Array.IndexOf(positions, mesher.Solid.Positions[i])], packed[2 * Array.IndexOf(positions, mesher.Solid.Positions[i]) + 1]).Shade);
+    }
+
+    [Fact]
+    public void Water_Carries_Its_Depth_Under_Each_Corner_Of_Its_Top_And_Less_Toward_Its_Shore()
+    {
+        // A pool three blocks deep and four across in sand, its top at 5.
+        var world = Laid.World(c =>
+        {
+            Laid.Fill(c, 0, 5, BlockId.Sand);
+            for (int y = 3; y <= 5; y++)
+                for (int z = 2; z < 6; z++)
+                    for (int x = 2; x < 6; x++)
+                        c.Set(x, y, z, BlockId.Water);
+        });
+        var mesher = new SectionMesher();
+        Assert.True(mesher.Mesh(world, new SectionKey(0, 0, 0)));
+        var faces = mesher.Water;
+        var depths = new Dictionary<(float X, float Z), uint>();
+        for (int i = 0; i < faces.Count; i++)
+            if (faces.Unpack(i).Face == 2) depths[(faces.Positions[i].X, faces.Positions[i].Z)] = faces.Packed[2 * i] >> 22 & 511;
+        // Inside the pool every column about a corner holds three blocks, sixteen levels a block.
+        Assert.Equal(48u, depths[(3, 3)]);
+        // At its edge two of the four are sand, and at its corner three are.
+        Assert.Equal(24u, depths[(3, 2)]);
+        Assert.Equal(12u, depths[(2, 2)]);
+        // Water's faces go to a mesh of their own, none to the one glass and ice share.
+        Assert.Empty(mesher.SeeThrough.Positions);
     }
 }

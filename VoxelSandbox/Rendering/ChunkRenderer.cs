@@ -78,7 +78,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         public readonly Matrix4x4 Transform = transform;
         public readonly Vector3 Middle = middle;
-        public readonly Part Solid = new(), SeeThrough = new(), Cutout = new(), CutoutGlass = new(), SolidCutout = new(), Molten = new();
+        public readonly Part Solid = new(), SeeThrough = new(), Water = new(), Cutout = new(), CutoutGlass = new(), SolidCutout = new(), Molten = new();
         public readonly List<(int Surface, Matrix4x4 At)> Emitters = [];
     }
 
@@ -98,7 +98,7 @@ public sealed class ChunkRenderer : IDisposable
     // mesh, so a lake lights its cave with one draw where a lamp's cube for each block would be
     // thousands; the field reads a mesh made again without its light for a few frames, which a lake
     // seldom is. All six are drawn through the game's terrain shader, the engine's light with a haze.
-    private readonly ModelMaterial _terrain, _clear, _cutout, _cutoutGlass, _solidCutout, _haze;
+    private readonly ModelMaterial _terrain, _clear, _water, _cutout, _cutoutGlass, _solidCutout, _haze;
     private ModelMaterial _molten;
 
     // The dome under the horizon in the haze's color, drawn while there is a haze to meet it.
@@ -158,6 +158,9 @@ public sealed class ChunkRenderer : IDisposable
         // Glass, ice and water are rough, so they reflect neither the land the scene's distance field
         // traces nor the sky, which in the field's coarse cells clashes with the blocks' pixels.
         _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 1, CastsShadows = false, Shader = _shader };
+        // Water is see-through as glass is, its material's alpha of 253 telling the terrain shader
+        // its faces carry the water's depth, which it darkens and clears the water by.
+        _water = _clear with { Color = new Color(255, 255, 255, 253) };
         _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, BouncesLight = false, Shader = _shader };
         _cutoutGlass = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, CastsShadows = false, Shader = _shader };
         _solidCutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, Shader = _shader };
@@ -482,7 +485,7 @@ public sealed class ChunkRenderer : IDisposable
         }
         if (!_mesher.Mesh(world, key)) return false;
 
-        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.CutoutGlass.Count == 0 && _mesher.SolidCutout.Count == 0
+        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Water.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.CutoutGlass.Count == 0 && _mesher.SolidCutout.Count == 0
             && _mesher.Molten.Count == 0 && _mesher.Emitters.Count == 0)
         {
             Forget(key);
@@ -493,6 +496,7 @@ public sealed class ChunkRenderer : IDisposable
 
         entry.Solid.Take(_mesher.Solid);
         entry.SeeThrough.Take(_mesher.SeeThrough);
+        entry.Water.Take(_mesher.Water);
         entry.Cutout.Take(_mesher.Cutout);
         entry.CutoutGlass.Take(_mesher.CutoutGlass);
         entry.SolidCutout.Take(_mesher.SolidCutout);
@@ -512,6 +516,7 @@ public sealed class ChunkRenderer : IDisposable
         if (!_sections.Remove(key, out var entry)) return;
         entry.Solid.Forget();
         entry.SeeThrough.Forget();
+        entry.Water.Forget();
         entry.Cutout.Forget();
         entry.CutoutGlass.Forget();
         entry.SolidCutout.Forget();
@@ -578,7 +583,7 @@ public sealed class ChunkRenderer : IDisposable
             {
                 deep++;
                 deepTriangles += entry.Solid.Mesh.TriangleCount + entry.Cutout.Mesh.TriangleCount + entry.CutoutGlass.Mesh.TriangleCount
-                    + entry.SolidCutout.Mesh.TriangleCount + entry.Molten.Mesh.TriangleCount + entry.SeeThrough.Mesh.TriangleCount;
+                    + entry.SolidCutout.Mesh.TriangleCount + entry.Molten.Mesh.TriangleCount + entry.SeeThrough.Mesh.TriangleCount + entry.Water.Mesh.TriangleCount;
             }
             if (entry.Solid.Mesh.IsValid)
             {
@@ -610,7 +615,7 @@ public sealed class ChunkRenderer : IDisposable
                 draws++;
                 triangles += entry.Molten.Mesh.TriangleCount;
             }
-            if (entry.SeeThrough.Mesh.IsValid) _seeThrough.Add((Vector3.DistanceSquared(entry.Middle, eye), entry));
+            if (entry.SeeThrough.Mesh.IsValid || entry.Water.Mesh.IsValid) _seeThrough.Add((Vector3.DistanceSquared(entry.Middle, eye), entry));
         }
 
         SetProfileValue("draw.sections.opaque", laps.Elapsed.TotalMilliseconds);
@@ -618,12 +623,15 @@ public sealed class ChunkRenderer : IDisposable
         // See-through sections farthest first, so each blends over what lies behind it. The faces
         // inside one section are drawn in the order they were meshed.
         _seeThrough.Sort((a, b) => b.Distance.CompareTo(a.Distance));
+        // A section's water goes before its glass and ice, which more often stand above it.
         foreach (var (_, entry) in _seeThrough)
-        {
-            DrawMesh(entry.SeeThrough.Mesh, _clear, entry.Transform);
-            draws++;
-            triangles += entry.SeeThrough.Mesh.TriangleCount;
-        }
+            foreach (var (part, material) in (ReadOnlySpan<(Part, ModelMaterial)>)[(entry.Water, _water), (entry.SeeThrough, _clear)])
+            {
+                if (!part.Mesh.IsValid) continue;
+                DrawMesh(part.Mesh, material, entry.Transform);
+                draws++;
+                triangles += part.Mesh.TriangleCount;
+            }
 
         for (int surface = 0; surface < _emitterDraws.Length; surface++)
         {
