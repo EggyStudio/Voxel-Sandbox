@@ -1136,11 +1136,14 @@ about as long to generate with them.
 A column's 24 sections hold 288 KB of blocks and light, and its sections of open air over the land,
 most of them, share one pair of arrays until a block or a level in one of them changes, so a column
 of seed 1 holds about 100 KB of its own, 69 MB over the 665 columns loaded at 12. A column's
-sections from the one under its floor up, its floor being the lowest of its places' highest
-blocks, are meshed and drawn wherever the column is, and its deep sections only within the render
-distance of the eye in all three dimensions. Those two sections past that are packed, compressed
-until something reads them, so from 230 blocks over seed 1's spawn 3,817 sections pack and the
-columns hold 25 MB. A column takes 11 to 16 ms to generate on a worker and 6 to 7 ms to light.
+sections from the one under its floor up, its floor being the lowest of its places' highest blocks,
+are meshed and drawn wherever the column is, and its deep sections only within the render distance
+of the eye in all three dimensions. Those two sections past that are packed, compressed until
+something reads them, so from 230 blocks over seed 1's spawn 3,817 sections pack and the columns
+hold 25 MB. Of the deep sections the flood draws only those the eye's open cells join, through a
+cave's mouth, and `voxel.state` counts them, at 1920 by 1080 61 of the 1,683 draws at seed 1's
+cherry grove and 149 of the 1,563 at the plains village, 4 and 10 percent of their triangles. A
+column takes 11 to 16 ms to generate on a worker and 6 to 7 ms to light.
 
 Flying east over land the stream has not loaded, the game meshes the sections and joins the columns
 that come into reach on the main thread, and the frame keeps 60 a second at no distance. In three

@@ -5,18 +5,19 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `3236b56`, item 103, the fire's top line, read at 12:45 on 2026-10-24, carrying
-REVIEW.md. A carried place in terrain.slang, surface.w 3 for the plants' and flames' pictures that
-do not tile, is clamped half a texel of ceil(level) inside its tile, since each atlas cell holds its
-tile two by two wrapped from half a tile in and a coarse texel at a wall's top read into the copy
-above and drew the frame's bottom rows as a line; the pack's fire frames are white in their top rows
-with flames from the second, which a 32-frame strip showed and a single frame did not. The capture
-at a slant, before over after in three views, shows the line along the walls' tops gone. The play
-pack gains a 32-frame fire_0 of that shape, and play.sh's check "the fire's top" sees a fire at 40,
-4, minus 50 at night from 40.5, 5.5, minus 45 pitched minus 12, three lines of 40 samples across the
-north wall's top edge in nine readings five frames apart, each brightest at most 15 over the ground
-beyond the wall, 26.8 to 28.3 in four of nine before and 4.2 to 8.0 after, the bloom's own slope.
-275 tests, play.sh 162 s on the GPU. Held until the run of `fa6963d` ends, then pushed.
+Reviewed up to `89d8caa`, item 93's second mend, read at 13:01 on 2026-10-24, carrying the review's
+files, LightSettings.ShadowDistance 96 to 64. Read in Release at 1920 by 1080 at the cherry grove,
+96, 64 and 48 in turn twice, the first triple spoiled by another GPU user and the clean one the
+frame 17.84, 16.79 and 15.81 ms, the GPU's shadows 2.01, 1.04 and 0.70, the CPU's 2.84, 2.31 and
+2.13; by eye at the cherry grove, the plains village and the hills, 48 loses the shadows of the
+trees about the village some 50 to 60 blocks off and 64 keeps them a little fainter at the far left,
+the grove the same at all three, so 64 for about a millisecond. The README's Shadows paragraph says
+the distance and why, the stepped sun's cost of about 1.6 ms beside the old reading, the costs
+paragraph no longer naming 96; 275 tests, play.sh 164 s on the GPU. After `3236b56`, item 103, the
+fire's top line, read at 12:45, the carried place in terrain.slang clamped half a texel of the
+sampled level inside its tile, the play pack's 32-frame fire and play.sh's check of the north wall's
+top edge against the ground beyond, 275 tests, play.sh 162 s. Both held until the run of `fa6963d`
+ends, then pushed.
 
 Before it, `fa6963d` came, Verdict 2's mend, pushed at 12:34 on 2026-10-24, its run watched.
 
@@ -431,7 +432,9 @@ full.
     hundred draws fewer and the GPU's share read then, then the meshing of unseen sections held
     back, the flight's update; and the engine's per-pixel read of the cascades in the scene pass,
     5.6 ms at 1080p, goes to the engine as an entry in its ASKS.md. The owner runs Release, dotnet
-    run -c Release or a published build, which the record says to them.
+    run -c Release or a published build, which the record says to them. The second mend at
+    `89d8caa`, the shadow distance 64, about a millisecond at 1920 by 1080, the village's trees'
+    shadows kept where 48 loses them; the deep sections next.
 
 97. **The game's entries in the engine's ASKS.md hold no colon inside a running sentence.** The
     owner wrote at about 10:3x on 2026-10-24 that some documents join sentences with a colon and

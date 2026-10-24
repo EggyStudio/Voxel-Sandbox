@@ -251,6 +251,9 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>Sections the last <see cref="Draw"/> left out as unseen.</summary>
     public int Culled { get; private set; }
 
+    /// <summary>Deep sections the last <see cref="Draw"/> drew, those under their column's floor, and their triangles.</summary>
+    public (int Sections, int Triangles) Deep { get; private set; }
+
     /// <summary>Draw calls the last <see cref="Draw"/> made, each instanced draw of lamps counted once.</summary>
     public int Draws { get; private set; }
 
@@ -528,7 +531,7 @@ public sealed class ChunkRenderer : IDisposable
         SetShaderValue(_shader, _ticks, (float)ticks);
         int cx = (int)MathF.Floor(eye.X) >> Section.Shift, cz = (int)MathF.Floor(eye.Z) >> Section.Shift;
         var reach = renderDistance * renderDistance + renderDistance;
-        int draws = 0, triangles = 0, lamps = 0, culled = 0;
+        int draws = 0, triangles = 0, lamps = 0, culled = 0, deep = 0, deepTriangles = 0;
         var laps = System.Diagnostics.Stopwatch.StartNew();
         if (Cull) _visibility.Flood(world, eye, renderDistance, Atlas);
         SetProfileValue("draw.sections.flood", laps.Elapsed.TotalMilliseconds);
@@ -545,6 +548,12 @@ public sealed class ChunkRenderer : IDisposable
             {
                 culled++;
                 continue;
+            }
+            if (world.TryGetColumn(key.X, key.Z, out var column) && key.Y < column.FloorSection)
+            {
+                deep++;
+                deepTriangles += entry.Solid.Mesh.TriangleCount + entry.Cutout.Mesh.TriangleCount + entry.CutoutGlass.Mesh.TriangleCount
+                    + entry.SolidCutout.Mesh.TriangleCount + entry.Molten.Mesh.TriangleCount + entry.SeeThrough.Mesh.TriangleCount;
             }
             if (entry.Solid.Mesh.IsValid)
             {
@@ -607,7 +616,8 @@ public sealed class ChunkRenderer : IDisposable
             DrawMesh(_dome, _haze, Matrix4x4.CreateTranslation(eye));
             draws++;
         }
-        (Draws, Triangles, Lamps, Culled) = (draws, triangles, lamps, culled);
+        (Draws, Triangles, Lamps, Culled, Deep) = (draws, triangles, lamps, culled, (deep, deepTriangles));
+        SetProfileValue("draw.sections.deep", deep);
     }
 
     public void Dispose()
