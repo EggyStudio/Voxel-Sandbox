@@ -6,15 +6,16 @@ namespace VoxelSandbox.Tests;
 [Collection(nameof(HeadlessGames))]
 public sealed class FireFrameTests
 {
-    // Each seed's square of a block, 16 along x and z, laid in the flat world at the top of its
-    // ground away from the player with air over it, in its own place along x, and a fire lit over
-    // its middle, burned for two minutes of the game's frames of a twentieth of a second. Gives how
-    // many fires burned at once at most and how many of the square's blocks went.
+    // A square of a block, 16 along x and z, laid afresh in the flat world at the top of its ground
+    // eight blocks from the player within a ring of stone, with air over both, and a fire lit over
+    // its middle with the step's chances seeded, burned for two minutes of the game's frames of a
+    // twentieth of a second. Gives how many fires burned at once at most and how many of the
+    // square's blocks went.
     private static (int Most, int Burned) Burn(HeadlessGame headless, int seed, BlockId block)
     {
         var game = headless.Game;
         var ground = (int)MathF.Floor(game.Player.Body.Position.Y) - 1;
-        int x0 = 8 + (seed - 1) * 24, z0 = -8;
+        int x0 = (int)MathF.Floor(game.Player.Body.Position.X) + 8, z0 = (int)MathF.Floor(game.Player.Body.Position.Z) - 8;
         for (int z = z0 - 4; z < z0 + 20; z++)
             for (int x = x0 - 4; x < x0 + 20; x++)
             {

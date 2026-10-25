@@ -1666,6 +1666,28 @@ before a batch.
     Done at `6a7e5b1` on 2026-10-25 in five commits, the fixture and the mobs, the fires, the TNT
     and the falling blocks, the drops and the arrows, every twin gone.
 
+33. **Ambient sound, footsteps by the block and the sound's occlusion and reverb by the room
+    (Decision 15).** The game gains footsteps that sound by the block walked on, grass, stone, wood,
+    sand, gravel, snow and water, for the player and the mobs within hearing, through the engine's
+    spatial play of its item 58 so a mob's steps come from its side; ambient sounds by the place,
+    birds in the forests by day, crickets by night, wind on the heights, drips and a low tone in
+    caves, water near water, faded in and out by where the listener stands; and the sound's
+    occlusion, a ray through the blocks from the listener to the source lowering the volume by what
+    it crosses, with the reverb of a cave or a room by the space around the listener, read by rays.
+    The low-pass of an occluded sound and the reverb itself are the engine's to give, a filter and a
+    reverb on a voice, which the game asks of it in the engine's ASKS.md with its readings when it
+    reaches this item, and the game does with the volume alone until the package brings them. The
+    sounds are the game's own recordings or synthesized, none from the source or the mods. Tests:
+    the step's sound chosen by the block, the occlusion's volume through one and three blocks, the
+    ambient sound chosen by the place, and the mix read as the engine's spatial tests read it. Two
+    commits, the footsteps and the ambience, then the occlusion and the reverb. The first commit at
+    `5b62bef` on 2026-10-25, the steps and the loops made as the game starts, the listener and the
+    mobs' steps spatial, two engine faults as its items 118 and 119; the occlusion through the
+    blocks and the room's reverb next, the low-pass asked of the engine. The second at `e433e5c`,
+    the occlusion by the blocks crossed and the room read by rays, the reverb and the low-pass the
+    engine's item 120, a mob's non-number mended on the way. Done at `e433e5c` on {day} in two
+    commits.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

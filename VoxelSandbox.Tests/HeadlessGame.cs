@@ -17,8 +17,11 @@ namespace VoxelSandbox.Tests;
 /// window before the next opens one.
 /// </para>
 /// <para>
-/// The game saves nothing and loads no pack, and draws two columns about the player, which the
-/// flat world loads within a second or two.
+/// The game saves nothing and loads no pack, and draws two columns about the player. The world's
+/// columns are made on workers by the clock, not by the frames, which pass in a fraction of that
+/// with nothing held to a rate, so the game is stepped until it stands and every column in reach is
+/// in, yielding a moment between frames while it loads, or until 30 seconds have passed, which a
+/// slow machine's flat world takes a second or two of.
 /// </para>
 /// </remarks>
 public sealed class HeadlessGame : IDisposable
@@ -38,8 +41,15 @@ public sealed class HeadlessGame : IDisposable
         try
         {
             Game = new VoxelGame("flat", seed, null, transient: true, []) { RenderDistance = 2 };
-            for (int frame = 0; frame < 600 && Game.Loading; frame++) Game.Draw();
-            Assert.False(Game.Loading, "the flat world did not load within 600 frames");
+            var (clock, frames) = (System.Diagnostics.Stopwatch.StartNew(), 0);
+            while ((Game.Loading || Game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30)
+            {
+                Game.Draw();
+                frames++;
+                if (Game.Loading || Game.Streamer.Pending > 0) Thread.Sleep(2);
+            }
+            Assert.False(Game.Loading, $"the flat world did not stand within 30 seconds, {frames} frames");
+            Assert.Equal(0, Game.Streamer.Pending);
         }
         catch
         {

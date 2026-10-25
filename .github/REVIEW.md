@@ -5,41 +5,53 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `5b62bef`, item 33's first commit, the footsteps and the ambience, read at 02:47 on
-2026-10-25, carrying the review's files. SoundBank synthesizes everything at 22,050 Hz mono from
-fixed seeds, seven kinds of step with four variants each shaped by filtered noise, grains or a tone,
-and five loops of 8 s, the birds, the crickets, the wind, the cave's tone with drips and the water
-lapping, each joined so the end runs into the start; StepOf maps a block to a kind and StepAt reads
-water or a snow layer at the feet first, Levels sets the birds by day in the woods and on the plains
-and the crickets by night where it rains, both hushed by the weather, the wind rising from 32 to 80
-blocks over the sea, and in a cave the cave alone with water by its share nearby; GameSounds sets
-the listener from the eye, plays the player's steps every 1.6 blocks at a quarter and a mob's within
-16 blocks through the engine's spatial play with its pitch varied, eases each loop's level over 2 s,
-and a Music and Sounds screen holds the master volume, the footsteps and the ambience in
-options.txt; the zoom key's button shared a cell with Video Settings and the buttons lay out under
-the rows. Two engine faults, the AudioServer keeping a played-out voice until Stop with Tick walking
-them all, 34 steps leaving 36 live voices, and the dummy driver of a hidden run never draining a
-one-shot voice, the game stopping each step half a second after it began meanwhile, the engine's
-items 118 and 119 through ASKS.md. Live at the forest spawn the birds read 0.99 by day, the crickets
-0.77 at 22:00, the cave 0.95 underground and the wind 0.94 at y 140; SoundTests reads the step by
-block and at the feet, each sound by place, weather and height and every bank sound finite and
-joined, and SoundFrameTests hears a pig running west of a north-facing player with a pan below minus
-0.3 through the server's own processor and not one 28 blocks off, the fixture opening the audio
-device. 319 tests, play.sh 310 s on the GPU. Held with `6a7e5b1`, `8b01c69` and `480d97b` until the
-run of `01eb71f` ends, then pushed. After `6a7e5b1`, item 128's arrows, the last of its list, read
-at 02:24 on 2026-10-25, carrying REVIEW.md. Fly is folded into its context system, which sends each
-ArrowStrike after despawning the arrows that struck, Arrows.Update and the facade's Random gone with
-the extra point's chance drawn from the step's; HostileTests keeps the skeleton's two to three shots
-from the mob's own Update aimed within 25 degrees of the way to the player, and MobFrameTests reads
-a skeleton eight blocks from a survival player at hour 0 taking it to 8 to 17 health in 150 frames
-through MobShot, the flight and ArrowStrike; no twin is left in the source. 315 tests in 27 s,
-play.sh 317 s on the GPU. After `8b01c69`, item 128's drops, read at 02:18 on 2026-10-25, carrying
-REVIEW.md. Fall, PickUp and Gather are folded into their context systems and ItemDrops.Update is
-gone, PickUp no longer counting what it picked since only the facade read it; ItemFrameTests reads a
-stack picked up after its delay with the inventory full but for four places, 10 sand spawned a block
-from the player, none taken in 9 frames, 4 by 18 and 6 left lying, and two stacks of leather with a
-feather between joining to two stacks of 5 after 3 frames. 314 tests in 26 s, play.sh 310 s on the
-GPU. After `480d97b`, item 128's TNT and falling blocks with the blasts' flashes, read at 02:12 on
+Reviewed up to `e433e5c`, item 33's second commit, the occlusion and the room, read at 02:58 on
+2026-10-25, carrying REVIEW.md and AGENTS.md's Sound row. Places.Crossed walks a grid line from the
+eye to the source counting opaque cells but the two end cells, the occlusion a half to that power, a
+mob's step played at that share; Places.Room casts 26 rays to 24 blocks four times a second and
+gives the share meeting an opaque block and their mean distance, reported and not heard since the
+engine has no reverb, the plains reading 0.54 closed at 4.8 blocks, the forest canopy 0.88 at 2.2
+and the deep cave 0.92 at 7.8, a pig in the rock nine blocks under the plains coming through at
+0.002; the low-pass and the reverb asked of the engine as its item 120. Found and fixed, Mob.Follow
+normalized a zero horizontal way when a mob stood under or over its next cell's middle and the
+non-number stayed in its velocity and place for good, a cow seen at NaN, minus 1198, NaN, the way
+zero below 1e-8. SoundTests gains the occlusion and the room. 320 tests, play.sh 321 s on the GPU.
+The run of `01eb71f` ended red on its three test jobs at 03:00, Verdict 3, the play job green in
+52.4 minutes; the five held for the verdict's mend, pushed with it. After `5b62bef`, item 33's first
+commit, the footsteps and the ambience, read at 02:47 on 2026-10-25, carrying the review's files.
+SoundBank synthesizes everything at 22,050 Hz mono from fixed seeds, seven kinds of step with four
+variants each shaped by filtered noise, grains or a tone, and five loops of 8 s, the birds, the
+crickets, the wind, the cave's tone with drips and the water lapping, each joined so the end runs
+into the start; StepOf maps a block to a kind and StepAt reads water or a snow layer at the feet
+first, Levels sets the birds by day in the woods and on the plains and the crickets by night where
+it rains, both hushed by the weather, the wind rising from 32 to 80 blocks over the sea, and in a
+cave the cave alone with water by its share nearby; GameSounds sets the listener from the eye, plays
+the player's steps every 1.6 blocks at a quarter and a mob's within 16 blocks through the engine's
+spatial play with its pitch varied, eases each loop's level over 2 s, and a Music and Sounds screen
+holds the master volume, the footsteps and the ambience in options.txt; the zoom key's button shared
+a cell with Video Settings and the buttons lay out under the rows. Two engine faults, the
+AudioServer keeping a played-out voice until Stop with Tick walking them all, 34 steps leaving 36
+live voices, and the dummy driver of a hidden run never draining a one-shot voice, the game stopping
+each step half a second after it began meanwhile, the engine's items 118 and 119 through ASKS.md.
+Live at the forest spawn the birds read 0.99 by day, the crickets 0.77 at 22:00, the cave 0.95
+underground and the wind 0.94 at y 140; SoundTests reads the step by block and at the feet, each
+sound by place, weather and height and every bank sound finite and joined, and SoundFrameTests hears
+a pig running west of a north-facing player with a pan below minus 0.3 through the server's own
+processor and not one 28 blocks off, the fixture opening the audio device. 319 tests, play.sh 310 s
+on the GPU. After `6a7e5b1`, item 128's arrows, the last of its list, read at 02:24 on 2026-10-25,
+carrying REVIEW.md. Fly is folded into its context system, which sends each ArrowStrike after
+despawning the arrows that struck, Arrows.Update and the facade's Random gone with the extra point's
+chance drawn from the step's; HostileTests keeps the skeleton's two to three shots from the mob's
+own Update aimed within 25 degrees of the way to the player, and MobFrameTests reads a skeleton
+eight blocks from a survival player at hour 0 taking it to 8 to 17 health in 150 frames through
+MobShot, the flight and ArrowStrike; no twin is left in the source. 315 tests in 27 s, play.sh 317 s
+on the GPU. After `8b01c69`, item 128's drops, read at 02:18 on 2026-10-25, carrying REVIEW.md.
+Fall, PickUp and Gather are folded into their context systems and ItemDrops.Update is gone, PickUp
+no longer counting what it picked since only the facade read it; ItemFrameTests reads a stack picked
+up after its delay with the inventory full but for four places, 10 sand spawned a block from the
+player, none taken in 9 frames, 4 by 18 and 6 left lying, and two stacks of leather with a feather
+between joining to two stacks of 5 after 3 frames. 314 tests in 26 s, play.sh 310 s on the GPU.
+After `480d97b`, item 128's TNT and falling blocks with the blasts' flashes, read at 02:12 on
 2026-10-25, carrying REVIEW.md. Burn, Drop and Fade are folded into their context systems and the
 facades' Update methods gone, each event sent as its entity despawns; TntFrameTests reads the lit
 TNT on the headless game at frames of a sixtieth six blocks from the player with the bounds relative
@@ -630,25 +642,6 @@ full.
     a laid world at a known seed with its blocks counted, a structure crossing an edge whole on both
     sides, and a capture of each in the record. Two or three commits by kind.
 
-33. **Ambient sound, footsteps by the block and the sound's occlusion and reverb by the room
-    (Decision 15).** The game gains footsteps that sound by the block walked on, grass, stone, wood,
-    sand, gravel, snow and water, for the player and the mobs within hearing, through the engine's
-    spatial play of its item 58 so a mob's steps come from its side; ambient sounds by the place,
-    birds in the forests by day, crickets by night, wind on the heights, drips and a low tone in
-    caves, water near water, faded in and out by where the listener stands; and the sound's
-    occlusion, a ray through the blocks from the listener to the source lowering the volume by what
-    it crosses, with the reverb of a cave or a room by the space around the listener, read by rays.
-    The low-pass of an occluded sound and the reverb itself are the engine's to give, a filter and a
-    reverb on a voice, which the game asks of it in the engine's ASKS.md with its readings when it
-    reaches this item, and the game does with the volume alone until the package brings them. The
-    sounds are the game's own recordings or synthesized, none from the source or the mods. Tests:
-    the step's sound chosen by the block, the occlusion's volume through one and three blocks, the
-    ambient sound chosen by the place, and the mix read as the engine's spatial tests read it. Two
-    commits, the footsteps and the ambience, then the occlusion and the reverb. The first commit at
-    `5b62bef` on 2026-10-25, the steps and the loops made as the game starts, the listener and the
-    mobs' steps spatial, two engine faults as its items 118 and 119; the occlusion through the
-    blocks and the room's reverb next, the low-pass asked of the engine.
-
 34. **Connected textures from the packs' properties (Decision 15).** A pack of item 24 that carries
     connected texture properties, OptiFine's `.properties` under its `optifine/ctm` folder with the
     methods `ctm`, `horizontal`, `vertical`, `top`, `repeat` and `random` and their tiles, has them
@@ -698,7 +691,19 @@ full.
 
 ## Verdicts
 
-No verdict is open. Verdicts 1 and 2 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdict 3 is open. Verdicts 1 and 2 are settled, said under each in REVIEW-ARCHIVE.md.
+
+3. **The headless fixture's world does not load within its frames on the runners.** Read at 03:01 on
+    2026-10-25 from the run of `01eb71f`, the three test jobs red on FireFrameTests' two tests with
+    "the flat world did not load within 600 frames" from HeadlessGame's constructor after 140 and
+    199 ms, 312 passed, the play job green in 52.4 minutes. The fixture steps 600 frames and asks
+    the game whether it still loads, and since `01eb71f` set the frame target to 0 the 600 frames
+    pass in a fifth of a second on the runners while the world's columns load on workers by wall
+    time, so the frames run out before the world is in; on the development machine the workers are
+    faster than the frames. The mend is the fixture waiting by wall time, stepping frames until the
+    game has loaded or 30 s have passed with a short yield between frames while the world loads, the
+    fixture's own test of a load, and every headless test on it; one commit, before the next push,
+    read on the three runners. Mended at `?`.
 
 ## Decisions
 
