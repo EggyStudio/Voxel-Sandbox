@@ -5,55 +5,66 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `f97a4c9`, item 131, the screen probes on with no setting, read at 09:48 on
-2026-10-25, carrying the review's files, DEVLOG.md and a captioned picture, pushed at 10:01 on
-2026-10-25 once the run of `0babebb` went green, the run watched. LightSettings.ScreenProbes is true
-by default with its comment giving the reason and naming gi.toggle screen as the debug view; the
-Screen Probes toggle and its README row are gone and the README says the probes are on; an old
-options file's Screen_Probes line matches no setting and is passed over, a HeadlessGameTests test
-reading such a file as one line with the probes on; OptionTests' toggle test moved to Rim Light; the
-two SetGlobalIlluminationScreenProbes calls stay until the package with the engine's item 103; the
-play run gains a check reading gi.state's screen probes line first after the flat world stands. The
-plains village at noon on seed 1 at render distance 12 and 1280 by 720 reads an RMSE of 0.0023
-between the probes on and off, the light much the same, gi.state saying every 8 pixels, 160 by 90,
-230,400 rays a frame and 13.07 MB. 352 tests, play.sh 243 s on the GPU and 1,173 s on local lavapipe
-with every light check passing, no lavapipe time with the probes off to compare, so the CI play
-job's time says what the probes cost there. After `0babebb`, item 130, the haze in a dark cave, read
-at 08:28 on 2026-10-25, carrying the review's files, the two profile values update.mesh and
-update.stream and a captioned picture, pushed at 09:04 on 2026-10-25 once the run of `9955bf3` went
-green, its run green at 09:57, the play job 54 minutes, the runner's and not the item's, every check
-about 1.37 times slower than in the run of `2549786`, the open and the flat world's among them,
-where the run of `9955bf3` matched that run to the second; the probes themselves add about 10% a
-frame on local lavapipe, 16.8 to 17.9 s for 60 frames against 15.7, so the play job's time cannot
-read them and a check's time against the open's in the same run could. One departure, the haze's
-share following the sky level of the point or of the eye, whichever is higher, on the source's
-brightness curve and not the point's level alone, since the haze is lit air between the eye and the
-point, so from the open land a distant cave mouth or a forest floor keeps its haze, from a cave the
-land outside keeps its haze and the cave's own walls fade to black. The eye's level is read from the
-world's light at the eye's cell, eased over about a quarter of a second and passed as the uniform
-eyeCovered; under water and with the fog off nothing changes, the clouds' copy of the shader sets
-nothing and reads as the open sky, a see-through color carrying no sky level keeps the haze whole,
-and the haze dome's corners carry level 15 so it stays the haze's color seen from a cave, a line in
-HazeDomeTests holding it. Readings on seed 1 at render distance 12 offscreen at 1280 by 720, the
-deep cave's top at 90 blocks from the eye at -59.5, -4, -91.5 reading 9, 13, 18 before and 0, 0, 0
-after with the fog on and 0, 0, 0 both times with it off; the plains village at noon an RMSE of
-0.00074 with 11 of 921,600 pixels differing by more than 1%, the ravine 0.00067 and 3 pixels, the
-cave with the fog off 0.00037, noise; the lava lake from inside its cave 0.035, its far wall losing
-the blue haze, the devlog's pair. The README's Fog section says how a point takes the haze. 351
-tests, play.sh 200 s on the GPU. After `9955bf3`, Verdict 4's mend, pushed at 08:20 on 2026-10-25
-after the red run of `1d31dda` ended, its run green at 09:00 with the GPU's caves check passing on
-lavapipe and the play job 40 minutes, carrying the review's files. The cause was none of the three
-the verdict named, the streamer asking ahead and the count moving; the play script's wait ended too
-early, since with the GPU path on a column at a new place waits for its readings with no worker on
-it, and ChunkStreamer.Pending counted the workers' columns alone, so after the teleport voxel.state
-read 0 columns, 0 generating and the play script's meshed wait passed at once, before any batch was
-back, which the NVIDIA GPU never showed since its first batches land before the next command; on
-local lavapipe with the old build 0 columns read at 0.0 s and 69 at 1.8 s. Pending counts the
-workers' columns plus the columns wanted and not yet given to a worker, lavapipe reading 0 columns,
-69 generating at 0.0 s, 64 columns, 5 generating and 69 read at 2 s, and 69 columns at 4 s; the
-check stands unchanged as a check of the GPU path, each column of a new place waiting for its
-readings however slow the device, the commit saying so. 351 tests, play.sh 315 s on the GPU reading
-69 columns at the GPU's caves.
+Reviewed up to `1767348`, item 132, the tree's sweep for N 4.7 and STYLE.md, read at 10:54 on
+2026-10-25, carrying the review's files and DEVLOG.md, pushed at 11:05 on 2026-10-25 after the run
+of `f97a4c9` ended, the run watched. Forty-four replacements, each touched comment block or README
+paragraph rewrapped to 100 columns, the 22 colon joints in comments and scripts recast as a full
+stop, a comma or a which or a where or a so with ModeSwitcher's sentence reordered, the README's
+three with one paragraph brought back within width, the five paraphrases of emission in
+AmbientParticles.cs made emits and emitted, and the thirteen places naming the owner made the
+reference modpack, the reference copy and the reference modpack's settings, Surface.cs's quoted wish
+dropped since its so gives the reason; the sweep's greps are clean, the one owner left E3D.md's
+session file that only its Unix owner can read. 352 tests, play.sh 587 s on a loaded machine, the
+tests taking 55 s where they take 18. After `f97a4c9`, item 131, the screen probes on with no
+setting, read at 09:48 on 2026-10-25, carrying the review's files, DEVLOG.md and a captioned
+picture, pushed at 10:01 on 2026-10-25 once the run of `0babebb` went green, its run lost at 11:02,
+the play job cancelled at its limit after 61 minutes with the three test jobs green, Verdict 5.
+LightSettings.ScreenProbes is true by default with its comment giving the reason and naming
+gi.toggle screen as the debug view; the Screen Probes toggle and its README row are gone and the
+README says the probes are on; an old options file's Screen_Probes line matches no setting and is
+passed over, a HeadlessGameTests test reading such a file as one line with the probes on;
+OptionTests' toggle test moved to Rim Light; the two SetGlobalIlluminationScreenProbes calls stay
+until the package with the engine's item 103; the play run gains a check reading gi.state's screen
+probes line first after the flat world stands. The plains village at noon on seed 1 at render
+distance 12 and 1280 by 720 reads an RMSE of 0.0023 between the probes on and off, the light much
+the same, gi.state saying every 8 pixels, 160 by 90, 230,400 rays a frame and 13.07 MB. 352 tests,
+play.sh 243 s on the GPU and 1,173 s on local lavapipe with every light check passing, no lavapipe
+time with the probes off to compare, so the CI play job's time says what the probes cost there.
+After `0babebb`, item 130, the haze in a dark cave, read at 08:28 on 2026-10-25, carrying the
+review's files, the two profile values update.mesh and update.stream and a captioned picture, pushed
+at 09:04 on 2026-10-25 once the run of `9955bf3` went green, its run green at 09:57, the play job 54
+minutes, the runner's and not the item's, every check about 1.37 times slower than in the run of
+`2549786`, the open and the flat world's among them, where the run of `9955bf3` matched that run to
+the second; the probes themselves add about 10% a frame on local lavapipe, 16.8 to 17.9 s for 60
+frames against 15.7, so the play job's time cannot read them and a check's time against the open's
+in the same run could. One departure, the haze's share following the sky level of the point or of
+the eye, whichever is higher, on the source's brightness curve and not the point's level alone,
+since the haze is lit air between the eye and the point, so from the open land a distant cave mouth
+or a forest floor keeps its haze, from a cave the land outside keeps its haze and the cave's own
+walls fade to black. The eye's level is read from the world's light at the eye's cell, eased over
+about a quarter of a second and passed as the uniform eyeCovered; under water and with the fog off
+nothing changes, the clouds' copy of the shader sets nothing and reads as the open sky, a
+see-through color carrying no sky level keeps the haze whole, and the haze dome's corners carry
+level 15 so it stays the haze's color seen from a cave, a line in HazeDomeTests holding it. Readings
+on seed 1 at render distance 12 offscreen at 1280 by 720, the deep cave's top at 90 blocks from the
+eye at -59.5, -4, -91.5 reading 9, 13, 18 before and 0, 0, 0 after with the fog on and 0, 0, 0 both
+times with it off; the plains village at noon an RMSE of 0.00074 with 11 of 921,600 pixels differing
+by more than 1%, the ravine 0.00067 and 3 pixels, the cave with the fog off 0.00037, noise; the lava
+lake from inside its cave 0.035, its far wall losing the blue haze, the devlog's pair. The README's
+Fog section says how a point takes the haze. 351 tests, play.sh 200 s on the GPU. After `9955bf3`,
+Verdict 4's mend, pushed at 08:20 on 2026-10-25 after the red run of `1d31dda` ended, its run green
+at 09:00 with the GPU's caves check passing on lavapipe and the play job 40 minutes, carrying the
+review's files. The cause was none of the three the verdict named, the streamer asking ahead and the
+count moving; the play script's wait ended too early, since with the GPU path on a column at a new
+place waits for its readings with no worker on it, and ChunkStreamer.Pending counted the workers'
+columns alone, so after the teleport voxel.state read 0 columns, 0 generating and the play script's
+meshed wait passed at once, before any batch was back, which the NVIDIA GPU never showed since its
+first batches land before the next command; on local lavapipe with the old build 0 columns read at
+0.0 s and 69 at 1.8 s. Pending counts the workers' columns plus the columns wanted and not yet given
+to a worker, lavapipe reading 0 columns, 69 generating at 0.0 s, 64 columns, 5 generating and 69
+read at 2 s, and 69 columns at 4 s; the check stands unchanged as a check of the GPU path, each
+column of a new place waiting for its readings however slow the device, the commit saying so. 351
+tests, play.sh 315 s on the GPU reading 69 columns at the GPU's caves.
 
 Before it, `1d31dda` came, item 29's first part's GPU half, pushed at 07:22 on 2026-10-25, its run
 red on the play job, Verdict 4, settled by this mend.
@@ -538,24 +549,22 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-132. **The tree's documents and comments keep N 4.7 and STYLE.md.** From the sweep of 10:41 on
-    2026-10-25 in the gap before item 95's package, over the tracked files less the review's.
-    Thirteen places name the owner, the README at lines 234, 1063, 1148, 1263, 1323, 1397 and 1400
-    with the owner's modpack, copy and settings, and the comments of Surface.cs, Climate.cs,
-    Trees.cs, GroundArt.cs, VitalsFade.cs and VoxelGame.cs; the modpack is never named where a
-    reader can open it, Sky.cs naming its shader alone, so they become the reference modpack, the
-    reference copy and the reference modpack's settings, the reference folder being the name the
-    records give the copy under .ref, unless the owner gives the pack's name first. Twenty-two colon
-    joints stand in comments, InventoryWindow, GuiArt, VoxelGame, ModeSwitcher, SlotMoves and
-    BlockShape two or three each and one each in Gui, Sky, SectionMesher, PlantArt, GroundArt,
-    Climate, play.sh and mob-pairs.py, and three in the README at lines 433, 574 and 1443;
-    AmbientParticles.cs paraphrases emission five times. Clean of dashes, banners, the forbidden
-    verbs, clefts and history phrasing, the spaced hyphens arithmetic and the semicolon joints left,
-    STYLE.md not forbidding them. One commit.
-
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 4 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdict 5 is open. Verdicts 1 to 4 are settled, said under each in REVIEW-ARCHIVE.md.
+
+5. **The run of `f97a4c9` is lost, the play job cancelled at its limit of 60 minutes.** Read at
+    11:06 on 2026-10-25 from the run's jobs, run 40178969652. The three test jobs are green; the
+    play job ran from 10:01 to 11:02 and was cancelled at the workflow's limit, which its comment
+    says is reached only where the game or e3d hangs. Nothing hung. The job took 39 minutes on the
+    run of `2549786` and 40 on `9955bf3`, 52 to 54 on the runs of `79ad110`, `bbe814c` and `0babebb`
+    where the runner ran about 1.37 times slower check by check, and this run added item 131's
+    screen probes, about 10% a frame on lavapipe by the coder's reading, and its new check, so a
+    slow runner with the probes on passed 60. The mend raises the limit so a slow runner with the
+    probes on fits, 90 minutes with the comment saying why, the owner's rule weighing no cost of the
+    Actions bill, and reads the job's log check by check for any check that grew out of proportion,
+    saying so in the commit; the walk's checks are not trimmed for it. The mend goes ahead of item
+    95.
 
 ## Decisions
 

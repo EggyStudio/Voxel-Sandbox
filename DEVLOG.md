@@ -124,6 +124,7 @@ Done that day
 - Item 129 at `bbe814c`. The rain's particle texture is drawn upside down.
 - Item 130 at `0babebb`. The fog does not light a dark cave's far walls.
 - Item 131 at `f97a4c9`. The screen probes are on, with no setting for a player.
+- Item 132 at `1767348`. The tree's documents and comments keep N 4.7 and STYLE.md.
 
 ## 2026-10-24
 

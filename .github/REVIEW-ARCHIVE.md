@@ -1809,6 +1809,22 @@ before a batch.
     two calls go, no other row added. Done at `f97a4c9` on 2026-10-25, the probes on by default and
     the toggle gone, the two calls waiting on the package with the engine's item 103.
 
+132. **The tree's documents and comments keep N 4.7 and STYLE.md.** From the sweep of 10:41 on
+    2026-10-25 in the gap before item 95's package, over the tracked files less the review's.
+    Thirteen places name the owner, the README at lines 234, 1063, 1148, 1263, 1323, 1397 and 1400
+    with the owner's modpack, copy and settings, and the comments of Surface.cs, Climate.cs,
+    Trees.cs, GroundArt.cs, VitalsFade.cs and VoxelGame.cs; the modpack is never named where a
+    reader can open it, Sky.cs naming its shader alone, so they become the reference modpack, the
+    reference copy and the reference modpack's settings, the reference folder being the name the
+    records give the copy under .ref, unless the owner gives the pack's name first. Twenty-two colon
+    joints stand in comments, InventoryWindow, GuiArt, VoxelGame, ModeSwitcher, SlotMoves and
+    BlockShape two or three each and one each in Gui, Sky, SectionMesher, PlantArt, GroundArt,
+    Climate, play.sh and mob-pairs.py, and three in the README at lines 433, 574 and 1443;
+    AmbientParticles.cs paraphrases emission five times. Clean of dashes, banners, the forbidden
+    verbs, clefts and history phrasing, the spaced hyphens arithmetic and the semicolon joints left,
+    STYLE.md not forbidding them. One commit. Done at `1767348` on 2026-10-25, forty-four
+    replacements and the greps clean, the pack called the reference modpack.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
