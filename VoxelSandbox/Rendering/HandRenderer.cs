@@ -6,8 +6,8 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// What the player's right hand holds, drawn in the view as the source draws it, the held block's
-/// cube or item's picture, swinging on a hit, a break or a use and bobbing with the walk, and nothing
-/// when the hand is empty.
+/// cube or item's picture, swinging on a hit, a break or a use and bobbing with the walk, and the
+/// player's own right arm of its model when the hand is empty.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -32,6 +32,9 @@ public sealed class HandRenderer
 
     private float _swing = -1, _walked, _bob;
 
+    /// <summary>How far through its swing the hand is, from 0 to 1, or 0 at rest, which the model's arm swings by too.</summary>
+    public float Swung => _swing < 0 ? 0 : _swing / SwingSeconds;
+
     /// <summary>Swings the held item, as a hit, a break or a use does, unless a swing is under way and short of its half.</summary>
     public void Swing()
     {
@@ -47,10 +50,9 @@ public sealed class HandRenderer
         _bob += (bob - _bob) * (1 - MathF.Exp(-12 * seconds));
     }
 
-    /// <summary>Draws the held item before the eye, looking the way given, and nothing for an empty hand. Called inside <c>BeginMode3D</c>.</summary>
-    public void Draw(Vector3 eye, Vector3 look, Item? held, DropRenderer drops)
+    /// <summary>Draws the held item before the eye, looking the way given, or for an empty hand the model's right arm. Called inside <c>BeginMode3D</c>.</summary>
+    public void Draw(Vector3 eye, Vector3 look, Item? held, DropRenderer drops, MobRenderer models)
     {
-        if (held is not { } item) return;
         var right = Vector3.Normalize(Vector3.Cross(look, Vector3.UnitY));
         var up = Vector3.Cross(right, look);
         var toWorld = Matrix4x4.CreateScale(Near) * new Matrix4x4(
@@ -65,10 +67,15 @@ public sealed class HandRenderer
             * Matrix4x4.CreateRotationZ(Degrees(MathF.Sin(step) * _bob * 3))
             * Matrix4x4.CreateTranslation(MathF.Sin(step) * _bob * 0.5f, -MathF.Abs(MathF.Cos(step) * _bob), 0);
 
+        var swing = Swung;
+        var root = MathF.Sqrt(swing);
+        if (held is not { } item)
+        {
+            models.DrawArm(Arm(swing) * pose * toWorld);
+            return;
+        }
         // The source's arm with an item, its swing's way and its turns, then the item's model in the
         // right hand.
-        var swing = _swing < 0 ? 0 : _swing / SwingSeconds;
-        var root = MathF.Sqrt(swing);
         var g = MathF.Sin(swing * swing * MathF.PI);
         var h = MathF.Sin(root * MathF.PI);
         pose = Matrix4x4.CreateRotationY(Degrees(-45))
@@ -80,6 +87,22 @@ public sealed class HandRenderer
             * pose;
         var (mesh, material, flat) = drops.Model(item);
         DrawMesh(mesh, material, Turn(flat, item.Tool != ToolKind.None) * pose * toWorld);
+    }
+
+    /// <summary>
+    /// Where the source's empty right hand stands in the view as it swings, its arm's boxes taken
+    /// from the model's space, y up and x mirrored, into the source's, and placed by the source's
+    /// turns of a player's arm in the first person.
+    /// </summary>
+    public static Matrix4x4 Arm(float swing)
+    {
+        var root = MathF.Sqrt(swing);
+        float across = -0.3f * MathF.Sin(root * MathF.PI), up = 0.4f * MathF.Sin(root * MathF.Tau), ahead = -0.4f * MathF.Sin(swing * MathF.PI);
+        var model = Matrix4x4.CreateScale(-1, -1, 1) * Matrix4x4.CreateTranslation(0, 1.5f, 0);
+        return model * Matrix4x4.CreateTranslation(5.6f, 0, 0) * Matrix4x4.CreateRotationY(Degrees(-135)) * Matrix4x4.CreateRotationX(Degrees(200))
+            * Matrix4x4.CreateRotationZ(Degrees(120)) * Matrix4x4.CreateTranslation(-1, 3.6f, 3.5f)
+            * Matrix4x4.CreateRotationZ(Degrees(MathF.Sin(swing * swing * MathF.PI) * -20)) * Matrix4x4.CreateRotationY(Degrees(MathF.Sin(root * MathF.PI) * 70))
+            * Matrix4x4.CreateRotationY(Degrees(45)) * Matrix4x4.CreateTranslation(across + 0.64f, up - 0.6f, ahead - 0.72f);
     }
 
     /// <summary>

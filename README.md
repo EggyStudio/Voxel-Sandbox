@@ -123,9 +123,17 @@ the look, looking at the eye, and is pulled in a tenth of a block short of the n
 any of five rays from about the eye meets on the way, as Minecraft's is, so a wall behind the player
 does not hide it. The player is seen there with a model of Minecraft's layout at its scale of
 fifteen sixteenths, a head, a body, two arms and two legs in the game's own colors, a teal shirt with
-short sleeves, blue trousers, grey shoes and brown hair, its legs swinging by how far it walks as a
-mob's do and its head tilted by the aim. The hand and the crosshair show from the eye alone, and a
-spectator is not seen. `voxel.view` sets the view.
+short sleeves, blue trousers, grey shoes and brown hair, posed as Minecraft poses its player. Its
+legs swing by how far it walks as a mob's do and its arms against them, its body turns toward the
+way it walks and its head after the aim, leading the body by at most 75 degrees. A sneak leans the
+body over by half a radian, its hips and arms back, the head down, and the whole two pixels lower.
+A swimmer lies along its look, its head turned up to look ahead and its arms stroking in turn over
+its head and back. One climbing out of water reaches up with its arms in turn, and one in the air
+holds its arms a little out from its sides. A hit, a break or a use swings its right arm up ahead
+and back down as the hand seen from the eye swings, and what the hand holds is in it, a block's cube
+at three eighths of a block and an item's picture at 0.55, the arm held a little ahead. The hand
+and the crosshair show from the eye alone, the empty hand there being the model's own right arm,
+and a spectator is not seen. `voxel.view` sets the view.
 
 ## Commands
 

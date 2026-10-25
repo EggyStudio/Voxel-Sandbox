@@ -5,22 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `76053f6`, Verdict 3's mend, read at 03:12 on 2026-10-25, carrying the review's
-files. The fixture steps game.Draw until the game stands and Streamer.Pending reads 0, by a
-stopwatch with a 30 s limit, sleeping 2 ms between frames while it loads, and asserts both naming
-the frames it took; HeadlessGameTests reads the flat world standing with nothing pending, the 5 by 5
-columns about the player in and the player on the ground after 10 frames, every headless test
-through the fixture; FireFrameTests laid seeds 2 and 3's squares up to 76 blocks out past two
-columns' reach, a second fault the failure hid, and each seed lays one square afresh 8 blocks from
-the player in a stone ring; on one CPU core the headless and fire tests passed, 7 in 40 s. 321
-tests, play.sh 342 s on the GPU. The six pushed at 03:12 on 2026-10-25 after the run of `01eb71f`
-ended; the run watched for the verdict's settling. After `e433e5c`, item 33's second commit, the
-occlusion and the room, read at 02:58 on 2026-10-25, carrying REVIEW.md and AGENTS.md's Sound row.
-Places.Crossed walks a grid line from the eye to the source counting opaque cells but the two end
-cells, the occlusion a half to that power, a mob's step played at that share; Places.Room casts 26
-rays to 24 blocks four times a second and gives the share meeting an opaque block and their mean
-distance, reported and not heard since the engine has no reverb, the plains reading 0.54 closed at
-4.8 blocks, the forest canopy 0.88 at 2.2 and the deep cave 0.92 at 7.8, a pig in the rock nine
+Reviewed up to `a00fdcc`, item 36's first commit, the camera and the model, read at 03:22 on
+2026-10-25, carrying REVIEW.md and the devlog's views. A View of First, Behind or Front with the
+third person's distance, five rays from the eye and four points a tenth across it toward where the
+camera would stand at 4 blocks as the source's, the camera a tenth short of the nearest hit or at 4,
+the controller keeping the view and the distance and making the camera look at the eye from behind
+or in front; F5 steps the views and voxel.view sets one, the hand and the crosshair from the eye
+alone, a spectator not drawn. The player's model is the zombie's layout in the game's own colors at
+scale 0.9375, kept out of MobKinds.All so the save's kinds, voxel.spawn and the counts stay, the
+renderer placing it by the controller's stride and phase with the head pitched by the aim; Gait.Arm
+gave every kind that does not shoot the zombie's reaching arms, so the player held its arms out, and
+they hang and swing against the legs as a skeleton's do, the picture sent again. ThirdPersonTests
+covers the distance, a wall and the floor, an offset ray meeting a block beside the middle one, F5's
+order, the camera's look and the model's height and arms. 324 tests, play.sh 300 s on the GPU. Held
+until the run of `76053f6` ends, then pushed. After `76053f6`, Verdict 3's mend, read at 03:12 on
+2026-10-25, carrying the review's files. The fixture steps game.Draw until the game stands and
+Streamer.Pending reads 0, by a stopwatch with a 30 s limit, sleeping 2 ms between frames while it
+loads, and asserts both naming the frames it took; HeadlessGameTests reads the flat world standing
+with nothing pending, the 5 by 5 columns about the player in and the player on the ground after 10
+frames, every headless test through the fixture; FireFrameTests laid seeds 2 and 3's squares up to
+76 blocks out past two columns' reach, a second fault the failure hid, and each seed lays one square
+afresh 8 blocks from the player in a stone ring; on one CPU core the headless and fire tests passed,
+7 in 40 s. 321 tests, play.sh 342 s on the GPU. The six pushed at 03:12 on 2026-10-25 after the run
+of `01eb71f` ended; the run watched for the verdict's settling. After `e433e5c`, item 33's second
+commit, the occlusion and the room, read at 02:58 on 2026-10-25, carrying REVIEW.md and AGENTS.md's
+Sound row. Places.Crossed walks a grid line from the eye to the source counting opaque cells but the
+two end cells, the occlusion a half to that power, a mob's step played at that share; Places.Room
+casts 26 rays to 24 blocks four times a second and gives the share meeting an opaque block and their
+mean distance, reported and not heard since the engine has no reverb, the plains reading 0.54 closed
+at 4.8 blocks, the forest canopy 0.88 at 2.2 and the deep cave 0.92 at 7.8, a pig in the rock nine
 blocks under the plains coming through at 0.002; the low-pass and the reverb asked of the engine as
 its item 120. Found and fixed, Mob.Follow normalized a zero horizontal way when a mob stood under or
 over its next cell's middle and the non-number stayed in its velocity and place for good, a cow seen
@@ -575,7 +588,10 @@ full.
     are taken, and the first-person arm and held item are drawn from the same model. Tests: the
     camera's distance against blocks, each state's pose at a known phase, and a capture of the
     player mid-stride and mid-swim from behind beside the source's silhouette in the record. After
-    item 30. Two commits, the camera and the model, then the animations.
+    item 30. Two commits, the camera and the model, then the animations. The first commit at
+    `a00fdcc` on 2026-10-25, the camera and the model, the reaching arms of every unarmed kind found
+    on the way; the animations next, sneaking, swimming, climbing and the air, the swing, the held
+    item, the body turning after the head and the first-person hand from the model's arm.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the

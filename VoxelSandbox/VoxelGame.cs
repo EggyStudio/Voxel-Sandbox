@@ -1151,15 +1151,28 @@ public sealed class VoxelGame : IDisposable
         Lap("draw.sky");
         Renderer.Draw(World, Player.Eye, RenderDistance, Sky.TowardLight, Light.ShadowDistance);
         Lap("draw.sections");
-        // The player's own model where the view stands without, none of a spectator's.
-        MobRenderer.Draw(GetApp().World.Resource<EcsWorld>(), Player.Eye, Player.View != View.First && Mode != GameMode.Spectator
-            ? (Player.Body.Position, Player.Yaw, new Stance(Player.StridePhase, Player.Stride, 0, Player.Pitch, 0, false)) : null);
+        // The player's own model where the view stands without, none of a spectator's, posed by what
+        // it does, with what its right hand holds.
+        var seen = Player.View != View.First && Mode != GameMode.Spectator;
+        var held = Mode.Touches() ? Hotbar.Current?.Item : null;
+        var stance = new PlayerStance(Player.StridePhase, Player.Stride, MathF.IEEERemainder(Player.Yaw - Player.BodyYaw, MathF.Tau), Player.Pitch, Hand.Swung,
+            Player.Sneaking, Player.Swimming && !Player.Body.OnGround, Player.Climbing, !Player.Body.OnGround && !Player.Swimming && !Player.Flying, held is not null);
+        MobRenderer.Draw(GetApp().World.Resource<EcsWorld>(), Player.Eye, seen ? (Player.Body.Position, Player.BodyYaw, stance) : null);
+        if (seen && held is { } holding)
+        {
+            var (heldMesh, heldMaterial, flat) = DropRenderer.Model(holding);
+            var arm = MobKinds.Player.Parts.First(p => p.Swing == Swing.ArmB);
+            var whole = PlayerPoses.Whole(stance) * Matrix4x4.CreateScale(MobKinds.Player.Scale) * Matrix4x4.CreateRotationY(Player.BodyYaw) * Matrix4x4.CreateTranslation(Player.Body.Position);
+            // The source's sizes in a hand seen from without, an item's picture 0.55 of a block and a
+            // block's cube 0.375, of the drops' picture of 0.3 and cube of a quarter.
+            DrawMesh(heldMesh, heldMaterial, Matrix4x4.CreateScale(flat ? 0.55f / 0.3f : 0.375f / 0.25f) * PlayerPoses.Hand(arm, stance) * whole);
+        }
         DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Falling.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Lit.Size))), Player.Eye, GetTime());
         // A burning TNT shows white every other five ticks, a hair larger than its cube.
         foreach (var (lit, body) in Tnt.All)
             if (lit.Flashing) DrawCube(body.Position + new Vector3(0, 0.5f * lit.Size, 0), 1.01f * lit.Size, 1.01f * lit.Size, 1.01f * lit.Size, new Color(255, 255, 255, 150));
         Bits.Draw(Player.Eye, Player.Look);
-        if (!HudHidden && Player.View == View.First && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead)) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer);
+        if (!HudHidden && Player.View == View.First && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead)) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer, MobRenderer);
         DrawArrows();
         // An explosion's flash, a ball swelling to the power's size and fading over half a second.
         foreach (var blast in Blasts.All)

@@ -230,11 +230,28 @@ public sealed class FirstPersonController
 
         // The legs swing by how far the body went across, as a mob's do, and a view from without
         // stands as far from the eye as the blocks let it.
+        var across = new Vector2(Body.Position.X - before.X, Body.Position.Z - before.Z);
         var (stride, phase) = (Stride, StridePhase);
-        Gait.Step(ref stride, ref phase, new Vector2(Body.Position.X - before.X, Body.Position.Z - before.Z).Length(), seconds);
+        Gait.Step(ref stride, ref phase, across.Length(), seconds);
         (Stride, StridePhase) = (stride, phase);
+        // The body turns toward the way it walks, front to back where it walks backward, and after
+        // the head where the head turns more than 75 degrees from it, as the source's does.
+        if (across.LengthSquared() > 1e-6f)
+        {
+            var toward = MathF.Atan2(-across.X, -across.Y);
+            if (MathF.Abs(MathF.IEEERemainder(toward - Yaw, MathF.Tau)) > MathF.PI / 2) toward += MathF.PI;
+            BodyYaw += Math.Clamp(MathF.IEEERemainder(toward - BodyYaw, MathF.Tau), -10 * seconds, 10 * seconds);
+        }
+        var off = MathF.IEEERemainder(Yaw - BodyYaw, MathF.Tau);
+        if (MathF.Abs(off) > 1.3f) BodyYaw = Yaw - MathF.Sign(off) * 1.3f;
         if (View != View.First) _away = ThirdPerson.Distance(world, Eye, View == View.Behind ? -Look : Look);
     }
+
+    /// <summary>The body's turn, which follows the way it walks and the head's, the head leading it by at most 75 degrees.</summary>
+    public float BodyYaw { get; private set; }
+
+    /// <summary>Whether it climbs out of water onto a bank, as a swimmer pushing into one does.</summary>
+    public bool Climbing => _climbing;
 
     // One of Minecraft's ticks of a body in water or bobbing above it, from where the tick finds the
     // feet. In water it takes a jump from the bottom where the water stands no deeper than Wade over

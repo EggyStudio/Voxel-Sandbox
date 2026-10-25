@@ -246,7 +246,7 @@ public sealed class MobRenderer : IDisposable
     /// Draws the mobs of an ECS world within reach of the eye, read by their components, and the
     /// player's model where it is given, as a view from without shows it. Called inside <c>BeginMode3D</c>.
     /// </summary>
-    public void Draw(EcsWorld ecs, Vector3 eye, (Vector3 At, float Yaw, Stance Stance)? player = null)
+    public void Draw(EcsWorld ecs, Vector3 eye, (Vector3 At, float Yaw, PlayerStance Stance)? player = null)
     {
         foreach (var slot in _slots)
         {
@@ -260,7 +260,8 @@ public sealed class MobRenderer : IDisposable
         foreach (var (_, mob, body, life, pose, hostile) in ecs.Query<Mob, Body, MobLife, MobPose, MobHostile>())
             if (Place(mob, body, life, pose, hostile.Fuse, hostile.Hunting, eye)) drawn++;
         if (player is { } shown)
-            Place(MobKinds.Player, 0, Matrix4x4.CreateScale(MobKinds.Player.Scale) * Matrix4x4.CreateRotationY(shown.Yaw) * Matrix4x4.CreateTranslation(shown.At), shown.Stance, red: false, white: false);
+            Place(MobKinds.Player, 0, PlayerPoses.Whole(shown.Stance) * Matrix4x4.CreateScale(MobKinds.Player.Scale) * Matrix4x4.CreateRotationY(shown.Yaw) * Matrix4x4.CreateTranslation(shown.At),
+                part => PlayerPoses.Turn(part, shown.Stance), red: false, white: false);
 
         var draws = 0;
         foreach (var slot in _slots)
@@ -287,6 +288,17 @@ public sealed class MobRenderer : IDisposable
         (Draws, Drawn) = (draws, drawn);
     }
 
+    /// <summary>
+    /// Draws the player's right arm by its own, as the first-person view shows an empty hand, its
+    /// boxes in the model's space placed so. Called inside <c>BeginMode3D</c>.
+    /// </summary>
+    public void DrawArm(Matrix4x4 placed)
+    {
+        var parts = MobKinds.Player.Parts;
+        var arm = Array.FindIndex(parts, p => p.Swing == Swing.ArmB);
+        foreach (var (mesh, materials) in _byKind[MobKinds.Player.Id][arm][0].Layers) DrawMesh(mesh, materials.Plain, placed);
+    }
+
     // Adds a mob within reach of the eye to the instances of its parts, by its life, its pose and a
     // hostile one's fuse and hunt, and says whether it was within reach.
     private bool Place(Mob mob, Body body, MobLife life, MobPose pose, float fuse, bool hunting, Vector3 eye)
@@ -299,19 +311,19 @@ public sealed class MobRenderer : IDisposable
         var (wide, tall, flash) = CreeperSwell(fuse);
         if (fuse >= 0) placed = Matrix4x4.CreateScale(wide, tall, wide) * placed;
         var stance = new Stance(pose.StridePhase, pose.Stride, pose.HeadYaw - pose.Yaw, pose.HeadPitch, pose.WingAngle, hunting);
-        Place(mob.Kind, mob.Variant, placed, stance, life.Hurt > 0 || life.Dying >= 0, flash > 0);
+        Place(mob.Kind, mob.Variant, placed, part => Gait.Turn(mob.Kind, part, stance), life.Hurt > 0 || life.Dying >= 0, flash > 0);
         return true;
     }
 
-    // Adds a kind's pieces in a variant and a stance to the instances, the whole placed so, red or
-    // white as a hit or a creeper's flash shows it.
-    private void Place(MobKind kind, byte variant, Matrix4x4 placed, Stance stance, bool red, bool white)
+    // Adds a kind's pieces in a variant to the instances, each turned about its pivot as given and
+    // the whole placed so, red or white as a hit or a creeper's flash shows it.
+    private void Place(MobKind kind, byte variant, Matrix4x4 placed, Func<ModelPart, Matrix4x4> turn, bool red, bool white)
     {
         var parts = kind.Parts;
         for (int p = 0; p < parts.Length; p++)
         {
             var part = parts[p];
-            var local = part.PlacedBy(Gait.Turn(kind, part, stance));
+            var local = part.PlacedBy(turn(part));
             var variants = _byKind[kind.Id][p];
             var slot = variants[variants.Length == 1 ? 0 : variant % variants.Length];
             (red ? slot.Hurt : white ? slot.Flash : slot.Plain).Add(local * placed);
