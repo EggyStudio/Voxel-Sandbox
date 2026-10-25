@@ -5,35 +5,49 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `a00fdcc`, item 36's first commit, the camera and the model, read at 03:22 on
-2026-10-25, carrying REVIEW.md and the devlog's views. A View of First, Behind or Front with the
-third person's distance, five rays from the eye and four points a tenth across it toward where the
-camera would stand at 4 blocks as the source's, the camera a tenth short of the nearest hit or at 4,
-the controller keeping the view and the distance and making the camera look at the eye from behind
-or in front; F5 steps the views and voxel.view sets one, the hand and the crosshair from the eye
-alone, a spectator not drawn. The player's model is the zombie's layout in the game's own colors at
-scale 0.9375, kept out of MobKinds.All so the save's kinds, voxel.spawn and the counts stay, the
-renderer placing it by the controller's stride and phase with the head pitched by the aim; Gait.Arm
-gave every kind that does not shoot the zombie's reaching arms, so the player held its arms out, and
-they hang and swing against the legs as a skeleton's do, the picture sent again. ThirdPersonTests
-covers the distance, a wall and the floor, an offset ray meeting a block beside the middle one, F5's
-order, the camera's look and the model's height and arms. 324 tests, play.sh 300 s on the GPU. Held
-until the run of `76053f6` ends, then pushed. After `76053f6`, Verdict 3's mend, read at 03:12 on
-2026-10-25, carrying the review's files. The fixture steps game.Draw until the game stands and
-Streamer.Pending reads 0, by a stopwatch with a 30 s limit, sleeping 2 ms between frames while it
-loads, and asserts both naming the frames it took; HeadlessGameTests reads the flat world standing
-with nothing pending, the 5 by 5 columns about the player in and the player on the ground after 10
-frames, every headless test through the fixture; FireFrameTests laid seeds 2 and 3's squares up to
-76 blocks out past two columns' reach, a second fault the failure hid, and each seed lays one square
-afresh 8 blocks from the player in a stone ring; on one CPU core the headless and fire tests passed,
-7 in 40 s. 321 tests, play.sh 342 s on the GPU. The six pushed at 03:12 on 2026-10-25 after the run
-of `01eb71f` ended; the run watched for the verdict's settling. After `e433e5c`, item 33's second
-commit, the occlusion and the room, read at 02:58 on 2026-10-25, carrying REVIEW.md and AGENTS.md's
-Sound row. Places.Crossed walks a grid line from the eye to the source counting opaque cells but the
-two end cells, the occlusion a half to that power, a mob's step played at that share; Places.Room
-casts 26 rays to 24 blocks four times a second and gives the share meeting an opaque block and their
-mean distance, reported and not heard since the engine has no reverb, the plains reading 0.54 closed
-at 4.8 blocks, the forest canopy 0.88 at 2.2 and the deep cave 0.92 at 7.8, a pig in the rock nine
+Reviewed up to `6a56e0f`, item 36's second commit, the animations, read at 03:39 on 2026-10-25,
+carrying REVIEW.md and the devlog's poses. PlayerStance carries the phase, the stride, the head's
+yaw and pitch, the swing and whether the player sneaks, swims, climbs, is in the air or holds an
+item, PlayerPoses.Turn taking the source's humanoid numbers in the game's axes, the walk's legs and
+arms, the sneak's lean, the held item's arm and the hit's swing with the body turned, and
+PlayerPoses.Whole laying a swimmer along its look with the arms stroking in turn and the legs
+fluttering; the body's yaw turns toward the way walked with the head leading it by at most 75
+degrees, the right hand holds the hotbar item at the source's third-person sizes, and the first
+person's empty hand draws the model's right arm by the source's turns with the swing shared.
+Departures, climbing is the controller's step out of water onto a bank since the game has no
+ladders, the arms reaching up in turn, and in the air the arms go 0.15 out from the sides, a pose
+the source lacks; no picture of the source's silhouette on the machine, the record holding the
+game's poses alone. PlayerPoseTests reads each stance at a known phase by the hands', the hips' and
+the head's places. 329 tests, play.sh 315 s on the GPU. Held with `a00fdcc` until the run of
+`76053f6` ends, then pushed. After `a00fdcc`, item 36's first commit, the camera and the model, read
+at 03:22 on 2026-10-25, carrying REVIEW.md and the devlog's views. A View of First, Behind or Front
+with the third person's distance, five rays from the eye and four points a tenth across it toward
+where the camera would stand at 4 blocks as the source's, the camera a tenth short of the nearest
+hit or at 4, the controller keeping the view and the distance and making the camera look at the eye
+from behind or in front; F5 steps the views and voxel.view sets one, the hand and the crosshair from
+the eye alone, a spectator not drawn. The player's model is the zombie's layout in the game's own
+colors at scale 0.9375, kept out of MobKinds.All so the save's kinds, voxel.spawn and the counts
+stay, the renderer placing it by the controller's stride and phase with the head pitched by the aim;
+Gait.Arm gave every kind that does not shoot the zombie's reaching arms, so the player held its arms
+out, and they hang and swing against the legs as a skeleton's do, the picture sent again.
+ThirdPersonTests covers the distance, a wall and the floor, an offset ray meeting a block beside the
+middle one, F5's order, the camera's look and the model's height and arms. 324 tests, play.sh 300 s
+on the GPU. After `76053f6`, Verdict 3's mend, read at 03:12 on 2026-10-25, carrying the review's
+files. The fixture steps game.Draw until the game stands and Streamer.Pending reads 0, by a
+stopwatch with a 30 s limit, sleeping 2 ms between frames while it loads, and asserts both naming
+the frames it took; HeadlessGameTests reads the flat world standing with nothing pending, the 5 by 5
+columns about the player in and the player on the ground after 10 frames, every headless test
+through the fixture; FireFrameTests laid seeds 2 and 3's squares up to 76 blocks out past two
+columns' reach, a second fault the failure hid, and each seed lays one square afresh 8 blocks from
+the player in a stone ring; on one CPU core the headless and fire tests passed, 7 in 40 s. 321
+tests, play.sh 342 s on the GPU. The six pushed at 03:12 on 2026-10-25 after the run of `01eb71f`
+ended; the run watched for the verdict's settling. After `e433e5c`, item 33's second commit, the
+occlusion and the room, read at 02:58 on 2026-10-25, carrying REVIEW.md and AGENTS.md's Sound row.
+Places.Crossed walks a grid line from the eye to the source counting opaque cells but the two end
+cells, the occlusion a half to that power, a mob's step played at that share; Places.Room casts 26
+rays to 24 blocks four times a second and gives the share meeting an opaque block and their mean
+distance, reported and not heard since the engine has no reverb, the plains reading 0.54 closed at
+4.8 blocks, the forest canopy 0.88 at 2.2 and the deep cave 0.92 at 7.8, a pig in the rock nine
 blocks under the plains coming through at 0.002; the low-pass and the reverb asked of the engine as
 its item 120. Found and fixed, Mob.Follow normalized a zero horizontal way when a mob stood under or
 over its next cell's middle and the non-number stayed in its velocity and place for good, a cow seen
@@ -578,21 +592,6 @@ full.
     read as a picture's metadata, the tiles and the method's name, and the methods are the game's
     own.
 
-36. **The player seen in third person, with their own animations (Decision 15).** F5 cycles the
-    first-person view, a camera behind the player and one in front, as the source's does, the camera
-    pulled in where a block would hide it; the player has a model of the source's layout, head,
-    body, arms and legs at the source's scale with the game's own skin, animated by walking,
-    running, sneaking, swimming, climbing, jumping, falling, mining and placing, the swings and the
-    stride from the source's numbers as item 18's mobs take them, the held item in the hand, and the
-    head following the aim; where item 30's packs model the player, the pack's model and animations
-    are taken, and the first-person arm and held item are drawn from the same model. Tests: the
-    camera's distance against blocks, each state's pose at a known phase, and a capture of the
-    player mid-stride and mid-swim from behind beside the source's silhouette in the record. After
-    item 30. Two commits, the camera and the model, then the animations. The first commit at
-    `a00fdcc` on 2026-10-25, the camera and the model, the reaching arms of every unarmed kind found
-    on the way; the animations next, sneaking, swimming, climbing and the air, the swing, the held
-    item, the body turning after the head and the first-person hand from the model's arm.
-
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
     generator carves them; their count falls to what the source's land shows, a cliff here and there
@@ -617,21 +616,7 @@ full.
 
 ## Verdicts
 
-Verdict 3 is open. Verdicts 1 and 2 are settled, said under each in REVIEW-ARCHIVE.md.
-
-3. **The headless fixture's world does not load within its frames on the runners.** Read at 03:01 on
-    2026-10-25 from the run of `01eb71f`, the three test jobs red on FireFrameTests' two tests with
-    "the flat world did not load within 600 frames" from HeadlessGame's constructor after 140 and
-    199 ms, 312 passed, the play job green in 52.4 minutes. The fixture steps 600 frames and asks
-    the game whether it still loads, and since `01eb71f` set the frame target to 0 the 600 frames
-    pass in a fifth of a second on the runners while the world's columns load on workers by wall
-    time, so the frames run out before the world is in; on the development machine the workers are
-    faster than the frames. The mend is the fixture waiting by wall time, stepping frames until the
-    game has loaded or 30 s have passed with a short yield between frames while the world loads, the
-    fixture's own test of a load, and every headless test on it; one commit, before the next push,
-    read on the three runners. Mended at `76053f6`, read at 03:12, the fixture waiting by a
-    stopwatch with a yield and the fire squares laid within the columns' reach. Settled when its run
-    is green on the three test jobs.
+No verdict is open. Verdicts 1 to 3 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 

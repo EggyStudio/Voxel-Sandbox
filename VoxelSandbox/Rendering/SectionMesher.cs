@@ -398,6 +398,34 @@ public sealed class SectionMesher
         return tiles & 511 | joins << 9 | 3u << 18;
     }
 
+    // A face's tile by a pack's connected texture, chosen by its rule from the neighbors in the face's
+    // plane as its texture lies on it or from its place, or null where the rule gives the surface's
+    // own, as a side of a top rule with no block of its own over it.
+    private int? ConnectedTile(ConnectedRule rule, int[] numbers, int surface, int face, int at, Vector3 block)
+    {
+        var (right, down) = TextureWays[face];
+        int r = Steps[right], l = Steps[right ^ 1], d = Steps[down], u = Steps[down ^ 1];
+        var own = _blocks[at];
+        // A neighbor is the same where it is the same block, or for a rule of textures shows the same
+        // texture on this side, and with inner seams joins only where the cell before it is not.
+        bool Same(int cell) => rule.ByTile ? SurfaceOn((BlockId)_blocks[cell], face) == surface : _blocks[cell] == own;
+        bool Joins(int offset) => Same(at + offset) && !(rule.InnerSeams && Same(at + offset + Steps[face]));
+        int x = _origin.X + (int)block.X, y = _origin.Y + (int)block.Y, z = _origin.Z + (int)block.Z;
+        var index = rule.Method switch
+        {
+            ConnectMethod.Full => ConnectedTextures.FullTile(Joins(l), Joins(d), Joins(r), Joins(u), Joins(l + d), Joins(r + d), Joins(r + u), Joins(l + u)),
+            ConnectMethod.Horizontal => ConnectedTextures.HorizontalTile(Joins(l), Joins(r)),
+            ConnectMethod.Vertical => ConnectedTextures.VerticalTile(Joins(d), Joins(u)),
+            ConnectMethod.Top => face is 2 or 3 || !Same(at + Steps[2]) ? -1 : 0,
+            ConnectMethod.Repeat => ConnectedTextures.RepeatTile(face, x, y, z, rule.Width, rule.Height),
+            _ => ConnectedTextures.RandomTile(face, x, y, z, numbers.Length, rule.Weights),
+        };
+        return index >= 0 && index < numbers.Length && numbers[index] >= 0 ? numbers[index] : null;
+    }
+
+    // The surface a block shows on a face of a direction, its top's up, its bottom's down and its side's across.
+    private static int SurfaceOn(BlockId block, int face) => face switch { 2 => Blocks.Get(block).Top, 3 => Blocks.Get(block).Bottom, _ => Blocks.Get(block).Side };
+
     // A face of a block, its corners on the cell's floor raised to bottom and those on its ceiling
     // lowered to top, for water and for a side shown only above the water beside it.
     private void Add(int surface, bool cuttable, BlockKind kind, int face, int at, Vector3 block, float bottom, float top)
@@ -406,7 +434,13 @@ public sealed class SectionMesher
         var place = (int)block.Z * Section.Size + (int)block.X;
         var spot = PlaceHash.Of(_origin.X + (int)block.X, _origin.Z + (int)block.Z, _origin.Y + (int)block.Y);
         var (tiles, color, albedo) = Atlas.Paint(surface, _column.GrassTint[place], _column.FoliageTint[place], spot);
-        if (kind == BlockKind.Glass && Atlas.Tile(surface) != 0 && BlockGroups.Glass.Contains((BlockId)_blocks[at])) tiles = Joined(tiles, face, at);
+        // A pack's connected texture takes the face's tile where its rule gives one, and the game's
+        // own joining of glass's frames is left to it.
+        if (Atlas.Connected(surface) is var (rule, numbers) && (rule.Faces >> face & 1) != 0)
+        {
+            if (ConnectedTile(rule, numbers, surface, face, at, block) is { } connected) tiles = tiles & ~511u | (uint)connected;
+        }
+        else if (kind == BlockKind.Glass && Atlas.Tile(surface) != 0 && BlockGroups.Glass.Contains((BlockId)_blocks[at])) tiles = Joined(tiles, face, at);
         var faces = FacesOf(surface, cuttable, kind);
         var first = (uint)faces.Count;
         var front = at + Steps[face];

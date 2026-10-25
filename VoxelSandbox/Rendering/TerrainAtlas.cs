@@ -66,11 +66,13 @@ public sealed class TerrainAtlas
     // Each surface's own looks, their tiles as Paint packs them and their weights, or null for a
     // surface that has none.
     private readonly (uint Tiles, int Weight)[]?[] _variants;
+    // Each surface's connected texture, its rule and its tiles' numbers, -1 for the surface's own, or null.
+    private readonly (ConnectedRule Rule, int[] Tiles)?[] _connected;
 
     private TerrainAtlas(int pixels, int[] tile, int[] overlay, Color?[] tint, bool[] own, (uint, int)[]?[] variants, List<byte[]> pictures,
-        List<(int First, int Count, int Ticks)> animations)
+        List<(int First, int Count, int Ticks)> animations, (ConnectedRule, int[])?[] connected)
     {
-        (Pixels, _tile, _overlay, _tint, _own, _variants, _pictures, Animations) = (pixels, tile, overlay, tint, own, variants, pictures, animations);
+        (Pixels, _tile, _overlay, _tint, _own, _variants, _pictures, Animations, _connected) = (pixels, tile, overlay, tint, own, variants, pictures, animations, connected);
         _averages = [.. pictures.Select(Average)];
         _cuts = [.. pictures.Select(p => Enumerable.Range(0, p.Length / 4).Any(i => p[i * 4 + 3] == 0) && Enumerable.Range(0, p.Length / 4).All(i => p[i * 4 + 3] is 0 or 255))];
         _cutOut = [.. Blocks.All.Select(b => b.Kind == BlockKind.Opaque && b.Shape is null && !b.Emits
@@ -154,9 +156,44 @@ public sealed class TerrainAtlas
             }
         }
 
+        var connected = Connect(packs, found, tile);
         var pixels = (int)System.Numerics.BitOperations.RoundUpToPowerOf2((uint)Math.Clamp(found.Skip(1).Select(i => i.Width).DefaultIfEmpty(1).Max(), 1, MostPixels));
-        return new TerrainAtlas(pixels, tile, overlay, tint, own, variants, [.. found.Select(i => Resized(i, pixels))], animations);
+        return new TerrainAtlas(pixels, tile, overlay, tint, own, variants, [.. found.Select(i => Resized(i, pixels))], animations, connected);
     }
+
+    // The packs' connected textures of OptiFine's form, each rule's tiles laid in the atlas as the
+    // blocks' are and the surfaces it takes, the blocks it names, the textures it names, the first
+    // rule in the paths' order taking a surface named twice. A rule whose tiles the packs lack, or
+    // that the atlas has no room left for, is left out.
+    private static (ConnectedRule, int[])?[] Connect(ResourcePacks packs, List<Image> found, int[] tile)
+    {
+        var connected = new (ConnectedRule, int[])?[tile.Length];
+        foreach (var path in packs.Under("optifine/ctm/"))
+        {
+            if (!path.EndsWith(".properties", StringComparison.Ordinal) || packs.Read(path) is not { } text
+                || ConnectedTextures.Parse(path, System.Text.Encoding.UTF8.GetString(text)) is not { } rule) continue;
+            var surfaces = new HashSet<int>();
+            foreach (var block in Blocks.All.Where(b => rule.Blocks.Contains(b.Key)))
+                surfaces.UnionWith([block.Top, block.Side, block.Bottom]);
+            for (int surface = 0; surface < tile.Length; surface++)
+                if (PackTextures.Of(surface) is { } look && rule.Textures.Contains(look.Texture)) surfaces.Add(surface);
+            surfaces.RemoveWhere(s => connected[s] is not null || tile[s] == 0);
+            if (surfaces.Count == 0 || found.Count + rule.Tiles.Length > MostTiles) continue;
+            var images = rule.Tiles.Select(t => t is null ? null : packs.ImageAt(t)).ToArray();
+            if (images.Where((image, i) => image is null && rule.Tiles[i] is not null).Any()) continue;
+            var numbers = new int[images.Length];
+            for (int i = 0; i < images.Length; i++)
+            {
+                numbers[i] = images[i] is { } image ? found.Count : -1;
+                if (images[i] is { } picture) found.Add(picture);
+            }
+            foreach (var surface in surfaces) connected[surface] = (rule, numbers);
+        }
+        return connected;
+    }
+
+    /// <summary>A surface's connected texture as a pack gives it, its rule and its tiles' numbers, -1 for the surface's own tile, or null.</summary>
+    public (ConnectedRule Rule, int[] Tiles)? Connected(int surface) => _connected[surface];
 
     // The game's own looks of the grass's top, the grass's tile kept as it lies, since a pack draws
     // its grass's streaks one way, and each patch of clover and each layer of decor at four quarter

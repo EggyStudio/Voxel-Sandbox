@@ -1009,8 +1009,24 @@ pane's most common pixel, and two panes of the same glass side by side show one 
 the modpack's connected textures draw them. The mesher packs which of a glass face's eight neighbors
 in its plane are the same glass, and the terrain shader leaves out the frame toward them, running
 the frame's other edge on straight past a join and keeping a corner inside an L of three panes, as
-`build/play.sh` reads where two panes meet. A pack's own pieces of connected glass are not read,
-since none of the packs the game fetches has them. Leaves cut out hide nothing behind them, so they
+`build/play.sh` reads where two panes meet.
+
+A pack's connected textures of OptiFine's form are read from the `.properties` files under its
+`optifine/ctm` folder as a picture's metadata, each its method, its tiles in the pack, the blocks or
+the textures it takes and how it joins, and its tiles laid in the atlas as the blocks' are. The
+mesher then picks a face's tile as the method says, by the face's neighbors in its plane as its
+texture lies on it or by its place. The full method's 47 tiles go by the eight neighbors as
+OptiFine's template lays them, a corner counting only where both its sides join. Horizontal and
+vertical take four tiles by the two neighbors along their way. Top takes its tile on a side under
+the same block. Repeat lays its sheet of so many tiles across and down over the faces by their place,
+and random picks a tile by the face's place, the same each time, by the weights given. A neighbor
+joins where it is the same block, or for a rule of textures where it shows the same texture, and
+with inner seams only where the cell before it is not the same too. Glass a rule takes leaves its
+frame to the pack's tiles rather than the game's own joining. The methods `ctm_compact`, `overlay`,
+`fixed` and those joined with a plus are not read, nor is a rule past the atlas's 512 tiles, and
+none of the packs the game fetches has any, so with them the blocks look as before.
+
+Leaves cut out hide nothing behind them, so they
 keep their faces against each other and the faces beside them, as Minecraft draws its leaves, and
 the sections seen through them are drawn. Bare Bones' leaves are covered in every pixel and so stay
 whole. A texture partly clear, as ice's is, blends as before. The cactus is Minecraft's model, its

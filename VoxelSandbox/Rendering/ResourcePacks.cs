@@ -62,6 +62,18 @@ public sealed class ResourcePacks : IDisposable
     /// <summary>The bytes of a file under <c>assets/minecraft</c> from the first pack that has it, or null where none does.</summary>
     public byte[]? Read(string path) => Find(path) is { } pack ? Read(pack, path) : null;
 
+    /// <summary>The paths under <c>assets/minecraft</c> of every pack's files in a folder and the folders in it, each once, in order.</summary>
+    public IEnumerable<string> Under(string folder) =>
+        _packs.SelectMany(p => p.Files.Keys).Where(path => path.StartsWith(folder, StringComparison.Ordinal)).Distinct().Order(StringComparer.Ordinal);
+
+    /// <summary>A picture by its path under <c>assets/minecraft</c>, decoded to RGBA, from the first pack that has it, or null.</summary>
+    public Image? ImageAt(string path)
+    {
+        if (Read(path) is not { } png) return null;
+        var image = LoadImageFromMemory(".png", png);
+        return image.Data is null || image.Width <= 0 ? null : image;
+    }
+
     // The first pack holding a file, or null.
     private int? Find(string path)
     {

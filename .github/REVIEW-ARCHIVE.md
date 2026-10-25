@@ -1688,6 +1688,23 @@ before a batch.
     engine's item 120, a mob's non-number mended on the way. Done at `e433e5c` on {day} in two
     commits.
 
+36. **The player seen in third person, with their own animations (Decision 15).** F5 cycles the
+    first-person view, a camera behind the player and one in front, as the source's does, the camera
+    pulled in where a block would hide it; the player has a model of the source's layout, head,
+    body, arms and legs at the source's scale with the game's own skin, animated by walking,
+    running, sneaking, swimming, climbing, jumping, falling, mining and placing, the swings and the
+    stride from the source's numbers as item 18's mobs take them, the held item in the hand, and the
+    head following the aim; where item 30's packs model the player, the pack's model and animations
+    are taken, and the first-person arm and held item are drawn from the same model. Tests: the
+    camera's distance against blocks, each state's pose at a known phase, and a capture of the
+    player mid-stride and mid-swim from behind beside the source's silhouette in the record. After
+    item 30. Two commits, the camera and the model, then the animations. The first commit at
+    `a00fdcc` on 2026-10-25, the camera and the model, the reaching arms of every unarmed kind found
+    on the way; the animations next, sneaking, swimming, climbing and the air, the swing, the held
+    item, the body turning after the head and the first-person hand from the model's arm. The second
+    at `6a56e0f`, the poses by the source's numbers with two departures in the head. Done at
+    `6a56e0f` on 2026-10-25 in two commits, the pack's player model with item 30.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -1720,3 +1737,17 @@ before a batch.
     item 97 through ASKS.md; the game's light stands a third of a block under the eye, within the
     player's box, still not turning with the view. Settled at 13:11 on 2026-10-24 on the run of
     `fa6963d`, green on the three suites and the play job in 36.0 minutes.
+
+3. **The headless fixture's world does not load within its frames on the runners.** Read at 03:01 on
+    2026-10-25 from the run of `01eb71f`, the three test jobs red on FireFrameTests' two tests with
+    "the flat world did not load within 600 frames" from HeadlessGame's constructor after 140 and
+    199 ms, 312 passed, the play job green in 52.4 minutes. The fixture steps 600 frames and asks
+    the game whether it still loads, and since `01eb71f` set the frame target to 0 the 600 frames
+    pass in a fifth of a second on the runners while the world's columns load on workers by wall
+    time, so the frames run out before the world is in; on the development machine the workers are
+    faster than the frames. The mend is the fixture waiting by wall time, stepping frames until the
+    game has loaded or 30 s have passed with a short yield between frames while the world loads, the
+    fixture's own test of a load, and every headless test on it; one commit, before the next push,
+    read on the three runners. Mended at `76053f6`, read at 03:12, the fixture waiting by a
+    stopwatch with a yield and the fire squares laid within the columns' reach. Settled at 03:44 on
+    2026-10-25, the three test jobs green on the run of `76053f6`.
