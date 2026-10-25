@@ -31,6 +31,10 @@ uniform float4 hazeHeight;
 // a wall of them takes from the fire's own light inside would leave the walls facing out dark; and
 // the same two of lava, which the source draws at its full light too.
 uniform float4 flames;
+// The looks the settings choose, how much brighter the rim along each block's edges is than its
+// face, 0 for none, and 1 where every open face takes the sun's light as one facing it does, with
+// its shadows kept, and 0 where a face takes it by how far it turns toward the sun.
+uniform float4 looks;
 
 // How much of the haze the dome shows at a height above the horizon in degrees, between the rings of
 // HazeDome.Shown as its faces blend it.
@@ -263,7 +267,31 @@ float3 litStepped(float3 albedo, ModelVertexOutput input, float sky)
         shadow = lightReaching(pixelMiddle(input.world, geometric), geometric, held);
     }
     LitLight light = litLight(albedo, input, shadow, held);
+    // Unshaded, a face takes the sun's light that reaches the air half a block out from it whatever
+    // way it faces, where a face turned from the sun lies in its own block's shadow, so every open
+    // face is as bright as one facing the sun and a shadow falls on each as before.
+    if (looks.y > 0.0 && shadow >= 0.0)
+    {
+        Light sun = lighting.lights[index];
+        float3 geometric = normalize(input.normal);
+        float3 toSun = -sun.directionAndRange.xyz;
+        float heldOut = 0.0;
+        float reached = lightReaching(pixelMiddle(input.world, geometric) + geometric * 0.5, toSun, heldOut);
+        light.diffuse += sun.colorAndShadow.xyz * albedo * max(reached - shadow * max(dot(geometric, toSun), 0.0), 0.0);
+    }
     return toDisplay(max(light.diffuse + light.specular + emitted(input), skyFloor(albedo, input, sky)));
+}
+
+// How much of a rim a point of a whole block's face lies in, the pixel of its texture along each of
+// its block's edges, smoothed over a pixel of the screen and gone where the rim grows thinner than
+// two of them, so a far slope shows no shimmer of lines.
+float rimAt(float3 world, uint face)
+{
+    float2 at = frac(across(world, face));
+    float edge = min(min(at.x, 1.0 - at.x), min(at.y, 1.0 - at.y));
+    float pixel = max(fwidth(edge), 1e-5);
+    float width = 1.0 / 16.0;
+    return saturate((width - edge) / pixel + 0.5) * saturate(width / pixel - 1.0);
 }
 
 // Whether a sample of a picture differs from another, as a point of glass's frame does from its
@@ -316,6 +344,8 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     float2 texels = place * pixels;
     float spans = max(length(ddx(texels)), length(ddy(texels)));
     float level = clamp(log2(max(spans, 1e-6)), 0.0, log2(pixels) + 1.0);
+    // The rim's share, which takes its rate across the screen, before any fragment is dropped too.
+    float rim = looks.x > 0.0 ? rimAt(streams.base.world, min(surface.x, 5u)) : 0.0;
     // A carried place, a plant's or a flame's picture, which does not tile, is kept half a texel of
     // the coarser level sampled inside its tile, since a texel at its edge reaches into the copy of
     // the tile beside it in its cell, its far edge's rows, which drew a line along a fire's top.
@@ -346,6 +376,10 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     float3 shown = int(surface.y) + 1 == int(flames.x) ? color.rgb * flames.y
         : int(surface.y) + 1 == int(flames.z) ? color.rgb * flames.w
         : litStepped(color.rgb, facing, streams.uv2.y);
+    // The rim, lit by the light the face takes, so it shows by day and by a lamp and stays dark where
+    // the face is, on whole blocks' faces alone, not a plant's, a shaped piece's or water's.
+    if (surface.x < 6 && surface.w != 3 && input.waterDepth < 0.0)
+        shown *= 1.0 + looks.x * rim;
     // Water's top shows its bed through it darkened and hidden by the way the view takes through the
     // water, longer the lower the eye looks across it, clears toward its shore so it meets the bank
     // with no hard line, and shows the sky along the view's mirror by Schlick's fresnel, more of it

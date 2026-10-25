@@ -1705,6 +1705,20 @@ before a batch.
     at `6a56e0f`, the poses by the source's numbers with two departures in the head. Done at
     `6a56e0f` on 2026-10-25 in two commits, the pack's player model with item 30.
 
+34. **Connected textures from the packs' properties (Decision 15).** A pack of item 24 that carries
+    connected texture properties, OptiFine's `.properties` under its `optifine/ctm` folder with the
+    methods `ctm`, `horizontal`, `vertical`, `top`, `repeat` and `random` and their tiles, has them
+    read, and the mesher picks a block's face texture by its neighbors of the same kind as the
+    methods say, the 47 tiles of the full method by the eight neighbors, so glass, bookshelves and
+    sandstone join as they do in the owner's instance; the atlas takes the tiles as it takes the
+    blocks. Without a pack, the game's own blocks stay as they are. After item 24. Tests: the
+    properties parsed to their methods and tiles, the full method's tile chosen for each of a set of
+    neighbor cases, a random method stable by position, and a capture of a glass wall from a pack
+    where the machine has one, skipped where not. One commit. Under Decision 22 the properties are
+    read as a picture's metadata, the tiles and the method's name, and the methods are the game's
+    own. Done at `85c3ff6` on 2026-10-25, the six methods read from a pack's properties with the
+    full method's table, the departures in the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

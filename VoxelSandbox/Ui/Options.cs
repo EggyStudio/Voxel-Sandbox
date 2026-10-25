@@ -176,6 +176,9 @@ public sealed class OptionScreens
             new("Corner Shade", () => renderer.CornerStrength * 100, v => renderer.CornerStrength = v / 100)
                 { High = 100, Step = 5, Format = Option.Percent, Settled = game.World.ReshadeAll },
             new("Emission", () => renderer.GlowScale, v => renderer.GlowScale = v) { High = 4, Step = 0.1f, Format = v => $"{v:0.0}" },
+            Option.Toggle("Colored Lamps", () => renderer.ColoredLamps, on => renderer.ColoredLamps = on),
+            new("Rim Light", () => renderer.Rim * 100, v => renderer.Rim = v / 100) { High = 100, Step = 5, Format = Option.Percent },
+            Option.Toggle("Unshaded", () => renderer.Unshaded, on => renderer.Unshaded = on),
             new("Field Cascades", () => light.Cascades, v =>
             {
                 light.Cascades = (int)v;
@@ -198,8 +201,13 @@ public sealed class OptionScreens
             new("Bloom", () => GetBloom().Intensity, v =>
             {
                 light.Bloom = v;
-                SetBloom(v);
+                SetBloom(v, light.BloomThreshold);
             }) { High = 2, Step = 0.05f },
+            new("Bloom Threshold", () => GetBloom().Threshold, v =>
+            {
+                light.BloomThreshold = v;
+                SetBloom(light.Bloom, v);
+            }) { Low = 0.5f, High = 8, Step = 0.25f, Format = v => $"{v:0.00}" },
             new("Ambient Occlusion", () => light.Occlusion, v =>
             {
                 light.Occlusion = v;

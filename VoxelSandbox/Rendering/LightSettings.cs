@@ -30,6 +30,9 @@ public sealed class LightSettings
     // A tenth of the light past 1 spread around it, a faint glow about a flame or a lamp, where more
     // spreads a halo far wider than the flame's own block.
     public float Bloom = 0.1f;
+    // The light bloom spreads from, past white, so a lamp's face and a flame bloom, which shine many
+    // times past it, and the land in the sun all but never does.
+    public float BloomThreshold = 1;
     public float Occlusion;
     public bool AutoExposure;
     // The light is raised by 1.6 before the modpack's curve, which gives a village's roofs and wheat in
@@ -49,7 +52,7 @@ public sealed class LightSettings
         ApplyField();
         SetGlobalIllumination(Quality);
         SetGlobalIlluminationScreenProbes(ScreenProbes);
-        SetBloom(Bloom);
+        SetBloom(Bloom, BloomThreshold);
         SetAmbientOcclusion(Occlusion);
         ApplyExposure();
         SetShadowDistance(ShadowDistance);

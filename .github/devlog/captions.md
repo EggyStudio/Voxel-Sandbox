@@ -43,3 +43,7 @@
 2026-10-25-item-105-grove.webp | Seed 1's cherry grove at 1920 by 1080 at High with the sun's stepped shadow read three times a pixel on the left and once on the right, alike to the pixel but for 96 of them.
 2026-10-25-item-36-views.webp | Seed 1's plains at nine in the morning seen from behind the player as it walks, on the left, and from in front of it looking back, on the right, the camera four blocks from the eye and the player in the game's own colors.
 2026-10-25-item-36-poses.webp | The player's poses on seed 1, mid-stride from behind as it walks sideways on a floor of stone in the sky and mid-swim from behind in a pool, above, and from in front holding a block on the plains and the empty right hand from the eye, below.
+2026-10-25-item-28-lamps.webp | A room of stone in the sky over seed 1 at midnight, a lantern and a soul lantern on its white floor and glowstone in its ceiling, each block's light its own color on the left and white as bright on the right.
+2026-10-25-item-28-bloom.webp | The lantern and the soul lantern of that room with no bloom on the left and a bloom of 0.6 on the right, a halo about each flame's glass.
+2026-10-25-item-28-rim.webp | The oaks of seed 1's coast at noon without a rim on the left and with a rim of 100% on the right, a lit line along each block's edges.
+2026-10-25-item-28-unshaded.webp | The same coast as the game shades it on the left and unshaded on the right, every open face taking the sun's light as one facing it does.

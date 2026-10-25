@@ -105,7 +105,7 @@ public sealed class ChunkRenderer : IDisposable
     private readonly ModelMesh _dome;
     private float _fogEnd = float.MaxValue;
     private readonly Shader _shader;
-    private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _hazeHeight, _atlas, _atlasLayout, _animations, _ticks, _flames;
+    private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _hazeHeight, _atlas, _atlasLayout, _animations, _ticks, _flames, _looks;
     private Texture2D _atlasTexture;
     // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with its
     // own texture where a pack has one, which the scene's distance field reads its average of, and
@@ -142,6 +142,10 @@ public sealed class ChunkRenderer : IDisposable
     private Texture2D[][] _lampStepEmission = [];
     private ModelMaterial[]?[] _lampSteps = [];
     private float _glowScale = 1;
+    // Whether each emissive surface's light keeps its color.
+    private bool _colored = true;
+    private float _rim;
+    private bool _unshaded;
 
     public ChunkRenderer()
     {
@@ -154,6 +158,7 @@ public sealed class ChunkRenderer : IDisposable
         _atmosphere = GetShaderLocation(_shader, "atmosphere");
         _hazeHeight = GetShaderLocation(_shader, "hazeHeight");
         _flames = GetShaderLocation(_shader, "flames");
+        _looks = GetShaderLocation(_shader, "looks");
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
         (_animations, _ticks) = (GetShaderLocation(_shader, "animations"), GetShaderLocation(_shader, "ticks"));
         _lampCubes = [.. Surfaces.All.Select(s => LampParts[s.Id] is { } shown ? LampCube(shown, new Vector2(16))
@@ -215,25 +220,34 @@ public sealed class ChunkRenderer : IDisposable
             SetShaderValueV<Vector4>(_shader, _animations, table);
             SetShaderValue(_shader, _flames, new Vector4(value.Tile(Surfaces.Fire) is > 0 and var flames ? flames + 1 : 0, FlamesShown,
                 value.Tile(Surfaces.Lava) is > 0 and var lava ? lava + 1 : 0, LavaShown));
-            foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
-                if (texture.IsValid) UnloadTexture(texture);
-            _lampTextures = [.. Surfaces.All.Select(s => !s.Emits ? default
-                : LampFaces[s.Id] is { } faces ? LoadTextureFromImage(Strip(value, faces, s, glow: false))
-                : value.Picture(s.Id) is { } picture ? LoadTextureFromImage(picture) : default)];
-            _lampEmission = [.. Surfaces.All.Select(s => !s.Emits ? default
-                : LampFaces[s.Id] is { } faces ? LoadTextureFromImage(Strip(value, faces, s, glow: true))
-                : LampParts[s.Id] is not null && value.Picture(s.Id) is { } picture ? LoadTextureFromImage(EmissionMap(picture, s)) : default)];
-            // An animated lamp keeps its first frame's texture, which the scene's distance field reads
-            // the average of as its color, since a draw whose color changes is no longer the same and
-            // is stamped again without its light for frames, and steps its emission map instead, which
-            // the field does not read and which shows most of what a lamp's face shows.
-            _lampAnimations = [.. Surfaces.All.Select(s => s.Emits && LampFaces[s.Id] is null ? value.Animated(s.Id) : null)];
-            _lampStepEmission = [.. Surfaces.All.Select(s => _lampAnimations[s.Id] is { } animation
-                ? animation.Steps.Select(step => LoadTextureFromImage(EmissionMap(step, s))).ToArray() : [])];
-            foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
-                if (texture.IsValid) SetTextureFilter(texture, TextureFilter.Point);
-            BuildLamps();
+            LoadLamps();
         }
+    }
+
+    // The emissive blocks' textures and the maps of their emission from the atlas, and their
+    // materials, again as the atlas or the lamps' color changes, since each map is divided by the
+    // light of its material.
+    private void LoadLamps()
+    {
+        var value = _mesher.Atlas;
+        foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
+            if (texture.IsValid) UnloadTexture(texture);
+        _lampTextures = [.. Surfaces.All.Select(s => !s.Emits ? default
+            : LampFaces[s.Id] is { } faces ? LoadTextureFromImage(Strip(value, faces, s, glow: false))
+            : value.Picture(s.Id) is { } picture ? LoadTextureFromImage(picture) : default)];
+        _lampEmission = [.. Surfaces.All.Select(s => !s.Emits ? default
+            : LampFaces[s.Id] is { } faces ? LoadTextureFromImage(Strip(value, faces, s, glow: true, LightOf(s.Id)))
+            : LampParts[s.Id] is not null && value.Picture(s.Id) is { } picture ? LoadTextureFromImage(EmissionMap(picture, s, LightOf(s.Id))) : default)];
+        // An animated lamp keeps its first frame's texture, which the scene's distance field reads
+        // the average of as its color, since a draw whose color changes is no longer the same and
+        // is stamped again without its light for frames, and steps its emission map instead, which
+        // the field does not read and which shows most of what a lamp's face shows.
+        _lampAnimations = [.. Surfaces.All.Select(s => s.Emits && LampFaces[s.Id] is null ? value.Animated(s.Id) : null)];
+        _lampStepEmission = [.. Surfaces.All.Select(s => _lampAnimations[s.Id] is { } animation
+            ? animation.Steps.Select(step => LoadTextureFromImage(EmissionMap(step, s, LightOf(s.Id)))).ToArray() : [])];
+        foreach (var texture in _lampTextures.Concat(_lampEmission).Concat(_lampStepEmission.SelectMany(steps => steps)))
+            if (texture.IsValid) SetTextureFilter(texture, TextureFilter.Point);
+        BuildLamps();
     }
 
     /// <summary>What the light of every emissive surface is multiplied by.</summary>
@@ -246,6 +260,92 @@ public sealed class ChunkRenderer : IDisposable
             _glowScale = value;
             BuildLamps();
         }
+    }
+
+    /// <summary>
+    /// Whether each emissive block's light is its own color, its surface's emission, a lantern's
+    /// orange and a soul lantern's cyan, or white as bright to the eye, as the source's light is.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The engine draws a lamp's face by its material's emission times its emission map, and the
+    /// scene's distance field and so the global illumination take that emission whole, so white
+    /// light keeps each face's colors through its map up to the light's own brightness.
+    /// </para>
+    /// <para>
+    /// The color is the surface's own rather than one read from a pack's texture. The mean of a
+    /// pack's lamp's pixels by how much each emits is far paler, Bare Bones's glowstone 255, 228,
+    /// 133 against 255, 200, 120 and its soul lantern 186, 252, 255 against 70, 210, 255, since its
+    /// brightest pixels are nearly white, and graded at a saturation of 1.4 the glowstone's turned a
+    /// white room olive.
+    /// </para>
+    /// </remarks>
+    public bool ColoredLamps
+    {
+        get => _colored;
+        set
+        {
+            if (value == _colored) return;
+            _colored = value;
+            LoadLamps();
+        }
+    }
+
+    /// <summary>How much brighter than its face the rim along each whole block's edges is drawn, 0 for none.</summary>
+    public float Rim
+    {
+        get => _rim;
+        set
+        {
+            _rim = Math.Max(0, value);
+            SetLooks();
+        }
+    }
+
+    /// <summary>Whether every open face takes the sun's light as one facing the sun does, for a flat look with its shadows kept.</summary>
+    public bool Unshaded
+    {
+        get => _unshaded;
+        set
+        {
+            _unshaded = value;
+            SetLooks();
+        }
+    }
+
+    private void SetLooks() => SetShaderValue(_shader, _looks, new Vector4(_rim, _unshaded ? 1 : 0, 0, 0));
+
+    /// <summary>
+    /// The light an emissive surface gives at a glow of 1 in linear light, its surface's emission, or
+    /// white as bright where <see cref="ColoredLamps"/> is off.
+    /// </summary>
+    public Vector3 LightOf(int surface)
+    {
+        var own = LinearOf(Surfaces.All[surface].Emissive);
+        return _colored ? own : new Vector3(Brightness(own));
+    }
+
+    /// <summary>A color in linear light.</summary>
+    public static Vector3 LinearOf(Color color) => new(TerrainAtlas.Linear(color.R), TerrainAtlas.Linear(color.G), TerrainAtlas.Linear(color.B));
+
+    /// <summary>How bright a light in linear light is to the eye, by Rec. 709's weights.</summary>
+    public static float Brightness(Vector3 light) => 0.2126f * light.X + 0.7152f * light.Y + 0.0722f * light.Z;
+
+    /// <summary>A light in linear light as the color of its hue at its brightest and how many times that it is, so no part of it clips in a color's bytes.</summary>
+    public static (Color Hue, float Most) Split(Vector3 light)
+    {
+        var most = MathF.Max(light.X, MathF.Max(light.Y, light.Z));
+        var hue = light / MathF.Max(most, 1e-6f);
+        return (TerrainAtlas.Encode(hue.X, hue.Y, hue.Z), most);
+    }
+
+    // An emissive surface's material with its light as LightOf has it.
+    private ModelMaterial Lamp(Surface s)
+    {
+        var material = s.Material(_glowScale);
+        if (!s.Emits) return material;
+        var (hue, most) = Split(LightOf(s.Id));
+        return material with { Emissive = hue, EmissiveIntensity = s.Glow * _glowScale * most };
     }
 
     private readonly Visibility _visibility = new();
@@ -321,15 +421,15 @@ public sealed class ChunkRenderer : IDisposable
     // and lava's, its color in its vertices.
     private void BuildLamps()
     {
-        var lava = Surfaces.All[Surfaces.Lava];
+        var lava = Lamp(Surfaces.All[Surfaces.Lava]);
         _molten = new ModelMaterial(Color.White)
         {
-            AlphaMode = MaterialAlphaMode.Opaque, Roughness = lava.Roughness, Shader = _shader, Emissive = lava.Emissive, EmissiveIntensity = lava.Glow * _glowScale,
+            AlphaMode = MaterialAlphaMode.Opaque, Roughness = lava.Roughness, Shader = _shader, Emissive = lava.Emissive, EmissiveIntensity = lava.EmissiveIntensity,
         };
         _lamps = [.. Surfaces.All.Select(s => _lampTextures[s.Id].IsValid
-            ? s.Material(_glowScale) with { Color = Color.White, Texture = _lampTextures[s.Id], EmissiveMap = _lampEmission[s.Id] }
-            : s.Unseen ? s.Material(_glowScale) with { AlphaMode = MaterialAlphaMode.Mask, Color = s.Color with { A = 0 } }
-            : s.Material(_glowScale))];
+            ? Lamp(s) with { Color = Color.White, Texture = _lampTextures[s.Id], EmissiveMap = _lampEmission[s.Id] }
+            : s.Unseen ? Lamp(s) with { AlphaMode = MaterialAlphaMode.Mask, Color = s.Color with { A = 0 } }
+            : Lamp(s))];
         _lampSteps = [.. Surfaces.All.Select(s => _lampStepEmission[s.Id].Length == 0 ? null : _lampStepEmission[s.Id].Select(map => _lamps[s.Id] with { EmissiveMap = map }).ToArray())];
     }
 
@@ -349,10 +449,10 @@ public sealed class ChunkRenderer : IDisposable
     /// A lamp's faces' pictures side by side, its top's, its sides' and its bottom's, each a pack's
     /// texture or a tile of the surface's own color, or with <paramref name="glow"/> the map of their
     /// emission, an emissive surface's picture's bright pixels as <see cref="EmissionMap"/> lights them
-    /// or its own color's whole, and nothing of the rest, so a lit furnace's top shows the furnace's
-    /// and its front alone glows.
+    /// against <paramref name="light"/> or its own color's whole, and nothing of the rest, so a lit
+    /// furnace's top shows the furnace's and its front alone glows.
     /// </summary>
-    public static Image Strip(TerrainAtlas atlas, (int Top, int Side, int Bottom) faces, Surface lit, bool glow)
+    public static Image Strip(TerrainAtlas atlas, (int Top, int Side, int Bottom) faces, Surface lit, bool glow, Vector3? light = null)
     {
         var size = atlas.Pixels;
         var data = new byte[3 * size * size * 4];
@@ -362,7 +462,7 @@ public sealed class ChunkRenderer : IDisposable
             var surface = Surfaces.All[surfaces[tile]];
             var picture = atlas.Picture(surface.Id);
             byte[] pixels = glow
-                ? !surface.Emits ? new byte[size * size * 4] : picture is { } shown ? EmissionMap(shown, lit).Data : Filled(Color.White)
+                ? !surface.Emits ? new byte[size * size * 4] : picture is { } shown ? EmissionMap(shown, lit, light).Data : Filled(Color.White)
                 : picture is { } own ? own.Data : Filled(surface.Color);
             for (int y = 0; y < size; y++)
                 Array.Copy(pixels, y * size * 4, data, (y * 3 * size + tile * size) * 4, size * 4);
@@ -413,13 +513,14 @@ public sealed class ChunkRenderer : IDisposable
     /// <remarks>
     /// A pixel emits by the eighth power of its brightest channel, so iron at 0.4 keeps under a
     /// thousandth of the emission and a flame's yellow most of it. The map multiplies the material's
-    /// emission, so each channel is divided by the material's, its color times the surface's
-    /// <see cref="Surface.Glow"/>, and encoded as sRGB, as the engine decodes an emissive map.
+    /// emission, so each channel is divided by the material's, its light, the surface's emission
+    /// unless <paramref name="light"/> is given, times the surface's <see cref="Surface.Glow"/>, and
+    /// encoded as sRGB, as the engine decodes an emissive map.
     /// </remarks>
-    public static Image EmissionMap(Image picture, Surface surface)
+    public static Image EmissionMap(Image picture, Surface surface, Vector3? light = null)
     {
         var (data, map) = (picture.Data, new byte[picture.Data.Length]);
-        var emitted = new Vector3(TerrainAtlas.Linear(surface.Emissive.R), TerrainAtlas.Linear(surface.Emissive.G), TerrainAtlas.Linear(surface.Emissive.B)) * surface.Glow;
+        var emitted = (light ?? LinearOf(surface.Emissive)) * surface.Glow;
         for (int at = 0; at < data.Length; at += 4)
         {
             var bright = MathF.Pow(Math.Max(data[at], Math.Max(data[at + 1], data[at + 2])) / 255f, 8) * LampShown;

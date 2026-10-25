@@ -628,7 +628,7 @@ public sealed class VoxelGame : IDisposable
         Blasts.Update(seconds);
         // The TNT whose fuses ran out as the engine's frame burned them goes off.
         foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(blast.At, PrimedTnt.Power, "was blown up by TNT");
-        Lights.Update(Player.Eye - new Vector3(0, HeldLights.UnderEye, 0), Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye);
+        Lights.Update(Player.Eye - new Vector3(0, HeldLights.UnderEye, 0), Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye, Renderer.LightOf);
 
         _overcast += (Weather.Share(Sky.Day, Sky.Hour) - _overcast) * (1 - MathF.Exp(-0.5f * seconds));
         // Snow settles while the weather has more than half turned, and melts once it has cleared.

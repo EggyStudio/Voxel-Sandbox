@@ -6,8 +6,9 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// The light a block that gives light throws where it is carried or dropped, a torch, a lantern or
-/// glowstone in the player's hand or lying on the ground, a point light of the block's own color
-/// reaching as many blocks as its level of light, which follows it each frame.
+/// glowstone in the player's hand or lying on the ground, a point light of the block's own color, or
+/// white as the lamps' setting has it, reaching as many blocks as its level of light, which follows
+/// it each frame.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -38,8 +39,8 @@ public sealed class HeldLights : IDisposable
 
     private readonly List<(LightHandle Light, BlockId Block)> _lights = [];
 
-    /// <summary>Puts a light at the player's place for what the hand holds, where that gives light, and at each of the nearest dropped stacks that do, as of this frame.</summary>
-    public void Update(Vector3 carrier, Item? held, IEnumerable<(ItemDrop Drop, Body Body)> drops, Vector3 eye)
+    /// <summary>Puts a light at the player's place for what the hand holds, where that gives light, and at each of the nearest dropped stacks that do, as of this frame, each in its surface's light as <paramref name="lightOf"/> gives it, <see cref="ChunkRenderer.LightOf"/>.</summary>
+    public void Update(Vector3 carrier, Item? held, IEnumerable<(ItemDrop Drop, Body Body)> drops, Vector3 eye, Func<int, Vector3> lightOf)
     {
         var wanted = new List<(Vector3 At, BlockId Block)>();
         if (held?.Block is { } carried && Blocks.Get(carried).Light > 0) wanted.Add((carrier, carried));
@@ -59,10 +60,16 @@ public sealed class HeldLights : IDisposable
             if (i >= wanted.Count) continue;
             var (at, block) = wanted[i];
             var info = Blocks.Get(block);
-            var (color, intensity) = (Surfaces.All[info.Side].Emissive, Strength * info.Light / 15f);
+            var (color, most) = ChunkRenderer.Split(lightOf(info.Side));
+            var intensity = Strength * info.Light / 15f * most;
             if (i == _lights.Count) _lights.Add((CreatePointLight(at, color, intensity, info.Light, castsShadows: true), block));
             else if (_lights[i].Block == BlockId.Air) _lights[i] = (CreatePointLight(at, color, intensity, info.Light, castsShadows: true), block);
-            else SetLightPosition(_lights[i].Light, at);
+            else
+            {
+                // The color is set each frame too, so the lamps' color setting reaches a light already lit.
+                SetLightPosition(_lights[i].Light, at);
+                SetLightColor(_lights[i].Light, color, intensity);
+            }
         }
         _lights.RemoveAll(l => l.Block == BlockId.Air);
     }

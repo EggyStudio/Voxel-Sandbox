@@ -5,61 +5,57 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `6a56e0f`, item 36's second commit, the animations, read at 03:39 on 2026-10-25,
-carrying REVIEW.md and the devlog's poses. PlayerStance carries the phase, the stride, the head's
-yaw and pitch, the swing and whether the player sneaks, swims, climbs, is in the air or holds an
-item, PlayerPoses.Turn taking the source's humanoid numbers in the game's axes, the walk's legs and
-arms, the sneak's lean, the held item's arm and the hit's swing with the body turned, and
-PlayerPoses.Whole laying a swimmer along its look with the arms stroking in turn and the legs
-fluttering; the body's yaw turns toward the way walked with the head leading it by at most 75
-degrees, the right hand holds the hotbar item at the source's third-person sizes, and the first
-person's empty hand draws the model's right arm by the source's turns with the swing shared.
-Departures, climbing is the controller's step out of water onto a bank since the game has no
-ladders, the arms reaching up in turn, and in the air the arms go 0.15 out from the sides, a pose
-the source lacks; no picture of the source's silhouette on the machine, the record holding the
-game's poses alone. PlayerPoseTests reads each stance at a known phase by the hands', the hips' and
-the head's places. 329 tests, play.sh 315 s on the GPU. Held with `a00fdcc` until the run of
-`76053f6` ends, then pushed. After `a00fdcc`, item 36's first commit, the camera and the model, read
-at 03:22 on 2026-10-25, carrying REVIEW.md and the devlog's views. A View of First, Behind or Front
-with the third person's distance, five rays from the eye and four points a tenth across it toward
-where the camera would stand at 4 blocks as the source's, the camera a tenth short of the nearest
-hit or at 4, the controller keeping the view and the distance and making the camera look at the eye
-from behind or in front; F5 steps the views and voxel.view sets one, the hand and the crosshair from
-the eye alone, a spectator not drawn. The player's model is the zombie's layout in the game's own
-colors at scale 0.9375, kept out of MobKinds.All so the save's kinds, voxel.spawn and the counts
-stay, the renderer placing it by the controller's stride and phase with the head pitched by the aim;
-Gait.Arm gave every kind that does not shoot the zombie's reaching arms, so the player held its arms
-out, and they hang and swing against the legs as a skeleton's do, the picture sent again.
-ThirdPersonTests covers the distance, a wall and the floor, an offset ray meeting a block beside the
-middle one, F5's order, the camera's look and the model's height and arms. 324 tests, play.sh 300 s
-on the GPU. After `76053f6`, Verdict 3's mend, read at 03:12 on 2026-10-25, carrying the review's
-files. The fixture steps game.Draw until the game stands and Streamer.Pending reads 0, by a
-stopwatch with a 30 s limit, sleeping 2 ms between frames while it loads, and asserts both naming
-the frames it took; HeadlessGameTests reads the flat world standing with nothing pending, the 5 by 5
-columns about the player in and the player on the ground after 10 frames, every headless test
-through the fixture; FireFrameTests laid seeds 2 and 3's squares up to 76 blocks out past two
-columns' reach, a second fault the failure hid, and each seed lays one square afresh 8 blocks from
-the player in a stone ring; on one CPU core the headless and fire tests passed, 7 in 40 s. 321
-tests, play.sh 342 s on the GPU. The six pushed at 03:12 on 2026-10-25 after the run of `01eb71f`
-ended; the run watched for the verdict's settling. After `e433e5c`, item 33's second commit, the
-occlusion and the room, read at 02:58 on 2026-10-25, carrying REVIEW.md and AGENTS.md's Sound row.
-Places.Crossed walks a grid line from the eye to the source counting opaque cells but the two end
-cells, the occlusion a half to that power, a mob's step played at that share; Places.Room casts 26
-rays to 24 blocks four times a second and gives the share meeting an opaque block and their mean
-distance, reported and not heard since the engine has no reverb, the plains reading 0.54 closed at
-4.8 blocks, the forest canopy 0.88 at 2.2 and the deep cave 0.92 at 7.8, a pig in the rock nine
-blocks under the plains coming through at 0.002; the low-pass and the reverb asked of the engine as
-its item 120. Found and fixed, Mob.Follow normalized a zero horizontal way when a mob stood under or
-over its next cell's middle and the non-number stayed in its velocity and place for good, a cow seen
-at NaN, minus 1198, NaN, the way zero below 1e-8. SoundTests gains the occlusion and the room. 320
-tests, play.sh 321 s on the GPU.
+Reviewed up to `85c3ff6`, item 34, the connected textures, read at 03:53 on 2026-10-25, carrying the
+review's files. ConnectedTextures.Parse reads an OptiFine properties file, the method, the tiles as
+ranges, names, relative and full paths and the default, the blocks and tiles matched, connect, the
+inner seams, the faces, width and height and the weights, a rule naming neither blocks nor textures
+taking its file's name; TerrainAtlas.Connect gathers every ctm properties file in path order and
+lays each rule's tiles in the atlas, a surface taking the first rule that names it and only where a
+pack gives it a texture; SectionMesher picks the face's tile in the mesher's texture directions,
+which match the source's direction maps, a pack's glass rule replacing the game's own frame joining;
+the methods ctm with the full 47, horizontal, vertical, top, repeat and random, the full method's
+256-entry table the template's layout with the numbers taken from Continuity's reading of OptiFine's
+format and no code taken, a corner counting only where both its sides join. Departures, the compact,
+overlay, fixed and plus-joined methods are not read and a rule naming one is skipped, a rule that
+would pass the atlas's 512 tiles is left out, and no default pack nor any on the machine has ctm so
+the glass wall capture is skipped as the item allows, the game unchanged with the packs it fetches.
+ConnectedTextureTests covers the parsing, the full method's tile for each neighbor case, horizontal
+and vertical, random stable by place and weighted, repeat across a sheet and a 3 by 3 glass wall
+meshed under a laid pack of 47 tiles. 333 tests, play.sh 337 s on the GPU. The three pushed at 03:54
+on 2026-10-25 after the run of `76053f6` went green; the run watched. After `6a56e0f`, item 36's
+second commit, the animations, read at 03:39 on 2026-10-25, carrying REVIEW.md and the devlog's
+poses. PlayerStance carries the phase, the stride, the head's yaw and pitch, the swing and whether
+the player sneaks, swims, climbs, is in the air or holds an item, PlayerPoses.Turn taking the
+source's humanoid numbers in the game's axes, the walk's legs and arms, the sneak's lean, the held
+item's arm and the hit's swing with the body turned, and PlayerPoses.Whole laying a swimmer along
+its look with the arms stroking in turn and the legs fluttering; the body's yaw turns toward the way
+walked with the head leading it by at most 75 degrees, the right hand holds the hotbar item at the
+source's third-person sizes, and the first person's empty hand draws the model's right arm by the
+source's turns with the swing shared. Departures, climbing is the controller's step out of water
+onto a bank since the game has no ladders, the arms reaching up in turn, and in the air the arms go
+0.15 out from the sides, a pose the source lacks; no picture of the source's silhouette on the
+machine, the record holding the game's poses alone. PlayerPoseTests reads each stance at a known
+phase by the hands', the hips' and the head's places. 329 tests, play.sh 315 s on the GPU. After
+`a00fdcc`, item 36's first commit, the camera and the model, read at 03:22 on 2026-10-25, carrying
+REVIEW.md and the devlog's views. A View of First, Behind or Front with the third person's distance,
+five rays from the eye and four points a tenth across it toward where the camera would stand at 4
+blocks as the source's, the camera a tenth short of the nearest hit or at 4, the controller keeping
+the view and the distance and making the camera look at the eye from behind or in front; F5 steps
+the views and voxel.view sets one, the hand and the crosshair from the eye alone, a spectator not
+drawn. The player's model is the zombie's layout in the game's own colors at scale 0.9375, kept out
+of MobKinds.All so the save's kinds, voxel.spawn and the counts stay, the renderer placing it by the
+controller's stride and phase with the head pitched by the aim; Gait.Arm gave every kind that does
+not shoot the zombie's reaching arms, so the player held its arms out, and they hang and swing
+against the legs as a skeleton's do, the picture sent again. ThirdPersonTests covers the distance, a
+wall and the floor, an offset ray meeting a block beside the middle one, F5's order, the camera's
+look and the model's height and arms. 324 tests, play.sh 300 s on the GPU.
+
+Before it, `76053f6` came, Verdict 3's mend with items 33, 128's last three and 105, 123 and the
+lookups, pushed at 03:11 on 2026-10-25, its run green, the play job 39.0 minutes.
 
 Before it, `01eb71f` came, item 128's fires with `4105293`, `d647b0e`, `fb04f6b` and `c7c1b41`,
 pushed at 02:07 on 2026-10-25, its run red on the three test jobs, Verdict 3, the play job green in
 52.4 minutes.
-
-Before it, `3275e76` came, the mobs' third commit and item 27's pin of 5.2.291 with `9dad43e`,
-pushed at 02:09 on 2026-10-25 before the clocks went back, its run green, the play job 54.2 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -578,19 +574,6 @@ full.
     finished in the neighbor as the villages are. After items 25 and 26. Tests: each kind placed in
     a laid world at a known seed with its blocks counted, a structure crossing an edge whole on both
     sides, and a capture of each in the record. Two or three commits by kind.
-
-34. **Connected textures from the packs' properties (Decision 15).** A pack of item 24 that carries
-    connected texture properties, OptiFine's `.properties` under its `optifine/ctm` folder with the
-    methods `ctm`, `horizontal`, `vertical`, `top`, `repeat` and `random` and their tiles, has them
-    read, and the mesher picks a block's face texture by its neighbors of the same kind as the
-    methods say, the 47 tiles of the full method by the eight neighbors, so glass, bookshelves and
-    sandstone join as they do in the owner's instance; the atlas takes the tiles as it takes the
-    blocks. Without a pack, the game's own blocks stay as they are. After item 24. Tests: the
-    properties parsed to their methods and tiles, the full method's tile chosen for each of a set of
-    neighbor cases, a random method stable by position, and a capture of a glass wall from a pack
-    where the machine has one, skipped where not. One commit. Under Decision 22 the properties are
-    read as a picture's metadata, the tiles and the method's name, and the methods are the game's
-    own.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the

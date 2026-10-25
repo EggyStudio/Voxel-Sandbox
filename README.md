@@ -752,10 +752,14 @@ and mode.
 | | Shadow Distance | 16 to 192 blocks by 8 | 64 |
 | | Corner Shade | 0 to 100% by 5, the sections shaded again as it is let go | 50% |
 | | Emission, what every emissive surface's light is multiplied by | 0 to 4 by 0.1 | 1 |
+| | Colored Lamps, each emissive block's light its own color or white as bright | Off, On | On |
+| | Rim Light, how much brighter the rim along each whole block's edges is than its face | 0 to 100% by 5 | 0% |
+| | Unshaded, every open face taking the sun's light as one facing it does | Off, On | Off |
 | | Field Cascades, the scene's distance field's | 1 to 8 | 4 |
 | | Field Cell, the finest cascade's cell | 0.125 to 1 block by 0.125 | 0.25 |
 | | Cascades a Frame, built again each frame | 1 to 8 | 2 |
 | Post Processing | Bloom | 0 to 2 by 0.05 | 0.1 |
+| | Bloom Threshold, the light past white bloom spreads from | 0.5 to 8 by 0.25 | 1 |
 | | Ambient Occlusion | 0 to 1 by 0.05 | 0 |
 | | Auto Exposure | Off, On | Off |
 | | Exposure, while Auto Exposure is off | 0.1 to 4 by 0.05 | 1.6 |
@@ -1180,6 +1184,24 @@ source's are and as the far shadows the cascades fade read, where the sky's blue
 blue, a village tree's shadow on the grass at noon 48, 73, 14 where it read 6, 74, 58. The sky drawn
 keeps its blue and the night its light, and since the tint scales what the sky's light reflects too,
 a lake's blue is 12 levels less and the clouds' undersides white.
+
+## Looks
+
+Four settings change how the light looks, each the game's own over the engine's light. Colored
+Lamps, on the Render Settings screen, gives each emissive block's light its own color, a lantern's
+orange and a soul lantern's cyan, through the engine's lights and its global illumination, or with
+it off white as bright to the eye, as the source's light is. The color is each surface's own,
+since the mean of a pack's lamp's pixels by how much each emits is nearly white. A lamp's face keeps
+its texture's colors under white light, its map of emission divided by the light of its material,
+up to that light's own brightness. Rim Light draws a line a pixel of the texture wide along every
+whole block's edges, brighter than its face by its strength and lit by the light the face takes,
+so a rim shows by day and by a lamp and stays dark in a dark cave, gone where it would grow thinner
+than two pixels of the screen. Unshaded gives every open face the sun's light that reaches the air
+half a block out from it, so a wall turned from the sun is as bright as one facing it and a shadow
+still falls on each, a flat look like the source's with its shading of faces turned off. Bloom
+Threshold, on Post Processing, is the light past white the bloom spreads from, so the lamps' faces
+and flames, many times past it, bloom alone, the land at noon changing by under a percent of its
+pixels' values at a bloom of 0.6.
 
 ## Sky
 
