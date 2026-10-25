@@ -1283,16 +1283,22 @@ hollow knock on wood and a splash in water, four of each, chosen at random at a 
 of its own. The player steps each block and three fifths it walks on the ground or through water's
 top, heard in the middle at a quarter of the step's loudness, and a mob within sixteen blocks the
 same, heard through the engine's spatial play from the side it stands on and fainter with its
-distance, silent at sixteen.
+distance, silent at sixteen. A mob's step behind blocks comes through at half its loudness for each
+opaque block a straight line from the player's eye to it crosses, a quarter through two and an
+eighth through three, where the source's sound mods also dull it, which the engine has no filter
+for yet.
 
 The sounds of a place play on, each easing in and out over about two seconds by where the player
 stands: birds in the woods and on the plains by day, crickets by night where it is neither dry nor
 cold, both hushed by the weather, the wind rising from 32 blocks over the sea to its loudest at 80, a
 cave's low tone and its dripping water in a cave, under the sea's level with little of the sky's
 light, and water lapping by how much of it lies within eight blocks. Each is a loop of eight
-seconds whose end runs on into its start. The Music and Sounds screen sets how loud all of them
-play, the steps and the places' sounds, and `voxel.sounds` says how loud each sound of the place
-plays and the steps played.
+seconds whose end runs on into its start. The room about the player is read four times a second by
+26 rays to 24 blocks, the share that meet a block and how far they go, 0.54 at 4.8 blocks on seed 1's
+plains and 0.92 at 7.8 in its deep cave, for a reverb the engine does not give yet, so it is said and
+not heard. The Music and Sounds screen sets how loud all of them play, the steps and the places'
+sounds, and `voxel.sounds` says how loud each sound of the place plays, the room, and the steps
+played with what the blocks between let through.
 
 ## What is not here yet
 

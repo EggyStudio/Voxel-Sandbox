@@ -76,4 +76,33 @@ public sealed class SoundTests
             Assert.True(MathF.Abs(loop[^1] - loop[0]) < 0.1f, $"{sound} steps from {loop[^1]} to {loop[0]} where it starts again");
         }
     }
+
+    [Fact]
+    public void A_Sound_Behind_Blocks_Comes_Through_Halved_By_Each_And_A_Room_Reads_As_Closed_Or_Open()
+    {
+        // Air over a floor of stone, and walls of one block and of three across the line to a sound.
+        var world = Laid.World(c => Laid.Fill(c, 0, 10, BlockId.Stone));
+        var listener = new Vector3(4.5f, 12.5f, 4.5f);
+        Assert.Equal(1, Places.Occlusion(world, listener, new Vector3(12.5f, 12.5f, 4.5f)));
+        world.SetBlock(8, 12, 4, BlockId.Stone);
+        Assert.Equal(0.5f, Places.Occlusion(world, listener, new Vector3(12.5f, 12.5f, 4.5f)));
+        world.SetBlock(9, 12, 4, BlockId.Stone);
+        world.SetBlock(10, 12, 4, BlockId.OakPlanks);
+        Assert.Equal(0.125f, Places.Occlusion(world, listener, new Vector3(12.5f, 12.5f, 4.5f)));
+        // Glass lets it through, and the cells of the two ends do not count, the stone of the first here.
+        world.SetBlock(8, 12, 5, BlockId.Glass);
+        Assert.Equal(1, Places.Occlusion(world, new Vector3(8.5f, 12.5f, 4.5f), new Vector3(8.5f, 12.5f, 6.5f)));
+
+        // Over the open floor the rays down meet it and those up and across reach nothing, and in a
+        // closed box of stone five blocks across every ray meets a wall within three.
+        var open = Places.Room(world, new Vector3(20.5f, 12.5f, 20.5f));
+        Assert.InRange(open.Enclosed, 0.3f, 0.4f);
+        for (int z = 18; z <= 24; z++)
+            for (int y = 11; y <= 17; y++)
+                for (int x = 18; x <= 24; x++)
+                    world.SetBlock(x, y, z, x is 18 or 24 || y is 11 or 17 || z is 18 or 24 ? BlockId.Stone : BlockId.Air);
+        var closed = Places.Room(world, new Vector3(21.5f, 14.5f, 21.5f));
+        Assert.Equal(1, closed.Enclosed);
+        Assert.InRange(closed.Size, 2, 4);
+    }
 }

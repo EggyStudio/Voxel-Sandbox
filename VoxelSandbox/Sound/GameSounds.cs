@@ -14,13 +14,20 @@ namespace VoxelSandbox;
 /// its step the ground's (<see cref="Places.StepAt"/>), a variant at random at a pitch within a
 /// tenth of its own. The player's are heard in the middle at a quarter of the step's loudness, as
 /// the source's steps are quiet. A mob's within sixteen blocks play where it stands through the
-/// engine's spatial play, from the side it is on and fainter with its distance, silent at sixteen.
+/// engine's spatial play, from the side it is on and fainter with its distance, silent at sixteen,
+/// and fainter again by the blocks between it and the listener (<see cref="Places.Occlusion"/>).
 /// </para>
 /// <para>
 /// Each sound of a place plays on from the start, its loudness easing over about two seconds toward
 /// the level the place gives it (<see cref="Places.Levels"/>), so a sound fades in as the player
 /// walks into a wood and out as it walks into a cave. The water about the player is the share of a
 /// few blocks tried at random within eight each frame that are water, eased the same.
+/// </para>
+/// <para>
+/// The room about the listener is read four times a second (<see cref="Places.Room"/>), how closed
+/// it is and how far its walls stand, for a reverb the engine does not give yet, so it is said by
+/// <c>voxel.sounds</c> and heard nowhere. Nor does the engine yet dull a sound behind blocks, so
+/// their occlusion lowers its loudness alone.
 /// </para>
 /// <para>
 /// The listener is the player's eye, turned as the view is, which the game sets on the engine's
@@ -45,7 +52,7 @@ public sealed class GameSounds
     private double _time;
     private readonly float[] _levels = new float[Enum.GetValues<AmbientSound>().Length];
     private readonly Random _random = new();
-    private float _walked, _water;
+    private float _walked, _water, _roomWait;
     private Vector3? _lastFeet;
 
     public GameSounds()
@@ -65,8 +72,11 @@ public sealed class GameSounds
     /// <summary>How loud each sound of a place plays now, by <see cref="AmbientSound"/>, before the settings.</summary>
     public IReadOnlyList<float> Levels => _levels;
 
-    /// <summary>The steps played in the last frame, where each was and what it sounded of, the player's at its feet.</summary>
-    public List<(Vector3 At, StepSound Sound, bool Own)> Heard { get; } = [];
+    /// <summary>The steps played in the last frame, where each was, what it sounded of, the player's at its feet, and the share of its loudness the blocks between let through.</summary>
+    public List<(Vector3 At, StepSound Sound, bool Own, float Through)> Heard { get; } = [];
+
+    /// <summary>The room about the listener as last read, how closed it is and how far its walls stand.</summary>
+    public (float Enclosed, float Size) Room { get; private set; }
 
     /// <summary>The steps played since the world opened.</summary>
     public int StepsHeard { get; private set; }
@@ -102,7 +112,7 @@ public sealed class GameSounds
         {
             _walked %= Places.StepLength;
             var sound = swimming ? StepSound.Water : Places.StepAt(world, feet);
-            if (Play(audio, sound, null, OwnStep * Steps)) Heard.Add((feet, sound, true));
+            if (Play(audio, sound, null, OwnStep * Steps)) Heard.Add((feet, sound, true, 1));
         }
 
         // The mobs' that stepped in this frame within hearing, at their feet.
@@ -111,8 +121,15 @@ public sealed class GameSounds
             {
                 if (!pose.Stepped || Vector3.DistanceSquared(body.Position, eye) > Hearing * Hearing) continue;
                 var sound = Places.StepAt(world, body.Position);
-                if (Play(audio, sound, body.Position, MobStep * Steps * MathF.Min(1, 0.4f + mob.Kind.Height / 3))) Heard.Add((body.Position, sound, false));
+                var through = Places.Occlusion(world, eye, body.Position + new Vector3(0, 0.5f, 0));
+                if (Play(audio, sound, body.Position, MobStep * Steps * MathF.Min(1, 0.4f + mob.Kind.Height / 3) * through)) Heard.Add((body.Position, sound, false, through));
             }
+
+        if ((_roomWait -= seconds) <= 0)
+        {
+            _roomWait = 0.25f;
+            Room = Places.Room(world, eye);
+        }
 
         // The places' sounds, each eased toward its level.
         int ex = (int)MathF.Floor(eye.X), ey = (int)MathF.Floor(eye.Y), ez = (int)MathF.Floor(eye.Z);

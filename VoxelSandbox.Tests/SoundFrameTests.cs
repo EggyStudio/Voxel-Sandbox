@@ -39,7 +39,7 @@ public sealed class SoundFrameTests
                 NearDistance = audio.NearDistance,
                 FarDistance = GameSounds.Hearing,
             };
-            foreach (var (at, _, own) in game.Sounds.Heard)
+            foreach (var (at, _, own, _) in game.Sounds.Heard)
                 if (!own) heard.Add((at, spatial.Compute(0, at, audio.ListenerPosition, context).Pan));
         }
         // The near pig's steps are heard, each from the left while it runs west of the player, and

@@ -70,6 +70,7 @@ release of the zips.
 | `VoxelSandbox/Items` | Items, the inventory, recipes, loot, the stacks on the ground, furnaces and smelting |
 | `VoxelSandbox/Player` | The first-person controller, the player's health and hunger, and the ray to the block looked at |
 | `VoxelSandbox/Rendering` | The section mesher, the chunk renderer, the visibility graph, the sky, the clouds and the light's settings |
+| `VoxelSandbox/Sound` | The game's own sounds, the steps by the ground and the sounds of a place, made as it starts and played through the engine's audio |
 | `VoxelSandbox/Ui` | The HUD, the hotbar, the inventory window, item icons and the settings window, drawn with ImGui |
 | `VoxelSandbox/World` | Sections, columns, the world, streaming, light levels, water and the save |
 | `VoxelSandbox/resources` | The terrain shader, `shaders/terrain.slang`, copied beside the program |

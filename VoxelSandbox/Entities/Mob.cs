@@ -371,7 +371,10 @@ public sealed partial class Mob
             return (Vector3.Zero, false);
         }
 
-        var way = Vector3.Normalize(flat);
+        // Straight under or over the next cell's middle, as a mob placed at a cell's middle climbing
+        // out of a well stands, the way across is none rather than the not-a-number a zero length
+        // gives, which would stay in its velocity and its place for good.
+        var way = flat.LengthSquared() > 1e-8f ? Vector3.Normalize(flat) : Vector3.Zero;
         // A jump from the ground or from water onto a cell higher than a step, as out of a well.
         var jump = (Body.OnGround || _swimming) && cell.Y > Body.Position.Y + 0.55f && flat.LengthSquared() < 2.25f;
         return (way * speed, jump);

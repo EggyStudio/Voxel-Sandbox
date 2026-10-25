@@ -78,4 +78,64 @@ public static class Places
     private static bool Wooded(Biome biome) =>
         biome == Biomes.Forest || biome == Biomes.BirchForest || biome == Biomes.DarkForest || biome == Biomes.Taiga || biome == Biomes.SnowyTaiga
         || biome == Biomes.Jungle || biome == Biomes.Swamp || biome == Biomes.CherryGrove || biome == Biomes.Plains;
+
+    /// <summary>The share of a sound's loudness that comes through each whole block between it and the listener.</summary>
+    public const float ThroughABlock = 0.5f;
+
+    /// <summary>How far the rays that read a room reach, in blocks.</summary>
+    public const float RoomReach = 24;
+
+    /// <summary>
+    /// The share of a sound's loudness that comes from a place to the listener through the blocks
+    /// between, <see cref="ThroughABlock"/> for each opaque cell a straight line from one to the other
+    /// crosses, the cells of the two ends left out, as a wall between halves a step and three blocks
+    /// of rock leave an eighth.
+    /// </summary>
+    public static float Occlusion(VoxelWorld world, Vector3 listener, Vector3 sound) => MathF.Pow(ThroughABlock, Crossed(world, listener, sound));
+
+    /// <summary>How many opaque cells a straight line from one place to another crosses, the cells of its two ends left out.</summary>
+    public static int Crossed(VoxelWorld world, Vector3 from, Vector3 to)
+    {
+        var way = to - from;
+        var length = way.Length();
+        if (length < 1e-4f) return 0;
+        way /= length;
+        int x = (int)MathF.Floor(from.X), y = (int)MathF.Floor(from.Y), z = (int)MathF.Floor(from.Z);
+        int endX = (int)MathF.Floor(to.X), endY = (int)MathF.Floor(to.Y), endZ = (int)MathF.Floor(to.Z);
+        int stepX = MathF.Sign(way.X), stepY = MathF.Sign(way.Y), stepZ = MathF.Sign(way.Z);
+        float Next(float at, int cell, int step, float part) => step == 0 ? float.MaxValue : (cell + (step > 0 ? 1 : 0) - at) / part;
+        float nextX = Next(from.X, x, stepX, way.X), nextY = Next(from.Y, y, stepY, way.Y), nextZ = Next(from.Z, z, stepZ, way.Z);
+        float acrossX = stepX == 0 ? float.MaxValue : 1 / MathF.Abs(way.X), acrossY = stepY == 0 ? float.MaxValue : 1 / MathF.Abs(way.Y), acrossZ = stepZ == 0 ? float.MaxValue : 1 / MathF.Abs(way.Z);
+        var crossed = 0;
+        while (true)
+        {
+            if (nextX <= nextY && nextX <= nextZ) (x, nextX) = (x + stepX, nextX + acrossX);
+            else if (nextY <= nextZ) (y, nextY) = (y + stepY, nextY + acrossY);
+            else (z, nextZ) = (z + stepZ, nextZ + acrossZ);
+            if ((x, y, z) == (endX, endY, endZ) || MathF.Min(nextX, MathF.Min(nextY, nextZ)) > length + 2) return crossed;
+            if (Blocks.IsOpaque(world.GetBlock(x, y, z))) crossed++;
+        }
+    }
+
+    /// <summary>
+    /// The room about the listener as a reverb would read it, the share of rays in 26 ways, along
+    /// the axes, the diagonals of the faces and those of the corners, that meet an opaque block within
+    /// <see cref="RoomReach"/>, and how far on average those that meet one go.
+    /// </summary>
+    public static (float Enclosed, float Size) Room(VoxelWorld world, Vector3 listener)
+    {
+        int met = 0;
+        float distance = 0;
+        for (int dz = -1; dz <= 1; dz++)
+            for (int dy = -1; dy <= 1; dy++)
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
+                    var way = Vector3.Normalize(new Vector3(dx, dy, dz));
+                    if (VoxelRay.Cast(world, listener, way, RoomReach) is not { } hit || !Blocks.IsOpaque(world.GetBlock(hit.X, hit.Y, hit.Z))) continue;
+                    met++;
+                    distance += hit.Distance;
+                }
+        return (met / 26f, met > 0 ? distance / met : RoomReach);
+    }
 }

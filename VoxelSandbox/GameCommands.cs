@@ -374,15 +374,16 @@ public static class GameCommands
         return on ? $"the clouds are drawn, {game.Clouds.Faces} faces, drifted {game.Clouds.Drift:0.0} blocks east" : "the clouds are hidden";
     }
 
-    [Command("voxel.sounds", "How loud each sound of the place plays, before the settings, the steps played since the world opened and those of the last frame, and the voices the engine's audio holds")]
+    [Command("voxel.sounds", "How loud each sound of the place plays, before the settings, the room about the player as a reverb would read it, the steps played since the world opened and those of the last frame with the share the blocks between let through, and the voices the engine's audio holds")]
     internal static string ShowSounds()
     {
         if (Game is not { } game) return "no world is loaded";
         var sounds = game.Sounds;
         var levels = string.Join(", ", Enum.GetValues<AmbientSound>().Select(a => $"{a.ToString().ToLowerInvariant()} {sounds.Levels[(int)a]:0.00}"));
-        var last = sounds.Heard.Count == 0 ? "none" : string.Join(", ", sounds.Heard.Select(h => $"{h.Sound.ToString().ToLowerInvariant()} {(h.Own ? "of the player" : $"at {h.At.X:0.0}, {h.At.Y:0.0}, {h.At.Z:0.0}")}"));
+        var last = sounds.Heard.Count == 0 ? "none" : string.Join(", ", sounds.Heard.Select(h => $"{h.Sound.ToString().ToLowerInvariant()} {(h.Own ? "of the player" : $"at {h.At.X:0.0}, {h.At.Y:0.0}, {h.At.Z:0.0} through {h.Through:0.00}")}"));
         var voices = Engine.E3D.GetApp().World.TryGetResource<Engine.AudioServer>(out var audio) ? audio.LiveSourceCount : 0;
-        return $"{levels}; {sounds.StepsHeard} steps played, in the last frame {last}; {voices} voices";
+        var (enclosed, size) = sounds.Room;
+        return $"{levels}; the room {enclosed:0.00} closed, its walls {size:0.0} blocks off; {sounds.StepsHeard} steps played, in the last frame {last}; {voices} voices";
     }
 
     [Command("voxel.break", "Breaks the block the crosshair rests on at once, dropping what it leaves in survival, as a left click does")]
