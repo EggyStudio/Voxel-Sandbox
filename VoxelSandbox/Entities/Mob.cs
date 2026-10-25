@@ -16,8 +16,8 @@ public readonly record struct MobRecord(MobKind Kind, byte Variant, Vector3 Posi
 /// </summary>
 /// <remarks>
 /// A hit while the mob is still red does nothing, as in Minecraft, and a mob is taken away once it
-/// has lain dying for a second. The aging also takes its world and its seconds as arguments, so a
-/// test ages the mobs of an ECS world of its own as the frame ages the game's.
+/// has lain dying for a second. Its behavior ages each mob's life by <see cref="Pass"/>, which a test
+/// of a mob alone calls as the frame would.
 /// </remarks>
 [Behavior]
 public partial struct MobLife
@@ -39,18 +39,15 @@ public partial struct MobLife
     [OnUpdate]
     public static void Age(BehaviorContext ctx)
     {
-        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds > 0 && !step.MobsStill) Age(ctx.Ecs, step.Seconds);
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0 || step.MobsStill) return;
+        foreach (var (id, _) in ctx.Ecs.Query<MobLife>()) ctx.Ecs.GetRef<MobLife>(id).Pass(step.Seconds);
     }
 
-    /// <summary>Fades every mob's red and counts its time dying by so many seconds.</summary>
-    public static void Age(EcsWorld ecs, float seconds)
+    /// <summary>Fades the red and counts the time dying by so many seconds.</summary>
+    public void Pass(float seconds)
     {
-        foreach (var (id, _) in ecs.Query<MobLife>())
-        {
-            ref var life = ref ecs.GetRef<MobLife>(id);
-            life.Hurt = MathF.Max(0, life.Hurt - seconds);
-            if (life.Dying >= 0) life.Dying += seconds;
-        }
+        Hurt = MathF.Max(0, Hurt - seconds);
+        if (Dying >= 0) Dying += seconds;
     }
 
     /// <summary>Takes a hit's damage and reddens, falling over where the health is gone, unless still red or dying.</summary>

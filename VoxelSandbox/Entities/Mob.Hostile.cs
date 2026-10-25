@@ -25,9 +25,7 @@ public sealed record MobBlast(Mob Mob, Vector3 At, float Power) : MobEvent(Mob);
 /// </summary>
 /// <remarks>
 /// The hostile mobs think and move in this behavior's system and the others in
-/// <see cref="MobMind"/>'s, each reading its mob's body, life, pose and hunt by one query. Each
-/// also takes its world and its inputs as arguments, so a test steps the mobs of an ECS world of its
-/// own as the frame steps the game's.
+/// <see cref="MobMind"/>'s, each reading its mob's body, life, pose and hunt by one query.
 /// </remarks>
 [Behavior]
 public partial struct MobHostile
@@ -47,26 +45,22 @@ public partial struct MobHostile
     /// <summary>Seconds a creeper's fuse has burned, or less than zero while it is not lit.</summary>
     public float Fuse;
 
+    /// <summary>
+    /// Thinks and moves every hostile mob whose columns are loaded around it, hunting the player as
+    /// in survival, and sends what they do to the player as <see cref="MobEvent"/>s.
+    /// </summary>
     [OnUpdate]
     public static void Hunt(BehaviorContext ctx)
     {
         if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0 || step.MobsStill) return;
         var events = new List<MobEvent>();
-        Hunt(ctx.Ecs, step.World, step.Hunted ? new MobTarget(step.Player, step.Eye) : null, step.Eye, step.Hour, step.Seconds, events);
-        foreach (var e in events) ctx.World.SendEvent(e);
-    }
-
-    /// <summary>
-    /// Thinks and moves every hostile mob whose columns are loaded around it, hunting the target
-    /// where one is given, as in survival, adding what they do to the player to <paramref name="events"/>.
-    /// </summary>
-    public static void Hunt(EcsWorld ecs, VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events)
-    {
-        foreach (var (_, mob, body, _, _, _) in ecs.Query<Mob, Body, MobLife, MobPose, MobHostile>())
+        var target = step.Hunted ? new MobTarget(step.Player, step.Eye) : (MobTarget?)null;
+        foreach (var (_, mob, body, _, _, _) in ctx.Ecs.Query<Mob, Body, MobLife, MobPose, MobHostile>())
         {
             var (cx, cz) = Mobs.ColumnOf(body.Position);
-            if (Mobs.Around(world, cx, cz)) mob.Update(world, target, playerEye, hour, seconds, events);
+            if (Mobs.Around(step.World, cx, cz)) mob.Update(step.World, target, step.Eye, step.Hour, step.Seconds, events);
         }
+        foreach (var e in events) ctx.World.SendEvent(e);
     }
 }
 

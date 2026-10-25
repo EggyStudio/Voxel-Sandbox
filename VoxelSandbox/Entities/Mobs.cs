@@ -16,19 +16,23 @@ public readonly record struct MobDied(Mob Mob);
 /// They read the voxel world, the player, the hour and the seconds from the game's
 /// <see cref="GameStep"/> on the main thread, which alone may read the world, and send what the
 /// hostile mobs did to the player as <see cref="MobEvent"/>s and each mob taken away as a
-/// <see cref="MobDied"/>, which the game carries out. Nothing steps while the mobs stand still. Each
-/// also takes its world and its inputs as arguments, so a test steps the mobs of an ECS world of its
-/// own as the frame steps the game's.
+/// <see cref="MobDied"/>, which the game carries out. Nothing steps while the mobs stand still. A
+/// test steps them through the frame of a whole game built with no window, as the game steps them.
 /// </remarks>
 [Behavior]
 public partial struct MobMind
 {
+    /// <summary>Thinks and moves every mob that is not hostile whose columns are loaded around it.</summary>
     [OnUpdate]
     public static void Think(BehaviorContext ctx)
     {
         if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0 || step.MobsStill) return;
         var events = new List<MobEvent>();
-        Think(ctx.Ecs, step.World, step.Hunted ? new MobTarget(step.Player, step.Eye) : null, step.Eye, step.Hour, step.Seconds, events);
+        foreach (var (_, mob, body, _, _) in ctx.Ecs.Query<Mob, Body, MobLife, MobPose>().Without<MobHostile>())
+        {
+            var (cx, cz) = Mobs.ColumnOf(body.Position);
+            if (Mobs.Around(step.World, cx, cz)) mob.Update(step.World, null, step.Eye, step.Hour, step.Seconds, events);
+        }
         foreach (var e in events) ctx.World.SendEvent(e);
     }
 
@@ -45,38 +49,14 @@ public partial struct MobMind
     /// <summary>Whether the world stands to be played.</summary>
     public static bool Playing(World world) => world.TryGetResource<State<WorldState>>(out var state) && state.Current == WorldState.Playing;
 
+    /// <summary>Pushes each pair of overlapping mobs apart along x and z, and a mob the player overlaps away from the player.</summary>
     [OnPostUpdate]
     public static void Crowd(BehaviorContext ctx)
     {
-        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds > 0 && !step.MobsStill) Crowd(ctx.Ecs, step.Player, step.Seconds);
-    }
-
-    [OnPostUpdate]
-    public static void Vanish(BehaviorContext ctx)
-    {
         if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0 || step.MobsStill) return;
-        foreach (var mob in Vanish(ctx.Ecs)) ctx.World.SendEvent(new MobDied(mob));
-    }
-
-    /// <summary>
-    /// Thinks and moves every mob that is not hostile whose columns are loaded around it, which
-    /// <paramref name="target"/> and <paramref name="events"/> are given to as to the hostile ones'.
-    /// </summary>
-    public static void Think(EcsWorld ecs, VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events)
-    {
-        foreach (var (_, mob, body, _, _) in ecs.Query<Mob, Body, MobLife, MobPose>().Without<MobHostile>())
-        {
-            var (cx, cz) = Mobs.ColumnOf(body.Position);
-            if (Mobs.Around(world, cx, cz)) mob.Update(world, target, playerEye, hour, seconds, events);
-        }
-    }
-
-    /// <summary>Pushes each pair of overlapping mobs apart along x and z, and a mob the player overlaps away from the player.</summary>
-    public static void Crowd(EcsWorld ecs, Body player, float seconds)
-    {
         var bodies = new List<Body>();
-        foreach (var (_, _, body) in ecs.Query<Mob, Body>()) bodies.Add(body);
-        var strength = MathF.Min(1, 8 * seconds);
+        foreach (var (_, _, body) in ctx.Ecs.Query<Mob, Body>()) bodies.Add(body);
+        var strength = MathF.Min(1, 8 * step.Seconds);
         for (int i = 0; i < bodies.Count; i++)
         {
             var a = bodies[i];
@@ -87,18 +67,23 @@ public partial struct MobMind
                 a.Velocity -= push * strength * 4;
                 b.Velocity += push * strength * 4;
             }
-            if (Apart(player, a) is { } away) a.Velocity += away * strength * 6;
+            if (Apart(step.Player, a) is { } away) a.Velocity += away * strength * 6;
         }
     }
 
-    /// <summary>Takes away the mobs that have fallen over for long enough, and gives them.</summary>
-    public static List<Mob> Vanish(EcsWorld ecs)
+    /// <summary>Takes away the mobs that have fallen over for long enough, each sent as a <see cref="MobDied"/>.</summary>
+    [OnPostUpdate]
+    public static void Vanish(BehaviorContext ctx)
     {
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0 || step.MobsStill) return;
         var gone = new List<(int Id, Mob Mob)>();
-        foreach (var (id, mob, life) in ecs.Query<Mob, MobLife>())
+        foreach (var (id, mob, life) in ctx.Ecs.Query<Mob, MobLife>())
             if (life.Gone) gone.Add((id, mob));
-        foreach (var (id, _) in gone) ecs.Despawn(id);
-        return [.. gone.Select(g => g.Mob)];
+        foreach (var (id, mob) in gone)
+        {
+            ctx.Ecs.Despawn(id);
+            ctx.World.SendEvent(new MobDied(mob));
+        }
     }
 
     // The way from a box to another along x and z, as long as they overlap, or null where they do not.

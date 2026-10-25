@@ -5,21 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `fb04f6b`, item 105, the stepped shadow read once, read at 02:33 on 2026-10-25,
-carrying the review's files and the devlog's grove. litStepped reads lightReaching once at the
-step's middle with its held share and calls litLight with the shadow and the held, its own
-correction and the sun's specular rebuild gone, passing minus 1 where there is no shadow light; the
-grove alike to the pixel but for 96 of 2.07 million, the pillar's shadow still stepping and the
-lantern's pool and the grass wall as before. The scene pass at the grove reads 9.87 and 8.96 ms with
-one read against 10.19 and 9.38 with three, 0.3 to 0.4 ms where the item expected 1.6 measured on
-the older pass of 12.5, and the step costs nothing measurable against no step, the README's costs
-paragraph rewritten. 311 tests, play.sh 324 s on the GPU. The lookups next, the fires keyed by cell
-through the index and the mobs still walked since a key names one entity, an index whose key names
-many asked of the engine as its item 117. Held with `c7c1b41` until the run of `3275e76` ends, then
-pushed. After `c7c1b41`, item 123, the culled sections casting the sun's shadow, read at 02:15 on
-2026-10-25, carrying the review's files and the devlog's cave tops. ChunkRenderer.FindCasters casts
-a ray toward the light from each of the eight corners of every drawn, meshed section within the
-shadow distance plus 16 blocks, shared corners once, each ray walking the section grid after
+Reviewed up to `d647b0e`, the lookups, read at 02:40 on 2026-10-25, carrying the review's files.
+Fire is keyed by its cell and Fires.Take asks the engine's index in place of building a set of every
+fire each frame the world names a cell, each named cell still drawing its delay so the seeds'
+sequences hold; a test reads a lit cell named again keeping its one fire, a new cell getting one,
+the index finding it by its key and an empty cell not found; Mobs.Leaving keeps its walk with a
+comment pointing at the engine's item 117, the README's Fire section gaining a line. 312 tests,
+play.sh 325 s on the GPU. The entities' tests through the engine's stepped app are item 128, planned
+in the item. Held with `fb04f6b` and `c7c1b41` until the run of `3275e76` ends, then pushed. After
+`fb04f6b`, item 105, the stepped shadow read once, read at 02:33 on 2026-10-25, carrying the
+review's files and the devlog's grove. litStepped reads lightReaching once at the step's middle with
+its held share and calls litLight with the shadow and the held, its own correction and the sun's
+specular rebuild gone, passing minus 1 where there is no shadow light; the grove alike to the pixel
+but for 96 of 2.07 million, the pillar's shadow still stepping and the lantern's pool and the grass
+wall as before. The scene pass at the grove reads 9.87 and 8.96 ms with one read against 10.19 and
+9.38 with three, 0.3 to 0.4 ms where the item expected 1.6 measured on the older pass of 12.5, and
+the step costs nothing measurable against no step, the README's costs paragraph rewritten. 311
+tests, play.sh 324 s on the GPU. The lookups next, the fires keyed by cell through the index and the
+mobs still walked since a key names one entity, an index whose key names many asked of the engine as
+its item 117. After `c7c1b41`, item 123, the culled sections casting the sun's shadow, read at 02:15
+on 2026-10-25, carrying the review's files and the devlog's cave tops. ChunkRenderer.FindCasters
+casts a ray toward the light from each of the eight corners of every drawn, meshed section within
+the shadow distance plus 16 blocks, shared corners once, each ray walking the section grid after
 Amanatides and Woo up to the world's top or as far as the loaded land reaches and marking every
 section the flood left out, the marked sections drawing their meshes through the same materials with
 ShadowOnly true, taken off the unseen set and meshed like the drawn; the marking redone when a flood
@@ -640,6 +647,22 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
+
+128. **The entities' tests step the real game through the engine's headless app, the twins gone.**
+    From the coder's trial at 02:40 on 2026-10-25, after the engine's item 104 made App.Frame and
+    DefaultPlugins public. An app built as the engine's behaviors guide says steps the game's
+    registered systems, a pig falling through the real MobMind.Think, and a whole VoxelGame builds
+    in a test under E3D_HEADLESS with InitWindow, a transient flat world stepping 30 frames of
+    game.Draw with its mobs in 2 s. The plan, one kind of thing a commit with play's readings
+    unchanged, is a HeadlessGame fixture in a non-parallel collection, the variable, InitWindow, a
+    transient flat VoxelGame and CloseWindow on dispose, GameStep.Random seedable so the seeded
+    tests keep their sequences; then each kind's tests laying their scene in the game's flat world,
+    the placed animals cleared where they would interfere, stepping game.Draw frames, the mobs, the
+    fires, the TNT and the falling blocks, the drops and the arrows in that order, each twin, the
+    EcsWorld overloads and the facades' Update methods calling them, going in the same commit with
+    its logic moved into the context system; the tests of pure logic staying on their small laid
+    worlds, the pathfinder, a mob's own Update and Hit, the mesher and the rest. Five or six
+    commits, after the lookups.
 
 ## Verdicts
 

@@ -40,7 +40,7 @@ public sealed class MobTests : IDisposable
         for (float t = 0; t < seconds; t += 1 / 30f)
         {
             mob.Update(world, new Vector3(100, 100, 100), hour, 1 / 30f);
-            MobLife.Age(mob.Ecs, 1 / 30f);
+            mob.Ecs.GetRef<MobLife>(mob.Entity).Pass(1 / 30f);
         }
     }
 
@@ -108,27 +108,6 @@ public sealed class MobTests : IDisposable
 
         Assert.True(float.IsFinite(mob.Stride));
         Assert.True(float.IsFinite(mob.StridePhase));
-    }
-
-    [Fact]
-    public void A_Mob_Is_Read_By_One_Query_Of_Its_Kind_And_Stepped_By_Its_Own_Mind()
-    {
-        var world = Floor();
-        var ecs = new Engine.EcsWorld();
-        var pig = new Mob(1, At(MobKinds.Pig, 8.5f, 20, 8.5f), 1, ecs);
-        var zombie = new Mob(2, At(MobKinds.Zombie, 12.5f, 20, 8.5f), 2, ecs);
-        // The passive mobs are those with no hunt, the hostile those with one, each mob in one of the two.
-        Assert.Equal([pig], ecs.Query<Mob, Body, MobLife, MobPose>().Without<MobHostile>().Select(row => row.C1));
-        Assert.Equal([zombie], ecs.Query<Mob, Body, MobLife, MobPose, MobHostile>().Select(row => row.C1));
-        Assert.Equal((-1f, false), (zombie.Fuse, zombie.Hunting));
-        // In the air, each falls only once its own mind has stepped it.
-        MobMind.Think(ecs, world, null, Vector3.Zero, 12, 0.1f, []);
-        Assert.True(pig.Body.Position.Y < 20);
-        Assert.Equal(20, zombie.Body.Position.Y);
-        MobHostile.Hunt(ecs, world, null, Vector3.Zero, 12, 0.1f, []);
-        Assert.True(zombie.Body.Position.Y < 20);
-        // The pose its movement wrote is the one its entity holds.
-        Assert.Equal(pig.Stride, ecs.GetRef<MobPose>(pig.Entity).Stride);
     }
 
     [Fact]
