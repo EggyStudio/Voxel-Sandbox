@@ -246,38 +246,24 @@ float3 skyFloor(float3 albedo, ModelVertexOutput input, float level)
 // A color lit at a point as the engine's lit lights it, all its light taken at the point itself but
 // the sun's shadow, taken at the middle of the point's step (pixelMiddle), so the sun's shadows step
 // along the grid and a lamp's light and the light from all around fall smoothly, where taking all of
-// it at the step's middle laid a lantern's pool on the floor in squares. The sun's share of the
-// light, which litLight cuts by its shadow at the point, is cut by the step's instead, the light
-// reaching a flat face the same at both and the contact shadow, read from the screen's pixel, the
-// same for both. The terrain's material has no metallic-roughness map, so its factors are its own.
-// The light is no less than the sky's floor at the point's sky level (skyFloor).
+// it at the step's middle laid a lantern's pool on the floor in squares. The shadow is read once, at
+// the step, and handed to litLight with how much of the step the counted cascades hold, which it
+// cuts the sun's light by in place of its own read at the point. The light is no less than the sky's
+// floor at the point's sky level (skyFloor).
 float3 litStepped(float3 albedo, ModelVertexOutput input, float sky)
 {
     if (drawnUnlit(input))
         return lit(albedo, input);
-    LitLight light = litLight(albedo, input);
-    float3 shown = light.diffuse + light.specular + emitted(input);
+    float shadow = -1.0;
+    float held = 0.0;
     int index = lighting.shadowLight;
     if (index >= 0 && index < min(lighting.count, 16))
     {
         float3 geometric = normalize(input.normal);
-        float held;
-        float here = lightReaching(input.world, geometric, held);
-        // Past the shadow map both read 1, and the sun's share is the same.
-        if (held > 0.0)
-        {
-            float there = lightReaching(pixelMiddle(input.world, geometric), geometric);
-            Light sun = lighting.lights[index];
-            float3 n = surfaceNormal(input);
-            float metallic = saturate(materialMetallic(input));
-            float roughness = clamp(materialRoughness(input), 0.045, 1.0);
-            float3 fresnel;
-            float3 specular = specularReflected(n, normalize(input.toEye), -fromLight(sun, input.world), lerp(float3(0.04), albedo, metallic), roughness * roughness, fresnel);
-            float3 reflected = albedo * (1.0 - metallic) * (1.0 - fresnel) + specular;
-            shown += arriving(sun, input.world, n) * reflected * sunContact(input, held) * (there - here);
-        }
+        shadow = lightReaching(pixelMiddle(input.world, geometric), geometric, held);
     }
-    return toDisplay(max(shown, skyFloor(albedo, input, sky)));
+    LitLight light = litLight(albedo, input, shadow, held);
+    return toDisplay(max(light.diffuse + light.specular + emitted(input), skyFloor(albedo, input, sky)));
 }
 
 // Whether a sample of a picture differs from another, as a point of glass's frame does from its

@@ -5,10 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `3275e76`, item 94's mobs, the third commit, read at 01:53 on 2026-10-25, carrying
-REVIEW.md. MobPose is a struct component of the yaw, the head's yaw and pitch, the stride and its
-phase, the flap and the swing, written in place by Move, Look and Face; MobHostile a behavior struct
-the hostile mobs alone carry, its own Hunt system on update stepping them through a query of five
+Reviewed up to `c7c1b41`, item 123, the culled sections casting the sun's shadow, read at 02:15 on
+2026-10-25, carrying the review's files and the devlog's cave tops. ChunkRenderer.FindCasters casts
+a ray toward the light from each of the eight corners of every drawn, meshed section within the
+shadow distance plus 16 blocks, shared corners once, each ray walking the section grid after
+Amanatides and Woo up to the world's top or as far as the loaded land reaches and marking every
+section the flood left out, the marked sections drawing their meshes through the same materials with
+ShadowOnly true, taken off the unseen set and meshed like the drawn; the marking redone when a flood
+runs, the light's step turns or the shadow distance changes; draw.sections.shadow counts them and
+Casts switches the casting off for a reading. Departure, the casters found by marching from the
+drawn sections' corners toward the light rather than sweeping the drawn set's bounds, which hold
+thousands of sections under open land casting onto nothing. The cave at the entry's place reads the
+tops 45 blocks ahead 0, 0, 0 where 35, 29, 20 stood, the same at a shadow distance of 150 and the
+same as with the culling off, the 90-block tops 9, 13, 18 where 19, 20, 22, the band's pixels lit
+above 24 falling from 4,427 to 4 at 96 and from 2,325 to 4 at 150, the frame 4.6 ms where 3.1 stood
+with 357 shadow-only draws and 6.7 at 150, against 28 to 31 with the culling off; the grove draws 20
+shadow-only and reads the frame the same with the casting on and off within one session.
+VisibilityTests walks the march, the README's culling paragraph gains the casters and the numbers.
+311 tests, play.sh 327 s on the GPU. Held until the run of `3275e76` ends, then pushed. After
+`3275e76`, item 94's mobs, the third commit, read at 01:53 on 2026-10-25, carrying REVIEW.md.
+MobPose is a struct component of the yaw, the head's yaw and pitch, the stride and its phase, the
+flap and the swing, written in place by Move, Look and Face; MobHostile a behavior struct the
+hostile mobs alone carry, its own Hunt system on update stepping them through a query of five
 components and MobMind.Think stepping the rest through a query of four without it; MobRenderer.Draw
 takes the EcsWorld and draws through the same two queries with no GetRef. Departures, the Mob class
 stays the class component holding the path and the Random under its name, Exploded stays on the
@@ -596,17 +614,6 @@ full.
     from the caller; the game's `litStepped` then hands the step's read in and reads the shadow
     once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
     again. One commit, small, with the package carrying the engine's item 99.
-
-123. **The sections the flood culls still cast the sun's shadow.** From the engine's reading of item
-    101 at 18:48 on 2026-10-24 on the game at `758e9df`, the deep cave's tops read sunlit because
-    the flood draws only the sections the eye sees through open cells, so the ground over the cave
-    is never drawn and never reaches the shadow pass, and with voxel.cull off the tops read 0 at
-    every shadow distance. With the package carrying the engine's item 101, a draw into the shadow
-    maps alone, the game draws the culled sections that lie between its view and the sun within the
-    shadow distance through that draw, the sections above and toward the sun of the drawn set's
-    bounds, kept meshed as the drawn ones are and counted in the profile as draw.sections.shadow;
-    the deep cave's tops and edge lines read again at the entry's place, and the cost at the grove
-    and in the cave before and after. One commit, with the package carrying the engine's item 101.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the

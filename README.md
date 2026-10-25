@@ -1205,17 +1205,15 @@ side, as the modpack's shader steps its shadows with the settings it is played w
 texture's sixteen pixels, so a shadow's edge steps along the face rather than running slantwise
 across it. The grid is the sun's alone. The rest of the light, the lamps' and global illumination's,
 is taken at the point itself, so a lantern's light on the floor it stands on falls smoothly from its
-glass, and `voxel.line` reads the last frame's light along a line in the world. Taking the sun's
-shadow at the step's middle reads the shadow map twice more at each pixel the map holds, which over
-seed 1's plains at noon at 12 columns with Bare Bones costs too little to read, the window's model
-pass taking 10.73 ms against 10.71 with all of the light taken at the step's middle, the mean of
-three sessions each, whose readings swing by half a millisecond. Against no stepping at all, at 1920
-by 1080 over seed 1's cherry grove, the steps cost the scene pass about 1.6 ms, 12.5 and 12.7
-against 10.9 and 11.2 in two sessions each, which the engine is asked to bring to one read of the
-shadow by letting `litLight` take it from the shader that calls it. The engine's soft contact
-shadow, traced toward the sun through the scene's distance field, is left out where the shadow map
-holds a point, so no fringe lies beside a shadow's edge, and kept past the map's reach, where the
-land has no other shadow of the sun.
+glass, and `voxel.line` reads the last frame's light along a line in the world. The shadow map is
+read once at each pixel, at the step, and the read is handed to the engine's `litLight` in place of
+its own at the point. At 1920 by 1080 over seed 1's cherry grove the scene pass takes 9.8 and 10.4
+ms so, against 9.7 and 10.5 with the shadow read at the point and no step, two sessions each taken
+in turn, where reading it three times, twice at the point to take its share out and once at the
+step, took 10.2 and 9.4 against 9.9 and 9.0 for the one read in another two. The engine's soft
+contact shadow, traced toward the sun through the scene's distance field, is left out where the
+shadow map holds a point, so no fringe lies beside a shadow's edge, and kept past the map's reach,
+where the land has no other shadow of the sun.
 
 As the day passes the light stands at the nearest of 36 steps an hour while the sun drawn on the
 sky moves smoothly, so a shadow stands still between steps and jumps at once to its next place,

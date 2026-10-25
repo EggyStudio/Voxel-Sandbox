@@ -1622,6 +1622,20 @@ before a batch.
     the blasts and the mobs as entities with their events, the column walks taking the lookup by key
     in the commit after.
 
+123. **The sections the flood culls still cast the sun's shadow.** From the engine's reading of item
+    101 at 18:48 on 2026-10-24 on the game at `758e9df`, the deep cave's tops read sunlit because
+    the flood draws only the sections the eye sees through open cells, so the ground over the cave
+    is never drawn and never reaches the shadow pass, and with voxel.cull off the tops read 0 at
+    every shadow distance. With the package carrying the engine's item 101, a draw into the shadow
+    maps alone, the game draws the culled sections that lie between its view and the sun within the
+    shadow distance through that draw, the sections above and toward the sun of the drawn set's
+    bounds, kept meshed as the drawn ones are and counted in the profile as draw.sections.shadow;
+    the deep cave's tops and edge lines read again at the entry's place, and the cost at the grove
+    and in the cave before and after. One commit, with the package carrying the engine's item 101.
+    Done at `c7c1b41` on 2026-10-25, the casters marched from the drawn sections' corners toward the
+    light and drawn into the shadow maps alone, the cave's tops dark at 1.5 ms, the departure in the
+    head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
