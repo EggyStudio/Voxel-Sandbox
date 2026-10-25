@@ -1746,6 +1746,14 @@ before a batch.
     `057011a` on 2026-10-25, the villages' biome kinds with the savanna added, the house shapes one
     set for every kind, the departure in the head. Done in the three commits.
 
+129. **The rain's particle texture is drawn upside down.** From the word of 2026-10-25 at about
+    05:20, given to the game's session, that the rain particles' texture is upside down; item 32's
+    rain draws its streaks from the texture the wrong way up, so the mend turns the texture or its
+    coordinates and reads the snow and the other ambient particles for the same. A capture of the
+    rain before and after, N 4.8. One commit, after item 31's third commit. Done at `bbe814c` on
+    2026-10-25, the column's v taken downward so the rows run down the wall, the snow with it, the
+    before-and-after picture in the devlog.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

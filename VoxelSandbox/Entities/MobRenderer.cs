@@ -48,6 +48,12 @@ public sealed class MobRenderer : IDisposable
     // Each kind's pieces' slots, by kind, piece and variant, a piece of one color holding one, the
     // player's model after the mobs'.
     private readonly Slot[][][] _byKind = new Slot[MobKinds.All.Length + 1][][];
+    // Each kind's pieces as drawn, a pack's model's where the packs model the kind and give its
+    // pictures, the kind's own otherwise.
+    private readonly ModelPart[][] _parts = new ModelPart[MobKinds.All.Length + 1][];
+
+    /// <summary>Whether a kind is drawn with a pack's model.</summary>
+    public bool Modeled(MobKind kind) => !ReferenceEquals(_parts[kind.Id], kind.Parts);
 
     public MobRenderer()
     {
@@ -81,18 +87,20 @@ public sealed class MobRenderer : IDisposable
         var textures = new Dictionary<byte[], Materials>(ReferenceEqualityComparer.Instance);
         foreach (var kind in MobKinds.All.Append(MobKinds.Player))
         {
-            _byKind[kind.Id] = new Slot[kind.Parts.Length][];
             var names = PackTextures.OfMob(kind.Name);
             Image?[] found = [.. names.Select(list => list.Select(packs.Texture).FirstOrDefault(p => p is { } image && Fits(image, kind.PictureSize)))];
-            if (names.Count > 0 && found.All(p => p is not null))
+            var pictured = names.Count > 0 && found.All(p => p is not null);
+            var parts = _parts[kind.Id] = pictured && PackModels.Read(packs, kind) is { } model ? model : kind.Parts;
+            _byKind[kind.Id] = new Slot[parts.Length][];
+            if (pictured)
             {
                 // Each variant's pictures, its body's with any clothes over it.
                 var pictures = Enumerable.Range(0, kind.Variants.Length).Select(v => found.Select((p, i) =>
                     i == 0 && PackTextures.OverMob(kind.Name, v) is { } over && packs.Texture(over) is { } clothes && Fits(clothes, kind.PictureSize) ? Over(p!.Value, clothes) : p!.Value).ToArray()).ToArray();
                 var varies = pictures.Any(v => !ReferenceEquals(v[0].Data, pictures[0][0].Data));
-                for (int p = 0; p < kind.Parts.Length; p++)
+                for (int p = 0; p < parts.Length; p++)
                 {
-                    var part = kind.Parts[p];
+                    var part = parts[p];
                     var count = varies || part.Boxes.Any(b => b.Source is { Tinted: true }) ? kind.Variants.Length : 1;
                     _byKind[kind.Id][p] = [.. Enumerable.Range(0, count).Select(v => Add(new Slot([.. Enumerable.Range(0, found.Length)
                         .Select(i => (Boxes: PicturedBoxes(part, pictures[v][i], kind.PictureSize, i, kind.Variants[v]), Picture: pictures[v][i]))
@@ -319,7 +327,7 @@ public sealed class MobRenderer : IDisposable
     // the whole placed so, red or white as a hit or a creeper's flash shows it.
     private void Place(MobKind kind, byte variant, Matrix4x4 placed, Func<ModelPart, Matrix4x4> turn, bool red, bool white)
     {
-        var parts = kind.Parts;
+        var parts = _parts[kind.Id];
         for (int p = 0; p < parts.Length; p++)
         {
             var part = parts[p];

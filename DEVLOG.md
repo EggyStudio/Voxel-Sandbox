@@ -80,6 +80,11 @@ Seed 1's nearest village of each kind at ten in the morning, the desert's of san
 of yellow terracotta and the savanna's of acacia on floors of orange terracotta above, the taiga's
 of spruce and the snowy plains' under roofs of snow below.
 
+![](.github/devlog/2026-10-25-item-129-rain.webp)
+Rain over seed 1's plains village at noon seen against the sky through its nearest columns, twice as
+large, its streaks standing upside down with their faint ends below on the left and the right way up
+on the right, faint at their tops and brighter at their feet.
+
 Done that day
 
 - Item 27 at `9dad43e`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
@@ -100,6 +105,7 @@ Done that day
 - Item 123 at `c7c1b41`. The sections the flood culls still cast the sun's shadow.
 - Item 128 at `6a7e5b1`. The entities' tests step the real game through the engine's headless app,
   the twins gone.
+- Item 129 at `bbe814c`. The rain's particle texture is drawn upside down.
 
 ## 2026-10-24
 

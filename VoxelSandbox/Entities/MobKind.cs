@@ -32,20 +32,36 @@ public enum Drawn
 /// </summary>
 public readonly record struct Cuboid(Vector3 Pivot, Vector3 From, Vector3 Size, float Grow, bool Lying, Vector2 Offset, bool Mirror, int Picture = 0, bool Tinted = false)
 {
+    /// <summary>
+    /// Where a pack's model places the cuboid in the game's model space once it is placed as the
+    /// source's own are, the turns and moves of the parts it lies in, or null for none.
+    /// </summary>
+    public Matrix4x4? Placed { get; init; }
+
+    /// <summary>
+    /// The parts of the picture each face shows, in pixels from one corner to the other, in the
+    /// order of <see cref="Faces"/>, down, up, west, north, east and south, as a pack's model gives a
+    /// box's faces each its own, a face given none left out, or null for the source's layout from the
+    /// <see cref="Offset"/>.
+    /// </summary>
+    public Vector4?[]? Parts { get; init; }
+
     /// <summary>A point of the cuboid in Minecraft's space from its pivot, placed in the game's model space in sixteenths.</summary>
     public Vector3 Place(Vector3 point)
     {
         // The quarter turn about x takes a point's y to -z and its z to y.
         if (Lying) point = new Vector3(point.X, -point.Z, point.Y);
-        return new Vector3(-(Pivot.X + point.X), 24 - (Pivot.Y + point.Y), Pivot.Z + point.Z);
+        var placed = new Vector3(-(Pivot.X + point.X), 24 - (Pivot.Y + point.Y), Pivot.Z + point.Z);
+        return Placed is { } turn ? Vector3.Transform(placed, turn) : placed;
     }
 
     /// <summary>
-    /// Its six faces, each four corners counterclockwise seen from outside in the game's model space
-    /// in sixteenths, with their places on the picture in pixels, as Minecraft's ModelPart.Cube lays a
-    /// box on its texture, the top and the bottom side by side at the offset moved right by the
-    /// depth, and below them the side toward x, the front, the side away from x and the back, each
-    /// as high as the box.
+    /// Its faces, six but for those a pack's model leaves out, each four corners counterclockwise seen
+    /// from outside in the game's model space in sixteenths, with their places on the picture in
+    /// pixels, as Minecraft's ModelPart.Cube lays a box on its texture, the top and the bottom side by
+    /// side at the offset moved right by the depth, and below them the side toward x, the front, the
+    /// side away from x and the back, each as high as the box, or each face's own part where
+    /// <see cref="Parts"/> gives them.
     /// </summary>
     public (Vector3 Position, Vector2 Texel)[][] Faces()
     {
@@ -70,10 +86,15 @@ public readonly record struct Cuboid(Vector3 Pivot, Vector3 From, Vector3 Size, 
             (4, 5, 6, 7, u + d + w + d, v + d, u + d + w + d + w, v + d + h),
         ];
         var middle = Place((corner[0] + corner[6]) / 2);
-        var faces = new (Vector3, Vector2)[6][];
+        var faces = new List<(Vector3, Vector2)[]>(6);
         for (int f = 0; f < 6; f++)
         {
             var (a, b, c, e, u1, v1, u2, v2) = polygons[f];
+            if (Parts is { } parts)
+            {
+                if (parts[f] is not { } part) continue;
+                (u1, v1, u2, v2) = (part.X, part.Y, part.Z, part.W);
+            }
             (Vector3 Position, Vector2 Texel)[] face =
             [
                 (Place(corner[a]), new Vector2(u2, v1)), (Place(corner[b]), new Vector2(u1, v1)),
@@ -84,9 +105,9 @@ public readonly record struct Cuboid(Vector3 Pivot, Vector3 From, Vector3 Size, 
             var normal = Vector3.Cross(face[1].Position - face[0].Position, face[2].Position - face[0].Position);
             var outward = (face[0].Position + face[2].Position) / 2 - middle;
             if (Vector3.Dot(normal, outward) < 0) Array.Reverse(face);
-            faces[f] = face;
+            faces.Add(face);
         }
-        return faces;
+        return [.. faces];
     }
 }
 

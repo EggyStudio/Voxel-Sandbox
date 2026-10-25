@@ -616,6 +616,20 @@ writes a pack of one zombie's picture, red on its head's front, clear on its hat
 elsewhere, and reads its
 face red and its body blue, and `voxel.pixel` reads the last frame's color where a point in the
 world lies.
+
+A pack that models a kind in OptiFine's form, a `.jem` file under `optifine/cem` by its name, as
+Fresh Animations models every kind the game has, draws it with the pack's boxes and its picture,
+the kind's pictures found as above. Its parts' pivots, turns and boxes are read as assets, each top
+part a piece of the game's model with every box nested in it, placed by the turns of the parts it
+lies in, and the faces take the parts of the picture each box names, scaled from the model's size
+of picture to the kind's. The pieces take their roles in the game's own gait by the source's names
+of the parts, the head, the arms, the legs and the wings, a nested part named for one lifted out
+into a piece of its own, as Fresh Animations lays a cow's head inside its body, and a numbered leg
+by where it stands, so a model walks as the game's own does. A leg the model pivots at its hoof
+swings from its top. The model's animations are expressions the game reads none of, so its blinks,
+its ears and its tail stand as the file places them. A kind no pack models, or whose picture no
+pack gives, keeps the game's own model.
+
 The walk is Minecraft's too, a leg turning up
 to 1.4 radians each way with its stride, which follows the speed, and cycling every 2.36 blocks, a
 villager's half as far under its robe, a spider's legs turning and lifting by 0.4. A zombie reaches
