@@ -658,26 +658,27 @@ dropped=$(ask voxel.pixel 23.5 4.3 4.5)
 echo "the dropped furnace's top $dropped"
 read -r dr dg db <<< "$(channels "$dropped")"
 [ -n "$db" ] && [ "$db" -gt $((2 * dr)) ] && [ "$db" -gt $((2 * dg)) ] || fail "the dropped furnace's top does not wear the furnace's top's blue, $dropped"
-# A pool of water a block across shows the written water's frames in turn, read eight times three
-# tenths of a second apart and three and a half by turns, six ticks and seven, so readings that
-# keep time with the frames still fall on each, at least once white under the water's tint and
-# once black.
+# A pool of water a block across shows the written water's frames in turn, white under the water's
+# tint at an even tick and black at an odd one, read with the animated textures held at each tick,
+# since a frame takes its tick from the time it is drawn at, and frames drawn at a steady pace a whole
+# number of tenths of a second long, as lavapipe's can be, all fall on the same of the two.
 cmd voxel.set 26 3 2 water
 cmd voxel.tp 26.5 5 4.5
 cmd voxel.look 0 -50
-cmd frames.wait 10
 greens=""
-for i in $(seq 1 8); do
-  sleep "0.3$((i % 2 * 5))"
-  cmd frames.wait 1
+for tick in 0 1 2 3; do
+  cmd voxel.ticks "$tick"
+  cmd frames.wait 3
   pool=$(ask voxel.pixel 26.5 3.876 2.5)
   read -r wr wg wb <<< "$(channels "$pool")"
   [ -n "$wb" ] || fail "voxel.pixel read no water, saying $pool"
   greens="$greens $wg"
 done
-echo "the water's green over the frames:$greens"
-printf '%s\n' $greens | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low >= 40) }' \
-  || fail "the water's texture does not step through its frames, its green reading$greens"
+cmd voxel.ticks off
+echo "the water's green at ticks 0 to 3:$greens"
+read -r g0 g1 g2 g3 <<< "$greens"
+[ $((g0 - g1)) -ge 40 ] && [ $((g2 - g3)) -ge 40 ] && [ $((g0 - g2)) -le 8 ] && [ $((g2 - g0)) -le 8 ] \
+  || fail "the water's texture does not step through its frames by the tick, its green at ticks 0 to 3 reading$greens"
 
 check "the fire's top"
 # A fire's walls show no line along their tops. The pack's fire is 32 frames of flames reaching the

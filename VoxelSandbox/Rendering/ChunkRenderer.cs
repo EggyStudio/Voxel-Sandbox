@@ -203,6 +203,14 @@ public sealed class ChunkRenderer : IDisposable
         Fog(Color.White, float.MaxValue, float.MaxValue);
     }
 
+    /// <summary>The tick the animated textures and lamps are held at, a twentieth of a second each, or null for the time's own.</summary>
+    /// <remarks>
+    /// A frame takes its tick from the time it is drawn at, so frames drawn at a steady pace whose
+    /// length is a whole number of tenths of a second all show the same of two frames a tick each, as
+    /// lavapipe's can, and a held tick shows each frame of an animation however the frames fall.
+    /// </remarks>
+    public double? HeldTicks { get; set; }
+
     /// <summary>Whether the haze dome is drawn, which it is while a haze fades the land's edge short of it.</summary>
     public bool Hazed => _fogEnd < HazeDome.Radius;
 
@@ -758,7 +766,7 @@ public sealed class ChunkRenderer : IDisposable
     public void Draw(VoxelWorld world, Vector3 eye, int renderDistance, Vector3 towardLight, float shadowDistance)
     {
         // The game ticks the animated textures step by, a twentieth of a second each, as Minecraft steps them.
-        var ticks = GetTime() * 20;
+        var ticks = HeldTicks ?? GetTime() * 20;
         SetShaderValue(_shader, _ticks, (float)ticks);
         int cx = (int)MathF.Floor(eye.X) >> Section.Shift, cz = (int)MathF.Floor(eye.Z) >> Section.Shift;
         var laps = System.Diagnostics.Stopwatch.StartNew();

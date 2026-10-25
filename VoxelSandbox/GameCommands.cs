@@ -541,6 +541,20 @@ public static class GameCommands
         return on ? "the sections the eye cannot see are left undrawn" : "every section within the render distance is drawn";
     }
 
+    [Command("voxel.ticks", "Holds the animated textures and lamps at a tick, a twentieth of a second each, or lets them run with the time: voxel.ticks <tick|off>")]
+    internal static string Ticks(string tick)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        if (tick.Equals("off", StringComparison.OrdinalIgnoreCase))
+        {
+            game.Renderer.HeldTicks = null;
+            return "the animated textures run with the time";
+        }
+        if (!int.TryParse(tick, out var held) || held < 0) return $"{tick} is neither a tick from 0 up nor off";
+        game.Renderer.HeldTicks = held;
+        return $"the animated textures are held at tick {held}";
+    }
+
     [Command("voxel.gi", "Sets global illumination to a quality, off, low, medium or high: voxel.gi <quality>")]
     internal static string Gi(string quality)
     {

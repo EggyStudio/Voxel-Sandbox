@@ -5,86 +5,40 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `ddede23`, Verdict 5's mend, pushed at 11:57 on 2026-10-25 once the run of `1767348`
-went green, its run green at 13:00 with the play job 63 minutes under the new limit, carrying the
-review's files and DEVLOG.md. The play job's limit is 90 minutes, its comment giving the reasons, a
-desktop's lavapipe at 20 minutes, a hosted runner at 39 to 40 or 52 to 54 with every check about 1.4
-times slower on the slow machine, the probes adding about a tenth to a frame on lavapipe which took
-a slow runner past 60, and a public repository's hosted minutes costing nothing. The lost run's log
-read check by check against the run of `0babebb` on the slow runner, every check it reached 1.0 to
-1.33 times as long, about 1.2 on average, the overworld walk growing most, the swamp 1.33, the river
-1.32 and the savanna 1.28, no check out of proportion, cancelled after the GPU's caves before the
-rain, the edge, the draws, the options and the screenshot. One check is large in every run though
-not grown, the rain's splashes at 358 s on the fast runner and 528 on the slow, 10 s on the RTX and
-228 on local lavapipe, 450 frames of rain, 150 to settle and 300 for the eased count to fall below
-one with the splashes off, reported and left as it is. 352 tests, play.sh 545 s on a machine loaded
-by the engine's game. After `1767348`, item 132, the tree's sweep for N 4.7 and STYLE.md, read at
-10:54 on 2026-10-25, carrying the review's files and DEVLOG.md, pushed at 11:05 on 2026-10-25 after
-the run of `f97a4c9` ended, its run green at 11:56, the play job 49 minutes with the probes on, a
-fast runner's 40 plus the probes. Forty-four replacements, each touched comment block or README
-paragraph rewrapped to 100 columns, the 22 colon joints in comments and scripts recast as a full
-stop, a comma or a which or a where or a so with ModeSwitcher's sentence reordered, the README's
-three with one paragraph brought back within width, the five paraphrases of emission in
-AmbientParticles.cs made emits and emitted, and the thirteen places naming the owner made the
-reference modpack, the reference copy and the reference modpack's settings, Surface.cs's quoted wish
-dropped since its so gives the reason; the sweep's greps are clean, the one owner left E3D.md's
-session file that only its Unix owner can read. 352 tests, play.sh 587 s on a loaded machine, the
-tests taking 55 s where they take 18. After `f97a4c9`, item 131, the screen probes on with no
-setting, read at 09:48 on 2026-10-25, carrying the review's files, DEVLOG.md and a captioned
-picture, pushed at 10:01 on 2026-10-25 once the run of `0babebb` went green, its run lost at 11:02,
-the play job cancelled at its limit after 61 minutes with the three test jobs green, Verdict 5.
-LightSettings.ScreenProbes is true by default with its comment giving the reason and naming
-gi.toggle screen as the debug view; the Screen Probes toggle and its README row are gone and the
-README says the probes are on; an old options file's Screen_Probes line matches no setting and is
-passed over, a HeadlessGameTests test reading such a file as one line with the probes on;
-OptionTests' toggle test moved to Rim Light; the two SetGlobalIlluminationScreenProbes calls stay
-until the package with the engine's item 103; the play run gains a check reading gi.state's screen
-probes line first after the flat world stands. The plains village at noon on seed 1 at render
-distance 12 and 1280 by 720 reads an RMSE of 0.0023 between the probes on and off, the light much
-the same, gi.state saying every 8 pixels, 160 by 90, 230,400 rays a frame and 13.07 MB. 352 tests,
-play.sh 243 s on the GPU and 1,173 s on local lavapipe with every light check passing, no lavapipe
-time with the probes off to compare, so the CI play job's time says what the probes cost there.
-After `0babebb`, item 130, the haze in a dark cave, read at 08:28 on 2026-10-25, carrying the
-review's files, the two profile values update.mesh and update.stream and a captioned picture, pushed
-at 09:04 on 2026-10-25 once the run of `9955bf3` went green, its run green at 09:57, the play job 54
-minutes, the runner's and not the item's, every check about 1.37 times slower than in the run of
-`2549786`, the open and the flat world's among them, where the run of `9955bf3` matched that run to
-the second; the probes themselves add about 10% a frame on local lavapipe, 16.8 to 17.9 s for 60
-frames against 15.7, so the play job's time cannot read them and a check's time against the open's
-in the same run could. One departure, the haze's share following the sky level of the point or of
-the eye, whichever is higher, on the source's brightness curve and not the point's level alone,
-since the haze is lit air between the eye and the point, so from the open land a distant cave mouth
-or a forest floor keeps its haze, from a cave the land outside keeps its haze and the cave's own
-walls fade to black. The eye's level is read from the world's light at the eye's cell, eased over
-about a quarter of a second and passed as the uniform eyeCovered; under water and with the fog off
-nothing changes, the clouds' copy of the shader sets nothing and reads as the open sky, a
-see-through color carrying no sky level keeps the haze whole, and the haze dome's corners carry
-level 15 so it stays the haze's color seen from a cave, a line in HazeDomeTests holding it. Readings
-on seed 1 at render distance 12 offscreen at 1280 by 720, the deep cave's top at 90 blocks from the
-eye at -59.5, -4, -91.5 reading 9, 13, 18 before and 0, 0, 0 after with the fog on and 0, 0, 0 both
-times with it off; the plains village at noon an RMSE of 0.00074 with 11 of 921,600 pixels differing
-by more than 1%, the ravine 0.00067 and 3 pixels, the cave with the fog off 0.00037, noise; the lava
-lake from inside its cave 0.035, its far wall losing the blue haze, the devlog's pair. The README's
-Fog section says how a point takes the haze. 351 tests, play.sh 200 s on the GPU. After `9955bf3`,
-Verdict 4's mend, pushed at 08:20 on 2026-10-25 after the red run of `1d31dda` ended, its run green
-at 09:00 with the GPU's caves check passing on lavapipe and the play job 40 minutes, carrying the
-review's files. The cause was none of the three the verdict named, the streamer asking ahead and the
-count moving; the play script's wait ended too early, since with the GPU path on a column at a new
-place waits for its readings with no worker on it, and ChunkStreamer.Pending counted the workers'
-columns alone, so after the teleport voxel.state read 0 columns, 0 generating and the play script's
-meshed wait passed at once, before any batch was back, which the NVIDIA GPU never showed since its
-first batches land before the next command; on local lavapipe with the old build 0 columns read at
-0.0 s and 69 at 1.8 s. Pending counts the workers' columns plus the columns wanted and not yet given
-to a worker, lavapipe reading 0 columns, 69 generating at 0.0 s, 64 columns, 5 generating and 69
-read at 2 s, and 69 columns at 4 s; the check stands unchanged as a check of the GPU path, each
-column of a new place waiting for its readings however slow the device, the commit saying so. 351
-tests, play.sh 315 s on the GPU reading 69 columns at the GPU's caves.
+Reviewed up to `b7608c7`, item 95's first commit, three of the section's parts as mesh entities on
+5.2.313, pushed at 17:34 on 2026-10-25 once the run of `ddede23` went green, its run red on the play
+job at 17:53 with the three test jobs green, Verdict 6, carrying NORM.md, the review's files and
+DEVLOG.md with a note. The solid, the solid cut-out and the molten parts are entities with an
+uploaded Mesh, an ECS Material through the terrain shader copying the ModelMaterial's alpha mode,
+cutoff, roughness and emission with DoubleSided false since the ECS Material defaults to
+double-sided, a Transform, Visible, ShadowOnly and the game's SectionPart naming the section and the
+kind, the molten's material written again when the lamps rebuild; a Place pass sets Visible and
+ShadowOnly writing what changed, run when the flood, the casters, the reach or a section's parts
+change, caching the shown sections and the lamps' lists; the plants, the glass, the ice, the water
+and the cut-out glass stay on DrawMesh each frame, the casters' plants shadow-only. LightSettings'
+ScreenProbes and its call are gone, the quality's summary saying the engine traces the probes at
+Medium and High, the headless options test holding the quality at High, the README's probes sentence
+and a paragraph on the entities; the play run's draws check reads entities.drawn and fails at 0, 145
+at the land's edge. In the four views of item 93 voxel.state counts the same sections, draws,
+triangles, lamps and culled in both 5.2.313 builds, the captures within an RMSE of 0.0011 and at
+most 5 pixels past 3%. The note's readings, Release at distance 12 and High with the probes, read
+twice a build interleaved with the engine's game holding 10 to 50% of the GPU, the grove at 1920 by
+1080 on 5.2.291 a frame of 41.5 to 46.6 ms with the scene pass 19.8 to 23.6, on 5.2.313 with
+DrawMesh 35.1 to 45.7 and 19.8 to 21.2, and with the entities 23.2 to 24.0 and 9.8 to 10.3; at 1280
+by 720 the grove 29 to 33 against 19.6 to 20.0 and the village 27.5 to 29.5 against 19.2 to 20.0;
+the CPU's recording of the passes more than halved, the grove's cpu.shadows 8.6 to 11.9 ms against
+4.5 to 6.1, the game's draw.sections 0.65 to 1.8 ms from 1.2 to 6, MeshEntityDraws 0.25 to 0.33 ms;
+why the GPU's scene pass halves with the same pixels lies inside the engine, untraced, the engine's
+item 125. The package alone, both builds on DrawMesh, took 1 to 2 ms off the shadows and up to 1.5
+off the global illumination within the load's noise, the scene pass the same. 352 tests, play.sh 389
+s on the GPU, the README's costs not read again on a loaded GPU.
 
-Before it, `1d31dda` came, item 29's first part's GPU half, pushed at 07:22 on 2026-10-25, its run
-red on the play job, Verdict 4, settled by this mend.
+Before it, `ddede23` came, Verdict 5's mend, pushed at 11:57 on 2026-10-25, its run green at 13:00
+with the play job 63 minutes.
 
-Before it, `2549786` came, item 29's first part's first half, with `87d089e`, item 30, pushed at
-06:38 on 2026-10-25 once the run of `bbe814c` went green, its run green, the play job 39 minutes.
+Before it, `1767348` came, item 132, the tree's sweep for N 4.7 and STYLE.md, pushed at 11:05 on
+2026-10-25 after the lost run of `f97a4c9`, item 131, Verdict 5, its run green at 11:56 with the
+play job 49 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -445,7 +399,10 @@ full.
     each, the engine's item 124 under Decision 68, after which the rest move; the draw count test
     reads entities.drawn plus the draws left, and the frame is read three ways, 5.2.291, 5.2.313
     with DrawMesh and 5.2.313 with the entities, so the package's own change shows apart. nuget.org
-    served 5.2.313 late, its flat container at 404 at 17:04.
+    served 5.2.313 late, its flat container at 404 at 17:04. The first commit at `b7608c7` on
+    2026-10-25, the three flagless parts as entities on 5.2.313, the grove's frame from about 43 ms
+    to 23.6 at 1080p with the scene pass halved, the readings in the devlog's note; the four flagged
+    parts move on the package carrying the engine's item 124, which closes this item.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
@@ -555,7 +512,24 @@ full.
     package publishes. Part three is dropped at 07:51, item 92 having removed far land under
     Decision 41, so nothing of it remains to move to the GPU; the light levels stay a fourth part if
     their cost shows, the flights' numbers showing the meshing and the field's main-thread cost and
-    not the flood.
+    not the flood. Part two's number read again at 17:40 on item 95's tree, the same three sprint
+    flights at distance 12 offscreen at 1280 by 720 on a quiet GPU: Debug frames of 21.7, 16.7 and
+    19.0 ms with update.mesh 0.93, 2.59 and 1.09, Release with the entities 16.3, 13.7 and 14.6 with
+    0.35, 1.07 and 0.15, Release on DrawMesh 17.0, 14.6 and 18.0, against the morning's Debug frames
+    of 22.0, 37.5 and 37.0 with update.mesh up to 7.8 on 5.2.291, the difference the package, item
+    95 and the quieter GPU; so the meshing is at most 2.6 ms of a Debug frame and about 1 of a
+    Release one, and the frame stands under 16.7 ms in Release in two flights of three. On 5.2.313
+    part two would upload each frame's sections in one write of blocks, light and borders of about
+    17 KB each before one dispatch, since UpdateShaderBuffer waits for every dispatch before it,
+    needs a count pass read back a frame later before a range of fixed capacity is allocated from a
+    pool and the mesh pass runs, so edits stay on the CPU mesher, and ports the whole mesher to
+    Slang, the seven face classes, the shapes and plant walls, the connected glass, the water depth,
+    the per-corner light with the open-cell gather, the corner shade, the biome tints, the atlas's
+    spots and the field's colors, several commits over days for those 1 to 2.6 ms in flights alone.
+    Chosen, the meshing moves to the workers first, SectionMesher filling its arrays off the main
+    thread and the main thread taking the finished arrays in and uploading them, a commit or two;
+    part two as written is held on these numbers for the owner's word, Decision 12 being the
+    owner's.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
@@ -581,7 +555,33 @@ full.
 
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 5 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdict 6 is open. Verdicts 1 to 5 are settled, said under each in REVIEW-ARCHIVE.md.
+
+6. **The run of `b7608c7` is red, the play job's water texture check reading no frame step on
+    lavapipe.** Read at 17:58 on 2026-10-25 from the run's jobs and the play job's log, run
+    40212359716. The three test jobs are green; the play job ran 19 minutes to the check after the
+    water's depth and failed it, the water's texture not stepping through its frames, its green
+    reading 114 eight times where item 39's animated textures step by their metadata's frame time.
+    The game's log ends with Vulkan's validation saying an Output variable is a pointer to a float32
+    and this mismatch between vector sizes is not allowed unless maintenance4 is enabled, a shader
+    interface mismatch the entity path's pipeline or the terrain shader's new use may raise. On the
+    GPU the play run passed in 389 s, so the fault shows on lavapipe or on the first run after the
+    commit; the water stays on DrawMesh, so the coder reads what the entities' commit changed in the
+    frame's time for the terrain shader, the animation table's step set with the Place pass where it
+    was set each frame, or the shader values the entities' Material holds, and the validation
+    message beside it. The mend goes ahead of item 29's meshing on the workers. Read at 18:09, the
+    cause is the check and not the water. On local lavapipe with validation the two-frame water pack
+    reads 74 and 115 in turn on both `ddede23` and `b7608c7`, so the animation runs; the check reads
+    the last frame drawn, a frame takes its tick from the time it is drawn, and frames at a steady
+    pace a whole number of tenths of a second long land on the same of the two frames whenever the
+    script reads them, which the entities' faster frames on the runner likely made, the checks there
+    running about a fifth faster. The mend gives ChunkRenderer HeldTicks and a voxel.ticks command
+    holding the animated textures and the lamps at a tick, the check reading the pool at ticks 0 to
+    3 for white and black alternating by 40 or more in green and then setting off, without a sleep.
+    The validation lines are performance notes new with item 95, two in the game's log, a pipeline
+    the entity path builds pairing the terrain's vertex stage with a fragment stage that reads none
+    of its output at location 11, likely the water depth, the write discarded; the pairing is the
+    engine's choice a pass, so it goes to the engine's item 125 and not to the shader blind.
 
 ## Decisions
 

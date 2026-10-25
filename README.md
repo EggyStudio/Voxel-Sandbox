@@ -176,7 +176,9 @@ and `voxel.reload` reads them again. `voxel.vitals` says or sets the health and 
 harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and
 `voxel.shadows` set global illumination, the scene's distance field and the sun's shadows,
 `voxel.options` says or sets any setting of the options' screens by its screen and name, `voxel.hud`
-hides what is drawn over the world for a capture, `voxel.scale` sets the interface's scale, at which
+hides what is drawn over the world for a capture, `voxel.ticks` holds the animated textures and
+lamps at a tick, so a capture or a check reads a frame of an animation however the frames fall,
+`voxel.scale` sets the interface's scale, at which
 `build/pictures.sh` takes the windows, and `voxel.fov` sets the field of view, which the script
 narrows to 40 degrees for its views of the world, as a zoom does for a screenshot. Three measure the
 light. `voxel.flicker` records each frame's change in the picture around a turn or a step into a
