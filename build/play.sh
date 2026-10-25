@@ -1006,7 +1006,7 @@ echo "the draws at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ 
 
 check "the options"
 # Each setting of the options' own screen and of the Video, Render, Post Processing, Sky and
-# Visuals and Particles screens is set to the middle of its reach, or to its low end where it stands there, or to
+# Visuals, Particles and Music and Sounds screens is set to the middle of its reach, or to its low end where it stands there, or to
 # its next choice, read back as set, through the engine's own state where the setting reads it
 # there, and set back as it was, to its step's nearest where it stood between two, as the hour can.
 # A setting is named in voxel.options by its words joined by underscores. The sky's colors'
@@ -1014,7 +1014,7 @@ check "the options"
 # and vsync are left out, which the engine says of a window alone and an offscreen run has none.
 same() { awk -v a="$1" -v b="$2" 'BEGIN { d = a - b; exit !(d < 0.001 && d > -0.001) }'; }
 walked=0
-for screen in general video render post sky particles; do
+for screen in general video render post sky particles sounds; do
   mapfile -t lines < <(ask voxel.options "$screen")
   for line in "${lines[@]}"; do
     name=${line%%: *}
@@ -1047,7 +1047,7 @@ for screen in general video render post sky particles; do
   done
 done
 echo "the options screens' $walked settings each set and set back"
-[ "$walked" -ge 41 ] || fail "the options screens hold $walked settings, where 41 were written"
+[ "$walked" -ge 48 ] || fail "the options screens hold $walked settings, where 48 were written"
 
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"

@@ -240,6 +240,8 @@ public sealed class VoxelGame : IDisposable
 
     public AmbientParticles Particles { get; } = new();
 
+    public GameSounds Sounds { get; } = new();
+
     /// <summary>The snow the weather lays on the tops while it snows and melts once it clears.</summary>
     public SnowCover Snow { get; } = new();
 
@@ -382,6 +384,7 @@ public sealed class VoxelGame : IDisposable
         Drops.Clear();
         Falling.Clear();
         Fires.Clear();
+        Sounds.Stop();
         Tnt.Clear();
         Arrows.Clear();
         // What the behaviors sent of the world left is dropped with it.
@@ -634,6 +637,9 @@ public sealed class VoxelGame : IDisposable
         // The splashes fall as far as the weather has turned, and the wakes follow the bodies in the
         // water, the player's while it is seen.
         Particles.Update(World, Player.Eye, _overcast, seconds, Mobs.All.Select(m => m.Body).Prepend(Player.Body).Skip(Mode == GameMode.Spectator ? 1 : 0));
+        // The steps and the places' sounds, heard from the player's eye, none of a spectator's steps.
+        Sounds.Update(World, Player.Eye, Player.Yaw, Player.Pitch, Player.Body, Mode != GameMode.Spectator, Player.Swimming, Sky.Hour, _overcast,
+            GetApp().World.Resource<EcsWorld>(), Mobs.Still, seconds);
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
         Clouds.Update(seconds);

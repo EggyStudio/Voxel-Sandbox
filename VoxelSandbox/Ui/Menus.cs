@@ -16,6 +16,7 @@ public enum Menu
     SkyAndVisuals,
     SkyColors,
     Particles,
+    Sounds,
     SkyColor,
 }
 
@@ -89,7 +90,7 @@ public sealed class Menus
         _chosen = null;
         Open = Open switch
         {
-            Menu.Packs or Menu.Video or Menu.Render or Menu.PostProcessing or Menu.SkyAndVisuals => Menu.Options,
+            Menu.Packs or Menu.Video or Menu.Render or Menu.PostProcessing or Menu.SkyAndVisuals or Menu.Sounds => Menu.Options,
             Menu.SkyColor => Menu.SkyColors,
             Menu.SkyColors or Menu.Particles => Menu.SkyAndVisuals,
             Menu.Options => Menu.Pause,
@@ -146,6 +147,9 @@ public sealed class Menus
             case Menu.Particles:
                 DrawScreen(screens.Particles, s, height);
                 return;
+            case Menu.Sounds:
+                DrawScreen(screens.Sounds, s, height);
+                return;
             case Menu.SkyColor:
                 DrawSkyColor(screens, s, height);
                 return;
@@ -154,16 +158,19 @@ public sealed class Menus
         Title("Options", top);
         var general = screens.General.Options;
         for (int i = 0; i < general.Count; i++) Draw(general[i], Cell(i % 2, i / 2, top));
-        if (Gui.Button("Video Settings...", Cell(0, 2, top))) Open = Menu.Video;
-        if (Gui.Button("Render Settings...", Cell(1, 2, top))) Open = Menu.Render;
-        if (Gui.Button("Post Processing...", Cell(0, 3, top))) Open = Menu.PostProcessing;
-        if (Gui.Button("Sky and Visuals...", Cell(1, 3, top))) Open = Menu.SkyAndVisuals;
-        if (Gui.Button("Resource Packs...", Row(4)))
+        // The buttons to the other screens in rows of two under the settings.
+        var below = (general.Count + 1) / 2;
+        if (Gui.Button("Video Settings...", Cell(0, below, top))) Open = Menu.Video;
+        if (Gui.Button("Render Settings...", Cell(1, below, top))) Open = Menu.Render;
+        if (Gui.Button("Post Processing...", Cell(0, below + 1, top))) Open = Menu.PostProcessing;
+        if (Gui.Button("Sky and Visuals...", Cell(1, below + 1, top))) Open = Menu.SkyAndVisuals;
+        if (Gui.Button("Music and Sounds...", Cell(0, below + 2, top))) Open = Menu.Sounds;
+        if (Gui.Button("Resource Packs...", Cell(1, below + 2, top)))
         {
             (_chosen, _fetchSeen, _packScroll) = (null, null, 0);
             Open = Menu.Packs;
         }
-        if (Gui.Button("Done", Row(5))) Open = Menu.Pause;
+        if (Gui.Button("Done", Row(below + 3))) Open = Menu.Pause;
     }
 
     // A cell of two columns of 150, as Minecraft lays its options out.

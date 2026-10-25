@@ -99,6 +99,11 @@ public struct MobPose
     /// <summary>Seconds it has moved for, which a wing's flap beats by.</summary>
     public float Swing;
 
+    /// <summary>How far it has walked on the ground or through water's top, in blocks, and whether a step of it fell in its last move, each <see cref="Places.StepLength"/>.</summary>
+    public float Walked;
+
+    public bool Stepped;
+
     /// <summary>A wing's angle in radians as it flaps, from <see cref="Flap"/>.</summary>
     public readonly float WingAngle => Flap * (0.6f + 0.6f * MathF.Sin(Swing * 30));
 }
@@ -446,6 +451,9 @@ public sealed partial class Mob
         // A hunter faces its prey as it moves, a skeleton backing away from the player among them.
         if (along > 1e-4f && wish != Vector3.Zero && !Hunting) pose.Yaw = Turn(pose.Yaw, MathF.Atan2(-moved.X, -moved.Z), 10 * seconds);
         Gait.Step(ref pose.Stride, ref pose.StridePhase, along, seconds);
+        var walked = pose.Walked;
+        if (Body.OnGround || swimming) pose.Walked += along;
+        pose.Stepped = (int)(pose.Walked / Places.StepLength) != (int)(walked / Places.StepLength);
         pose.Swing += seconds;
         pose.Flap += ((Kind.FallsSlowly && !Body.OnGround && !swimming ? 1 : 0) - pose.Flap) * MathF.Min(1, 12 * seconds);
     }

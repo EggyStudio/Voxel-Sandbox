@@ -276,6 +276,14 @@ public sealed class OptionScreens
             Density("Wakes", () => particles.WakeDensity, v => particles.WakeDensity = v),
         ], []);
 
+        var sounds = game.Sounds;
+        Sounds = new("Music and Sounds",
+        [
+            Loudness("Master Volume", () => sounds.Master, v => sounds.Master = v),
+            Loudness("Footsteps", () => sounds.Steps, v => sounds.Steps = v),
+            Loudness("Ambience", () => sounds.Ambience, v => sounds.Ambience = v),
+        ], []);
+
         Colors = SkyColorsOf(colors);
         SkyColors = colors;
     }
@@ -296,12 +304,15 @@ public sealed class OptionScreens
     /// <summary>How thick each kind of the world's small moving things is, from none to twice its own.</summary>
     public OptionScreen Particles { get; }
 
+    /// <summary>How loud the sounds play, all of them, the steps and the places' sounds.</summary>
+    public OptionScreen Sounds { get; }
+
     /// <summary>The sky's colors, each set on a screen of its own.</summary>
     public IReadOnlyList<SkyColor> Colors { get; }
 
     public SkyColors SkyColors { get; }
 
-    /// <summary>The screens of settings by the name a command and the options file give each, general, video, render, post, sky, particles and colors, the last every channel of every color.</summary>
+    /// <summary>The screens of settings by the name a command and the options file give each, general, video, render, post, sky, particles, sounds and colors, the last every channel of every color.</summary>
     public IEnumerable<(string Name, IReadOnlyList<Option> Options)> All()
     {
         yield return ("general", General.Options);
@@ -310,10 +321,15 @@ public sealed class OptionScreens
         yield return ("post", PostProcessing.Options);
         yield return ("sky", SkyAndVisuals.Options);
         yield return ("particles", Particles.Options);
+        yield return ("sounds", Sounds.Options);
         yield return ("colors", ChannelsOf(Colors, SkyColors));
     }
 
     /// <summary>Every channel of every color, each named by its color and its channel.</summary>
+    // A loudness from none to full, shown as a share.
+    private static Option Loudness(string name, Func<float> get, Action<float> set) =>
+        new(name, () => get() * 100, v => set(v / 100)) { High = 100, Step = 5, Format = Option.Percent };
+
     // A density from none to twice its own, shown as a share.
     private static Option Density(string name, Func<float> get, Action<float> set) =>
         new(name, () => get() * 100, v => set(v / 100)) { High = 200, Step = 10, Format = Option.Percent };

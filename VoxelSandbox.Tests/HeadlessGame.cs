@@ -33,6 +33,8 @@ public sealed class HeadlessGame : IDisposable
         InitWindow(1280, 720, "Voxel Sandbox");
         // The frames are counted, not waited on, so none is held back to a rate.
         SetTargetFPS(0);
+        // Its sounds go to a device that plays none, as a run with no window shown does.
+        InitAudioDevice();
         try
         {
             Game = new VoxelGame("flat", seed, null, transient: true, []) { RenderDistance = 2 };
@@ -41,6 +43,7 @@ public sealed class HeadlessGame : IDisposable
         }
         catch
         {
+            CloseAudioDevice();
             CloseWindow();
             throw;
         }
@@ -60,6 +63,7 @@ public sealed class HeadlessGame : IDisposable
     public void Dispose()
     {
         Game.Dispose();
+        CloseAudioDevice();
         CloseWindow();
     }
 }

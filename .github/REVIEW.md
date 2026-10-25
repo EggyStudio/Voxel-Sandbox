@@ -5,22 +5,29 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `8b01c69`, item 128's drops, read at 02:18 on 2026-10-25, carrying REVIEW.md. Fall,
-PickUp and Gather are folded into their context systems and ItemDrops.Update is gone, PickUp no
-longer counting what it picked since only the facade read it; ItemFrameTests reads a stack picked up
-after its delay with the inventory full but for four places, 10 sand spawned a block from the
-player, none taken in 9 frames, 4 by 18 and 6 left lying, and two stacks of leather with a feather
-between joining to two stacks of 5 after 3 frames. 314 tests in 26 s, play.sh 310 s on the GPU. Held
-with `480d97b` until the run of `01eb71f` ends, then pushed. After `480d97b`, item 128's TNT and
-falling blocks with the blasts' flashes, read at 02:12 on 2026-10-25, carrying REVIEW.md. Burn, Drop
-and Fade are folded into their context systems and the facades' Update methods gone, each event sent
-as its entity despawns; TntFrameTests reads the lit TNT on the headless game at frames of a sixtieth
-six blocks from the player with the bounds relative to the feet, the highest point 0.3 to 1.5 over
-them, the blast 0.06 to 0.07 and the chained fuses 0.5 to 1.45 s, stepping until the TNT is gone and
-one frame more since a fuse of 240 frames crosses zero on the 241st by float error and the blast is
-carried out the frame after it is sent; FallingFrameTests reads the sand column, the gravel let
-down, the sand broken on a torch with its item among the drops a frame after the landing, and the
-felled oak through the test's own TreeFelling handing its logs to game.Falling, the felling-only
+Reviewed up to `6a7e5b1`, item 128's arrows, the last of its list, read at 02:24 on 2026-10-25,
+carrying REVIEW.md. Fly is folded into its context system, which sends each ArrowStrike after
+despawning the arrows that struck, Arrows.Update and the facade's Random gone with the extra point's
+chance drawn from the step's; HostileTests keeps the skeleton's two to three shots from the mob's
+own Update aimed within 25 degrees of the way to the player, and MobFrameTests reads a skeleton
+eight blocks from a survival player at hour 0 taking it to 8 to 17 health in 150 frames through
+MobShot, the flight and ArrowStrike; no twin is left in the source. 315 tests in 27 s, play.sh 317 s
+on the GPU. Held with `8b01c69` and `480d97b` until the run of `01eb71f` ends, then pushed. After
+`8b01c69`, item 128's drops, read at 02:18 on 2026-10-25, carrying REVIEW.md. Fall, PickUp and
+Gather are folded into their context systems and ItemDrops.Update is gone, PickUp no longer counting
+what it picked since only the facade read it; ItemFrameTests reads a stack picked up after its delay
+with the inventory full but for four places, 10 sand spawned a block from the player, none taken in
+9 frames, 4 by 18 and 6 left lying, and two stacks of leather with a feather between joining to two
+stacks of 5 after 3 frames. 314 tests in 26 s, play.sh 310 s on the GPU. After `480d97b`, item 128's
+TNT and falling blocks with the blasts' flashes, read at 02:12 on 2026-10-25, carrying REVIEW.md.
+Burn, Drop and Fade are folded into their context systems and the facades' Update methods gone, each
+event sent as its entity despawns; TntFrameTests reads the lit TNT on the headless game at frames of
+a sixtieth six blocks from the player with the bounds relative to the feet, the highest point 0.3 to
+1.5 over them, the blast 0.06 to 0.07 and the chained fuses 0.5 to 1.45 s, stepping until the TNT is
+gone and one frame more since a fuse of 240 frames crosses zero on the 241st by float error and the
+blast is carried out the frame after it is sent; FallingFrameTests reads the sand column, the gravel
+let down, the sand broken on a torch with its item among the drops a frame after the landing, and
+the felled oak through the test's own TreeFelling handing its logs to game.Falling, the felling-only
 tests staying on their small worlds. 314 tests in 27 s, play.sh 304 s on the GPU. After `01eb71f`,
 item 128's fires, read at 02:01 on 2026-10-25 after the clocks went back an hour, carrying
 REVIEW.md. Fire.Spread's overload is folded into its context system and Fires.Update is gone, Fires
@@ -664,26 +671,6 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
-
-128. **The entities' tests step the real game through the engine's headless app, the twins gone.**
-    From the coder's trial at 02:40 on 2026-10-25, after the engine's item 104 made App.Frame and
-    DefaultPlugins public. An app built as the engine's behaviors guide says steps the game's
-    registered systems, a pig falling through the real MobMind.Think, and a whole VoxelGame builds
-    in a test under E3D_HEADLESS with InitWindow, a transient flat world stepping 30 frames of
-    game.Draw with its mobs in 2 s. The plan, one kind of thing a commit with play's readings
-    unchanged, is a HeadlessGame fixture in a non-parallel collection, the variable, InitWindow, a
-    transient flat VoxelGame and CloseWindow on dispose, GameStep.Random seedable so the seeded
-    tests keep their sequences; then each kind's tests laying their scene in the game's flat world,
-    the placed animals cleared where they would interfere, stepping game.Draw frames, the mobs, the
-    fires, the TNT and the falling blocks, the drops and the arrows in that order, each twin, the
-    EcsWorld overloads and the facades' Update methods calling them, going in the same commit with
-    its logic moved into the context system; the tests of pure logic staying on their small laid
-    worlds, the pathfinder, a mob's own Update and Hit, the mesher and the rest. Five or six
-    commits, after the lookups. The first commit at `4105293` on 2026-10-25, the fixture and the
-    mobs, their twins gone; the fires next with GameStep.Random settable and Fires.Take taking the
-    step's Random so a seeded test seeds every draw. The fires at `01eb71f`; the TNT and the falling
-    blocks next. The TNT, the falling blocks and the flashes at `480d97b`; the drops next, then the
-    arrows. The drops at `8b01c69`; the arrows next, which close the list.
 
 ## Verdicts
 

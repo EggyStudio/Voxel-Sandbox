@@ -1644,6 +1644,28 @@ before a batch.
     2026-10-25, one read at the step's middle, 0.3 to 0.4 ms at the grove on the mended scene pass,
     the step itself free.
 
+128. **The entities' tests step the real game through the engine's headless app, the twins gone.**
+    From the coder's trial at 02:40 on 2026-10-25, after the engine's item 104 made App.Frame and
+    DefaultPlugins public. An app built as the engine's behaviors guide says steps the game's
+    registered systems, a pig falling through the real MobMind.Think, and a whole VoxelGame builds
+    in a test under E3D_HEADLESS with InitWindow, a transient flat world stepping 30 frames of
+    game.Draw with its mobs in 2 s. The plan, one kind of thing a commit with play's readings
+    unchanged, is a HeadlessGame fixture in a non-parallel collection, the variable, InitWindow, a
+    transient flat VoxelGame and CloseWindow on dispose, GameStep.Random seedable so the seeded
+    tests keep their sequences; then each kind's tests laying their scene in the game's flat world,
+    the placed animals cleared where they would interfere, stepping game.Draw frames, the mobs, the
+    fires, the TNT and the falling blocks, the drops and the arrows in that order, each twin, the
+    EcsWorld overloads and the facades' Update methods calling them, going in the same commit with
+    its logic moved into the context system; the tests of pure logic staying on their small laid
+    worlds, the pathfinder, a mob's own Update and Hit, the mesher and the rest. Five or six
+    commits, after the lookups. The first commit at `4105293` on 2026-10-25, the fixture and the
+    mobs, their twins gone; the fires next with GameStep.Random settable and Fires.Take taking the
+    step's Random so a seeded test seeds every draw. The fires at `01eb71f`; the TNT and the falling
+    blocks next. The TNT, the falling blocks and the flashes at `480d97b`; the drops next, then the
+    arrows. The drops at `8b01c69`; the arrows next, which close the list. The arrows at `6a7e5b1`.
+    Done at `6a7e5b1` on 2026-10-25 in five commits, the fixture and the mobs, the fires, the TNT
+    and the falling blocks, the drops and the arrows, every twin gone.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

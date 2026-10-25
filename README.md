@@ -150,7 +150,8 @@ spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` put
 inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and
 reads a furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
 `voxel.throw` throws as Q does, and `voxel.drop` lays one of an item on the ground at a place.
-`voxel.weather` says, holds or frees the weather, `voxel.packs` says or sets the resource packs on,
+`voxel.weather` says, holds or frees the weather, `voxel.sounds` says how loud the place's sounds
+play and the steps played, `voxel.packs` says or sets the resource packs on,
 and `voxel.reload` reads them again. `voxel.vitals` says or sets the health and food, `voxel.hurt`
 harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and
 `voxel.shadows` set global illumination, the scene's distance field and the sun's shadows,
@@ -714,8 +715,8 @@ as Minecraft's does when played alone, with Back to Game, the options, Save the 
 Quit. The options are in two columns of buttons and sliders as Minecraft lays its options out, the
 field of view, the mouse's sensitivity, the interface's scale, automatic or 1 to 4, whether full
 rows of the HUD fade, and the zoom's key, C, V, Z, X, R or Left Alt, with a button to each screen of
-settings by its area, Video Settings, Render Settings, Post Processing, Sky and Visuals and Resource
-Packs. A setting's slider moves by its step, a button steps through its choices, each takes effect
+settings by its area, Video Settings, Render Settings, Post Processing, Sky and Visuals, Music and
+Sounds and Resource Packs. A setting's slider moves by its step, a button steps through its choices, each takes effect
 at once, and Done goes back a screen. The window F3 opens is the engine's ImGui, a tool for the
 developer, with what the frame holds and costs, the toggles of debugging and the world's kind, seed
 and mode.
@@ -755,6 +756,7 @@ and mode.
 | | Clouds and Fog | Off, On | On |
 | | Haze by Height, the haze thinning over land high above the sea, and Morning Haze, the haze thickening about sunrise | Off, On | On |
 | Particles, from Sky and Visuals | Rain Splashes, Falling Leaves, Cave Dust and Wakes, each how thick it is | 0 to 200% by 10 | 100% |
+| Music and Sounds | Master Volume, Footsteps and Ambience | 0 to 100% by 5 | 100% |
 | Sky Colors, from Sky and Visuals | Noon Sunlight, Low Sunlight, Moonlight and Night Tint, each a light by its hue | red, green and blue from 0 to 255 | the modpack's shader's |
 | | Day Sky, Day Horizon, Sunset Horizon, Night Sky and Night Horizon | red, green and blue from 0 to 255 | the modpack's shader's |
 
@@ -1270,6 +1272,27 @@ corner takes the share of the haze left clear at its height, so a low sun dims i
 dome blended over it would show it. `voxel.edge` reads where the drawn land ends up a column of
 pixels and how it meets what lies above it. The Sky and Visuals screen turns the fog off, and the
 dome with it. The lamps' cubes are drawn with the engine's own shader and take no haze.
+
+## Sound
+
+The game's sounds are its own, made from noise and tones as it starts, none recorded nor taken from
+the source or its mods. A step sounds of the ground it falls on, grass, stone, wood, sand, gravel,
+snow or water, the source's groups of sounds made seven, a soft crunch on grass and leaves, a run of
+grains on gravel, a hiss on sand, a muffled crunch on snow and wool, a click over a thud on stone, a
+hollow knock on wood and a splash in water, four of each, chosen at random at a pitch within a tenth
+of its own. The player steps each block and three fifths it walks on the ground or through water's
+top, heard in the middle at a quarter of the step's loudness, and a mob within sixteen blocks the
+same, heard through the engine's spatial play from the side it stands on and fainter with its
+distance, silent at sixteen.
+
+The sounds of a place play on, each easing in and out over about two seconds by where the player
+stands: birds in the woods and on the plains by day, crickets by night where it is neither dry nor
+cold, both hushed by the weather, the wind rising from 32 blocks over the sea to its loudest at 80, a
+cave's low tone and its dripping water in a cave, under the sea's level with little of the sky's
+light, and water lapping by how much of it lies within eight blocks. Each is a loop of eight
+seconds whose end runs on into its start. The Music and Sounds screen sets how loud all of them
+play, the steps and the places' sounds, and `voxel.sounds` says how loud each sound of the place
+plays and the steps played.
 
 ## What is not here yet
 

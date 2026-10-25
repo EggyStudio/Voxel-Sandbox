@@ -30,6 +30,7 @@ SetExitKey(Key.Null);
 // Minecraft's, so the engine's hiding of the interface, its screenshot and its debug overlay on them
 // are turned off.
 SetUiHiddenKey(Key.Null);
+InitAudioDevice();
 SetScreenshotKey(Key.Null);
 SetDebugOverlayKey(Key.Null);
 
@@ -41,4 +42,5 @@ using (var game = new VoxelGame(flat ? "flat" : "overworld", seed, name, transie
     GameCommands.Game = null;
 }
 
+CloseAudioDevice();
 CloseWindow();
