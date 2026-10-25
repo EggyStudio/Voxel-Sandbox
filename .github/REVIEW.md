@@ -5,44 +5,50 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `480d97b`, item 128's TNT and falling blocks with the blasts' flashes, read at 02:12
-on 2026-10-25, carrying REVIEW.md. Burn, Drop and Fade are folded into their context systems and the
-facades' Update methods gone, each event sent as its entity despawns; TntFrameTests reads the lit
-TNT on the headless game at frames of a sixtieth six blocks from the player with the bounds relative
-to the feet, the highest point 0.3 to 1.5 over them, the blast 0.06 to 0.07 and the chained fuses
-0.5 to 1.45 s, stepping until the TNT is gone and one frame more since a fuse of 240 frames crosses
-zero on the 241st by float error and the blast is carried out the frame after it is sent;
-FallingFrameTests reads the sand column, the gravel let down, the sand broken on a torch with its
-item among the drops a frame after the landing, and the felled oak through the test's own
-TreeFelling handing its logs to game.Falling, the felling-only tests staying on their small worlds.
-314 tests in 27 s, play.sh 304 s on the GPU. Held until the run of `01eb71f` ends, then pushed.
-After `01eb71f`, item 128's fires, read at 02:01 on 2026-10-25 after the clocks went back an hour,
-carrying REVIEW.md. Fire.Spread's overload is folded into its context system and Fires.Update is
-gone, Fires holding no Random of its own, Light and Take taking one and the game passing the step's,
-which is settable; FireFrameTests lays a 16 by 16 square of planks or stone ringed by stone in the
-game's flat world, seeds the step's Random with 1, 2 and 3, lights a fire and steps 2,400 frames of
-0.05 s a seed with the bounds as before, FireTests keeping the two small-world tests; the fixture
-gains a frame length and a target of 0, the headless app having paced itself at 60 a second so the
-fire tests took four minutes and take 13 s. 314 tests in 25 s, play.sh 335 s on the GPU. The five
-pushed at 02:07 on 2026-10-25 after the run of `3275e76` went green; the run watched. After
-`4105293`, item 128's first commit, the fixture and the mobs, read at 02:48 on 2026-10-25, carrying
-REVIEW.md. HeadlessGame sets the headless and the frame time variables, calls InitWindow, builds a
-transient flat VoxelGame at render distance 2, steps game.Draw until it stops loading within 600
-frames and on dispose disposes the game and closes the window, its tests in a collection run one at
-a time; the twins go, MobLife.Age's overload becoming the instance Pass the Age system calls a mob,
-a lone mob's tests calling it through GetRef, and Think, Crowd, Vanish and Hunt folded into their
-context systems, Vanish sending each MobDied as it despawns. MobFrameTests reads a pig and a zombie
-in the air each taken by one of the two queries and falling within three frames with the pose the
-movement wrote, a zombie beside a survival player taking it to at most 17 within 60 frames through
-MobStrike, and a pig killed by Hit standing after 15 frames and gone after 45 with its porkchop
-among the drops through MobDied. 314 tests in 15 s where 311 took 12 to 13, each headless game about
-2.5 s; play.sh 308 s on the GPU with the readings as before. After `d647b0e`, the lookups, read at
-02:40 on 2026-10-25, carrying the review's files. Fire is keyed by its cell and Fires.Take asks the
-engine's index in place of building a set of every fire each frame the world names a cell, each
-named cell still drawing its delay so the seeds' sequences hold; a test reads a lit cell named again
-keeping its one fire, a new cell getting one, the index finding it by its key and an empty cell not
-found; Mobs.Leaving keeps its walk with a comment pointing at the engine's item 117, the README's
-Fire section gaining a line. 312 tests, play.sh 325 s on the GPU. The entities' tests through the
+Reviewed up to `8b01c69`, item 128's drops, read at 02:18 on 2026-10-25, carrying REVIEW.md. Fall,
+PickUp and Gather are folded into their context systems and ItemDrops.Update is gone, PickUp no
+longer counting what it picked since only the facade read it; ItemFrameTests reads a stack picked up
+after its delay with the inventory full but for four places, 10 sand spawned a block from the
+player, none taken in 9 frames, 4 by 18 and 6 left lying, and two stacks of leather with a feather
+between joining to two stacks of 5 after 3 frames. 314 tests in 26 s, play.sh 310 s on the GPU. Held
+with `480d97b` until the run of `01eb71f` ends, then pushed. After `480d97b`, item 128's TNT and
+falling blocks with the blasts' flashes, read at 02:12 on 2026-10-25, carrying REVIEW.md. Burn, Drop
+and Fade are folded into their context systems and the facades' Update methods gone, each event sent
+as its entity despawns; TntFrameTests reads the lit TNT on the headless game at frames of a sixtieth
+six blocks from the player with the bounds relative to the feet, the highest point 0.3 to 1.5 over
+them, the blast 0.06 to 0.07 and the chained fuses 0.5 to 1.45 s, stepping until the TNT is gone and
+one frame more since a fuse of 240 frames crosses zero on the 241st by float error and the blast is
+carried out the frame after it is sent; FallingFrameTests reads the sand column, the gravel let
+down, the sand broken on a torch with its item among the drops a frame after the landing, and the
+felled oak through the test's own TreeFelling handing its logs to game.Falling, the felling-only
+tests staying on their small worlds. 314 tests in 27 s, play.sh 304 s on the GPU. After `01eb71f`,
+item 128's fires, read at 02:01 on 2026-10-25 after the clocks went back an hour, carrying
+REVIEW.md. Fire.Spread's overload is folded into its context system and Fires.Update is gone, Fires
+holding no Random of its own, Light and Take taking one and the game passing the step's, which is
+settable; FireFrameTests lays a 16 by 16 square of planks or stone ringed by stone in the game's
+flat world, seeds the step's Random with 1, 2 and 3, lights a fire and steps 2,400 frames of 0.05 s
+a seed with the bounds as before, FireTests keeping the two small-world tests; the fixture gains a
+frame length and a target of 0, the headless app having paced itself at 60 a second so the fire
+tests took four minutes and take 13 s. 314 tests in 25 s, play.sh 335 s on the GPU. The five pushed
+at 02:07 on 2026-10-25 after the run of `3275e76` went green; the run watched. After `4105293`, item
+128's first commit, the fixture and the mobs, read at 02:48 on 2026-10-25, carrying REVIEW.md.
+HeadlessGame sets the headless and the frame time variables, calls InitWindow, builds a transient
+flat VoxelGame at render distance 2, steps game.Draw until it stops loading within 600 frames and on
+dispose disposes the game and closes the window, its tests in a collection run one at a time; the
+twins go, MobLife.Age's overload becoming the instance Pass the Age system calls a mob, a lone mob's
+tests calling it through GetRef, and Think, Crowd, Vanish and Hunt folded into their context
+systems, Vanish sending each MobDied as it despawns. MobFrameTests reads a pig and a zombie in the
+air each taken by one of the two queries and falling within three frames with the pose the movement
+wrote, a zombie beside a survival player taking it to at most 17 within 60 frames through MobStrike,
+and a pig killed by Hit standing after 15 frames and gone after 45 with its porkchop among the drops
+through MobDied. 314 tests in 15 s where 311 took 12 to 13, each headless game about 2.5 s; play.sh
+308 s on the GPU with the readings as before. After `d647b0e`, the lookups, read at 02:40 on
+2026-10-25, carrying the review's files. Fire is keyed by its cell and Fires.Take asks the engine's
+index in place of building a set of every fire each frame the world names a cell, each named cell
+still drawing its delay so the seeds' sequences hold; a test reads a lit cell named again keeping
+its one fire, a new cell getting one, the index finding it by its key and an empty cell not found;
+Mobs.Leaving keeps its walk with a comment pointing at the engine's item 117, the README's Fire
+section gaining a line. 312 tests, play.sh 325 s on the GPU. The entities' tests through the
 engine's stepped app are item 128, planned in the item. After `fb04f6b`, item 105, the stepped
 shadow read once, read at 02:33 on 2026-10-25, carrying the review's files and the devlog's grove.
 litStepped reads lightReaching once at the step's middle with its held share and calls litLight with
@@ -677,7 +683,7 @@ full.
     mobs, their twins gone; the fires next with GameStep.Random settable and Fires.Take taking the
     step's Random so a seeded test seeds every draw. The fires at `01eb71f`; the TNT and the falling
     blocks next. The TNT, the falling blocks and the flashes at `480d97b`; the drops next, then the
-    arrows.
+    arrows. The drops at `8b01c69`; the arrows next, which close the list.
 
 ## Verdicts
 

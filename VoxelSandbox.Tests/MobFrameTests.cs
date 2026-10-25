@@ -67,4 +67,20 @@ public sealed class MobFrameTests
         Assert.DoesNotContain(pig, game.Mobs.All);
         Assert.Contains(game.Drops.All, drop => drop.Drop.Item == Items.RawPorkchop);
     }
+
+    [Fact]
+    public void A_Skeleton_At_Night_Shoots_A_Player_In_Survival_And_Its_Arrows_Strike_It_Through_The_Frame()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        game.Mobs.Clear(null);
+        game.Mode = GameMode.Survival;
+        game.Sky.Hour = 0;
+        headless.Step(1);
+        Beside(game, MobKinds.Skeleton, 8);
+        // In five seconds it shoots two or three arrows, each of three or four points, which the
+        // frame flies home and the game deals.
+        headless.Step(150);
+        Assert.InRange(game.Vitals.Health, Vitals.Most - 12, Vitals.Most - 3);
+    }
 }

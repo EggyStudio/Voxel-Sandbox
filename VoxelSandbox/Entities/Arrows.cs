@@ -11,8 +11,7 @@ public readonly record struct ArrowStrike(int Damage, Vector3 From);
 /// Its behavior flies it in the engine's frame, reading the voxel world, the player and the
 /// seconds from the game's <see cref="GameStep"/> on the main thread, which alone may read the
 /// world, and sends each strike on the player as an <see cref="ArrowStrike"/>, which the game deals
-/// as its next frame answers the mobs. It also takes its world and its inputs as arguments, so a
-/// test flies the arrows of an ECS world of its own as the frame flies the game's.
+/// as its next frame answers the mobs.
 /// </remarks>
 [Behavior]
 public partial struct Arrow
@@ -29,36 +28,32 @@ public partial struct Arrow
 
     private const float Life = 60, Step = 0.1f;
 
+    /// <summary>Moves every arrow in flight by the step's seconds, a tenth of a block at a time, and sends the damage of each that struck the player and where it came from.</summary>
     [OnUpdate]
     public static void Fly(BehaviorContext ctx)
     {
         if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
-        foreach (var (damage, from) in Fly(ctx.Ecs, step.World, step.Player, step.Seconds, step.Random)) ctx.World.SendEvent(new ArrowStrike(damage, from));
-    }
-
-    /// <summary>Moves every arrow in flight, a step of a tenth of a block at a time, and gives the damage of each that struck the player and where it came from.</summary>
-    public static List<(int Damage, Vector3 From)> Fly(EcsWorld ecs, VoxelWorld world, Body player, float seconds, Random random)
-    {
-        var hits = new List<(int, Vector3)>();
+        var ecs = ctx.Ecs;
+        var hits = new List<ArrowStrike>();
         var gone = new List<int>();
         foreach (var (id, _) in ecs.Query<Arrow>())
         {
             ref var arrow = ref ecs.GetRef<Arrow>(id);
-            arrow.Age += seconds;
+            arrow.Age += step.Seconds;
             if (arrow.Age > Life) gone.Add(id);
-            else if (!arrow.Stuck && Move(ref arrow, world, player, seconds, random) is { } hit)
+            else if (!arrow.Stuck && Move(ref arrow, step.World, step.Player, step.Seconds, step.Random) is { } hit)
             {
-                hits.Add(hit);
+                hits.Add(new ArrowStrike(hit.Damage, hit.From));
                 gone.Add(id);
             }
         }
         foreach (var id in gone) ecs.Despawn(id);
-        return hits;
+        foreach (var hit in hits) ctx.World.SendEvent(hit);
     }
 
     // Falls and slows the arrow along its flight, sticking it in the first block it meets, and gives
     // its strike where it meets the player's box first.
-    private static (int, Vector3)? Move(ref Arrow arrow, VoxelWorld world, Body player, float seconds, Random random)
+    private static (int Damage, Vector3 From)? Move(ref Arrow arrow, VoxelWorld world, Body player, float seconds, Random random)
     {
         arrow.Velocity.Y -= Arrows.Gravity * seconds;
         arrow.Velocity *= MathF.Exp(-0.2f * seconds);
@@ -99,8 +94,6 @@ public sealed class Arrows(EcsWorld ecs)
     /// <summary>The pull on an arrow in blocks a second each second, Minecraft's 0.05 a tick.</summary>
     public const float Gravity = 20;
 
-    private readonly Random _random = new();
-
     /// <summary>Every arrow, where it is, its flight, whether it is stuck and its age.</summary>
     public IEnumerable<Arrow> All
     {
@@ -114,9 +107,6 @@ public sealed class Arrows(EcsWorld ecs)
     public int Count => ecs.Count<Arrow>();
 
     public void Shoot(Vector3 from, Vector3 velocity) => ecs.Add(ecs.Spawn(), new Arrow { Position = from, Velocity = velocity });
-
-    /// <summary>Flies the arrows by so many seconds as a frame flies them, and gives the damage of each that struck the player and where it came from.</summary>
-    public List<(int Damage, Vector3 From)> Update(VoxelWorld world, Body player, float seconds) => Arrow.Fly(ecs, world, player, seconds, _random);
 
     /// <summary>Despawns every arrow, as a world closes.</summary>
     public void Clear()

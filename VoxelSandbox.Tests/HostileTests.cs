@@ -98,13 +98,8 @@ public class HostileTests
 
         var shots = Hunt(skeleton, world, player, hour: 0, seconds: 5).OfType<MobShot>().ToList();
         Assert.InRange(shots.Count, 2, 3);
-
-        var arrows = new Arrows(new Engine.EcsWorld());
-        arrows.Shoot(shots[0].From, shots[0].Velocity);
-        var hits = new List<(int Damage, Vector3 From)>();
-        for (float t = 0; t < 2; t += Step) hits.AddRange(arrows.Update(world, player, Step));
-        var hit = Assert.Single(hits);
-        Assert.InRange(hit.Damage, 3, 4);
+        // Each aimed at the player's chest, the frame's tests flying them home.
+        Assert.All(shots, shot => Assert.True(Vector3.Dot(Vector3.Normalize(shot.Velocity), Vector3.UnitZ) > 0.9f));
     }
 
     [Fact]
