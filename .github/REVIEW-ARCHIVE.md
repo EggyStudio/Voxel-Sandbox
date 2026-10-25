@@ -1826,3 +1826,18 @@ before a batch.
     read on the three runners. Mended at `76053f6`, read at 03:12, the fixture waiting by a
     stopwatch with a yield and the fire squares laid within the columns' reach. Settled at 03:44 on
     2026-10-25, the three test jobs green on the run of `76053f6`.
+
+4. **The run of `1d31dda` is red, the play job's GPU caves check reading no column generated from
+    the GPU.** Read at 07:56 on 2026-10-25 from the job's page and log. The three test jobs are
+    green. In the play job on lavapipe, verify 2 read 0 of 147,000 readings over 4 columns
+    differing, so the compute path runs there and gives the CPU's values; then voxel.tp 900.5 110
+    900.5 and the script's meshed wait, and voxel.gpu read 'the GPU's reading of the caves' noises
+    is on, 0 columns read since the world opened', where the NVIDIA GPU read 69 in 2 s. So on
+    lavapipe the columns of the new place came from the workers' own reading and none from a batch's
+    readback within the wait, the readbacks slower than the workers there, or the streamer not
+    asking the GPU ahead of them for a teleport, or the count not moved where a worker took the
+    readings; the coder reads which. The mend keeps the check as a check of the GPU path and not of
+    lavapipe's speed, a wait on the batches in flight or a smaller place, with the reason said in
+    the commit. The log is at the run's play job, run 40168842433. Settled at `9955bf3` on
+    2026-10-25, the streamer's Pending counting the columns waiting for the GPU's readings beside
+    the workers', so the play script's meshed wait holds until they arrive; the check unchanged.

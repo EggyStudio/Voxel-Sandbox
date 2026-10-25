@@ -20,6 +20,9 @@ public class HazeDomeTests
             if (above >= 5.99f) Assert.Equal(0, tint.A);
             // The share the sky's bodies take at a height is the dome's own there.
             Assert.Equal(tint.A, 255 * HazeDome.Shown(above), 1.5);
+            // A whole corner carries the open sky's level, so the haze it shows stays whole where the
+            // sky's light reaches neither a cave's walls nor the eye in it.
+            if (tint.A == 255) Assert.Equal(Lighting.Max, dome.SkyOf(i));
         }
         // Every triangle's front is toward the eye at the middle.
         for (int t = 0; t < dome.Indices.Count; t += 3)

@@ -660,9 +660,21 @@ public sealed class VoxelGame : IDisposable
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
         Clouds.Update(seconds);
+        var clock = System.Diagnostics.Stopwatch.StartNew();
         Streamer.Update(Player.Body.Position, RenderDistance);
+        var streamed = clock.Elapsed.TotalMilliseconds;
         Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
+        // The main thread's time taking in the columns the workers made and meshing the sections,
+        // eased over about a second, as the frame's profile shows the last value set.
+        _streamMs += (streamed - _streamMs) * 0.05;
+        _meshMs += (clock.Elapsed.TotalMilliseconds - streamed - _meshMs) * 0.05;
+        SetProfileValue("update.stream", _streamMs);
+        SetProfileValue("update.mesh", _meshMs);
     }
+
+    private double _streamMs, _meshMs;
+    // The sky's light level at the eye as the haze takes it, eased.
+    private float _eyeSky = Lighting.Max;
 
     /// <summary>Takes the player's vitals for the frame and fades the HUD by them, as the game's behavior does while the player lives.</summary>
     public void TakeVitals()
@@ -1146,6 +1158,12 @@ public sealed class VoxelGame : IDisposable
         // fades into the sky's blue, and under water it is the water's blue and covers it within 16
         // blocks.
         var reach = RenderDistance * Section.Size;
+        // Above water a point takes the haze by the sky's light reaching it or the eye, the eye's
+        // eased over about a quarter of a second, so a cave's far walls fade to black from in the
+        // cave and the haze changes smoothly as the eye walks in.
+        var eye = Player.Eye;
+        var (skyAtEye, _) = World.GetLight((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
+        _eyeSky += (skyAtEye - _eyeSky) * MathF.Min(1, GetFrameTime() * 8);
         if (Player.EyeInWater) Renderer.Fog(new Color(24, 52, 120), 2, 16);
         // Over that the atmosphere hazes the land as the modpack's shader does with its owner's
         // settings, its fog's strength of 0.95 less the 0.25 it keeps in clear weather, held to
@@ -1155,7 +1173,7 @@ public sealed class VoxelGame : IDisposable
         // The haze thins over the land high above the sea and thickens about sunrise, each as its
         // setting says.
         else if (Fog) Renderer.Fog(Sky.Horizon, reach * 0.65f, reach * 0.95f, (0.95f - 0.25f) * 0.325f,
-            0.5f * MathF.Min(1, 192 / reach) * (MorningHaze ? Haze.Dawn(Sky.Hour) : 1), sky: true, byHeight: HazeByHeight);
+            0.5f * MathF.Min(1, 192 / reach) * (MorningHaze ? Haze.Dawn(Sky.Hour) : 1), sky: true, byHeight: HazeByHeight, eyeSky: _eyeSky);
         else Renderer.Fog(Sky.Horizon, float.MaxValue, float.MaxValue);
 
         _laps.Restart();

@@ -61,7 +61,9 @@ public static class HazeDome
                     (Point(ring + 1, step + 1), Rings[ring + 1].Shown), (Point(ring + 1, step), Rings[ring + 1].Shown),
                 ];
                 var first = (uint)faces.Count;
-                for (int i = 0; i < 4; i++) faces.Add(quad[i].At, 2, i, 1, new Color(255, 255, 255, (byte)(255 * quad[i].Shown)));
+                // Each corner carries the open sky's level, so the terrain shader gives the dome its
+                // haze whole wherever the eye stands.
+                for (int i = 0; i < 4; i++) faces.Add(quad[i].At, 2, i, 1, new Color(255, 255, 255, (byte)(255 * quad[i].Shown)), sky: Lighting.Max);
                 // Each triangle wound so the side toward the middle is the front the model pass draws,
                 // and the one of no area where the lowest ring meets at a point left out.
                 foreach (var (i, j, k) in (ReadOnlySpan<(int, int, int)>)[(0, 1, 2), (0, 2, 3)])

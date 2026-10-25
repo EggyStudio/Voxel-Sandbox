@@ -1407,7 +1407,11 @@ weather, held to 0.325 of that under its altitude of 300, so about a tenth of th
 at and under the sea's level and falling by e over each 40 blocks above it, so a valley holds its
 haze and a peak eighty blocks over the sea about two fifths of it, and the morning thickens it as a
 dawn's mist, growing two and a half times as fast at a quarter past six and back to its noon's by
-nine, the Sky and Visuals screen turning each off. Under water the haze is the water's blue and
+nine, the Sky and Visuals screen turning each off. A point takes the haze by the sky's light
+reaching it or the eye, whichever is more, on the source's brightness curve, since the haze is the
+sky's light the air scatters toward the eye, so a cave's far walls seen from in the cave fade to
+black and not to the sky, while the land seen from a cave and a cave's mouth seen from the open land
+keep their haze, the eye's level eased over about a quarter of a second. Under water the haze is the water's blue and
 covers the view within 16 blocks. Past the last section the world ends, so a dome about the eye
 below the horizon is drawn in the haze's color, as Minecraft draws what lies below its horizon in
 its fog's color, fading into the sky over six degrees above the horizon. It is drawn through the

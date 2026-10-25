@@ -25,6 +25,9 @@ uniform float4 atmosphere;
 // The haze's thinning with height, the height it is whole at and under, the blocks over it it thins
 // by e in, and 1 where it thins so and 0 where it is as thick at every height, as Haze reckons it.
 uniform float4 hazeHeight;
+// How many levels the sky's light at the eye falls short of the open sky's, 0 where nothing sets it,
+// as in the clouds' copy of the shader.
+uniform float eyeCovered;
 // One more than the atlas's tile of a fire's flames, 0 for none, so a copy of the shader that sets
 // nothing, as the clouds' does, draws no face as flames, and how many times their color they are
 // drawn at whatever light reaches them, as the source draws fire at its full light, where the light
@@ -408,6 +411,13 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     float density = heightShare(streams.base.world.y + streams.base.toEye.y, streams.base.world.y);
     float aerial = atmosphere.x * (1.0 - exp(-distance * distance * distance * 1e-6 * atmosphere.y * density));
     float haze = 1.0 - (1.0 - smoothstep(fogStart, fogEnd, distance)) * (1.0 - aerial);
+    // The haze is the sky's light that the air between the eye and the point scatters toward the
+    // eye, so a point the sky's light does not reach, seen from where it does not reach either,
+    // takes none, and a cave's far walls fade to black rather than to the sky. The share follows the
+    // point's sky level or the eye's, whichever is higher, on the source's brightness curve, so the
+    // land seen from a cave and a cave's mouth seen from the open land keep their haze, and a
+    // see-through color that carries no sky level keeps it whole.
+    haze *= streams.vertexColor.a < 0.95 ? 1.0 : skyBrightness(max(streams.uv2.y, 15.0 - eyeCovered));
     return float4(lerp(shown, hazeColor(streams.base.toEye, distance), haze), color.a);
 }
 
