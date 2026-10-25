@@ -5,37 +5,32 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `9dad43e`, item 27's pin of 5.2.291, read at 01:44 on 2026-10-25, carrying the
-review's files and the devlog's grove. The csproj's version alone changes, the build clean under the
-strict flag; the grove at 1920 by 1080 at High, the two pins run in turn twice each with the desktop
-holding 22 percent of the GPU, reads 21.0 and 18.2 ms a frame on 5.2.291 against 20.9 and 19.0 on
-5.2.283, the scene pass 11.7 and 9.7 against 12.3 and 10.5, the shadows and the global illumination
-the same, the pictures differing in 129 pixels of 2.07 million; the cave left for item 123 and the
-far cascade still off. 309 tests, play.sh 325 s on the GPU. Held until the run of `7443bdc` ends,
-then pushed. After `7443bdc`, item 32's second commit, the ambient particles, pushed at 01:31 on
-2026-10-25 after the run of `1c881d0` went green, the run watched, carrying the review's files and
-the devlog's captures. Rain splashes at 60 a second within 8 blocks with three drops each and rings
-on water, leaves falling and turning from canopies with three blocks of air under them, cave dust
-with spores by moss and embers by lava drawn additive, and wakes of the player and the mobs at the
-water's top, each with a density from 0 to 200 percent on a Particles screen under Sky and Visuals
-that voxel.options and options.txt cover. Departures, the rings a flat mesh rebuilt each frame from
-a six-frame sheet since the engine's particles always face the camera; emitters made when a burst
-needs one and unloaded once their particles have died, at most three of a kind and eleven in all,
-since the engine steps, sorts and draws every emitter to its full capacity when empty, 20 fixed
-emitters reading 3.5 ms of CPU and 2.1 of GPU with nothing alive; no emitter colliding with the
-scene, each living no longer than its fall; and the profile's particle counts eased over a second
-since the profile shows a program's value as last set, the three gaps the engine's items 114 to 116
-through ASKS.md. Against `1c881d0` at the rainy forest spawn at 1280 by 720 the frame reads 14.7 to
-19.7 ms against 15.0 to 15.2, inside the noise, the particles 0.005 to 0.04 ms of CPU and up to 0.03
-of GPU from two to four emitters; ParticleTests reads the rates over frames and the cap on a long
-frame, the ring sheet and the leaf sheet's half-turn, and play gains the rain's splashes check and
-walks 45 settings. 309 tests, play.sh 310 s on the GPU.
+Reviewed up to `3275e76`, item 94's mobs, the third commit, read at 01:53 on 2026-10-25, carrying
+REVIEW.md. MobPose is a struct component of the yaw, the head's yaw and pitch, the stride and its
+phase, the flap and the swing, written in place by Move, Look and Face; MobHostile a behavior struct
+the hostile mobs alone carry, its own Hunt system on update stepping them through a query of five
+components and MobMind.Think stepping the rest through a query of four without it; MobRenderer.Draw
+takes the EcsWorld and draws through the same two queries with no GetRef. Departures, the Mob class
+stays the class component holding the path and the Random under its name, Exploded stays on the
+class since the loot is reckoned from MobDied after the despawn, Mob keeps read-only forwards for
+the save, voxel.mobs and the tests, and the column walk waits for the lookup's commit. MobTests
+reads each mob by exactly one of the two queries and stepped by its own mind alone and the pose the
+movement writes as the entity's; live at 22:00 a zombie hunted the player to 8, a creeper hissed and
+37 mobs drew in 42 draws; the play readings inside their bounds. 310 tests, play.sh 360 s on the
+GPU. Both pushed at 02:09 on 2026-10-25 after the run of `7443bdc` went green; the run watched.
+After `9dad43e`, item 27's pin of 5.2.291, read at 01:44 on 2026-10-25, carrying the review's files
+and the devlog's grove. The csproj's version alone changes, the build clean under the strict flag;
+the grove at 1920 by 1080 at High, the two pins run in turn twice each with the desktop holding 22
+percent of the GPU, reads 21.0 and 18.2 ms a frame on 5.2.291 against 20.9 and 19.0 on 5.2.283, the
+scene pass 11.7 and 9.7 against 12.3 and 10.5, the shadows and the global illumination the same, the
+pictures differing in 129 pixels of 2.07 million; the cave left for item 123 and the far cascade
+still off. 309 tests, play.sh 325 s on the GPU.
+
+Before it, `7443bdc` came, item 32's particles, pushed at 01:31 on 2026-10-25, its run green, the
+play job 33.3 minutes.
 
 Before it, `1c881d0` came, items 35 and 32's weather and snow layer with `24a4916` and `ce693af`,
 pushed at 00:40 on 2026-10-25, its run green, the play job 47.0 minutes.
-
-Before it, `9d4b295` came, item 42's second commit, pushed at 23:52 on 2026-10-24, its run green,
-the play job 47.5 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -422,47 +417,6 @@ full.
     before item 94. Done in the engine's tree at 10:4x on 2026-10-24, 21 lines recast, the 15
     headings with a comma after the game's name and six sentences split or recast, the engine's next
     batch carrying it; the file's header lines are the engine's sweep's, item 93 there.
-
-94. **The things that move become entities with behaviors (Decision 43).** The mobs, the drops, the
-    arrows, the primed TNT, the falling blocks, the fires and the blasts, which the game keeps in
-    lists of its own and steps from one Update, become entities of the engine's ECS: components for
-    what each is, its body of position, velocity and box, its kind, its health, its path and target,
-    its fuse or age, its stack, its light, and a behavior for each concern, the movement against the
-    voxel world and its collisions, the hostile and the grazing minds, the aging and the vanishing,
-    the loot on a death, the renderer reading them by query; the save keeping them per column from
-    the components as it keeps them today. One kind of thing a commit, in this order, the drops, the
-    arrows, the primed TNT and the falling blocks, the fires and the blasts, the mobs last, each
-    with its tests and the play checks' readings unchanged, the game playable at every commit. Where
-    the ECS lacks a thing the game needs, queries over more than three components, a save of
-    entities, a spatial lookup or a system run on a worker, the gap goes into the engine's ASKS.md
-    as an entry and the engine takes it ahead of its other work, the game waiting on the package
-    where it must and never keeping a structure of its own around the gap. After items 92 and 93.
-    The drops at `5113176` on 2026-10-24, each stack an entity with its behavior and Body and three
-    systems by stage, the three gaps found as the engine's items 104 to 106 through ASKS.md; the
-    arrows next, after items 27's pin, 125 and 124. The arrows at `c0dd6e4`, one behavior and one
-    system, the strikes dealt a frame after through GameStep; the primed TNT and the falling blocks
-    next. The lit TNT and the falling blocks at `e0d9788`, their results handed back through
-    resources, which the engine's own event channel took over at `299aa33`, the shared lists gone;
-    the fires and the blasts at `9a70f28`, a lookup by a component's key asked of the engine as its
-    item 107, the engine handles of the blasts' clouds and lights kept in the game's pool outside
-    the systems; the mobs last, their plan read here before the code, the six-component queries of
-    the engine's item 105 landing with the next package. The mobs' plan, read at 20:48, three
-    commits each playable with HostileTests, MobTests and play's readings unchanged. First, each mob
-    an entity with Body and the Mob class as a component, its mind inside unchanged, the systems by
-    stage, Mind on update for think, hunt and move, Crowd after it pushing mobs apart and off the
-    player, and Vanish aging the dying, despawning the gone and the far and sending a MobDied event
-    with the loot's kind and place, MobStrike, MobShot and MobBlast as engine events, the Mobs
-    facade keeping spawn, Cast, Overlaps, Columns and the joined and leaving over queries since a
-    mob leaving its column becomes a record for the save. Second, the health, hurt and dying into a
-    MobLife struct with its own behavior, Hit and Harm writing it. Third, the pose into a MobPose
-    struct written by the movement and read by MobRenderer through a query, the hostile state into a
-    MobHostile struct with the hostile mind as its own system, the path and the Random staying in a
-    MobMind class component by E3D006; the third after the package carrying the engine's item 105,
-    so its queries over Body, the identity, the life, the pose and the hostile state take the
-    four-to-six-component forms rather than GetRef beside a narrower query, and the column
-    bookkeeping taking item 107's lookup when it lands, the walk meanwhile. The mobs' first commit
-    at `75be580`, the Mob class a component with three systems by stage and its events. The second
-    at `5bfafef`, MobLife as a struct with its behavior; the third with the package.
 
 95. **The world's sections become mesh entities the engine draws (Decision 43).** Each meshed
     section becomes an entity with the engine's Mesh, Material and Transform and a component of the

@@ -1142,7 +1142,7 @@ public sealed class VoxelGame : IDisposable
         DrawSkybox();
         Sky.Draw(Player.Eye, Renderer.Hazed);
         Lap("draw.sky");
-        Renderer.Draw(World, Player.Eye, RenderDistance);
+        Renderer.Draw(World, Player.Eye, RenderDistance, Sky.TowardLight, Light.ShadowDistance);
         Lap("draw.sections");
         MobRenderer.Draw(GetApp().World.Resource<EcsWorld>(), Player.Eye);
         DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Falling.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Lit.Size))), Player.Eye, GetTime());

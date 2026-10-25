@@ -127,6 +127,11 @@ public sealed class ChunkRenderer : IDisposable
     // is meshed only where a cave opens to it, about 4,400 sections held in a flight over seed 1's
     // cherry grove against some 400 meshed a second.
     private readonly HashSet<SectionKey> _unseen = [];
+    // The sections the flood leaves out that stand between a drawn one and the light, drawn into the
+    // shadow maps alone, and the light's direction and shadow distance they were found for.
+    private readonly HashSet<SectionKey> _casters = [];
+    private readonly HashSet<(int X, int Y, int Z)> _corners = [];
+    private (Vector3 TowardLight, float Distance)? _castFor;
     private readonly List<SectionKey> _gone = [];
     private (SectionKey Eye, int Distance)? _reachedFor;
     private readonly List<(float Distance, SectionMeshes Entry)> _seeThrough = [];
@@ -250,16 +255,33 @@ public sealed class ChunkRenderer : IDisposable
     /// <see cref="Visibility"/> floods them, the lamps' cubes drawn all the same.
     /// </summary>
     /// <remarks>
-    /// A section left undrawn also leaves the sun's shadows and the scene's distance field, since a
-    /// draw goes to every pass, and the field builds its cascades again as sections come into sight
-    /// and go out of it. The land the flood leaves out lies behind walls the drawn sections hold, the
-    /// walls of a cave or a closed room, so the eye sees the same light either way, a cave lit by a
-    /// glowstone within 2 of 255 in every pixel, and a cave in a hill stays dark at noon.
+    /// <para>
+    /// A section left undrawn also leaves the scene's distance field, which builds its cascades again
+    /// as sections come into sight and go out of it. The land the flood leaves out lies behind walls
+    /// the drawn sections hold, the walls of a cave or a closed room, so the eye sees the same light
+    /// either way, a cave lit by a glowstone within 2 of 255 in every pixel, and a cave in a hill
+    /// stays dark at noon.
+    /// </para>
+    /// <para>
+    /// The sun's shadow is another matter, since the rock over a cave stands between the light and
+    /// what the eye sees there. So the sections the flood leaves out that lie toward the light from
+    /// a drawn section within the shadow distance are drawn into the shadow maps alone, through the
+    /// engine's shadow-only draw, their opaque faces casting and seen nowhere. They are found by rays
+    /// toward the light from each corner of every drawn section within the shadow distance, through
+    /// the sections to the world's top, again when a flood changes what is drawn, the light turns or
+    /// the shadow distance changes, and are meshed as the drawn ones are.
+    /// </para>
     /// </remarks>
     public bool Cull { get; set; } = true;
 
     /// <summary>Sections the last <see cref="Draw"/> left out as unseen.</summary>
     public int Culled { get; private set; }
+
+    /// <summary>Whether the sections the flood leaves out cast the light's shadow where they stand toward it, as <see cref="Cull"/> says, true unless set.</summary>
+    public bool Casts { get; set; } = true;
+
+    /// <summary>Sections the last <see cref="Draw"/> drew into the shadow maps alone, of those it left out, and the draws it made of them.</summary>
+    public (int Sections, int Draws) Casting { get; private set; }
 
     /// <summary>Deep sections the last <see cref="Draw"/> drew, those under their column's floor, and their triangles.</summary>
     public (int Sections, int Triangles) Deep { get; private set; }
@@ -460,7 +482,7 @@ public sealed class ChunkRenderer : IDisposable
                 _parked.Add(key);
                 continue;
             }
-            if (Cull && !_visibility.Sees(key))
+            if (Cull && !_visibility.Sees(key) && !_casters.Contains(key))
             {
                 _unseen.Add(key);
                 continue;
@@ -540,14 +562,18 @@ public sealed class ChunkRenderer : IDisposable
         foreach (var key in _sections.Keys.ToList()) Forget(key);
         _parked.Clear();
         _unseen.Clear();
+        _casters.Clear();
+        _castFor = null;
         _reachedFor = null;
     }
 
     /// <summary>
     /// Draws the sections whose column lies within <paramref name="renderDistance"/> columns of the
-    /// eye's, those the eye can see where <see cref="Cull"/> is set, and the lamps in them all.
+    /// eye's, those the eye can see where <see cref="Cull"/> is set, the lamps in them all, and the
+    /// opaque faces of those left out that stand toward the light, given by the way toward it, from
+    /// those drawn within the shadow distance into the shadow maps alone.
     /// </summary>
-    public void Draw(VoxelWorld world, Vector3 eye, int renderDistance)
+    public void Draw(VoxelWorld world, Vector3 eye, int renderDistance, Vector3 towardLight, float shadowDistance)
     {
         // The game ticks the animated textures step by, a twentieth of a second each, as Minecraft steps them.
         var ticks = GetTime() * 20;
@@ -556,16 +582,20 @@ public sealed class ChunkRenderer : IDisposable
         var reach = renderDistance * renderDistance + renderDistance;
         int draws = 0, triangles = 0, lamps = 0, culled = 0, deep = 0, deepTriangles = 0;
         var laps = System.Diagnostics.Stopwatch.StartNew();
-        // The sections held back as unseen that a new flood reaches, or all of them once culling is
-        // off, are meshed from the next update.
-        if (Cull ? _visibility.Flood(world, eye, renderDistance, Atlas) : _unseen.Count > 0)
+        // The sections held back as unseen that a new flood reaches or that now cast toward the light,
+        // or all of them once culling is off, are meshed from the next update.
+        var flooded = Cull && _visibility.Flood(world, eye, renderDistance, Atlas);
+        var cast = Cull && (flooded || _castFor != (Casts ? towardLight : Vector3.Zero, shadowDistance));
+        if (cast) FindCasters(eye, towardLight, shadowDistance, (renderDistance + 1) * Section.Size);
+        if (flooded || cast || !Cull && _unseen.Count > 0)
         {
             foreach (var key in _unseen)
-                if (_visibility.Sees(key) || !Cull) world.Loaded.Add(key);
+                if (_visibility.Sees(key) || _casters.Contains(key) || !Cull) world.Loaded.Add(key);
             _unseen.ExceptWith(world.Loaded);
         }
         SetProfileValue("draw.sections.flood", laps.Elapsed.TotalMilliseconds);
         laps.Restart();
+        int casting = 0, castDraws = 0;
         foreach (var list in _emitterDraws) list.Clear();
         _seeThrough.Clear();
 
@@ -577,6 +607,15 @@ public sealed class ChunkRenderer : IDisposable
             if (Cull && !_visibility.Sees(key))
             {
                 culled++;
+                if (!_casters.Contains(key)) continue;
+                // Its opaque faces, through the shadow-only twin of each of their materials.
+                casting++;
+                foreach (var (part, material) in (ReadOnlySpan<(Part, ModelMaterial)>)[(entry.Solid, _terrain), (entry.Cutout, _cutout), (entry.SolidCutout, _solidCutout)])
+                {
+                    if (!part.Mesh.IsValid) continue;
+                    DrawMesh(part.Mesh, material with { ShadowOnly = true }, entry.Transform);
+                    castDraws++;
+                }
                 continue;
             }
             if (world.TryGetColumn(key.X, key.Z, out var column) && key.Y < column.FloorSection)
@@ -619,6 +658,8 @@ public sealed class ChunkRenderer : IDisposable
         }
 
         SetProfileValue("draw.sections.opaque", laps.Elapsed.TotalMilliseconds);
+        SetProfileValue("draw.sections.shadow", castDraws);
+        Casting = (casting, castDraws);
         laps.Restart();
         // See-through sections farthest first, so each blends over what lies behind it. The faces
         // inside one section are drawn in the order they were meshed.
@@ -651,6 +692,55 @@ public sealed class ChunkRenderer : IDisposable
         }
         (Draws, Triangles, Lamps, Culled, Deep) = (draws, triangles, lamps, culled, (deep, deepTriangles));
         SetProfileValue("draw.sections.deep", deep);
+    }
+
+    // Marks the sections the flood left out that a ray toward the light meets from a corner of a
+    // drawn section within the shadow distance, as far across as the loaded land reaches, none while
+    // the light lies under the horizon or the flood leaves nothing out.
+    private void FindCasters(Vector3 eye, Vector3 towardLight, float shadowDistance, float across)
+    {
+        if (!Casts) towardLight = Vector3.Zero;
+        _castFor = (towardLight, shadowDistance);
+        _casters.Clear();
+        if (!_visibility.Culled || towardLight.Y <= 0.01f) return;
+        _corners.Clear();
+        var reach = shadowDistance + Section.Size;
+        foreach (var key in _visibility.Seen)
+        {
+            if (!_sections.ContainsKey(key) || Vector3.DistanceSquared(key.Origin + new Vector3(Section.Size / 2f), eye) > reach * reach) continue;
+            for (int corner = 0; corner < 8; corner++)
+                _corners.Add(((key.X + (corner & 1)) * Section.Size, (key.Y + (corner >> 1 & 1)) * Section.Size, (key.Z + (corner >> 2)) * Section.Size));
+        }
+        var light = Vector3.Normalize(towardLight);
+        // A low light's rays run far across before they reach the top, and stop past the land.
+        var longest = across / MathF.Max(1e-4f, MathF.Sqrt(light.X * light.X + light.Z * light.Z));
+        Func<SectionKey, bool> sees = _visibility.Sees;
+        foreach (var (x, y, z) in _corners) March(new Vector3(x, y, z), light, longest, sees, _casters);
+    }
+
+    /// <summary>
+    /// Walks a ray through the sections from a point along a way that rises, to the world's top or
+    /// so far along it, one section at a time as a ray through a grid is walked, adding each it
+    /// meets that is not seen to <paramref name="casters"/>.
+    /// </summary>
+    public static void March(Vector3 from, Vector3 way, float longest, Func<SectionKey, bool> seen, HashSet<SectionKey> casters)
+    {
+        const float size = Section.Size;
+        int x = (int)MathF.Floor(from.X / size), y = (int)MathF.Floor(from.Y / size), z = (int)MathF.Floor(from.Z / size);
+        int stepX = MathF.Sign(way.X), stepZ = MathF.Sign(way.Z);
+        float Next(float at, int cell, int step, float part) => step == 0 ? float.MaxValue : ((cell + (step > 0 ? 1 : 0)) * size - at) / part;
+        float nextX = Next(from.X, x, stepX, way.X), nextY = Next(from.Y, y, 1, way.Y), nextZ = Next(from.Z, z, stepZ, way.Z);
+        float acrossX = stepX == 0 ? float.MaxValue : size / MathF.Abs(way.X), acrossY = size / way.Y, acrossZ = stepZ == 0 ? float.MaxValue : size / MathF.Abs(way.Z);
+        // How far along the ray the section walked into begins.
+        var along = 0f;
+        while (y < ChunkColumn.CeilingSection && along <= longest)
+        {
+            var key = new SectionKey(x, y, z);
+            if (!seen(key)) casters.Add(key);
+            if (nextX <= nextY && nextX <= nextZ) (x, along, nextX) = (x + stepX, nextX, nextX + acrossX);
+            else if (nextY <= nextZ) (y, along, nextY) = (y + 1, nextY, nextY + acrossY);
+            else (z, along, nextZ) = (z + stepZ, nextZ, nextZ + acrossZ);
+        }
     }
 
     public void Dispose()

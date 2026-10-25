@@ -82,6 +82,9 @@ public sealed class Sky : IDisposable
     public static readonly (Vector3 Way, Vector3 Right, Vector3 Up, Vector3 Color)[] Stars = PlaceStars();
 
     private readonly LightHandle _light;
+
+    /// <summary>The way toward the light that casts the shadows, the sun by day and the moon by night, as the light last turned.</summary>
+    public Vector3 TowardLight { get; private set; } = Vector3.UnitY;
     private readonly byte[] _pixels = new byte[Width * Height * 4];
     private readonly Texture2D _sun, _moon;
     private float _litHour = float.NaN, _paintedHour = float.NaN;
@@ -424,11 +427,13 @@ public sealed class Sky : IDisposable
                 var light = Colors.SunLight(toLight.Y);
                 var most = MathF.Max(light.X, MathF.Max(light.Y, light.Z));
                 SetLightDirection(_light, -toLight);
+                TowardLight = toLight;
                 SetLightColor(_light, ColorOf(Encode(light / most) * 255), Colors.SunStrength * most * SmoothStep(-0.05f, 0.1f, toLight.Y) * (1 - 0.7f * _overcastPainted));
             }
             else
             {
                 SetLightDirection(_light, toLight);
+                TowardLight = -toLight;
                 SetLightColor(_light, ColorOf(Encode(Colors.Moonlight) * 255), Colors.MoonStrength * SmoothStep(0.05f, 0.2f, -toLight.Y) * (1 - 0.5f * _overcastPainted));
             }
         }

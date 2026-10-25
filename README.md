@@ -1065,7 +1065,16 @@ it off. Sections are not culled to the view's frustum, because a mesh left out o
 field, and the indirect light it reflected or blocked goes with it until the field settles again,
 where the land the flood leaves out lies behind walls the field holds, so a cave lit by a glowstone
 looks the same either way. Each of the engine's passes leaves out on its own the sections whose
-boxes it cannot see, and the field keeps them all the same.
+boxes it cannot see, and the field keeps them all the same. The rock over a cave stands between the
+sun and the cave all the same, so the sections the flood leaves out that a ray toward the sun or the
+moon meets from a corner of a drawn section within the shadow distance are drawn into the shadow
+maps alone, through the engine's shadow-only draw, and meshed as the drawn ones are. They are found
+again when a flood changes what is drawn, the light turns or the shadow distance changes. In seed
+1's deep cave at -59.5, -4, -91.5 at noon, the tops of the blocks 45 blocks ahead read 35, 29, 20 in
+the sun's light through 70 blocks of rock without them and 0 with them, as with culling off, from
+357 shadow-only draws and 1.4 ms more of the frame, where culling off costs 28 ms more. Over the
+cherry grove in the open the flood leaves out little toward the sun, 20 draws, and the frame reads
+19.0 to 19.5 ms with them and without them in one run.
 
 With the eye inside a whole opaque block, in every mode but spectator, the block's side covers the
 window, its texture or its own color darkened to a tenth, repeated four times across and four down

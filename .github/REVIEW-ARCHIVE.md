@@ -1577,6 +1577,51 @@ before a batch.
     2026-10-25 with the particles, the weather at `24a4916` and the snow layer at `1c881d0` before
     it, the three engine gaps as its items 114 to 116.
 
+94. **The things that move become entities with behaviors (Decision 43).** The mobs, the drops, the
+    arrows, the primed TNT, the falling blocks, the fires and the blasts, which the game keeps in
+    lists of its own and steps from one Update, become entities of the engine's ECS: components for
+    what each is, its body of position, velocity and box, its kind, its health, its path and target,
+    its fuse or age, its stack, its light, and a behavior for each concern, the movement against the
+    voxel world and its collisions, the hostile and the grazing minds, the aging and the vanishing,
+    the loot on a death, the renderer reading them by query; the save keeping them per column from
+    the components as it keeps them today. One kind of thing a commit, in this order, the drops, the
+    arrows, the primed TNT and the falling blocks, the fires and the blasts, the mobs last, each
+    with its tests and the play checks' readings unchanged, the game playable at every commit. Where
+    the ECS lacks a thing the game needs, queries over more than three components, a save of
+    entities, a spatial lookup or a system run on a worker, the gap goes into the engine's ASKS.md
+    as an entry and the engine takes it ahead of its other work, the game waiting on the package
+    where it must and never keeping a structure of its own around the gap. After items 92 and 93.
+    The drops at `5113176` on 2026-10-24, each stack an entity with its behavior and Body and three
+    systems by stage, the three gaps found as the engine's items 104 to 106 through ASKS.md; the
+    arrows next, after items 27's pin, 125 and 124. The arrows at `c0dd6e4`, one behavior and one
+    system, the strikes dealt a frame after through GameStep; the primed TNT and the falling blocks
+    next. The lit TNT and the falling blocks at `e0d9788`, their results handed back through
+    resources, which the engine's own event channel took over at `299aa33`, the shared lists gone;
+    the fires and the blasts at `9a70f28`, a lookup by a component's key asked of the engine as its
+    item 107, the engine handles of the blasts' clouds and lights kept in the game's pool outside
+    the systems; the mobs last, their plan read here before the code, the six-component queries of
+    the engine's item 105 landing with the next package. The mobs' plan, read at 20:48, three
+    commits each playable with HostileTests, MobTests and play's readings unchanged. First, each mob
+    an entity with Body and the Mob class as a component, its mind inside unchanged, the systems by
+    stage, Mind on update for think, hunt and move, Crowd after it pushing mobs apart and off the
+    player, and Vanish aging the dying, despawning the gone and the far and sending a MobDied event
+    with the loot's kind and place, MobStrike, MobShot and MobBlast as engine events, the Mobs
+    facade keeping spawn, Cast, Overlaps, Columns and the joined and leaving over queries since a
+    mob leaving its column becomes a record for the save. Second, the health, hurt and dying into a
+    MobLife struct with its own behavior, Hit and Harm writing it. Third, the pose into a MobPose
+    struct written by the movement and read by MobRenderer through a query, the hostile state into a
+    MobHostile struct with the hostile mind as its own system, the path and the Random staying in a
+    MobMind class component by E3D006; the third after the package carrying the engine's item 105,
+    so its queries over Body, the identity, the life, the pose and the hostile state take the
+    four-to-six-component forms rather than GetRef beside a narrower query, and the column
+    bookkeeping taking item 107's lookup when it lands, the walk meanwhile. The mobs' first commit
+    at `75be580`, the Mob class a component with three systems by stage and its events. The second
+    at `5bfafef`, MobLife as a struct with its behavior; the third with the package. The third at
+    `3275e76` on 2026-10-25, MobPose and MobHostile with the wide queries, its departures in the
+    head. Done at `3275e76`, the drops, the arrows, the TNT and the falling blocks, the fires and
+    the blasts and the mobs as entities with their events, the column walks taking the lookup by key
+    in the commit after.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

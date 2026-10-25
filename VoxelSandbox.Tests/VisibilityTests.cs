@@ -40,4 +40,25 @@ public class VisibilityTests
         Assert.True(visibility.Sees(new SectionKey(1, 6, 1)) && visibility.Sees(new SectionKey(-1, 3, 0)));
         Assert.False(visibility.Sees(new SectionKey(0, 1, 0)));
     }
+
+    [Fact]
+    public void A_Ray_Toward_The_Light_Marks_The_Sections_Left_Out_It_Passes_To_The_Top_Or_Its_Length()
+    {
+        // From the top of the one section seen straight up, every section over it to the world's top.
+        var seen = new SectionKey(0, 0, 0);
+        var marked = new HashSet<SectionKey>();
+        ChunkRenderer.March(new Vector3(8, 16, 8), Vector3.UnitY, float.MaxValue, key => key == seen, marked);
+        Assert.Equal(Enumerable.Range(1, ChunkColumn.CeilingSection - 1).Select(y => new SectionKey(0, y, 0)), marked.OrderBy(k => k.Y));
+        // Leaning toward +x, up a stair of sections that never turns back, as far as its length.
+        marked.Clear();
+        ChunkRenderer.March(new Vector3(16, 16, 8), Vector3.Normalize(new Vector3(1, 1, 0)), 40, key => key == seen, marked);
+        Assert.Contains(new SectionKey(1, 1, 0), marked);
+        Assert.DoesNotContain(seen, marked);
+        Assert.All(marked, key => Assert.True(key.X >= 0 && key.Z == 0 && key.X <= 3 && key.Y <= 3, key.ToString()));
+        // A section it passes that is seen is left out of the mark.
+        marked.Clear();
+        ChunkRenderer.March(new Vector3(8, 16, 8), Vector3.UnitY, float.MaxValue, key => key.Y <= 2, marked);
+        Assert.DoesNotContain(new SectionKey(0, 2, 0), marked);
+        Assert.Contains(new SectionKey(0, 3, 0), marked);
+    }
 }
