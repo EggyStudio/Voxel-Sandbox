@@ -1780,6 +1780,21 @@ before a batch.
     Done at `87d089e` on 2026-10-25, the packs' models read as boxes with their pivots and turns and
     the mobs walked by the game's own gait, the departures in the head.
 
+130. **The fog does not light a dark cave's far walls.** From the engine's reading for its item 102
+    on 2026-10-25, which answers the question of the cave's distant light asked with item 108's
+    clouds. The far cave's tops at 90 blocks read 9, 13, 18 at High under every cascade alone and
+    with the merge off, and 0, 0, 0 with the game's fog off, so the light seen far down a dark cave
+    is the terrain shader's fog laid over a fragment by its distance alone, and no cascade's light
+    reaches those walls. The fog's share at a fragment is scaled by the sky light reaching it, the
+    flood's sky level the terrain stream carries for the block the face lies in, so a cave's far
+    walls fade to black and not to the fog's color, a cave mouth taking the fog as its sky level
+    rises, and the open land's fog stays as it is. The tests read the far cave's tops at 90 blocks
+    at 0, 0, 0 at High with the fog on and the plains at noon unchanged by RMSE against before, with
+    a before-and-after capture of the cave under N 4.8. One commit, in the gap before the package
+    carrying item 108. Done at `0babebb` on 2026-10-25, the haze following the higher of the point's
+    and the eye's sky level, so a cave's walls fade to black from inside and the land keeps its
+    haze, the departure in the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

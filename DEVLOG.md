@@ -90,6 +90,11 @@ A villager, a chicken, a sheep, a pig and a cow at noon with a zombie, a skeleto
 spider under a roof behind them, in the game's own models above and in Fresh Animations' models
 under Bare Bones' pictures below, walked by the game's own gait.
 
+![](.github/devlog/2026-10-25-item-130-cave-haze.webp)
+Seed 1's lava lake at noon seen from in its cave, the far wall at the top left in the sky's haze on
+the left and black on the right, where the haze follows the sky's light that reaches the wall or the
+eye.
+
 Done that day
 
 - Item 27 at `9dad43e`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
@@ -113,6 +118,7 @@ Done that day
 - Item 128 at `6a7e5b1`. The entities' tests step the real game through the engine's headless app,
   the twins gone.
 - Item 129 at `bbe814c`. The rain's particle texture is drawn upside down.
+- Item 130 at `0babebb`. The fog does not light a dark cave's far walls.
 
 ## 2026-10-24
 

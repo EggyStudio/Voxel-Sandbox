@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # A scripted run of the game through ./e3d, offscreen and under the validation layer, as the build
-# workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it builds a
-# closed room of stone with a glowstone block in it, puts the player in the room facing the lamp at
-# night, walks toward it and captures the frame, then captures the night sky from the room's roof,
-# the full moon and the stars over the flat land from two places and headings, reads a cloud's
-# underside overhead at noon, captures the sun and its glow at noon and at dusk, a pillar's shadow
-# under the morning sun, and the window of every item's icon, then swims the player out of a pool
-# onto its bank and reads a white sheep's wool in the shade, and over seed 1's overworld stands the
-# player over each of the eight biomes the climate gained and captures it, reads the chest of seed
-# 1's nearest mineshaft, compares the caves' noises read on the GPU with the CPU's and reads the
-# drawn land's edge against the sky. A second run that keeps its files, in a data folder of its own,
-# then takes a screenshot with F2. It fails where the game does not open or answer, the player did
+# workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it reads that
+# global illumination takes the screen's probes, builds a closed room of stone with a glowstone
+# block in it, puts the player in the room facing the lamp at night, walks toward it and captures
+# the frame, then captures the night sky from the room's roof, the full moon and the stars over the
+# flat land from two places and headings, reads a cloud's underside overhead at noon, captures the
+# sun and its glow at noon and at dusk, a pillar's shadow under the morning sun, and the window of
+# every item's icon, then swims the player out of a pool onto its bank and reads a white sheep's
+# wool in the shade, and over seed 1's overworld stands the player over each of the eight biomes the
+# climate gained and captures it, reads the chest of seed 1's nearest mineshaft, compares the caves'
+# noises read on the GPU with the CPU's and reads the drawn land's edge against the sky. A second
+# run that keeps its files, in a data folder of its own, then takes a screenshot with F2. It fails
+# where the game does not open or answer, global illumination takes no screen probes, the player did
 # not move or did not climb out onto the bank, the wool in shade is not a gray, a cloud's underside
 # overhead at noon is dark, a biome is not found or not where it was found, the mineshaft's chest
 # holds no rails or torches, the GPU's readings of the caves' noises are not the CPU's, the land's
@@ -113,6 +114,12 @@ pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; 
 # for the land in reach to be meshed and 10 frames more.
 cmd voxel.distance 4
 stood
+
+check "the screen probes"
+# Global illumination takes the screen's probes, which the game leaves on.
+probes=$(ask gi.state | grep "screen probes")
+echo "$probes"
+[[ "$probes" == "screen probes every "* ]] || fail "global illumination takes no screen probes, $probes"
 
 check "the lamp's room"
 # The room is closed, so at night the lamp is its only light, and the player stands at its south

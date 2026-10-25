@@ -104,11 +104,11 @@ public sealed class OptionTests : IDisposable
         Assert.Equal(GlobalIllumination.Off, quality);
 
         var on = false;
-        var probes = new Option("Screen Probes", () => on ? 1 : 0, v => on = v >= 0.5f) { Choices = ["Off", "On"], Settled = () => settled++ };
-        probes.Next();
+        var rim = new Option("Rim Light", () => on ? 1 : 0, v => on = v >= 0.5f) { Choices = ["Off", "On"], Settled = () => settled++ };
+        rim.Next();
         Assert.True(on);
-        Assert.Equal("Screen Probes: On", probes.Label);
-        probes.Next();
+        Assert.Equal("Rim Light: On", rim.Label);
+        rim.Next();
         Assert.False(on);
         Assert.Equal(2, settled);
     }

@@ -163,11 +163,6 @@ public sealed class OptionScreens
                 light.Quality = quality;
                 SetGlobalIllumination(quality);
             }),
-            Option.Toggle("Screen Probes", () => light.ScreenProbes, on =>
-            {
-                light.ScreenProbes = on;
-                SetGlobalIlluminationScreenProbes(on);
-            }),
             new("Shadow Distance", () => light.ShadowDistance, v =>
             {
                 light.ShadowDistance = v;

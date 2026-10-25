@@ -840,7 +840,6 @@ and mode.
 | Render Settings | Render Distance | 2 to 16 chunks | 12 |
 | | GPU Generation, the caves' noises read on the GPU | Off, On | On |
 | | Global Illumination | Off, Low, Medium, High | High |
-| | Screen Probes | Off, On | Off |
 | | Shadow Distance | 16 to 192 blocks by 8 | 64 |
 | | Corner Shade | 0 to 100% by 5, the sections shaded again as it is let go | 50% |
 | | Emission, what every emissive surface's light is multiplied by | 0 to 4 by 0.1 | 1 |
@@ -1256,11 +1255,10 @@ light them. The plants and a broken block's bits take the same floor at their ce
 The F3 window turns the light levels and the shaded corners off, each on its own, to see
 global illumination alone, and opens the engine's windows of what global illumination holds, of the
 frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
-depth of field, motion blur and bloom, each set at once as it is changed. Global illumination leaves
-out the engine's screen probes, so every face reads the light of its cascades through the scene
-alone, smoother and coarser, since the screen's probes spotted the light and moved it as the eye
-moved, and a non-number one of them kept spread black across the frame; the Render Settings
-screen turns them on.
+depth of field, motion blur and bloom, each set at once as it is changed. Global illumination
+takes the engine's screen probes, each pixel's light traced from its own surface, as the engine
+makes it, and the cascades' light read alone is a view for debugging, which the engine's
+`gi.toggle screen` gives through the command line.
 
 The frame is tonemapped by the curve of the owner's modpack's shader with the owner's settings, its
 exposure 0.9, white curve 1.3, lower curve 1.05 and upper 1.0, which the engine's `SetTonemapCurve`

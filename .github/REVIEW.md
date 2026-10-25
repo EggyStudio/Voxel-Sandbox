@@ -5,9 +5,27 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `9955bf3`, Verdict 4's mend, pushed at 08:20 on 2026-10-25 after the red run of
-`1d31dda` ended, the run watched, carrying the review's files. The cause was none of the three the
-verdict named, the streamer asking ahead and the count moving; the play script's wait ended too
+Reviewed up to `0babebb`, item 130, the haze in a dark cave, read at 08:28 on 2026-10-25, carrying
+the review's files, the two profile values update.mesh and update.stream and a captioned picture,
+pushed at 09:04 on 2026-10-25 once the run of `9955bf3` went green, the run watched. One departure,
+the haze's share following the sky level of the point or of the eye, whichever is higher, on the
+source's brightness curve and not the point's level alone, since the haze is lit air between the eye
+and the point, so from the open land a distant cave mouth or a forest floor keeps its haze, from a
+cave the land outside keeps its haze and the cave's own walls fade to black. The eye's level is read
+from the world's light at the eye's cell, eased over about a quarter of a second and passed as the
+uniform eyeCovered; under water and with the fog off nothing changes, the clouds' copy of the shader
+sets nothing and reads as the open sky, a see-through color carrying no sky level keeps the haze
+whole, and the haze dome's corners carry level 15 so it stays the haze's color seen from a cave, a
+line in HazeDomeTests holding it. Readings on seed 1 at render distance 12 offscreen at 1280 by 720,
+the deep cave's top at 90 blocks from the eye at -59.5, -4, -91.5 reading 9, 13, 18 before and 0, 0,
+0 after with the fog on and 0, 0, 0 both times with it off; the plains village at noon an RMSE of
+0.00074 with 11 of 921,600 pixels differing by more than 1%, the ravine 0.00067 and 3 pixels, the
+cave with the fog off 0.00037, noise; the lava lake from inside its cave 0.035, its far wall losing
+the blue haze, the devlog's pair. The README's Fog section says how a point takes the haze. 351
+tests, play.sh 200 s on the GPU. After `9955bf3`, Verdict 4's mend, pushed at 08:20 on 2026-10-25
+after the red run of `1d31dda` ended, its run green at 09:00 with the GPU's caves check passing on
+lavapipe and the play job 40 minutes, carrying the review's files. The cause was none of the three
+the verdict named, the streamer asking ahead and the count moving; the play script's wait ended too
 early, since with the GPU path on a column at a new place waits for its readings with no worker on
 it, and ChunkStreamer.Pending counted the workers' columns alone, so after the teleport voxel.state
 read 0 columns, 0 generating and the play script's meshed wait passed at once, before any batch was
@@ -502,18 +520,18 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-130. **The fog does not light a dark cave's far walls.** From the engine's reading for its item 102
-    on 2026-10-25, which answers the question of the cave's distant light asked with item 108's
-    clouds. The far cave's tops at 90 blocks read 9, 13, 18 at High under every cascade alone and
-    with the merge off, and 0, 0, 0 with the game's fog off, so the light seen far down a dark cave
-    is the terrain shader's fog laid over a fragment by its distance alone, and no cascade's light
-    reaches those walls. The fog's share at a fragment is scaled by the sky light reaching it, the
-    flood's sky level the terrain stream carries for the block the face lies in, so a cave's far
-    walls fade to black and not to the fog's color, a cave mouth taking the fog as its sky level
-    rises, and the open land's fog stays as it is. The tests read the far cave's tops at 90 blocks
-    at 0, 0, 0 at High with the fog on and the plains at noon unchanged by RMSE against before, with
-    a before-and-after capture of the cave under N 4.8. One commit, in the gap before the package
-    carrying item 108.
+131. **The screen probes are on, with no setting for a player.** From the owner's word to the
+    engine's session before 09:19 on 2026-10-25, Decision 48, that the screen probes stay on and
+    that off is for debugging alone. LightSettings.ScreenProbes is true by default and the Screen
+    Probes toggle leaves the options, a saved options file carrying the old value read as on; the
+    two calls to SetGlobalIlluminationScreenProbes stay while the engine keeps the call and go in
+    the commit that takes the package without it, if the owner has it go. A capture of the plains
+    village at noon with the probes on, N 4.8, and the play run reading the probes on. One commit,
+    in the gap before the package carrying item 108. Settled further at 09:39 under the engine's
+    Decision 72 as amended, the engine keying the screen probes to its quality, left out at Low with
+    the glow lights through the glow-only pass and present at Medium and High, so once the package
+    carrying its item 103 comes the game's probes follow its global illumination quality row and the
+    two calls go, no other row added.
 
 ## Verdicts
 
@@ -1059,5 +1077,12 @@ No verdict is open. Verdicts 1 to 4 are settled, said under each in REVIEW-ARCHI
     DEVLOG.md regenerated by the review as each item is archived, the coder's next commit carrying
     it as it carries the review's files; the three devlogs were regenerated at 05:17 with the day's
     pictures and items. The same in 3DEngine (Decision 71) and BevyCSharp (Decision 64).
+
+48. **The screen probes are on, off a debugging switch alone.** The owner wrote to the engine's
+    session before 09:19 on 2026-10-25, with the engine's item 103 held on its cost, that the screen
+    probes stay on as the engine recommended and that off is for debugging alone and not for a
+    player. Decision 42's default of off, taken when the engine's item 90 spread black across the
+    screen, is over, item 90 mended since; item 131 turns them on and takes the setting out of the
+    options.
 
 ## Replies
