@@ -229,6 +229,35 @@ public static class GameCommands
         return $"saved to {game.Save.Folder}";
     }
 
+    [Command("voxel.gpu", "Says whether the GPU reads the caves' noises for the columns to generate and how many columns it has read, turns it on or off for the session, or compares its readings with the CPU's over a square of columns about the player: voxel.gpu [on|off|verify] [columns across]")]
+    internal static string Gpu(string action = "", int across = 2)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        var fields = game.CaveFields;
+        switch (action)
+        {
+            case "on" or "off":
+                fields.Enabled = action == "on";
+                break;
+            case "verify":
+            {
+                var at = game.Player.Body.Position;
+                int cx = VoxelWorld.ColumnOf((int)MathF.Floor(at.X)), cz = VoxelWorld.ColumnOf((int)MathF.Floor(at.Z));
+                across = Math.Clamp(across, 1, 8);
+                var columns = Enumerable.Range(0, across * across).Select(i => (cx - across / 2 + i % across, cz - across / 2 + i / across)).ToList();
+                return fields.Verify(columns) is var (compared, differ)
+                    ? $"{differ} of {compared} readings over {columns.Count} columns differ between the GPU and the CPU"
+                    : "the GPU reads no caves' noises here, with no compute or no overworld";
+            }
+            case "":
+                break;
+            default:
+                return $"{action} is neither on, off nor verify";
+        }
+        var state = fields.Running ? "on" : fields.Enabled ? "on but unable, with no compute or no overworld" : "off";
+        return $"the GPU's reading of the caves' noises is {state}, {fields.Read} columns read since the world opened";
+    }
+
     [Command("voxel.distance", "Sets how many columns around the player are drawn, from 2 to 16: voxel.distance <columns>")]
     internal static string Distance(int columns)
     {

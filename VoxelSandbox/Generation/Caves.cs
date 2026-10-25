@@ -55,17 +55,48 @@ public sealed class Caves
         _pillar = new(seed, "pillar", -7, 1, 1);
         _pillarRareness = new(seed, "pillar_rareness", -8);
         _pillarThickness = new(seed, "pillar_thickness", -8);
-        // The readings at a scale of their own, each of the tunnels' at each width a slow noise picks.
-        (_layerAt, _cheeseAt, _entranceAt, _rarityAt) = (_layer.Scaled(1, 8, 1), _cheese.Scaled(1, 0.6666666666666666, 1), _entrance.Scaled(0.75, 0.5, 0.75), _rarity.Scaled(2, 1, 2));
-        (_thickness2dAt, _modulatorAt, _pillarAt) = (_thickness2d.Scaled(2, 1, 2), _modulator.Scaled(2, 1, 2), _pillar.Scaled(25, 0.3, 25));
-        (_ridgeAAt, _ridgeBAt) = (_ridgeA.Scaled(NoodleScale, NoodleScale, NoodleScale), _ridgeB.Scaled(NoodleScale, NoodleScale, NoodleScale));
-        _spaghetti1At = [.. SpaghettiWidths.Select(w => _spaghetti1.Scaled(w.Scale, w.Scale, w.Scale))];
-        _spaghetti2At = [.. SpaghettiWidths.Select(w => _spaghetti2.Scaled(w.Scale, w.Scale, w.Scale))];
-        _spaghetti2dAt = [.. Spaghetti2dWidths.Select(w => _spaghetti2d.Scaled(w.Scale, w.Scale, w.Scale))];
+        // Every reading the caves take, each at a scale of its own, the tunnels' at each width a slow
+        // noise picks, in the order of the constants below, which a shader reads them in too.
+        _samplers =
+        [
+            _layer.Scaled(1, 8, 1), _cheese.Scaled(1, 0.6666666666666666, 1), _entrance.Scaled(0.75, 0.5, 0.75), _rarity.Scaled(2, 1, 2),
+            .. SpaghettiWidths.Select(w => _spaghetti1.Scaled(w.Scale, w.Scale, w.Scale)),
+            .. SpaghettiWidths.Select(w => _spaghetti2.Scaled(w.Scale, w.Scale, w.Scale)),
+            _thickness3d.Scaled(1, 1, 1),
+            .. Spaghetti2dWidths.Select(w => _spaghetti2d.Scaled(w.Scale, w.Scale, w.Scale)),
+            _modulator.Scaled(2, 1, 2), _elevation.Scaled(1, 0, 1), _thickness2d.Scaled(2, 1, 2),
+            _roughness.Scaled(1, 1, 1), _roughnessModulator.Scaled(1, 1, 1),
+            _pillar.Scaled(25, 0.3, 25), _pillarRareness.Scaled(1, 1, 1), _pillarThickness.Scaled(1, 1, 1),
+            _noodle.Scaled(1, 1, 1), _noodleThickness.Scaled(1, 1, 1),
+            _ridgeA.Scaled(NoodleScale, NoodleScale, NoodleScale), _ridgeB.Scaled(NoodleScale, NoodleScale, NoodleScale),
+        ];
     }
 
-    private readonly SourceNoise.Sampler _layerAt, _cheeseAt, _entranceAt, _rarityAt, _thickness2dAt, _modulatorAt, _pillarAt, _ridgeAAt, _ridgeBAt;
-    private readonly SourceNoise.Sampler[] _spaghetti1At, _spaghetti2At, _spaghetti2dAt;
+    private readonly SourceNoise.Sampler[] _samplers;
+
+    /// <summary>Every reading of a noise the caves take, in the order a column's readings at its corners hold them.</summary>
+    public IReadOnlyList<SourceNoise.Sampler> Samplers => _samplers;
+
+    // Each reading's place among the samplers.
+    private const int Layer = 0, Cheese = 1, Entrance = 2, Rarity = 3, Spaghetti1 = 4, Spaghetti2 = 8, Thickness3d = 12,
+        Spaghetti2dAt = 13, Modulator = 18, Elevation = 19, Thickness2d = 20, RoughnessAt = 21, RoughnessModulator = 22,
+        Pillar = 23, PillarRareness = 24, PillarThickness = 25, NoodleAt = 26, NoodleThickness = 27, RidgeA = 28, RidgeB = 29;
+
+    /// <summary>How many corners of cells a column has, which its readings are taken at, four blocks apart across and eight up.</summary>
+    public const int Corners = Across * Across * Levels;
+
+    /// <summary>The place of a column's corner by its index among its <see cref="Corners"/>, from the column's corner.</summary>
+    public static (int X, int Y, int Z) CornerAt(int index) =>
+        (index % Across * CellWidth, ChunkColumn.Bottom + index / (Across * Across) * CellHeight, index / Across % Across * CellWidth);
+
+    // Where the noises are read at a corner, through their samplers on the CPU or from a column's
+    // readings a shader took at its corners, the readings of a corner side by side in 16 fractional
+    // bits from the first given, which are the same to the bit.
+    private readonly struct Reading(Caves caves, int[]? fields, int first)
+    {
+        public double this[int sampler, int x, int y, int z] =>
+            fields is null ? caves._samplers[sampler].At(x, y, z) : fields[first + sampler] / (double)FixedNoise.One;
+    }
 
     // The tunnels' scales and weights a slow noise picks among, a quarter wider to twice as wide.
     private static readonly (double Scale, double Weight)[] SpaghettiWidths = [(4 / 3.0, 0.75), (1.0, 1.0), (2 / 3.0, 1.5), (0.5, 2.0)];
@@ -73,32 +104,34 @@ public sealed class Caves
     private const double NoodleScale = 2.6666666666666665;
 
     /// <summary>The density at a place so many blocks under the ground's top, solid over 0 and a cave at 0 or under.</summary>
-    public double Density(int x, int y, int z, double depth)
+    public double Density(int x, int y, int z, double depth) => Density(x, y, z, depth, new Reading(this, null, 0));
+
+    private double Density(int x, int y, int z, double depth, Reading read)
     {
         var sloped = depth * SlopedPerBlock;
-        var roughness = Roughness(x, y, z);
+        var roughness = Roughness(x, y, z, read);
         double density;
         // Near the top the ground opens only at an entrance, and deeper the cheese caves, the
         // tunnels and the noodles take it, the pillars standing where their noise holds them.
-        if (sloped < 1.5625) density = Math.Min(sloped, 5 * Entrances(x, y, z, roughness));
+        if (sloped < 1.5625) density = Math.Min(sloped, 5 * Entrances(x, y, z, roughness, read));
         else
         {
-            var cheese = 4 * Square(_layerAt.At(x, y, z)) + Math.Clamp(_cheeseAt.At(x, y, z) + 0.27, -1, 1)
+            var cheese = 4 * Square(read[Layer, x, y, z]) + Math.Clamp(read[Cheese, x, y, z] + 0.27, -1, 1)
                 + Math.Clamp(-0.64 * sloped + 1.5, 0, 0.5);
-            var underground = Math.Min(Math.Min(cheese, Entrances(x, y, z, roughness)), Spaghetti2d(x, y, z) + roughness);
-            var pillars = Pillars(x, y, z);
+            var underground = Math.Min(Math.Min(cheese, Entrances(x, y, z, roughness, read)), Spaghetti2d(x, y, z, read) + roughness);
+            var pillars = Pillars(x, y, z, read);
             density = Math.Max(underground, pillars < 0.03 ? -1e6 : pillars);
         }
         // Toward the world's floor the ground closes, wholly at -64 and not at all from -40.
         density = 0.1171875 + Math.Clamp((y + 64) / 24.0, 0, 1) * (density - 0.1171875);
-        return Math.Min(density, Noodle(x, y, z));
+        return Math.Min(density, Noodle(x, y, z, read));
     }
 
     /// <summary>
     /// The density at the corners of a column's cells, under the ground's top a function gives at
     /// each corner, from the world's floor up through the cell over the highest top, solid above it.
     /// </summary>
-    public Grid Carve(int columnX, int columnZ, Func<int, int, int> groundAt)
+    public Grid Carve(int columnX, int columnZ, Func<int, int, int> groundAt, ArraySegment<int>? readings = null)
     {
         var grid = new Grid(new double[Across * Across * Levels]);
         int x0 = columnX * Section.Size, z0 = columnZ * Section.Size;
@@ -108,7 +141,11 @@ public sealed class Caves
                 int x = x0 + cx * CellWidth, z = z0 + cz * CellWidth;
                 var ground = groundAt(x, z);
                 for (int level = 0; level < Levels; level++)
-                    grid.Values[(level * Across + cz) * Across + cx] = Corner(x, ChunkColumn.Bottom + level * CellHeight, z, ground);
+                {
+                    var corner = (level * Across + cz) * Across + cx;
+                    var y = ChunkColumn.Bottom + level * CellHeight;
+                    grid.Values[corner] = y > ground + CellHeight ? 1 : Density(x, y, z, Math.Max(ground - y, 0) + 1, new Reading(this, readings?.Array, (readings?.Offset ?? 0) + corner * _samplers.Length));
+                }
             }
         return grid;
     }
@@ -164,41 +201,41 @@ public sealed class Caves
         }
     }
 
-    private double Entrances(int x, int y, int z, double roughness)
+    private double Entrances(int x, int y, int z, double roughness, Reading read)
     {
-        var opening = _entranceAt.At(x, y, z) + 0.37 + Gradient(y, -10, 0.3, 30, 0);
+        var opening = read[Entrance, x, y, z] + 0.37 + Gradient(y, -10, 0.3, 30, 0);
         // The tunnels' width by a slow noise, a quarter wider to twice as wide, as the source picks
         // among four of its readings.
-        var rarity = _rarityAt.At(x, y, z);
+        var rarity = read[Rarity, x, y, z];
         var width = rarity < -0.5 ? 0 : rarity < 0 ? 1 : rarity < 0.5 ? 2 : 3;
         var weight = SpaghettiWidths[width].Weight;
-        var first = Math.Abs(_spaghetti1At[width].At(x, y, z) * weight);
-        var second = Math.Abs(_spaghetti2At[width].At(x, y, z) * weight);
-        var thickness = _thickness3d.At(x, y, z) * -0.011500001 - 0.0765;
+        var first = Math.Abs(read[Spaghetti1 + width, x, y, z] * weight);
+        var second = Math.Abs(read[Spaghetti2 + width, x, y, z] * weight);
+        var thickness = read[Thickness3d, x, y, z] * -0.011500001 - 0.0765;
         return Math.Min(opening, roughness + Math.Clamp(Math.Max(first, second) + thickness, -1, 1));
     }
 
-    private double Spaghetti2d(int x, int y, int z)
+    private double Spaghetti2d(int x, int y, int z, Reading read)
     {
-        var thickness = _thickness2dAt.At(x, y, z) * -0.34999996 - 0.95;
-        var modulator = _modulatorAt.At(x, y, z);
+        var thickness = read[Thickness2d, x, y, z] * -0.34999996 - 0.95;
+        var modulator = read[Modulator, x, y, z];
         var width = modulator < -0.75 ? 0 : modulator < -0.5 ? 1 : modulator < 0.5 ? 2 : modulator < 0.75 ? 3 : 4;
-        var tunnel = Math.Abs(_spaghetti2dAt[width].At(x, y, z) * Spaghetti2dWidths[width].Weight) + thickness * 0.083;
-        var level = Cube(Math.Abs(_elevation.At(x, 0, z) * 8 + Gradient(y, -64, 8, 320, -40)) + thickness);
+        var tunnel = Math.Abs(read[Spaghetti2dAt + width, x, y, z] * Spaghetti2dWidths[width].Weight) + thickness * 0.083;
+        var level = Cube(Math.Abs(read[Elevation, x, y, z] * 8 + Gradient(y, -64, 8, 320, -40)) + thickness);
         return Math.Clamp(Math.Max(tunnel, level), -1, 1);
     }
 
-    private double Roughness(int x, int y, int z) =>
-        (_roughnessModulator.At(x, y, z) * -0.05 - 0.05) * (Math.Abs(_roughness.At(x, y, z)) - 0.4);
+    private static double Roughness(int x, int y, int z, Reading read) =>
+        (read[RoughnessModulator, x, y, z] * -0.05 - 0.05) * (Math.Abs(read[RoughnessAt, x, y, z]) - 0.4);
 
-    private double Pillars(int x, int y, int z) =>
-        (_pillarAt.At(x, y, z) * 2 + (_pillarRareness.At(x, y, z) * -1 - 1)) * Cube(_pillarThickness.At(x, y, z) * 0.55 + 0.55);
+    private static double Pillars(int x, int y, int z, Reading read) =>
+        (read[Pillar, x, y, z] * 2 + (read[PillarRareness, x, y, z] * -1 - 1)) * Cube(read[PillarThickness, x, y, z] * 0.55 + 0.55);
 
-    private double Noodle(int x, int y, int z)
+    private static double Noodle(int x, int y, int z, Reading read)
     {
-        if (y < -60 || y >= 321 || _noodle.At(x, y, z) < 0) return 64;
-        var ridges = Math.Max(Math.Abs(_ridgeAAt.At(x, y, z)), Math.Abs(_ridgeBAt.At(x, y, z)));
-        return _noodleThickness.At(x, y, z) * -0.025 - 0.075 + ridges * 1.5;
+        if (y < -60 || y >= 321 || read[NoodleAt, x, y, z] < 0) return 64;
+        var ridges = Math.Max(Math.Abs(read[RidgeA, x, y, z]), Math.Abs(read[RidgeB, x, y, z]));
+        return read[NoodleThickness, x, y, z] * -0.025 - 0.075 + ridges * 1.5;
     }
 
     // A value from one at one height to another at another, held at each beyond them.

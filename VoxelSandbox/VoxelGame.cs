@@ -214,6 +214,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The light a torch or a lantern throws in the hand or on the ground.</summary>
     public HeldLights Lights { get; } = new();
 
+    /// <summary>The caves' noises read on the GPU for the columns about to be generated.</summary>
+    public CaveFields CaveFields { get; } = new();
+
     public Inventory Inventory { get; } = new();
 
     /// <summary>The player's health, food and breath, which change in survival alone.</summary>
@@ -415,7 +418,8 @@ public sealed class VoxelGame : IDisposable
         if (info is null) Vitals.Set();
         else Vitals.Set(info.Health, info.Food, info.Saturation);
         // The old streamer's workers finish into its own queue, which nothing reads again.
-        Streamer = new ChunkStreamer(World, Renderer, Mobs, Chests, Save);
+        CaveFields.Use((World.Generator as Overworld)?.Caves);
+        Streamer = new ChunkStreamer(World, Renderer, Mobs, Chests, Save, CaveFields);
         Clouds.Follow(generator.Seed);
         _sinceSave = 0;
         Loading = true;
@@ -1327,6 +1331,7 @@ public sealed class VoxelGame : IDisposable
     {
         SaveWorld();
         Renderer.Dispose();
+        CaveFields.Dispose();
         MobRenderer.Dispose();
         DropRenderer.Dispose();
         Bits.Dispose();

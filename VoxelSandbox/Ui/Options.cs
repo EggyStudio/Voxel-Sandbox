@@ -157,6 +157,7 @@ public sealed class OptionScreens
         Render = new("Render Settings",
         [
             new("Render Distance", () => game.RenderDistance, v => game.RenderDistance = (int)v) { Low = 2, High = 16, Step = 1, Format = v => $"{v:0} chunks" },
+            Option.Toggle("GPU Generation", () => game.CaveFields.Enabled, on => game.CaveFields.Enabled = on),
             Option.Choice("Global Illumination", () => light.Quality, quality =>
             {
                 light.Quality = quality;

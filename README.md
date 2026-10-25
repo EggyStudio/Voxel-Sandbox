@@ -155,7 +155,8 @@ and the light, and the block the eye is inside where it is in one. `voxel.fill`,
 `voxel.set` change blocks, `voxel.tp`, `voxel.look` and `voxel.fly` move the player, `voxel.break`
 and `voxel.place` act as the mouse buttons do, `voxel.time`, `voxel.day` and `voxel.cycle` set the
 sky, `voxel.clouds` shows or hides the clouds and places their drift, `voxel.distance` the render
-distance, `voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the
+distance, `voxel.gpu` reads the caves' noises on the GPU or not and compares them with the CPU's,
+`voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the
 shaded corners on or off, `voxel.corners` sets how far the corners darken, `voxel.world` saves the
 world and opens or begins another of a kind and seed, `voxel.loading` holds its loading screen up
 for a capture, `voxel.save` saves at once, and `voxel.blocks` lists the blocks by number and name.
@@ -435,6 +436,23 @@ ground, every place the tests pin, the spawn, the villages and the structures, s
 stood, and the cliffs' counts move by one at most. A world saved before may show a step of a block where a column it saved meets
 one generated since. A column takes 16.9 ms on the CPU, the caves' density 5.7 of it, against 16.1
 and 5.4 in floats.
+
+The GPU reads the caves' noises for the columns about to be generated, through a compute shader of
+the game's own, `resources/shaders/cavefields.slang`. A batch of eight columns is one dispatch, a
+thread a reading, the 30 readings the caves take at each of a column's 1,225 corners of cells, and
+its readings come back a frame or more later through the engine's readback that does not wait, up to
+three batches in flight at once, each column's place in its batch a uniform of the dispatch, so
+sending one never waits for the GPU. A worker then places the column from its readings, 11.0 ms a
+column against 16.5 reading the noises itself. The streamer asks the GPU ahead of its workers, the
+nearest columns first. A new place on seed 1 settles in the same 3.6 to 3.8 seconds either way,
+since the main thread's joining and meshing set that pace, and its frames take 5.6 to 5.8 ms with
+the GPU reading against 7.2 without, the workers leaving the main thread more of the CPU. The
+shader reads each noise in fixed point as the CPU does, two 32-bit products of halves taking a
+product's floor where the engine enables no 64-bit integers in shaders, so a column is the same
+whichever path made it. GPU Generation on the Render Settings screen turns it off, and a device with
+no compute or a run without a window reads every column's noises on the CPU. `voxel.gpu` says how
+many columns the GPU read, turns it on or off for the session, and with `verify` compares its
+readings with the CPU's over a square of columns about the player, none of which differ.
 
 The caves hold Minecraft's aquifers. The ground is cut into cells 16 blocks across and 12 high, each
 with a place of its own within it, and a cave's block takes the fluid of the nearest place's aquifer
@@ -820,6 +838,7 @@ and mode.
 | | Frame Limit | 10 to 250 frames a second by 10, then Unlimited | Unlimited |
 | | VSync | Off, On | Off |
 | Render Settings | Render Distance | 2 to 16 chunks | 12 |
+| | GPU Generation, the caves' noises read on the GPU | Off, On | On |
 | | Global Illumination | Off, Low, Medium, High | High |
 | | Screen Probes | Off, On | Off |
 | | Shadow Distance | 16 to 192 blocks by 8 | 64 |

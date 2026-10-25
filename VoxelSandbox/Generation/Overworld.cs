@@ -205,13 +205,19 @@ public sealed class Overworld : IWorldGenerator
         return (height, biome, top, sandy ? BlockId.Sand : biome.Under, temperature, humidity);
     }
 
-    public ChunkColumn Generate(int columnX, int columnZ)
+    /// <summary>The world's caves, whose noises a column's readings on the GPU hold.</summary>
+    public Caves Caves => _caves;
+
+    public ChunkColumn Generate(int columnX, int columnZ) => Generate(columnX, columnZ, null);
+
+    /// <summary>A column generated with its caves' readings at its cells' corners where the GPU read them, which are the CPU's to the bit.</summary>
+    public ChunkColumn Generate(int columnX, int columnZ, ArraySegment<int>? caveReadings)
     {
         var column = new ChunkColumn(columnX, columnZ);
         int minX = columnX * Section.Size, minZ = columnZ * Section.Size;
         var villages = Structures.Village.GroundIn(minX, minZ, minX + Section.Mask, minZ + Section.Mask, this);
         var grounds = new (int Height, Biome Biome, BlockId Top)[Section.Size * Section.Size];
-        var caves = _caves.Carve(columnX, columnZ, (x, z) => At(x, z).Height);
+        var caves = _caves.Carve(columnX, columnZ, (x, z) => At(x, z).Height, caveReadings);
         var aquifers = _aquifers.For((x, z) => At(x, z).Height);
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)

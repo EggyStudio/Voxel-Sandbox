@@ -17,7 +17,7 @@ namespace VoxelSandbox;
 /// that makes it, and the loaded columns' again, a few a frame, each time the eye enters another
 /// section, as <see cref="Reach"/> has it.
 /// </remarks>
-public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, Chests chests, WorldSave? save)
+public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, Chests chests, WorldSave? save, CaveFields? fields = null)
 {
     private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column)> _done = new();
     private readonly HashSet<(int X, int Z)> _pending = [];
@@ -71,18 +71,33 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             Unload(cx, cz, load + 1);
         }
 
+        // A column to generate waits for its caves' readings where the GPU reads them, a few batches
+        // asked ahead of the workers.
+        fields?.Update((x, z) => _wanted.Contains((x, z)));
+        // The GPU is asked ahead of the workers, the nearest columns first, so a worker that comes
+        // free finds a column's readings back.
+        var asking = fields is { Running: true } && world.Generator is Overworld;
         foreach (var (x, z) in _wanted)
         {
-            if (_running >= _workers) break;
-            if (world.HasColumn(x, z) || !_pending.Add((x, z))) continue;
-            Interlocked.Increment(ref _running);
+            if (_running >= _workers && !asking) break;
+            if (world.HasColumn(x, z) || _pending.Contains((x, z))) continue;
             var (generator, saved, renumber) = (world.Generator, Kept(x, z), save?.Renumber);
+            var gpu = asking && saved is null;
+            ArraySegment<int>? readings = null;
+            if (_running >= _workers || gpu && !fields!.TryTake(x, z, out readings))
+            {
+                if (gpu && fields!.Backlog < CaveFields.Batch * CaveFields.Flights * 2) fields.Ask(x, z);
+                else if (_running >= _workers) break;
+                continue;
+            }
+            _pending.Add((x, z));
+            Interlocked.Increment(ref _running);
             Task.Run(() =>
             {
                 ChunkColumn? column = null;
                 try
                 {
-                    column = Make(generator, saved, renumber, x, z, eye, kept);
+                    column = Make(generator, saved, renumber, x, z, eye, kept, readings);
                 }
                 catch (Exception ex)
                 {
@@ -113,10 +128,10 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     // A column from its kept blocks or its generator, with its own light worked out, which leaves the
     // main thread only the light across its edges, its open air sharing its arrays and its deep
     // sections out of the eye's reach packed.
-    private static ChunkColumn Make(IWorldGenerator generator, byte[]? kept, ushort[]? renumber, int x, int z, SectionKey eye, int distance)
+    private static ChunkColumn Make(IWorldGenerator generator, byte[]? kept, ushort[]? renumber, int x, int z, SectionKey eye, int distance, ArraySegment<int>? readings = null)
     {
         ChunkColumn column;
-        if (kept is null) column = generator.Generate(x, z);
+        if (kept is null) column = readings is not null && generator is Overworld land ? land.Generate(x, z, readings) : generator.Generate(x, z);
         else
         {
             column = WorldSave.Decode(x, z, kept, renumber, WorldSave.Shallow(kept) ? generator.Generate(x, z) : null);

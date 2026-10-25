@@ -7,15 +7,16 @@
 # underside overhead at noon, captures the sun and its glow at noon and at dusk, a pillar's shadow
 # under the morning sun, and the window of every item's icon, then swims the player out of a pool
 # onto its bank and reads a white sheep's wool in the shade, and over seed 1's overworld stands the
-# player over each of the eight biomes the climate gained and captures it, reads the chest of seed 1's
-# nearest mineshaft and reads the drawn land's edge against the sky. A second run that keeps its files, in a data folder of its own, then takes a
-# screenshot with F2. It fails where the game does not open or answer, the player did not move or
-# did not climb out onto the bank, the wool in shade is not a gray, a cloud's underside overhead at
-# noon is dark, a biome is not found or not where it was found, the mineshaft's chest holds no rails or
-# torches, the land's edge steps to the sky
-# beyond it, more than 400 draws of sections are recorded there, the layer reported an error, or F2
-# left no screenshot of the window's size, and says why in an error annotation, so the run's page
-# names it.
+# player over each of the eight biomes the climate gained and captures it, reads the chest of seed
+# 1's nearest mineshaft, compares the caves' noises read on the GPU with the CPU's and reads the
+# drawn land's edge against the sky. A second run that keeps its files, in a data folder of its own,
+# then takes a screenshot with F2. It fails where the game does not open or answer, the player did
+# not move or did not climb out onto the bank, the wool in shade is not a gray, a cloud's underside
+# overhead at noon is dark, a biome is not found or not where it was found, the mineshaft's chest
+# holds no rails or torches, the GPU's readings of the caves' noises are not the CPU's, the land's
+# edge steps to the sky beyond it, more than 400 draws of sections are recorded there, the layer
+# reported an error, or F2 left no screenshot of the window's size, and says why in an error
+# annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -891,6 +892,8 @@ cmd voxel.distance 2
 # screen's black while the state says it loads, and once it is let go and the world stands the
 # player is set over the origin, and from above the trees there the corner is the sky's.
 cmd voxel.loading on
+# The run reads the caves' noises on the CPU, and one check below reads them on the GPU.
+cmd voxel.gpu off
 cmd voxel.world overworld 1
 cmd frames.wait 2
 state=$(ask voxel.state)
@@ -961,6 +964,22 @@ meshed
 held=$(ask voxel.chest 134 15 58)
 echo "$held"
 [[ "$held" == *" rail"* || "$held" == *" torch"* ]] || fail "the mineshaft's chest at 134, 15, 58 holds no rails or torches, $held"
+
+check "the GPU's caves"
+# The caves' noises read on the GPU, lavapipe's in the build workflow, at the corners of the four
+# columns about the player, the same to the bit as the CPU's, and the columns of a place not yet
+# visited generated from what the GPU read.
+cmd voxel.gpu on
+verify=$(ask voxel.gpu verify 2)
+echo "$verify"
+[[ "$verify" == "0 of 147000 readings over 4 columns differ"* ]] || fail "the GPU's readings of the caves' noises are not the CPU's, $verify"
+cmd voxel.tp 900.5 110 900.5
+meshed
+gpu=$(ask voxel.gpu)
+echo "$gpu"
+read=$(printf '%s\n' "$gpu" | sed -nE 's/.*, ([0-9]+) columns read since.*/\1/p')
+[ "${read:-0}" -gt 0 ] || fail "no column of a new place was generated from the GPU's readings, $gpu"
+cmd voxel.gpu off
 
 check "the rain's splashes"
 # On the meadow with the weather held turned the rain splashes about the player, which the frame's
@@ -1099,4 +1118,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a grass wall as bright above the eye as below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw deep water darker than shallow and the sky in water seen low, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, opened a mineshaft's chest of rails or torches, saw the rain splash on a meadow within its particles' budget, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a grass wall as bright above the eye as below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw deep water darker than shallow and the sky in water seen low, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, opened a mineshaft's chest of rails or torches, read the caves' noises on the GPU as on the CPU, saw the rain splash on a meadow within its particles' budget, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"

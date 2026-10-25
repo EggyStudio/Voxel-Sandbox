@@ -20,5 +20,8 @@ public sealed class HeadlessGameTests
                 Assert.True(game.World.HasColumn(cx + dx, cz + dz), $"the column {cx + dx}, {cz + dz} is not in");
         headless.Step(10);
         Assert.True(game.Player.Body.OnGround, $"the player stands at {game.Player.Body.Position}");
+        // With no device to compute on, every column reads its caves' noises itself.
+        Assert.False(game.CaveFields.Running);
+        Assert.Equal(0, game.CaveFields.Read);
     }
 }

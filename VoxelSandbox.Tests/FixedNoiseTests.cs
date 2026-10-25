@@ -124,4 +124,28 @@ public sealed class FixedNoiseTests
         double u = h < 8 ? x : y, v = h < 4 ? y : h is 12 or 14 ? x : z;
         return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
     }
+
+    [Fact]
+    public void A_Column_Generated_From_Its_Caves_Readings_Is_The_Column_Generated_Reading_The_Noises_Itself()
+    {
+        // The readings a shader takes at a column's corners, here taken through the caves' samplers
+        // as the shader takes them, in its order, give the column the noises give it.
+        var land = new Overworld(1);
+        var samplers = land.Caves.Samplers;
+        foreach (var (cx, cz) in new[] { (4, 2), (-7, 11) })
+        {
+            var readings = new int[Caves.Corners * samplers.Count + 5];
+            for (int corner = 0; corner < Caves.Corners; corner++)
+            {
+                var (dx, y, dz) = Caves.CornerAt(corner);
+                for (int s = 0; s < samplers.Count; s++) readings[5 + corner * samplers.Count + s] = samplers[s].FixedAt(cx * 16 + dx, y, cz * 16 + dz);
+            }
+            var (read, own) = (land.Generate(cx, cz, new ArraySegment<int>(readings, 5, readings.Length - 5)), land.Generate(cx, cz));
+            for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
+                for (int z = 0; z < 16; z++)
+                    for (int x = 0; x < 16; x++)
+                        Assert.Equal(own.Get(x, y, z), read.Get(x, y, z));
+        }
+    }
 }
+

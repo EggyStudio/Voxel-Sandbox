@@ -5,30 +5,51 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `87d089e`, item 30, the packs' mob models, read at 06:11 on 2026-10-25, carrying the
-review's files, DEVLOG.md and a captioned picture, held until the run of `bbe814c` ends. PackModels
-reads the loaded packs' cem jem files by kind, the sheep's wool as its tinted second picture, into
-the game's pieces, each top part one piece holding every box nested in it and each box placed by the
-turns of the parts it lies in, Cuboid gaining Placed and Parts, a face's own part of the picture
-with faces not given left out; the coordinates read as Blockbench reads them, a top part's pivot its
-negated translation and its boxes where they say, a nested part's translation its pivot and deeper
-parts and boxes standing from their holder's pivot, the turns about x, then y, then z, checked
-against Fresh Animations' own zombie and cow; the UVs scaled from the model's texture size to the
-kind's picture. Roles come from the source's part names, a nested part named for a role lifted into
-its own piece since the pack lays the cow's, pig's, sheep's, chicken's and creeper's heads inside
-their bodies, numbered legs taking their roles by where they stand, a leg or arm pivoted in the
-lower three quarters of its boxes swinging from its top since the pack pivots the cow's legs at the
-hoof, a kind keeping its own model where no pack models it or none gives its pictures, MobRenderer
-drawing from a per-kind parts array. Two departures, the expressions not read so the pack's blinks,
-ears and tails stand at rest, as Decision 22 has it, and the pack's texture key not read, the kind's
-pictures found as before. PackModelTests reads a small cow of the form for the roles, the lifted
-head, the turned body's bounds, a leg pivot moved from the hoof, a face's UV scaled and the other
-faces left out, and no pack or a malformed file giving null, and a test over the reference copy
-covers the eight kinds, returning early where the machine lacks it. 347 tests, play.sh 489 s on the
-GPU against about 320 before, the pack's pictures check 76 s, to be read again on the next run.
+Reviewed up to `2549786`, item 29's first part's first half, every noise in fixed point on the CPU,
+read at 06:29 on 2026-10-25, carrying the review's files and DEVLOG.md. SourceNoise, the caves and
+the aquifers, and Noise, the terrain, the climate, the plant patches and the clouds, are integers
+alone; a level reads a point as its offset plus the integer coordinates times its frequency, each a
+uint of 24 fractional bits whose 8 whole bits wrap at the period of 256, so no per-column bases are
+needed and a shader reads the same sum; the noise, the fades, the lerps and the weights carry 16
+fractional bits with every product floored in FixedNoise.Mul, the shader to do it in four 32-bit
+half products; the permutations and the offsets come from the same Random sequence as before, the
+scales SourceNoise.Scaled samplers the caves pick by index. Over 144 columns about seed 1's origin
+4,552 blocks of 14,155,776 differ, 0.032%, 1,578 between air and ground across 131 columns, 3,011 of
+them from SourceNoise; the spawn's ground at 75, the five villages, the mineshaft, the ravine, the
+pyramid, the ruin, the shipwreck, the temple, the hut and the outpost stand where they stood, the
+cliffs' steps of two or more at the spawn 460 unchanged, of three or more 7 where 6, the village's 0
+where 1, no test or play.sh pin moved. A column on the CPU takes 16.86 ms against 16.05 in floats,
+the caves 5.68 against 5.36 and the ground's 256 lookups 1.15 against 0.83, the GPU half to take the
+caves off. FixedNoiseTests reads Mul's floor, Smooth's ends and middle, zero at the cell corners and
+the period at a power-of-two step, and holds both noises within 2e-3 of a double reference of their
+old formula over 2,000 points each. The README says an old world may show a block's step where saved
+and new columns meet. 350 tests, play.sh 346 s on the GPU, the pack's pictures check 35 s against 76
+before, so that was a one-off. After `87d089e`, item 30, the packs' mob models, read at 06:11 on
+2026-10-25, carrying the review's files, DEVLOG.md and a captioned picture, pushed with `2549786` at
+06:38 on 2026-10-25 once the run of `bbe814c` went green, the run watched. PackModels reads the
+loaded packs' cem jem files by kind, the sheep's wool as its tinted second picture, into the game's
+pieces, each top part one piece holding every box nested in it and each box placed by the turns of
+the parts it lies in, Cuboid gaining Placed and Parts, a face's own part of the picture with faces
+not given left out; the coordinates read as Blockbench reads them, a top part's pivot its negated
+translation and its boxes where they say, a nested part's translation its pivot and deeper parts and
+boxes standing from their holder's pivot, the turns about x, then y, then z, checked against Fresh
+Animations' own zombie and cow; the UVs scaled from the model's texture size to the kind's picture.
+Roles come from the source's part names, a nested part named for a role lifted into its own piece
+since the pack lays the cow's, pig's, sheep's, chicken's and creeper's heads inside their bodies,
+numbered legs taking their roles by where they stand, a leg or arm pivoted in the lower three
+quarters of its boxes swinging from its top since the pack pivots the cow's legs at the hoof, a kind
+keeping its own model where no pack models it or none gives its pictures, MobRenderer drawing from a
+per-kind parts array. Two departures, the expressions not read so the pack's blinks, ears and tails
+stand at rest, as Decision 22 has it, and the pack's texture key not read, the kind's pictures found
+as before. PackModelTests reads a small cow of the form for the roles, the lifted head, the turned
+body's bounds, a leg pivot moved from the hoof, a face's UV scaled and the other faces left out, and
+no pack or a malformed file giving null, and a test over the reference copy covers the eight kinds,
+returning early where the machine lacks it. 347 tests, play.sh 489 s on the GPU against about 320
+before, the pack's pictures check 76 s, to be read again on the next run.
 
 Before it, `bbe814c` came, item 129, the rain's picture, with `af9d829`, `211e57a` and `057011a`,
-item 31, pushed at 05:40 on 2026-10-25 once the run of `79ad110` went green, the run watched.
+item 31, pushed at 05:40 on 2026-10-25 once the run of `79ad110` went green, its run green, the play
+job 53 minutes.
 
 Before it, `79ad110` came, item 28, the looks Shine shows, pushed at 04:47 on 2026-10-25 once the
 run of `85c3ff6` went green, its run green, the play job 52 minutes.
@@ -466,7 +487,11 @@ full.
     two 32-bit multiplies giving C#'s 64-bit result exactly; on the CPU a column takes 15.45 ms, the
     caves' density grid 5.31 and the 256 ground lookups 0.82, the rest the block loop, the ores, the
     plants and the structures, so part one's first gain is the caves' grid, the ground's 2D noises
-    going with it and the CPU combining the fields as today.
+    going with it and the CPU combining the fields as today. Part one's first half at `2549786` on
+    2026-10-25, every noise in fixed point on the CPU with the changed blocks counted, a scattering
+    of 0.032% and no pinned place moved; the GPU half next, the caves' corner readings in a compute
+    shader read back without a wait, voxel.gpu on or off as a setting and voxel.gpu verify comparing
+    both paths bit for bit in play.sh.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
