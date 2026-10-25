@@ -1754,6 +1754,32 @@ before a batch.
     2026-10-25, the column's v taken downward so the rows run down the wall, the snow with it, the
     before-and-after picture in the devlog.
 
+30. **Entity models, textures and animations read from the player's packs in OptiFine's form, the
+    game's own the fallback (Decision 13).** The owner's word of about 00:55 on 2026-10-21: the
+    packs of their modpack, Bare Bones and Fresh Animations among them, have the look they like, and
+    a Bedrock add-on reworks all of this in the same spirit. Fresh Animations is 100 custom entity
+    models under `optifine/cem`, `.jem` files of parts and boxes with `.jpm` parts and animation
+    expressions over the entity's variables, with 170 entity textures, and its terms allow personal
+    use and building on it with credit, never redistribution, so none of it ships; the game reads
+    the player's own copy as item 24 reads the blocks. The game gains a reader of the form: a `.jem`
+    model's parts, boxes, texture offsets, pivots and rotations into the game's cuboid model of item
+    13 at the source's scale, its texture from the pack by the model's name, and its animations as
+    expressions parsed once and evaluated each frame over the variables the form names,
+    `limb_swing`, `limb_speed`, `head_yaw`, `head_pitch`, `age`, `hurt_time`, `is_child` and the
+    rest the game can give, the functions of the form's expression language in a small evaluator of
+    the game's own; a mob whose kind the loaded packs model is drawn with the pack's model and
+    animated by its expressions, the game's own model and walk of item 18 otherwise, read per kind
+    at load and on `voxel.packs reload`; the parts the game cannot give, random variables and the
+    attack times, hold their defaults. Tests: a `.jem` of a known box and a one-line animation
+    parsed to the counts and evaluated at two values, the expression language's functions each on a
+    value, and a capture of a villager and a cow from the owner's packs beside the game's own in the
+    record, read from the packs where the machine has them and skipped where it has not. After item
+    24. Two commits, the models and the textures, then the animations. Under Decision 22 the reader
+    takes a model's geometry and its texture as assets and none of its animation expressions, the
+    mobs animated by the game's own gait of item 18 on the pack's boxes; two commits become one.
+    Done at `87d089e` on 2026-10-25, the packs' models read as boxes with their pivots and turns and
+    the mobs walked by the game's own gait, the departures in the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

@@ -99,11 +99,11 @@ public sealed class Overworld : IWorldGenerator
         float badlands = Climate.Badlands(temperature, humidity), swamp = Climate.Swampness(temperature, humidity);
         // The badlands keep their hills, which the desert around them loses.
         var dry = Climate.Dryness(temperature, humidity) * (1 - badlands);
-        var hills = _hills.Fractal(x / 160f, z / 160f, 5) * 18 * (1 - 0.6f * dry);
-        var mountains = Math.Max(0, _mountains.Fractal(x / 420f, z / 420f, 3)) * (1 - Climate.Dryness(temperature, humidity));
+        var hills = _hills.Fractal(x, z, 160, 5) * 18 * (1 - 0.6f * dry);
+        var mountains = Math.Max(0, _mountains.Fractal(x, z, 420, 3)) * (1 - Climate.Dryness(temperature, humidity));
         // Wide basins sink the land under the sea level, the lakes and seas of the world, as
         // Minecraft's continentalness lowers its oceans.
-        var basin = Math.Clamp((-_basins.Fractal(x / 520f, z / 520f, 3) - 0.1f) / 0.3f, 0, 1);
+        var basin = Math.Clamp((-_basins.Fractal(x, z, 520, 3) - 0.1f) / 0.3f, 0, 1);
         var sunk = basin * basin * (3 - 2 * basin);
         var height = 56 + hills + mountains * mountains * 110 - sunk * 22;
 
@@ -111,14 +111,14 @@ public sealed class Overworld : IWorldGenerator
         // ground where a noise is high.
         if (badlands > 0)
         {
-            var mesa = Math.Max(0, _mesas.Fractal(x / 90f, z / 90f, 3) + 0.08f) * 95;
+            var mesa = Math.Max(0, _mesas.Fractal(x, z, 90, 3) + 0.08f) * 95;
             var stepped = MathF.Floor(mesa / 5) * 5 + Math.Clamp((mesa % 5 - 4) * 5, 0, 5);
             height += badlands * stepped;
         }
         // A swamp sinks toward the sea level, a block or two over and under it, so pools stand
         // among its ground, the land around it sinking in with it.
         if (swamp > 0 && height > SeaLevel - 4)
-            height += (SeaLevel + 0.5f + _swampFloor.At(x / 14f, z / 14f) * 2.4f - height) * swamp;
+            height += (SeaLevel + 0.5f + _swampFloor.At(x, z, 14) * 2.4f - height) * swamp;
 
         // A river winds where a noise is near zero, in a valley that sinks the land around it most
         // of the way to the water, and cut down to three blocks under the sea level where it
@@ -128,7 +128,7 @@ public sealed class Overworld : IWorldGenerator
         // on high ground runs between slopes rather than under a wall cut down from the valley's
         // floor. The bank fades out sooner than the valley as the ground rises, where a river
         // climbing into hills would end against a steeper wall.
-        var winding = MathF.Abs(_rivers.Fractal(x / 420f, z / 420f, 2));
+        var winding = MathF.Abs(_rivers.Fractal(x, z, 420, 2));
         var below = SmoothStep(MountainsFrom, MountainsFrom - 16, height);
         var valleyEdge = 0.03f + Math.Max(0.08f, (height - SeaLevel - 1) * BankWidth);
         var valley = SmoothStep(valleyEdge, 0.03f, winding) * below;
@@ -172,7 +172,7 @@ public sealed class Overworld : IWorldGenerator
     {
         var at = z * Section.Size + x;
         column.Biome[at] = land.Biome.Id;
-        var mottled = _mottle.At(wx / 44f, wz / 44f) < -0.1f ? new Color(76, 118, 60) : new Color(106, 112, 57);
+        var mottled = _mottle.At(wx, wz, 44) < -0.1f ? new Color(76, 118, 60) : new Color(106, 112, 57);
         (column.GrassTint[at], column.FoliageTint[at]) = Climate.Colors(land.Temperature, land.Humidity, land.Height, MountainsFrom, mottled);
     }
 
@@ -186,12 +186,12 @@ public sealed class Overworld : IWorldGenerator
     {
         var (height, temperature, humidity, biome) = At(x, z);
         var temperate = biome == Biomes.Plains || biome == Biomes.Forest || biome == Biomes.BirchForest;
-        var sandy = temperate && height < SandBelow && _sand.At(x / 48f, z / 48f) > 0.05f;
+        var sandy = temperate && height < SandBelow && _sand.At(x, z, 48) > 0.05f;
         // Ground under the water is sand near the shore and gravel deeper, as a sea's floor is, and
         // in patches clay under a river's or a swamp's shallow water, as the source lays its disks of clay.
         if (height < SeaLevel)
         {
-            var floor = (biome == Biomes.River || biome == Biomes.Swamp) && _clay.At(x / 9f, z / 9f) > 0.25f ? BlockId.Clay
+            var floor = (biome == Biomes.River || biome == Biomes.Swamp) && _clay.At(x, z, 9) > 0.25f ? BlockId.Clay
                 : biome == Biomes.Swamp ? BlockId.Dirt
                 : height >= SeaLevel - 4 ? BlockId.Sand : BlockId.Gravel;
             return (height, biome, floor, floor == BlockId.Clay ? BlockId.Clay : floor, temperature, humidity);
@@ -200,7 +200,7 @@ public sealed class Overworld : IWorldGenerator
         if (biome == Biomes.Badlands && height > Mesas) return (height, biome, _bands[height], _bands[height - 1], temperature, humidity);
         var top = height >= SnowLine ? BlockId.Snow
             : sandy ? BlockId.Sand
-            : biome == Biomes.Mountains && _gravel.At(x / 24f, z / 24f) > 0.3f ? BlockId.Gravel
+            : biome == Biomes.Mountains && _gravel.At(x, z, 24) > 0.3f ? BlockId.Gravel
             : biome.Top;
         return (height, biome, top, sandy ? BlockId.Sand : biome.Under, temperature, humidity);
     }

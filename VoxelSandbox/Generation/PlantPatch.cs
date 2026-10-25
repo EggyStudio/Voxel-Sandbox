@@ -20,7 +20,7 @@ public sealed record PlantPatch(int Count, int BelowNoise, int Rarity, int Tries
     private static readonly Noise Details = new(2345), Tulips = new(2346);
 
     /// <summary>How many patches the chunk whose corner is at a place holds.</summary>
-    public int PatchesAt(int x, int z) => BelowNoise >= 0 && Details.At(x / 200f, z / 200f) < -0.8f ? BelowNoise : Count;
+    public int PatchesAt(int x, int z) => BelowNoise >= 0 && Details.At(x, z, 200) < -0.8f ? BelowNoise : Count;
 
     // A plant of a few kinds by weight.
     private static Func<Random, int, int, BlockId> Of(params (BlockId Plant, int Weight)[] kinds)
@@ -41,7 +41,7 @@ public sealed record PlantPatch(int Count, int BelowNoise, int Rarity, int Tries
     // The source's flowers of the plains, tulips where its noise is under -0.8, and elsewhere a
     // dandelion, or one time in three a poppy, an azure bluet, an oxeye daisy or a cornflower.
     private static BlockId PlainsFlower(Random random, int x, int z) =>
-        Tulips.At(x * 0.005f, z * 0.005f) < -0.8f ? PlainsTulips[random.Next(PlainsTulips.Length)]
+        Tulips.At(x, z, 200) < -0.8f ? PlainsTulips[random.Next(PlainsTulips.Length)]
             : random.NextSingle() < 1 / 3f ? PlainsFlowers[random.Next(PlainsFlowers.Length)] : BlockId.Dandelion;
 
     // The source's patches the game's biomes take, in the order its biomes place them, each named as

@@ -423,6 +423,19 @@ caves read for how deep a place lies, is the depth under the ground's top, so on
 reaches the top ten blocks, and never in the top three under water, which it would drain, nor on a
 village's ground.
 
+Every noise of the land, the caves, the aquifers, the climate and the clouds is worked out in fixed
+point with integers alone, so a shader on the GPU reckons each value to the bit as the CPU does. A
+place's coordinate along a noise is its offset plus the place's integer coordinates times the
+noise's frequency, an integer of 24 fractional bits whose 8 whole bits wrap at the noise's period of
+256 as it overflows, and the noise, its fades, its lerps and its octaves' weights are 16 fractional
+bits, each product taken to the floor. Its values stray from the formulas in doubles they stand for
+by under two thousandths, which moves a block here and there: over the 144 columns about seed 1's
+origin 4,552 blocks of 14 million differ from the noises in floats, 1,578 of them between air and
+ground, every place the tests pin, the spawn, the villages and the structures, stands where it
+stood, and the cliffs' counts move by one at most. A world saved before may show a step of a block where a column it saved meets
+one generated since. A column takes 16.9 ms on the CPU, the caves' density 5.7 of it, against 16.1
+and 5.4 in floats.
+
 The caves hold Minecraft's aquifers. The ground is cut into cells 16 blocks across and 12 high, each
 with a place of its own within it, and a cave's block takes the fluid of the nearest place's aquifer
 under its level and air over it. Under -54 every cave holds lava, as Minecraft's do. An aquifer

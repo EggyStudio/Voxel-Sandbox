@@ -55,10 +55,25 @@ public sealed class Caves
         _pillar = new(seed, "pillar", -7, 1, 1);
         _pillarRareness = new(seed, "pillar_rareness", -8);
         _pillarThickness = new(seed, "pillar_thickness", -8);
+        // The readings at a scale of their own, each of the tunnels' at each width a slow noise picks.
+        (_layerAt, _cheeseAt, _entranceAt, _rarityAt) = (_layer.Scaled(1, 8, 1), _cheese.Scaled(1, 0.6666666666666666, 1), _entrance.Scaled(0.75, 0.5, 0.75), _rarity.Scaled(2, 1, 2));
+        (_thickness2dAt, _modulatorAt, _pillarAt) = (_thickness2d.Scaled(2, 1, 2), _modulator.Scaled(2, 1, 2), _pillar.Scaled(25, 0.3, 25));
+        (_ridgeAAt, _ridgeBAt) = (_ridgeA.Scaled(NoodleScale, NoodleScale, NoodleScale), _ridgeB.Scaled(NoodleScale, NoodleScale, NoodleScale));
+        _spaghetti1At = [.. SpaghettiWidths.Select(w => _spaghetti1.Scaled(w.Scale, w.Scale, w.Scale))];
+        _spaghetti2At = [.. SpaghettiWidths.Select(w => _spaghetti2.Scaled(w.Scale, w.Scale, w.Scale))];
+        _spaghetti2dAt = [.. Spaghetti2dWidths.Select(w => _spaghetti2d.Scaled(w.Scale, w.Scale, w.Scale))];
     }
 
+    private readonly SourceNoise.Sampler _layerAt, _cheeseAt, _entranceAt, _rarityAt, _thickness2dAt, _modulatorAt, _pillarAt, _ridgeAAt, _ridgeBAt;
+    private readonly SourceNoise.Sampler[] _spaghetti1At, _spaghetti2At, _spaghetti2dAt;
+
+    // The tunnels' scales and weights a slow noise picks among, a quarter wider to twice as wide.
+    private static readonly (double Scale, double Weight)[] SpaghettiWidths = [(4 / 3.0, 0.75), (1.0, 1.0), (2 / 3.0, 1.5), (0.5, 2.0)];
+    private static readonly (double Scale, double Weight)[] Spaghetti2dWidths = [(2.0, 0.5), (4 / 3.0, 0.75), (1.0, 1.0), (0.5, 2.0), (1 / 3.0, 3.0)];
+    private const double NoodleScale = 2.6666666666666665;
+
     /// <summary>The density at a place so many blocks under the ground's top, solid over 0 and a cave at 0 or under.</summary>
-    public double Density(double x, double y, double z, double depth)
+    public double Density(int x, int y, int z, double depth)
     {
         var sloped = depth * SlopedPerBlock;
         var roughness = Roughness(x, y, z);
@@ -68,7 +83,7 @@ public sealed class Caves
         if (sloped < 1.5625) density = Math.Min(sloped, 5 * Entrances(x, y, z, roughness));
         else
         {
-            var cheese = 4 * Square(_layer.At(x, y * 8, z)) + Math.Clamp(_cheese.At(x, y * 0.6666666666666666, z) + 0.27, -1, 1)
+            var cheese = 4 * Square(_layerAt.At(x, y, z)) + Math.Clamp(_cheeseAt.At(x, y, z) + 0.27, -1, 1)
                 + Math.Clamp(-0.64 * sloped + 1.5, 0, 0.5);
             var underground = Math.Min(Math.Min(cheese, Entrances(x, y, z, roughness)), Spaghetti2d(x, y, z) + roughness);
             var pillars = Pillars(x, y, z);
@@ -149,41 +164,40 @@ public sealed class Caves
         }
     }
 
-    private double Entrances(double x, double y, double z, double roughness)
+    private double Entrances(int x, int y, int z, double roughness)
     {
-        var opening = _entrance.At(x * 0.75, y * 0.5, z * 0.75) + 0.37 + Gradient(y, -10, 0.3, 30, 0);
+        var opening = _entranceAt.At(x, y, z) + 0.37 + Gradient(y, -10, 0.3, 30, 0);
         // The tunnels' width by a slow noise, a quarter wider to twice as wide, as the source picks
         // among four of its readings.
-        var rarity = _rarity.At(x * 2, y, z * 2);
-        var (scale, weight) = rarity < -0.5 ? (4 / 3.0, 0.75) : rarity < 0 ? (1.0, 1.0) : rarity < 0.5 ? (2 / 3.0, 1.5) : (0.5, 2.0);
-        var first = Math.Abs(_spaghetti1.At(x * scale, y * scale, z * scale) * weight);
-        var second = Math.Abs(_spaghetti2.At(x * scale, y * scale, z * scale) * weight);
+        var rarity = _rarityAt.At(x, y, z);
+        var width = rarity < -0.5 ? 0 : rarity < 0 ? 1 : rarity < 0.5 ? 2 : 3;
+        var weight = SpaghettiWidths[width].Weight;
+        var first = Math.Abs(_spaghetti1At[width].At(x, y, z) * weight);
+        var second = Math.Abs(_spaghetti2At[width].At(x, y, z) * weight);
         var thickness = _thickness3d.At(x, y, z) * -0.011500001 - 0.0765;
         return Math.Min(opening, roughness + Math.Clamp(Math.Max(first, second) + thickness, -1, 1));
     }
 
-    private double Spaghetti2d(double x, double y, double z)
+    private double Spaghetti2d(int x, int y, int z)
     {
-        var thickness = _thickness2d.At(x * 2, y, z * 2) * -0.34999996 - 0.95;
-        var modulator = _modulator.At(x * 2, y, z * 2);
-        var (scale, weight) = modulator < -0.75 ? (2.0, 0.5) : modulator < -0.5 ? (4 / 3.0, 0.75) : modulator < 0.5 ? (1.0, 1.0)
-            : modulator < 0.75 ? (0.5, 2.0) : (1 / 3.0, 3.0);
-        var tunnel = Math.Abs(_spaghetti2d.At(x * scale, y * scale, z * scale) * weight) + thickness * 0.083;
+        var thickness = _thickness2dAt.At(x, y, z) * -0.34999996 - 0.95;
+        var modulator = _modulatorAt.At(x, y, z);
+        var width = modulator < -0.75 ? 0 : modulator < -0.5 ? 1 : modulator < 0.5 ? 2 : modulator < 0.75 ? 3 : 4;
+        var tunnel = Math.Abs(_spaghetti2dAt[width].At(x, y, z) * Spaghetti2dWidths[width].Weight) + thickness * 0.083;
         var level = Cube(Math.Abs(_elevation.At(x, 0, z) * 8 + Gradient(y, -64, 8, 320, -40)) + thickness);
         return Math.Clamp(Math.Max(tunnel, level), -1, 1);
     }
 
-    private double Roughness(double x, double y, double z) =>
+    private double Roughness(int x, int y, int z) =>
         (_roughnessModulator.At(x, y, z) * -0.05 - 0.05) * (Math.Abs(_roughness.At(x, y, z)) - 0.4);
 
-    private double Pillars(double x, double y, double z) =>
-        (_pillar.At(x * 25, y * 0.3, z * 25) * 2 + (_pillarRareness.At(x, y, z) * -1 - 1)) * Cube(_pillarThickness.At(x, y, z) * 0.55 + 0.55);
+    private double Pillars(int x, int y, int z) =>
+        (_pillarAt.At(x, y, z) * 2 + (_pillarRareness.At(x, y, z) * -1 - 1)) * Cube(_pillarThickness.At(x, y, z) * 0.55 + 0.55);
 
-    private double Noodle(double x, double y, double z)
+    private double Noodle(int x, int y, int z)
     {
         if (y < -60 || y >= 321 || _noodle.At(x, y, z) < 0) return 64;
-        const double Scale = 2.6666666666666665;
-        var ridges = Math.Max(Math.Abs(_ridgeA.At(x * Scale, y * Scale, z * Scale)), Math.Abs(_ridgeB.At(x * Scale, y * Scale, z * Scale)));
+        var ridges = Math.Max(Math.Abs(_ridgeAAt.At(x, y, z)), Math.Abs(_ridgeBAt.At(x, y, z)));
         return _noodleThickness.At(x, y, z) * -0.025 - 0.075 + ridges * 1.5;
     }
 

@@ -85,12 +85,19 @@ Rain over seed 1's plains village at noon seen against the sky through its neare
 large, its streaks standing upside down with their faint ends below on the left and the right way up
 on the right, faint at their tops and brighter at their feet.
 
+![](.github/devlog/2026-10-25-item-30-models.webp)
+A villager, a chicken, a sheep, a pig and a cow at noon with a zombie, a skeleton, a creeper and a
+spider under a roof behind them, in the game's own models above and in Fresh Animations' models
+under Bare Bones' pictures below, walked by the game's own gait.
+
 Done that day
 
 - Item 27 at `9dad43e`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
   aquifers.
 - Item 28 at `79ad110`. The looks Shine shows, done as the game's own, bloom on emissive blocks,
   colored light from emissive blocks, a rim around blocks, and an unshaded look.
+- Item 30 at `87d089e`. Entity models, textures and animations read from the player's packs in
+  OptiFine's form, the game's own the fallback (Decision 13).
 - Item 31 at `057011a`. Structures as the source's, more kinds and the modpack's taste (Decision
   15).
 - Item 32 at `7443bdc`. Weather and the ambient particles, rain and snow by biome, falling leaves,

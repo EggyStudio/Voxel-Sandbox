@@ -32,6 +32,8 @@ public sealed class Aquifers
     private const int Dry = -2032;
 
     private readonly SourceNoise _barrier, _floodedness, _spread, _lava;
+    // The readings with their heights scaled, as the source reads them.
+    private readonly SourceNoise.Sampler _barrierAt, _floodednessAt, _spreadAt;
     private readonly int _seed, _seaLevel;
 
     public Aquifers(int seed, int seaLevel)
@@ -41,6 +43,7 @@ public sealed class Aquifers
         _floodedness = new(seed, "aquifer_fluid_level_floodedness", -7);
         _spread = new(seed, "aquifer_fluid_level_spread", -5);
         _lava = new(seed, "aquifer_lava", -1);
+        (_barrierAt, _floodednessAt, _spreadAt) = (_barrier.Scaled(1, 0.5, 1), _floodedness.Scaled(1, 0.67, 1), _spread.Scaled(1, 0.7142857142857143, 1));
     }
 
     /// <summary>An aquifer's level and fluid, its fluid under the level and air at it and over it.</summary>
@@ -153,13 +156,13 @@ public sealed class Aquifers
     {
         var depth = lowest + 8 - y;
         var near = underSea ? Math.Clamp(1 - depth / 64.0, 0, 1) : 0;
-        var floodedness = Math.Clamp(_floodedness.At(x, y * 0.67, z), -1, 1);
+        var floodedness = Math.Clamp(_floodednessAt.At(x, y, z), -1, 1);
         var spreading = floodedness - (0.8 - 1.1 * near);
         var flooded = floodedness - (0.4 - 1.2 * near);
         if (spreading > 0) return global.Level;
         if (flooded <= 0) return Dry;
         int gx = (int)Math.Floor(x / 16.0), gy = (int)Math.Floor(y / 40.0), gz = (int)Math.Floor(z / 16.0);
-        var spread = (int)Math.Floor(_spread.At(gx, gy * 0.7142857142857143, gz) * 10 / 3) * 3;
+        var spread = (int)Math.Floor(_spreadAt.At(gx, gy, gz) * 10 / 3) * 3;
         return Math.Min(lowest, gy * 40 + 20 + spread);
     }
 
@@ -191,7 +194,7 @@ public sealed class Aquifers
             var t = 3 + within;
             pressure = t > 0 ? t / 3 : t / 10;
         }
-        var barrier = pressure is >= -2 and <= 2 ? _barrier.At(x, y * 0.5, z) : 0;
+        var barrier = pressure is >= -2 and <= 2 ? _barrierAt.At(x, y, z) : 0;
         return 2 * (barrier + pressure);
     }
 }

@@ -101,9 +101,9 @@ public sealed class Climate(int seed)
 {
     private readonly Noise _temperature = new(seed + 10), _humidity = new(seed + 11);
 
-    public float Temperature(int x, int z) => Math.Clamp(0.5f + 0.9f * _temperature.Fractal(x / 700f, z / 700f, 3), 0, 1);
+    public float Temperature(int x, int z) => Math.Clamp(0.5f + 0.9f * _temperature.Fractal(x, z, 700, 3), 0, 1);
 
-    public float Humidity(int x, int z) => Math.Clamp(0.5f + 0.9f * _humidity.Fractal(x / 600f, z / 600f, 3), 0, 1);
+    public float Humidity(int x, int z) => Math.Clamp(0.5f + 0.9f * _humidity.Fractal(x, z, 600, 3), 0, 1);
 
     /// <summary>How flat the land lies from 0 to 1, high where it is hot and dry, which lowers the hills of a desert as it nears one.</summary>
     public static float Dryness(float temperature, float humidity) => SmoothStep(0.6f, 0.85f, temperature) * SmoothStep(0.45f, 0.2f, humidity);

@@ -65,7 +65,7 @@ public sealed class Clouds : IDisposable
     public int Faces { get; private set; }
 
     /// <summary>Whether a cell of cloud space holds a cloud.</summary>
-    public bool IsCloud(int x, int z) => _noise.Fractal(x / 7f, z / 7f, 2) > 0.12f;
+    public bool IsCloud(int x, int z) => _noise.Fractal(x, z, 7, 2) > 0.12f;
 
     /// <summary>How far east the clouds have drifted, in blocks, which a capture sets to place them the same each time it is taken.</summary>
     public double Drift
