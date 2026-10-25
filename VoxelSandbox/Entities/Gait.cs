@@ -69,9 +69,11 @@ public static class Gait
 
     // A zombie reaches its arms out ahead, higher while it hunts. A skeleton's hang and swing
     // against its legs until it hunts, and then hold its bow out where it looks, the left hand
-    // turned in to the string, as Minecraft's bow is drawn.
+    // turned in to the string, as Minecraft's bow is drawn. The player's hang and swing as a
+    // skeleton's do.
     private static Matrix4x4 Arm(MobKind kind, bool right, float at, Stance stance)
     {
+        if (kind == MobKinds.Player) return Matrix4x4.CreateRotationX((right ? 1 : -1) * MathF.Cos(at) * stance.Stride);
         if (!kind.Shoots) return Matrix4x4.CreateRotationX(stance.Hunting ? Raised : Reaching);
         if (!stance.Hunting) return Matrix4x4.CreateRotationX((right ? 1 : -1) * MathF.Cos(at) * stance.Stride);
         return Matrix4x4.CreateRotationX(MathF.PI / 2 + stance.HeadPitch) * Matrix4x4.CreateRotationY((right ? 0.1f : -0.5f) + stance.HeadYaw);

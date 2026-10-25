@@ -840,6 +840,7 @@ public sealed class VoxelGame : IDisposable
             _switched = false;
         }
         if (IsKeyPressed(Key.F1)) HudHidden = !HudHidden;
+        if (IsKeyPressed(Key.F5)) Player.View = ThirdPerson.Next(Player.View);
         if (IsKeyPressed(Key.F2)) Screenshot();
         if (_said is var (said, age)) _said = age + GetFrameTime() < Hud.SaidSeconds ? (said, age + GetFrameTime()) : null;
         if (IsKeyPressed(Key.G))
@@ -1150,13 +1151,15 @@ public sealed class VoxelGame : IDisposable
         Lap("draw.sky");
         Renderer.Draw(World, Player.Eye, RenderDistance, Sky.TowardLight, Light.ShadowDistance);
         Lap("draw.sections");
-        MobRenderer.Draw(GetApp().World.Resource<EcsWorld>(), Player.Eye);
+        // The player's own model where the view stands without, none of a spectator's.
+        MobRenderer.Draw(GetApp().World.Resource<EcsWorld>(), Player.Eye, Player.View != View.First && Mode != GameMode.Spectator
+            ? (Player.Body.Position, Player.Yaw, new Stance(Player.StridePhase, Player.Stride, 0, Player.Pitch, 0, false)) : null);
         DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Falling.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Lit.Size))), Player.Eye, GetTime());
         // A burning TNT shows white every other five ticks, a hair larger than its cube.
         foreach (var (lit, body) in Tnt.All)
             if (lit.Flashing) DrawCube(body.Position + new Vector3(0, 0.5f * lit.Size, 0), 1.01f * lit.Size, 1.01f * lit.Size, 1.01f * lit.Size, new Color(255, 255, 255, 150));
         Bits.Draw(Player.Eye, Player.Look);
-        if (!HudHidden && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead)) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer);
+        if (!HudHidden && Player.View == View.First && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead)) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer);
         DrawArrows();
         // An explosion's flash, a ball swelling to the power's size and fading over half a second.
         foreach (var blast in Blasts.All)
@@ -1183,7 +1186,8 @@ public sealed class VoxelGame : IDisposable
         if (Mode.Lives() && Vitals.Hurt > 0) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(200, 0, 0, (byte)(90 * Vitals.Hurt / 0.5f)));
         if (!HudHidden)
         {
-            if (Mode.Touches()) Hud.DrawCrosshair();
+            // The crosshair marks the eye's aim, which a view from without does not look along.
+            if (Mode.Touches() && Player.View == View.First) Hud.DrawCrosshair();
             if (Eating > 0) Hud.DrawEating(Eating);
             if (Mode.Touches()) Hud.DrawHotbar(Hotbar, Mode.Lives());
             if (Mode.Lives()) Hud.DrawVitals(Vitals, Fade);

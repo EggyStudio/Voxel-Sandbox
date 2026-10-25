@@ -92,7 +92,19 @@ public sealed class FirstPersonController
 
     public Vector3 Look => new(-MathF.Sin(Yaw) * MathF.Cos(Pitch), MathF.Sin(Pitch), -MathF.Cos(Yaw) * MathF.Cos(Pitch));
 
-    public Camera3D Camera => new(Eye, Eye + Look, Vector3.UnitY, _fov * Zoom.Share);
+    /// <summary>
+    /// The camera of the view, at the eye looking along the look, or from without, behind the player
+    /// or in front of it, as far as the blocks let it stand, looking at the eye.
+    /// </summary>
+    public Camera3D Camera => View switch
+    {
+        View.First => new(Eye, Eye + Look, Vector3.UnitY, _fov * Zoom.Share),
+        View.Behind => new(Eye - Look * _away, Eye, Vector3.UnitY, _fov * Zoom.Share),
+        _ => new(Eye + Look * _away, Eye, Vector3.UnitY, _fov * Zoom.Share),
+    };
+
+    // How far a view from without stands from the eye, as last found.
+    private float _away = ThirdPerson.Away;
 
     /// <summary>The way the player faces in degrees from north, clockwise, as a compass reads it.</summary>
     public float Heading
@@ -138,12 +150,21 @@ public sealed class FirstPersonController
         Step(world, seconds, controls);
     }
 
+    /// <summary>Where the camera stands, at the eye, behind the player or in front of it, as F5 steps it.</summary>
+    public View View { get; set; }
+
+    /// <summary>How far the player's legs swing and where in their swing they are, as a mob's are, for the model a view from without shows.</summary>
+    public float Stride { get; private set; }
+
+    public float StridePhase { get; private set; }
+
     /// <summary>What the keys ask of the body for a frame, ahead and to the right from -1 to 1, and whether Space, Left Shift and Left Control are held.</summary>
     public readonly record struct Controls(float Forward = 0, float Side = 0, bool Up = false, bool Down = false, bool Sprint = false);
 
     /// <summary>Moves the body for a frame of so many seconds as the controls ask, as <see cref="Update"/> does from the keys.</summary>
     public void Step(VoxelWorld world, float seconds, Controls controls)
     {
+        var before = Body.Position;
         var (forward, side, up, down, sprintKey) = (controls.Forward, controls.Side, controls.Up, controls.Down, controls.Sprint);
         if (forward <= 0) Sprinting = false;
         else if (sprintKey && MaySprint) Sprinting = true;
@@ -206,6 +227,13 @@ public sealed class FirstPersonController
         EyeInWater = world.GetBlock((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z)) is var around && Blocks.IsWater(around);
         var widened = Sprinting && wish != Vector3.Zero ? FieldOfView * 1.12f : FieldOfView;
         _fov += (widened - _fov) * (1 - MathF.Exp(-10 * seconds));
+
+        // The legs swing by how far the body went across, as a mob's do, and a view from without
+        // stands as far from the eye as the blocks let it.
+        var (stride, phase) = (Stride, StridePhase);
+        Gait.Step(ref stride, ref phase, new Vector2(Body.Position.X - before.X, Body.Position.Z - before.Z).Length(), seconds);
+        (Stride, StridePhase) = (stride, phase);
+        if (View != View.First) _away = ThirdPerson.Distance(world, Eye, View == View.Behind ? -Look : Look);
     }
 
     // One of Minecraft's ticks of a body in water or bobbing above it, from where the tick finds the

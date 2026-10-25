@@ -45,8 +45,9 @@ public sealed class MobRenderer : IDisposable
     private readonly List<Slot> _slots = [];
     // The kinds' pictures from the packs loaded, which their materials draw with.
     private readonly List<Texture2D> _pictures = [];
-    // Each kind's pieces' slots, by kind, piece and variant, a piece of one color holding one.
-    private readonly Slot[][][] _byKind = new Slot[MobKinds.All.Length][][];
+    // Each kind's pieces' slots, by kind, piece and variant, a piece of one color holding one, the
+    // player's model after the mobs'.
+    private readonly Slot[][][] _byKind = new Slot[MobKinds.All.Length + 1][][];
 
     public MobRenderer()
     {
@@ -78,7 +79,7 @@ public sealed class MobRenderer : IDisposable
     {
         Forget();
         var textures = new Dictionary<byte[], Materials>(ReferenceEqualityComparer.Instance);
-        foreach (var kind in MobKinds.All)
+        foreach (var kind in MobKinds.All.Append(MobKinds.Player))
         {
             _byKind[kind.Id] = new Slot[kind.Parts.Length][];
             var names = PackTextures.OfMob(kind.Name);
@@ -241,8 +242,11 @@ public sealed class MobRenderer : IDisposable
         return true;
     }
 
-    /// <summary>Draws the mobs of an ECS world within reach of the eye, read by their components. Called inside <c>BeginMode3D</c>.</summary>
-    public void Draw(EcsWorld ecs, Vector3 eye)
+    /// <summary>
+    /// Draws the mobs of an ECS world within reach of the eye, read by their components, and the
+    /// player's model where it is given, as a view from without shows it. Called inside <c>BeginMode3D</c>.
+    /// </summary>
+    public void Draw(EcsWorld ecs, Vector3 eye, (Vector3 At, float Yaw, Stance Stance)? player = null)
     {
         foreach (var slot in _slots)
         {
@@ -255,6 +259,8 @@ public sealed class MobRenderer : IDisposable
             if (Place(mob, body, life, pose, -1, false, eye)) drawn++;
         foreach (var (_, mob, body, life, pose, hostile) in ecs.Query<Mob, Body, MobLife, MobPose, MobHostile>())
             if (Place(mob, body, life, pose, hostile.Fuse, hostile.Hunting, eye)) drawn++;
+        if (player is { } shown)
+            Place(MobKinds.Player, 0, Matrix4x4.CreateScale(MobKinds.Player.Scale) * Matrix4x4.CreateRotationY(shown.Yaw) * Matrix4x4.CreateTranslation(shown.At), shown.Stance, red: false, white: false);
 
         var draws = 0;
         foreach (var slot in _slots)
@@ -292,19 +298,24 @@ public sealed class MobRenderer : IDisposable
         if (life.Dying >= 0) placed = Matrix4x4.CreateRotationZ(MathF.Sqrt(MathF.Min(1, life.Dying / 0.6f)) * MathF.PI / 2) * placed;
         var (wide, tall, flash) = CreeperSwell(fuse);
         if (fuse >= 0) placed = Matrix4x4.CreateScale(wide, tall, wide) * placed;
-        var red = life.Hurt > 0 || life.Dying >= 0;
-        var white = flash > 0;
         var stance = new Stance(pose.StridePhase, pose.Stride, pose.HeadYaw - pose.Yaw, pose.HeadPitch, pose.WingAngle, hunting);
-        var parts = mob.Kind.Parts;
+        Place(mob.Kind, mob.Variant, placed, stance, life.Hurt > 0 || life.Dying >= 0, flash > 0);
+        return true;
+    }
+
+    // Adds a kind's pieces in a variant and a stance to the instances, the whole placed so, red or
+    // white as a hit or a creeper's flash shows it.
+    private void Place(MobKind kind, byte variant, Matrix4x4 placed, Stance stance, bool red, bool white)
+    {
+        var parts = kind.Parts;
         for (int p = 0; p < parts.Length; p++)
         {
             var part = parts[p];
-            var local = part.PlacedBy(Gait.Turn(mob.Kind, part, stance));
-            var variants = _byKind[mob.Kind.Id][p];
-            var slot = variants[variants.Length == 1 ? 0 : mob.Variant % variants.Length];
+            var local = part.PlacedBy(Gait.Turn(kind, part, stance));
+            var variants = _byKind[kind.Id][p];
+            var slot = variants[variants.Length == 1 ? 0 : variant % variants.Length];
             (red ? slot.Hurt : white ? slot.Flash : slot.Plain).Add(local * placed);
         }
-        return true;
     }
 
     /// <summary>

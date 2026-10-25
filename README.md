@@ -106,6 +106,7 @@ with its history.
 | G | The next quality of global illumination, Off after High |
 | C, held | Zoom, the view narrowed to a quarter over a tenth of a second and the mouse's turn with it, the wheel narrowing it further to a tenth, the key set in the options |
 | F1 | Hide the crosshair, the hotbar and the outline |
+| F5 | The next view, the player's own eye, a camera behind the player and one in front of it looking back, as Minecraft's F5 steps them |
 | Escape | Shut the window open, go back a menu, or open the menu, which holds the world still |
 
 The player is an entity of the engine's ECS, its controller, its body, its vitals and its hand its
@@ -116,6 +117,15 @@ in the frame it moved in. The world's loading, the game mode, whether the player
 menu open are the engine's states, and the behaviors run by them, the frame played while the world
 stands, the vitals and the hostile mobs' spawning while the player lives, and the cursor freed as a
 menu opens and taken back as the last shuts.
+
+From without, behind the player or in front of it, the camera stands four blocks from the eye along
+the look, looking at the eye, and is pulled in a tenth of a block short of the nearest block that
+any of five rays from about the eye meets on the way, as Minecraft's is, so a wall behind the player
+does not hide it. The player is seen there with a model of Minecraft's layout at its scale of
+fifteen sixteenths, a head, a body, two arms and two legs in the game's own colors, a teal shirt with
+short sleeves, blue trousers, grey shoes and brown hair, its legs swinging by how far it walks as a
+mob's do and its head tilted by the aim. The hand and the crosshair show from the eye alone, and a
+spectator is not seen. `voxel.view` sets the view.
 
 ## Commands
 
@@ -150,7 +160,8 @@ spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` put
 inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and
 reads a furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
 `voxel.throw` throws as Q does, and `voxel.drop` lays one of an item on the ground at a place.
-`voxel.weather` says, holds or frees the weather, `voxel.sounds` says how loud the place's sounds
+`voxel.weather` says, holds or frees the weather, `voxel.view` sets where the camera stands,
+`voxel.sounds` says how loud the place's sounds
 play and the steps played, `voxel.packs` says or sets the resource packs on,
 and `voxel.reload` reads them again. `voxel.vitals` says or sets the health and food, `voxel.hurt`
 harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and

@@ -312,6 +312,14 @@ public static class MobKinds
 
     public static readonly MobKind[] All = [Pig, Cow, Sheep, Chicken, Villager, Zombie, Skeleton, Creeper, Spider];
 
+    /// <summary>
+    /// The player as it is seen from without, the source's layout of a head, a body, two arms and
+    /// two legs at its scale, in the game's own colors, a teal shirt with short sleeves, blue
+    /// trousers, grey shoes, brown hair and a face with eyes and a mouth. It is no mob, so it is
+    /// not among <see cref="All"/>, and its place after them is its <see cref="MobKind.Id"/>.
+    /// </summary>
+    public static readonly MobKind Player = MakePlayer();
+
     /// <summary>The hostile kinds, and how often each of a hundred spawns is of it, as Minecraft's overworld weighs them.</summary>
     public static readonly (MobKind Kind, int Weight)[] Night = [(Zombie, 40), (Skeleton, 30), (Spider, 15), (Creeper, 15)];
 
@@ -457,6 +465,31 @@ public static class MobKinds
         {
             Id = 5, PictureSize = new(64, 64), Hostile = true, AttackDamage = 3, ChaseSpeed = 2.3f, FollowRange = 24, Burns = true,
         };
+    }
+
+    private static MobKind MakePlayer()
+    {
+        Color skin = new(196, 146, 112), hair = new(74, 50, 30), shirt = new(48, 150, 160), trousers = new(54, 56, 132), shoes = new(84, 84, 88),
+            white = new(236, 236, 236), iris = new(72, 60, 150), mouth = new(124, 74, 56);
+        Vector3 leftLeg = new(1.9f, 12, 0), rightLeg = new(-1.9f, 12, 0), leftArm = new(5, 2, 0), rightArm = new(-5, 2, 0);
+        ModelPart[] parts =
+        [
+            new(Swing.LegA, At(leftLeg), [Mc(leftLeg, -2, 0, -2, 4, 12, 4, trousers, mirror: true), Mc(leftLeg, -2, 10, -2, 4, 2, 4, shoes, grow: 0.05f)]),
+            new(Swing.LegB, At(rightLeg), [Mc(rightLeg, -2, 0, -2, 4, 12, 4, trousers), Mc(rightLeg, -2, 10, -2, 4, 2, 4, shoes, grow: 0.05f)]),
+            new(Swing.None, Vector3.Zero, [Mc(Vector3.Zero, -4, 0, -2, 8, 12, 4, shirt)]),
+            new(Swing.ArmA, At(leftArm), [Mc(leftArm, -1, -2, -2, 4, 12, 4, skin, mirror: true), Mc(leftArm, -1, -2, -2, 4, 4, 4, shirt, grow: 0.05f)]),
+            new(Swing.ArmB, At(rightArm), [Mc(rightArm, -3, -2, -2, 4, 12, 4, skin), Mc(rightArm, -3, -2, -2, 4, 4, 4, shirt, grow: 0.05f)]),
+            // The face in its fifth row from the top, each eye white outside and coloured within, a
+            // mouth two rows under it, and the hair over the head's top two rows and down its back.
+            new(Swing.Head, At(Vector3.Zero),
+                [
+                    Mc(Vector3.Zero, -4, -8, -4, 8, 8, 8, skin), Mc(Vector3.Zero, -4, -8, -4, 8, 2, 8, hair, grow: 0.05f), Mc(Vector3.Zero, -4, -6, 2, 8, 5, 2, hair, grow: 0.05f),
+                    B(2, 27, -4.05f, 3, 28, -4, white), B(1, 27, -4.05f, 2, 28, -4, iris), B(-3, 27, -4.05f, -2, 28, -4, white), B(-2, 27, -4.05f, -1, 28, -4, iris),
+                    B(-2, 25, -4.05f, 2, 26, -4, mouth),
+                ]),
+        ];
+        // Drawn at fifteen sixteenths of its 32 pixels, as the source draws its player, 1.875 blocks tall.
+        return new MobKind("player", 0.3f, 1.8f, 1.0f, 20, [skin], parts) { Id = 9, PictureSize = new(64, 64), Scale = 0.9375f };
     }
 
     private static MobKind MakeSkeleton()

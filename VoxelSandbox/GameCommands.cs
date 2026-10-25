@@ -374,6 +374,15 @@ public static class GameCommands
         return on ? $"the clouds are drawn, {game.Clouds.Faces} faces, drifted {game.Clouds.Drift:0.0} blocks east" : "the clouds are hidden";
     }
 
+    [Command("voxel.view", "Sets where the camera stands, at the eye, behind the player or in front of it, as F5 steps it: voxel.view <first|behind|front>")]
+    internal static string SetView(string view)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        if (!Enum.TryParse<View>(view, ignoreCase: true, out var chosen) || !Enum.IsDefined(chosen)) return $"no view is called {view}, which is first, behind or front";
+        game.Player.View = chosen;
+        return chosen switch { View.First => "the camera stands at the eye", View.Behind => "the camera stands behind the player", _ => "the camera stands in front of the player" };
+    }
+
     [Command("voxel.sounds", "How loud each sound of the place plays, before the settings, the room about the player as a reverb would read it, the steps played since the world opened and those of the last frame with the share the blocks between let through, and the voices the engine's audio holds")]
     internal static string ShowSounds()
     {

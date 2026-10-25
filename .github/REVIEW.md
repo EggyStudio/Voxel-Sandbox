@@ -5,124 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `e433e5c`, item 33's second commit, the occlusion and the room, read at 02:58 on
-2026-10-25, carrying REVIEW.md and AGENTS.md's Sound row. Places.Crossed walks a grid line from the
-eye to the source counting opaque cells but the two end cells, the occlusion a half to that power, a
-mob's step played at that share; Places.Room casts 26 rays to 24 blocks four times a second and
-gives the share meeting an opaque block and their mean distance, reported and not heard since the
-engine has no reverb, the plains reading 0.54 closed at 4.8 blocks, the forest canopy 0.88 at 2.2
-and the deep cave 0.92 at 7.8, a pig in the rock nine blocks under the plains coming through at
-0.002; the low-pass and the reverb asked of the engine as its item 120. Found and fixed, Mob.Follow
-normalized a zero horizontal way when a mob stood under or over its next cell's middle and the
-non-number stayed in its velocity and place for good, a cow seen at NaN, minus 1198, NaN, the way
-zero below 1e-8. SoundTests gains the occlusion and the room. 320 tests, play.sh 321 s on the GPU.
-The run of `01eb71f` ended red on its three test jobs at 03:00, Verdict 3, the play job green in
-52.4 minutes; the five held for the verdict's mend, pushed with it. After `5b62bef`, item 33's first
-commit, the footsteps and the ambience, read at 02:47 on 2026-10-25, carrying the review's files.
-SoundBank synthesizes everything at 22,050 Hz mono from fixed seeds, seven kinds of step with four
-variants each shaped by filtered noise, grains or a tone, and five loops of 8 s, the birds, the
-crickets, the wind, the cave's tone with drips and the water lapping, each joined so the end runs
-into the start; StepOf maps a block to a kind and StepAt reads water or a snow layer at the feet
-first, Levels sets the birds by day in the woods and on the plains and the crickets by night where
-it rains, both hushed by the weather, the wind rising from 32 to 80 blocks over the sea, and in a
-cave the cave alone with water by its share nearby; GameSounds sets the listener from the eye, plays
-the player's steps every 1.6 blocks at a quarter and a mob's within 16 blocks through the engine's
-spatial play with its pitch varied, eases each loop's level over 2 s, and a Music and Sounds screen
-holds the master volume, the footsteps and the ambience in options.txt; the zoom key's button shared
-a cell with Video Settings and the buttons lay out under the rows. Two engine faults, the
-AudioServer keeping a played-out voice until Stop with Tick walking them all, 34 steps leaving 36
-live voices, and the dummy driver of a hidden run never draining a one-shot voice, the game stopping
-each step half a second after it began meanwhile, the engine's items 118 and 119 through ASKS.md.
-Live at the forest spawn the birds read 0.99 by day, the crickets 0.77 at 22:00, the cave 0.95
-underground and the wind 0.94 at y 140; SoundTests reads the step by block and at the feet, each
-sound by place, weather and height and every bank sound finite and joined, and SoundFrameTests hears
-a pig running west of a north-facing player with a pan below minus 0.3 through the server's own
-processor and not one 28 blocks off, the fixture opening the audio device. 319 tests, play.sh 310 s
-on the GPU. After `6a7e5b1`, item 128's arrows, the last of its list, read at 02:24 on 2026-10-25,
-carrying REVIEW.md. Fly is folded into its context system, which sends each ArrowStrike after
-despawning the arrows that struck, Arrows.Update and the facade's Random gone with the extra point's
-chance drawn from the step's; HostileTests keeps the skeleton's two to three shots from the mob's
-own Update aimed within 25 degrees of the way to the player, and MobFrameTests reads a skeleton
-eight blocks from a survival player at hour 0 taking it to 8 to 17 health in 150 frames through
-MobShot, the flight and ArrowStrike; no twin is left in the source. 315 tests in 27 s, play.sh 317 s
-on the GPU. After `8b01c69`, item 128's drops, read at 02:18 on 2026-10-25, carrying REVIEW.md.
-Fall, PickUp and Gather are folded into their context systems and ItemDrops.Update is gone, PickUp
-no longer counting what it picked since only the facade read it; ItemFrameTests reads a stack picked
-up after its delay with the inventory full but for four places, 10 sand spawned a block from the
-player, none taken in 9 frames, 4 by 18 and 6 left lying, and two stacks of leather with a feather
-between joining to two stacks of 5 after 3 frames. 314 tests in 26 s, play.sh 310 s on the GPU.
-After `480d97b`, item 128's TNT and falling blocks with the blasts' flashes, read at 02:12 on
-2026-10-25, carrying REVIEW.md. Burn, Drop and Fade are folded into their context systems and the
-facades' Update methods gone, each event sent as its entity despawns; TntFrameTests reads the lit
-TNT on the headless game at frames of a sixtieth six blocks from the player with the bounds relative
-to the feet, the highest point 0.3 to 1.5 over them, the blast 0.06 to 0.07 and the chained fuses
-0.5 to 1.45 s, stepping until the TNT is gone and one frame more since a fuse of 240 frames crosses
-zero on the 241st by float error and the blast is carried out the frame after it is sent;
-FallingFrameTests reads the sand column, the gravel let down, the sand broken on a torch with its
-item among the drops a frame after the landing, and the felled oak through the test's own
-TreeFelling handing its logs to game.Falling, the felling-only tests staying on their small worlds.
-314 tests in 27 s, play.sh 304 s on the GPU. After `01eb71f`, item 128's fires, read at 02:01 on
-2026-10-25 after the clocks went back an hour, carrying REVIEW.md. Fire.Spread's overload is folded
-into its context system and Fires.Update is gone, Fires holding no Random of its own, Light and Take
-taking one and the game passing the step's, which is settable; FireFrameTests lays a 16 by 16 square
-of planks or stone ringed by stone in the game's flat world, seeds the step's Random with 1, 2 and
-3, lights a fire and steps 2,400 frames of 0.05 s a seed with the bounds as before, FireTests
-keeping the two small-world tests; the fixture gains a frame length and a target of 0, the headless
-app having paced itself at 60 a second so the fire tests took four minutes and take 13 s. 314 tests
-in 25 s, play.sh 335 s on the GPU. The five pushed at 02:07 on 2026-10-25 after the run of `3275e76`
-went green; the run watched. After `4105293`, item 128's first commit, the fixture and the mobs,
-read at 02:48 on 2026-10-25, carrying REVIEW.md. HeadlessGame sets the headless and the frame time
-variables, calls InitWindow, builds a transient flat VoxelGame at render distance 2, steps game.Draw
-until it stops loading within 600 frames and on dispose disposes the game and closes the window, its
-tests in a collection run one at a time; the twins go, MobLife.Age's overload becoming the instance
-Pass the Age system calls a mob, a lone mob's tests calling it through GetRef, and Think, Crowd,
-Vanish and Hunt folded into their context systems, Vanish sending each MobDied as it despawns.
-MobFrameTests reads a pig and a zombie in the air each taken by one of the two queries and falling
-within three frames with the pose the movement wrote, a zombie beside a survival player taking it to
-at most 17 within 60 frames through MobStrike, and a pig killed by Hit standing after 15 frames and
-gone after 45 with its porkchop among the drops through MobDied. 314 tests in 15 s where 311 took 12
-to 13, each headless game about 2.5 s; play.sh 308 s on the GPU with the readings as before. After
-`d647b0e`, the lookups, read at 02:40 on 2026-10-25, carrying the review's files. Fire is keyed by
-its cell and Fires.Take asks the engine's index in place of building a set of every fire each frame
-the world names a cell, each named cell still drawing its delay so the seeds' sequences hold; a test
-reads a lit cell named again keeping its one fire, a new cell getting one, the index finding it by
-its key and an empty cell not found; Mobs.Leaving keeps its walk with a comment pointing at the
-engine's item 117, the README's Fire section gaining a line. 312 tests, play.sh 325 s on the GPU.
-The entities' tests through the engine's stepped app are item 128, planned in the item. After
-`fb04f6b`, item 105, the stepped shadow read once, read at 02:33 on 2026-10-25, carrying the
-review's files and the devlog's grove. litStepped reads lightReaching once at the step's middle with
-its held share and calls litLight with the shadow and the held, its own correction and the sun's
-specular rebuild gone, passing minus 1 where there is no shadow light; the grove alike to the pixel
-but for 96 of 2.07 million, the pillar's shadow still stepping and the lantern's pool and the grass
-wall as before. The scene pass at the grove reads 9.87 and 8.96 ms with one read against 10.19 and
-9.38 with three, 0.3 to 0.4 ms where the item expected 1.6 measured on the older pass of 12.5, and
-the step costs nothing measurable against no step, the README's costs paragraph rewritten. 311
-tests, play.sh 324 s on the GPU. The lookups next, the fires keyed by cell through the index and the
-mobs still walked since a key names one entity, an index whose key names many asked of the engine as
-its item 117. After `c7c1b41`, item 123, the culled sections casting the sun's shadow, read at 02:15
-on 2026-10-25, carrying the review's files and the devlog's cave tops. ChunkRenderer.FindCasters
-casts a ray toward the light from each of the eight corners of every drawn, meshed section within
-the shadow distance plus 16 blocks, shared corners once, each ray walking the section grid after
-Amanatides and Woo up to the world's top or as far as the loaded land reaches and marking every
-section the flood left out, the marked sections drawing their meshes through the same materials with
-ShadowOnly true, taken off the unseen set and meshed like the drawn; the marking redone when a flood
-runs, the light's step turns or the shadow distance changes; draw.sections.shadow counts them and
-Casts switches the casting off for a reading. Departure, the casters found by marching from the
-drawn sections' corners toward the light rather than sweeping the drawn set's bounds, which hold
-thousands of sections under open land casting onto nothing. The cave at the entry's place reads the
-tops 45 blocks ahead 0, 0, 0 where 35, 29, 20 stood, the same at a shadow distance of 150 and the
-same as with the culling off, the 90-block tops 9, 13, 18 where 19, 20, 22, the band's pixels lit
-above 24 falling from 4,427 to 4 at 96 and from 2,325 to 4 at 150, the frame 4.6 ms where 3.1 stood
-with 357 shadow-only draws and 6.7 at 150, against 28 to 31 with the culling off; the grove draws 20
-shadow-only and reads the frame the same with the casting on and off within one session.
-VisibilityTests walks the march, the README's culling paragraph gains the casters and the numbers.
-311 tests, play.sh 327 s on the GPU.
+Reviewed up to `76053f6`, Verdict 3's mend, read at 03:12 on 2026-10-25, carrying the review's
+files. The fixture steps game.Draw until the game stands and Streamer.Pending reads 0, by a
+stopwatch with a 30 s limit, sleeping 2 ms between frames while it loads, and asserts both naming
+the frames it took; HeadlessGameTests reads the flat world standing with nothing pending, the 5 by 5
+columns about the player in and the player on the ground after 10 frames, every headless test
+through the fixture; FireFrameTests laid seeds 2 and 3's squares up to 76 blocks out past two
+columns' reach, a second fault the failure hid, and each seed lays one square afresh 8 blocks from
+the player in a stone ring; on one CPU core the headless and fire tests passed, 7 in 40 s. 321
+tests, play.sh 342 s on the GPU. The six pushed at 03:12 on 2026-10-25 after the run of `01eb71f`
+ended; the run watched for the verdict's settling. After `e433e5c`, item 33's second commit, the
+occlusion and the room, read at 02:58 on 2026-10-25, carrying REVIEW.md and AGENTS.md's Sound row.
+Places.Crossed walks a grid line from the eye to the source counting opaque cells but the two end
+cells, the occlusion a half to that power, a mob's step played at that share; Places.Room casts 26
+rays to 24 blocks four times a second and gives the share meeting an opaque block and their mean
+distance, reported and not heard since the engine has no reverb, the plains reading 0.54 closed at
+4.8 blocks, the forest canopy 0.88 at 2.2 and the deep cave 0.92 at 7.8, a pig in the rock nine
+blocks under the plains coming through at 0.002; the low-pass and the reverb asked of the engine as
+its item 120. Found and fixed, Mob.Follow normalized a zero horizontal way when a mob stood under or
+over its next cell's middle and the non-number stayed in its velocity and place for good, a cow seen
+at NaN, minus 1198, NaN, the way zero below 1e-8. SoundTests gains the occlusion and the room. 320
+tests, play.sh 321 s on the GPU.
+
+Before it, `01eb71f` came, item 128's fires with `4105293`, `d647b0e`, `fb04f6b` and `c7c1b41`,
+pushed at 02:07 on 2026-10-25, its run red on the three test jobs, Verdict 3, the play job green in
+52.4 minutes.
 
 Before it, `3275e76` came, the mobs' third commit and item 27's pin of 5.2.291 with `9dad43e`,
 pushed at 02:09 on 2026-10-25 before the clocks went back, its run green, the play job 54.2 minutes.
-
-Before it, `7443bdc` came, item 32's particles, pushed at 01:31 on 2026-10-25, its run green, the
-play job 33.3 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -703,7 +613,9 @@ Verdict 3 is open. Verdicts 1 and 2 are settled, said under each in REVIEW-ARCHI
     faster than the frames. The mend is the fixture waiting by wall time, stepping frames until the
     game has loaded or 30 s have passed with a short yield between frames while the world loads, the
     fixture's own test of a load, and every headless test on it; one commit, before the next push,
-    read on the three runners. Mended at `?`.
+    read on the three runners. Mended at `76053f6`, read at 03:12, the fixture waiting by a
+    stopwatch with a yield and the fire squares laid within the columns' reach. Settled when its run
+    is green on the three test jobs.
 
 ## Decisions
 
