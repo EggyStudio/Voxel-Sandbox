@@ -72,11 +72,18 @@ public sealed class PrecipitationRenderer : IDisposable
         }
     }
 
-    // Two walls crossed in a column's middle, along x and along z, the picture's rows down them by
-    // the height in blocks over four and its columns across with the drift.
-    private static void Column(List<ModelVertex> vertices, List<uint> indices, int x, int z, float bottom, float top, float fallen, float drift)
+    /// <summary>
+    /// Two walls crossed in a column's middle, along x and along z, from a height to a height, the
+    /// picture's rows down them as the heights fall, a picture to four blocks, scrolled down by the
+    /// share of a picture fallen, and its columns across with the drift.
+    /// </summary>
+    /// <remarks>
+    /// A row lower in the picture stands lower on the wall, so a streak's faint tail is over its
+    /// head, as the source's rain falls.
+    /// </remarks>
+    public static void Column(List<ModelVertex> vertices, List<uint> indices, int x, int z, float bottom, float top, float fallen, float drift)
     {
-        float vTop = top / Tall + fallen, vBottom = bottom / Tall + fallen;
+        float vTop = -(top / Tall + fallen), vBottom = -(bottom / Tall + fallen);
         foreach (var (near, far, normal) in new[]
         {
             (new Vector3(x, 0, z + 0.5f), new Vector3(x + 1, 0, z + 0.5f), Vector3.UnitZ),

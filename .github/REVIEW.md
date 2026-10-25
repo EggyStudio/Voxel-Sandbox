@@ -5,52 +5,64 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `211e57a`, item 31's second commit, the sea's and the land's kinds, read at 05:12 on
-2026-10-25, carrying the review's files and a captioned picture. Structure.Spread puts each kind as
-the source does, at a chunk's corner among the first spacing less separation chunks of its square,
-its chests' loot from ChestLoot tables with the source's weights over the game's items. The ocean
-ruin comes every 20 chunks where the floor lies 6 or more under the sea, stone bricks mossy and
-cracked, sandstone where warm, the walls kept less the higher they stood, one in three big with
-three rooms; the shipwreck every 24 chunks where the floor lies 8 or more down, a hull 22 long of
-oak, spruce or dark oak with deck, mast, cabin, a supply chest and a treasure chest, one in three
-broken behind the middle; the jungle temple every 32 chunks in the jungle, three stepped floors of
-cobblestone, two in five mossy, a stair up and a stair down to a vault with two chests; the witch
-hut every 32 chunks in the swamp, spruce on oak posts with a porch, a crafting table and a chest;
-the pillager outpost in one square in five of 32 chunks on the plains, the desert, the savanna, the
-taiga and the snowy plains and never within 10 chunks of a village, three floors of dark oak over
-birch up to a railed platform with a chest. Three blocks, mossy cobblestone, mossy stone bricks and
-cracked stone bricks, and the village's frame shared as StructureFrame. Four departures from the
-source. The hut's chest is the modpack's, from Dungeons and Taverns' hut; the outpost follows that
-mod's watchtower in dark oak, birch floors and a cobblestone base; the temple, the hut and the
-outpost keep trees out of their ground as villages do, since jungle trees hid the temple; no witch
-or pillager, the game having neither, and the loot leaves out the items the game lacks, maps,
-crossbows and armor. Seed 1's nearest to the origin, the ruin at 0, 32, -528 with 42 stone bricks,
-31 cracked, 31 mossy and a chest, the wreck broken at 64, 39, 3072 with 197 dark oak planks and 12
-logs, the temple at -2544, 52, 128 with 917 cobblestone, 597 mossy and two chests, the hut at -448,
-55, -1808 with 117 spruce planks, 25 oak logs, 32 stairs, a crafting table and a chest, the outpost
-at -1408, 51, -400 with 549 dark oak planks, 90 birch, 60 logs, 63 fences and a chest. 341 tests,
-play.sh 312 s on the GPU. After `af9d829`, item 31's first commit, the mineshafts and the chests,
-read at 05:01 on 2026-10-25, carrying the review's files and a captioned picture, held with
-`211e57a` until the run of `79ad110` ends, then both pushed. Three blocks, the chest with four
-facings, the rail with two and the cobweb; ChestArt cuts the chest's faces from the pack's entity
-chest picture, its window the source's three rows cut from the 54-slot picture with shift-click
-moving stacks, its contents kept as the furnaces' in chests.json, a structure placing one through
-ColumnClip.Chest so it joins with its column where its block still stands after generation, its loot
-from ChestLoot tables with the source's weights and counts over the game's items rolled from its
-place's seed the first time it is opened or broken; recipes for the chest and the rail and a
-voxel.chest command. The mineshaft comes one a 16-chunk square, near the source's one chunk in 250,
-its room's floor between -40 and 30, corridors of two to four lengths of five turning, branching,
-crossing and stepping down, eight pieces deep within 80 blocks and no piece crossing another, log
-posts under plank beams every five blocks in the biome's wood after Hopo's Better Mineshaft with
-dark oak in the badlands, rails in one corridor in three, cobwebs, a lantern under one beam in ten,
-a chest niche in one corridor in eight and nothing cut within four blocks of the ground. Two
-departures. Log posts and hanging lanterns hold the corridors up in the modpack's taste rather than
-the source's fences; a cobweb needs no support and never falls, so the floating-plant test skips
-plants that do not fall and the tree count reads bases at the ground alone, the posts having counted
-as trees. Seed 1's nearest lies at 71, 12, 36, the eight by eight columns about it holding 356
-rails, 164 cobwebs, 15 chests and 57 lanterns at the earlier rate of one in six; 1.10 ms a column
-across its square against 15.2 for a whole column. The play run opens that chest and reads its loot.
-338 tests, play.sh 342 s on the GPU.
+Reviewed up to `057011a`, item 31's third commit, the villages' biome kinds, read at 05:22 on
+2026-10-25, carrying NORM.md, the review's files, DEVLOG.md, the saturation caption reworded and a
+captioned picture. Savanna villages of acacia on orange terracotta floors with flat roofs and
+torches, their villagers in a fifth robe from the pack's savanna villager texture; the taiga's
+floors and footings of mossy cobblestone, windows of ice under the snowy plains' snow roofs, corners
+of yellow terracotta in the desert; a window block in the palette. One departure, the house shapes
+one set for every kind, since the modpack's structure mods hold no remake of the source's own
+village kinds to read, Repurposed Structures adding other biomes' villages, so each kind has its
+blocks and flat roofs where the source's are flat. Seed 1's nearest, the plains at 576, -432, the
+desert at 672, -736, the savanna at 864, -1360, the taiga at -160, 1200 and the snowy at 400, -1792;
+the test reads the savanna's floor at 150 acacia planks and 40 orange terracotta at least with no
+oak or spruce and savanna-robed villagers alone, the taiga's at 40 mossy cobblestone at least, the
+desert's at 16 yellow terracotta at least. 342 tests, play.sh 325 s on the GPU. After `211e57a`,
+item 31's second commit, the sea's and the land's kinds, read at 05:12 on 2026-10-25, carrying the
+review's files and a captioned picture. Structure.Spread puts each kind as the source does, at a
+chunk's corner among the first spacing less separation chunks of its square, its chests' loot from
+ChestLoot tables with the source's weights over the game's items. The ocean ruin comes every 20
+chunks where the floor lies 6 or more under the sea, stone bricks mossy and cracked, sandstone where
+warm, the walls kept less the higher they stood, one in three big with three rooms; the shipwreck
+every 24 chunks where the floor lies 8 or more down, a hull 22 long of oak, spruce or dark oak with
+deck, mast, cabin, a supply chest and a treasure chest, one in three broken behind the middle; the
+jungle temple every 32 chunks in the jungle, three stepped floors of cobblestone, two in five mossy,
+a stair up and a stair down to a vault with two chests; the witch hut every 32 chunks in the swamp,
+spruce on oak posts with a porch, a crafting table and a chest; the pillager outpost in one square
+in five of 32 chunks on the plains, the desert, the savanna, the taiga and the snowy plains and
+never within 10 chunks of a village, three floors of dark oak over birch up to a railed platform
+with a chest. Three blocks, mossy cobblestone, mossy stone bricks and cracked stone bricks, and the
+village's frame shared as StructureFrame. Four departures from the source. The hut's chest is the
+modpack's, from Dungeons and Taverns' hut; the outpost follows that mod's watchtower in dark oak,
+birch floors and a cobblestone base; the temple, the hut and the outpost keep trees out of their
+ground as villages do, since jungle trees hid the temple; no witch or pillager, the game having
+neither, and the loot leaves out the items the game lacks, maps, crossbows and armor. Seed 1's
+nearest to the origin, the ruin at 0, 32, -528 with 42 stone bricks, 31 cracked, 31 mossy and a
+chest, the wreck broken at 64, 39, 3072 with 197 dark oak planks and 12 logs, the temple at -2544,
+52, 128 with 917 cobblestone, 597 mossy and two chests, the hut at -448, 55, -1808 with 117 spruce
+planks, 25 oak logs, 32 stairs, a crafting table and a chest, the outpost at -1408, 51, -400 with
+549 dark oak planks, 90 birch, 60 logs, 63 fences and a chest. 341 tests, play.sh 312 s on the GPU.
+After `af9d829`, item 31's first commit, the mineshafts and the chests, read at 05:01 on 2026-10-25,
+carrying the review's files and a captioned picture, held with `211e57a` and `057011a` until the run
+of `79ad110` ends, then the three pushed. Three blocks, the chest with four facings, the rail with
+two and the cobweb; ChestArt cuts the chest's faces from the pack's entity chest picture, its window
+the source's three rows cut from the 54-slot picture with shift-click moving stacks, its contents
+kept as the furnaces' in chests.json, a structure placing one through ColumnClip.Chest so it joins
+with its column where its block still stands after generation, its loot from ChestLoot tables with
+the source's weights and counts over the game's items rolled from its place's seed the first time it
+is opened or broken; recipes for the chest and the rail and a voxel.chest command. The mineshaft
+comes one a 16-chunk square, near the source's one chunk in 250, its room's floor between -40 and
+30, corridors of two to four lengths of five turning, branching, crossing and stepping down, eight
+pieces deep within 80 blocks and no piece crossing another, log posts under plank beams every five
+blocks in the biome's wood after Hopo's Better Mineshaft with dark oak in the badlands, rails in one
+corridor in three, cobwebs, a lantern under one beam in ten, a chest niche in one corridor in eight
+and nothing cut within four blocks of the ground. Two departures. Log posts and hanging lanterns
+hold the corridors up in the modpack's taste rather than the source's fences; a cobweb needs no
+support and never falls, so the floating-plant test skips plants that do not fall and the tree count
+reads bases at the ground alone, the posts having counted as trees. Seed 1's nearest lies at 71, 12,
+36, the eight by eight columns about it holding 356 rails, 164 cobwebs, 15 chests and 57 lanterns at
+the earlier rate of one in six; 1.10 ms a column across its square against 15.2 for a whole column.
+The play run opens that chest and reads its loot. 338 tests, play.sh 342 s on the GPU.
 
 Before it, `79ad110` came, item 28, the looks Shine shows, pushed at 04:47 on 2026-10-25 once the
 run of `85c3ff6` went green, the run watched.
@@ -499,22 +511,6 @@ full.
     24. Two commits, the models and the textures, then the animations. Under Decision 22 the reader
     takes a model's geometry and its texture as assets and none of its animation expressions, the
     mobs animated by the game's own gait of item 18 on the pack's boxes; two commits become one.
-
-31. **Structures as the source's, more kinds and the modpack's taste (Decision 15).** The world has
-    igloos, desert pyramids, dungeons and villages; it gains mineshafts with their corridors, rails,
-    supports and chests, underwater ruins and shipwrecks in oceans, jungle temples, witch huts in
-    swamps and pillager outposts, each placed by the biome and a spacing and salt as the source
-    places them, built from blocks with loot in chests from item 25's blocks; the villages gain the
-    biome's kind, desert, savanna, taiga and snowy, with their own blocks and the modpack's
-    structure mods read for their shapes as a model; a structure that crosses a column's edge is
-    finished in the neighbor as the villages are. After items 25 and 26. Tests: each kind placed in
-    a laid world at a known seed with its blocks counted, a structure crossing an edge whole on both
-    sides, and a capture of each in the record. Two or three commits by kind. The first commit at
-    `af9d829` on 2026-10-25, the mineshafts with the chest, the rail and the cobweb, the departures
-    in the head; the second next, the ocean ruins, the shipwrecks, the jungle temples, the witch
-    huts and the outposts. The second at `211e57a` on 2026-10-25, the ocean ruins, the shipwrecks,
-    the jungle temples, the witch huts and the outposts, the departures in the head; the third next,
-    the villages' biome kinds with the savanna added, each with its own blocks.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the

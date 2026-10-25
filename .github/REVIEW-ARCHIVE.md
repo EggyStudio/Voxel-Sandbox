@@ -1728,6 +1728,24 @@ before a batch.
     One or two commits. Done at `79ad110` on 2026-10-25, the four as settings with captures, the
     lamp colors kept the surfaces' own and the rim an edge outline, the departures in the head.
 
+31. **Structures as the source's, more kinds and the modpack's taste (Decision 15).** The world has
+    igloos, desert pyramids, dungeons and villages; it gains mineshafts with their corridors, rails,
+    supports and chests, underwater ruins and shipwrecks in oceans, jungle temples, witch huts in
+    swamps and pillager outposts, each placed by the biome and a spacing and salt as the source
+    places them, built from blocks with loot in chests from item 25's blocks; the villages gain the
+    biome's kind, desert, savanna, taiga and snowy, with their own blocks and the modpack's
+    structure mods read for their shapes as a model; a structure that crosses a column's edge is
+    finished in the neighbor as the villages are. After items 25 and 26. Tests: each kind placed in
+    a laid world at a known seed with its blocks counted, a structure crossing an edge whole on both
+    sides, and a capture of each in the record. Two or three commits by kind. The first commit at
+    `af9d829` on 2026-10-25, the mineshafts with the chest, the rail and the cobweb, the departures
+    in the head; the second next, the ocean ruins, the shipwrecks, the jungle temples, the witch
+    huts and the outposts. The second at `211e57a` on 2026-10-25, the ocean ruins, the shipwrecks,
+    the jungle temples, the witch huts and the outposts, the departures in the head; the third next,
+    the villages' biome kinds with the savanna added, each with its own blocks. The third at
+    `057011a` on 2026-10-25, the villages' biome kinds with the savanna added, the house shapes one
+    set for every kind, the departure in the head. Done in the three commits.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

@@ -246,8 +246,8 @@ moon half, and rain falls on the wet biomes, snow on the snowy plains and the sn
 nothing on the desert, the savanna and the badlands. They fall as the source draws them, in each
 column within eight blocks of the eye from fourteen blocks over it down to the column's highest
 block, so none falls under a roof, two walls crossed in each column with the game's own picture of
-thin pale streaks falling ten blocks a second or a dozen flakes a block and a half a second,
-drifting as they go. `voxel.weather` holds the weather turned or clear, which the save keeps, or lets
+thin pale streaks, faint at their tops and brighter at their feet, falling ten blocks a second or
+a dozen flakes a block and a half a second, drifting as they go. `voxel.weather` holds the weather turned or clear, which the save keeps, or lets
 it turn by its days again, and the Sky and Visuals screen turns the weather off.
 
 While the weather has more than half turned the snow settles, a layer an eighth of a block deep on

@@ -86,6 +86,8 @@ Done that day
   aquifers.
 - Item 28 at `79ad110`. The looks Shine shows, done as the game's own, bloom on emissive blocks,
   colored light from emissive blocks, a rim around blocks, and an unshaded look.
+- Item 31 at `057011a`. Structures as the source's, more kinds and the modpack's taste (Decision
+  15).
 - Item 32 at `7443bdc`. Weather and the ambient particles, rain and snow by biome, falling leaves,
   cave dust and wakes (Decision 15).
 - Item 33 at `e433e5c`. Ambient sound, footsteps by the block and the sound's occlusion and reverb

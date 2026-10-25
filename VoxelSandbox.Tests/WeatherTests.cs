@@ -58,6 +58,32 @@ public class WeatherTests
         Assert.Equal(Precipitation.None, Biomes.Badlands.Precipitation);
         Assert.All(new[] { Biomes.Plains, Biomes.Forest, Biomes.Jungle, Biomes.Swamp, Biomes.Taiga }, b => Assert.Equal(Precipitation.Rain, b.Precipitation));
     }
+
+    [Fact]
+    public void The_Rains_Picture_Stands_The_Right_Way_Up_On_Its_Walls_And_Scrolls_Down()
+    {
+        // The height of a wall at which a row of the picture stands, from its corners at the bottom
+        // and the top, a picture to four blocks.
+        static float HeightOf(float row, float fallen)
+        {
+            var (vertices, indices) = (new List<Engine.ModelVertex>(), new List<uint>());
+            PrecipitationRenderer.Column(vertices, indices, 0, 0, 60, 68, fallen, 0);
+            Assert.Equal(12, indices.Count);
+            var (bottom, top) = (vertices[0], vertices[3]);
+            Assert.Equal((60f, 68f), (bottom.Position.Y, top.Position.Y));
+            var share = (row - bottom.Uv.Y) / (top.Uv.Y - bottom.Uv.Y);
+            return bottom.Position.Y + share * (top.Position.Y - bottom.Position.Y);
+        }
+
+        // A row lower in the picture stands lower on the wall, a streak's faint top over its head.
+        Assert.True(HeightOf(-16.4f, 0) < HeightOf(-16.6f, 0));
+        // As a quarter of a picture falls, each row stands a block lower.
+        Assert.Equal(HeightOf(-16.5f, 0) - 1, HeightOf(-16.5f, 0.25f), 3);
+        // The streaks are faint at their tops, the picture's lower rows the brighter.
+        var pixels = PrecipitationRenderer.RainPixels();
+        var x = Enumerable.Range(0, 16 * 64).First(i => pixels[i * 4 + 3] > 0 && pixels[(i + 16) * 4 + 3] > 0);
+        Assert.True(pixels[x * 4 + 3] < pixels[(x + 16) * 4 + 3], "a streak brightens down the picture");
+    }
 }
 
 /// <summary>The snow the weather lays on the tops and melts again.</summary>
