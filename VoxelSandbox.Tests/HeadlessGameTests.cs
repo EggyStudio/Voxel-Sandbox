@@ -1,3 +1,4 @@
+using Engine;
 using Xunit;
 
 namespace VoxelSandbox.Tests;
@@ -26,21 +27,21 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
-    public void The_Screen_Probes_Are_On_And_An_Options_File_That_Turned_Them_Off_Leaves_Them_On()
+    public void An_Options_File_That_Turned_The_Screen_Probes_Off_Leaves_The_Quality_That_Traces_Them()
     {
         using var headless = new HeadlessGame();
         var game = headless.Game;
-        Assert.True(game.Light.ScreenProbes);
+        Assert.Equal(GlobalIllumination.High, game.Light.Quality);
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
         try
         {
             var file = new OptionsFile(folder);
             Directory.CreateDirectory(folder);
             File.WriteAllText(file.File, "render.Screen_Probes:Off\nrender.Render_Distance:6\n");
-            // The screen's probes have no setting, so a file's line of them is passed over and the
-            // one beside it read.
+            // The screen's probes have no setting, the engine tracing them at Medium and High, so a
+            // file's line of them is passed over and the one beside it read.
             Assert.Equal(1, file.Read(game.Menus.Screens(game).All()));
-            Assert.True(game.Light.ScreenProbes);
+            Assert.Equal(GlobalIllumination.High, game.Light.Quality);
             Assert.Equal(6, game.RenderDistance);
         }
         finally

@@ -72,7 +72,7 @@ public sealed class VoxelGame : IDisposable
         AddComputedState<Living, GameMode>(mode => mode.Lives() ? Living.Yes : null);
         Menus.MakeState();
         Hotbar = new Hotbar(Inventory);
-        Renderer = new ChunkRenderer();
+        Renderer = new ChunkRenderer(ecs);
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
         PackEntries = given.Count > 0 || transient ? given : PackList.Default.Read();
         Sky = new Sky(10);

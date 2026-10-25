@@ -6,13 +6,11 @@ namespace VoxelSandbox;
 /// <summary>The settings of global illumination and of the frame's post-processing, which the Render and Post Processing screens change.</summary>
 public sealed class LightSettings
 {
-    /// <summary>The quality of global illumination, the highest by default, since the game is made to show it.</summary>
+    /// <summary>
+    /// The quality of global illumination, the highest by default, since the game is made to show it,
+    /// the engine tracing the screen's probes at Medium and High.
+    /// </summary>
     public GlobalIllumination Quality = GlobalIllumination.High;
-
-    // The screen's probes are on, since the engine's global illumination is made with them, each
-    // pixel's light traced from its own surface, and the cascades' light read alone is a view for
-    // debugging, which the engine's gi.toggle screen gives.
-    public bool ScreenProbes = true;
 
     // Four cascades of 0.25 cover 128 blocks across around the eye, a third of the 384 drawn at the
     // default render distance, with four cells to a block, so the middle of a tunnel one block wide
@@ -51,7 +49,6 @@ public sealed class LightSettings
     {
         ApplyField();
         SetGlobalIllumination(Quality);
-        SetGlobalIlluminationScreenProbes(ScreenProbes);
         SetBloom(Bloom, BloomThreshold);
         SetAmbientOcclusion(Occlusion);
         ApplyExposure();

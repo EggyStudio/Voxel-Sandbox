@@ -1208,6 +1208,15 @@ the sun's light through 70 blocks of rock without them and 0 with them, as with 
 cherry grove in the open the flood leaves out little toward the sun, 20 draws, and the frame reads
 19.0 to 19.5 ms with them and without them in one run.
 
+A section's solid faces, the faces a pack cuts out that cast the shadow of the whole face and its
+lava are entities the engine draws, each a `Mesh` of the section's upload, a `Material` through the
+terrain shader, a `Transform` at the section's corner, the engine's `Visible` and `ShadowOnly`, and
+the game's `SectionPart` naming the section and the part. The flood writes `Visible` and
+`ShadowOnly` only where its answer for a section changes, so a frame standing still costs the game
+no call for them, and the engine's model pass gathers them with its change detection. The plants,
+glass, ice, water and the glass a pack cuts out are drawn through `DrawMesh` each frame, since their
+materials cast no shadow or leave the scene's distance field, which an entity's material cannot say.
+
 With the eye inside a whole opaque block, in every mode but spectator, the block's side covers the
 window, its texture or its own color darkened to a tenth, repeated four times across and four down
 and sliding a repeat for each 64 degrees the player turns or pitches, as Minecraft draws the inside
@@ -1255,9 +1264,9 @@ The F3 window turns the light levels and the shaded corners off, each on its own
 global illumination alone, and opens the engine's windows of what global illumination holds, of the
 frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
 depth of field, motion blur and bloom, each set at once as it is changed. Global illumination
-takes the engine's screen probes, each pixel's light traced from its own surface, as the engine
-makes it, and the cascades' light read alone is a view for debugging, which the engine's
-`gi.toggle screen` gives through the command line.
+takes the engine's screen probes at Medium and High, each pixel's light traced from its own
+surface, and Low leaves them out for the cascades' light alone, as the engine keys them to its
+quality.
 
 The frame is tonemapped by the curve of the reference modpack's shader with that modpack's settings,
 its exposure 0.9, white curve 1.3, lower curve 1.05 and upper 1.0, which the engine's

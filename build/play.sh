@@ -116,7 +116,8 @@ cmd voxel.distance 4
 stood
 
 check "the screen probes"
-# Global illumination takes the screen's probes, which the game leaves on.
+# Global illumination takes the screen's probes at the game's quality of High, as the engine traces
+# them at Medium and High.
 probes=$(ask gi.state | grep "screen probes")
 echo "$probes"
 [[ "$probes" == "screen probes every "* ]] || fail "global illumination takes no screen probes, $probes"
@@ -1039,10 +1040,13 @@ done
 check "the draws"
 # Over the same land the frame records no more than 400 draws of sections, 277 when this was
 # written, where drawing every section meshed at four columns, or with no flood leaving the land
-# under the ground out, would record well over that.
+# under the ground out, would record well over that, and the engine draws the sections' solid faces
+# as entities, which its profile counts.
 state=$(ask voxel.state)
 draws=$(printf '%s\n' "$state" | sed -nE 's/.* ([0-9]+) draws, .*/\1/p')
-echo "the draws at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ sections, [0-9]+ draws, [0-9]+ triangles')"
+entities=$(ask profile | sed -nE 's/^entities\.drawn ([0-9.]+).*/\1/p')
+echo "the draws at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ sections, [0-9]+ draws, [0-9]+ triangles'), ${entities:-no} entities drawn"
+awk -v e="$entities" 'BEGIN { exit !(e > 0) }' || fail "the engine draws no section as an entity at the land's edge"
 [ -n "$draws" ] && [ "$draws" -le 400 ] || fail "the frame records more than 400 draws of sections at the land's edge, $(printf '%s\n' "$state" | grep -oE '[0-9]+ sections, [0-9]+ draws' || echo "$state")"
 
 check "the options"

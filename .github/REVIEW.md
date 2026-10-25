@@ -5,9 +5,23 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `1767348`, item 132, the tree's sweep for N 4.7 and STYLE.md, read at 10:54 on
-2026-10-25, carrying the review's files and DEVLOG.md, pushed at 11:05 on 2026-10-25 after the run
-of `f97a4c9` ended, the run watched. Forty-four replacements, each touched comment block or README
+Reviewed up to `ddede23`, Verdict 5's mend, pushed at 11:57 on 2026-10-25 once the run of `1767348`
+went green, its run green at 13:00 with the play job 63 minutes under the new limit, carrying the
+review's files and DEVLOG.md. The play job's limit is 90 minutes, its comment giving the reasons, a
+desktop's lavapipe at 20 minutes, a hosted runner at 39 to 40 or 52 to 54 with every check about 1.4
+times slower on the slow machine, the probes adding about a tenth to a frame on lavapipe which took
+a slow runner past 60, and a public repository's hosted minutes costing nothing. The lost run's log
+read check by check against the run of `0babebb` on the slow runner, every check it reached 1.0 to
+1.33 times as long, about 1.2 on average, the overworld walk growing most, the swamp 1.33, the river
+1.32 and the savanna 1.28, no check out of proportion, cancelled after the GPU's caves before the
+rain, the edge, the draws, the options and the screenshot. One check is large in every run though
+not grown, the rain's splashes at 358 s on the fast runner and 528 on the slow, 10 s on the RTX and
+228 on local lavapipe, 450 frames of rain, 150 to settle and 300 for the eased count to fall below
+one with the splashes off, reported and left as it is. 352 tests, play.sh 545 s on a machine loaded
+by the engine's game. After `1767348`, item 132, the tree's sweep for N 4.7 and STYLE.md, read at
+10:54 on 2026-10-25, carrying the review's files and DEVLOG.md, pushed at 11:05 on 2026-10-25 after
+the run of `f97a4c9` ended, its run green at 11:56, the play job 49 minutes with the probes on, a
+fast runner's 40 plus the probes. Forty-four replacements, each touched comment block or README
 paragraph rewrapped to 100 columns, the 22 colon joints in comments and scripts recast as a full
 stop, a comma or a which or a where or a so with ModeSwitcher's sentence reordered, the README's
 three with one paragraph brought back within width, the five paraphrases of emission in
@@ -415,7 +429,23 @@ full.
     shadow-only component and the entity draws not in the profile, which the engine takes as its
     item 108 through ASKS.md; the flood stays as the game's visibility, a Visible component the
     engine honors once it has one, and the shadow-only draw of item 123 the ShadowOnly component.
-    Waits on the package carrying the engine's item 108; item 96 taken before it.
+    Waits on the package carrying the engine's item 108; item 96 taken before it. Read on 5.2.313's
+    source at 17:06 on 2026-10-25, a gap and a split, taken. A mesh entity cannot say it casts no
+    shadow or bounces no light, the ECS Material having neither flag and MeshEntityDraws building
+    every entity's draw with both true, while four of a section's seven parts need one through
+    ModelMaterial today, the see-through glass and ice, the water and a pack's cut-out glass casting
+    no shadow, which also keeps them out of the field that would hold a window as solid, and the
+    plants bouncing no light so the field holds no grass. The three parts needing neither move first
+    in one commit, the solid, the solid cut-out and the molten, each an entity with its uploaded
+    mesh, a white Material with the terrain shader and its alpha mode, a Transform, Visible from the
+    flood and ShadowOnly for the casters written where they change, and a SectionPart component
+    naming the section and the part; the cut-out plants, the see-through, the water, the cut-out
+    glass, the lamps' instanced cubes and the dome stay on DrawMesh; an ASKS.md entry in the
+    engine's tree asks for CastsShadows and BouncesLight on the ECS Material or a component for
+    each, the engine's item 124 under Decision 68, after which the rest move; the draw count test
+    reads entities.drawn plus the draws left, and the frame is read three ways, 5.2.291, 5.2.313
+    with DrawMesh and 5.2.313 with the entities, so the package's own change shows apart. nuget.org
+    served 5.2.313 late, its flat container at 404 at 17:04.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
@@ -551,20 +581,7 @@ full.
 
 ## Verdicts
 
-Verdict 5 is open. Verdicts 1 to 4 are settled, said under each in REVIEW-ARCHIVE.md.
-
-5. **The run of `f97a4c9` is lost, the play job cancelled at its limit of 60 minutes.** Read at
-    11:06 on 2026-10-25 from the run's jobs, run 40178969652. The three test jobs are green; the
-    play job ran from 10:01 to 11:02 and was cancelled at the workflow's limit, which its comment
-    says is reached only where the game or e3d hangs. Nothing hung. The job took 39 minutes on the
-    run of `2549786` and 40 on `9955bf3`, 52 to 54 on the runs of `79ad110`, `bbe814c` and `0babebb`
-    where the runner ran about 1.37 times slower check by check, and this run added item 131's
-    screen probes, about 10% a frame on lavapipe by the coder's reading, and its new check, so a
-    slow runner with the probes on passed 60. The mend raises the limit so a slow runner with the
-    probes on fits, 90 minutes with the comment saying why, the owner's rule weighing no cost of the
-    Actions bill, and reads the job's log check by check for any check that grew out of proportion,
-    saying so in the commit; the walk's checks are not trimmed for it. The mend goes ahead of item
-    95.
+No verdict is open. Verdicts 1 to 5 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 
@@ -1113,5 +1130,14 @@ Verdict 5 is open. Verdicts 1 to 4 are settled, said under each in REVIEW-ARCHIV
     player. Decision 42's default of off, taken when the engine's item 90 spread black across the
     screen, is over, item 90 mended since; item 131 turns them on and takes the setting out of the
     options.
+
+49. **The devlog carries notes beside the pictures.** The owner asked on 2026-10-25 at about 12:01,
+    shown the table of the screen probes' cost at four resolutions from 3DEngine's item 122, that it
+    be written in a devlog or something along those lines. N 4.8 gains the note, a reading worth the
+    devlog's reader with no picture to carry it, a table or a few sentences, saved beside the
+    pictures as a Markdown file named the same way, and DEVLOG.md carries it on its day under the
+    pictures; the generator reads them, and the first note is 3DEngine's
+    2026-10-25-item-122-resolution.md. The same in 3DEngine (Decision 73) and BevyCSharp (Decision
+    65).
 
 ## Replies

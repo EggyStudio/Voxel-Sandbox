@@ -1886,3 +1886,17 @@ before a batch.
     the commit. The log is at the run's play job, run 40168842433. Settled at `9955bf3` on
     2026-10-25, the streamer's Pending counting the columns waiting for the GPU's readings beside
     the workers', so the play script's meshed wait holds until they arrive; the check unchanged.
+
+5. **The run of `f97a4c9` is lost, the play job cancelled at its limit of 60 minutes.** Read at
+    11:06 on 2026-10-25 from the run's jobs, run 40178969652. The three test jobs are green; the
+    play job ran from 10:01 to 11:02 and was cancelled at the workflow's limit, which its comment
+    says is reached only where the game or e3d hangs. Nothing hung. The job took 39 minutes on the
+    run of `2549786` and 40 on `9955bf3`, 52 to 54 on the runs of `79ad110`, `bbe814c` and `0babebb`
+    where the runner ran about 1.37 times slower check by check, and this run added item 131's
+    screen probes, about 10% a frame on lavapipe by the coder's reading, and its new check, so a
+    slow runner with the probes on passed 60. The mend raises the limit so a slow runner with the
+    probes on fits, 90 minutes with the comment saying why, the owner's rule weighing no cost of the
+    Actions bill, and reads the job's log check by check for any check that grew out of proportion,
+    saying so in the commit; the walk's checks are not trimmed for it. The mend goes ahead of item
+    95. Settled at `ddede23` on 2026-10-25, the limit 90 minutes with the reasons in its comment,
+    the lost run's checks grown evenly and none out of proportion; the walk untouched.
