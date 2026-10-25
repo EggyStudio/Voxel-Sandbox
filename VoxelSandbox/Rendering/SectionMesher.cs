@@ -560,9 +560,10 @@ public sealed class SectionMesher
     }
 
     /// <summary>
-    /// How far a plant of an offset kind stands off its cell's middle at a place, as Minecraft offsets
-    /// it: a nibble of the place's hash each for across x and z, from a quarter of a block one way to
-    /// a quarter the other in sixteen steps, and for the kind that sinks a third nibble, down to a fifth.
+    /// How far a plant of an offset kind stands off its cell's middle at a place, as Minecraft
+    /// offsets it, by a nibble of the place's hash each for across x and z, from a quarter of a
+    /// block one way to a quarter the other in sixteen steps, and for the kind that sinks by a
+    /// third nibble, down to a fifth.
     /// </summary>
     public static Vector3 Offset(PlantOffset kind, int x, int z)
     {

@@ -297,9 +297,9 @@ public sealed class GiantMushroom(bool red) : IFeature
 }
 
 /// <summary>
-/// A cherry tree, its trunk four to six logs high forking into two branches that lean out to
-/// either side, each under a wide crown of pink leaves with leaves hanging from its edge, and now
-/// and then a lantern hung under a crown, as the owner's modpack's cherry groves show them.
+/// A cherry tree, its trunk four to six logs high forking into two branches that lean out to either
+/// side, each under a wide crown of pink leaves with leaves hanging from its edge, and now and then
+/// a lantern hung under a crown, as the reference modpack's cherry groves show them.
 /// </summary>
 public sealed class CherryTree : IFeature
 {

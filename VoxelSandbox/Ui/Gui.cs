@@ -6,8 +6,8 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// The interface's drawing, in its own pixels at a whole number of the screen's, as Minecraft draws
-/// its interface: the pictures of <see cref="GuiArt"/>, panels stretched between their edges, text
-/// with its shadow, an item's icon with its count and its wear, and a tooltip.
+/// its interface, of the pictures of <see cref="GuiArt"/>, panels stretched between their edges,
+/// text with its shadow, an item's icon with its count and its wear, and a tooltip.
 /// </summary>
 /// <remarks>
 /// The scale is the largest whole number at which 320 by 240 of the interface's pixels fit the

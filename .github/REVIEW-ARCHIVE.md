@@ -1795,6 +1795,20 @@ before a batch.
     and the eye's sky level, so a cave's walls fade to black from inside and the land keeps its
     haze, the departure in the head.
 
+131. **The screen probes are on, with no setting for a player.** From the owner's word to the
+    engine's session before 09:19 on 2026-10-25, Decision 48, that the screen probes stay on and
+    that off is for debugging alone. LightSettings.ScreenProbes is true by default and the Screen
+    Probes toggle leaves the options, a saved options file carrying the old value read as on; the
+    two calls to SetGlobalIlluminationScreenProbes stay while the engine keeps the call and go in
+    the commit that takes the package without it, if the owner has it go. A capture of the plains
+    village at noon with the probes on, N 4.8, and the play run reading the probes on. One commit,
+    in the gap before the package carrying item 108. Settled further at 09:39 under the engine's
+    Decision 72 as amended, the engine keying the screen probes to its quality, left out at Low with
+    the glow lights through the glow-only pass and present at Medium and High, so once the package
+    carrying its item 103 comes the game's probes follow its global illumination quality row and the
+    two calls go, no other row added. Done at `f97a4c9` on 2026-10-25, the probes on by default and
+    the toggle gone, the two calls waiting on the package with the engine's item 103.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

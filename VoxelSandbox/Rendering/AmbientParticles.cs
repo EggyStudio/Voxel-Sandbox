@@ -34,8 +34,8 @@ namespace VoxelSandbox;
 /// <para>
 /// A particle faces the eye, so a ring would stand up off the water, and the rings are a mesh of
 /// flat squares built each frame instead, each showing the frame of a sheet its age has reached,
-/// spreading and fading. The frame's profile counts each kind as what it gives off a second over
-/// about the last second times its life, the particles it keeps alive, and the emitters held.
+/// spreading and fading. The frame's profile counts each kind as what it emits a second over about
+/// the last second times its life, the particles it keeps alive, and the emitters held.
 /// </para>
 /// </remarks>
 public sealed class AmbientParticles : IDisposable
@@ -79,7 +79,8 @@ public sealed class AmbientParticles : IDisposable
     /// <summary>The emitters held this frame.</summary>
     public int Emitters => _splashes.Count + _leaves.Count + _wakes.Count + _dust.Count + _spores.Count + _embers.Count;
 
-    /// <summary>The particles of each kind kept alive, what it gives off a second over about the last second times their life, which the frame's profile shows.</summary>
+    /// <summary>The particles of each kind kept alive, what it emits a second over about the last
+    /// second times their life, which the frame's profile shows.</summary>
     public (float Splashes, float Leaves, float Dust, float Wakes) Alive { get; private set; }
 
     // Each emitter's cap holds what it keeps alive at a density of 2 at the longest lives, a kind's
@@ -116,7 +117,7 @@ public sealed class AmbientParticles : IDisposable
             SpeedVariation = 1, Drag = 0.2f, StartSize = 0.04f, EndSize = 0.03f, StartColor = new Color(170, 230, 120, 200), EndColor = new Color(170, 230, 120, 0),
             Intensity = 1, Lit = true, Blend = ParticleBlend.Alpha, Texture = _mote,
         });
-        // An ember gives off its own light, added over what lies behind it, and rises as it cools.
+        // An ember emits its own light, added over what lies behind it, and rises as it cools.
         _embers = new Stream(DustLife * 1.4f, new ParticleEmitter
         {
             MaxParticles = 80, Emitting = false, Life = DustLife, LifeVariation = 0.4f, Radius = 8, Velocity = new Vector3(0, 0.3f, 0), Spread = 40,
@@ -214,8 +215,8 @@ public sealed class AmbientParticles : IDisposable
         _splashes.Retire(_time);
         _leaves.Retire(_time);
         _wakes.Retire(_time);
-        // What this frame gave off, as many a second, kept alive over its life, eased over about a
-        // second, since the profile shows the last frame's value and a frame gives off few or none.
+        // What this frame emitted, as many a second, kept alive over its life, eased over about a
+        // second, since the profile shows the last frame's value and a frame emits few or none.
         var ease = 1 - MathF.Exp(-seconds);
         Alive = (Ease(Alive.Splashes, splashed * DropsASplash / seconds * SplashLife), Ease(Alive.Leaves, fallen / seconds * LeafLife),
             (dustRate + sporeRate + emberRate) * DustLife, Ease(Alive.Wakes, thrown / seconds * WakeLife));

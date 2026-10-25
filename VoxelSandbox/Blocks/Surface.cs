@@ -69,13 +69,13 @@ public static class Surfaces
     }
 
     // Each full block's color is the average of Bare Bones' texture of it, decoded and weighed by
-    // alpha, read from the owner's copy as numbers by voxel.palette, so the game drawn with no pack
-    // looks as it does with the pack it fetches, as the owner asked, a see-through block's alpha its
-    // texture's cover, and a surface the pack tints by a color of its own, as water and birch and
-    // spruce leaves, under that color. The plants keep their own, since a flower's average mixes
-    // its stem and its petals, and so do the ores, since without a texture an ore shows by its color
-    // alone and an average reads as the stone around it.
-    // The gray a tinted surface multiplies its climate's color by, Bare Bones' gray grass and leaves.
+    // alpha, read from the reference copy as numbers by voxel.palette, so the game drawn with no
+    // pack looks as it does with the pack it fetches, a see-through block's alpha its texture's
+    // cover, and a surface the pack tints by a color of its own, as water and birch and spruce
+    // leaves, under that color. The plants keep their own, since a flower's average mixes its stem
+    // and its petals, and so do the ores, since without a texture an ore shows by its color alone
+    // and an average reads as the stone around it. The gray a tinted surface multiplies its
+    // climate's color by, Bare Bones' gray grass and leaves.
     public static readonly int Grass = Add("grass", new Color(174, 174, 174), tint: SurfaceTint.Grass);
     public static readonly int Dirt = Add("dirt", new Color(155, 101, 49));
     public static readonly int Stone = Add("stone", new Color(130, 130, 130));

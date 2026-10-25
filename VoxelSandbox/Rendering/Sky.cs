@@ -379,11 +379,11 @@ public sealed class Sky : IDisposable
         return texture;
     }
 
-    // The stars, spread evenly over the sky from a fixed hash, so each run has the same ones, as the
-    // modpack's shader, Aurora's Shaders after Complementary, draws its own: squares of StarDegrees,
-    // each as bright as 40 times the square of how far the product of three noises passes 0.7, the
-    // product drawn until it passes, so most are faint and a few bright, in a cool white, the light
-    // taken to sRGB levels.
+    // The stars, spread evenly over the sky from a fixed hash, so each run has the same ones, as
+    // the modpack's shader, Aurora's Shaders after Complementary, draws its own, as squares of
+    // StarDegrees, each as bright as 40 times the square of how far the product of three noises
+    // passes 0.7, the product drawn until it passes, so most are faint and a few bright, in a cool
+    // white, the light taken to sRGB levels.
     private static (Vector3, Vector3, Vector3, Vector3)[] PlaceStars()
     {
         var half = StarDistance * MathF.Tan(float.DegreesToRadians(StarDegrees)) / 2;

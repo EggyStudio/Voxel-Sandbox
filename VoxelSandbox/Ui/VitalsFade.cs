@@ -2,8 +2,8 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// How much of the hearts, the food and the bubbles of breath shows, each fading out once it is
-/// full and has not changed for a few seconds and showing again at once when it changes, as the
-/// HUD of the owner's modpack hides what has nothing to say.
+/// full and has not changed for a few seconds and showing again at once when it changes, as the HUD
+/// of the reference modpack hides what has nothing to say.
 /// </summary>
 public sealed class VitalsFade
 {

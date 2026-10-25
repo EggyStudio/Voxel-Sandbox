@@ -61,8 +61,8 @@ public static class GuiArt
     /// <summary>The arrow of a grid's making and a furnace's smelting, and the furnace's flame, empty and full.</summary>
     public static readonly GuiSprite Arrow = new(166, 0, 22, 15), ArrowFull = new(190, 0, 22, 15), Flame = new(214, 0, 14, 14), FlameFull = new(230, 0, 14, 14);
 
-    // A heart, a drumstick and a bubble, a row a string: o the outline, r and m their color, l its
-    // light, d the empty place's dark and . nothing.
+    // A heart, a drumstick and a bubble, a row a string, where o is the outline, r and m their
+    // color, l its light, d the empty place's dark and . nothing.
     private static readonly string[] HeartPattern = [".oo...oo.", "orro.orro", "orlrorrro", "orrrrrrro", ".orrrrro.", "..orrro..", "...oro...", "....o....", "........."];
     private static readonly string[] FoodPattern = ["....oooo.", "...ommmmo", "..ommlmmo", "..ommmmmo", ".oommmmo.", "o.oooo...", ".wo......", "ow.......", ".o......."];
     private static readonly string[] AirPattern = ["..ooooo..", ".obbbbbo.", "obwbbbbbo", "obwbbbbbo", "obbbbbbbo", "obbbbbbbo", ".obbbbbo.", "..ooooo..", "........."];
@@ -91,7 +91,7 @@ public static class GuiArt
             (atlas[at], atlas[at + 1], atlas[at + 2], atlas[at + 3]) = (c.R, c.G, c.B, c.A);
         }
 
-        // The panel: its corners cut, a dark outline, light above and to the left, shade below and
+        // The panel, its corners cut, a dark outline, light above and to the left, shade below and
         // to the right, and the face between.
         Fill(Panel, (x, y) =>
         {
@@ -123,7 +123,7 @@ public static class GuiArt
             if (x == 1 || y == 1 || x == r - 1 || y == b - 1) return new Color(96, 96, 112, 240);
             return new Color(24, 24, 30, 235);
         });
-        // The hotbar: an outline around nine cells, each a lighter edge and a darker one around a
+        // The hotbar, an outline around nine cells, each a lighter edge and a darker one around a
         // see-through inside, 20 across with the outline's pixel shared.
         Fill(Hotbar, (x, y) =>
         {

@@ -230,8 +230,8 @@ def walk(kind):
 
 def corners(layer, kind, walking):
     """Each cuboid's eight corners in the world, the mob facing south at MOB as the game spawns it."""
-    # Minecraft's render of a mob facing south: turned 180 degrees about y, its model scaled by -1 in
-    # x and y and moved down 1.501, each part placed in pixels over 16.
+    # Minecraft's render of a mob facing south, turned 180 degrees about y, its model scaled by -1
+    # in x and y and moved down 1.501, each part placed in pixels over 16.
     entity = mul(translate(*MOB), mul(ry(math.pi), mul(scale(-1, -1, 1), translate(0, -1.501, 0))))
     turns = walk(kind) if walking else {}
     boxes = []

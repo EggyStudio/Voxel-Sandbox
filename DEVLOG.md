@@ -95,6 +95,10 @@ Seed 1's lava lake at noon seen from in its cave, the far wall at the top left i
 the left and black on the right, where the haze follows the sky's light that reaches the wall or the
 eye.
 
+![](.github/devlog/2026-10-25-item-131-probes.webp)
+Seed 1's plains village at noon with the screen's probes off on the left and on, as the game starts,
+on the right, the light much the same in the open at noon.
+
 Done that day
 
 - Item 27 at `9dad43e`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
@@ -119,6 +123,7 @@ Done that day
   the twins gone.
 - Item 129 at `bbe814c`. The rain's particle texture is drawn upside down.
 - Item 130 at `0babebb`. The fog does not light a dark cave's far walls.
+- Item 131 at `f97a4c9`. The screen probes are on, with no setting for a player.
 
 ## 2026-10-24
 

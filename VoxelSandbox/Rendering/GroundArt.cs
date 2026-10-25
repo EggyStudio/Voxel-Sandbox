@@ -4,18 +4,18 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// The game's own looks for the grass's top, in its flat style of few lines and plain colors, where
-/// no pack's block state lists any: the plain grass, patches of clover a shade darker than the grass
-/// under them, a few pebbles, and little blossoms of a few colors, each drawn sixteen pixels square
-/// and weighed by how often a block shows it.
+/// no pack's block state lists any. They are the plain grass, patches of clover a shade darker than
+/// the grass under them, a few pebbles, and little blossoms of a few colors, each drawn sixteen
+/// pixels square and weighed by how often a block shows it.
 /// </summary>
 /// <remarks>
 /// A clover's patch darkens the grass's own tile where it lies, so it is tinted by the climate as
 /// the grass is, and it is laid over whatever tile the grass has, a pack's or the game's white one,
 /// which keeps the way it lies, since a pack draws its grass's streaks one way, the patch and the
-/// decor turning over it instead.
-/// A pebble's and a blossom's pixels keep their own colors, laid as a layer of decor over the grass,
-/// clear elsewhere. The weights follow those of the grass's looks in the owner's modpack, about four
-/// blocks in five plain, one in twelve clover and a few in a hundred stones or flowers.
+/// decor turning over it instead. A pebble's and a blossom's pixels keep their own colors, laid as
+/// a layer of decor over the grass, clear elsewhere. The weights follow those of the grass's looks
+/// in the reference modpack, about four blocks in five plain, one in twelve clover and a few in a
+/// hundred stones or flowers.
 /// </remarks>
 public static class GroundArt
 {

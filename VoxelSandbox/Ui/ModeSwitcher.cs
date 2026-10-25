@@ -12,8 +12,8 @@ namespace VoxelSandbox;
 /// </summary>
 public sealed class ModeSwitcher
 {
-    // Minecraft's switcher in its pixels, drawn two screen pixels to one: a panel of 125 by 75,
-    // boxes of 26 a side 31 apart, and its icons of 16.
+    // Minecraft's switcher in its pixels, a panel of 125 by 75, boxes of 26 a side 31 apart and its
+    // icons of 16, drawn two screen pixels to one.
     private const int Scale = 2, Box = 26 * Scale, Pitch = 31 * Scale, PanelWidth = 125 * Scale, PanelHeight = 75 * Scale;
 
     private static readonly GameMode[] Order = [GameMode.Creative, GameMode.Survival, GameMode.Adventure, GameMode.Spectator];
@@ -95,7 +95,7 @@ public sealed class ModeSwitcher
         DrawText(next, textX + MeasureText(key, 20), textY, 20, Color.White);
     }
 
-    // A mode's icon: creative's grass block and survival's iron sword from the items' atlas, and
+    // A mode's icon, creative's grass block and survival's iron sword from the items' atlas, and
     // adventure's map and spectator's eye painted here.
     private static void Icon(GameMode mode, int x, int y)
     {

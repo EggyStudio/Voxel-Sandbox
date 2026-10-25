@@ -523,9 +523,9 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>
-    /// Begins the game's frame in the engine's first stage, after the commands of the frame: a world
-    /// asked for is opened, a loading world stands, and the frame's seconds, the toggles, the cursor
-    /// and the hotbar are taken, and the step the behaviors read is set.
+    /// Begins the game's frame in the engine's first stage, after the commands of the frame. A
+    /// world asked for is opened, a loading world stands, and the frame's seconds, the toggles, the
+    /// cursor and the hotbar are taken, and the step the behaviors read is set.
     /// </summary>
     public void Begin()
     {
@@ -581,9 +581,9 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>
     /// Plays the game's frame in the engine's update stage, once the player has moved in the stage
-    /// before: the vitals, the mobs' spawning and what they did, the block aimed at and the hand's
-    /// work on it, the stacks thrown and left, the furnaces, the felling, the fires and the blasts,
-    /// the sky, the water, the clouds and the columns and sections in reach.
+    /// before, taking the vitals, the mobs' spawning and what they did, the block aimed at and the
+    /// hand's work on it, the stacks thrown and left, the furnaces, the felling, the fires and the
+    /// blasts, the sky, the water, the clouds and the columns and sections in reach.
     /// </summary>
     public void Play()
     {
@@ -1165,13 +1165,12 @@ public sealed class VoxelGame : IDisposable
         var (skyAtEye, _) = World.GetLight((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
         _eyeSky += (skyAtEye - _eyeSky) * MathF.Min(1, GetFrameTime() * 8);
         if (Player.EyeInWater) Renderer.Fog(new Color(24, 52, 120), 2, 16);
-        // Over that the atmosphere hazes the land as the modpack's shader does with its owner's
+        // Over that the atmosphere hazes the land as the reference modpack's shader does with its
         // settings, its fog's strength of 0.95 less the 0.25 it keeps in clear weather, held to
         // 0.325 of that under its altitude of 300, which lies over the whole world, so a share of
         // 0.23 at most, growing half as fast as at its distance setting of 100, and as much slower
-        // as the render distance is past twelve columns.
-        // The haze thins over the land high above the sea and thickens about sunrise, each as its
-        // setting says.
+        // as the render distance is past twelve columns. The haze thins over the land high above
+        // the sea and thickens about sunrise, each as its setting says.
         else if (Fog) Renderer.Fog(Sky.Horizon, reach * 0.65f, reach * 0.95f, (0.95f - 0.25f) * 0.325f,
             0.5f * MathF.Min(1, 192 / reach) * (MorningHaze ? Haze.Dawn(Sky.Hour) : 1), sky: true, byHeight: HazeByHeight, eyeSky: _eyeSky);
         else Renderer.Fog(Sky.Horizon, float.MaxValue, float.MaxValue);

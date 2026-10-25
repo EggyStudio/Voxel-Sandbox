@@ -7,7 +7,7 @@ namespace VoxelSandbox;
 /// </summary>
 /// <remarks>
 /// A plant's walls take the rows of its tile from the cell's foot up, as a pack's texture lies on
-/// them, so a mask draws its plant at the bottom: a flower's stem in the rows its stem's walls
+/// them, so a mask draws its plant at the bottom, a flower's stem in the rows its stem's walls
 /// cover and its petals in the rows above, a mushroom's stem and cap the same, and grass in blades
 /// of heights a hash of their column gives. A lantern's iron takes one too, for its handle's and
 /// chain's crossed walls, which are cut out as a plant's are, and a fire's flames take one.

@@ -199,10 +199,10 @@ public sealed class BlockShape
         _ => Facing.East,
     };
 
-    // The edges of boxes together: along each axis, each box's four edges that way are cut where any
-    // box begins or ends along it, and a piece of an edge is kept where the four places around it,
-    // a hair off it across the other two axes, are one or three inside the boxes, or two that touch
-    // only at the edge, which is where the faces about it meet at an angle.
+    // The edges of boxes together. Along each axis, each box's four edges that way are cut where
+    // any box begins or ends along it, and a piece of an edge is kept where the four places around
+    // it, a hair off it across the other two axes, are one or three inside the boxes, or two that
+    // touch only at the edge, which is where the faces about it meet at an angle.
     private static (Vector3 From, Vector3 To)[] Outline(IReadOnlyList<Box> boxes)
     {
         const float Hair = 1e-3f;
@@ -541,9 +541,10 @@ public sealed class BlockShape
 }
 
 /// <summary>
-/// How a plant stands off its cell's middle, as Minecraft's offset types are: not at all, as a
+/// How a plant stands off its cell's middle, as Minecraft's offset types place it, not at all, as a
 /// sapling, a mushroom and a dead bush stand, up to a quarter of a block either way across, as a
-/// flower and tall grass do, or across and sunk up to a fifth of a block, as short grass and a fern are.
+/// flower and tall grass do, or across and sunk up to a fifth of a block, as short grass and a fern
+/// are.
 /// </summary>
 public enum PlantOffset
 {

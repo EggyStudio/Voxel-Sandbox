@@ -231,7 +231,7 @@ A swamp's grass is two greens laid out by a noise and its leaves an olive, the b
 leaves a dusty yellow, a cherry grove's grass and leaves a light green, and a dark forest's grass
 halfway to a dark olive, each as Minecraft colors them, blended with the biomes around as the
 others' are. The numbers, the climate's ranges, the colors and how many trees stand in a chunk, are
-read from Minecraft's and from those of Terralith, the biome overhaul of the owner's modpack, as a
+read from Minecraft's and from those of Terralith, the biome overhaul of the reference modpack, as a
 model and not a copy, since its license forbids handing its files out. `voxel.biome` finds the
 nearest place of a biome.
 
@@ -430,12 +430,12 @@ place's coordinate along a noise is its offset plus the place's integer coordina
 noise's frequency, an integer of 24 fractional bits whose 8 whole bits wrap at the noise's period of
 256 as it overflows, and the noise, its fades, its lerps and its octaves' weights are 16 fractional
 bits, each product taken to the floor. Its values stray from the formulas in doubles they stand for
-by under two thousandths, which moves a block here and there: over the 144 columns about seed 1's
+by under two thousandths, which moves a block here and there. Over the 144 columns about seed 1's
 origin 4,552 blocks of 14 million differ from the noises in floats, 1,578 of them between air and
 ground, every place the tests pin, the spawn, the villages and the structures, stands where it
-stood, and the cliffs' counts move by one at most. A world saved before may show a step of a block where a column it saved meets
-one generated since. A column takes 16.9 ms on the CPU, the caves' density 5.7 of it, against 16.1
-and 5.4 in floats.
+stood, and the cliffs' counts move by one at most. A world saved before may show a step of a block
+where a column it saved meets one generated since. A column takes 16.9 ms on the CPU, the caves'
+density 5.7 of it, against 16.1 and 5.4 in floats.
 
 The GPU reads the caves' noises for the columns about to be generated, through a compute shader of
 the game's own, `resources/shaders/cavefields.slang`. A batch of eight columns is one dispatch, a
@@ -571,7 +571,7 @@ stone bricks and cracked stone bricks are blocks of their own. The temple, the h
 keep the trees out of their ground, as a village does.
 
 A village stands where the plains, the taiga, the snowy plains, the desert or the savanna lie nearly
-level across 48 blocks, each of the source's kinds built of its own blocks: the plains' of oak, the
+level across 48 blocks, each of the source's kinds built of its own blocks, the plains' of oak, the
 taiga's of spruce on floors and footings of mossy cobblestone, the snowy plains' of spruce under
 roofs of snow with windows of ice, the desert's of sandstone with corners of yellow terracotta, and
 the savanna's of acacia on floors of orange terracotta, its villagers in the savanna's robe.
@@ -1060,7 +1060,7 @@ with the packs given in place of the list. A transient run reads no list and wri
 drawn the same on every machine. The repository ships no pack and none of a pack's files.
 `VoxelSandbox/Rendering/PackTextures.cs` names the texture each surface and item is drawn with, by
 Minecraft's names, and a surface it leaves out, or one no pack has, keeps the game's own color. Each
-full block's own color is the average of Bare Bones' texture of it, read from the owner's copy as
+full block's own color is the average of Bare Bones' texture of it, read from the reference copy as
 numbers by `voxel.palette`, which prints each surface's average from the packs loaded, so the world
 with no pack looks as it does with the pack the game fetches. The plants keep their own colors, and
 the ores theirs, since without a texture an ore shows by its color alone.
@@ -1121,35 +1121,34 @@ frame to the pack's tiles rather than the game's own joining. The methods `ctm_c
 `fixed` and those joined with a plus are not read, nor is a rule past the atlas's 512 tiles, and
 none of the packs the game fetches has any, so with them the blocks look as before.
 
-Leaves cut out hide nothing behind them, so they
-keep their faces against each other and the faces beside them, as Minecraft draws its leaves, and
-the sections seen through them are drawn. Bare Bones' leaves are covered in every pixel and so stay
-whole. A texture partly clear, as ice's is, blends as before. The cactus is Minecraft's model, its
-top and bottom across the whole cell and each side a pixel in from its side of the cell and as wide
-as the cell, so its pictures' clear edges are cut out, shadow and all, and the thorns on them stick
-out past the sides beside them. Its box stops the player a pixel in at each side and a pixel short
-of its top, as Minecraft's does. An emissive block's cube is drawn
-with its texture, and one whose faces differ, the lit furnace, with its top's, its sides' and its
-bottom's laid side by side, so it shows the furnace's top above its front, its front alone emissive
-where its pixels are bright. A pack's animated texture, a strip of frames its metadata plays in an
-order and for times of its own, has its frames laid in the atlas one after another, each held the
-shortest frame's time and a longer frame for as many steps as it lasts, a face carrying the first
-and the terrain shader stepping it by the game's ticks, twenty a second, as Minecraft steps them, up
-to 16 such textures. An animated lamp's cube keeps its first frame's texture, whose average the
-scene's distance field reads as its color, since a draw whose color changes is stamped again without
-its light for frames, and steps the map of its emission, which shows most of what the face shows, so
-a lantern's flame flickers and the light it casts holds still. `build/play.sh` writes water of a
-white and a black frame and reads both in turn. An item's icon is the pack's texture for it, or a
-block's cube with its faces' textures. The grass's top shows looks of the game's own in its flat
-style, little blossoms of four colors, patches of clover a shade darker than the grass under them
-and so tinted by the climate as it is, and pebbles, laid over a pack's grass or the game's own at
-four quarter turns, the grass's own tile keeping the way it lies, since a pack draws its grass's
-streaks one way, and about four blocks in five plain, a twelfth clover and a few in a hundred
-flowers or stones, as the looks of the grass in the owner's modpack are weighed. A hash of the
-block's place picks one, so the same block shows the same look every time. A pack gives the pictures
-alone, its textures, its sprites and its font, and the game reads nothing of its block states or
-models, which hold how the source draws and chooses its blocks, since how the game draws and chooses
-is its own.
+Leaves cut out hide nothing behind them, so they keep their faces against each other and the faces
+beside them, as Minecraft draws its leaves, and the sections seen through them are drawn. Bare
+Bones' leaves are covered in every pixel and so stay whole. A texture partly clear, as ice's is,
+blends as before. The cactus is Minecraft's model, its top and bottom across the whole cell and each
+side a pixel in from its side of the cell and as wide as the cell, so its pictures' clear edges are
+cut out, shadow and all, and the thorns on them stick out past the sides beside them. Its box stops
+the player a pixel in at each side and a pixel short of its top, as Minecraft's does. An emissive
+block's cube is drawn with its texture, and one whose faces differ, the lit furnace, with its top's,
+its sides' and its bottom's laid side by side, so it shows the furnace's top above its front, its
+front alone emissive where its pixels are bright. A pack's animated texture, a strip of frames its
+metadata plays in an order and for times of its own, has its frames laid in the atlas one after
+another, each held the shortest frame's time and a longer frame for as many steps as it lasts, a
+face carrying the first and the terrain shader stepping it by the game's ticks, twenty a second, as
+Minecraft steps them, up to 16 such textures. An animated lamp's cube keeps its first frame's
+texture, whose average the scene's distance field reads as its color, since a draw whose color
+changes is stamped again without its light for frames, and steps the map of its emission, which
+shows most of what the face shows, so a lantern's flame flickers and the light it casts holds still.
+`build/play.sh` writes water of a white and a black frame and reads both in turn. An item's icon is
+the pack's texture for it, or a block's cube with its faces' textures. The grass's top shows looks
+of the game's own in its flat style, little blossoms of four colors, patches of clover a shade
+darker than the grass under them and so tinted by the climate as it is, and pebbles, laid over a
+pack's grass or the game's own at four quarter turns, the grass's own tile keeping the way it lies,
+since a pack draws its grass's streaks one way, and about four blocks in five plain, a twelfth
+clover and a few in a hundred flowers or stones, as the looks of the grass in the reference modpack
+are weighed. A hash of the block's place picks one, so the same block shows the same look every
+time. A pack gives the pictures alone, its textures, its sprites and its font, and the game reads
+nothing of its block states or models, which hold how the source draws and chooses its blocks, since
+how the game draws and chooses is its own.
 
 The interface takes a pack's pictures where Minecraft reads them, the hotbar, its frame, the hearts,
 the food, the bubbles of breath and the crosshair under `gui/sprites/hud`, the buttons and sliders
@@ -1260,14 +1259,14 @@ takes the engine's screen probes, each pixel's light traced from its own surface
 makes it, and the cascades' light read alone is a view for debugging, which the engine's
 `gi.toggle screen` gives through the command line.
 
-The frame is tonemapped by the curve of the owner's modpack's shader with the owner's settings, its
-exposure 0.9, white curve 1.3, lower curve 1.05 and upper 1.0, which the engine's `SetTonemapCurve`
-draws. The light is raised by 1.6 before it, which keeps the middle levels within 3 of Reinhard's
-curve at 1.7, the brightness of the modpack's pictures, the darks deeper by the curve's lower power
-and the lights brighter, and the frame is graded, each channel pushed from the middle gray by 1.12
-and the color by 1.4, so a village's roofs, its wheat and its
-grass in the afternoon read as vividly as in the modpack's pictures, whose shader's warm light and
-deep shade saturate them. By day the sky's light on the land is drawn through the engine's
+The frame is tonemapped by the curve of the reference modpack's shader with that modpack's settings,
+its exposure 0.9, white curve 1.3, lower curve 1.05 and upper 1.0, which the engine's
+`SetTonemapCurve` draws. The light is raised by 1.6 before it, which keeps the middle levels within
+3 of Reinhard's curve at 1.7, the brightness of the modpack's pictures, the darks deeper by the
+curve's lower power and the lights brighter, and the frame is graded, each channel pushed from the
+middle gray by 1.12 and the color by 1.4, so a village's roofs, its wheat and its grass in the
+afternoon read as vividly as in the modpack's pictures, whose shader's warm light and deep shade
+saturate them. By day the sky's light on the land is drawn through the engine's
 `SetEnvironmentLight` toward a white of its own brightness, the painted sky's light on a face turned
 up taken each time the sky is painted, so a shadow is the ground darker in its own color, as the
 source's are and as the far shadows the cascades fade read, where the sky's blue lit the near ones
@@ -1320,15 +1319,15 @@ lights the world in the colors of the modpack's shader, read as numbers, a warm 
 0.55, 0.4) times 1.9 in linear light, turning orange toward the horizon, (0.64, 0.45, 0.3) to the
 power of 1.5 and the share short of noon, times 5, mixed by the square root of the sun's height, and
 as bright at noon as a white sun of the same luminance. By night the sky takes the shader's night
-tint of the owner's settings, its colors multiplied by 1.10, 0.90 and 1.30 in linear light as far as
-the day's light is gone, a violet blue, and the moon lights the world in the shader's night light,
-(0.15, 0.14, 0.20), as bright as before. Its 3,000 stars are squares of 0.28 degrees, most faint and
-a few bright, in a cool white, as the modpack's shader, Aurora's Shaders after Complementary, draws
-its own, each as bright as 40 times the square of how far the product of three noises passes 0.7.
-They are added to the sky, as the sun and the moon are, so a faint star brightens the sky behind it
-and darkens none of it at dawn and dusk, which `voxel.spots` counts. They keep their places on the
-turning sky, fade in as the day fades, thin out over the lowest 20 degrees above the horizon and are
-gone beside the sun and the moon. The moon goes through
+tint of the reference modpack's settings, its colors multiplied by 1.10, 0.90 and 1.30 in linear
+light as far as the day's light is gone, a violet blue, and the moon lights the world in the
+shader's night light, (0.15, 0.14, 0.20), as bright as before. Its 3,000 stars are squares of 0.28
+degrees, most faint and a few bright, in a cool white, as the modpack's shader, Aurora's Shaders
+after Complementary, draws its own, each as bright as 40 times the square of how far the product of
+three noises passes 0.7. They are added to the sky, as the sun and the moon are, so a faint star
+brightens the sky behind it and darkens none of it at dawn and dusk, which `voxel.spots` counts.
+They keep their places on the turning sky, fade in as the day fades, thin out over the lowest 20
+degrees above the horizon and are gone beside the sun and the moon. The moon goes through
 Minecraft's eight phases, a phase a day from the full moon of the first night, and changes while it
 is down. `voxel.time` sets the hour and `voxel.day` the count of days, which a save keeps, and the
 land and the clouds hide the sun, the moon and the stars.
@@ -1394,35 +1393,35 @@ shadows, global illumination and the sky, over each vertex's color as the engine
 colored meshes does, and fades the result from two thirds of the render distance to the render
 distance into the sky drawn behind each point, read along the ray from the eye from the sky's image
 as the engine's sky shader reads it, under the share of the dome's band below, as Minecraft's fog
-hides where the world ends and as the owner's modpack's shader colors its fog by the way the eye
+hides where the world ends and as the reference modpack's shader colors its fog by the way the eye
 looks. So a mountain's top high against the sky fades into the sky's blue and the land at the
 horizon into the horizon's haze. Nearer, the atmosphere hazes the land as the modpack's shader does
-with the owner's settings, toward the same color by a share that grows as one less e to the minus
-half a millionth of the cube of the distance in blocks, as much slower as the render distance is
-past twelve columns, to 0.23 at most, its fog's strength of 0.95 less the 0.25 it keeps in clear
-weather, held to 0.325 of that under its altitude of 300, so about a tenth of the land's color at
-100 blocks and a fifth at 150. Its growth is taken by its density along the way from the eye, whole
-at and under the sea's level and falling by e over each 40 blocks above it, so a valley holds its
-haze and a peak eighty blocks over the sea about two fifths of it, and the morning thickens it as a
-dawn's mist, growing two and a half times as fast at a quarter past six and back to its noon's by
-nine, the Sky and Visuals screen turning each off. A point takes the haze by the sky's light
-reaching it or the eye, whichever is more, on the source's brightness curve, since the haze is the
-sky's light the air scatters toward the eye, so a cave's far walls seen from in the cave fade to
+with the reference modpack's settings, toward the same color by a share that grows as one less e to
+the minus half a millionth of the cube of the distance in blocks, as much slower as the render
+distance is past twelve columns, to 0.23 at most, its fog's strength of 0.95 less the 0.25 it keeps
+in clear weather, held to 0.325 of that under its altitude of 300, so about a tenth of the land's
+color at 100 blocks and a fifth at 150. Its growth is taken by its density along the way from the
+eye, whole at and under the sea's level and falling by e over each 40 blocks above it, so a valley
+holds its haze and a peak eighty blocks over the sea about two fifths of it, and the morning
+thickens it as a dawn's mist, growing two and a half times as fast at a quarter past six and back to
+its noon's by nine, the Sky and Visuals screen turning each off. A point takes the haze by the sky's
+light reaching it or the eye, whichever is more, on the source's brightness curve, since the haze is
+the sky's light the air scatters toward the eye, so a cave's far walls seen from in the cave fade to
 black and not to the sky, while the land seen from a cave and a cave's mouth seen from the open land
-keep their haze, the eye's level eased over about a quarter of a second. Under water the haze is the water's blue and
-covers the view within 16 blocks. Past the last section the world ends, so a dome about the eye
-below the horizon is drawn in the haze's color, as Minecraft draws what lies below its horizon in
-its fog's color, fading into the sky over six degrees above the horizon. It is drawn through the
-same shader beyond the haze's end, which gives it the haze's color itself, so the land's fading edge
-meets it with no step at any render distance and under water, while the sky's image keeps its darker
-lower half for the light it gives the world. It lies 3,600 blocks out, beyond the sun, the moon and
-the stars and inside the engine's far plane, since it writes depth over its whole band, so a sun
-drawn behind it would end in a line six degrees up, where its band begins clear. They are drawn over
-it instead, the sun and the moon as a grid of a quad to each pixel of their pictures, and each
-corner takes the share of the haze left clear at its height, so a low sun dims into the haze as the
-dome blended over it would show it. `voxel.edge` reads where the drawn land ends up a column of
-pixels and how it meets what lies above it. The Sky and Visuals screen turns the fog off, and the
-dome with it. The lamps' cubes are drawn with the engine's own shader and take no haze.
+keep their haze, the eye's level eased over about a quarter of a second. Under water the haze is the
+water's blue and covers the view within 16 blocks. Past the last section the world ends, so a dome
+about the eye below the horizon is drawn in the haze's color, as Minecraft draws what lies below its
+horizon in its fog's color, fading into the sky over six degrees above the horizon. It is drawn
+through the same shader beyond the haze's end, which gives it the haze's color itself, so the land's
+fading edge meets it with no step at any render distance and under water, while the sky's image
+keeps its darker lower half for the light it gives the world. It lies 3,600 blocks out, beyond the
+sun, the moon and the stars and inside the engine's far plane, since it writes depth over its whole
+band, so a sun drawn behind it would end in a line six degrees up, where its band begins clear. They
+are drawn over it instead, the sun and the moon as a grid of a quad to each pixel of their pictures,
+and each corner takes the share of the haze left clear at its height, so a low sun dims into the
+haze as the dome blended over it would show it. `voxel.edge` reads where the drawn land ends up a
+column of pixels and how it meets what lies above it. The Sky and Visuals screen turns the fog off,
+and the dome with it. The lamps' cubes are drawn with the engine's own shader and take no haze.
 
 ## Sound
 
@@ -1440,16 +1439,16 @@ eighth through three, where the source's sound mods also dull it, which the engi
 for yet.
 
 The sounds of a place play on, each easing in and out over about two seconds by where the player
-stands: birds in the woods and on the plains by day, crickets by night where it is neither dry nor
-cold, both hushed by the weather, the wind rising from 32 blocks over the sea to its loudest at 80, a
-cave's low tone and its dripping water in a cave, under the sea's level with little of the sky's
-light, and water lapping by how much of it lies within eight blocks. Each is a loop of eight
-seconds whose end runs on into its start. The room about the player is read four times a second by
-26 rays to 24 blocks, the share that meet a block and how far they go, 0.54 at 4.8 blocks on seed 1's
-plains and 0.92 at 7.8 in its deep cave, for a reverb the engine does not give yet, so it is said and
-not heard. The Music and Sounds screen sets how loud all of them play, the steps and the places'
-sounds, and `voxel.sounds` says how loud each sound of the place plays, the room, and the steps
-played with what the blocks between let through.
+stands, birds in the woods and on the plains by day, crickets by night where it is neither dry nor
+cold, both hushed by the weather, the wind rising from 32 blocks over the sea to its loudest at 80,
+a cave's low tone and its dripping water in a cave, under the sea's level with little of the sky's
+light, and water lapping by how much of it lies within eight blocks. Each is a loop of eight seconds
+whose end runs on into its start. The room about the player is read four times a second by 26 rays
+to 24 blocks, the share that meet a block and how far they go, 0.54 at 4.8 blocks on seed 1's plains
+and 0.92 at 7.8 in its deep cave, for a reverb the engine does not give yet, so it is said and not
+heard. The Music and Sounds screen sets how loud all of them play, the steps and the places' sounds,
+and `voxel.sounds` says how loud each sound of the place plays, the room, and the steps played with
+what the blocks between let through.
 
 ## What is not here yet
 

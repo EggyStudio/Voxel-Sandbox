@@ -1014,10 +1014,11 @@ cmd voxel.options particles Rain_Splashes 100
 cmd voxel.weather days
 
 check "the land's edge"
-# From high over the land, the drawn land's edge meets the dome under the horizon in the haze's color
-# with no step, read up the window's middle column: the land's last pixel and the one above it alike,
-# and no two neighbors within 16 of the edge more than a few levels apart. It is read at four
-# columns, the land within them generated and meshed first, so the edge lies past the haze's start.
+# From high over the land, the drawn land's edge meets the dome under the horizon in the haze's
+# color with no step, read up the window's middle column, so the land's last pixel and the one above
+# it are alike and no two neighbors within 16 of the edge are more than a few levels apart. It is
+# read at four columns, the land within them generated and meshed first, so the edge lies past the
+# haze's start.
 cmd voxel.distance 4
 cmd voxel.tp "$bx" 120 "$bz"
 meshed

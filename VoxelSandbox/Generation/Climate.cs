@@ -77,8 +77,8 @@ public static class Biomes
     };
     public static readonly Biome Beach = new("beach", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, []) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(145, 189, 89), FoliageColor = new Color(119, 171, 47), Id = 13 };
     public static readonly Biome River = new("river", BlockId.Sand, BlockId.Sand, BlockId.Air, []) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(142, 185, 113), FoliageColor = new Color(113, 167, 77), Id = 14 };
-    // The cherry grove on raised ground where it is cool and wet, its grass and leaves a light green
-    // of their own, as the gallery of the owner's modpack shows it.
+    // The cherry grove on raised ground where it is cool and wet, its grass and leaves a light
+    // green of their own, as the gallery of the reference modpack shows it.
     public static readonly Biome CherryGrove = new("cherry grove", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Cherry, 14)])
     {
         Patches = [PlantPatch.TallGrass2, PlantPatch.GrassPlain, PlantPatch.FlowerCherry],
@@ -124,11 +124,11 @@ public sealed class Climate(int seed)
 
     /// <summary>
     /// The biome of a place by its climate and the height of its ground, as Minecraft's table of
-    /// temperatures and humidities chooses its biomes: the cold ones, then where it is hot the
-    /// badlands within the desert, the swamp where it is warm and wettest, the jungle where it is hot
-    /// and wet and the savanna where it is hot and dry, and where it is temperate the cherry grove
-    /// on raised ground, then the dark forest, the forest, the birch forest and the plains, from wet
-    /// to dry.
+    /// temperatures and humidities chooses its biomes, the cold ones first, then where it is hot
+    /// the badlands within the desert, the swamp where it is warm and wettest, the jungle where it
+    /// is hot and wet and the savanna where it is hot and dry, and where it is temperate the cherry
+    /// grove on raised ground, then the dark forest, the forest, the birch forest and the plains,
+    /// from wet to dry.
     /// </summary>
     public static Biome Choose(float temperature, float humidity, int height, int mountainsFrom)
     {

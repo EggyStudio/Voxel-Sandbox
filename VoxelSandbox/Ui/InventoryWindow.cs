@@ -39,8 +39,8 @@ public sealed class InventoryWindow
     // A double-click is a second press on the same slot within this many seconds, as Minecraft's.
     private const double DoubleClick = 0.25;
 
-    // A slot of the window: where it is in the interface's pixels from the panel's corner, and whether
-    // it is one a click only takes from, as a furnace's output, or what a grid makes.
+    // A slot of the window, where it is in the interface's pixels from the panel's corner, and
+    // whether it is one a click only takes from, as a furnace's output, or what a grid makes.
     private readonly record struct SlotView(SlotAt At, int X, int Y, bool TakeOnly = false, CraftingGrid? Makes = null);
 
     /// <summary>The inventory's own crafting grid, two by two.</summary>
@@ -339,8 +339,9 @@ public sealed class InventoryWindow
         }
     }
 
-    // A press on a slot: a shift-click's move, a double-click's gathering with a stack held, a click
-    // or a right click with none held, or the start of a drag with one held, which its release ends.
+    // A press on a slot, which is a shift-click's move, a double-click's gathering with a stack
+    // held, a click or a right click with none held, or the start of a drag with one held, which
+    // its release ends.
     private void Press(SlotAt at, MouseButton button)
     {
         var twice = button == MouseButton.Left && _lastPress.At == at && GetTime() - _lastPress.Time < DoubleClick;
@@ -382,7 +383,7 @@ public sealed class InventoryWindow
         _dragged.Clear();
     }
 
-    // The keys over a slot: a number swaps it with that slot of the hotbar, and Q drops one of its
+    // The keys over a slot. A number swaps it with that slot of the hotbar, and Q drops one of its
     // items, with Control its stack.
     private void Keys(SlotAt at)
     {

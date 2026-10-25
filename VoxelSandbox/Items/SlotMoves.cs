@@ -11,10 +11,10 @@ public readonly record struct SlotAt(ItemStack?[] Slots, int Index)
 }
 
 /// <summary>
-/// What the inventory window's quick moves do to its slots, as Minecraft's do: a shift-click's move
-/// of a stack into the slots it goes to, a double-click's gathering of a kind onto the held stack, a
-/// drag's spreading of the held stack over slots, and the sort of a run of slots by kind, as the
-/// sorting mods of Minecraft do it.
+/// The inventory window's quick moves as Minecraft's make them, a shift-click's move of a stack
+/// into the slots it goes to, a double-click's gathering of a kind onto the held stack, a drag's
+/// spreading of the held stack over slots, and the sort of a run of slots by kind, as the sorting
+/// mods of Minecraft do it.
 /// </summary>
 public static class SlotMoves
 {
@@ -48,9 +48,9 @@ public static class SlotMoves
     }
 
     /// <summary>
-    /// Where a shift-click on a slot of the inventory moves its stack: into the furnace open, its
-    /// input for what smelts and its fuel for what burns, and otherwise from the hotbar into the rest
-    /// of the inventory and from the rest into the hotbar, as Minecraft's inventory moves it.
+    /// Where a shift-click on a slot of the inventory moves its stack, into the furnace open, its
+    /// input for what smelts and its fuel for what burns, and otherwise from the hotbar into the
+    /// rest of the inventory and from the rest into the hotbar, as Minecraft's inventory moves it.
     /// </summary>
     /// <returns>Whether any of it moved.</returns>
     public static bool QuickMove(Inventory inventory, int slot, Furnace? furnace)
