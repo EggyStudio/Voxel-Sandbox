@@ -13,8 +13,7 @@ namespace VoxelSandbox;
 /// the stacks fall and age first, the player picks up those within reach next, and stacks of one
 /// item lying together join and the empty and the old vanish last. They read the voxel world and the
 /// player from the game's <see cref="GameStep"/> and the inventory as a resource, and run on the main
-/// thread, which alone may read the world. Each also takes its world and its inputs as arguments, so
-/// a test steps the stacks of an ECS world of its own as the frame steps the game's.
+/// thread, which alone may read the world.
 /// </para>
 /// <para>
 /// A stack can be picked up half a second after it is dropped, two seconds after the player throws
@@ -44,61 +43,46 @@ public partial struct ItemDrop
 
     private const float Lifetime = 300, Gravity = 16, Join = 0.5f;
 
+    /// <summary>Moves and ages by the step's seconds every stack whose column is loaded.</summary>
     [OnPreUpdate]
     public static void Fall(BehaviorContext ctx)
     {
-        if (ctx.World.TryGetResource<GameStep>(out var step)) Fall(ctx.Ecs, step.World, step.Seconds);
-    }
-
-    [OnUpdate]
-    public static void PickUp(BehaviorContext ctx)
-    {
-        if (ctx.World.TryGetResource<GameStep>(out var step) && step.PickUp && step.Seconds > 0 && ctx.World.TryGetResource<Inventory>(out var inventory))
-            PickUp(ctx.Ecs, step.Player, inventory);
-    }
-
-    [OnPostUpdate]
-    public static void Gather(BehaviorContext ctx) => Gather(ctx.Ecs);
-
-    /// <summary>Moves and ages by so many seconds every stack whose column is loaded.</summary>
-    public static void Fall(EcsWorld ecs, VoxelWorld world, float seconds)
-    {
-        if (seconds <= 0) return;
-        foreach (var (id, _, body) in ecs.Query<ItemDrop, Body>())
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
+        foreach (var (id, _, body) in ctx.Ecs.Query<ItemDrop, Body>())
         {
-            if (!world.HasColumn(VoxelWorld.ColumnOf((int)MathF.Floor(body.Position.X)), VoxelWorld.ColumnOf((int)MathF.Floor(body.Position.Z)))) continue;
-            ecs.GetRef<ItemDrop>(id).Age += seconds;
-            Move(world, body, seconds);
+            if (!step.World.HasColumn(VoxelWorld.ColumnOf((int)MathF.Floor(body.Position.X)), VoxelWorld.ColumnOf((int)MathF.Floor(body.Position.Z)))) continue;
+            ctx.Ecs.GetRef<ItemDrop>(id).Age += step.Seconds;
+            Move(step.World, body, step.Seconds);
         }
     }
 
     /// <summary>
     /// Puts into the inventory the stacks past their delay that the player's box reaches within a
-    /// block across and half a block up and down.
+    /// block across and half a block up and down, while the player picks up.
     /// </summary>
-    /// <returns>How many items the player picked up.</returns>
-    public static int PickUp(EcsWorld ecs, Body player, Inventory inventory)
+    [OnUpdate]
+    public static void PickUp(BehaviorContext ctx)
     {
-        var picked = 0;
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || !step.PickUp || step.Seconds <= 0 || !ctx.World.TryGetResource<Inventory>(out var inventory)) return;
+        var player = step.Player;
         Vector3 reachMin = player.Min - new Vector3(1, 0.5f, 1), reachMax = player.Max + new Vector3(1, 0.5f, 1);
-        foreach (var (id, drop, body) in ecs.Query<ItemDrop, Body>())
+        foreach (var (id, drop, body) in ctx.Ecs.Query<ItemDrop, Body>())
         {
             if (drop.Age < drop.Delay || drop.Count == 0) continue;
             Vector3 min = body.Min, max = body.Max;
             if (min.X > reachMax.X || max.X < reachMin.X || min.Y > reachMax.Y || max.Y < reachMin.Y || min.Z > reachMax.Z || max.Z < reachMin.Z) continue;
-            var left = inventory.Add(drop.Item, drop.Count, drop.Wear);
-            picked += drop.Count - left;
-            ecs.GetRef<ItemDrop>(id).Count = left;
+            ctx.Ecs.GetRef<ItemDrop>(id).Count = inventory.Add(drop.Item, drop.Count, drop.Wear);
         }
-        return picked;
     }
 
     /// <summary>
     /// Joins stacks of one item lying within half a block of each other, each taking as much of the
     /// others as it holds, and despawns the empty stacks and those five minutes old.
     /// </summary>
-    public static void Gather(EcsWorld ecs)
+    [OnPostUpdate]
+    public static void Gather(BehaviorContext ctx)
     {
+        var ecs = ctx.Ecs;
         var stacks = new List<(int Id, Vector3 At)>();
         foreach (var (id, _, body) in ecs.Query<ItemDrop, Body>()) stacks.Add((id, body.Position));
         for (int i = 0; i < stacks.Count; i++)
@@ -179,19 +163,6 @@ public sealed class ItemDrops(EcsWorld ecs)
         var angle = (float)_random.NextDouble() * MathF.Tau;
         var velocity = new Vector3(MathF.Cos(angle) * 1.2f, 3, MathF.Sin(angle) * 1.2f);
         Spawn(item, count, new Vector3(x + 0.5f, y + 0.375f, z + 0.5f), velocity);
-    }
-
-    /// <summary>
-    /// Steps the stacks by so many seconds as a frame steps them, falling, picked up unless
-    /// <paramref name="pickUp"/> is clear, as while the player lies dead, joined and gone when old.
-    /// </summary>
-    /// <returns>How many items the player picked up.</returns>
-    public int Update(VoxelWorld world, Body player, Inventory inventory, float seconds, bool pickUp = true)
-    {
-        ItemDrop.Fall(ecs, world, seconds);
-        var picked = pickUp ? ItemDrop.PickUp(ecs, player, inventory) : 0;
-        ItemDrop.Gather(ecs);
-        return picked;
     }
 
     /// <summary>Despawns every stack, as a world closes.</summary>
