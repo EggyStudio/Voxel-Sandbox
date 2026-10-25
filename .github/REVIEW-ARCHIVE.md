@@ -1636,6 +1636,14 @@ before a batch.
     light and drawn into the shadow maps alone, the cave's tops dark at 1.5 ms, the departure in the
     head.
 
+105. **The stepped sun's shadow is read once a pixel through the engine's hook.** From item 93's
+    first mend, which waits on the engine's item 99, `litLight` taking the shadow light's shadow
+    from the caller; the game's `litStepped` then hands the step's read in and reads the shadow
+    once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
+    again. One commit, small, with the package carrying the engine's item 99. Done at `fb04f6b` on
+    2026-10-25, one read at the step's middle, 0.3 to 0.4 ms at the grove on the mended scene pass,
+    the step itself free.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

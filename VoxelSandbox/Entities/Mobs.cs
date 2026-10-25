@@ -212,7 +212,8 @@ public sealed class Mobs
     public void Leaving(int x, int z)
     {
         List<MobRecord>? kept = null;
-        // The mobs are walked for their column, since the ECS finds an entity by its id alone.
+        // The mobs are walked for their column, since the engine's index by a key names one entity to
+        // a key and a column holds many.
         Despawn(mob =>
         {
             if (mob.Dying >= 0 || ColumnOf(mob) != (x, z)) return false;

@@ -5,7 +5,18 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `c7c1b41`, item 123, the culled sections casting the sun's shadow, read at 02:15 on
+Reviewed up to `fb04f6b`, item 105, the stepped shadow read once, read at 02:33 on 2026-10-25,
+carrying the review's files and the devlog's grove. litStepped reads lightReaching once at the
+step's middle with its held share and calls litLight with the shadow and the held, its own
+correction and the sun's specular rebuild gone, passing minus 1 where there is no shadow light; the
+grove alike to the pixel but for 96 of 2.07 million, the pillar's shadow still stepping and the
+lantern's pool and the grass wall as before. The scene pass at the grove reads 9.87 and 8.96 ms with
+one read against 10.19 and 9.38 with three, 0.3 to 0.4 ms where the item expected 1.6 measured on
+the older pass of 12.5, and the step costs nothing measurable against no step, the README's costs
+paragraph rewritten. 311 tests, play.sh 324 s on the GPU. The lookups next, the fires keyed by cell
+through the index and the mobs still walked since a key names one entity, an index whose key names
+many asked of the engine as its item 117. Held with `c7c1b41` until the run of `3275e76` ends, then
+pushed. After `c7c1b41`, item 123, the culled sections casting the sun's shadow, read at 02:15 on
 2026-10-25, carrying the review's files and the devlog's cave tops. ChunkRenderer.FindCasters casts
 a ray toward the light from each of the eight corners of every drawn, meshed section within the
 shadow distance plus 16 blocks, shared corners once, each ray walking the section grid after
@@ -22,27 +33,26 @@ above 24 falling from 4,427 to 4 at 96 and from 2,325 to 4 at 150, the frame 4.6
 with 357 shadow-only draws and 6.7 at 150, against 28 to 31 with the culling off; the grove draws 20
 shadow-only and reads the frame the same with the casting on and off within one session.
 VisibilityTests walks the march, the README's culling paragraph gains the casters and the numbers.
-311 tests, play.sh 327 s on the GPU. Held until the run of `3275e76` ends, then pushed. After
-`3275e76`, item 94's mobs, the third commit, read at 01:53 on 2026-10-25, carrying REVIEW.md.
-MobPose is a struct component of the yaw, the head's yaw and pitch, the stride and its phase, the
-flap and the swing, written in place by Move, Look and Face; MobHostile a behavior struct the
-hostile mobs alone carry, its own Hunt system on update stepping them through a query of five
-components and MobMind.Think stepping the rest through a query of four without it; MobRenderer.Draw
-takes the EcsWorld and draws through the same two queries with no GetRef. Departures, the Mob class
-stays the class component holding the path and the Random under its name, Exploded stays on the
-class since the loot is reckoned from MobDied after the despawn, Mob keeps read-only forwards for
-the save, voxel.mobs and the tests, and the column walk waits for the lookup's commit. MobTests
-reads each mob by exactly one of the two queries and stepped by its own mind alone and the pose the
-movement writes as the entity's; live at 22:00 a zombie hunted the player to 8, a creeper hissed and
-37 mobs drew in 42 draws; the play readings inside their bounds. 310 tests, play.sh 360 s on the
-GPU. Both pushed at 02:09 on 2026-10-25 after the run of `7443bdc` went green; the run watched.
-After `9dad43e`, item 27's pin of 5.2.291, read at 01:44 on 2026-10-25, carrying the review's files
-and the devlog's grove. The csproj's version alone changes, the build clean under the strict flag;
-the grove at 1920 by 1080 at High, the two pins run in turn twice each with the desktop holding 22
-percent of the GPU, reads 21.0 and 18.2 ms a frame on 5.2.291 against 20.9 and 19.0 on 5.2.283, the
-scene pass 11.7 and 9.7 against 12.3 and 10.5, the shadows and the global illumination the same, the
-pictures differing in 129 pixels of 2.07 million; the cave left for item 123 and the far cascade
-still off. 309 tests, play.sh 325 s on the GPU.
+311 tests, play.sh 327 s on the GPU. After `3275e76`, item 94's mobs, the third commit, read at
+01:53 on 2026-10-25, carrying REVIEW.md. MobPose is a struct component of the yaw, the head's yaw
+and pitch, the stride and its phase, the flap and the swing, written in place by Move, Look and
+Face; MobHostile a behavior struct the hostile mobs alone carry, its own Hunt system on update
+stepping them through a query of five components and MobMind.Think stepping the rest through a query
+of four without it; MobRenderer.Draw takes the EcsWorld and draws through the same two queries with
+no GetRef. Departures, the Mob class stays the class component holding the path and the Random under
+its name, Exploded stays on the class since the loot is reckoned from MobDied after the despawn, Mob
+keeps read-only forwards for the save, voxel.mobs and the tests, and the column walk waits for the
+lookup's commit. MobTests reads each mob by exactly one of the two queries and stepped by its own
+mind alone and the pose the movement writes as the entity's; live at 22:00 a zombie hunted the
+player to 8, a creeper hissed and 37 mobs drew in 42 draws; the play readings inside their bounds.
+310 tests, play.sh 360 s on the GPU. Both pushed at 02:09 on 2026-10-25 after the run of `7443bdc`
+went green; the run watched. After `9dad43e`, item 27's pin of 5.2.291, read at 01:44 on 2026-10-25,
+carrying the review's files and the devlog's grove. The csproj's version alone changes, the build
+clean under the strict flag; the grove at 1920 by 1080 at High, the two pins run in turn twice each
+with the desktop holding 22 percent of the GPU, reads 21.0 and 18.2 ms a frame on 5.2.291 against
+20.9 and 19.0 on 5.2.283, the scene pass 11.7 and 9.7 against 12.3 and 10.5, the shadows and the
+global illumination the same, the pictures differing in 129 pixels of 2.07 million; the cave left
+for item 123 and the far cascade still off. 309 tests, play.sh 325 s on the GPU.
 
 Before it, `7443bdc` came, item 32's particles, pushed at 01:31 on 2026-10-25, its run green, the
 play job 33.3 minutes.
@@ -608,12 +618,6 @@ full.
     camera's distance against blocks, each state's pose at a known phase, and a capture of the
     player mid-stride and mid-swim from behind beside the source's silhouette in the record. After
     item 30. Two commits, the camera and the model, then the animations.
-
-105. **The stepped sun's shadow is read once a pixel through the engine's hook.** From item 93's
-    first mend, which waits on the engine's item 99, `litLight` taking the shadow light's shadow
-    from the caller; the game's `litStepped` then hands the step's read in and reads the shadow
-    once, the scene pass about 1.6 ms cheaper at 1920 by 1080, the README's costs paragraph read
-    again. One commit, small, with the package carrying the engine's item 99.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the

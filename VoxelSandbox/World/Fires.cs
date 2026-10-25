@@ -5,7 +5,7 @@ namespace VoxelSandbox;
 /// <summary>A TNT a fire burned, where it stood, an event the game lights.</summary>
 public readonly record struct TntCaught(int X, int Y, int Z);
 
-/// <summary>A fire burning in a cell, an entity of the engine's ECS, its age and the seconds to its next tick.</summary>
+/// <summary>A fire burning in a cell, an entity of the engine's ECS, its age and the seconds to its next tick, found by its cell.</summary>
 /// <remarks>
 /// Its behavior burns the fires in the engine's frame, reading the voxel world, the seconds and the
 /// chances from the game's <see cref="GameStep"/> on the main thread, which alone may read and change
@@ -14,9 +14,12 @@ public readonly record struct TntCaught(int X, int Y, int Z);
 /// of its own. <see cref="Fires"/> has the source's numbers.
 /// </remarks>
 [Behavior]
-public partial struct Fire
+public partial struct Fire : IKeyed<(int X, int Y, int Z)>
 {
     public int X, Y, Z;
+
+    /// <summary>Its cell, which the world's index of the fires finds it by.</summary>
+    public readonly (int X, int Y, int Z) Key => (X, Y, Z);
 
     /// <summary>Its age, from 0 to 15.</summary>
     public int Age;
@@ -107,20 +110,18 @@ public sealed class Fires(EcsWorld ecs, Random? random = null)
     /// <summary>Takes the fires the world set, by an edit or as a column holding some arrived, to keep them burning.</summary>
     /// <remarks>
     /// The world names every fire set, those the fires spread themselves among them, so a cell that
-    /// already has its fire is passed over, found among the fires as they stand, since the ECS has no
-    /// lookup of an entity by its cell.
+    /// already has its fire is passed over, found by the world's index of the fires by their cells.
     /// </remarks>
     public void Take(VoxelWorld world)
     {
         if (world.Kindled.Count == 0) return;
-        var burning = new HashSet<(int, int, int)>();
-        foreach (var (_, fire) in ecs.Query<Fire>()) burning.Add((fire.X, fire.Y, fire.Z));
+        var burning = ecs.Index<Fire, (int X, int Y, int Z)>();
         foreach (var at in world.Kindled)
         {
             // Each cell named draws its delay, its new fire's or one let go, so the chances drawn after
             // it are the same whichever of the cells burned already.
             var wait = Delay(_random);
-            if (burning.Add(at)) ecs.Add(ecs.Spawn(), new Fire { X = at.X, Y = at.Y, Z = at.Z, Wait = wait });
+            if (!burning.Contains(at)) ecs.Add(ecs.Spawn(), new Fire { X = at.X, Y = at.Y, Z = at.Z, Wait = wait });
         }
         world.Kindled.Clear();
     }
