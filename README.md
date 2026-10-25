@@ -495,7 +495,8 @@ stepped sandstone pyramid in the desert, a dark chamber at its heart with a floo
 and a cobblestone dungeon deep under any ground, a magma block at its middle where Minecraft's has
 its spawner. The pyramid is as rare as the source's, one at most to each square of 32 chunks, at a
 chunk among its first 24 each way and only where that falls in the desert, so a desert holds one or
-none. `voxel.find <village|igloo|pyramid|dungeon|ravine|mineshaft>` gives the nearest one's place.
+none. `voxel.find <village|igloo|pyramid|dungeon|ravine|mineshaft|ruin|shipwreck|temple|hut|outpost>` gives
+the nearest one's place.
 
 An abandoned mineshaft lies deep under the ground, one to each square of sixteen chunks, about the
 source's one chunk in 250, its room's floor of dirt from 40 under the world's zero to 30 over it.
@@ -518,6 +519,25 @@ three rows, which a shift-click moves a stack into. `voxel.chest <x> <y> <z>` sa
 and a save keeps every chest in the world's `chests.json`, those not yet opened with their loot to
 roll. Rails, made of six iron ingots and a stick, and cobwebs, which give their string, are blocks
 too.
+
+The sea's floor holds ruins and wrecks, and the land temples, huts and outposts, each spread as the
+source spreads it, at a chunk's corner among the first so many chunks of its square, and each with
+chests of the source's loot for it. An ocean ruin, one to each square of 20 chunks where the floor
+lies six blocks or more under the sea's top, is a room of stone bricks, mossy and cracked, or of
+sandstone where the water is warm, its walls kept less the higher they stood, one in three a big
+ruin of three rooms. A shipwreck, one to each square of 24 chunks where the floor lies eight or
+more down, is a hull of oak, spruce or dark oak twenty-two blocks long narrowing to its bow, with
+a deck, a mast standing out of the water and a cabin at its stern, a chest of supplies in its hold
+and one of treasure in its cabin, one in three broken off behind its middle. A jungle temple, one
+to each square of 32 chunks in the jungle, steps up three floors of cobblestone, two blocks in five
+mossy, a stair up its hall and one down to a vault of two chests. A witch's hut, as often in the
+swamp, stands on posts of oak over the ground or a pool, of spruce under a roof of its stairs with
+a porch, a crafting table and, as the modpack's huts have, a chest. A pillagers' outpost, in one
+square of 32 chunks in five on the plains, the desert, the savanna, the taiga and the snowy plains
+and never within ten chunks of a village, is the modpack's watchtower, three floors of dark oak
+over birch up to a railed platform under a roof, a chest on its platform. Mossy cobblestone, mossy
+stone bricks and cracked stone bricks are blocks of their own. The temple, the hut and the outpost
+keep the trees out of their ground, as a village does.
 
 A village stands where the plains, the taiga, the snowy plains or the desert lie nearly level across
 48 blocks, built of that biome's wood or sandstone. Villages are spaced as the source spaces them,

@@ -312,6 +312,10 @@ public static class Surfaces
     public static readonly int Rail = Add("rail", new Color(120, 110, 100));
     public static readonly int RailAcross = Add("rail across", new Color(120, 110, 100));
     public static readonly int Cobweb = Add("cobweb", new Color(220, 220, 225));
+    // The old stone of the temples and the ruins, its cobblestone and bricks overgrown or cracked.
+    public static readonly int MossyCobblestone = Add("mossy cobblestone", new Color(105, 118, 90), 0.9f);
+    public static readonly int MossyStoneBricks = Add("mossy stone bricks", new Color(115, 121, 105), 0.9f);
+    public static readonly int CrackedStoneBricks = Add("cracked stone bricks", new Color(118, 117, 118), 0.9f);
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

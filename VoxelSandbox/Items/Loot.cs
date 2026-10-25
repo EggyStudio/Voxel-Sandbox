@@ -154,6 +154,7 @@ public static class Loot
         BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => (ToolKind.Pickaxe, true),
         BlockId.RedSand or BlockId.Clay => (ToolKind.Shovel, false),
         BlockId.Stone or BlockId.Cobblestone or BlockId.CoalOre or BlockId.IronOre or BlockId.Furnace or BlockId.Sandstone or BlockId.StoneBricks or BlockId.Magma
+            or BlockId.MossyCobblestone or BlockId.MossyStoneBricks or BlockId.CrackedStoneBricks
             or BlockId.Deepslate or BlockId.CobbledDeepslate or BlockId.WhiteConcrete or BlockId.RedConcrete or BlockId.GreenConcrete or BlockId.BlueConcrete
             or BlockId.Lantern or BlockId.SoulLantern or BlockId.StoneSlab or BlockId.CobblestoneSlab or BlockId.SandstoneSlab
             or BlockId.CobblestoneStairs or BlockId.SandstoneStairs or BlockId.StoneBrickStairs => (ToolKind.Pickaxe, true),
@@ -180,6 +181,7 @@ public static class Loot
         BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
         BlockId.Water or BlockId.Lava => 100,
         BlockId.Stone or BlockId.Cobblestone or BlockId.StoneBricks or BlockId.StoneSlab or BlockId.CobblestoneSlab
+            or BlockId.MossyCobblestone or BlockId.MossyStoneBricks or BlockId.CrackedStoneBricks
             or BlockId.CobblestoneStairs or BlockId.StoneBrickStairs or BlockId.Deepslate or BlockId.CobbledDeepslate => 6,
         BlockId.OakLog or BlockId.BirchLog or BlockId.SpruceLog or BlockId.OakPlanks or BlockId.SprucePlanks or BlockId.BirchPlanks
             or BlockId.OakSlab or BlockId.SpruceSlab or BlockId.OakStairs or BlockId.SpruceStairs or BlockId.OakFence or BlockId.CoalOre or BlockId.IronOre => 3,
@@ -214,7 +216,7 @@ public static class Loot
         BlockId.Sandstone or BlockId.SandstoneStairs or BlockId.WhiteWool or BlockId.LightGrayWool or BlockId.GrayWool
             or BlockId.BlackWool or BlockId.BrownWool or BlockId.PinkWool => 0.8f,
         BlockId.Shroomlight => 1,
-        BlockId.Stone or BlockId.StoneBricks or BlockId.StoneBrickStairs => 1.5f,
+        BlockId.Stone or BlockId.StoneBricks or BlockId.StoneBrickStairs or BlockId.MossyStoneBricks or BlockId.CrackedStoneBricks => 1.5f,
         BlockId.CraftingTable or BlockId.Chest => 2.5f,
         BlockId.Deepslate => 3,
         BlockId.CobbledDeepslate => 3.5f,

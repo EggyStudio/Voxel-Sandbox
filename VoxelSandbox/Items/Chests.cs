@@ -144,8 +144,47 @@ public sealed record ChestLoot(string Name, ChestLoot.Pool[] Pools)
         new(3, 3, [new(Items.Of(BlockId.Rail), 20, 4, 8), new(Items.Of(BlockId.Rail), 15, 1, 4), new(Items.Of(BlockId.Torch), 15, 1, 16)]),
     ]);
 
+    /// <summary>A small ocean ruin's, the source's table with the items the game has, nothing for its fishing rod, its map and its gold armor.</summary>
+    public static readonly ChestLoot OceanRuin = new("ocean_ruin",
+    [
+        new(2, 8, [new(Items.Coal, 10, 1, 4), new(Items.Find("stone_axe"), 2), new(Items.RottenFlesh, 5), new(Items.Emerald, 1), new(Items.Wheat, 10, 2, 3)]),
+    ]);
+
+    /// <summary>A shipwreck's supplies, the source's table with the items the game has, its paper, its crops, its stew and its armor left out.</summary>
+    public static readonly ChestLoot ShipwreckSupply = new("shipwreck_supply",
+    [
+        new(3, 10, [new(Items.Wheat, 7, 8, 21), new(Items.Coal, 6, 2, 8), new(Items.RottenFlesh, 5, 5, 24), new(Items.Gunpowder, 3, 1, 5), new(Items.Of(BlockId.Tnt), 1, 1, 2)]),
+    ]);
+
+    /// <summary>A shipwreck's treasure, the source's table with the items the game has, its nuggets and its bottles of experience left out.</summary>
+    public static readonly ChestLoot ShipwreckTreasure = new("shipwreck_treasure",
+    [
+        new(3, 6, [new(Items.IronIngot, 90, 1, 5), new(Items.GoldIngot, 10, 1, 5), new(Items.Emerald, 40, 1, 5), new(Items.Diamond, 5)]),
+        new(2, 5, [new(Items.LapisLazuli, 20, 1, 10), new(null, 60)]),
+    ]);
+
+    /// <summary>A jungle temple's, the source's table with the items the game has, its bamboo, its saddle, its armor for horses and its book left out.</summary>
+    public static readonly ChestLoot JungleTemple = new("jungle_temple",
+    [
+        new(2, 6, [new(Items.Diamond, 3, 1, 3), new(Items.IronIngot, 10, 1, 5), new(Items.GoldIngot, 15, 2, 7), new(Items.Emerald, 2, 1, 3), new(Items.Bone, 20, 4, 6), new(Items.RottenFlesh, 16, 3, 7)]),
+    ]);
+
+    /// <summary>A witch's hut's, which the source's hut has none of and the modpack's holds, what a witch keeps that the game has.</summary>
+    public static readonly ChestLoot WitchHut = new("witch_hut",
+    [
+        new(2, 5, [new(Items.SpiderEye, 10, 1, 3), new(Items.String, 10, 1, 4), new(Items.Redstone, 8, 1, 4), new(Items.RottenFlesh, 6, 1, 3), new(Items.Apple, 5, 1, 2), new(Items.Feather, 5, 1, 3)]),
+    ]);
+
+    /// <summary>A pillager outpost's, the source's table with the items the game has, its crossbow, its potatoes, its carrots, its bottles, its hooks and its book left out.</summary>
+    public static readonly ChestLoot Outpost = new("pillager_outpost",
+    [
+        new(2, 3, [new(Items.Wheat, 7, 3, 5)]),
+        new(1, 3, [new(Items.Of(BlockId.DarkOakLog), 1, 2, 3)]),
+        new(2, 3, [new(Items.String, 4, 1, 6), new(Items.Arrow, 4, 2, 7), new(Items.IronIngot, 3, 1, 3), new(null, 11)]),
+    ]);
+
     /// <summary>Every table, by its name.</summary>
-    public static readonly ChestLoot[] All = [Mineshaft];
+    public static readonly ChestLoot[] All = [Mineshaft, OceanRuin, ShipwreckSupply, ShipwreckTreasure, JungleTemple, WitchHut, Outpost];
 
     public static ChestLoot? Find(string name) => All.FirstOrDefault(t => t.Name == name);
 }

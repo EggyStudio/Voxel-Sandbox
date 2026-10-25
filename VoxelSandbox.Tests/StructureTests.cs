@@ -52,4 +52,71 @@ public sealed class StructureTests
             + blocks.Count(b => b.Block == BlockId.Rail && (b.Z & Section.Mask) == Section.Mask && region.At(b.X, b.Y, b.Z + 1) == BlockId.Rail);
         Assert.True(across >= 1, "no rail runs on across a column's edge");
     }
+
+    // The nearest start of a structure to the origin on seed 1, and the blocks of the columns its
+    // square and margin reach, each generated alone.
+    private static (StructureStart Start, Region Region, Dictionary<BlockId, int> Counts) Nearest(string name)
+    {
+        var land = new Overworld(1);
+        var structure = Structures.Find(name)!;
+        var start = structure.StartsIn(-6144, -6144, 6143, 6143, land).OrderBy(s => Math.Abs(s.X) + Math.Abs(s.Z)).First();
+        var middle = (X: start.X + structure.Size / 2, Z: start.Z + structure.Size / 2);
+        var region = new Region(land, middle.X, middle.Z, 4);
+        var counts = new Dictionary<BlockId, int>();
+        for (int z = start.Z - 2; z < start.Z + structure.Size + 2; z++)
+            for (int x = start.X - 2; x < start.X + structure.Size + 2; x++)
+                for (int y = start.Y - 8; y <= start.Y + 24; y++)
+                {
+                    var block = region.At(x, y, z);
+                    counts[block] = counts.GetValueOrDefault(block) + 1;
+                }
+        return (start, region, counts);
+    }
+
+    private static int Of(Dictionary<BlockId, int> counts, params BlockId[] kinds) => kinds.Sum(k => counts.GetValueOrDefault(k));
+
+    private static readonly BlockId[] AnyChest = [BlockId.Chest, BlockId.ChestEast, BlockId.ChestSouth, BlockId.ChestWest];
+
+    [Fact]
+    public void The_Seas_Floor_Holds_Ruins_Of_Broken_Walls_And_Wrecked_Ships_With_Their_Chests()
+    {
+        var (ruin, _, stones) = Nearest("ruin");
+        Assert.True(ruin.Y <= Overworld.SeaLevel - 6, $"a ruin stands at {ruin}");
+        var walls = Of(stones, BlockId.StoneBricks, BlockId.MossyStoneBricks, BlockId.CrackedStoneBricks, BlockId.Sandstone);
+        Assert.True(walls >= 40, $"the ruin at {ruin} has {walls} blocks of its walls and floor");
+        Assert.True(Of(stones, AnyChest) >= 1, $"the ruin at {ruin} holds no chest");
+
+        var (ship, _, hull) = Nearest("shipwreck");
+        Assert.True(ship.Y <= Overworld.SeaLevel - 8, $"a wreck lies at {ship}");
+        var planks = Of(hull, BlockId.OakPlanks, BlockId.SprucePlanks, BlockId.DarkOakPlanks);
+        var mast = Of(hull, BlockId.OakLog, BlockId.SpruceLog, BlockId.DarkOakLog);
+        Assert.True(planks >= 100 && mast >= 12, $"the wreck at {ship} has {planks} planks and {mast} logs");
+        Assert.True(Of(hull, AnyChest) >= 1, $"the wreck at {ship} holds no chest");
+    }
+
+    [Fact]
+    public void A_Jungle_Holds_A_Mossy_Temple_With_Two_Chests_In_Its_Vault()
+    {
+        var (temple, region, stones) = Nearest("temple");
+        Assert.Equal(Biomes.Jungle, new Overworld(1).At(temple.X + 7, temple.Z + 7).Biome);
+        var (cobble, mossy) = (Of(stones, BlockId.Cobblestone), Of(stones, BlockId.MossyCobblestone));
+        Assert.True(cobble + mossy >= 400 && mossy > (cobble + mossy) / 4, $"the temple at {temple} has {cobble} cobblestone and {mossy} mossy");
+        Assert.Equal(2, Of(stones, AnyChest));
+        Assert.True(Of(stones, BlockId.CobblestoneStairs, BlockId.CobblestoneStairsEast, BlockId.CobblestoneStairsSouth, BlockId.CobblestoneStairsWest) >= 9);
+    }
+
+    [Fact]
+    public void A_Swamp_Holds_A_Witchs_Hut_On_Posts_And_Open_Land_A_Pillagers_Tower_Far_From_Villages()
+    {
+        var (hut, _, wood) = Nearest("hut");
+        Assert.True(Of(wood, BlockId.SprucePlanks) >= 40 && Of(wood, BlockId.OakLog) >= 12, $"the hut at {hut} has {Of(wood, BlockId.SprucePlanks)} planks and {Of(wood, BlockId.OakLog)} logs");
+        Assert.Equal((1, 1), (Of(wood, BlockId.CraftingTable), Of(wood, AnyChest)));
+
+        var (outpost, _, tower) = Nearest("outpost");
+        Assert.True(Of(tower, BlockId.DarkOakPlanks) >= 150 && Of(tower, BlockId.BirchPlanks) >= 80 && Of(tower, BlockId.DarkOakLog) >= 40,
+            $"the outpost at {outpost} has {Of(tower, BlockId.DarkOakPlanks)} dark oak planks, {Of(tower, BlockId.BirchPlanks)} birch and {Of(tower, BlockId.DarkOakLog)} logs");
+        Assert.Equal(1, Of(tower, AnyChest));
+        var land = new Overworld(1);
+        Assert.Empty(Structures.Village.StartsIn(outpost.X - 160, outpost.Z - 160, outpost.X + 172, outpost.Z + 172, land));
+    }
 }

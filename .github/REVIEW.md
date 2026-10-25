@@ -5,28 +5,33 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `79ad110`, item 28, the looks Shine shows, read at 04:24 on 2026-10-25, carrying the
-review's files and four captioned pictures under the devlog folder, pushed at 04:47 on 2026-10-25
-once the run of `85c3ff6` went green, the run watched. Render Settings gains Colored Lamps, on by
-default, Rim Light from 0 to 100% at 0 and Unshaded, off; Post Processing gains Bloom Threshold from
-0.5 to 8 at 1. Colored Lamps off makes each lamp's light white at the same brightness to the eye by
-Rec. 709 luminance, the materials, the field's emission and the held and dropped point lights alike,
-the emission maps divided by the new light so a lamp's face keeps its texture's colors. The rim is a
-lit line one texture pixel wide along each whole block's edges, as Shine's README names it, brighter
-by its strength and lit by the face's light, fading where it would be thinner than 2 screen pixels.
-Unshaded gives every open face the sun's light reaching the air half a block out from it, the
-shadows kept and the shading by facing gone, a second shadow read costing 0.2 to 0.6 ms at the coast
-at noon, the rim free. Two departures. The lamp colors stay the surfaces' own, not a pack's
-texture's mean, since Bare Bones's emission-weighted means are nearly white, glowstone 255,228,133
-against 255,200,120, and that light at saturation 1.4 turned a white room olive, the reason in the
-ColoredLamps remarks and the README; the rim is an edge outline, not a fresnel rim. LooksFrameTests
-is new, 334 tests, play.sh 373 s on the GPU.
+Reviewed up to `af9d829`, item 31's first commit, the mineshafts and the chests, read at 05:01 on
+2026-10-25, carrying the review's files and a captioned picture, held until the run of `79ad110`
+ends. Three blocks, the chest with four facings, the rail with two and the cobweb; ChestArt cuts the
+chest's faces from the pack's entity chest picture, its window the source's three rows cut from the
+54-slot picture with shift-click moving stacks, its contents kept as the furnaces' in chests.json, a
+structure placing one through ColumnClip.Chest so it joins with its column where its block still
+stands after generation, its loot from ChestLoot tables with the source's weights and counts over
+the game's items rolled from its place's seed the first time it is opened or broken; recipes for the
+chest and the rail and a voxel.chest command. The mineshaft comes one a 16-chunk square, near the
+source's one chunk in 250, its room's floor between -40 and 30, corridors of two to four lengths of
+five turning, branching, crossing and stepping down, eight pieces deep within 80 blocks and no piece
+crossing another, log posts under plank beams every five blocks in the biome's wood after Hopo's
+Better Mineshaft with dark oak in the badlands, rails in one corridor in three, cobwebs, a lantern
+under one beam in ten, a chest niche in one corridor in eight and nothing cut within four blocks of
+the ground. Two departures. Log posts and hanging lanterns hold the corridors up in the modpack's
+taste rather than the source's fences; a cobweb needs no support and never falls, so the
+floating-plant test skips plants that do not fall and the tree count reads bases at the ground
+alone, the posts having counted as trees. Seed 1's nearest lies at 71, 12, 36, the eight by eight
+columns about it holding 356 rails, 164 cobwebs, 15 chests and 57 lanterns at the earlier rate of
+one in six; 1.10 ms a column across its square against 15.2 for a whole column. The play run opens
+that chest and reads its loot. 338 tests, play.sh 342 s on the GPU.
+
+Before it, `79ad110` came, item 28, the looks Shine shows, pushed at 04:47 on 2026-10-25 once the
+run of `85c3ff6` went green, the run watched.
 
 Before it, `85c3ff6` came, item 34, the connected textures, pushed at 03:54 on 2026-10-25 with
 `6a56e0f` and `a00fdcc`, its run green, the play job 52 minutes.
-
-Before it, `76053f6` came, Verdict 3's mend with items 33, 128's last three and 105, 123 and the
-lookups, pushed at 03:11 on 2026-10-25, its run green, the play job 39.0 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -536,7 +541,10 @@ full.
     structure mods read for their shapes as a model; a structure that crosses a column's edge is
     finished in the neighbor as the villages are. After items 25 and 26. Tests: each kind placed in
     a laid world at a known seed with its blocks counted, a structure crossing an edge whole on both
-    sides, and a capture of each in the record. Two or three commits by kind.
+    sides, and a capture of each in the record. Two or three commits by kind. The first commit at
+    `af9d829` on 2026-10-25, the mineshafts with the chest, the rail and the cobweb, the departures
+    in the head; the second next, the ocean ruins, the shipwrecks, the jungle temples, the witch
+    huts and the outposts.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the

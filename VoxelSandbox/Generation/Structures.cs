@@ -59,6 +59,14 @@ public abstract class Structure
         return ((int)(hash / 100 % room), (int)(hash / 10000 % room));
     }
 
+    /// <summary>
+    /// Where in its cell a start of a structure the source spreads stands, at a chunk's corner among
+    /// the first so many chunks each way, the cell's width in chunks less its least spacing, as the
+    /// source spreads a structure's starts.
+    /// </summary>
+    protected static (int X, int Z) Spread(uint hash, int chunks) =>
+        ((int)(hash / 100 % (uint)chunks) * Section.Size, (int)(hash / 10000 % (uint)chunks) * Section.Size);
+
     /// <summary>How far past its size it builds on each side, as a roof's eaves or the space a pyramid clears around it.</summary>
     protected const int Margin = 2;
 
@@ -96,7 +104,8 @@ public static class Structures
     /// <summary>The ravines, cut before the trees, which stand nowhere on their cuts.</summary>
     public static readonly Ravine Ravine = new();
 
-    public static readonly Structure[] All = [Ravine, new Mineshaft(), new Dungeon(), Village, new Igloo(), new DesertPyramid()];
+    public static readonly Structure[] All = [Ravine, new Mineshaft(), new Dungeon(), Village, new Igloo(), new DesertPyramid(), new OceanRuin(), new Shipwreck(),
+        new JungleTemple(), new WitchHut(), new PillagerOutpost()];
 
     public static Structure? Find(string name) => All.FirstOrDefault(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 }

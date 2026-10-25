@@ -257,6 +257,9 @@ public enum BlockId : ushort
     Rail,
     RailEast,
     Cobweb,
+    MossyCobblestone,
+    MossyStoneBricks,
+    CrackedStoneBricks,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -615,6 +618,9 @@ public static class Blocks
             Plant(BlockId.Rail, "rail", "Rail", BlockShape.Rail(Surfaces.Rail, Facing.North), Surfaces.Rail),
             Plant(BlockId.RailEast, "rail_east", "Rail", BlockShape.Rail(Surfaces.RailAcross, Facing.East), Surfaces.Rail) with { HeldAs = BlockId.Rail },
             Plant(BlockId.Cobweb, "cobweb", "Cobweb", BlockShape.Cobweb(Surfaces.Cobweb), Surfaces.Cobweb),
+            Same(BlockId.MossyCobblestone, "mossy_cobblestone", "Mossy Cobblestone", Surfaces.MossyCobblestone),
+            Same(BlockId.MossyStoneBricks, "mossy_stone_bricks", "Mossy Stone Bricks", Surfaces.MossyStoneBricks),
+            Same(BlockId.CrackedStoneBricks, "cracked_stone_bricks", "Cracked Stone Bricks", Surfaces.CrackedStoneBricks),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");

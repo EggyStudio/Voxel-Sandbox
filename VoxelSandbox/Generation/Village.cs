@@ -1,5 +1,3 @@
-using System.Numerics;
-
 namespace VoxelSandbox;
 
 /// <summary>
@@ -120,7 +118,7 @@ public sealed class Village : Structure
             {
                 int ox = cx + ux * along + vx * side * Front, oz = cz + uz * along + vz * side * Front;
                 var turn = TurnFacing(-vx * side, -vz * side);
-                var frame = new Frame(clip, ox, 0, oz, turn);
+                var frame = new StructureFrame(clip, ox, 0, oz, turn);
                 var kind = Mix(start.Hash, road + salt) % 9;
                 // The ground under the middle of the building's depth, 7 but for a pile of hay's 5.
                 var (mx, mz) = frame.At(0, kind < 8 ? 3 : 2);
@@ -181,73 +179,9 @@ public sealed class Village : Structure
         _ => 3,
     };
 
-    /// <summary>
-    /// A plot's own frame, x along its front, z from its front wall back and y from its floor, turned
-    /// a number of quarters clockwise so its front, north in its frame, faces its road.
-    /// </summary>
-    private readonly record struct Frame(ColumnClip Clip, int X, int Y, int Z, int Turn)
-    {
-        public (int X, int Z) At(int x, int z) => Turn switch
-        {
-            0 => (X + x, Z + z),
-            1 => (X - z, Z + x),
-            2 => (X - x, Z - z),
-            _ => (X + z, Z - x),
-        };
-
-        public BlockId Get(int x, int y, int z)
-        {
-            var (wx, wz) = At(x, z);
-            return Clip.Get(wx, Y + y, wz);
-        }
-
-        public void Set(int x, int y, int z, BlockId block)
-        {
-            var (wx, wz) = At(x, z);
-            Clip.Set(wx, Y + y, wz, Turned(block));
-        }
-
-        public void Fill(int x0, int y0, int z0, int x1, int y1, int z1, BlockId block)
-        {
-            for (int y = y0; y <= y1; y++)
-                for (int z = z0; z <= z1; z++)
-                    for (int x = x0; x <= x1; x++)
-                        Set(x, y, z, block);
-        }
-
-        // A block facing a side is turned with the plot, so a torch or stairs given facing north face its front.
-        private BlockId Turned(BlockId block)
-        {
-            var info = Blocks.Get(block);
-            if (info.Shape is not { Facing: not (Facing.Up or Facing.Down) } shape) return block;
-            Facing[] round = [Facing.North, Facing.East, Facing.South, Facing.West];
-            return Blocks.Variant(info.Item, round[(Array.IndexOf(round, shape.Facing) + Turn) % 4], shape.Upper);
-        }
-
-        // A villager of a robe standing at a place of the plot, facing its front, at home at another.
-        public void Villager(int x, int z, byte robe, int homeX, int homeZ)
-        {
-            var (wx, wz) = At(x, z);
-            var (hx, hz) = At(homeX, homeZ);
-            Clip.Spawn(new MobRecord(MobKinds.Villager, robe, new Vector3(wx + 0.5f, Y + 1, wz + 0.5f), -Turn * MathF.PI / 2,
-                MobKinds.Villager.Health, new Vector3(hx + 0.5f, Y + 1, hz + 0.5f)));
-        }
-
-        // Stone under each place of a footprint down to the ground, so a building on a slope stands
-        // on it rather than over a gap, and the space above it cleared of the trees.
-        public void Ground(int x0, int x1, int depth, BlockId footing, int height)
-        {
-            for (int z = 0; z < depth; z++)
-                for (int x = x0; x <= x1; x++)
-                    for (int d = 1; d <= 6 && Get(x, -d, z) is BlockId.Air or BlockId.Water or BlockId.OakLeaves or BlockId.SpruceLeaves or BlockId.BirchLeaves; d++)
-                        Set(x, -d, z, footing);
-            Fill(x0 - 1, 1, -1, x1 + 1, height, depth, BlockId.Air);
-        }
-    }
-
     // Walls of a palette around a floor, logs at the corners, the inside cleared, and a shut door in
     // the front's middle, facing in, with a torch over it outside.
-    private static void Shell(Frame f, Palette p, int half, int depth)
+    private static void Shell(StructureFrame f, Palette p, int half, int depth)
     {
         f.Ground(-half, half, depth, p.Floor, 9);
         f.Fill(-half, 0, 0, half, 0, depth - 1, p.Floor);
@@ -262,7 +196,7 @@ public sealed class Village : Structure
 
     // A small house of seven by seven, a window of glass in each other wall and a lantern hanging
     // from its roof.
-    private static void SmallHouse(Frame f, Palette p)
+    private static void SmallHouse(StructureFrame f, Palette p)
     {
         Shell(f, p, 3, 7);
         var hang = Roof(f, p, 3);
@@ -272,7 +206,7 @@ public sealed class Village : Structure
     }
 
     // A long house of nine by seven, two windows a wall and two lanterns.
-    private static void LongHouse(Frame f, Palette p)
+    private static void LongHouse(StructureFrame f, Palette p)
     {
         Shell(f, p, 4, 7);
         var hang = Roof(f, p, 4);
@@ -287,7 +221,7 @@ public sealed class Village : Structure
     // the back to a ridge along the width, the gable ends filled with the wall's block, or flat of
     // the roof's block in two layers where the village has no stairs. Gives the height a lantern
     // hangs at under its middle.
-    private static int Roof(Frame f, Palette p, int half)
+    private static int Roof(StructureFrame f, Palette p, int half)
     {
         if (p.Stairs is not { } stairs)
         {
@@ -311,7 +245,7 @@ public sealed class Village : Structure
 
     // A forge open at its front, a hearth of magma in its back corner under a chimney, and a torch on
     // its back wall.
-    private static void Forge(Frame f, Palette p)
+    private static void Forge(StructureFrame f, Palette p)
     {
         f.Ground(-3, 3, 7, BlockId.Cobblestone, 8);
         f.Fill(-3, 0, 0, 3, 0, 6, BlockId.Cobblestone);
@@ -329,7 +263,7 @@ public sealed class Village : Structure
     }
 
     // A field of wheat on farmland in a border of logs, a row of water through its middle.
-    private static void Farm(Frame f, Palette p)
+    private static void Farm(StructureFrame f, Palette p)
     {
         f.Ground(-4, 4, 7, BlockId.Dirt, 5);
         f.Fill(-4, 0, 0, 4, 0, 6, p.Corner);
@@ -341,7 +275,7 @@ public sealed class Village : Structure
     }
 
     // A few bales of hay piled on the ground.
-    private static void HayPile(Frame f)
+    private static void HayPile(StructureFrame f)
     {
         f.Ground(-2, 2, 5, BlockId.Dirt, 4);
         f.Fill(-1, 1, 1, 1, 1, 3, BlockId.HayBale);
