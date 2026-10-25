@@ -1221,14 +1221,17 @@ the sun's light through 70 blocks of rock without them and 0 with them, as with 
 cherry grove in the open the flood leaves out little toward the sun, 20 draws, and the frame reads
 19.0 to 19.5 ms with them and without them in one run.
 
-A section's solid faces, the faces a pack cuts out that cast the shadow of the whole face and its
-lava are entities the engine draws, each a `Mesh` of the section's upload, a `Material` through the
-terrain shader, a `Transform` at the section's corner, the engine's `Visible` and `ShadowOnly`, and
-the game's `SectionPart` naming the section and the part. The flood writes `Visible` and
+Each of a section's seven parts, its solid faces, its plants, its glass and ice, its water, the glass
+and the faces a pack cuts out and its lava, is an entity the engine draws, a `Mesh` of the part's
+upload, a `Material` through the terrain shader, a `Transform`, the engine's `Visible` and
+`ShadowOnly`, and the game's `SectionPart` naming the section and the part. Each material says what
+the part's `ModelMaterial` says of its shadow and of the scene's distance field, so the plants stay
+out of the field and the glass, ice and water cast no shadow. The flood writes `Visible` and
 `ShadowOnly` only where its answer for a section changes, so a frame standing still costs the game
-no call for them, and the engine's model pass gathers them with its change detection. The plants,
-glass, ice, water and the glass a pack cuts out are drawn through `DrawMesh` each frame, since their
-materials cast no shadow or leave the scene's distance field, which an entity's material cannot say.
+no call for them, and the engine's model pass gathers them with its change detection. The engine
+draws the blended parts, glass, ice and water, farthest first by where each stands, so each stands
+at the middle of its own faces to the nearest block, and a pane over the water is drawn after the
+water seen from above and before it seen from under the water.
 
 With the eye inside a whole opaque block, in every mode but spectator, the block's side covers the
 window, its texture or its own color darkened to a tenth, repeated four times across and four down

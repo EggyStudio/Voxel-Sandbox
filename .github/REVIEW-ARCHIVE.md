@@ -1928,3 +1928,13 @@ before a batch.
     engine's choice a pass, so it goes to the engine's item 125 and not to the shader blind. Settled
     at `117392b` on 2026-10-25, the animated textures held at a tick for the check, which reads the
     two frames in turn on the RTX and on lavapipe alike.
+
+7. **The run of `c802dea` is red on the runners' dotnet install, not on the game.** Read at 21:00 on
+    2026-10-25 from the run's jobs, run 40228490833. All four jobs failed within a minute at
+    setup-dotnet, asked for 10.0.x and resolving 10.0.403, which the install script could not find
+    as an SDK while the release feed's index named 10.0.402 the latest, the same failure that took
+    3DEngine's runs of `23b4793b` and BevyCSharp's of `ddf51f5a` since 20:17, their Verdicts 92 and
+    45; the commit touches the README and the devlog alone. Nothing to mend in the tree; the jobs
+    run again when the engines' do, and the verdict settles when they go green. Settled at 22:35 on
+    2026-10-25 by the second attempt, green on the four jobs once Microsoft's feed served the
+    release.

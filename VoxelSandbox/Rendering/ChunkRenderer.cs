@@ -40,15 +40,31 @@ public sealed class ChunkRenderer : IDisposable
     private sealed class Part
     {
         public ModelMesh Mesh;
-        // The entity the engine draws the part as, for the parts drawn so, or -1.
+        // The entity the engine draws the part as, or -1.
         public int Entity = -1;
         public Vector3[] Positions = [];
         public uint[] Indices = [];
         public uint[] Packed = [];
+        // Where a blended part's entity stands in its section, the middle of its faces to the
+        // nearest block, its positions held from there, since the engine draws blended entities
+        // farthest first by where each stands, so a section's water and its glass each sort by
+        // their own faces, a pane over the water drawn after it from above and before it from under
+        // the water. A part drawn solid stands at the section's corner.
+        public Vector3 Center;
 
-        public void Take(SectionMesher.Faces faces)
+        public void Take(SectionMesher.Faces faces, bool centered = false)
         {
             var positions = CollectionsMarshal.AsSpan(faces.Positions);
+            if (centered && positions.Length > 0)
+            {
+                Vector3 low = positions[0], high = positions[0];
+                foreach (var at in positions) (low, high) = (Vector3.Min(low, at), Vector3.Max(high, at));
+                var center = Vector3.Round((low + high) / 2);
+                var held = new Vector3[positions.Length];
+                for (int i = 0; i < held.Length; i++) held[i] = positions[i] - center;
+                positions = held;
+                Center = center;
+            }
             var indices = CollectionsMarshal.AsSpan(faces.Indices);
             var packed = CollectionsMarshal.AsSpan(faces.Packed);
             if (positions.SequenceEqual(Positions) && indices.SequenceEqual(Indices))
@@ -76,12 +92,12 @@ public sealed class ChunkRenderer : IDisposable
         }
     }
 
-    private sealed class SectionMeshes(Matrix4x4 transform, Vector3 middle)
+    private sealed class SectionMeshes
     {
-        public readonly Matrix4x4 Transform = transform;
-        public readonly Vector3 Middle = middle;
         public readonly Part Solid = new(), SeeThrough = new(), Water = new(), Cutout = new(), CutoutGlass = new(), SolidCutout = new(), Molten = new();
         public readonly List<(int Surface, Matrix4x4 At)> Emitters = [];
+
+        public Part[] Parts => [Solid, SeeThrough, Water, Cutout, CutoutGlass, SolidCutout, Molten];
     }
 
     // Every section's opaque faces are drawn with the first, their colors in their vertices, and
@@ -103,20 +119,15 @@ public sealed class ChunkRenderer : IDisposable
     private readonly ModelMaterial _terrain, _clear, _water, _cutout, _cutoutGlass, _solidCutout, _haze;
     private ModelMaterial _molten;
 
-    // A section's solid faces, the faces a pack cuts out that cast a whole shadow, and its lava are
-    // entities the engine draws, each a Mesh of the part's upload, a Material through the terrain
-    // shader, a Transform at the section's corner, a Visible and a ShadowOnly, and the game's
-    // SectionPart naming it, so the model pass gathers them with its change detection and a section
-    // standing still costs no call. Visible and ShadowOnly are written where the flood's answer for
-    // the section changes. The plants, the see-through faces, the water and the glass a pack cuts
-    // out are drawn through DrawMesh, since their materials cast no shadow or leave the scene's field
-    // and an entity's material says neither.
+    // Each of a section's seven parts is an entity the engine draws, a Mesh of the part's upload, a
+    // Material through the terrain shader with its material's shadow and its share in the scene's
+    // field, a Transform, a Visible and a ShadowOnly, and the game's SectionPart naming it, so the
+    // model pass gathers them with its change detection and a section standing still costs no call.
+    // Visible and ShadowOnly are written where the flood's answer for the section changes.
     private readonly EcsWorld _ecs;
-    private Material _terrainLook, _solidCutoutLook, _moltenLook;
-    // The sections the last placement shows and those it draws into the shadow maps alone, the
-    // eye's column, render distance and culling it was made for, and whether a section's parts or
-    // lamps changed since.
-    private readonly List<SectionMeshes> _shown = [], _castOnly = [];
+    private Material _terrainLook, _clearLook, _waterLook, _cutoutLook, _cutoutGlassLook, _solidCutoutLook, _moltenLook;
+    // The eye's column, render distance and culling the last placement was made for, and whether a
+    // section's parts or lamps changed since.
     private (int X, int Z, int Distance, bool Cull)? _placedFor;
     private bool _changed;
     private int _placedDraws, _placedTriangles;
@@ -169,7 +180,6 @@ public sealed class ChunkRenderer : IDisposable
     private (Vector3 TowardLight, float Distance)? _castFor;
     private readonly List<SectionKey> _gone = [];
     private (SectionKey Eye, int Distance)? _reachedFor;
-    private readonly List<(float Distance, SectionMeshes Entry)> _seeThrough = [];
     private ModelMaterial[] _lamps = [];
     // Each animated emissive surface's steps, its texture's steps and the ticks each is held, the
     // maps of their emission and its material with each.
@@ -211,7 +221,8 @@ public sealed class ChunkRenderer : IDisposable
         _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, BouncesLight = false, Shader = _shader };
         _cutoutGlass = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, CastsShadows = false, Shader = _shader };
         _solidCutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, Shader = _shader };
-        (_terrainLook, _solidCutoutLook) = (Look(_terrain), Look(_solidCutout));
+        (_terrainLook, _clearLook, _waterLook) = (Look(_terrain), Look(_clear), Look(_water));
+        (_cutoutLook, _cutoutGlassLook, _solidCutoutLook) = (Look(_cutout), Look(_cutoutGlass), Look(_solidCutout));
         _haze = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Blend, CastsShadows = false, Shader = _shader };
         var dome = HazeDome.Build();
         _dome = UploadMesh([.. dome.Positions], [.. dome.Indices], MeshStream.From(MeshStreamFormat.UInt2, dome.Packed.ToArray().AsSpan()), null);
@@ -738,16 +749,20 @@ public sealed class ChunkRenderer : IDisposable
             return;
         }
         if (!_sections.TryGetValue(key, out var entry))
-            _sections[key] = entry = new SectionMeshes(Matrix4x4.CreateTranslation(key.Origin), key.Origin + new Vector3(Section.Size / 2f));
+            _sections[key] = entry = new SectionMeshes();
 
         entry.Solid.Take(mesher.Solid);
-        entry.SeeThrough.Take(mesher.SeeThrough);
-        entry.Water.Take(mesher.Water);
+        entry.SeeThrough.Take(mesher.SeeThrough, centered: true);
+        entry.Water.Take(mesher.Water, centered: true);
         entry.Cutout.Take(mesher.Cutout);
         entry.CutoutGlass.Take(mesher.CutoutGlass);
         entry.SolidCutout.Take(mesher.SolidCutout);
         entry.Molten.Take(mesher.Molten);
         Keep(key, entry.Solid, SectionPart.Solid, _terrainLook);
+        Keep(key, entry.SeeThrough, SectionPart.SeeThrough, _clearLook);
+        Keep(key, entry.Water, SectionPart.Water, _waterLook);
+        Keep(key, entry.Cutout, SectionPart.Cutout, _cutoutLook);
+        Keep(key, entry.CutoutGlass, SectionPart.CutoutGlass, _cutoutGlassLook);
         Keep(key, entry.SolidCutout, SectionPart.SolidCutout, _solidCutoutLook);
         Keep(key, entry.Molten, SectionPart.Molten, _moltenLook);
         _changed = true;
@@ -764,7 +779,8 @@ public sealed class ChunkRenderer : IDisposable
     private Material Look(ModelMaterial material) => new(material.Color)
     {
         AlphaMode = material.AlphaMode, AlphaCutoff = material.AlphaCutoff, RoughnessFactor = material.Roughness, DoubleSided = material.DoubleSided,
-        EmissiveFactor = LinearOf(material.Emissive) * material.EmissiveIntensity, Shader = _shader,
+        EmissiveFactor = LinearOf(material.Emissive) * material.EmissiveIntensity, CastsShadows = material.CastsShadows, BouncesLight = material.BouncesLight,
+        Shader = _shader,
     };
 
     // Spawns a part's entity for its first mesh, gives it a mesh made again, and lets it go once
@@ -781,13 +797,16 @@ public sealed class ChunkRenderer : IDisposable
             part.Entity = _ecs.Spawn();
             _ecs.Add(part.Entity, new Mesh(part.Mesh));
             _ecs.Add(part.Entity, look);
-            _ecs.Add(part.Entity, new Transform(key.Origin));
+            _ecs.Add(part.Entity, new Transform(key.Origin + part.Center));
             _ecs.Add(part.Entity, new Visible(false));
             _ecs.Add(part.Entity, new ShadowOnly(false));
             _ecs.Add(part.Entity, new SectionPart(key, kind));
         }
-        else if (_ecs.GetReadOnly<Mesh>(part.Entity).Uploaded.Id != part.Mesh.Id)
-            _ecs.Update(part.Entity, new Mesh(part.Mesh));
+        else
+        {
+            if (_ecs.GetReadOnly<Mesh>(part.Entity).Uploaded.Id != part.Mesh.Id) _ecs.Update(part.Entity, new Mesh(part.Mesh));
+            if (_ecs.GetReadOnly<Transform>(part.Entity).Position != key.Origin + part.Center) _ecs.Update(part.Entity, new Transform(key.Origin + part.Center));
+        }
     }
 
     private void Drop(Part part)
@@ -811,14 +830,8 @@ public sealed class ChunkRenderer : IDisposable
         _asked.Remove(key);
         if (!_sections.Remove(key, out var entry)) return;
         _changed = true;
-        foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.SolidCutout, entry.Molten]) Drop(part);
-        entry.Solid.Forget();
-        entry.SeeThrough.Forget();
-        entry.Water.Forget();
-        entry.Cutout.Forget();
-        entry.CutoutGlass.Forget();
-        entry.SolidCutout.Forget();
-        entry.Molten.Forget();
+        foreach (var part in entry.Parts) Drop(part);
+        foreach (var part in entry.Parts) part.Forget();
     }
 
     /// <summary>Lets go of the meshes of a column's sections, as it unloads.</summary>
@@ -872,32 +885,7 @@ public sealed class ChunkRenderer : IDisposable
         laps.Restart();
         if (flooded || cast || _changed || _placedFor != (cx, cz, renderDistance, Cull)) Place(world, cx, cz, renderDistance);
         int draws = _placedDraws, triangles = _placedTriangles, lamps = 0;
-        _seeThrough.Clear();
-        foreach (var entry in _shown)
-        {
-            foreach (var (part, material) in (ReadOnlySpan<(Part, ModelMaterial)>)[(entry.Cutout, _cutout), (entry.CutoutGlass, _cutoutGlass)])
-                if (part.Mesh.IsValid) DrawMesh(part.Mesh, material, entry.Transform);
-            if (entry.SeeThrough.Mesh.IsValid || entry.Water.Mesh.IsValid) _seeThrough.Add((Vector3.DistanceSquared(entry.Middle, eye), entry));
-        }
-        // The plants of the sections cast alone, through their material's shadow-only twin.
-        foreach (var entry in _castOnly)
-            if (entry.Cutout.Mesh.IsValid) DrawMesh(entry.Cutout.Mesh, _cutout with { ShadowOnly = true }, entry.Transform);
-
         SetProfileValue("draw.sections.opaque", laps.Elapsed.TotalMilliseconds);
-        laps.Restart();
-        // See-through sections farthest first, so each blends over what lies behind it. The faces
-        // inside one section are drawn in the order they were meshed.
-        _seeThrough.Sort((a, b) => b.Distance.CompareTo(a.Distance));
-        // A section's water goes before its glass and ice, which more often stand above it.
-        foreach (var (_, entry) in _seeThrough)
-            foreach (var (part, material) in (ReadOnlySpan<(Part, ModelMaterial)>)[(entry.Water, _water), (entry.SeeThrough, _clear)])
-            {
-                if (!part.Mesh.IsValid) continue;
-                DrawMesh(part.Mesh, material, entry.Transform);
-                draws++;
-                triangles += part.Mesh.TriangleCount;
-            }
-
         for (int surface = 0; surface < _emitterDraws.Length; surface++)
         {
             var list = _emitterDraws[surface];
@@ -927,8 +915,6 @@ public sealed class ChunkRenderer : IDisposable
         _changed = false;
         var reach = renderDistance * renderDistance + renderDistance;
         int draws = 0, triangles = 0, culled = 0, deep = 0, deepTriangles = 0, casting = 0, castDraws = 0;
-        _shown.Clear();
-        _castOnly.Clear();
         foreach (var list in _emitterDraws) list.Clear();
         foreach (var (key, entry) in _sections)
         {
@@ -936,9 +922,13 @@ public sealed class ChunkRenderer : IDisposable
             var within = dx * dx + dz * dz <= reach;
             var seen = within && (!Cull || _visibility.Sees(key));
             var castsAlone = within && !seen && _casters.Contains(key);
-            Show(entry.Solid, seen || castsAlone, castsAlone);
-            Show(entry.SolidCutout, seen || castsAlone, castsAlone);
-            Show(entry.Molten, seen, false);
+            // The parts that cast a shadow are drawn into the shadow maps alone where the section
+            // casts alone, and the glass, the water and the lava, which the flood's casters leave
+            // out, only where it is seen.
+            foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.Cutout, entry.SolidCutout])
+                Show(part, seen || castsAlone, castsAlone);
+            foreach (var part in (ReadOnlySpan<Part>)[entry.SeeThrough, entry.Water, entry.CutoutGlass, entry.Molten])
+                Show(part, seen, false);
             if (!within) continue;
             foreach (var (surface, at) in entry.Emitters) _emitterDraws[surface].Add(at);
             if (!seen)
@@ -946,7 +936,6 @@ public sealed class ChunkRenderer : IDisposable
                 culled++;
                 if (!castsAlone) continue;
                 casting++;
-                _castOnly.Add(entry);
                 foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.Cutout, entry.SolidCutout])
                     if (part.Mesh.IsValid) castDraws++;
                 continue;
@@ -957,13 +946,12 @@ public sealed class ChunkRenderer : IDisposable
                 deepTriangles += entry.Solid.Mesh.TriangleCount + entry.Cutout.Mesh.TriangleCount + entry.CutoutGlass.Mesh.TriangleCount
                     + entry.SolidCutout.Mesh.TriangleCount + entry.Molten.Mesh.TriangleCount + entry.SeeThrough.Mesh.TriangleCount + entry.Water.Mesh.TriangleCount;
             }
-            foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.Cutout, entry.CutoutGlass, entry.SolidCutout, entry.Molten])
+            foreach (var part in entry.Parts)
             {
                 if (!part.Mesh.IsValid) continue;
                 draws++;
                 triangles += part.Mesh.TriangleCount;
             }
-            _shown.Add(entry);
         }
         (_placedDraws, _placedTriangles, Culled, Deep, Casting) = (draws, triangles, culled, (deep, deepTriangles), (casting, castDraws));
         SetProfileValue("draw.sections.shadow", castDraws);

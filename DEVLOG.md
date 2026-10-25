@@ -130,6 +130,39 @@ settled in 9 to 13 seconds where the main thread settled in 2 to 3, since each s
 the land waited a frame for a worker. Air is let go at once, and the workers build what is copied
 as fast as they can, so the land settles as fast as before.
 
+# Item 95, the README's costs read again
+
+The README's table of the frame by render distance and its line of lavapipe's frame, read again on
+`bb0b9bb` with the sections drawn as entities, meshed on the workers and the screen's probes on, in
+a Debug build with the three default packs, offscreen at 1280 by 720, seed 1's spawn at noon looking
+east. Other programs held 5 to 22 percent of the GPU before each part and the machine's load was 5
+to 7, so the GPU's sums may read a little high.
+
+| Columns | Frame | GPU | CPU's passes | Resident | Draws | Triangles |
+|---|---|---|---|---|---|---|
+| 8 | 16.7 ms | 12.1 ms | 6.5 ms | 1,029 MB | 865 | 0.63 million |
+| 12 | 16.7 ms | 16.6 ms | 11.0 ms | 1,308 MB | 1,739 | 1.20 million |
+| 16 | 23.8 ms | 23.8 ms | 17.7 ms | 1,942 MB | 2,870 | 1.94 million |
+
+Read again an hour later on the power-saving profile the machine usually runs on, another program
+holding 20 to 27 percent of the GPU, the frame took 16.7, 17.6 and 21.1 ms, the GPU 12.4, 17.7 and
+19.4, the CPU's passes 5.7, 10.4 and 16.0, and the game held 1,016, 1,393 and 1,960 MB. The first
+reading's power profile is not known, since it was switched to performance for a time that day, and
+the two lie within the other programs' noise of each other, so 12 columns stands at the edge of 60
+frames a second with the GPU bounding it.
+
+The table read before, with the probes off and every section a `DrawMesh`, gave the frame 16.8,
+17.5 and 40.3 ms, the GPU 10.8, 14.3 and 18.4 ms and the CPU's passes 7.4, 10.1 and 22.6 ms.
+
+On lavapipe the GPU's passes sum to 0.85, 1.13, 1.60 and 2.18 s a frame at 4, 8, 12 and 14 columns,
+where they read 0.49, 0.82, 1.20 and 1.42 with the probes off. Global illumination reads 0.25 to
+0.27 s of each and the scene pass 0.40 to 1.52, by lavapipe's timestamps.
+
+The flights over unloaded land, Debug, three of ten seconds at each distance, read the frame 10.0 to
+22.1 ms at 8 columns, 16.6 to 26.8 at 10, 21.6 to 32.5 at 12 and 38.6 to 41.2 at 14, with the main
+thread's meshing 0.15 to 1.86 ms. The README keeps its flights read with the probes off until a
+quiet GPU reads them again, since the load and the probes cannot be told apart in these.
+
 # Item 95, the sections as entities
 
 The frame at item 93's views, seed 1's cherry grove and plains village at hour 16, the three default

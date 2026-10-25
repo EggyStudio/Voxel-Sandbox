@@ -5,34 +5,52 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `cc49c81`, the README's costs read again, read at 20:21 on 2026-10-25, carrying
-REVIEW.md and DEVLOG.md with a note, held until the run of `bb0b9bb` ends. The distance table reads
-frames of 16.7, 16.7 and 23.8 ms at 8, 12 and 16 columns, the GPU 12.1, 16.6 and 23.8, the CPU's
-passes 6.5, 11.0 and 17.7 and 1,029, 1,308 and 1,942 MB resident, its lead sentence naming the
-probes on, a Debug build and the eastward view from the spawn, the frame keeping 60 a second at 8
-and 12 and losing it at 16 to the GPU; the lavapipe line 0.85, 1.13, 1.60 and 2.18 s with the probes
-on; the flights sentence saying the game joins columns on the main thread and meshes their sections
-on the workers, the old flight numbers kept with the probes off. The note holds the load's caveat,
-the draws and the triangles, the readings before and the flights read under load. 353 tests, play.sh
-353 s on the GPU. After `bb0b9bb`, item 29's meshing on the workers, pushed at 19:49 on 2026-10-25
-once the run of `117392b` went green, the run watched, carrying the review's files and a devlog
-note. SectionMesher splits into Gather on the main thread, the fill and, for a section holding
-water, a copy of the 18 by 32 by 18 cells the water's depth reads, and Build reading the mesher's
-own arrays alone, Mesh calling both; ChunkRenderer keeps a stack of 64 meshers with a semaphore
-letting half the cores up to 16 build at once, the sends numbered from one counter so a stale result
-is dropped, edits meshed synchronously, a section of air let go in the loop with no mesher, the loop
-parking far sections and filing unseen ones with every mesher lent, and voxel.state and the F3
-window counting the sections lent and not yet taken in as to mesh so the play script's meshed wait
-holds; a test gathers a section, changes the world, builds and reads the faces equal to those meshed
-before the change. With the machine's load at 6 to 12, Release flights at distance 12 read
-update.mesh 0.32, 0.23 and 0.46 ms against 0.26, 3.28 and 3.71 and the frames 25.9, 31.5 and 30.0
-against 25.4, 37.7 and 45.1, the settle after a teleport 5, 3 and 3 s against 6, 5 and 5 with
-update.mesh 2 to 3 ms against 4 to 6, and Debug on lavapipe pinned to four cores at distance 4
-settles in 64 and 73 s against 59 and 74 with update.mesh 4 ms against 10 to 12; a first version
-with eight meshers and a round a frame settled in 9 to 13 s since every air section waited a frame
-for a worker. 353 tests, play.sh 322 s on the GPU. After `117392b`, Verdict 6's mend, pushed at
-18:34 on 2026-10-25 after the red run of `b7608c7` ended, its run green at 19:41 with the play job
-67 minutes under the limit of 90, the water check reading its ticks, carrying REVIEW.md and
+Reviewed up to `c802dea`, the costs read on powersave, read at 20:30 on 2026-10-25, carrying
+REVIEW.md. The owner said the machine was switched to its performance profile once today where it
+sits at powersave, so the day's absolute readings may lean; the journal holds no time for the
+switch, and the machine stands on powersave with the CPU's energy preference at power. The distance
+table read again on powersave with the engine's scratch program holding 20 to 27% of the GPU gives
+frames of 16.7, 17.6 and 21.1 ms, the GPU 12.4, 17.7 and 19.4, the CPU's passes 5.7, 10.4 and 16.0
+and 1,016, 1,393 and 1,960 MB, within the other programs' noise of the reading before, 12 columns at
+the edge of 60 a second with the GPU bounding it; the README says so with both frames, and the costs
+note adds the powersave reading and that the first reading's profile is not known. The day's
+comparisons stand as relative readings, each interleaved, ABCCBA for item 95 and ABBA for item 29's
+settles and flights, every repeat agreeing with its pair where a switch between them would have
+shown as a split, and item 95's halved scene pass GPU-side in every pair; the absolute numbers carry
+the noise the notes name. 353 tests, play.sh 324 s on the GPU. After `cc49c81`, the README's costs
+read again, read at 20:21 on 2026-10-25, carrying REVIEW.md and DEVLOG.md with a note, pushed with
+`c802dea` at 20:57 on 2026-10-25 once the run of `bb0b9bb` went green, its run red within a minute
+on the runners' dotnet install, Verdict 7, and green on the second attempt at 22:32 once the feed
+settled, the play job 66 minutes. The distance table reads frames of 16.7, 16.7 and 23.8 ms at 8, 12
+and 16 columns, the GPU 12.1, 16.6 and 23.8, the CPU's passes 6.5, 11.0 and 17.7 and 1,029, 1,308
+and 1,942 MB resident, its lead sentence naming the probes on, a Debug build and the eastward view
+from the spawn, the frame keeping 60 a second at 8 and 12 and losing it at 16 to the GPU; the
+lavapipe line 0.85, 1.13, 1.60 and 2.18 s with the probes on; the flights sentence saying the game
+joins columns on the main thread and meshes their sections on the workers, the old flight numbers
+kept with the probes off. The note holds the load's caveat, the draws and the triangles, the
+readings before and the flights read under load. 353 tests, play.sh 353 s on the GPU. After
+`bb0b9bb`, item 29's meshing on the workers, pushed at 19:49 on 2026-10-25 once the run of `117392b`
+went green, its run green at 20:56 with the play job 67 minutes, the probes' and not the workers',
+every check within 0.97 to 1.09 of the run of `117392b` and 1.1 to 1.3 times the run of `0babebb`
+before the probes, the rain's splashes the largest at 683 s against 528, a sixth of the job, leaving
+23 minutes under the limit on a slow runner and the first place to cut should a later item need it,
+carrying the review's files and a devlog note. SectionMesher splits into Gather on the main thread,
+the fill and, for a section holding water, a copy of the 18 by 32 by 18 cells the water's depth
+reads, and Build reading the mesher's own arrays alone, Mesh calling both; ChunkRenderer keeps a
+stack of 64 meshers with a semaphore letting half the cores up to 16 build at once, the sends
+numbered from one counter so a stale result is dropped, edits meshed synchronously, a section of air
+let go in the loop with no mesher, the loop parking far sections and filing unseen ones with every
+mesher lent, and voxel.state and the F3 window counting the sections lent and not yet taken in as to
+mesh so the play script's meshed wait holds; a test gathers a section, changes the world, builds and
+reads the faces equal to those meshed before the change. With the machine's load at 6 to 12, Release
+flights at distance 12 read update.mesh 0.32, 0.23 and 0.46 ms against 0.26, 3.28 and 3.71 and the
+frames 25.9, 31.5 and 30.0 against 25.4, 37.7 and 45.1, the settle after a teleport 5, 3 and 3 s
+against 6, 5 and 5 with update.mesh 2 to 3 ms against 4 to 6, and Debug on lavapipe pinned to four
+cores at distance 4 settles in 64 and 73 s against 59 and 74 with update.mesh 4 ms against 10 to 12;
+a first version with eight meshers and a round a frame settled in 9 to 13 s since every air section
+waited a frame for a worker. 353 tests, play.sh 322 s on the GPU. After `117392b`, Verdict 6's mend,
+pushed at 18:34 on 2026-10-25 after the red run of `b7608c7` ended, its run green at 19:41 with the
+play job 67 minutes under the limit of 90, the water check reading its ticks, carrying REVIEW.md and
 DEVLOG.md. ChunkRenderer gains HeldTicks and voxel.ticks holds the animated textures and the lamps
 at a tick, the play run reading the pool at ticks 0 to 3 for white and black alternating in green
 and setting off, without a sleep, the README's commands paragraph naming it. 352 tests, play.sh 199
@@ -440,7 +458,9 @@ full.
     to 23.6 at 1080p with the scene pass halved, the readings in the devlog's note; the four flagged
     parts move on the package carrying the engine's item 124, which closes this item. The README's
     costs at `cc49c81` on 2026-10-25, the distance table with the probes on keeping 60 a second at
-    12 columns where it lost it before, the flights left for a quiet GPU.
+    12 columns where it lost it before, the flights left for a quiet GPU. Read again on powersave at
+    `c802dea`, 12 columns at the edge of 60 a second, the README saying so with both frames and the
+    note naming the profile's doubt.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
@@ -595,7 +615,7 @@ full.
 
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 6 are settled, said under each in REVIEW-ARCHIVE.md.
+No verdict is open. Verdicts 1 to 7 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 
