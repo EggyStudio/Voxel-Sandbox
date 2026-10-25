@@ -96,7 +96,7 @@ public static class Structures
     /// <summary>The ravines, cut before the trees, which stand nowhere on their cuts.</summary>
     public static readonly Ravine Ravine = new();
 
-    public static readonly Structure[] All = [Ravine, new Dungeon(), Village, new Igloo(), new DesertPyramid()];
+    public static readonly Structure[] All = [Ravine, new Mineshaft(), new Dungeon(), Village, new Igloo(), new DesertPyramid()];
 
     public static Structure? Find(string name) => All.FirstOrDefault(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 }

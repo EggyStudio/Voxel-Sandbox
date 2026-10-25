@@ -64,6 +64,9 @@ public sealed class ChunkColumn
     /// <summary>The mobs its generator placed in it, which the world's <see cref="Mobs"/> takes the first time it loads.</summary>
     public readonly List<MobRecord> Spawns = [];
 
+    /// <summary>The chests its generator's structures placed in it, which the world's <see cref="Chests"/> takes as it joins.</summary>
+    public readonly List<ChestPlaced> Chests = [];
+
     /// <summary>The section a height inside the world lies in.</summary>
     public Section At(int y) => Sections[(y - Bottom) >> Section.Shift];
 

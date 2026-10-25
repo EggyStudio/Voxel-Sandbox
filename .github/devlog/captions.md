@@ -47,3 +47,4 @@
 2026-10-25-item-28-bloom.webp | The lantern and the soul lantern of that room with no bloom on the left and a bloom of 0.6 on the right, a halo about each flame's glass.
 2026-10-25-item-28-rim.webp | The oaks of seed 1's coast at noon without a rim on the left and with a rim of 100% on the right, a lit line along each block's edges.
 2026-10-25-item-28-unshaded.webp | The same coast as the game shades it on the left and unshaded on the right, every open face taking the sun's light as one facing it does.
+2026-10-25-item-31-mineshaft.webp | Seed 1's nearest mineshaft under the forest, a corridor with its rails, its posts of oak under beams of planks and a lantern hanging from one, on the left, and a chest in a niche of another, lit by the torch held and one set on its floor, on the right.

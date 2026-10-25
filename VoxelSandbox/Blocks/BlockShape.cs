@@ -458,6 +458,26 @@ public sealed class BlockShape
     public static BlockShape Door(int wood, Facing facing, bool upper, bool open) => new(facing, Yawed(facing,
         open ? Px(0, 0, 0, 3, 16, 16, wood) : Px(0, 0, 13, 16, 16, 16, wood)), falls: false, solid: true, upper: upper, open: open);
 
+    /// <summary>
+    /// A chest, a box fourteen pixels across and fourteen high in the middle of its cell, its latch's
+    /// face toward the way it faces, which stops the player at its box as the source's does.
+    /// </summary>
+    public static BlockShape Chest(Facing facing)
+    {
+        var front = facing switch { Facing.East => 0, Facing.West => 1, Facing.South => 4, _ => 5 };
+        var sides = (1 << 0 | 1 << 1 | 1 << 4 | 1 << 5) & ~(1 << front);
+        Piece Box(int surface, int faces) => Px(1, 0, 1, 15, 14, 15, surface) with { Faces = faces };
+        var box = new Box(new Vector3(1, 0, 1) / 16, new Vector3(15, 14, 15) / 16);
+        return new(facing, [Box(Surfaces.ChestTop, 1 << 2), Box(Surfaces.ChestSide, sides), Box(Surfaces.ChestFront, 1 << front), Box(Surfaces.ChestBottom, 1 << 3)],
+            falls: false, solid: true, collision: [box], outline: [box]);
+    }
+
+    /// <summary>A cobweb, two walls crossed as a plant's are, which holds to nothing and stays where it is put, as the source's does.</summary>
+    public static BlockShape Cobweb(int surface) => new(Facing.Up, [Wall(0, 0, 0, 16, 16, 16, surface), Wall(0, 0, 16, 16, 16, 0, surface)], falls: false, cutout: true);
+
+    /// <summary>A straight rail lying on the block under it, a pixel deep, along the way it faces, which falls when that block is broken.</summary>
+    public static BlockShape Rail(int surface, Facing facing) => new(facing, [Px(0, 0, 0, 16, 1, 16, surface)], cutout: true);
+
     /// <summary>A layer of snow an eighth of a block deep on the block under it, walked on, and gone when that block is broken.</summary>
     public static BlockShape SnowLayer(int surface) => new(Facing.Up, [Px(0, 0, 0, 16, 2, 16, surface)], solid: true);
 

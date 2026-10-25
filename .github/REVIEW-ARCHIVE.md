@@ -1719,6 +1719,15 @@ before a batch.
     own. Done at `85c3ff6` on 2026-10-25, the six methods read from a pack's properties with the
     full method's table, the departures in the head.
 
+28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
+    emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the
+    reference folder's mod, whose code may not be taken: the engine's bloom on the emissive blocks'
+    faces, the colored light the engine's lamps and global illumination give from emissive blocks
+    read and set so a lantern's light is its color, a rim light as a setting in the terrain shader,
+    and an unshaded look as a setting, each a switch in the settings with a capture. After item 24.
+    One or two commits. Done at `79ad110` on 2026-10-25, the four as settings with captures, the
+    lamp colors kept the surfaces' own and the rim an edge outline, the departures in the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

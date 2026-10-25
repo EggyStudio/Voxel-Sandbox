@@ -117,7 +117,7 @@ public sealed class TerrainAtlas
         {
             var key = turns == 0 ? name : $"{name}@{turns}";
             if (numbers.TryGetValue(key, out var number)) return number;
-            if (found.Count >= MostTiles || packs.Texture(name) is not { } image) return numbers[key] = 0;
+            if (found.Count >= MostTiles || (ChestArt.Owns(name) ? ChestArt.Cut(packs, name) : packs.Texture(name)) is not { } image) return numbers[key] = 0;
             if (turns == 0 && animations.Count < MostAnimations && packs.Animation(name) is { } animation)
             {
                 var step = animation.Ticks.Aggregate(Gcd);
@@ -136,7 +136,7 @@ public sealed class TerrainAtlas
 
         for (int surface = 0; surface < count; surface++)
         {
-            if (PackTextures.Of(surface) is { } look && (tile[surface] = Number(look.Texture, framed: GlassSurfaces.Contains(surface))) != 0)
+            if (PackTextures.Of(surface) is { } look && (tile[surface] = Number(look.Texture, look.Turns, GlassSurfaces.Contains(surface))) != 0)
             {
                 tint[surface] = look.Tint;
                 if (look.Overlay is { } over) overlay[surface] = Number(over);

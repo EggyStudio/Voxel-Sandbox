@@ -5,57 +5,28 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `85c3ff6`, item 34, the connected textures, read at 03:53 on 2026-10-25, carrying the
-review's files. ConnectedTextures.Parse reads an OptiFine properties file, the method, the tiles as
-ranges, names, relative and full paths and the default, the blocks and tiles matched, connect, the
-inner seams, the faces, width and height and the weights, a rule naming neither blocks nor textures
-taking its file's name; TerrainAtlas.Connect gathers every ctm properties file in path order and
-lays each rule's tiles in the atlas, a surface taking the first rule that names it and only where a
-pack gives it a texture; SectionMesher picks the face's tile in the mesher's texture directions,
-which match the source's direction maps, a pack's glass rule replacing the game's own frame joining;
-the methods ctm with the full 47, horizontal, vertical, top, repeat and random, the full method's
-256-entry table the template's layout with the numbers taken from Continuity's reading of OptiFine's
-format and no code taken, a corner counting only where both its sides join. Departures, the compact,
-overlay, fixed and plus-joined methods are not read and a rule naming one is skipped, a rule that
-would pass the atlas's 512 tiles is left out, and no default pack nor any on the machine has ctm so
-the glass wall capture is skipped as the item allows, the game unchanged with the packs it fetches.
-ConnectedTextureTests covers the parsing, the full method's tile for each neighbor case, horizontal
-and vertical, random stable by place and weighted, repeat across a sheet and a 3 by 3 glass wall
-meshed under a laid pack of 47 tiles. 333 tests, play.sh 337 s on the GPU. The three pushed at 03:54
-on 2026-10-25 after the run of `76053f6` went green; the run watched. After `6a56e0f`, item 36's
-second commit, the animations, read at 03:39 on 2026-10-25, carrying REVIEW.md and the devlog's
-poses. PlayerStance carries the phase, the stride, the head's yaw and pitch, the swing and whether
-the player sneaks, swims, climbs, is in the air or holds an item, PlayerPoses.Turn taking the
-source's humanoid numbers in the game's axes, the walk's legs and arms, the sneak's lean, the held
-item's arm and the hit's swing with the body turned, and PlayerPoses.Whole laying a swimmer along
-its look with the arms stroking in turn and the legs fluttering; the body's yaw turns toward the way
-walked with the head leading it by at most 75 degrees, the right hand holds the hotbar item at the
-source's third-person sizes, and the first person's empty hand draws the model's right arm by the
-source's turns with the swing shared. Departures, climbing is the controller's step out of water
-onto a bank since the game has no ladders, the arms reaching up in turn, and in the air the arms go
-0.15 out from the sides, a pose the source lacks; no picture of the source's silhouette on the
-machine, the record holding the game's poses alone. PlayerPoseTests reads each stance at a known
-phase by the hands', the hips' and the head's places. 329 tests, play.sh 315 s on the GPU. After
-`a00fdcc`, item 36's first commit, the camera and the model, read at 03:22 on 2026-10-25, carrying
-REVIEW.md and the devlog's views. A View of First, Behind or Front with the third person's distance,
-five rays from the eye and four points a tenth across it toward where the camera would stand at 4
-blocks as the source's, the camera a tenth short of the nearest hit or at 4, the controller keeping
-the view and the distance and making the camera look at the eye from behind or in front; F5 steps
-the views and voxel.view sets one, the hand and the crosshair from the eye alone, a spectator not
-drawn. The player's model is the zombie's layout in the game's own colors at scale 0.9375, kept out
-of MobKinds.All so the save's kinds, voxel.spawn and the counts stay, the renderer placing it by the
-controller's stride and phase with the head pitched by the aim; Gait.Arm gave every kind that does
-not shoot the zombie's reaching arms, so the player held its arms out, and they hang and swing
-against the legs as a skeleton's do, the picture sent again. ThirdPersonTests covers the distance, a
-wall and the floor, an offset ray meeting a block beside the middle one, F5's order, the camera's
-look and the model's height and arms. 324 tests, play.sh 300 s on the GPU.
+Reviewed up to `79ad110`, item 28, the looks Shine shows, read at 04:24 on 2026-10-25, carrying the
+review's files and four captioned pictures under the devlog folder, pushed at 04:47 on 2026-10-25
+once the run of `85c3ff6` went green, the run watched. Render Settings gains Colored Lamps, on by
+default, Rim Light from 0 to 100% at 0 and Unshaded, off; Post Processing gains Bloom Threshold from
+0.5 to 8 at 1. Colored Lamps off makes each lamp's light white at the same brightness to the eye by
+Rec. 709 luminance, the materials, the field's emission and the held and dropped point lights alike,
+the emission maps divided by the new light so a lamp's face keeps its texture's colors. The rim is a
+lit line one texture pixel wide along each whole block's edges, as Shine's README names it, brighter
+by its strength and lit by the face's light, fading where it would be thinner than 2 screen pixels.
+Unshaded gives every open face the sun's light reaching the air half a block out from it, the
+shadows kept and the shading by facing gone, a second shadow read costing 0.2 to 0.6 ms at the coast
+at noon, the rim free. Two departures. The lamp colors stay the surfaces' own, not a pack's
+texture's mean, since Bare Bones's emission-weighted means are nearly white, glowstone 255,228,133
+against 255,200,120, and that light at saturation 1.4 turned a white room olive, the reason in the
+ColoredLamps remarks and the README; the rim is an edge outline, not a fresnel rim. LooksFrameTests
+is new, 334 tests, play.sh 373 s on the GPU.
+
+Before it, `85c3ff6` came, item 34, the connected textures, pushed at 03:54 on 2026-10-25 with
+`6a56e0f` and `a00fdcc`, its run green, the play job 52 minutes.
 
 Before it, `76053f6` came, Verdict 3's mend with items 33, 128's last three and 105, 123 and the
 lookups, pushed at 03:11 on 2026-10-25, its run green, the play job 39.0 minutes.
-
-Before it, `01eb71f` came, item 128's fires with `4105293`, `d647b0e`, `fb04f6b` and `c7c1b41`,
-pushed at 02:07 on 2026-10-25, its run red on the three test jobs, Verdict 3, the play job green in
-52.4 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -497,14 +468,6 @@ full.
     slab, and the cave read again with the engine's item 101. The pin of 5.2.283 at `3d70b20`, the
     grove's frame 19 to 22 ms where 5.2.281 read 33 to 35 and 5.2.215 15 to 18, the cave unchanged.
     The pin of 5.2.291 at `9dad43e` on 2026-10-25, the grove's frame as 5.2.283's.
-
-28. **The looks Shine shows, done as the game's own: bloom on emissive blocks, colored light from
-    emissive blocks, a rim around blocks, and an unshaded look.** From item 24's reading of the
-    reference folder's mod, whose code may not be taken: the engine's bloom on the emissive blocks'
-    faces, the colored light the engine's lamps and global illumination give from emissive blocks
-    read and set so a lantern's light is its color, a rim light as a setting in the terrain shader,
-    and an unshaded look as a setting, each a switch in the settings with a capture. After item 24.
-    One or two commits.
 
 29. **Generation and meshing on the GPU, the blocks kept on the CPU (Decision 12).** The owner's
     word of about 00:30 on 2026-10-21: compute shaders for generation and the rest are a big one.

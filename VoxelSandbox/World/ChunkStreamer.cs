@@ -17,7 +17,7 @@ namespace VoxelSandbox;
 /// that makes it, and the loaded columns' again, a few a frame, each time the eye enters another
 /// section, as <see cref="Reach"/> has it.
 /// </remarks>
-public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, WorldSave? save)
+public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, Chests chests, WorldSave? save)
 {
     private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column)> _done = new();
     private readonly HashSet<(int X, int Z)> _pending = [];
@@ -100,6 +100,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     {
         world.Add(column);
         mobs.Joined(column);
+        chests.Joined(column);
     }
 
     // The compressed blocks the save keeps for a column, read on the main thread, or null.

@@ -195,6 +195,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The world's furnaces by the place of their block.</summary>
     public Furnaces Furnaces { get; private set; } = new();
 
+    /// <summary>The world's chests by the place of their block.</summary>
+    public Chests Chests { get; private set; } = new();
+
     // The explosions of the last half second, where and how long ago, drawn as a fading flash.
 
     public DropRenderer DropRenderer { get; } = new();
@@ -356,6 +359,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The place of the furnace whose window is open, which a right click on one opens, or null.</summary>
     public (int X, int Y, int Z)? AtFurnace { get; private set; }
 
+    /// <summary>The place of the chest whose window is open, which a right click on one opens, or null.</summary>
+    public (int X, int Y, int Z)? AtChest { get; private set; }
+
     /// <summary>A recording of the picture's change around a motion, which <c>voxel.flicker</c> starts, read a frame at a time.</summary>
     public FlickerRun? Flicker { get; set; }
 
@@ -395,6 +401,7 @@ public sealed class VoxelGame : IDisposable
         GetApp().World.ClearEvents<MobEvent>();
         GetApp().World.ClearEvents<MobDied>();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
+        Chests = Save?.ReadChests() ?? new Chests();
         Blasts.Clear();
         // The weather turns by the world's own seed, held as its save held it.
         (Weather.Seed, Weather.Held, _overcast) = (World.Generator.Seed, info?.Weather, 0);
@@ -408,7 +415,7 @@ public sealed class VoxelGame : IDisposable
         if (info is null) Vitals.Set();
         else Vitals.Set(info.Health, info.Food, info.Saturation);
         // The old streamer's workers finish into its own queue, which nothing reads again.
-        Streamer = new ChunkStreamer(World, Renderer, Mobs, Save);
+        Streamer = new ChunkStreamer(World, Renderer, Mobs, Chests, Save);
         Clouds.Follow(generator.Seed);
         _sinceSave = 0;
         Loading = true;
@@ -503,6 +510,7 @@ public sealed class VoxelGame : IDisposable
         Save.Flush();
         Save.WriteMobs(Mobs.Columns());
         Save.WriteFurnaces(Furnaces);
+        Save.WriteChests(Chests);
         var at = Player.Body.Position;
         Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
             Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, [.. Blocks.All.Select(b => b.Key)],
@@ -596,6 +604,11 @@ public sealed class VoxelGame : IDisposable
         foreach (var ((x, y, z), stack) in Furnaces.Update(World, seconds))
         {
             if (AtFurnace == (x, y, z)) CloseInventory();
+            Drops.Spawn(stack.Item, stack.Count, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
+        }
+        foreach (var ((x, y, z), stack) in Chests.Update(World))
+        {
+            if (AtChest == (x, y, z)) CloseInventory();
             Drops.Spawn(stack.Item, stack.Count, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
         Bits.Update(World, seconds);
@@ -861,7 +874,7 @@ public sealed class VoxelGame : IDisposable
     // not fit thrown.
     private void CloseInventory()
     {
-        (InventoryOpen, AtTable, AtFurnace) = (false, false, null);
+        (InventoryOpen, AtTable, AtFurnace, AtChest) = (false, false, null, null);
         foreach (var left in InventoryWindow.Close(Inventory))
             Drops.Spawn(left.Item, left.Count, Player.Eye - new Vector3(0, 0.3f, 0), Vector3.Normalize(Player.Look) * 3, ItemDrops.ThrownDelay, left.Wear);
     }
@@ -902,7 +915,7 @@ public sealed class VoxelGame : IDisposable
     // Whether the player is eating.
     private bool Eat(float seconds)
     {
-        var opens = Target is { } hit && World.GetBlock(hit.X, hit.Y, hit.Z) is var block && (block == BlockId.CraftingTable || Furnaces.IsFurnace(block) || Blocks.Get(block).Toggled is not null);
+        var opens = Target is { } hit && World.GetBlock(hit.X, hit.Y, hit.Z) is var block && (block == BlockId.CraftingTable || Furnaces.IsFurnace(block) || Chests.IsChest(block) || Blocks.Get(block).Toggled is not null);
         // Glow berries aimed at a block's underside hang their vines there rather than being eaten, as the source's do.
         var hangs = Target is { NormalY: < 0 } && Hotbar.Current is { Item.Block: BlockId.CaveVines };
         if (!IsMouseButtonDown(MouseButton.Right) || opens || hangs || Hotbar.Current is not { Item.Food: > 0 } food || Vitals.Food >= Vitals.Most)
@@ -979,6 +992,13 @@ public sealed class VoxelGame : IDisposable
             (InventoryOpen, AtFurnace) = (true, (oven.X, oven.Y, oven.Z));
             Capture(false);
             return World.GetBlock(oven.X, oven.Y, oven.Z);
+        }
+        if (Target is { } box && Chests.IsChest(World.GetBlock(box.X, box.Y, box.Z)))
+        {
+            Chests.At(box.X, box.Y, box.Z);
+            (InventoryOpen, AtChest) = (true, (box.X, box.Y, box.Z));
+            Capture(false);
+            return World.GetBlock(box.X, box.Y, box.Z);
         }
         var toggles = Target is { } door && Blocks.Get(World.GetBlock(door.X, door.Y, door.Z)).Toggled is not null;
         // In adventure a door opens or shuts and nothing is placed.
@@ -1218,6 +1238,7 @@ public sealed class VoxelGame : IDisposable
         Settings.Draw(this);
         if (Mode.Lives() && Vitals.Dead) DrawDeath();
         if (InventoryOpen && !(AtFurnace is var (fx, fy, fz) ? InventoryWindow.DrawFurnace(Inventory, Furnaces.At(fx, fy, fz))
+            : AtChest is var (cx, cy, cz) ? InventoryWindow.DrawChest(Inventory, Chests.At(cx, cy, cz))
             : AtTable ? InventoryWindow.DrawInventory(Inventory, InventoryWindow.Table)
             : Mode.Lives() ? InventoryWindow.DrawInventory(Inventory, InventoryWindow.Small)
             : InventoryWindow.DrawCreative(Hotbar)))

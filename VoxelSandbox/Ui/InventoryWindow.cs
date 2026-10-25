@@ -59,6 +59,7 @@ public sealed class InventoryWindow
     private Inventory? _inventory;
     private CraftingGrid? _grid;
     private Furnace? _furnace;
+    private Chest? _chest;
 
     // The slots a drag with a stack held has passed, from the one it was pressed on, and its button.
     private readonly List<SlotAt> _dragged = [];
@@ -72,7 +73,7 @@ public sealed class InventoryWindow
     /// <returns>Whether the window stays open, which it does until E or Escape shuts it.</returns>
     public bool DrawInventory(Inventory inventory, CraftingGrid grid)
     {
-        (_inventory, _grid, _furnace) = (inventory, grid, null);
+        (_inventory, _grid, _furnace, _chest) = (inventory, grid, null, null);
         var table = grid.Size == 3;
         List<SlotView> slots = [];
         // Minecraft's inventory puts its grid of two at the upper right with what it makes beside it,
@@ -90,11 +91,30 @@ public sealed class InventoryWindow
         return true;
     }
 
+    /// <summary>Draws a chest's three rows of nine slots over the inventory's, as the source's chest lays them out.</summary>
+    /// <returns>Whether the window stays open, which it does until E or Escape shuts it.</returns>
+    public bool DrawChest(Inventory inventory, Chest chest)
+    {
+        (_inventory, _grid, _furnace, _chest) = (inventory, null, null, chest);
+        List<SlotView> slots = [];
+        for (int i = 0; i < Chest.Size; i++)
+            slots.Add(new SlotView(new SlotAt(chest.Slots, i), 8 + i % Hotbar.Size * 18, 18 + i / Hotbar.Size * 18));
+        // The source's chest of three rows puts the inventory a pixel lower than the furnace's window.
+        AddInventory(slots, inventory, 85);
+        Window(slots, inventory, "generic_54", (_, _, _, _) => { }, ChestRows);
+        return true;
+    }
+
+    // The rows of a chest, whose window the source cuts from its picture of six rows, the top and
+    // the rows' part of it and then its inventory's part, so the window is 17 and 18 a row high over
+    // the 96 of the inventory.
+    private const int ChestRows = 3;
+
     /// <summary>Draws a furnace's slots, what it smelts over its fuel with the fire's flame and the smelting's arrow between them and what it made, over the inventory's.</summary>
     /// <returns>Whether the window stays open, which it does until E or Escape shuts it.</returns>
     public bool DrawFurnace(Inventory inventory, Furnace furnace)
     {
-        (_inventory, _grid, _furnace) = (inventory, null, furnace);
+        (_inventory, _grid, _furnace, _chest) = (inventory, null, furnace, null);
         List<SlotView> slots =
         [
             new(new SlotAt(furnace.Slots, Furnace.Input), 56, 17),
@@ -134,7 +154,7 @@ public sealed class InventoryWindow
     /// <returns>Whether the window stays open, which it does until E or Escape shuts it.</returns>
     public bool DrawCreative(Hotbar hotbar)
     {
-        (_inventory, _grid, _furnace) = (null, null, null);
+        (_inventory, _grid, _furnace, _chest) = (null, null, null, null);
         var s = Gui.Scale;
         int left = (GetScreenWidth() - CreativeWidth * s) / 2, top = (GetScreenHeight() - CreativeHeight * s) / 2;
         var rows = (Items.All.Count + Hotbar.Size - 1) / Hotbar.Size;
@@ -200,26 +220,31 @@ public sealed class InventoryWindow
     }
 
     // The inventory's three rows of nine and the hotbar's below them, at Minecraft's places.
-    private static void AddInventory(List<SlotView> slots, Inventory inventory)
+    private static void AddInventory(List<SlotView> slots, Inventory inventory, int top = 84)
     {
         for (int row = 0; row < 3; row++)
             for (int column = 0; column < Hotbar.Size; column++)
-                slots.Add(new SlotView(new SlotAt(inventory.Slots, Hotbar.Size + row * Hotbar.Size + column), 8 + column * 18, 84 + row * 18));
+                slots.Add(new SlotView(new SlotAt(inventory.Slots, Hotbar.Size + row * Hotbar.Size + column), 8 + column * 18, top + row * 18));
         for (int column = 0; column < Hotbar.Size; column++)
-            slots.Add(new SlotView(new SlotAt(inventory.Slots, column), 8 + column * 18, 142));
+            slots.Add(new SlotView(new SlotAt(inventory.Slots, column), 8 + column * 18, top + 58));
     }
 
     // The panel, or the window's texture of a pack under the name Minecraft gives it, with no title
     // or label over it, since its slots say what it is, the window's own pictures, told whether the
     // window is the pack's, its slots and their stacks, then the pointer's clicks and keys on them,
     // the tooltip and the stack held. A pack's window holds its slots.
-    private void Window(List<SlotView> slots, Inventory inventory, string container, Action<int, int, int, bool> pictures)
+    private void Window(List<SlotView> slots, Inventory inventory, string container, Action<int, int, int, bool> pictures, int rows = 0)
     {
         var s = Gui.Scale;
         int left = (GetScreenWidth() - Width * s) / 2, top = (GetScreenHeight() - Height * s) / 2;
         Gui.Backdrop();
         var pack = PackGui.Container(container);
-        if (pack is { } window) PackGui.DrawPart(window, 256, 256, 0, 0, Width, Height, left, top, s);
+        if (pack is { } window && rows > 0)
+        {
+            PackGui.DrawPart(window, 256, 256, 0, 0, Width, 17 + rows * 18, left, top, s);
+            PackGui.DrawPart(window, 256, 256, 0, 126, Width, 96, left, top + (17 + rows * 18) * s, s);
+        }
+        else if (pack is { } whole) PackGui.DrawPart(whole, 256, 256, 0, 0, Width, Height, left, top, s);
         else Gui.Stretched(GuiArt.Panel, new Rectangle(left, top, Width * s, Height * s));
         pictures(left, top, s, pack is not null);
 
@@ -376,7 +401,8 @@ public sealed class InventoryWindow
     private void QuickMove(SlotAt at)
     {
         if (_inventory is not { } inventory) return;
-        if (at.Slots == inventory.Slots) SlotMoves.QuickMove(inventory, at.Index, _furnace);
+        if (at.Slots == inventory.Slots && _chest is { } chest) SlotMoves.MoveInto(at, SlotMoves.Range(chest.Slots, 0, Chest.Size).ToList());
+        else if (at.Slots == inventory.Slots) SlotMoves.QuickMove(inventory, at.Index, _furnace);
         else SlotMoves.MoveInto(at, SlotMoves.FromContainer(inventory));
     }
 
@@ -386,6 +412,7 @@ public sealed class InventoryWindow
         var slots = new List<SlotAt>();
         if (_grid is { } grid) slots.AddRange(SlotMoves.Range(grid.Slots, 0, grid.Slots.Length));
         if (_furnace is { } furnace) slots.AddRange([new SlotAt(furnace.Slots, Furnace.Input), new SlotAt(furnace.Slots, Furnace.Fuel)]);
+        if (_chest is { } chest) slots.AddRange(SlotMoves.Range(chest.Slots, 0, Chest.Size));
         if (_inventory is { } inventory) slots.AddRange(SlotMoves.Range(inventory.Slots, 0, Inventory.Size));
         return slots;
     }

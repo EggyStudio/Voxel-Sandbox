@@ -23,12 +23,14 @@ public static class PackTextures
     /// leaves are.
     /// </summary>
     /// <remarks>
+    /// A texture turned by <paramref name="Turns"/> quarter turns clockwise is a tile of its own, as a
+    /// rail running east and west shows the one running north and south turned.
     /// Where <paramref name="Looks"/> is set, the game's own looks of <see cref="GroundArt"/> lie over
     /// the texture, each picked by the block's place. A pack gives pictures alone, and the game
     /// reads nothing of a pack's block states or models, which hold how a block is drawn and
     /// chosen, since how the game draws and chooses is its own.
     /// </remarks>
-    public readonly record struct Look(string Texture, string? Overlay = null, Color? Tint = null, bool Looks = false);
+    public readonly record struct Look(string Texture, string? Overlay = null, Color? Tint = null, bool Looks = false, int Turns = 0);
 
     private static readonly Dictionary<int, Look> _surfaces = new()
     {
@@ -178,6 +180,14 @@ public static class PackTextures
         [Surfaces.DeepslateEmeraldOre] = new("block/deepslate_emerald_ore"),
         [Surfaces.Lava] = new("block/lava_still"),
         [Surfaces.Moss] = new("block/moss_block"),
+        // A chest's faces cut from the source's picture of its chest model by ChestArt.
+        [Surfaces.ChestTop] = new(ChestArt.Top),
+        [Surfaces.ChestSide] = new(ChestArt.Side),
+        [Surfaces.ChestFront] = new(ChestArt.Front),
+        [Surfaces.ChestBottom] = new(ChestArt.Bottom),
+        [Surfaces.Rail] = new("block/rail"),
+        [Surfaces.RailAcross] = new("block/rail", Turns: 1),
+        [Surfaces.Cobweb] = new("block/cobweb"),
         [Surfaces.CaveVines] = new("block/cave_vines_plant"),
         [Surfaces.CaveVinesLit] = new("block/cave_vines_plant_lit"),
         [Surfaces.Fern] = new("block/fern"),
@@ -263,6 +273,8 @@ public static class PackTextures
         ["tall_grass"] = "block/tall_grass_top",
         ["fern"] = "block/fern",
         ["dead_bush"] = "block/dead_bush",
+        ["rail"] = "block/rail",
+        ["cobweb"] = "block/cobweb",
         ["brown_mushroom"] = "block/brown_mushroom",
         ["red_mushroom"] = "block/red_mushroom",
     };

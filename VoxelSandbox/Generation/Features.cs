@@ -49,6 +49,17 @@ public readonly struct ColumnClip(ChunkColumn column)
         if (Inside((int)MathF.Floor(mob.Position.X), (int)MathF.Floor(mob.Position.Y), (int)MathF.Floor(mob.Position.Z))) column.Spawns.Add(mob);
     }
 
+    /// <summary>
+    /// Places a chest facing a way, holding the loot of a <see cref="ChestLoot"/> table to be rolled
+    /// when it is first opened, from a seed of its place and the world's, if it stands inside the column.
+    /// </summary>
+    public void Chest(int x, int y, int z, Facing facing, string loot, int seed)
+    {
+        if (!Inside(x, y, z)) return;
+        column.Set(x - MinX, y, z - MinZ, Blocks.Variant(BlockId.Chest, facing));
+        column.Chests.Add(new ChestPlaced(x, y, z, loot, PlaceHash.Of(x * 31 + y, z, seed ^ 0x4c07)));
+    }
+
     /// <summary>Whether a box between two corners reaches into the column.</summary>
     public bool Touches(int x0, int z0, int x1, int z1) =>
         x1 >= MinX && x0 <= MinX + Section.Mask && z1 >= MinZ && z0 <= MinZ + Section.Mask;

@@ -166,7 +166,7 @@ where the bit nearest a place flies, and `voxel.kill` takes the mobs away. `voxe
 fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival, adventure or
 spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the
 inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and
-reads a furnace, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
+reads a furnace, `voxel.chest` reads a chest, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
 `voxel.throw` throws as Q does, and `voxel.drop` lays one of an item on the ground at a place.
 `voxel.weather` says, holds or frees the weather, `voxel.view` sets where the camera stands,
 `voxel.sounds` says how loud the place's sounds
@@ -495,7 +495,29 @@ stepped sandstone pyramid in the desert, a dark chamber at its heart with a floo
 and a cobblestone dungeon deep under any ground, a magma block at its middle where Minecraft's has
 its spawner. The pyramid is as rare as the source's, one at most to each square of 32 chunks, at a
 chunk among its first 24 each way and only where that falls in the desert, so a desert holds one or
-none. `voxel.find <village|igloo|pyramid|dungeon|ravine>` gives the nearest one's place.
+none. `voxel.find <village|igloo|pyramid|dungeon|ravine|mineshaft>` gives the nearest one's place.
+
+An abandoned mineshaft lies deep under the ground, one to each square of sixteen chunks, about the
+source's one chunk in 250, its room's floor of dirt from 40 under the world's zero to 30 over it.
+Corridors three wide and three high run out from the room's walls, two to four lengths of five
+blocks each, and turn, branch, cross and step down five blocks over nine, eight pieces deep at most
+and within 80 blocks of the room, as the source lays its pieces out, a piece that would cross one
+laid before it left out. Every five blocks a corridor is held up by posts of logs under a beam of
+planks, as the modpack's mineshafts are, the wood the biome's over the room, acacia in the savanna,
+spruce in the taiga, birch, jungle wood, cherry, and dark oak in the dark forest and the badlands,
+and oak elsewhere. A lantern hangs under one beam in ten, cobwebs hang under the ceiling, one
+corridor in three has rails, a floor of planks crosses a cave, and nothing is cut within four blocks
+of the ground. Seed 1's nearest, under the forest 79 blocks from the spawn, holds 356 rails, 164
+cobwebs and 15 chests on the 128 blocks about its room.
+
+A chest stands in a niche of one corridor in eight, its loot the source's mineshaft table with the
+items the game has, rolled the first time it is opened or broken from a seed of its place, so a
+world's chest holds the same loot each time. A chest is a block of its own, made of eight planks,
+its faces cut from a pack's picture of the source's chest model, and its window is the source's of
+three rows, which a shift-click moves a stack into. `voxel.chest <x> <y> <z>` says what one holds,
+and a save keeps every chest in the world's `chests.json`, those not yet opened with their loot to
+roll. Rails, made of six iron ingots and a stick, and cobwebs, which give their string, are blocks
+too.
 
 A village stands where the plains, the taiga, the snowy plains or the desert lie nearly level across
 48 blocks, built of that biome's wood or sandstone. Villages are spaced as the source spaces them,

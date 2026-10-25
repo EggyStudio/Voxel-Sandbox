@@ -250,6 +250,13 @@ public enum BlockId : ushort
     CaveVines,
     CaveVinesLit,
     SnowLayer,
+    Chest,
+    ChestEast,
+    ChestSouth,
+    ChestWest,
+    Rail,
+    RailEast,
+    Cobweb,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -600,6 +607,14 @@ public static class Blocks
                 Kind: BlockKind.Shaped, Shape: BlockShape.Vines(Surfaces.CaveVinesLit, Surfaces.GlowBerryLight), HeldAs: BlockId.CaveVines),
             // The snow the weather lays on the tops, an eighth of a block deep, as the source's first layer.
             Shaped(BlockId.SnowLayer, "snow_layer", "Snow", BlockShape.SnowLayer(Surfaces.Snow), 0),
+            // A chest faces the way its latch looks, as the player who places it faces it.
+            Shaped(BlockId.Chest, "chest", "Chest", BlockShape.Chest(Facing.North), 0),
+            Shaped(BlockId.ChestEast, "chest_east", "Chest", BlockShape.Chest(Facing.East), 0, BlockId.Chest),
+            Shaped(BlockId.ChestSouth, "chest_south", "Chest", BlockShape.Chest(Facing.South), 0, BlockId.Chest),
+            Shaped(BlockId.ChestWest, "chest_west", "Chest", BlockShape.Chest(Facing.West), 0, BlockId.Chest),
+            Plant(BlockId.Rail, "rail", "Rail", BlockShape.Rail(Surfaces.Rail, Facing.North), Surfaces.Rail),
+            Plant(BlockId.RailEast, "rail_east", "Rail", BlockShape.Rail(Surfaces.RailAcross, Facing.East), Surfaces.Rail) with { HeldAs = BlockId.Rail },
+            Plant(BlockId.Cobweb, "cobweb", "Cobweb", BlockShape.Cobweb(Surfaces.Cobweb), Surfaces.Cobweb),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");

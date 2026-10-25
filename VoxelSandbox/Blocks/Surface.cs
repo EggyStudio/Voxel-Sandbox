@@ -302,6 +302,16 @@ public static class Surfaces
     public static readonly int CaveVines = Add("cave vines", new Color(92, 120, 46));
     public static readonly int CaveVinesLit = Add("cave vines with glow berries", new Color(150, 130, 60));
     public static readonly int GlowBerryLight = Add("glow berry light", new Color(255, 210, 140), emissive: new Color(255, 205, 140), glow: 6, unseen: true);
+    // A chest's faces, its lid's top, its sides, its front with the latch and its bottom, each a pack's
+    // tile cut from the source's picture of its chest model, or its wood's color.
+    public static readonly int ChestTop = Add("chest top", new Color(160, 112, 50));
+    public static readonly int ChestSide = Add("chest side", new Color(150, 104, 46));
+    public static readonly int ChestFront = Add("chest front", new Color(150, 104, 46));
+    public static readonly int ChestBottom = Add("chest bottom", new Color(130, 90, 40));
+    // A rail running north and south and one running east and west, its texture turned a quarter.
+    public static readonly int Rail = Add("rail", new Color(120, 110, 100));
+    public static readonly int RailAcross = Add("rail across", new Color(120, 110, 100));
+    public static readonly int Cobweb = Add("cobweb", new Color(220, 220, 225));
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

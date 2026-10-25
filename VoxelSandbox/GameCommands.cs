@@ -327,6 +327,15 @@ public static class GameCommands
         return made > 0 ? $"{made} {found.Key} made" : $"the inventory lacks what {found.Key} is made of";
     }
 
+    [Command("voxel.chest", "Says what the chest at a place holds, rolling the loot it holds first as opening it does: voxel.chest <x> <y> <z>")]
+    internal static string Chest(int x, int y, int z)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        if (!Chests.IsChest(game.World.GetBlock(x, y, z))) return $"no chest stands at {x}, {y}, {z}";
+        var held = game.Chests.At(x, y, z).Slots.OfType<ItemStack>().ToList();
+        return held.Count == 0 ? "the chest is empty" : string.Join(", ", held.Select(s => $"{s.Count} {s.Item.Key}"));
+    }
+
     [Command("voxel.furnace", "Says what the furnace at a place holds, its fire and its smelting, putting so many of an item to smelt and of a fuel in it where given: voxel.furnace <x> <y> <z> [item] [count] [fuel] [count]")]
     internal static string Furnace(int x, int y, int z, string item = "", int count = 1, string fuel = "", int fuelCount = 1)
     {
@@ -403,10 +412,11 @@ public static class GameCommands
     internal static string Place()
     {
         if (Game is not { } game) return "no world is loaded";
-        var (atTable, atFurnace) = (game.AtTable, game.AtFurnace);
+        var (atTable, atFurnace, atChest) = (game.AtTable, game.AtFurnace, game.AtChest);
         var used = game.Use();
         if (!atTable && game.AtTable) return "the crafting table is opened";
         if (atFurnace is null && game.AtFurnace is { } at) return $"the furnace at {at.X}, {at.Y}, {at.Z} is opened";
+        if (atChest is null && game.AtChest is { } box) return $"the chest at {box.X}, {box.Y}, {box.Z} is opened";
         return used is not BlockId.Air ? $"{Blocks.Get(used).Key} is placed" : "nothing can be placed there";
     }
 
@@ -690,7 +700,7 @@ public static class GameCommands
         return $"{Blocks.Get(game.World.GetBlock(hit.X, hit.Y, hit.Z)).Key} at {hit.X}, {hit.Y}, {hit.Z}, {hit.Distance:0.0} blocks along the ray and {flat:0.0} along the ground";
     }
 
-    [Command("voxel.find", "The nearest start of a structure from the player, by the corner it is built from: voxel.find <village|igloo|pyramid|dungeon|ravine>")]
+    [Command("voxel.find", "The nearest start of a structure from the player, by the corner it is built from: voxel.find <village|igloo|pyramid|dungeon|ravine|mineshaft>")]
     internal static string Find(string name)
     {
         if (Game is not { } game) return "no world is loaded";

@@ -28,6 +28,7 @@ public sealed record WorldInfo(string Kind, int Seed, float X, float Y, float Z,
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(WorldInfo))]
 [JsonSerializable(typeof(WorldSave.FurnaceRecord[]))]
+[JsonSerializable(typeof(WorldSave.ChestRecord[]))]
 internal sealed partial class SaveJson : JsonSerializerContext;
 
 /// <summary>
@@ -315,6 +316,39 @@ public sealed class WorldSave
         var path = Path.Combine(Folder, "furnaces.json");
         var records = furnaces.All.Select(f => new FurnaceRecord(f.Key.X, f.Key.Y, f.Key.Z, [.. f.Value.Slots.Select(Inventory.Encode)], f.Value.Burning, f.Value.BurnTotal, f.Value.Cooked));
         File.WriteAllText(path + ".new", JsonSerializer.Serialize(records.ToArray(), SaveJson.Default.FurnaceRecordArray));
+        File.Move(path + ".new", path, overwrite: true);
+    }
+
+    /// <summary>A chest as a save keeps it, with its place, its slots as <see cref="Inventory.Encode"/> gives them, and the loot it holds not yet rolled.</summary>
+    public sealed record ChestRecord(int X, int Y, int Z, string[] Slots, string? Loot, uint Seed);
+
+    /// <summary>The world's chests, read from its <c>chests.json</c>, none for a folder never saved into.</summary>
+    public Chests ReadChests()
+    {
+        var chests = new Chests();
+        var path = Path.Combine(Folder, "chests.json");
+        if (!File.Exists(path)) return chests;
+        try
+        {
+            foreach (var r in JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.ChestRecordArray) ?? [])
+            {
+                var chest = new Chest { Loot = r.Loot, Seed = r.Seed };
+                for (int i = 0; i < Math.Min(Chest.Size, r.Slots.Length); i++) chest.Slots[i] = Inventory.Decode(r.Slots[i]);
+                chests.Add((r.X, r.Y, r.Z), chest);
+            }
+        }
+        catch (Exception ex) when (ex is IOException or JsonException)
+        {
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's chests begin empty. {ex.Message}");
+        }
+        return chests;
+    }
+
+    public void WriteChests(Chests chests)
+    {
+        var path = Path.Combine(Folder, "chests.json");
+        var records = chests.All.Select(c => new ChestRecord(c.Key.X, c.Key.Y, c.Key.Z, [.. c.Value.Slots.Select(Inventory.Encode)], c.Value.Loot, c.Value.Seed));
+        File.WriteAllText(path + ".new", JsonSerializer.Serialize(records.ToArray(), SaveJson.Default.ChestRecordArray));
         File.Move(path + ".new", path, overwrite: true);
     }
 

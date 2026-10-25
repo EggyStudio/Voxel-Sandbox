@@ -47,6 +47,10 @@ public static class Loot
                 // Gravel gives flint one time in ten, as the source's does.
                 yield return random.Next(10) == 0 ? (Items.Flint, 1) : (Items.Of(BlockId.Gravel), 1);
                 yield break;
+            // A cobweb gives its string, as the source's does to a sword.
+            case BlockId.Cobweb:
+                yield return (Items.String, 1);
+                yield break;
             case BlockId.DeadBush:
                 if (random.Next(3) is > 0 and var sticks) yield return (Items.Stick, sticks);
                 yield break;
@@ -156,7 +160,9 @@ public static class Loot
         BlockId.Ice => (ToolKind.Pickaxe, false),
         BlockId.OakLog or BlockId.BirchLog or BlockId.SpruceLog or BlockId.OakPlanks or BlockId.SprucePlanks or BlockId.BirchPlanks
             or BlockId.CraftingTable or BlockId.OakFence or BlockId.OakDoor or BlockId.OakSlab or BlockId.SpruceSlab
-            or BlockId.OakStairs or BlockId.SpruceStairs => (ToolKind.Axe, false),
+            or BlockId.OakStairs or BlockId.SpruceStairs or BlockId.Chest => (ToolKind.Axe, false),
+        BlockId.Rail => (ToolKind.Pickaxe, false),
+        BlockId.Cobweb => (ToolKind.Sword, false),
         BlockId.Dirt or BlockId.Grass or BlockId.Sand or BlockId.Gravel or BlockId.Snow or BlockId.Farmland or BlockId.DirtPath => (ToolKind.Shovel, false),
         _ => (ToolKind.None, false),
     };
@@ -187,6 +193,8 @@ public static class Loot
         BlockId.Air => 0,
         var deep when Ores.InStone.ContainsKey(deep) => 4.5f,
         BlockId.Torch or BlockId.SoulTorch or BlockId.EndRod or BlockId.Wheat or BlockId.Tnt => 0,
+        BlockId.Rail => 0.7f,
+        BlockId.Cobweb => 4,
         var plant when BlockGroups.Plants.Contains(plant) => 0,
         var leaves when BlockGroups.Leaves.ContainsKey(leaves) => 0.2f,
         BlockId.BrownMushroomBlock or BlockId.RedMushroomBlock or BlockId.MushroomStem => 0.2f,
@@ -207,7 +215,7 @@ public static class Loot
             or BlockId.BlackWool or BlockId.BrownWool or BlockId.PinkWool => 0.8f,
         BlockId.Shroomlight => 1,
         BlockId.Stone or BlockId.StoneBricks or BlockId.StoneBrickStairs => 1.5f,
-        BlockId.CraftingTable => 2.5f,
+        BlockId.CraftingTable or BlockId.Chest => 2.5f,
         BlockId.Deepslate => 3,
         BlockId.CobbledDeepslate => 3.5f,
         BlockId.CoalOre or BlockId.IronOre => 3,
