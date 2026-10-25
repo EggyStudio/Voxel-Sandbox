@@ -1489,19 +1489,17 @@ frame's time, draws and triangles, and a save keeps no distance of its own. The 
 through the terrain's own shader, which keeps the positions their meshes hold, and the game marks it
 so with `SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and
 each of the sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the
-shadows take about the same from 8 columns to 16. Over seed 1's spawn at noon, from 100 blocks up
-looking north, at 1280 by 720 offscreen on the development machine's RTX 4070 Laptop GPU with the
-three default packs, the frame keeps 60 a second at 8 columns and loses it at 12, where the main
-thread bounds it, the game's update and drawing with the engine's render work, while the GPU's work
-stays at 14 to 15 ms. The frame's time, the GPU's and the CPU's passes' in milliseconds and the
-memory the game holds, one session each, the frame's time varying by up to 6 ms between sessions at
-12 columns and the GPU's by under 0.5:
+shadows take about the same from 8 columns to 16. Over seed 1's spawn at noon, looking east over
+the forest to the sea, at 1280 by 720 offscreen on the development machine's RTX 4070 Laptop GPU
+with the three default packs and the screen's probes on, in a Debug build, the frame keeps 60 a
+second at 8 columns and at 12 and loses it at 16, where the GPU's work bounds it. The frame's time,
+the GPU's and the CPU's passes' in milliseconds and the memory the game holds:
 
 | columns | frame | GPU | CPU's passes | memory |
 |---|---|---|---|---|
-| 8 | 16.8 | 10.8 | 7.4 | 1,002 MB |
-| 12 | 17.5 | 14.3 | 10.1 | 1,551 MB |
-| 16 | 40.3 | 18.4 | 22.6 | 2,675 MB |
+| 8 | 16.7 | 12.1 | 6.5 | 1,029 MB |
+| 12 | 16.7 | 16.6 | 11.0 | 1,308 MB |
+| 16 | 23.8 | 23.8 | 17.7 | 1,942 MB |
 
 The plants are most of what a meadow draws. Over seed 1's plains at noon at 12 columns, from 20
 blocks up at -288, 64 looking east, they take the frame from 1.18 million triangles to 1.64, the
@@ -1522,13 +1520,13 @@ cave's mouth, and `voxel.state` counts them, at 1920 by 1080 61 of the 1,683 dra
 cherry grove and 149 of the 1,563 at the plains village, 4 and 10 percent of their triangles. A
 column takes 11 to 16 ms to generate on a worker and 6 to 7 ms to light.
 
-Flying east over land the stream has not loaded, the game meshes the sections and joins the columns
-that come into reach on the main thread, and the frame keeps 60 a second at no distance. In three
-flights of ten seconds over the same land it takes 18.3 to 18.9 ms at 8 columns, 18.4 to 20.9 at 10,
-21.4 to 28.8 at 12 and 23.8 to 24.7 at 14.
+Flying east over land the stream has not loaded, the game joins the columns that come into reach on
+the main thread and meshes their sections on the workers, and the frame keeps 60 a second at no
+distance. In three flights of ten seconds over the same land, with the screen's probes off, it took
+18.3 to 18.9 ms at 8 columns, 18.4 to 20.9 at 10, 21.4 to 28.8 at 12 and 23.8 to 24.7 at 14.
 
-On lavapipe, as the build workflow plays the game, the GPU's work is 0.49 s a frame at 4 columns,
-0.82 s at 8, 1.20 s at 12 and 1.42 s at 14. Leaving the unseen sections out matters most underground.
+On lavapipe, as the build workflow plays the game, the GPU's work with the screen's probes on is
+0.85 s a frame at 4 columns, 1.13 s at 8, 1.60 s at 12 and 2.18 s at 14. Leaving the unseen sections out matters most underground.
 In a cave of seed 1's hills it leaves 905 of 1,085 sections undrawn and takes the frame from 16 ms
 to 4, the sun's shadows from 6.9 ms to 0.07, and in a closed room on a flat world it takes 0.3 ms
 off the window's passes.

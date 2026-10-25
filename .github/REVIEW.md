@@ -5,21 +5,37 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `117392b`, Verdict 6's mend, pushed at 18:34 on 2026-10-25 after the red run of
-`b7608c7` ended, its run green at 19:41 with the play job 67 minutes under the limit of 90, the
-water check reading its ticks, carrying REVIEW.md and DEVLOG.md. ChunkRenderer gains HeldTicks and
-voxel.ticks holds the animated textures and the lamps at a tick, the play run reading the pool at
-ticks 0 to 3 for white and black alternating in green and setting off, without a sleep, the README's
-commands paragraph naming it. 352 tests, play.sh 199 s on the RTX and 1,267 s on local lavapipe with
-validation, both reading the water's green at the four ticks as 114, 70, 114 and 70. Item 29's
-workers next, whose first settle reading showed the land settling four times slower, 9 to 13 s
-against 2 to 3 with frames of 9 to 12 ms against 19 to 58, eight meshers with a frame's round trip
-meshing too few sections a second, so the meshers in flight rise and the settle and the flights are
-read again before the commit. After `b7608c7`, item 95's first commit, three of the section's parts
-as mesh entities on 5.2.313, pushed at 17:34 on 2026-10-25 once the run of `ddede23` went green, its
-run red on the play job at 17:53 with the three test jobs green, Verdict 6, carrying NORM.md, the
-review's files and DEVLOG.md with a note. The solid, the solid cut-out and the molten parts are
-entities with an uploaded Mesh, an ECS Material through the terrain shader copying the
+Reviewed up to `bb0b9bb`, item 29's meshing on the workers, pushed at 19:49 on 2026-10-25 once the
+run of `117392b` went green, the run watched, carrying the review's files and a devlog note.
+SectionMesher splits into Gather on the main thread, the fill and, for a section holding water, a
+copy of the 18 by 32 by 18 cells the water's depth reads, and Build reading the mesher's own arrays
+alone, Mesh calling both; ChunkRenderer keeps a stack of 64 meshers with a semaphore letting half
+the cores up to 16 build at once, the sends numbered from one counter so a stale result is dropped,
+edits meshed synchronously, a section of air let go in the loop with no mesher, the loop parking far
+sections and filing unseen ones with every mesher lent, and voxel.state and the F3 window counting
+the sections lent and not yet taken in as to mesh so the play script's meshed wait holds; a test
+gathers a section, changes the world, builds and reads the faces equal to those meshed before the
+change. With the machine's load at 6 to 12, Release flights at distance 12 read update.mesh 0.32,
+0.23 and 0.46 ms against 0.26, 3.28 and 3.71 and the frames 25.9, 31.5 and 30.0 against 25.4, 37.7
+and 45.1, the settle after a teleport 5, 3 and 3 s against 6, 5 and 5 with update.mesh 2 to 3 ms
+against 4 to 6, and Debug on lavapipe pinned to four cores at distance 4 settles in 64 and 73 s
+against 59 and 74 with update.mesh 4 ms against 10 to 12; a first version with eight meshers and a
+round a frame settled in 9 to 13 s since every air section waited a frame for a worker. 353 tests,
+play.sh 322 s on the GPU. After `117392b`, Verdict 6's mend, pushed at 18:34 on 2026-10-25 after the
+red run of `b7608c7` ended, its run green at 19:41 with the play job 67 minutes under the limit of
+90, the water check reading its ticks, carrying REVIEW.md and DEVLOG.md. ChunkRenderer gains
+HeldTicks and voxel.ticks holds the animated textures and the lamps at a tick, the play run reading
+the pool at ticks 0 to 3 for white and black alternating in green and setting off, without a sleep,
+the README's commands paragraph naming it. 352 tests, play.sh 199 s on the RTX and 1,267 s on local
+lavapipe with validation, both reading the water's green at the four ticks as 114, 70, 114 and 70.
+Item 29's workers next, whose first settle reading showed the land settling four times slower, 9 to
+13 s against 2 to 3 with frames of 9 to 12 ms against 19 to 58, eight meshers with a frame's round
+trip meshing too few sections a second, so the meshers in flight rise and the settle and the flights
+are read again before the commit. After `b7608c7`, item 95's first commit, three of the section's
+parts as mesh entities on 5.2.313, pushed at 17:34 on 2026-10-25 once the run of `ddede23` went
+green, its run red on the play job at 17:53 with the three test jobs green, Verdict 6, carrying
+NORM.md, the review's files and DEVLOG.md with a note. The solid, the solid cut-out and the molten
+parts are entities with an uploaded Mesh, an ECS Material through the terrain shader copying the
 ModelMaterial's alpha mode, cutoff, roughness and emission with DoubleSided false since the ECS
 Material defaults to double-sided, a Transform, Visible, ShadowOnly and the game's SectionPart
 naming the section and the kind, the molten's material written again when the lamps rebuild; a Place
@@ -539,7 +555,9 @@ full.
     Chosen, the meshing moves to the workers first, SectionMesher filling its arrays off the main
     thread and the main thread taking the finished arrays in and uploading them, a commit or two;
     part two as written is held on these numbers for the owner's word, Decision 12 being the
-    owner's.
+    owner's. The meshing on the workers at `bb0b9bb` on 2026-10-25, update.mesh under half a
+    millisecond in the flights and the settle no slower, the readings in the devlog's note; part two
+    as written stays held for the owner's word.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
