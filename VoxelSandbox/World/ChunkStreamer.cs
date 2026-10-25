@@ -31,8 +31,16 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     private (SectionKey Eye, int Distance)? _packedFor;
     private const int PackedAFrame = 16;
 
-    /// <summary>Columns asked for and not yet in the world.</summary>
-    public int Pending => _pending.Count;
+    /// <summary>
+    /// Columns asked for and not yet in the world, those a worker is generating and those waiting for
+    /// a worker or for their caves' readings from the GPU.
+    /// </summary>
+    /// <remarks>
+    /// Where the GPU reads the caves' noises, a column waits for its readings with no worker on it, so
+    /// a count of the workers' columns alone reads none while a new place's columns wait on a slow
+    /// device, as on lavapipe.
+    /// </remarks>
+    public int Pending => _pending.Count + _wanted.Count;
 
     /// <summary>Generates the columns around a point on this thread, so the player has ground under them before the first frame.</summary>
     public void LoadNow(Vector3 at, int radius)

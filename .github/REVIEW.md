@@ -5,54 +5,40 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `2549786`, item 29's first part's first half, every noise in fixed point on the CPU,
-read at 06:29 on 2026-10-25, carrying the review's files and DEVLOG.md. SourceNoise, the caves and
-the aquifers, and Noise, the terrain, the climate, the plant patches and the clouds, are integers
-alone; a level reads a point as its offset plus the integer coordinates times its frequency, each a
-uint of 24 fractional bits whose 8 whole bits wrap at the period of 256, so no per-column bases are
-needed and a shader reads the same sum; the noise, the fades, the lerps and the weights carry 16
-fractional bits with every product floored in FixedNoise.Mul, the shader to do it in four 32-bit
-half products; the permutations and the offsets come from the same Random sequence as before, the
-scales SourceNoise.Scaled samplers the caves pick by index. Over 144 columns about seed 1's origin
-4,552 blocks of 14,155,776 differ, 0.032%, 1,578 between air and ground across 131 columns, 3,011 of
-them from SourceNoise; the spawn's ground at 75, the five villages, the mineshaft, the ravine, the
-pyramid, the ruin, the shipwreck, the temple, the hut and the outpost stand where they stood, the
-cliffs' steps of two or more at the spawn 460 unchanged, of three or more 7 where 6, the village's 0
-where 1, no test or play.sh pin moved. A column on the CPU takes 16.86 ms against 16.05 in floats,
-the caves 5.68 against 5.36 and the ground's 256 lookups 1.15 against 0.83, the GPU half to take the
-caves off. FixedNoiseTests reads Mul's floor, Smooth's ends and middle, zero at the cell corners and
-the period at a power-of-two step, and holds both noises within 2e-3 of a double reference of their
-old formula over 2,000 points each. The README says an old world may show a block's step where saved
-and new columns meet. 350 tests, play.sh 346 s on the GPU, the pack's pictures check 35 s against 76
-before, so that was a one-off. After `87d089e`, item 30, the packs' mob models, read at 06:11 on
-2026-10-25, carrying the review's files, DEVLOG.md and a captioned picture, pushed with `2549786` at
-06:38 on 2026-10-25 once the run of `bbe814c` went green, the run watched. PackModels reads the
-loaded packs' cem jem files by kind, the sheep's wool as its tinted second picture, into the game's
-pieces, each top part one piece holding every box nested in it and each box placed by the turns of
-the parts it lies in, Cuboid gaining Placed and Parts, a face's own part of the picture with faces
-not given left out; the coordinates read as Blockbench reads them, a top part's pivot its negated
-translation and its boxes where they say, a nested part's translation its pivot and deeper parts and
-boxes standing from their holder's pivot, the turns about x, then y, then z, checked against Fresh
-Animations' own zombie and cow; the UVs scaled from the model's texture size to the kind's picture.
-Roles come from the source's part names, a nested part named for a role lifted into its own piece
-since the pack lays the cow's, pig's, sheep's, chicken's and creeper's heads inside their bodies,
-numbered legs taking their roles by where they stand, a leg or arm pivoted in the lower three
-quarters of its boxes swinging from its top since the pack pivots the cow's legs at the hoof, a kind
-keeping its own model where no pack models it or none gives its pictures, MobRenderer drawing from a
-per-kind parts array. Two departures, the expressions not read so the pack's blinks, ears and tails
-stand at rest, as Decision 22 has it, and the pack's texture key not read, the kind's pictures found
-as before. PackModelTests reads a small cow of the form for the roles, the lifted head, the turned
-body's bounds, a leg pivot moved from the hoof, a face's UV scaled and the other faces left out, and
-no pack or a malformed file giving null, and a test over the reference copy covers the eight kinds,
-returning early where the machine lacks it. 347 tests, play.sh 489 s on the GPU against about 320
-before, the pack's pictures check 76 s, to be read again on the next run.
+Reviewed up to `1d31dda`, item 29's first part's GPU half, the caves' readings in a compute shader,
+read at 06:57 on 2026-10-25, carrying the review's files, pushed at 07:22 on 2026-10-25 once the run
+of `2549786` went green, its run red on the play job at 07:52, the three test jobs green, Verdict 4.
+cavefields.slang reads the caves' noises at the corners of a batch of 8 columns, a thread a reading,
+30 readings at each of a column's 1,225 cell corners in Caves.Samplers' order, in fixed point as the
+CPU does with each product's floor from four 32-bit half products. CaveFields on the main thread
+keeps up to 3 batches in flight, each writing its own values buffer read back with
+ReadShaderBufferAsync, a batch's column corners a uniform int4 array of its dispatch the engine
+copies as it dispatches, since a storage buffer would make UpdateShaderBuffer wait for every
+dispatch before it; a batch of 16 stalled the world's opening for over 30 s on the NVIDIA GPU, so
+the batch is 8. The streamer asks the GPU ahead of its workers nearest first, a worker generating
+from the readings through Overworld.Generate with ArraySegments of one array a batch and no copies;
+with no compute device or no shader the path turns itself off and every column reads on the CPU. GPU
+Generation stands on the Render Settings screen, on by default, and voxel.gpu says how many columns
+the GPU read, turns it on or off for the session and verify compares N by N columns about the player
+reading by reading. A worker takes 10.98 ms a column from the readings against 16.47 reading the
+noises itself, tiering off; flying to one new place on seed 1 in fresh sessions, both paths settle
+in 3.6 to 3.8 s, the main thread's joining and meshing setting the pace, the frames during the
+flight 5.6 to 5.8 ms with the GPU against 7.2 without; verify reads 0 of 147,000 readings differing
+over 4 columns at the spawn and 0 of 330,750 over 9 at 2,000, 2,000. play.sh turns GPU Generation
+off before opening the overworld, so lavapipe runs on the CPU path, and one check turns it on,
+compares the 4 columns about the player, flies to 900, 900, requires columns generated from the
+GPU's readings and turns it off, lavapipe's compute running it on CI, the NVIDIA GPU reading 0
+differing and 69 columns from the GPU in 2 s. A test holds a column generated from readings taken
+through the samplers at an offset in a segment equal block for block to one reading the noises, for
+two columns, and the headless game reads CaveFields off with nothing read. 351 tests, play.sh 316 s
+on the GPU with the validation layer.
+
+Before it, `2549786` came, item 29's first part's first half, with `87d089e`, item 30, pushed at
+06:38 on 2026-10-25 once the run of `bbe814c` went green, its run green, the play job 39 minutes.
 
 Before it, `bbe814c` came, item 129, the rain's picture, with `af9d829`, `211e57a` and `057011a`,
 item 31, pushed at 05:40 on 2026-10-25 once the run of `79ad110` went green, its run green, the play
 job 53 minutes.
-
-Before it, `79ad110` came, item 28, the looks Shine shows, pushed at 04:47 on 2026-10-25 once the
-run of `85c3ff6` went green, its run green, the play job 52 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -491,7 +477,23 @@ full.
     2026-10-25, every noise in fixed point on the CPU with the changed blocks counted, a scattering
     of 0.032% and no pinned place moved; the GPU half next, the caves' corner readings in a compute
     shader read back without a wait, voxel.gpu on or off as a setting and voxel.gpu verify comparing
-    both paths bit for bit in play.sh.
+    both paths bit for bit in play.sh. The GPU half at `1d31dda` on 2026-10-25, the caves' readings
+    in a compute shader read back without a wait in batches of 8 with the CPU path kept and verified
+    bit for bit, a worker at 10.98 ms a column against 16.47, which ends part one; part two, the
+    meshing on the engine's item 69, next. Part two waits on the engine from 07:48 on 2026-10-25,
+    its ASKS.md entry in the engine's tree the engine's item 121, since a mesh over shader buffers
+    on 5.2.291 holds one stream and the field reads colors from a UNorm8x4 stream alone, so a
+    section meshed in compute would bounce white, and holds whole buffers, so each section would be
+    sized for its fullest case; the reading before it, three ten-second sprint flights east over
+    unloaded land on seed 1 at render distance 12 offscreen at 1280 by 720 on the RTX 4070 Laptop
+    GPU, the frame 22.0, 37.5 and 37.0 ms, update.mesh 1.0, 7.8 and 6.9, update.stream 0.9, 1.9 and
+    2.4, cpu.scene_field 6.8, 8.6 and 9.3 and the GPU's passes about 12, so the main thread binds
+    the frame and the meshing is the largest part the game owns, the two profile values going with
+    the next commit. Part three next where it needs no engine change, item 95 otherwise once the
+    package publishes. Part three is dropped at 07:51, item 92 having removed far land under
+    Decision 41, so nothing of it remains to move to the GPU; the light levels stay a fourth part if
+    their cost shows, the flights' numbers showing the meshing and the field's main-thread cost and
+    not the flood.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
@@ -515,9 +517,33 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
+130. **The fog does not light a dark cave's far walls.** From the engine's reading for its item 102
+    on 2026-10-25, which answers the question of the cave's distant light asked with item 108's
+    clouds. The far cave's tops at 90 blocks read 9, 13, 18 at High under every cascade alone and
+    with the merge off, and 0, 0, 0 with the game's fog off, so the light seen far down a dark cave
+    is the terrain shader's fog laid over a fragment by its distance alone, and no cascade's light
+    reaches those walls. The fog's share at a fragment is scaled by the sky light reaching it, the
+    flood's sky level the terrain stream carries for the block the face lies in, so a cave's far
+    walls fade to black and not to the fog's color, a cave mouth taking the fog as its sky level
+    rises, and the open land's fog stays as it is. The tests read the far cave's tops at 90 blocks
+    at 0, 0, 0 at High with the fog on and the plains at noon unchanged by RMSE against before, with
+    a before-and-after capture of the cave under N 4.8. One commit, in the gap before the package
+    carrying item 108.
+
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 3 are settled, said under each in REVIEW-ARCHIVE.md.
+4. **The run of `1d31dda` is red, the play job's GPU caves check reading no column generated from
+    the GPU.** Read at 07:56 on 2026-10-25 from the job's page and log. The three test jobs are
+    green. In the play job on lavapipe, verify 2 read 0 of 147,000 readings over 4 columns
+    differing, so the compute path runs there and gives the CPU's values; then voxel.tp 900.5 110
+    900.5 and the script's meshed wait, and voxel.gpu read 'the GPU's reading of the caves' noises
+    is on, 0 columns read since the world opened', where the NVIDIA GPU read 69 in 2 s. So on
+    lavapipe the columns of the new place came from the workers' own reading and none from a batch's
+    readback within the wait, the readbacks slower than the workers there, or the streamer not
+    asking the GPU ahead of them for a teleport, or the count not moved where a worker took the
+    readings; the coder reads which. The mend keeps the check as a check of the GPU path and not of
+    lavapipe's speed, a wait on the batches in flight or a smaller place, with the reason said in
+    the commit. The log is at the run's play job, run 40168842433.
 
 ## Decisions
 
