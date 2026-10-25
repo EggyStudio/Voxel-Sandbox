@@ -304,7 +304,7 @@ public static class PackTextures
     };
 
     // A villager's clothes by its variant, the biome its robe is of, as MobKinds orders the robes.
-    private static readonly string[] _villagerTypes = ["plains", "desert", "taiga", "snow"];
+    private static readonly string[] _villagerTypes = ["plains", "desert", "taiga", "snow", "savanna"];
 
     /// <summary>
     /// The names each of a kind of mob's pictures may have in a pack, its body's first and then its

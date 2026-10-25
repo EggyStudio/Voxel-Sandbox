@@ -1,7 +1,7 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// A village in the plains, the taiga, the snowy plains or the desert, with a well at its middle
+/// A village in the plains, the taiga, the snowy plains, the desert or the savanna, with a well at its middle
 /// and a lantern under the well's roof, four roads of dirt path from it, houses, a forge, farms of
 /// wheat and piles of hay beside the roads, and lamp posts along them, each village of its biome's
 /// wood and stone, with a villager in its robe in each house, two in a long one, at each forge and
@@ -43,14 +43,22 @@ public sealed class Village : Structure
     // North, east, south and west, each road's way out from the well.
     private static readonly (int X, int Z)[] Ways = [(0, -1), (1, 0), (0, 1), (-1, 0)];
 
-    /// <summary>What a village of a biome is built from, its houses' roofs of stairs where it has them and flat where not.</summary>
-    private sealed record Palette(BlockId Wall, BlockId Corner, BlockId Floor, BlockId Roof, BlockId Post, BlockId? Stairs, byte Robe);
+    /// <summary>
+    /// What a village of a biome is built from, its houses' roofs of stairs where it has them and flat
+    /// where not, its villagers' robe and its windows.
+    /// </summary>
+    private sealed record Palette(BlockId Wall, BlockId Corner, BlockId Floor, BlockId Roof, BlockId Post, BlockId? Stairs, byte Robe, BlockId Window = BlockId.Glass);
 
+    // Each kind of the source's villages with its own blocks, the taiga's floors and footings of mossy
+    // cobblestone, the snowy plains' windows of ice under roofs of snow, the desert's sandstone with
+    // corners of yellow terracotta, and the savanna's acacia on floors of orange terracotta under
+    // flat roofs, as the source's savanna and desert houses are flat.
     private static Palette? For(Biome biome) =>
         biome == Biomes.Plains ? new(BlockId.OakPlanks, BlockId.OakLog, BlockId.Cobblestone, BlockId.OakPlanks, BlockId.Lantern, BlockId.OakStairs, 0)
-        : biome == Biomes.Taiga ? new(BlockId.SprucePlanks, BlockId.SpruceLog, BlockId.Cobblestone, BlockId.SprucePlanks, BlockId.Lantern, BlockId.SpruceStairs, 2)
-        : biome == Biomes.SnowyPlains ? new(BlockId.SprucePlanks, BlockId.SpruceLog, BlockId.Cobblestone, BlockId.Snow, BlockId.Lantern, BlockId.SpruceStairs, 3)
-        : biome == Biomes.Desert ? new(BlockId.Sandstone, BlockId.Sandstone, BlockId.Sandstone, BlockId.Sandstone, BlockId.Torch, null, 1)
+        : biome == Biomes.Taiga ? new(BlockId.SprucePlanks, BlockId.SpruceLog, BlockId.MossyCobblestone, BlockId.SprucePlanks, BlockId.Lantern, BlockId.SpruceStairs, 2)
+        : biome == Biomes.SnowyPlains ? new(BlockId.SprucePlanks, BlockId.SpruceLog, BlockId.Cobblestone, BlockId.Snow, BlockId.Lantern, BlockId.SpruceStairs, 3, BlockId.Ice)
+        : biome == Biomes.Desert ? new(BlockId.Sandstone, BlockId.YellowTerracotta, BlockId.Sandstone, BlockId.Sandstone, BlockId.Torch, null, 1)
+        : biome == Biomes.Savanna ? new(BlockId.AcaciaPlanks, BlockId.AcaciaLog, BlockId.OrangeTerracotta, BlockId.AcaciaPlanks, BlockId.Torch, null, 4)
         : null;
 
     protected override bool Suits(Biome biome, int ground, uint hash, out int y)
@@ -200,7 +208,7 @@ public sealed class Village : Structure
     {
         Shell(f, p, 3, 7);
         var hang = Roof(f, p, 3);
-        foreach (var (x, z) in (ReadOnlySpan<(int, int)>)[(-3, 3), (3, 3), (0, 6)]) f.Set(x, 2, z, BlockId.Glass);
+        foreach (var (x, z) in (ReadOnlySpan<(int, int)>)[(-3, 3), (3, 3), (0, 6)]) f.Set(x, 2, z, p.Window);
         f.Set(0, hang, 3, BlockId.HangingLantern);
         f.Villager(0, 3, p.Robe, 0, 3);
     }
@@ -210,7 +218,7 @@ public sealed class Village : Structure
     {
         Shell(f, p, 4, 7);
         var hang = Roof(f, p, 4);
-        foreach (var (x, z) in (ReadOnlySpan<(int, int)>)[(-2, 0), (2, 0), (-2, 6), (2, 6), (-4, 3), (4, 3)]) f.Set(x, 2, z, BlockId.Glass);
+        foreach (var (x, z) in (ReadOnlySpan<(int, int)>)[(-2, 0), (2, 0), (-2, 6), (2, 6), (-4, 3), (4, 3)]) f.Set(x, 2, z, p.Window);
         f.Set(-2, hang, 3, BlockId.HangingLantern);
         f.Set(2, hang, 3, BlockId.HangingLantern);
         f.Villager(-2, 3, p.Robe, -2, 3);

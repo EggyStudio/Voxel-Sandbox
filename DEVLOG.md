@@ -6,6 +6,99 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 under Done names the item of .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that
 closed it.
 
+## 2026-10-25
+
+![](.github/devlog/2026-10-25-item-32-snow-layer.webp)
+Seed 6's snowy village before and after three minutes of snow, the spruces' and the bushes' tops and
+the ground laid with a layer an eighth deep, the stairs of the roofs taking none.
+
+![](.github/devlog/2026-10-25-item-32-embers.webp)
+A dark room of stone laid under seed 1's forest round a pool of lava, embers rising from it as they
+cool, with the cave's dust lit only where the lava's light reaches.
+
+![](.github/devlog/2026-10-25-item-32-falling-leaves.webp)
+Leaves falling and turning under a canopy of oak leaves laid over seed 1's forest, with Falling
+Leaves at 200%.
+
+![](.github/devlog/2026-10-25-item-32-rain-splashes.webp)
+A river of seed 1 from over its bank under the rain, before on the left and after on the right,
+rings spreading on the water and drops leaping from the bank where the rain meets them.
+
+![](.github/devlog/2026-10-25-item-27-grove-291.webp)
+Seed 1's cherry grove at 1920 by 1080 at High on the 3DEngine 5.2.283 package and on 5.2.291, alike
+to the pixel but for 129 of them, the frame 19 to 21 ms on the first and 18 to 21 ms on the second.
+
+![](.github/devlog/2026-10-25-item-123-cave-tops.webp)
+The top 200 rows of seed 1's deep cave at -59.5, -4, -91.5 looking 0 -30 at noon with the shadows
+reaching 96 blocks, brightened two and a half times, before above with the sun lighting the tops and
+their edges through 70 blocks of rock left undrawn, and after below with that rock drawn into the
+shadow maps alone and the tops dark.
+
+![](.github/devlog/2026-10-25-item-105-grove.webp)
+Seed 1's cherry grove at 1920 by 1080 at High with the sun's stepped shadow read three times a pixel
+on the left and once on the right, alike to the pixel but for 96 of them.
+
+![](.github/devlog/2026-10-25-item-36-views.webp)
+Seed 1's plains at nine in the morning seen from behind the player as it walks, on the left, and
+from in front of it looking back, on the right, the camera four blocks from the eye and the player
+in the game's own colors.
+
+![](.github/devlog/2026-10-25-item-36-poses.webp)
+The player's poses on seed 1, mid-stride from behind as it walks sideways on a floor of stone in the
+sky and mid-swim from behind in a pool, above, and from in front holding a block on the plains and
+the empty right hand from the eye, below.
+
+![](.github/devlog/2026-10-25-item-28-bloom.webp)
+The lantern and the soul lantern of that room with no bloom on the left and a bloom of 0.6 on the
+right, a halo about each flame's glass.
+
+![](.github/devlog/2026-10-25-item-28-lamps.webp)
+A room of stone in the sky over seed 1 at midnight, a lantern and a soul lantern on its white floor
+and glowstone in its ceiling, each block's light its own color on the left and white as bright on
+the right.
+
+![](.github/devlog/2026-10-25-item-28-rim.webp)
+The oaks of seed 1's coast at noon without a rim on the left and with a rim of 100% on the right, a
+lit line along each block's edges.
+
+![](.github/devlog/2026-10-25-item-28-unshaded.webp)
+The same coast as the game shades it on the left and unshaded on the right, every open face taking
+the sun's light as one facing it does.
+
+![](.github/devlog/2026-10-25-item-31-mineshaft.webp)
+Seed 1's nearest mineshaft under the forest, a corridor with its rails, its posts of oak under beams
+of planks and a lantern hanging from one, on the left, and a chest in a niche of another, lit by the
+torch held and one set on its floor, on the right.
+
+![](.github/devlog/2026-10-25-item-31-kinds.webp)
+Seed 1's nearest of the new kinds at noon, a mossy temple in the jungle, a witch's hut on posts in
+the swamp and a pillagers' tower on open land above, and under the sea a ruin of broken walls and a
+wrecked ship with its mast below.
+
+![](.github/devlog/2026-10-25-item-31-villages.webp)
+Seed 1's nearest village of each kind at ten in the morning, the desert's of sandstone with corners
+of yellow terracotta and the savanna's of acacia on floors of orange terracotta above, the taiga's
+of spruce and the snowy plains' under roofs of snow below.
+
+Done that day
+
+- Item 27 at `9dad43e`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
+  aquifers.
+- Item 28 at `79ad110`. The looks Shine shows, done as the game's own, bloom on emissive blocks,
+  colored light from emissive blocks, a rim around blocks, and an unshaded look.
+- Item 32 at `7443bdc`. Weather and the ambient particles, rain and snow by biome, falling leaves,
+  cave dust and wakes (Decision 15).
+- Item 33 at `e433e5c`. Ambient sound, footsteps by the block and the sound's occlusion and reverb
+  by the room (Decision 15).
+- Item 34 at `85c3ff6`. Connected textures from the packs' properties (Decision 15).
+- Item 35 at `ce693af`. A zoom key (Decision 15).
+- Item 36 at `6a56e0f`. The player seen in third person, with their own animations (Decision 15).
+- Item 94 at `3275e76`. The things that move become entities with behaviors (Decision 43).
+- Item 105 at `fb04f6b`. The stepped sun's shadow is read once a pixel through the engine's hook.
+- Item 123 at `c7c1b41`. The sections the flood culls still cast the sun's shadow.
+- Item 128 at `6a7e5b1`. The entities' tests step the real game through the engine's headless app,
+  the twins gone.
+
 ## 2026-10-24
 
 ![](.github/devlog/2026-10-24-breaking-pair.webp)
@@ -139,6 +232,62 @@ A broken block's bits in a short tunnel, lit as the engine lit them beside lit a
 read while the bits came to take the shadow and the probes at their middles.
 
 ![](.github/devlog/2026-10-24-item-27-grove-283.webp)
+Seed 1's cherry grove at 1920 by 1080 at High on the 3DEngine 5.2.281 package and on 5.2.283, alike
+to the pixel but for 324 of them, the frame 33 to 35 ms on the first and 19 to 22 ms on the second.
+
+![](.github/devlog/2026-10-24-item-125-loading.webp)
+The loading screen in the source's red and in black, the white words and the green bar reading
+plainly on the black.
+
+![](.github/devlog/2026-10-24-item-124-screens.webp)
+The options with a button to each area's screen, Render Settings, Post Processing, Sky and Visuals,
+the sky's colors and the noon sunlight's own screen, each in the source's buttons and sliders.
+
+![](.github/devlog/2026-10-24-item-124-f3.webp)
+The F3 window before and after the settings moved to the options' screens, keeping what the frame
+holds and costs, the toggles of debugging and the world's kind, seed and mode.
+
+![](.github/devlog/2026-10-24-item-126-video.webp)
+The options with Video Settings among the areas' screens, and the screen of the window's mode, its
+resolution, the frame limit and vsync.
+
+![](.github/devlog/2026-10-24-item-94-arrows.webp)
+A skeleton at night in the flat world, whose arrows, now entities of the engine's ECS, took eight of
+the player's twenty points of health in five seconds.
+
+![](.github/devlog/2026-10-24-item-94-tnt.webp)
+A TNT lit in the flat world a half second after it popped up from its cell, burning as an entity of
+the engine's ECS, which blew its crater five seconds on.
+
+![](.github/devlog/2026-10-24-item-94-fires.webp)
+A block of planks forty seconds into a burn from three fires, each fire an entity of the engine's
+ECS, its top's 41 fires out of the view but for one.
+
+![](.github/devlog/2026-10-24-item-70-grass-wall.webp)
+A wall of grass blocks at noon seen from the player's height, as bright above the eye's line as
+below it, the same texel of each block reading 186 to 192 in red from the line up.
+
+![](.github/devlog/2026-10-24-item-70-plains-village.webp)
+The plains village as the README showed it beside the same view taken again, its shadows the
+ground's darker color and its river's banks widened since.
+
+![](.github/devlog/2026-10-24-item-43-haze.webp)
+The plains village at a quarter past six, at noon and at half past five in the evening, above before
+the haze thinned with height and thickened toward dawn and below after, the dawn's mist hiding more
+of the island.
+
+![](.github/devlog/2026-10-24-item-43-saturation.webp)
+The plains village at noon and at 17 with the grading's saturation of 1.4 on the left, which crushes
+the dirt's blue to 0, and 1.2 on the right, the choice between them open.
+
+![](.github/devlog/2026-10-24-item-42-water.webp)
+The sea by an island at noon and at 17, a lush cave's pools and a laid pool of three depths seen
+low, before on the left and after on the right, the sea deep and pale toward the horizon, the
+seabed's steps gone under it, the cave's pools clear and the shallow lane's bed showing.
+
+![](.github/devlog/2026-10-24-item-32-weather.webp)
+Seed 1's forest from over its trees and seed 6's snowy village, clear on the left and under the
+weather's full turn on the right, rain over the forest and snow on the village under a grayed sky.
 
 ![](.github/assets/world/plant-shadows.webp)
 The plants cast the shadows of their blades and flowers on the 3DEngine 5.2.215 package, the terrain
@@ -159,8 +308,8 @@ Done that day
 
 - Item 26 at `3a99729`. The world's layout, sections streamed, meshed and saved in three dimensions
   with a taller world, and far land drawn at a coarser level by distance, the blocks' size kept.
-- Item 27 at `758e9df`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
-  aquifers.
+- Item 43 at `4b398bd`. The sun's look, warm and low with long soft shadows, and a blue haze over
+  distant land (Decision 21).
 - Item 55 at `d7c4892`. The plants cast shadows, cut by their texture (Decision 27).
 - Item 67 at `073d84b`. The inventory screens take no player key, draw a dragged stack every frame,
   and dropped items wear the pack's pictures.
@@ -168,6 +317,7 @@ Done that day
   keeps its progress across jumps.
 - Item 69 at `cc4f29a`. Felling a tree takes its logs and leaves, some logs falling, and gravity
   blocks fall (Decision 35).
+- Item 70 at `8bcbfde`. The land's light is the same above the eye's height as below it.
 - Item 72 at `ee557b3`. Fire, a block that burns, animated and emissive (Decision 34).
 - Item 73 at `cba35ca`. TNT and the creeper's blast.
 - Item 74 at `2aea2bf`. A held light lights the ground around the player.
@@ -187,6 +337,7 @@ Done that day
 - Item 92 at `2263618`. Far land goes (Decision 41).
 - Item 93 at `4a2cd7b`. The frame's cost on the development machine with the taller world, read and
   brought down.
+- Item 96 at `2926dda`. The player and the game's states live in the ECS (Decision 43).
 - Item 98 at `ccf6fcf`. The particles keep their light at every angle of looking.
 - Item 99 at `dc2ad9f`. No tree stands cut by a cave or a cliff, and no leaves hang with no trunk.
 - Item 100 at `54fc848`. Felling takes every log of the tree, and the crown decays within a second
@@ -214,6 +365,12 @@ Done that day
 - Item 120 at `7ece2c1`. The selected item's name over the hotbar fades away.
 - Item 121 at `4142a32`. A shadow darkens the ground and keeps its warmth, the sky's blue out of it.
 - Item 122 at `e04a1a5`. The overworld's loading screen is the red of the source's loading overlay.
+- Item 124 at `5f7bad8`. The settings live in the game's own screens, by area, and F3 keeps only
+  what is read.
+- Item 125 at `e643539`. The loading screen is pure black.
+- Item 126 at `80d149e`. A Video Settings screen holds the resolution, the window mode, the frame
+  limit and VSync.
+- Item 127 at `d6532d1`. The settings are kept across runs.
 
 ## 2026-10-23
 
@@ -238,7 +395,6 @@ Done that day
 
 - Item 39 at `710fe0d`. Cutout textures, a texture a face for the lamp's kind, and animated
   textures.
-- Item 70 at `22616f4`. The land's light is the same above the eye's height as below it.
 - Item 71 at `fd276d3`. The stars are points of light with no dark backing, faded by the sky's
   light.
 - Item 77 at `532e45c`. The distance fog takes the sky's color at the ray's height, so a mountain's
@@ -424,8 +580,6 @@ Done that day
   by its position, and Simple Grass Flowers is a fourth default pack (Decision 20).
 - Item 44 at `cc46f25`. The land's fading edge meets a sky of the haze's color below the horizon.
 - Item 45 at `8261308`. The look without a pack takes Bare Bones' colors (Decision 23).
-- Item 46 at `7039d5a`. The README's pictures taken again, an animation at its head and pictures in
-  its parts (Decision 24).
 - Item 47 at `f7df279`. The haze dome no longer cuts the sun, the moon and their glows (Decision
   25).
 - Item 48 at `0c93d3e`. No tunnel mouth and no ravine under a village (Decision 25).

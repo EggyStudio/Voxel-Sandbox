@@ -119,4 +119,29 @@ public sealed class StructureTests
         var land = new Overworld(1);
         Assert.Empty(Structures.Village.StartsIn(outpost.X - 160, outpost.Z - 160, outpost.X + 172, outpost.Z + 172, land));
     }
+
+    [Fact]
+    public void Each_Biomes_Village_Is_Built_Of_Its_Own_Blocks_The_Savannas_Of_Acacia_On_Terracotta()
+    {
+        var land = new Overworld(1);
+        var starts = Structures.Village.StartsIn(-6144, -6144, 6143, 6143, land).OrderBy(s => Math.Abs(s.X) + Math.Abs(s.Z)).ToList();
+        (Dictionary<BlockId, int> Counts, List<MobRecord> Villagers) Nearest(Biome biome)
+        {
+            var start = starts.First(s => land.At(s.X + 24, s.Z + 24).Biome == biome);
+            var region = new Region(land, start.X + 24, start.Z + 24, 5);
+            var counts = region.Blocks(start.Y - 8, start.Y + 16).GroupBy(b => b.Block).ToDictionary(g => g.Key, g => g.Count());
+            return (counts, [.. region.Columns.Values.SelectMany(c => c.Spawns).Where(m => m.Kind == MobKinds.Villager)]);
+        }
+
+        var (savanna, herders) = Nearest(Biomes.Savanna);
+        Assert.True(Of(savanna, BlockId.AcaciaPlanks) >= 150 && Of(savanna, BlockId.OrangeTerracotta) >= 40,
+            $"the savanna's village has {Of(savanna, BlockId.AcaciaPlanks)} acacia planks and {Of(savanna, BlockId.OrangeTerracotta)} terracotta");
+        Assert.Equal(0, Of(savanna, BlockId.OakPlanks, BlockId.SprucePlanks));
+        Assert.NotEmpty(herders);
+        Assert.All(herders, m => Assert.Equal(4, m.Variant));
+        var (taiga, _) = Nearest(Biomes.Taiga);
+        Assert.True(Of(taiga, BlockId.MossyCobblestone) >= 40, $"the taiga's village has {Of(taiga, BlockId.MossyCobblestone)} mossy cobblestone");
+        var (desert, _) = Nearest(Biomes.Desert);
+        Assert.True(Of(desert, BlockId.YellowTerracotta) >= 16, $"the desert's village has {Of(desert, BlockId.YellowTerracotta)} yellow terracotta");
+    }
 }

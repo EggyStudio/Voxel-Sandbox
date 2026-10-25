@@ -435,8 +435,8 @@ public static class MobKinds
                 .. Eyes(1, 28, -4, eye, White),
             ]),
         ];
-        // A robe of the plains, the desert, the taiga and the snow, as Minecraft's villagers wear by biome.
-        Color[] robes = [new(118, 86, 58), new(204, 168, 112), new(86, 62, 46), new(214, 218, 228)];
+        // A robe of the plains, the desert, the taiga, the snow and the savanna, as Minecraft's villagers wear by biome.
+        Color[] robes = [new(118, 86, 58), new(204, 168, 112), new(86, 62, 46), new(214, 218, 228), new(170, 98, 56)];
         // Drawn at the scale Minecraft's layer gives it, about its feet, so its 34 pixels stand 1.99
         // blocks as Minecraft's villager does, where at 1 they would stand 2.13.
         return new MobKind("villager", 0.3f, 1.95f, 1.5f, 20, robes, parts) { Id = 4, OpensDoors = true, Scale = 0.9375f, StrideSwing = 0.7f, PictureSize = new(64, 64) };

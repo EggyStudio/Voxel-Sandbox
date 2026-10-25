@@ -5,27 +5,52 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `af9d829`, item 31's first commit, the mineshafts and the chests, read at 05:01 on
-2026-10-25, carrying the review's files and a captioned picture, held until the run of `79ad110`
-ends. Three blocks, the chest with four facings, the rail with two and the cobweb; ChestArt cuts the
-chest's faces from the pack's entity chest picture, its window the source's three rows cut from the
-54-slot picture with shift-click moving stacks, its contents kept as the furnaces' in chests.json, a
-structure placing one through ColumnClip.Chest so it joins with its column where its block still
-stands after generation, its loot from ChestLoot tables with the source's weights and counts over
-the game's items rolled from its place's seed the first time it is opened or broken; recipes for the
-chest and the rail and a voxel.chest command. The mineshaft comes one a 16-chunk square, near the
-source's one chunk in 250, its room's floor between -40 and 30, corridors of two to four lengths of
-five turning, branching, crossing and stepping down, eight pieces deep within 80 blocks and no piece
-crossing another, log posts under plank beams every five blocks in the biome's wood after Hopo's
-Better Mineshaft with dark oak in the badlands, rails in one corridor in three, cobwebs, a lantern
-under one beam in ten, a chest niche in one corridor in eight and nothing cut within four blocks of
-the ground. Two departures. Log posts and hanging lanterns hold the corridors up in the modpack's
-taste rather than the source's fences; a cobweb needs no support and never falls, so the
-floating-plant test skips plants that do not fall and the tree count reads bases at the ground
-alone, the posts having counted as trees. Seed 1's nearest lies at 71, 12, 36, the eight by eight
-columns about it holding 356 rails, 164 cobwebs, 15 chests and 57 lanterns at the earlier rate of
-one in six; 1.10 ms a column across its square against 15.2 for a whole column. The play run opens
-that chest and reads its loot. 338 tests, play.sh 342 s on the GPU.
+Reviewed up to `211e57a`, item 31's second commit, the sea's and the land's kinds, read at 05:12 on
+2026-10-25, carrying the review's files and a captioned picture. Structure.Spread puts each kind as
+the source does, at a chunk's corner among the first spacing less separation chunks of its square,
+its chests' loot from ChestLoot tables with the source's weights over the game's items. The ocean
+ruin comes every 20 chunks where the floor lies 6 or more under the sea, stone bricks mossy and
+cracked, sandstone where warm, the walls kept less the higher they stood, one in three big with
+three rooms; the shipwreck every 24 chunks where the floor lies 8 or more down, a hull 22 long of
+oak, spruce or dark oak with deck, mast, cabin, a supply chest and a treasure chest, one in three
+broken behind the middle; the jungle temple every 32 chunks in the jungle, three stepped floors of
+cobblestone, two in five mossy, a stair up and a stair down to a vault with two chests; the witch
+hut every 32 chunks in the swamp, spruce on oak posts with a porch, a crafting table and a chest;
+the pillager outpost in one square in five of 32 chunks on the plains, the desert, the savanna, the
+taiga and the snowy plains and never within 10 chunks of a village, three floors of dark oak over
+birch up to a railed platform with a chest. Three blocks, mossy cobblestone, mossy stone bricks and
+cracked stone bricks, and the village's frame shared as StructureFrame. Four departures from the
+source. The hut's chest is the modpack's, from Dungeons and Taverns' hut; the outpost follows that
+mod's watchtower in dark oak, birch floors and a cobblestone base; the temple, the hut and the
+outpost keep trees out of their ground as villages do, since jungle trees hid the temple; no witch
+or pillager, the game having neither, and the loot leaves out the items the game lacks, maps,
+crossbows and armor. Seed 1's nearest to the origin, the ruin at 0, 32, -528 with 42 stone bricks,
+31 cracked, 31 mossy and a chest, the wreck broken at 64, 39, 3072 with 197 dark oak planks and 12
+logs, the temple at -2544, 52, 128 with 917 cobblestone, 597 mossy and two chests, the hut at -448,
+55, -1808 with 117 spruce planks, 25 oak logs, 32 stairs, a crafting table and a chest, the outpost
+at -1408, 51, -400 with 549 dark oak planks, 90 birch, 60 logs, 63 fences and a chest. 341 tests,
+play.sh 312 s on the GPU. After `af9d829`, item 31's first commit, the mineshafts and the chests,
+read at 05:01 on 2026-10-25, carrying the review's files and a captioned picture, held with
+`211e57a` until the run of `79ad110` ends, then both pushed. Three blocks, the chest with four
+facings, the rail with two and the cobweb; ChestArt cuts the chest's faces from the pack's entity
+chest picture, its window the source's three rows cut from the 54-slot picture with shift-click
+moving stacks, its contents kept as the furnaces' in chests.json, a structure placing one through
+ColumnClip.Chest so it joins with its column where its block still stands after generation, its loot
+from ChestLoot tables with the source's weights and counts over the game's items rolled from its
+place's seed the first time it is opened or broken; recipes for the chest and the rail and a
+voxel.chest command. The mineshaft comes one a 16-chunk square, near the source's one chunk in 250,
+its room's floor between -40 and 30, corridors of two to four lengths of five turning, branching,
+crossing and stepping down, eight pieces deep within 80 blocks and no piece crossing another, log
+posts under plank beams every five blocks in the biome's wood after Hopo's Better Mineshaft with
+dark oak in the badlands, rails in one corridor in three, cobwebs, a lantern under one beam in ten,
+a chest niche in one corridor in eight and nothing cut within four blocks of the ground. Two
+departures. Log posts and hanging lanterns hold the corridors up in the modpack's taste rather than
+the source's fences; a cobweb needs no support and never falls, so the floating-plant test skips
+plants that do not fall and the tree count reads bases at the ground alone, the posts having counted
+as trees. Seed 1's nearest lies at 71, 12, 36, the eight by eight columns about it holding 356
+rails, 164 cobwebs, 15 chests and 57 lanterns at the earlier rate of one in six; 1.10 ms a column
+across its square against 15.2 for a whole column. The play run opens that chest and reads its loot.
+338 tests, play.sh 342 s on the GPU.
 
 Before it, `79ad110` came, item 28, the looks Shine shows, pushed at 04:47 on 2026-10-25 once the
 run of `85c3ff6` went green, the run watched.
@@ -85,63 +110,6 @@ full.
     with depth, the edge and the view from under, with the shore's mirror when the engine's plane
     lands. The second commit at `9d4b295` on 2026-10-24, the depth, the edge and the sky's fresnel,
     the water a mesh of its own; the shore's mirror with the package carrying the engine's item 112.
-
-44. **The clouds cover the area about the player and do not reach the horizon.** The owner wrote to
-    the game's session at about 15:00 on 2026-10-24, on item 108's try, not to stretch the clouds so
-    far, since the before images looked right where the clouds reached not to the horizon but
-    covered the area around. So the clouds stay within twice the render distance of the eye, fading
-    into the sky from six tenths of that reach, as Clouds.cs has them; item 108 is closed and its
-    build reverted.
-
-45. **A session saves the pictures of its work in the repository, N 4.8.** The owner wrote at about
-    18:5x on 2026-10-24, after BevyCSharp's session kept none of a day's captures, that the rule
-    should be written where the sessions read it and be the same in the three repositories, as this
-    game does. N 4.8 says it, the game's pictures under .github/devlog/ as WebP files named by the
-    date and the item in the commit of their work with the commit's sentence as the caption,
-    DEVLOG.md generated from them, which the game's session has done since Decision 39 through the
-    reviewer's collection and does itself from here on.
-
-46. **The README's pictures taken again, an animation at its head and pictures in its parts
-    (Decision 24).** The owner wrote shortly before 05:15 on 2026-10-21 to update the README's
-    images, to put at the top a GIF of different captures with 250 ms between them, and to showcase
-    things as images in the parts below, the interface, crafting and such. At the head, one animated
-    image of about ten captures 250 ms apart, the village, the hills, the mesas, the cherry grove at
-    dusk with its lanterns, the jungle, a swamp, a cave lit by glowstone, the night sky, a river
-    valley and the snowy peaks, each from a fixed seed, place, hour and heading in
-    `build/pictures.sh` as the head pictures are, encoded together at 800 by 450 with the tools on
-    the machine, a GIF as the owner asked, measured beside an animated WebP of the same frames,
-    which the site plays too, and the GIF taken unless it is too large, said with the sizes; the
-    engine's recorder of its item 70 takes the frames once its package comes. In the parts below,
-    pictures at 800 by 450 by the same script, the biomes as a sheet of four, the plants and the
-    grass's looks, the trees, water, glass and ice, torches and lanterns lighting a room at night,
-    the interface with the HUD, the inventory, a crafting table, a furnace and the menu, the
-    resource packs' screen, and caves and ravines; the script gaining the interface's shots through
-    input keys and commands and a list of what it takes. The owner's word shortly before 05:25 on
-    2026-10-21: the captures use the resource packs as well. So the pictures are taken with the
-    three default packs on in the manifest's order, read as the terms allow, a picture of the game
-    drawn with a pack holding none of its files where Bare Bones forbids reuploading any instance of
-    the pack, Recolourful's terms allowing its use in any form of media with a link to its page, and
-    the font's page offering it for content creation; the repository still holds no file of any
-    pack, and the README credits each pack with a link beside the pictures. The pictures script
-    fetches the packs by the manifest's URLs into a captures folder, checks each hash and opens the
-    game with a pack flag for each; the resource packs section keeps one pair, the same view in the
-    game's own art and with the packs, so the look with no pack stays shown; the Resource Packs
-    screen is left out since a transient run lists no packs and prints the machine's folder; a
-    `voxel.scale` command sets the interface's scale for the scripted shots, the windows taken at 2
-    and cut out at 800 by 450 with no resampling. One commit, after item 45 and before item 39. Done
-    at `7039d5a` on 2026-10-21, as the head says, the GIF at 1.45 MB. The animation's pictures at
-    two seconds each at `fc38219` on the owner's word. The pictures are taken again after item 39,
-    one run covering the plants, the lantern and the cutout. The owner said shortly before 08:16
-    that for screenshots they zoom with alt to about 40 degrees of field of view and the cinematic
-    captures should too, so the retake takes the world's views at 40 degrees through a `voxel.fov`
-    command, each view's place moved back to frame the same subject. From item 80 at 03:5x on
-    2026-10-24: seed 1's villages stand elsewhere, so the plains village views at 15.4, 700.6 and
-    the snowy and night views at 454.4, 77.4 point at empty land, the desert view at 720.4, minus
-    697.6 still at its village's edge; the retake moves the plains views to a village of seed 1,
-    576, minus 432 the nearest, and the snowy one to another seed or a village found with
-    voxel.find, none standing within 1,600 blocks on seed 1; the plains-village.webp of `b032e76`
-    shows a village that no longer stands there until then. The retake at `5556519` on 2026-10-24,
-    the views as the head says; play.sh passed; item 46 done.
 
 89. **The clouds are not drawn black by the fire's uniform.** Found at item 46's retake on
     2026-10-24: in every daytime view the clouds' undersides drew a dark navy near black, where the
@@ -544,7 +512,9 @@ full.
     sides, and a capture of each in the record. Two or three commits by kind. The first commit at
     `af9d829` on 2026-10-25, the mineshafts with the chest, the rail and the cobweb, the departures
     in the head; the second next, the ocean ruins, the shipwrecks, the jungle temples, the witch
-    huts and the outposts.
+    huts and the outposts. The second at `211e57a` on 2026-10-25, the ocean ruins, the shipwrecks,
+    the jungle temples, the witch huts and the outposts, the departures in the head; the third next,
+    the villages' biome kinds with the savanna added, each with its own blocks.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
@@ -567,6 +537,12 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
+
+129. **The rain's particle texture is drawn upside down.** From the word of 2026-10-25 at about
+    05:20, given to the game's session, that the rain particles' texture is upside down; item 32's
+    rain draws its streaks from the texture the wrong way up, so the mend turns the texture or its
+    coordinates and reads the snow and the other ambient particles for the same. A capture of the
+    rain before and after, N 4.8. One commit, after item 31's third commit.
 
 ## Verdicts
 
@@ -1047,5 +1023,70 @@ No verdict is open. Verdicts 1 to 3 are settled, said under each in REVIEW-ARCHI
     gap an entry in its ASKS.md taken ahead of other engine work; and the engine's DESIGN.md says
     both where each fits with this game as the model, the engine's own small games staying as they
     are. Items 94 to 96.
+
+44. **The clouds cover the area about the player and do not reach the horizon.** The owner wrote to
+    the game's session at about 15:00 on 2026-10-24, on item 108's try, not to stretch the clouds so
+    far, since the before images looked right where the clouds reached not to the horizon but
+    covered the area around. So the clouds stay within twice the render distance of the eye, fading
+    into the sky from six tenths of that reach, as Clouds.cs has them; item 108 is closed and its
+    build reverted.
+
+45. **A session saves the pictures of its work in the repository, N 4.8.** The owner wrote at about
+    18:5x on 2026-10-24, after BevyCSharp's session kept none of a day's captures, that the rule
+    should be written where the sessions read it and be the same in the three repositories, as this
+    game does. N 4.8 says it, the game's pictures under .github/devlog/ as WebP files named by the
+    date and the item in the commit of their work with the commit's sentence as the caption,
+    DEVLOG.md generated from them, which the game's session has done since Decision 39 through the
+    reviewer's collection and does itself from here on.
+
+46. **The README's pictures taken again, an animation at its head and pictures in its parts
+    (Decision 24).** The owner wrote shortly before 05:15 on 2026-10-21 to update the README's
+    images, to put at the top a GIF of different captures with 250 ms between them, and to showcase
+    things as images in the parts below, the interface, crafting and such. At the head, one animated
+    image of about ten captures 250 ms apart, the village, the hills, the mesas, the cherry grove at
+    dusk with its lanterns, the jungle, a swamp, a cave lit by glowstone, the night sky, a river
+    valley and the snowy peaks, each from a fixed seed, place, hour and heading in
+    `build/pictures.sh` as the head pictures are, encoded together at 800 by 450 with the tools on
+    the machine, a GIF as the owner asked, measured beside an animated WebP of the same frames,
+    which the site plays too, and the GIF taken unless it is too large, said with the sizes; the
+    engine's recorder of its item 70 takes the frames once its package comes. In the parts below,
+    pictures at 800 by 450 by the same script, the biomes as a sheet of four, the plants and the
+    grass's looks, the trees, water, glass and ice, torches and lanterns lighting a room at night,
+    the interface with the HUD, the inventory, a crafting table, a furnace and the menu, the
+    resource packs' screen, and caves and ravines; the script gaining the interface's shots through
+    input keys and commands and a list of what it takes. The owner's word shortly before 05:25 on
+    2026-10-21: the captures use the resource packs as well. So the pictures are taken with the
+    three default packs on in the manifest's order, read as the terms allow, a picture of the game
+    drawn with a pack holding none of its files where Bare Bones forbids reuploading any instance of
+    the pack, Recolourful's terms allowing its use in any form of media with a link to its page, and
+    the font's page offering it for content creation; the repository still holds no file of any
+    pack, and the README credits each pack with a link beside the pictures. The pictures script
+    fetches the packs by the manifest's URLs into a captures folder, checks each hash and opens the
+    game with a pack flag for each; the resource packs section keeps one pair, the same view in the
+    game's own art and with the packs, so the look with no pack stays shown; the Resource Packs
+    screen is left out since a transient run lists no packs and prints the machine's folder; a
+    `voxel.scale` command sets the interface's scale for the scripted shots, the windows taken at 2
+    and cut out at 800 by 450 with no resampling. One commit, after item 45 and before item 39. Done
+    at `7039d5a` on 2026-10-21, as the head says, the GIF at 1.45 MB. The animation's pictures at
+    two seconds each at `fc38219` on the owner's word. The pictures are taken again after item 39,
+    one run covering the plants, the lantern and the cutout. The owner said shortly before 08:16
+    that for screenshots they zoom with alt to about 40 degrees of field of view and the cinematic
+    captures should too, so the retake takes the world's views at 40 degrees through a `voxel.fov`
+    command, each view's place moved back to frame the same subject. From item 80 at 03:5x on
+    2026-10-24: seed 1's villages stand elsewhere, so the plains village views at 15.4, 700.6 and
+    the snowy and night views at 454.4, 77.4 point at empty land, the desert view at 720.4, minus
+    697.6 still at its village's edge; the retake moves the plains views to a village of seed 1,
+    576, minus 432 the nearest, and the snowy one to another seed or a village found with
+    voxel.find, none standing within 1,600 blocks on seed 1; the plains-village.webp of `b032e76`
+    shows a village that no longer stands there until then. The retake at `5556519` on 2026-10-24,
+    the views as the head says; play.sh passed; item 46 done.
+
+47. **The devlog written as the work goes.** The owner asked on 2026-10-25 at 05:13 that the
+    sessions write the devlog more often than at a day's end, though not at every commit. N 4.8
+    gains the cadence, an item that changes what is seen ending with at least one captioned picture,
+    a pair before and after where it mends and one a phase where it is built in phases, and
+    DEVLOG.md regenerated by the review as each item is archived, the coder's next commit carrying
+    it as it carries the review's files; the three devlogs were regenerated at 05:17 with the day's
+    pictures and items. The same in 3DEngine (Decision 71) and BevyCSharp (Decision 64).
 
 ## Replies

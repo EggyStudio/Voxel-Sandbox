@@ -539,18 +539,22 @@ over birch up to a railed platform under a roof, a chest on its platform. Mossy 
 stone bricks and cracked stone bricks are blocks of their own. The temple, the hut and the outpost
 keep the trees out of their ground, as a village does.
 
-A village stands where the plains, the taiga, the snowy plains or the desert lie nearly level across
-48 blocks, built of that biome's wood or sandstone. Villages are spaced as the source spaces them,
-one to each square of 34 chunks at a chunk among its first 26 each way, so two stand at least eight
-chunks apart and most a few hundred blocks. A well at its middle has a lantern hanging under its
-roof, four roads of dirt path lead out from it, and beside each road stand two plots, each a small
-house, a long house, a farm of wheat with a row of water through it, a forge with a hearth of magma
-or a pile of hay, its front toward the road, with lamp posts along the roads, a lantern on a fence,
-or a torch in the desert. A house has a shut oak door with a torch over it, lanterns hanging inside
-and a roof of stairs climbing to a ridge, flat in the desert. Each road follows the ground block by
-block and crosses water on planks, each building stands at its own ground's height on a footing of
-stone, and no tree grows within the village. A villager lives in each house, two in a long house,
-and one keeps each forge and each farm.
+A village stands where the plains, the taiga, the snowy plains, the desert or the savanna lie nearly
+level across 48 blocks, each of the source's kinds built of its own blocks: the plains' of oak, the
+taiga's of spruce on floors and footings of mossy cobblestone, the snowy plains' of spruce under
+roofs of snow with windows of ice, the desert's of sandstone with corners of yellow terracotta, and
+the savanna's of acacia on floors of orange terracotta, its villagers in the savanna's robe.
+Villages are spaced as the source spaces them, one to each square of 34 chunks at a chunk among its
+first 26 each way, so two stand at least eight chunks apart and most a few hundred blocks. A well at
+its middle has a lantern hanging under its roof, four roads of dirt path lead out from it, and
+beside each road stand two plots, each a small house, a long house, a farm of wheat with a row of
+water through it, a forge with a hearth of magma or a pile of hay, its front toward the road, with
+lamp posts along the roads, a lantern on a fence, or a torch in the desert and the savanna. A house
+has a shut oak door with a torch over it, lanterns hanging inside and a roof of stairs climbing to a
+ridge, flat in the desert and the savanna. Each road follows the ground block by block and crosses
+water on planks, each building stands at its own ground's height on a footing of stone, and no tree
+grows within the village. A villager lives in each house, two in a long house, and one keeps each
+forge and each farm.
 
 ## Animals and villagers
 
