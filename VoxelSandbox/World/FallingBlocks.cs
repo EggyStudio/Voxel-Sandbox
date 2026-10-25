@@ -11,8 +11,7 @@ public readonly record struct FallingBroke(int X, int Y, int Z, BlockId Block);
 /// Its behavior lets it fall in the engine's frame, reading the voxel world and the seconds from the
 /// game's <see cref="GameStep"/> on the main thread, which alone may read and change the world, and
 /// sends each that lands where it cannot stand as a <see cref="FallingBroke"/>, which the game drops
-/// as an item. It also takes its world and its inputs as arguments, so a test lets fall the blocks
-/// of an ECS world of its own.
+/// as an item.
 /// </remarks>
 [Behavior]
 public partial struct FallingBlock
@@ -24,19 +23,14 @@ public partial struct FallingBlock
 
     private const float Tick = 0.05f, Fall = 0.04f, Keep = 0.98f, MostSeconds = 60;
 
+    /// <summary>Moves the falling blocks on by the step's seconds, sets down or breaks those that land, and sends each that broke.</summary>
     [OnUpdate]
     public static void Drop(BehaviorContext ctx)
     {
         if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
-        var broken = new List<(int, int, int, BlockId)>();
-        Drop(ctx.Ecs, step.World, step.Seconds, broken);
-        foreach (var (x, y, z, block) in broken) ctx.World.SendEvent(new FallingBroke(x, y, z, block));
-    }
-
-    /// <summary>Moves the falling blocks on by so many seconds, and sets down or breaks those that land.</summary>
-    public static void Drop(EcsWorld ecs, VoxelWorld world, float seconds, List<(int X, int Y, int Z, BlockId Block)> broken)
-    {
-        var keep = MathF.Pow(Keep, seconds / Tick);
+        var ecs = ctx.Ecs;
+        var broken = new List<(int X, int Y, int Z, BlockId Block)>();
+        var keep = MathF.Pow(Keep, step.Seconds / Tick);
         // The lowest moves first, so one falling over another finds it standing once it has landed,
         // as a column of sand stacks again where it lands.
         var order = new List<(int Id, float Y)>();
@@ -47,19 +41,20 @@ public partial struct FallingBlock
         {
             var body = ecs.GetRef<Body>(id);
             ref var falling = ref ecs.GetRef<FallingBlock>(id);
-            falling.Age += seconds;
-            body.Velocity.Y -= Fall / (Tick * Tick) * seconds;
+            falling.Age += step.Seconds;
+            body.Velocity.Y -= Fall / (Tick * Tick) * step.Seconds;
             body.Velocity *= keep;
-            body.Move(world, body.Velocity * seconds, keepToEdges: false);
+            body.Move(step.World, body.Velocity * step.Seconds, keepToEdges: false);
             if (body.OnGround)
             {
                 int x = (int)MathF.Floor(body.Position.X), y = (int)MathF.Floor(body.Position.Y + 0.01f), z = (int)MathF.Floor(body.Position.Z);
-                if (!BlockGroups.GivesWay(world.GetBlock(x, y, z)) || !world.SetBlock(x, y, z, falling.Block)) broken.Add((x, y, z, falling.Block));
+                if (!BlockGroups.GivesWay(step.World.GetBlock(x, y, z)) || !step.World.SetBlock(x, y, z, falling.Block)) broken.Add((x, y, z, falling.Block));
                 landed.Add(id);
             }
             else if (falling.Age > MostSeconds || body.Position.Y < ChunkColumn.Bottom - 16) landed.Add(id);
         }
         foreach (var id in landed) ecs.Despawn(id);
+        foreach (var (x, y, z, block) in broken) ctx.World.SendEvent(new FallingBroke(x, y, z, block));
     }
 }
 
@@ -93,14 +88,6 @@ public sealed class FallingBlocks(EcsWorld ecs)
     {
         foreach (var (x, y, z, block) in world.Loosened) Drop(block, x, y, z);
         world.Loosened.Clear();
-    }
-
-    /// <summary>Moves the falling blocks on by so many seconds as a frame moves them, sets down those that land, and gives where and which broke.</summary>
-    public List<(int X, int Y, int Z, BlockId Block)> Update(VoxelWorld world, float seconds)
-    {
-        var broken = new List<(int, int, int, BlockId)>();
-        FallingBlock.Drop(ecs, world, seconds, broken);
-        return broken;
     }
 
     /// <summary>Lets a block fall from its cell, as a felled tree's log does.</summary>

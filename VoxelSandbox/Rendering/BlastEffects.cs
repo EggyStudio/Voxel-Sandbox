@@ -21,19 +21,15 @@ public partial struct Blast
     /// <summary>How long a flash shows.</summary>
     public const float Seconds = 0.5f;
 
+    /// <summary>Ages every flash by the step's seconds and lets go of those that have faded.</summary>
     [OnUpdate]
     public static void Fade(BehaviorContext ctx)
     {
-        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds > 0) Fade(ctx.Ecs, step.Seconds);
-    }
-
-    /// <summary>Ages every flash by so many seconds and lets go of those that have faded.</summary>
-    public static void Fade(EcsWorld ecs, float seconds)
-    {
+        if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
         var gone = new List<int>();
-        foreach (var (id, _) in ecs.Query<Blast>())
-            if ((ecs.GetRef<Blast>(id).Age += seconds) > Seconds) gone.Add(id);
-        foreach (var id in gone) ecs.Despawn(id);
+        foreach (var (id, _) in ctx.Ecs.Query<Blast>())
+            if ((ctx.Ecs.GetRef<Blast>(id).Age += step.Seconds) > Seconds) gone.Add(id);
+        foreach (var id in gone) ctx.Ecs.Despawn(id);
     }
 }
 

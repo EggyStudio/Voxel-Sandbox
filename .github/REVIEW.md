@@ -5,7 +5,16 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `4105293`, item 128's first commit, the fixture and the mobs, read at 02:48 on
+Reviewed up to `01eb71f`, item 128's fires, read at 02:01 on 2026-10-25 after the clocks went back
+an hour, carrying REVIEW.md. Fire.Spread's overload is folded into its context system and
+Fires.Update is gone, Fires holding no Random of its own, Light and Take taking one and the game
+passing the step's, which is settable; FireFrameTests lays a 16 by 16 square of planks or stone
+ringed by stone in the game's flat world, seeds the step's Random with 1, 2 and 3, lights a fire and
+steps 2,400 frames of 0.05 s a seed with the bounds as before, FireTests keeping the two small-world
+tests; the fixture gains a frame length and a target of 0, the headless app having paced itself at
+60 a second so the fire tests took four minutes and take 13 s. 314 tests in 25 s, play.sh 335 s on
+the GPU. The five pushed at 02:07 on 2026-10-25 after the run of `3275e76` went green; the run
+watched. After `4105293`, item 128's first commit, the fixture and the mobs, read at 02:48 on
 2026-10-25, carrying REVIEW.md. HeadlessGame sets the headless and the frame time variables, calls
 InitWindow, builds a transient flat VoxelGame at render distance 2, steps game.Draw until it stops
 loading within 600 frames and on dispose disposes the game and closes the window, its tests in a
@@ -16,68 +25,48 @@ reads a pig and a zombie in the air each taken by one of the two queries and fal
 frames with the pose the movement wrote, a zombie beside a survival player taking it to at most 17
 within 60 frames through MobStrike, and a pig killed by Hit standing after 15 frames and gone after
 45 with its porkchop among the drops through MobDied. 314 tests in 15 s where 311 took 12 to 13,
-each headless game about 2.5 s; play.sh 308 s on the GPU with the readings as before. Held with
-`d647b0e`, `fb04f6b` and `c7c1b41` until the run of `3275e76` ends, then pushed. After `d647b0e`,
-the lookups, read at 02:40 on 2026-10-25, carrying the review's files. Fire is keyed by its cell and
-Fires.Take asks the engine's index in place of building a set of every fire each frame the world
-names a cell, each named cell still drawing its delay so the seeds' sequences hold; a test reads a
-lit cell named again keeping its one fire, a new cell getting one, the index finding it by its key
-and an empty cell not found; Mobs.Leaving keeps its walk with a comment pointing at the engine's
-item 117, the README's Fire section gaining a line. 312 tests, play.sh 325 s on the GPU. The
-entities' tests through the engine's stepped app are item 128, planned in the item. After `fb04f6b`,
-item 105, the stepped shadow read once, read at 02:33 on 2026-10-25, carrying the review's files and
-the devlog's grove. litStepped reads lightReaching once at the step's middle with its held share and
-calls litLight with the shadow and the held, its own correction and the sun's specular rebuild gone,
-passing minus 1 where there is no shadow light; the grove alike to the pixel but for 96 of 2.07
-million, the pillar's shadow still stepping and the lantern's pool and the grass wall as before. The
-scene pass at the grove reads 9.87 and 8.96 ms with one read against 10.19 and 9.38 with three, 0.3
-to 0.4 ms where the item expected 1.6 measured on the older pass of 12.5, and the step costs nothing
-measurable against no step, the README's costs paragraph rewritten. 311 tests, play.sh 324 s on the
-GPU. The lookups next, the fires keyed by cell through the index and the mobs still walked since a
-key names one entity, an index whose key names many asked of the engine as its item 117. After
-`c7c1b41`, item 123, the culled sections casting the sun's shadow, read at 02:15 on 2026-10-25,
-carrying the review's files and the devlog's cave tops. ChunkRenderer.FindCasters casts a ray toward
-the light from each of the eight corners of every drawn, meshed section within the shadow distance
-plus 16 blocks, shared corners once, each ray walking the section grid after Amanatides and Woo up
-to the world's top or as far as the loaded land reaches and marking every section the flood left
-out, the marked sections drawing their meshes through the same materials with ShadowOnly true, taken
-off the unseen set and meshed like the drawn; the marking redone when a flood runs, the light's step
-turns or the shadow distance changes; draw.sections.shadow counts them and Casts switches the
-casting off for a reading. Departure, the casters found by marching from the drawn sections' corners
-toward the light rather than sweeping the drawn set's bounds, which hold thousands of sections under
-open land casting onto nothing. The cave at the entry's place reads the tops 45 blocks ahead 0, 0, 0
-where 35, 29, 20 stood, the same at a shadow distance of 150 and the same as with the culling off,
-the 90-block tops 9, 13, 18 where 19, 20, 22, the band's pixels lit above 24 falling from 4,427 to 4
-at 96 and from 2,325 to 4 at 150, the frame 4.6 ms where 3.1 stood with 357 shadow-only draws and
-6.7 at 150, against 28 to 31 with the culling off; the grove draws 20 shadow-only and reads the
-frame the same with the casting on and off within one session. VisibilityTests walks the march, the
-README's culling paragraph gains the casters and the numbers. 311 tests, play.sh 327 s on the GPU.
-After `3275e76`, item 94's mobs, the third commit, read at 01:53 on 2026-10-25, carrying REVIEW.md.
-MobPose is a struct component of the yaw, the head's yaw and pitch, the stride and its phase, the
-flap and the swing, written in place by Move, Look and Face; MobHostile a behavior struct the
-hostile mobs alone carry, its own Hunt system on update stepping them through a query of five
-components and MobMind.Think stepping the rest through a query of four without it; MobRenderer.Draw
-takes the EcsWorld and draws through the same two queries with no GetRef. Departures, the Mob class
-stays the class component holding the path and the Random under its name, Exploded stays on the
-class since the loot is reckoned from MobDied after the despawn, Mob keeps read-only forwards for
-the save, voxel.mobs and the tests, and the column walk waits for the lookup's commit. MobTests
-reads each mob by exactly one of the two queries and stepped by its own mind alone and the pose the
-movement writes as the entity's; live at 22:00 a zombie hunted the player to 8, a creeper hissed and
-37 mobs drew in 42 draws; the play readings inside their bounds. 310 tests, play.sh 360 s on the
-GPU. Both pushed at 02:09 on 2026-10-25 after the run of `7443bdc` went green; the run watched.
-After `9dad43e`, item 27's pin of 5.2.291, read at 01:44 on 2026-10-25, carrying the review's files
-and the devlog's grove. The csproj's version alone changes, the build clean under the strict flag;
-the grove at 1920 by 1080 at High, the two pins run in turn twice each with the desktop holding 22
-percent of the GPU, reads 21.0 and 18.2 ms a frame on 5.2.291 against 20.9 and 19.0 on 5.2.283, the
-scene pass 11.7 and 9.7 against 12.3 and 10.5, the shadows and the global illumination the same, the
-pictures differing in 129 pixels of 2.07 million; the cave left for item 123 and the far cascade
-still off. 309 tests, play.sh 325 s on the GPU.
+each headless game about 2.5 s; play.sh 308 s on the GPU with the readings as before. After
+`d647b0e`, the lookups, read at 02:40 on 2026-10-25, carrying the review's files. Fire is keyed by
+its cell and Fires.Take asks the engine's index in place of building a set of every fire each frame
+the world names a cell, each named cell still drawing its delay so the seeds' sequences hold; a test
+reads a lit cell named again keeping its one fire, a new cell getting one, the index finding it by
+its key and an empty cell not found; Mobs.Leaving keeps its walk with a comment pointing at the
+engine's item 117, the README's Fire section gaining a line. 312 tests, play.sh 325 s on the GPU.
+The entities' tests through the engine's stepped app are item 128, planned in the item. After
+`fb04f6b`, item 105, the stepped shadow read once, read at 02:33 on 2026-10-25, carrying the
+review's files and the devlog's grove. litStepped reads lightReaching once at the step's middle with
+its held share and calls litLight with the shadow and the held, its own correction and the sun's
+specular rebuild gone, passing minus 1 where there is no shadow light; the grove alike to the pixel
+but for 96 of 2.07 million, the pillar's shadow still stepping and the lantern's pool and the grass
+wall as before. The scene pass at the grove reads 9.87 and 8.96 ms with one read against 10.19 and
+9.38 with three, 0.3 to 0.4 ms where the item expected 1.6 measured on the older pass of 12.5, and
+the step costs nothing measurable against no step, the README's costs paragraph rewritten. 311
+tests, play.sh 324 s on the GPU. The lookups next, the fires keyed by cell through the index and the
+mobs still walked since a key names one entity, an index whose key names many asked of the engine as
+its item 117. After `c7c1b41`, item 123, the culled sections casting the sun's shadow, read at 02:15
+on 2026-10-25, carrying the review's files and the devlog's cave tops. ChunkRenderer.FindCasters
+casts a ray toward the light from each of the eight corners of every drawn, meshed section within
+the shadow distance plus 16 blocks, shared corners once, each ray walking the section grid after
+Amanatides and Woo up to the world's top or as far as the loaded land reaches and marking every
+section the flood left out, the marked sections drawing their meshes through the same materials with
+ShadowOnly true, taken off the unseen set and meshed like the drawn; the marking redone when a flood
+runs, the light's step turns or the shadow distance changes; draw.sections.shadow counts them and
+Casts switches the casting off for a reading. Departure, the casters found by marching from the
+drawn sections' corners toward the light rather than sweeping the drawn set's bounds, which hold
+thousands of sections under open land casting onto nothing. The cave at the entry's place reads the
+tops 45 blocks ahead 0, 0, 0 where 35, 29, 20 stood, the same at a shadow distance of 150 and the
+same as with the culling off, the 90-block tops 9, 13, 18 where 19, 20, 22, the band's pixels lit
+above 24 falling from 4,427 to 4 at 96 and from 2,325 to 4 at 150, the frame 4.6 ms where 3.1 stood
+with 357 shadow-only draws and 6.7 at 150, against 28 to 31 with the culling off; the grove draws 20
+shadow-only and reads the frame the same with the casting on and off within one session.
+VisibilityTests walks the march, the README's culling paragraph gains the casters and the numbers.
+311 tests, play.sh 327 s on the GPU.
+
+Before it, `3275e76` came, the mobs' third commit and item 27's pin of 5.2.291 with `9dad43e`,
+pushed at 02:09 on 2026-10-25 before the clocks went back, its run green, the play job 54.2 minutes.
 
 Before it, `7443bdc` came, item 32's particles, pushed at 01:31 on 2026-10-25, its run green, the
 play job 33.3 minutes.
-
-Before it, `1c881d0` came, items 35 and 32's weather and snow layer with `24a4916` and `ce693af`,
-pushed at 00:40 on 2026-10-25, its run green, the play job 47.0 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -676,7 +665,8 @@ full.
     worlds, the pathfinder, a mob's own Update and Hit, the mesher and the rest. Five or six
     commits, after the lookups. The first commit at `4105293` on 2026-10-25, the fixture and the
     mobs, their twins gone; the fires next with GameStep.Random settable and Fires.Take taking the
-    step's Random so a seeded test seeds every draw.
+    step's Random so a seeded test seeds every draw. The fires at `01eb71f`; the TNT and the falling
+    blocks next.
 
 ## Verdicts
 

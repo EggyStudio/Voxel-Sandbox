@@ -10,8 +10,7 @@ public readonly record struct TntBlast(Vector3 At);
 /// <remarks>
 /// Its behavior burns it in the engine's frame, reading the voxel world and the seconds from the
 /// game's <see cref="GameStep"/> on the main thread, which alone may read the world, and sends
-/// where each went off as a <see cref="TntBlast"/>, which the game sets off. It also takes its world
-/// and its inputs as arguments, so a test burns the TNT of an ECS world of its own.
+/// where each went off as a <see cref="TntBlast"/>, which the game sets off.
 /// </remarks>
 [Behavior]
 public partial struct LitTnt
@@ -33,32 +32,29 @@ public partial struct LitTnt
         }
     }
 
+    /// <summary>Moves the TNT on by the step's seconds and burns their fuses, setting off those whose fuses have run out, each sent as a <see cref="TntBlast"/>.</summary>
     [OnUpdate]
     public static void Burn(BehaviorContext ctx)
     {
         if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
-        var exploded = new List<Vector3>();
-        Burn(ctx.Ecs, step.World, step.Seconds, exploded);
-        foreach (var at in exploded) ctx.World.SendEvent(new TntBlast(at));
-    }
-
-    /// <summary>Moves the TNT on by so many seconds and burns their fuses, setting off those whose fuses have run out.</summary>
-    public static void Burn(EcsWorld ecs, VoxelWorld world, float seconds, List<Vector3> exploded)
-    {
+        var (ecs, seconds) = (ctx.Ecs, step.Seconds);
         var keep = MathF.Pow(PrimedTnt.Keep, seconds / PrimedTnt.Tick);
         var slide = MathF.Pow(PrimedTnt.Slide, seconds / PrimedTnt.Tick);
-        var gone = new List<int>();
+        var gone = new List<(int Id, Vector3 At)>();
         foreach (var (id, _, body) in ecs.Query<LitTnt, Body>())
         {
             body.Velocity.Y -= PrimedTnt.Fall / (PrimedTnt.Tick * PrimedTnt.Tick) * seconds;
             body.Velocity *= keep;
             if (body.OnGround) (body.Velocity.X, body.Velocity.Z) = (body.Velocity.X * slide, body.Velocity.Z * slide);
-            body.Move(world, body.Velocity * seconds, keepToEdges: false);
+            body.Move(step.World, body.Velocity * seconds, keepToEdges: false);
             if ((ecs.GetRef<LitTnt>(id).Left -= seconds) > 0) continue;
-            exploded.Add(body.Position + new Vector3(0, 1 / 16f, 0));
-            gone.Add(id);
+            gone.Add((id, body.Position + new Vector3(0, 1 / 16f, 0)));
         }
-        foreach (var id in gone) ecs.Despawn(id);
+        foreach (var (id, at) in gone)
+        {
+            ecs.Despawn(id);
+            ctx.World.SendEvent(new TntBlast(at));
+        }
     }
 }
 
@@ -109,14 +105,6 @@ public sealed class PrimedTnt(EcsWorld ecs)
 
     /// <summary>Lights the TNT of a cell that another blast reached, its fuse 10 to 29 ticks.</summary>
     public void Chain(int x, int y, int z) => Light(x, y, z, (10 + _random.Next(20)) * Tick);
-
-    /// <summary>Burns the TNT by so many seconds as a frame burns them, and gives where those whose fuses ran out went off.</summary>
-    public List<Vector3> Update(VoxelWorld world, float seconds)
-    {
-        var exploded = new List<Vector3>();
-        LitTnt.Burn(ecs, world, seconds, exploded);
-        return exploded;
-    }
 
     /// <summary>Puts out every TNT, as a world closes.</summary>
     public void Clear()
