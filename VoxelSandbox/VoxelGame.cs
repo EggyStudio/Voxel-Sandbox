@@ -620,7 +620,7 @@ public sealed class VoxelGame : IDisposable
         Felling.Dropped.Clear();
         // The fires the world set start to burn, and the TNT the fires burned as the engine's frame
         // burned them is lit.
-        Fires.Take(World);
+        Fires.Take(World, Step.Random);
         foreach (var caught in GetApp().World.DrainEvents<TntCaught>()) Tnt.Light(caught.X, caught.Y, caught.Z);
         Blasts.Update(seconds);
         // The TNT whose fuses ran out as the engine's frame burned them goes off.
@@ -981,7 +981,7 @@ public sealed class VoxelGame : IDisposable
         // stand, a use worn in survival.
         if (!toggles && Hotbar.Current?.Item == Items.FlintAndSteel)
         {
-            if (Target is not { Inside: false } struck || !Fires.Light(World, struck.Beside.X, struck.Beside.Y, struck.Beside.Z)) return BlockId.Air;
+            if (Target is not { Inside: false } struck || !Fires.Light(World, struck.Beside.X, struck.Beside.Y, struck.Beside.Z, Step.Random)) return BlockId.Air;
             if (Mode.Lives()) Wear(1);
             return BlockId.Fire;
         }
@@ -1328,6 +1328,6 @@ public sealed class GameStep
     /// <summary>Whether the mobs stand still and think nothing, as for a capture.</summary>
     public bool MobsStill { get; set; }
 
-    /// <summary>The chances the behaviors draw, as of an arrow's extra point of damage.</summary>
-    public Random Random { get; } = new();
+    /// <summary>The chances the behaviors draw, as of an arrow's extra point of damage and a fire's spreading, which a test seeds.</summary>
+    public Random Random { get; set; } = new();
 }

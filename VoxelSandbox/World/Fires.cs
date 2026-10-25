@@ -10,8 +10,7 @@ public readonly record struct TntCaught(int X, int Y, int Z);
 /// Its behavior burns the fires in the engine's frame, reading the voxel world, the seconds and the
 /// chances from the game's <see cref="GameStep"/> on the main thread, which alone may read and change
 /// the world, and sends each TNT a fire burned as a <see cref="TntCaught"/>, which the game lights.
-/// It also takes its world and its inputs as arguments, so a test burns the fires of an ECS world
-/// of its own. <see cref="Fires"/> has the source's numbers.
+/// <see cref="Fires"/> has the source's numbers.
 /// </remarks>
 [Behavior]
 public partial struct Fire : IKeyed<(int X, int Y, int Z)>
@@ -27,26 +26,20 @@ public partial struct Fire : IKeyed<(int X, int Y, int Z)>
     /// <summary>Seconds to its next tick.</summary>
     public float Wait;
 
+    /// <summary>Goes on by the step's seconds, each fire whose tick comes burning as the source's does, and sends each TNT it burned.</summary>
     [OnUpdate]
     public static void Spread(BehaviorContext ctx)
     {
         if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
-        var primed = new List<(int, int, int)>();
-        Spread(ctx.Ecs, step.World, step.Seconds, step.Random, primed);
-        foreach (var (x, y, z) in primed) ctx.World.SendEvent(new TntCaught(x, y, z));
-    }
-
-    /// <summary>Goes on by so many seconds, each fire whose tick comes burning as the source's does, and gives where it burned TNT.</summary>
-    public static void Spread(EcsWorld ecs, VoxelWorld world, float seconds, Random random, List<(int X, int Y, int Z)> primed)
-    {
-        var due = new List<int>();
+        var (ecs, primed, due) = (ctx.Ecs, new List<(int X, int Y, int Z)>(), new List<int>());
         foreach (var (id, _) in ecs.Query<Fire>())
         {
             ref var fire = ref ecs.GetRef<Fire>(id);
-            if (fire.Wait <= seconds) due.Add(id);
-            else fire.Wait -= seconds;
+            if (fire.Wait <= step.Seconds) due.Add(id);
+            else fire.Wait -= step.Seconds;
         }
-        foreach (var id in due) Fires.Burn(ecs, world, id, random, primed);
+        foreach (var id in due) Fires.Burn(ecs, step.World, id, step.Random, primed);
+        foreach (var (x, y, z) in primed) ctx.World.SendEvent(new TntCaught(x, y, z));
     }
 }
 
@@ -70,10 +63,11 @@ public partial struct Fire : IKeyed<(int X, int Y, int Z)>
 /// <para>
 /// A fire over magma burns on, as the source's does over its endless burning blocks. Fire placed by
 /// the world, as a column holding some arrives, starts at age 0. Each fire is a <see cref="Fire"/>
-/// entity of an ECS world.
+/// entity of an ECS world, and its chances are drawn from the Random given, the game's step's, so a
+/// test that seeds it burns the same each time.
 /// </para>
 /// </remarks>
-public sealed class Fires(EcsWorld ecs, Random? random = null)
+public sealed class Fires(EcsWorld ecs)
 {
     private const float Tick = 0.05f;
     private const int Difficulty = 2;
@@ -81,8 +75,6 @@ public sealed class Fires(EcsWorld ecs, Random? random = null)
     // How readily each block catches fire into the air beside it and how readily it burns away, the
     // source's odds, both none for a block that does not burn.
     private static readonly (int Catches, int Burns)[] _odds = Odds();
-
-    private readonly Random _random = random ?? new Random();
 
     /// <summary>Where each fire burns and its age.</summary>
     public IEnumerable<((int X, int Y, int Z) At, int Age)> All
@@ -99,12 +91,12 @@ public sealed class Fires(EcsWorld ecs, Random? random = null)
     /// <summary>Whether a fire can stand in a cell, over a whole block or beside one that burns.</summary>
     public static bool CanStand(VoxelWorld world, int x, int y, int z) => Blocks.IsSturdy(world.GetBlock(x, y - 1, z)) || BesideFuel(world, x, y, z);
 
-    /// <summary>Lights a fire in a cell of air where it can stand, as flint and steel does.</summary>
+    /// <summary>Lights a fire in a cell of air where it can stand, as flint and steel does, its first tick drawn from a Random.</summary>
     /// <returns>Whether it was lit.</returns>
-    public bool Light(VoxelWorld world, int x, int y, int z)
+    public bool Light(VoxelWorld world, int x, int y, int z, Random random)
     {
         if (world.GetBlock(x, y, z) != BlockId.Air || !CanStand(world, x, y, z)) return false;
-        return Set(ecs, world, x, y, z, 0, _random);
+        return Set(ecs, world, x, y, z, 0, random);
     }
 
     /// <summary>Takes the fires the world set, by an edit or as a column holding some arrived, to keep them burning.</summary>
@@ -112,7 +104,7 @@ public sealed class Fires(EcsWorld ecs, Random? random = null)
     /// The world names every fire set, those the fires spread themselves among them, so a cell that
     /// already has its fire is passed over, found by the world's index of the fires by their cells.
     /// </remarks>
-    public void Take(VoxelWorld world)
+    public void Take(VoxelWorld world, Random random)
     {
         if (world.Kindled.Count == 0) return;
         var burning = ecs.Index<Fire, (int X, int Y, int Z)>();
@@ -120,18 +112,10 @@ public sealed class Fires(EcsWorld ecs, Random? random = null)
         {
             // Each cell named draws its delay, its new fire's or one let go, so the chances drawn after
             // it are the same whichever of the cells burned already.
-            var wait = Delay(_random);
+            var wait = Delay(random);
             if (!burning.Contains(at)) ecs.Add(ecs.Spawn(), new Fire { X = at.X, Y = at.Y, Z = at.Z, Wait = wait });
         }
         world.Kindled.Clear();
-    }
-
-    /// <summary>Goes on by so many seconds as a frame goes on, each fire whose tick comes burning as the source's does, and gives where it burned TNT.</summary>
-    public List<(int X, int Y, int Z)> Update(VoxelWorld world, float seconds)
-    {
-        var primed = new List<(int, int, int)>();
-        Fire.Spread(ecs, world, seconds, _random, primed);
-        return primed;
     }
 
     /// <summary>Lets go of every fire, as a world closes.</summary>

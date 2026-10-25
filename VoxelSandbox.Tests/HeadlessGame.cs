@@ -6,8 +6,8 @@ namespace VoxelSandbox.Tests;
 
 /// <summary>
 /// A whole game in an app with no window, its flat world of a seed loaded, its frames stepped by
-/// the engine's stages as the game's own loop steps them, each a thirtieth of a second, so a test
-/// runs the game's behaviors as the game runs them.
+/// the engine's stages as the game's own loop steps them, each a thirtieth of a second unless the
+/// test gives another, so a test runs the game's behaviors as the game runs them.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -23,14 +23,16 @@ namespace VoxelSandbox.Tests;
 /// </remarks>
 public sealed class HeadlessGame : IDisposable
 {
-    /// <summary>The seconds each frame steps the game by.</summary>
+    /// <summary>The seconds each frame steps the game by unless a test gives another.</summary>
     public const float FrameSeconds = 1 / 30f;
 
-    public HeadlessGame(int seed = 1)
+    public HeadlessGame(int seed = 1, float frameSeconds = FrameSeconds)
     {
         Environment.SetEnvironmentVariable("E3D_HEADLESS", "1");
-        Environment.SetEnvironmentVariable("E3D_FRAME_TIME", FrameSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        Environment.SetEnvironmentVariable("E3D_FRAME_TIME", frameSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
         InitWindow(1280, 720, "Voxel Sandbox");
+        // The frames are counted, not waited on, so none is held back to a rate.
+        SetTargetFPS(0);
         try
         {
             Game = new VoxelGame("flat", seed, null, transient: true, []) { RenderDistance = 2 };
