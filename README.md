@@ -1492,8 +1492,9 @@ each of the sun's three shadow cascades', leaves out the sections whose boxes it
 shadows take about the same from 8 columns to 16. Over seed 1's spawn at noon, looking east over
 the forest to the sea, at 1280 by 720 offscreen on the development machine's RTX 4070 Laptop GPU
 with the three default packs and the screen's probes on, in a Debug build, the frame keeps 60 a
-second at 8 columns and at 12 and loses it at 16, where the GPU's work bounds it. The frame's time,
-the GPU's and the CPU's passes' in milliseconds and the memory the game holds:
+second at 8 columns, stands at the edge of it at 12, where the GPU's work bounds it and two readings
+gave the frame 16.7 and 17.6 ms, and loses it at 16. The frame's time, the GPU's and the CPU's
+passes' in milliseconds and the memory the game holds:
 
 | columns | frame | GPU | CPU's passes | memory |
 |---|---|---|---|---|

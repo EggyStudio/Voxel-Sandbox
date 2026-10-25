@@ -5,59 +5,69 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `bb0b9bb`, item 29's meshing on the workers, pushed at 19:49 on 2026-10-25 once the
-run of `117392b` went green, the run watched, carrying the review's files and a devlog note.
-SectionMesher splits into Gather on the main thread, the fill and, for a section holding water, a
-copy of the 18 by 32 by 18 cells the water's depth reads, and Build reading the mesher's own arrays
-alone, Mesh calling both; ChunkRenderer keeps a stack of 64 meshers with a semaphore letting half
-the cores up to 16 build at once, the sends numbered from one counter so a stale result is dropped,
-edits meshed synchronously, a section of air let go in the loop with no mesher, the loop parking far
-sections and filing unseen ones with every mesher lent, and voxel.state and the F3 window counting
-the sections lent and not yet taken in as to mesh so the play script's meshed wait holds; a test
-gathers a section, changes the world, builds and reads the faces equal to those meshed before the
-change. With the machine's load at 6 to 12, Release flights at distance 12 read update.mesh 0.32,
-0.23 and 0.46 ms against 0.26, 3.28 and 3.71 and the frames 25.9, 31.5 and 30.0 against 25.4, 37.7
-and 45.1, the settle after a teleport 5, 3 and 3 s against 6, 5 and 5 with update.mesh 2 to 3 ms
-against 4 to 6, and Debug on lavapipe pinned to four cores at distance 4 settles in 64 and 73 s
-against 59 and 74 with update.mesh 4 ms against 10 to 12; a first version with eight meshers and a
-round a frame settled in 9 to 13 s since every air section waited a frame for a worker. 353 tests,
-play.sh 322 s on the GPU. After `117392b`, Verdict 6's mend, pushed at 18:34 on 2026-10-25 after the
-red run of `b7608c7` ended, its run green at 19:41 with the play job 67 minutes under the limit of
-90, the water check reading its ticks, carrying REVIEW.md and DEVLOG.md. ChunkRenderer gains
-HeldTicks and voxel.ticks holds the animated textures and the lamps at a tick, the play run reading
-the pool at ticks 0 to 3 for white and black alternating in green and setting off, without a sleep,
-the README's commands paragraph naming it. 352 tests, play.sh 199 s on the RTX and 1,267 s on local
-lavapipe with validation, both reading the water's green at the four ticks as 114, 70, 114 and 70.
-Item 29's workers next, whose first settle reading showed the land settling four times slower, 9 to
-13 s against 2 to 3 with frames of 9 to 12 ms against 19 to 58, eight meshers with a frame's round
-trip meshing too few sections a second, so the meshers in flight rise and the settle and the flights
-are read again before the commit. After `b7608c7`, item 95's first commit, three of the section's
-parts as mesh entities on 5.2.313, pushed at 17:34 on 2026-10-25 once the run of `ddede23` went
-green, its run red on the play job at 17:53 with the three test jobs green, Verdict 6, carrying
-NORM.md, the review's files and DEVLOG.md with a note. The solid, the solid cut-out and the molten
-parts are entities with an uploaded Mesh, an ECS Material through the terrain shader copying the
-ModelMaterial's alpha mode, cutoff, roughness and emission with DoubleSided false since the ECS
-Material defaults to double-sided, a Transform, Visible, ShadowOnly and the game's SectionPart
-naming the section and the kind, the molten's material written again when the lamps rebuild; a Place
-pass sets Visible and ShadowOnly writing what changed, run when the flood, the casters, the reach or
-a section's parts change, caching the shown sections and the lamps' lists; the plants, the glass,
-the ice, the water and the cut-out glass stay on DrawMesh each frame, the casters' plants
-shadow-only. LightSettings' ScreenProbes and its call are gone, the quality's summary saying the
-engine traces the probes at Medium and High, the headless options test holding the quality at High,
-the README's probes sentence and a paragraph on the entities; the play run's draws check reads
-entities.drawn and fails at 0, 145 at the land's edge. In the four views of item 93 voxel.state
-counts the same sections, draws, triangles, lamps and culled in both 5.2.313 builds, the captures
-within an RMSE of 0.0011 and at most 5 pixels past 3%. The note's readings, Release at distance 12
-and High with the probes, read twice a build interleaved with the engine's game holding 10 to 50% of
-the GPU, the grove at 1920 by 1080 on 5.2.291 a frame of 41.5 to 46.6 ms with the scene pass 19.8 to
-23.6, on 5.2.313 with DrawMesh 35.1 to 45.7 and 19.8 to 21.2, and with the entities 23.2 to 24.0 and
-9.8 to 10.3; at 1280 by 720 the grove 29 to 33 against 19.6 to 20.0 and the village 27.5 to 29.5
-against 19.2 to 20.0; the CPU's recording of the passes more than halved, the grove's cpu.shadows
-8.6 to 11.9 ms against 4.5 to 6.1, the game's draw.sections 0.65 to 1.8 ms from 1.2 to 6,
-MeshEntityDraws 0.25 to 0.33 ms; why the GPU's scene pass halves with the same pixels lies inside
-the engine, untraced, the engine's item 125. The package alone, both builds on DrawMesh, took 1 to 2
-ms off the shadows and up to 1.5 off the global illumination within the load's noise, the scene pass
-the same. 352 tests, play.sh 389 s on the GPU, the README's costs not read again on a loaded GPU.
+Reviewed up to `cc49c81`, the README's costs read again, read at 20:21 on 2026-10-25, carrying
+REVIEW.md and DEVLOG.md with a note, held until the run of `bb0b9bb` ends. The distance table reads
+frames of 16.7, 16.7 and 23.8 ms at 8, 12 and 16 columns, the GPU 12.1, 16.6 and 23.8, the CPU's
+passes 6.5, 11.0 and 17.7 and 1,029, 1,308 and 1,942 MB resident, its lead sentence naming the
+probes on, a Debug build and the eastward view from the spawn, the frame keeping 60 a second at 8
+and 12 and losing it at 16 to the GPU; the lavapipe line 0.85, 1.13, 1.60 and 2.18 s with the probes
+on; the flights sentence saying the game joins columns on the main thread and meshes their sections
+on the workers, the old flight numbers kept with the probes off. The note holds the load's caveat,
+the draws and the triangles, the readings before and the flights read under load. 353 tests, play.sh
+353 s on the GPU. After `bb0b9bb`, item 29's meshing on the workers, pushed at 19:49 on 2026-10-25
+once the run of `117392b` went green, the run watched, carrying the review's files and a devlog
+note. SectionMesher splits into Gather on the main thread, the fill and, for a section holding
+water, a copy of the 18 by 32 by 18 cells the water's depth reads, and Build reading the mesher's
+own arrays alone, Mesh calling both; ChunkRenderer keeps a stack of 64 meshers with a semaphore
+letting half the cores up to 16 build at once, the sends numbered from one counter so a stale result
+is dropped, edits meshed synchronously, a section of air let go in the loop with no mesher, the loop
+parking far sections and filing unseen ones with every mesher lent, and voxel.state and the F3
+window counting the sections lent and not yet taken in as to mesh so the play script's meshed wait
+holds; a test gathers a section, changes the world, builds and reads the faces equal to those meshed
+before the change. With the machine's load at 6 to 12, Release flights at distance 12 read
+update.mesh 0.32, 0.23 and 0.46 ms against 0.26, 3.28 and 3.71 and the frames 25.9, 31.5 and 30.0
+against 25.4, 37.7 and 45.1, the settle after a teleport 5, 3 and 3 s against 6, 5 and 5 with
+update.mesh 2 to 3 ms against 4 to 6, and Debug on lavapipe pinned to four cores at distance 4
+settles in 64 and 73 s against 59 and 74 with update.mesh 4 ms against 10 to 12; a first version
+with eight meshers and a round a frame settled in 9 to 13 s since every air section waited a frame
+for a worker. 353 tests, play.sh 322 s on the GPU. After `117392b`, Verdict 6's mend, pushed at
+18:34 on 2026-10-25 after the red run of `b7608c7` ended, its run green at 19:41 with the play job
+67 minutes under the limit of 90, the water check reading its ticks, carrying REVIEW.md and
+DEVLOG.md. ChunkRenderer gains HeldTicks and voxel.ticks holds the animated textures and the lamps
+at a tick, the play run reading the pool at ticks 0 to 3 for white and black alternating in green
+and setting off, without a sleep, the README's commands paragraph naming it. 352 tests, play.sh 199
+s on the RTX and 1,267 s on local lavapipe with validation, both reading the water's green at the
+four ticks as 114, 70, 114 and 70. Item 29's workers next, whose first settle reading showed the
+land settling four times slower, 9 to 13 s against 2 to 3 with frames of 9 to 12 ms against 19 to
+58, eight meshers with a frame's round trip meshing too few sections a second, so the meshers in
+flight rise and the settle and the flights are read again before the commit. After `b7608c7`, item
+95's first commit, three of the section's parts as mesh entities on 5.2.313, pushed at 17:34 on
+2026-10-25 once the run of `ddede23` went green, its run red on the play job at 17:53 with the three
+test jobs green, Verdict 6, carrying NORM.md, the review's files and DEVLOG.md with a note. The
+solid, the solid cut-out and the molten parts are entities with an uploaded Mesh, an ECS Material
+through the terrain shader copying the ModelMaterial's alpha mode, cutoff, roughness and emission
+with DoubleSided false since the ECS Material defaults to double-sided, a Transform, Visible,
+ShadowOnly and the game's SectionPart naming the section and the kind, the molten's material written
+again when the lamps rebuild; a Place pass sets Visible and ShadowOnly writing what changed, run
+when the flood, the casters, the reach or a section's parts change, caching the shown sections and
+the lamps' lists; the plants, the glass, the ice, the water and the cut-out glass stay on DrawMesh
+each frame, the casters' plants shadow-only. LightSettings' ScreenProbes and its call are gone, the
+quality's summary saying the engine traces the probes at Medium and High, the headless options test
+holding the quality at High, the README's probes sentence and a paragraph on the entities; the play
+run's draws check reads entities.drawn and fails at 0, 145 at the land's edge. In the four views of
+item 93 voxel.state counts the same sections, draws, triangles, lamps and culled in both 5.2.313
+builds, the captures within an RMSE of 0.0011 and at most 5 pixels past 3%. The note's readings,
+Release at distance 12 and High with the probes, read twice a build interleaved with the engine's
+game holding 10 to 50% of the GPU, the grove at 1920 by 1080 on 5.2.291 a frame of 41.5 to 46.6 ms
+with the scene pass 19.8 to 23.6, on 5.2.313 with DrawMesh 35.1 to 45.7 and 19.8 to 21.2, and with
+the entities 23.2 to 24.0 and 9.8 to 10.3; at 1280 by 720 the grove 29 to 33 against 19.6 to 20.0
+and the village 27.5 to 29.5 against 19.2 to 20.0; the CPU's recording of the passes more than
+halved, the grove's cpu.shadows 8.6 to 11.9 ms against 4.5 to 6.1, the game's draw.sections 0.65 to
+1.8 ms from 1.2 to 6, MeshEntityDraws 0.25 to 0.33 ms; why the GPU's scene pass halves with the same
+pixels lies inside the engine, untraced, the engine's item 125. The package alone, both builds on
+DrawMesh, took 1 to 2 ms off the shadows and up to 1.5 off the global illumination within the load's
+noise, the scene pass the same. 352 tests, play.sh 389 s on the GPU, the README's costs not read
+again on a loaded GPU.
 
 Before it, `ddede23` came, Verdict 5's mend, pushed at 11:57 on 2026-10-25, its run green at 13:00
 with the play job 63 minutes.
@@ -428,7 +438,9 @@ full.
     served 5.2.313 late, its flat container at 404 at 17:04. The first commit at `b7608c7` on
     2026-10-25, the three flagless parts as entities on 5.2.313, the grove's frame from about 43 ms
     to 23.6 at 1080p with the scene pass halved, the readings in the devlog's note; the four flagged
-    parts move on the package carrying the engine's item 124, which closes this item.
+    parts move on the package carrying the engine's item 124, which closes this item. The README's
+    costs at `cc49c81` on 2026-10-25, the distance table with the probes on keeping 60 a second at
+    12 columns where it lost it before, the flights left for a quiet GPU.
 
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
