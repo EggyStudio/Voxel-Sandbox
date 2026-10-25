@@ -5,33 +5,43 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `b7608c7`, item 95's first commit, three of the section's parts as mesh entities on
-5.2.313, pushed at 17:34 on 2026-10-25 once the run of `ddede23` went green, its run red on the play
-job at 17:53 with the three test jobs green, Verdict 6, carrying NORM.md, the review's files and
-DEVLOG.md with a note. The solid, the solid cut-out and the molten parts are entities with an
-uploaded Mesh, an ECS Material through the terrain shader copying the ModelMaterial's alpha mode,
-cutoff, roughness and emission with DoubleSided false since the ECS Material defaults to
-double-sided, a Transform, Visible, ShadowOnly and the game's SectionPart naming the section and the
-kind, the molten's material written again when the lamps rebuild; a Place pass sets Visible and
-ShadowOnly writing what changed, run when the flood, the casters, the reach or a section's parts
-change, caching the shown sections and the lamps' lists; the plants, the glass, the ice, the water
-and the cut-out glass stay on DrawMesh each frame, the casters' plants shadow-only. LightSettings'
-ScreenProbes and its call are gone, the quality's summary saying the engine traces the probes at
-Medium and High, the headless options test holding the quality at High, the README's probes sentence
-and a paragraph on the entities; the play run's draws check reads entities.drawn and fails at 0, 145
-at the land's edge. In the four views of item 93 voxel.state counts the same sections, draws,
-triangles, lamps and culled in both 5.2.313 builds, the captures within an RMSE of 0.0011 and at
-most 5 pixels past 3%. The note's readings, Release at distance 12 and High with the probes, read
-twice a build interleaved with the engine's game holding 10 to 50% of the GPU, the grove at 1920 by
-1080 on 5.2.291 a frame of 41.5 to 46.6 ms with the scene pass 19.8 to 23.6, on 5.2.313 with
-DrawMesh 35.1 to 45.7 and 19.8 to 21.2, and with the entities 23.2 to 24.0 and 9.8 to 10.3; at 1280
-by 720 the grove 29 to 33 against 19.6 to 20.0 and the village 27.5 to 29.5 against 19.2 to 20.0;
-the CPU's recording of the passes more than halved, the grove's cpu.shadows 8.6 to 11.9 ms against
-4.5 to 6.1, the game's draw.sections 0.65 to 1.8 ms from 1.2 to 6, MeshEntityDraws 0.25 to 0.33 ms;
-why the GPU's scene pass halves with the same pixels lies inside the engine, untraced, the engine's
-item 125. The package alone, both builds on DrawMesh, took 1 to 2 ms off the shadows and up to 1.5
-off the global illumination within the load's noise, the scene pass the same. 352 tests, play.sh 389
-s on the GPU, the README's costs not read again on a loaded GPU.
+Reviewed up to `117392b`, Verdict 6's mend, pushed at 18:34 on 2026-10-25 after the red run of
+`b7608c7` ended, its run green at 19:41 with the play job 67 minutes under the limit of 90, the
+water check reading its ticks, carrying REVIEW.md and DEVLOG.md. ChunkRenderer gains HeldTicks and
+voxel.ticks holds the animated textures and the lamps at a tick, the play run reading the pool at
+ticks 0 to 3 for white and black alternating in green and setting off, without a sleep, the README's
+commands paragraph naming it. 352 tests, play.sh 199 s on the RTX and 1,267 s on local lavapipe with
+validation, both reading the water's green at the four ticks as 114, 70, 114 and 70. Item 29's
+workers next, whose first settle reading showed the land settling four times slower, 9 to 13 s
+against 2 to 3 with frames of 9 to 12 ms against 19 to 58, eight meshers with a frame's round trip
+meshing too few sections a second, so the meshers in flight rise and the settle and the flights are
+read again before the commit. After `b7608c7`, item 95's first commit, three of the section's parts
+as mesh entities on 5.2.313, pushed at 17:34 on 2026-10-25 once the run of `ddede23` went green, its
+run red on the play job at 17:53 with the three test jobs green, Verdict 6, carrying NORM.md, the
+review's files and DEVLOG.md with a note. The solid, the solid cut-out and the molten parts are
+entities with an uploaded Mesh, an ECS Material through the terrain shader copying the
+ModelMaterial's alpha mode, cutoff, roughness and emission with DoubleSided false since the ECS
+Material defaults to double-sided, a Transform, Visible, ShadowOnly and the game's SectionPart
+naming the section and the kind, the molten's material written again when the lamps rebuild; a Place
+pass sets Visible and ShadowOnly writing what changed, run when the flood, the casters, the reach or
+a section's parts change, caching the shown sections and the lamps' lists; the plants, the glass,
+the ice, the water and the cut-out glass stay on DrawMesh each frame, the casters' plants
+shadow-only. LightSettings' ScreenProbes and its call are gone, the quality's summary saying the
+engine traces the probes at Medium and High, the headless options test holding the quality at High,
+the README's probes sentence and a paragraph on the entities; the play run's draws check reads
+entities.drawn and fails at 0, 145 at the land's edge. In the four views of item 93 voxel.state
+counts the same sections, draws, triangles, lamps and culled in both 5.2.313 builds, the captures
+within an RMSE of 0.0011 and at most 5 pixels past 3%. The note's readings, Release at distance 12
+and High with the probes, read twice a build interleaved with the engine's game holding 10 to 50% of
+the GPU, the grove at 1920 by 1080 on 5.2.291 a frame of 41.5 to 46.6 ms with the scene pass 19.8 to
+23.6, on 5.2.313 with DrawMesh 35.1 to 45.7 and 19.8 to 21.2, and with the entities 23.2 to 24.0 and
+9.8 to 10.3; at 1280 by 720 the grove 29 to 33 against 19.6 to 20.0 and the village 27.5 to 29.5
+against 19.2 to 20.0; the CPU's recording of the passes more than halved, the grove's cpu.shadows
+8.6 to 11.9 ms against 4.5 to 6.1, the game's draw.sections 0.65 to 1.8 ms from 1.2 to 6,
+MeshEntityDraws 0.25 to 0.33 ms; why the GPU's scene pass halves with the same pixels lies inside
+the engine, untraced, the engine's item 125. The package alone, both builds on DrawMesh, took 1 to 2
+ms off the shadows and up to 1.5 off the global illumination within the load's noise, the scene pass
+the same. 352 tests, play.sh 389 s on the GPU, the README's costs not read again on a loaded GPU.
 
 Before it, `ddede23` came, Verdict 5's mend, pushed at 11:57 on 2026-10-25, its run green at 13:00
 with the play job 63 minutes.
@@ -555,33 +565,7 @@ full.
 
 ## Verdicts
 
-Verdict 6 is open. Verdicts 1 to 5 are settled, said under each in REVIEW-ARCHIVE.md.
-
-6. **The run of `b7608c7` is red, the play job's water texture check reading no frame step on
-    lavapipe.** Read at 17:58 on 2026-10-25 from the run's jobs and the play job's log, run
-    40212359716. The three test jobs are green; the play job ran 19 minutes to the check after the
-    water's depth and failed it, the water's texture not stepping through its frames, its green
-    reading 114 eight times where item 39's animated textures step by their metadata's frame time.
-    The game's log ends with Vulkan's validation saying an Output variable is a pointer to a float32
-    and this mismatch between vector sizes is not allowed unless maintenance4 is enabled, a shader
-    interface mismatch the entity path's pipeline or the terrain shader's new use may raise. On the
-    GPU the play run passed in 389 s, so the fault shows on lavapipe or on the first run after the
-    commit; the water stays on DrawMesh, so the coder reads what the entities' commit changed in the
-    frame's time for the terrain shader, the animation table's step set with the Place pass where it
-    was set each frame, or the shader values the entities' Material holds, and the validation
-    message beside it. The mend goes ahead of item 29's meshing on the workers. Read at 18:09, the
-    cause is the check and not the water. On local lavapipe with validation the two-frame water pack
-    reads 74 and 115 in turn on both `ddede23` and `b7608c7`, so the animation runs; the check reads
-    the last frame drawn, a frame takes its tick from the time it is drawn, and frames at a steady
-    pace a whole number of tenths of a second long land on the same of the two frames whenever the
-    script reads them, which the entities' faster frames on the runner likely made, the checks there
-    running about a fifth faster. The mend gives ChunkRenderer HeldTicks and a voxel.ticks command
-    holding the animated textures and the lamps at a tick, the check reading the pool at ticks 0 to
-    3 for white and black alternating by 40 or more in green and then setting off, without a sleep.
-    The validation lines are performance notes new with item 95, two in the game's log, a pipeline
-    the entity path builds pairing the terrain's vertex stage with a fragment stage that reads none
-    of its output at location 11, likely the water depth, the write discarded; the pairing is the
-    engine's choice a pass, so it goes to the engine's item 125 and not to the shader blind.
+No verdict is open. Verdicts 1 to 6 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 

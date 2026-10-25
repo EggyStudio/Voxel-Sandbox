@@ -63,7 +63,7 @@ public sealed class SettingsWindow
             : game.Target is { } hit ? $"Looking at {Blocks.Get(game.World.GetBlock(hit.X, hit.Y, hit.Z)).Name} at {hit.X}, {hit.Y}, {hit.Z}, its face's light {LightBeside(game, hit)}"
             : "Looking at nothing within reach");
         var renderer = game.Renderer;
-        ImGui.TextUnformatted($"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count} sections to mesh");
+        ImGui.TextUnformatted($"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count + game.Renderer.Meshing} sections to mesh");
         ImGui.TextUnformatted($"{renderer.Sections} sections drawn as a mesh each, {renderer.Lamps} lamps");
         ImGui.TextUnformatted($"{renderer.Draws} draws of {renderer.Triangles:N0} triangles, {game.Clouds.Faces} faces of clouds");
         ImGui.TextUnformatted($"Hour {game.Sky.Hour:0.00} of day {game.Sky.Day}{(game.Sky.Cycle ? ", going on" : ", held")}");

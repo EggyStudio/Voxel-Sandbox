@@ -30,7 +30,7 @@ public static class GameCommands
             : "looking at nothing within reach";
         return (game.Loading ? $"loading {game.WorldName}, {game.LoadingShare():0%} done; " : "") + $"feet at {at.X:0.00}, {at.Y:0.00}, {at.Z:0.00} in {game.World.BiomeAt((int)MathF.Floor(at.X), (int)MathF.Floor(at.Z))?.Name ?? "nowhere loaded"}, facing {player.Heading:0} and pitched {player.Pitch * 180 / MathF.PI:0}, "
             + $"{(player.Flying ? "flying" : player.Body.OnGround ? "on the ground" : "in the air")}{EyeInside(game)}, {target}; "
-            + $"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count} sections to mesh; "
+            + $"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count + game.Renderer.Meshing} sections to mesh; "
             + $"{renderer.Sections} sections, {renderer.Draws} draws, {renderer.Triangles} triangles, {renderer.Lamps} lamps, {renderer.Culled} culled, {renderer.Deep.Sections} deep of {renderer.Deep.Triangles} triangles; "
             + $"{game.Mobs.All.Count} mobs loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws; "
             + $"hour {game.Sky.Hour:0.00} of day {game.Sky.Day}, light {game.Light.Quality}, render distance {game.RenderDistance}, world {game.World.Generator.Name} of seed {game.World.Generator.Seed}, "

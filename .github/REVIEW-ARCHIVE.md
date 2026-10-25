@@ -1900,3 +1900,31 @@ before a batch.
     saying so in the commit; the walk's checks are not trimmed for it. The mend goes ahead of item
     95. Settled at `ddede23` on 2026-10-25, the limit 90 minutes with the reasons in its comment,
     the lost run's checks grown evenly and none out of proportion; the walk untouched.
+
+6. **The run of `b7608c7` is red, the play job's water texture check reading no frame step on
+    lavapipe.** Read at 17:58 on 2026-10-25 from the run's jobs and the play job's log, run
+    40212359716. The three test jobs are green; the play job ran 19 minutes to the check after the
+    water's depth and failed it, the water's texture not stepping through its frames, its green
+    reading 114 eight times where item 39's animated textures step by their metadata's frame time.
+    The game's log ends with Vulkan's validation saying an Output variable is a pointer to a float32
+    and this mismatch between vector sizes is not allowed unless maintenance4 is enabled, a shader
+    interface mismatch the entity path's pipeline or the terrain shader's new use may raise. On the
+    GPU the play run passed in 389 s, so the fault shows on lavapipe or on the first run after the
+    commit; the water stays on DrawMesh, so the coder reads what the entities' commit changed in the
+    frame's time for the terrain shader, the animation table's step set with the Place pass where it
+    was set each frame, or the shader values the entities' Material holds, and the validation
+    message beside it. The mend goes ahead of item 29's meshing on the workers. Read at 18:09, the
+    cause is the check and not the water. On local lavapipe with validation the two-frame water pack
+    reads 74 and 115 in turn on both `ddede23` and `b7608c7`, so the animation runs; the check reads
+    the last frame drawn, a frame takes its tick from the time it is drawn, and frames at a steady
+    pace a whole number of tenths of a second long land on the same of the two frames whenever the
+    script reads them, which the entities' faster frames on the runner likely made, the checks there
+    running about a fifth faster. The mend gives ChunkRenderer HeldTicks and a voxel.ticks command
+    holding the animated textures and the lamps at a tick, the check reading the pool at ticks 0 to
+    3 for white and black alternating by 40 or more in green and then setting off, without a sleep.
+    The validation lines are performance notes new with item 95, two in the game's log, a pipeline
+    the entity path builds pairing the terrain's vertex stage with a fragment stage that reads none
+    of its output at location 11, likely the water depth, the write discarded; the pairing is the
+    engine's choice a pass, so it goes to the engine's item 125 and not to the shader blind. Settled
+    at `117392b` on 2026-10-25, the animated textures held at a tick for the check, which reads the
+    two frames in turn on the RTX and on lavapipe alike.

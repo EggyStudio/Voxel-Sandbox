@@ -134,6 +134,21 @@ public sealed class ChunkRenderer : IDisposable
 
     private readonly Dictionary<SectionKey, SectionMeshes> _sections = [];
     private readonly SectionMesher _mesher = new();
+    // The meshers lent to the workers, a section each, its copy taken here and its faces made on a
+    // worker, so the main thread takes in finished faces while the world streams in. As many are
+    // made at once as half the processor's cores, so the main thread keeps a core, and a section
+    // copied waits for one, so a slow frame, as on a device that draws on the processor, meshes as
+    // many as the workers make meanwhile rather than one round a frame. The sections the workers made
+    // come back with the meshing asked of each, and the meshing last asked of a section is kept, so a
+    // section edited or asked again while a worker meshes it takes only its newest faces. An edit is
+    // meshed here at once, so a block set shows in its own frame.
+    private readonly Stack<SectionMesher> _lent = new(Enumerable.Range(0, 64).Select(_ => new SectionMesher()));
+    private readonly SemaphoreSlim _building = new(Math.Clamp(Environment.ProcessorCount / 2, 1, 16));
+    private readonly System.Collections.Concurrent.ConcurrentQueue<(SectionKey Key, int Asked, SectionMesher Mesher, bool Made)> _built = new();
+    private readonly Dictionary<SectionKey, int> _asked = [];
+    // Each meshing asked is numbered from one count, so faces a worker made before a section was let
+    // go never pass for those asked of it after.
+    private int _asks, _asking;
     private readonly ModelMesh _cube = GenMeshCube(1, 1, 1);
     // Each emissive surface's cube, the one above for a surface showing its whole texture on each face.
     private readonly ModelMesh[] _lampCubes;
@@ -577,6 +592,12 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     public void Update(VoxelWorld world, Vector3 eye, int renderDistance, double budgetMs)
     {
+        while (_built.TryDequeue(out var done))
+        {
+            _asking--;
+            _lent.Push(done.Mesher);
+            if (done.Made && _asked.TryGetValue(done.Key, out var asked) && asked == done.Asked) Take(world, done.Key, done.Mesher);
+        }
         foreach (var key in world.Edited)
             if (!Remesh(world, key)) world.Loaded.Add(key);
         world.Reshaded.ExceptWith(world.Edited);
@@ -612,21 +633,24 @@ public sealed class ChunkRenderer : IDisposable
         foreach (var key in _queue)
         {
             if (watch.Elapsed.TotalMilliseconds > budgetMs) break;
+            // A section out of reach is parked, one the flood leaves out held back and one of air let
+            // go, each at once, while one to mesh waits marked for a mesher to come back once every
+            // one is lent.
+            var far = !InReach(world, key, at, renderDistance);
+            var unseen = !far && Cull && !_visibility.Sees(key) && !_casters.Contains(key);
+            var empty = !far && !unseen && (!world.TryGetColumn(key.X, key.Z, out var column) || column.Numbered(key.Y) is not { Filled: > 0 });
+            if (!far && !unseen && !empty && _lent.Count == 0) continue;
             // A section whose neighbor column has not arrived is dropped rather than kept, since the
             // neighbor's arrival marks it again.
             if (!world.Reshaded.Remove(key) & !world.Loaded.Remove(key)) continue;
-            if (!InReach(world, key, at, renderDistance))
+            if (far) _parked.Add(key);
+            else if (unseen) _unseen.Add(key);
+            else if (empty) Forget(key);
+            else
             {
-                _parked.Add(key);
-                continue;
+                Send(world, key);
+                meshed++;
             }
-            if (Cull && !_visibility.Sees(key) && !_casters.Contains(key))
-            {
-                _unseen.Add(key);
-                continue;
-            }
-            Remesh(world, key);
-            meshed++;
         }
         SetProfileValue("update.meshed", meshed);
         SetProfileValue("update.unseen", _unseen.Count);
@@ -636,6 +660,10 @@ public sealed class ChunkRenderer : IDisposable
     private static bool InReach(VoxelWorld world, SectionKey key, SectionKey eye, int distance) =>
         world.TryGetColumn(key.X, key.Z, out var column) && Reach.Within(key, column.FloorSection, eye, distance);
 
+    /// <summary>How many sections the workers are meshing or have meshed and the next update takes in.</summary>
+    public int Meshing => _asking;
+
+    // Meshes a section here at once.
     private bool Remesh(VoxelWorld world, SectionKey key)
     {
         if (!world.HasColumn(key.X, key.Z))
@@ -643,36 +671,93 @@ public sealed class ChunkRenderer : IDisposable
             Forget(key);
             return true;
         }
+        _asked[key] = ++_asks;
         if (!_mesher.Mesh(world, key)) return false;
+        Take(world, key, _mesher);
+        return true;
+    }
 
-        if (_mesher.Solid.Count == 0 && _mesher.SeeThrough.Count == 0 && _mesher.Water.Count == 0 && _mesher.Cutout.Count == 0 && _mesher.CutoutGlass.Count == 0 && _mesher.SolidCutout.Count == 0
-            && _mesher.Molten.Count == 0 && _mesher.Emitters.Count == 0)
+    // Takes a section's copy here and has a worker make its faces, which a later update takes in. A
+    // section whose neighbor column has not arrived is dropped, since the neighbor's arrival marks it
+    // again.
+    private void Send(VoxelWorld world, SectionKey key)
+    {
+        if (!world.HasColumn(key.X, key.Z))
         {
             Forget(key);
-            return true;
+            return;
+        }
+        var mesher = _lent.Pop();
+        (mesher.Atlas, mesher.LightLevels, mesher.CornerShade, mesher.CornerStrength) = (_mesher.Atlas, _mesher.LightLevels, _mesher.CornerShade, _mesher.CornerStrength);
+        var asked = _asked[key] = ++_asks;
+        // A section of air has no faces to make, so it is let go here rather than wait a frame for a
+        // worker, as most sections over the land are.
+        var gathered = mesher.Gather(world, key);
+        if (!gathered || mesher.Empty)
+        {
+            if (gathered) Take(world, key, mesher);
+            _lent.Push(mesher);
+            return;
+        }
+        _asking++;
+        Task.Run(async () =>
+        {
+            await _building.WaitAsync();
+            var made = true;
+            try
+            {
+                mesher.Build();
+            }
+            catch (Exception ex)
+            {
+                // The section keeps the faces it had, and is meshed again once it is marked.
+                Console.Error.WriteLine($"Section {key} could not be meshed. {ex}");
+                made = false;
+            }
+            finally
+            {
+                _building.Release();
+            }
+            _built.Enqueue((key, asked, mesher, made));
+        });
+    }
+
+    // Takes a section's faces from a mesher into its meshes and entities, or lets the section go
+    // where it has none.
+    private void Take(VoxelWorld world, SectionKey key, SectionMesher mesher)
+    {
+        if (!world.HasColumn(key.X, key.Z))
+        {
+            Forget(key);
+            return;
+        }
+        if (mesher.Solid.Count == 0 && mesher.SeeThrough.Count == 0 && mesher.Water.Count == 0 && mesher.Cutout.Count == 0 && mesher.CutoutGlass.Count == 0 && mesher.SolidCutout.Count == 0
+            && mesher.Molten.Count == 0 && mesher.Emitters.Count == 0)
+        {
+            Forget(key);
+            return;
         }
         if (!_sections.TryGetValue(key, out var entry))
             _sections[key] = entry = new SectionMeshes(Matrix4x4.CreateTranslation(key.Origin), key.Origin + new Vector3(Section.Size / 2f));
 
-        entry.Solid.Take(_mesher.Solid);
-        entry.SeeThrough.Take(_mesher.SeeThrough);
-        entry.Water.Take(_mesher.Water);
-        entry.Cutout.Take(_mesher.Cutout);
-        entry.CutoutGlass.Take(_mesher.CutoutGlass);
-        entry.SolidCutout.Take(_mesher.SolidCutout);
-        entry.Molten.Take(_mesher.Molten);
+        entry.Solid.Take(mesher.Solid);
+        entry.SeeThrough.Take(mesher.SeeThrough);
+        entry.Water.Take(mesher.Water);
+        entry.Cutout.Take(mesher.Cutout);
+        entry.CutoutGlass.Take(mesher.CutoutGlass);
+        entry.SolidCutout.Take(mesher.SolidCutout);
+        entry.Molten.Take(mesher.Molten);
         Keep(key, entry.Solid, SectionPart.Solid, _terrainLook);
         Keep(key, entry.SolidCutout, SectionPart.SolidCutout, _solidCutoutLook);
         Keep(key, entry.Molten, SectionPart.Molten, _moltenLook);
         _changed = true;
 
         entry.Emitters.Clear();
-        foreach (var (index, block) in _mesher.Emitters)
+        foreach (var (index, block) in mesher.Emitters)
         {
             var cell = Matrix4x4.CreateTranslation(key.Origin + new Vector3(index & Section.Mask, index >> 8, (index >> 4) & Section.Mask));
             foreach (var (local, surface) in Blocks.Get(block).Glows) entry.Emitters.Add((surface, local * cell));
         }
-        return true;
     }
 
     // The entity's look of a part drawn through a material, as DrawMesh would draw it.
@@ -723,6 +808,7 @@ public sealed class ChunkRenderer : IDisposable
 
     private void Forget(SectionKey key)
     {
+        _asked.Remove(key);
         if (!_sections.Remove(key, out var entry)) return;
         _changed = true;
         foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.SolidCutout, entry.Molten]) Drop(part);
@@ -750,6 +836,7 @@ public sealed class ChunkRenderer : IDisposable
     public void Clear()
     {
         foreach (var key in _sections.Keys.ToList()) Forget(key);
+        _asked.Clear();
         _parked.Clear();
         _unseen.Clear();
         _casters.Clear();

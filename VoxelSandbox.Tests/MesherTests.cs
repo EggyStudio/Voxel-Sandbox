@@ -350,4 +350,37 @@ public class MesherTests
         // Water's faces go to a mesh of their own, none to the one glass and ice share.
         Assert.Empty(mesher.SeeThrough.Positions);
     }
+
+    [Fact]
+    public void A_Section_Built_After_Its_Copy_Was_Gathered_Takes_Its_Faces_From_The_Copy_Though_The_World_Changes()
+    {
+        // Water deep enough that its depth reads the section below, beside stone, glass and a lamp.
+        var world = Laid.World(c =>
+        {
+            Laid.Fill(c, 0, 5, BlockId.Stone);
+            for (int y = 6; y < 22; y++) c.Set(4, y, 4, BlockId.Water);
+            c.Set(9, 20, 9, BlockId.Glass);
+            c.Set(12, 18, 3, BlockId.Glowstone);
+            c.Set(6, 24, 6, BlockId.Stone);
+        });
+        var key = new SectionKey(0, 1, 0);
+        var once = new SectionMesher();
+        Assert.True(once.Mesh(world, key));
+        var later = new SectionMesher();
+        Assert.True(later.Gather(world, key));
+        // A worker builds the faces while the world changes under it.
+        world.SetBlock(9, 20, 9, BlockId.Air);
+        world.SetBlock(4, 10, 4, BlockId.Stone);
+        world.SetBlock(5, 20, 4, BlockId.Stone);
+        later.Build();
+        Assert.NotEmpty(once.Solid.Positions);
+        Assert.NotEmpty(once.Water.Positions);
+        foreach (var (a, b) in new[] { (once.Solid, later.Solid), (once.SeeThrough, later.SeeThrough), (once.Water, later.Water) })
+        {
+            Assert.Equal(a.Positions, b.Positions);
+            Assert.Equal(a.Packed, b.Packed);
+            Assert.Equal(a.Colors, b.Colors);
+        }
+        Assert.Equal(once.Emitters, later.Emitters);
+    }
 }

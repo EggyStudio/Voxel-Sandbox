@@ -28,9 +28,10 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// The mesher reads the section and the blocks and light of the 26 sections around it into one
-/// padded copy, so the loop over its blocks never asks the world where a block is. It is used on
-/// the main thread, and holds its lists between calls so meshing allocates nothing but the arrays
-/// that are uploaded.
+/// padded copy, so the loop over its blocks never asks the world where a block is. The copy is
+/// taken on the thread the world changes on (<see cref="Gather(VoxelWorld, SectionKey)"/>) and the faces made from it on any
+/// (<see cref="Build"/>), so a mesher of its own for each worker makes sections while the world goes
+/// on. It holds its lists between calls so meshing allocates nothing but the arrays that are uploaded.
 /// </para>
 /// </remarks>
 public sealed class SectionMesher
@@ -41,7 +42,16 @@ public sealed class SectionMesher
     private readonly byte[] _light = new byte[P * P * P];
     private readonly Section?[] _around = new Section?[27];
     private ChunkColumn _column = null!;
-    private VoxelWorld _world = null!;
+    // The blocks of the columns the padded copy covers from 16 below the section's floor to its top,
+    // copied where the section holds water, since a water top's depth reaches 15 blocks down, past
+    // the padded copy, and whether they are.
+    private readonly ushort[] _deep = new ushort[P * Section.Size * 2 * P];
+    private bool _water;
+    // Whether the section last gathered holds a block, so its faces are to be made.
+    private bool _filled;
+
+    /// <summary>Whether the section last gathered holds no block, so it has no faces to make.</summary>
+    public bool Empty => !_filled;
     // The section's lowest corner in the world, so a block's place picks its look from a pack's block state.
     private (int X, int Y, int Z) _origin;
 
@@ -289,6 +299,18 @@ public sealed class SectionMesher
     /// <returns>False when one of the eight columns around it is not loaded, so its edges cannot be told yet, and nothing is meshed.</returns>
     public bool Mesh(VoxelWorld world, SectionKey key)
     {
+        if (!Gather(world, key)) return false;
+        Build();
+        return true;
+    }
+
+    /// <summary>
+    /// Copies a section's blocks and light and those around it into the mesher, on the thread the
+    /// world changes on, and empties the faces of the last section, for <see cref="Build"/> to make.
+    /// </summary>
+    /// <returns>False when one of the eight columns around it is not loaded, so its edges cannot be told yet.</returns>
+    public bool Gather(VoxelWorld world, SectionKey key)
+    {
         Solid.Clear();
         SeeThrough.Clear();
         Water.Clear();
@@ -298,7 +320,6 @@ public sealed class SectionMesher
         Molten.Clear();
         Emitters.Clear();
         _origin = (key.X * Section.Size, key.Y * Section.Size, key.Z * Section.Size);
-        _world = world;
 
         for (int dz = -1; dz <= 1; dz++)
             for (int dx = -1; dx <= 1; dx++)
@@ -308,9 +329,21 @@ public sealed class SectionMesher
                 for (int dy = -1; dy <= 1; dy++)
                     _around[(dy + 1) * 9 + (dz + 1) * 3 + dx + 1] = column.Numbered(key.Y + dy);
             }
-        if (_around[13] is not { Filled: > 0 }) return true;
-
+        _filled = _around[13] is { Filled: > 0 };
+        if (!_filled) return true;
         Fill();
+        _water = Array.Exists(_around[13]!.Blocks, block => Blocks.IsWater((BlockId)block));
+        if (_water) FillDeep();
+        return true;
+    }
+
+    /// <summary>
+    /// Makes the faces of the section last gathered from the mesher's own copy alone, so it may run
+    /// on a thread other than the world's.
+    /// </summary>
+    public void Build()
+    {
+        if (!_filled) return;
         for (int y = 0; y < Section.Size; y++)
             for (int z = 0; z < Section.Size; z++)
                 for (int x = 0; x < Section.Size; x++)
@@ -351,7 +384,6 @@ public sealed class SectionMesher
                         Add(face == 2 ? info.Top : face == 3 ? info.Bottom : info.Side, info.Kind == BlockKind.Glass || Atlas.CutOut(block), info.Kind, face, at, new Vector3(x, y, z), bottom, top);
                     }
                 }
-        return true;
     }
 
     // Whether a block's face shows beside a neighbor. An opaque block shows a face to anything that
@@ -498,16 +530,36 @@ public sealed class SectionMesher
     // sixteenths of a block as a color's alpha carries it.
     private byte DepthAt(Vector3 corner)
     {
-        int x = _origin.X + (int)corner.X, y = _origin.Y + (int)corner.Y - 1, z = _origin.Z + (int)corner.Z;
+        int x = (int)corner.X, y = (int)corner.Y - 1, z = (int)corner.Z;
         var sum = 0;
         for (int dz = -1; dz <= 0; dz++)
             for (int dx = -1; dx <= 0; dx++)
             {
                 var deep = 0;
-                while (deep < 15 && Blocks.IsWater(_world.GetBlock(x + dx, y - deep, z + dz))) deep++;
+                while (deep < 15 && Blocks.IsWater(DeepBlock(x + dx, y - deep, z + dz))) deep++;
                 sum += deep;
             }
         return (byte)Math.Min(240, sum * 4);
+    }
+
+    // A block by its place from the section's corner, from -1 to 16 across and -16 to 15 up, out of
+    // the deep copy.
+    private BlockId DeepBlock(int x, int y, int z) => (BlockId)_deep[((y + Section.Size) * P + z + 1) * P + x + 1];
+
+    // Copies the blocks the water's depth reads, air where no section stands.
+    private void FillDeep()
+    {
+        for (int py = -Section.Size; py < Section.Size; py++)
+            for (int pz = -1; pz <= Section.Size; pz++)
+            {
+                var sz = pz < 0 ? 0 : pz == Section.Size ? 2 : 1;
+                for (int px = -1; px <= Section.Size; px++)
+                {
+                    var sx = px < 0 ? 0 : px == Section.Size ? 2 : 1;
+                    var section = _around[(py < 0 ? 0 : 1) * 9 + sz * 3 + sx];
+                    _deep[((py + Section.Size) * P + pz + 1) * P + px + 1] = section?.Blocks[Section.Index(px & Section.Mask, py & Section.Mask, pz & Section.Mask)] ?? 0;
+                }
+            }
     }
 
     // The pieces of a block smaller than its cell that are not emissive, each a box of six faces,

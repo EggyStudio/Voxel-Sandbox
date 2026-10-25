@@ -1176,6 +1176,17 @@ so indirect light takes each block's color. Faces between two blocks are left ou
 that remains is two triangles of its own, since greedy meshing is not written yet. A section meshed
 again with the same faces keeps its mesh and takes only new packed bytes, written in place.
 
+Sections are meshed on worker threads, as many at once as half the processor's cores to 16, with up
+to 64 copied and waiting, so a slow frame, as on lavapipe, meshes as many as the workers make in
+it. The main thread copies a section's blocks and light with those of the 26 around it, and for
+water the blocks 16 below for its depth, and takes the faces in from the worker a frame or two
+later. In flights east over seed 1 at 12 columns in Release the main thread's meshing reads 0.2 to
+0.5 ms a frame where meshing on the main thread read 0.3 to 3.7, and while new land settles on
+lavapipe on four cores in Debug 4 ms where it read 10 to 12, the land settling as fast as before, in
+3 to 6 seconds here and about a minute on lavapipe. A section of air is let go at once without a
+worker, and an edit is meshed on the main thread in its own frame, so a block set or broken shows
+at once.
+
 An emissive block (glowstone, a sea lantern, shroomlight, magma) is drawn as a cube of its own, and
 the emissive piece of a torch, a lantern or an end rod as that cube scaled to it, every cube of one
 surface in one instanced draw, because a material's emission is one for its whole draw and a
