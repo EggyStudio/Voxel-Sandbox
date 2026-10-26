@@ -49,4 +49,20 @@ public sealed class HeadlessGameTests
             Directory.Delete(folder, recursive: true);
         }
     }
+
+    [Fact]
+    public void The_Debug_Overlay_Holds_The_Games_Sections_Of_The_Player_Generation_Light_Sky_Sections_And_Mobs()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        OverlaySections.Add(game);
+        Assert.StartsWith("Feet at ", OverlaySections.Player(game).First());
+        Assert.Equal("Flat, seed 1", OverlaySections.Generation(game).First());
+        Assert.StartsWith("At the eye sky ", OverlaySections.Light(game).First());
+        Assert.StartsWith("Hour ", OverlaySections.Sky(game).First());
+        Assert.Contains(" columns, ", OverlaySections.Sections(game).First());
+        Assert.Contains(" loaded, ", OverlaySections.Mobs(game).First());
+        // Each is the engine's overlay's, which takes it away again by its name.
+        foreach (var name in OverlaySections.Names) Assert.True(E3D.RemoveDebugOverlaySection(name), name);
+    }
 }

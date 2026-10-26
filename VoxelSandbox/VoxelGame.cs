@@ -38,8 +38,6 @@ public sealed class VoxelGame : IDisposable
     private bool _spilled;
     private bool _captured, _swallowClick;
     private GameMode _mode;
-    // Whether F4 or T was pressed while F3 has been held, so letting F3 go opens no settings.
-    private bool _switched;
 
     /// <summary>
     /// Opens the world saved under <paramref name="name"/>, or under its kind and seed when no name is
@@ -301,7 +299,8 @@ public sealed class VoxelGame : IDisposable
 
     public float BreakProgress => _breaking.Progress;
 
-    public SettingsWindow Settings { get; } = new();
+    /// <summary>The engine's windows the Debug screen of the options turns on.</summary>
+    public DebugWindows Windows { get; } = new();
 
     /// <summary>How many columns around the player are drawn, and two more loaded.</summary>
     /// <remarks>
@@ -832,7 +831,7 @@ public sealed class VoxelGame : IDisposable
             if (InventoryOpen)
             {
                 CloseInventory();
-                Capture(!Settings.Open);
+                Capture(true);
             }
             // The cursor follows the menu's state, freed as one opens and taken back as the last shuts.
             else if (Menus.Open != Menu.None) Menus.Back();
@@ -842,33 +841,15 @@ public sealed class VoxelGame : IDisposable
         {
             if (InventoryOpen) CloseInventory();
             else InventoryOpen = true;
-            Capture(!InventoryOpen && !Settings.Open);
+            Capture(!InventoryOpen);
         }
         // F3 held with F4 opens the mode switcher and steps it, and letting F3 go plays the mode
-        // chosen; F3 let go with no F4 pressed while it was held opens or shuts the settings, as
-        // Minecraft's debug screen opens when F3 is let go with no other key.
-        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.F4))
-        {
-            Switcher.Step(Mode, PreviousMode);
-            _switched = true;
-        }
+        // chosen. F3 let go with no other key pressed while it was held is the engine's, which shows
+        // or hides its debug overlay, as Minecraft's debug screen opens when F3 is let go alone.
+        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.F4)) Switcher.Step(Mode, PreviousMode);
         // F3 held with T reads the resource packs again, as Minecraft's does.
-        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.T))
-        {
-            ReloadPacks();
-            _switched = true;
-        }
-        if (IsKeyReleased(Key.F3))
-        {
-            if (Switcher.Release() is { } chosen) Mode = chosen;
-            else if (!_switched)
-            {
-                Settings.Open = !Settings.Open;
-                Capture(!Settings.Open && !InventoryOpen);
-            }
-            _switched = false;
-        }
-        if (IsKeyPressed(Key.F1)) HudHidden = !HudHidden;
+        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.T)) ReloadPacks();
+        if (IsKeyReleased(Key.F3) && Switcher.Release() is { } chosen) Mode = chosen;
         if (IsKeyPressed(Key.F5)) Player.View = ThirdPerson.Next(Player.View);
         if (IsKeyPressed(Key.F2)) Screenshot();
         if (_said is var (said, age)) _said = age + GetFrameTime() < Hud.SaidSeconds ? (said, age + GetFrameTime()) : null;
@@ -1213,7 +1194,12 @@ public sealed class VoxelGame : IDisposable
         foreach (var (lit, body) in Tnt.All)
             if (lit.Flashing) DrawCube(body.Position + new Vector3(0, 0.5f * lit.Size, 0), 1.01f * lit.Size, 1.01f * lit.Size, 1.01f * lit.Size, new Color(255, 255, 255, 150));
         Bits.Draw(Player.Eye, Player.Look);
-        if (!HudHidden && Player.View == View.First && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead)) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer, MobRenderer);
+        // The hand is the interface's, which the engine's F1 hides with the HUD, as the source's does.
+        if (!HudHidden && Player.View == View.First && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead))
+        {
+            if (BeginUi()) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer, MobRenderer);
+            EndUi();
+        }
         DrawArrows();
         // An explosion's flash, a ball swelling to the power's size and fading over half a second.
         foreach (var blast in Blasts.All)
@@ -1227,7 +1213,11 @@ public sealed class VoxelGame : IDisposable
         // and the outline the interface's.
         if (Target is { } hit && Mode.Touches())
         {
-            if (!HudHidden) Hud.DrawOutline(hit, World.ShapeAt(hit.X, hit.Y, hit.Z));
+            if (!HudHidden)
+            {
+                if (BeginUi()) Hud.DrawOutline(hit, World.ShapeAt(hit.X, hit.Y, hit.Z));
+                EndUi();
+            }
             if (BreakingAt == (hit.X, hit.Y, hit.Z)) Cracks.Draw(hit, World.ShapeAt(hit.X, hit.Y, hit.Z), BreakProgress);
         }
         EndMode3D();
@@ -1238,25 +1228,25 @@ public sealed class VoxelGame : IDisposable
         if (Player.EyeInWater) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(20, 50, 140, 110));
         // A hit reddens the view for the half second no other harms.
         if (Mode.Lives() && Vitals.Hurt > 0) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(200, 0, 0, (byte)(90 * Vitals.Hurt / 0.5f)));
+        // The HUD is the interface the engine's F1 hides, and voxel.hud hides it for a capture. The
+        // screens, the inventory, the tables and the menu, stay outside it and never hide.
         if (!HudHidden)
         {
-            // The crosshair marks the eye's aim, which a view from without does not look along.
-            if (Mode.Touches() && Player.View == View.First) Hud.DrawCrosshair();
-            if (Eating > 0) Hud.DrawEating(Eating);
-            if (Mode.Touches()) Hud.DrawHotbar(Hotbar, Mode.Lives());
-            if (Mode.Lives()) Hud.DrawVitals(Vitals, Fade);
-            if (!Settings.Open) Hud.DrawHelp(Light.Quality, Mode);
-            if (_said is var (said, age) && !_saidFresh) Hud.DrawSaid(said, age, Mode.Lives());
+            if (BeginUi())
+            {
+                // The crosshair marks the eye's aim, which a view from without does not look along.
+                if (Mode.Touches() && Player.View == View.First) Hud.DrawCrosshair();
+                if (Eating > 0) Hud.DrawEating(Eating);
+                if (Mode.Touches()) Hud.DrawHotbar(Hotbar, Mode.Lives());
+                if (Mode.Lives()) Hud.DrawVitals(Vitals, Fade);
+                Hud.DrawHelp(Light.Quality, Mode);
+                if (_said is var (said, age) && !_saidFresh) Hud.DrawSaid(said, age, Mode.Lives());
+            }
+            EndUi();
         }
         _saidFresh = false;
         Switcher.Draw();
-        // The engine's performance window opens with F2, which the game takes for its screenshots,
-        // so the window is kept far out of sight, what it shows drawn there, until the engine's
-        // package gives it a key of its own.
-        ImGui.SetNextWindowPos(new Vector2(-10000, -10000), ImGuiCond.Always);
-        ImGui.Begin("Performance", ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoNav);
-        ImGui.End();
-        Settings.Draw(this);
+        Windows.Draw();
         if (Mode.Lives() && Vitals.Dead) DrawDeath();
         if (InventoryOpen && !(AtFurnace is var (fx, fy, fz) ? InventoryWindow.DrawFurnace(Inventory, Furnaces.At(fx, fy, fz))
             : AtChest is var (cx, cy, cz) ? InventoryWindow.DrawChest(Inventory, Chests.At(cx, cy, cz))
@@ -1265,7 +1255,7 @@ public sealed class VoxelGame : IDisposable
             : InventoryWindow.DrawCreative(Hotbar)))
         {
             CloseInventory();
-            Capture(!Settings.Open);
+            Capture(true);
         }
         Menus.Draw(this);
         // A screen of the menu left, by a button or by Escape, writes the settings as they stand.

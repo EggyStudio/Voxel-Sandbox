@@ -68,7 +68,7 @@ public partial struct GameFrame
     [OnEnter(Menu.None)]
     public static void TakeCursor(BehaviorContext ctx)
     {
-        if (ctx.World.TryGetResource<VoxelGame>(out var game)) game.Capture(!game.Settings.Open && !game.InventoryOpen);
+        if (ctx.World.TryGetResource<VoxelGame>(out var game)) game.Capture(!game.InventoryOpen);
     }
 
     /// <summary>Whether the world stands to be played.</summary>

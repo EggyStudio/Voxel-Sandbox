@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
 # A scripted run of the game through ./e3d, offscreen and under the validation layer, as the build
 # workflow's play job runs it on lavapipe. On a flat world with nothing kept on disk it reads that
-# global illumination takes the screen's probes, builds a closed room of stone with a glowstone
-# block in it, puts the player in the room facing the lamp at night, walks toward it and captures
-# the frame, then captures the night sky from the room's roof, the full moon and the stars over the
-# flat land from two places and headings, reads a cloud's underside overhead at noon, captures the
-# sun and its glow at noon and at dusk, a pillar's shadow under the morning sun, and the window of
-# every item's icon, then swims the player out of a pool onto its bank and reads a white sheep's
-# wool in the shade, and over seed 1's overworld stands the player over each of the eight biomes the
-# climate gained and captures it, reads the chest of seed 1's nearest mineshaft, compares the caves'
-# noises read on the GPU with the CPU's and reads the drawn land's edge against the sky. A second
-# run that keeps its files, in a data folder of its own, then takes a screenshot with F2. It fails
-# where the game does not open or answer, global illumination takes no screen probes, the player did
-# not move or did not climb out onto the bank, the wool in shade is not a gray, a cloud's underside
-# overhead at noon is dark, a biome is not found or not where it was found, the mineshaft's chest
-# holds no rails or torches, the GPU's readings of the caves' noises are not the CPU's, the land's
-# edge steps to the sky beyond it, more than 400 draws of sections are recorded there, the layer
-# reported an error, or F2 left no screenshot of the window's size, and says why in an error
-# annotation, so the run's page names it.
+# global illumination takes the screen's probes and that the engine's F1 hides the HUD and its F3
+# shows the debug overlay, builds a closed room of stone with a glowstone block in it, puts the
+# player in the room facing the lamp at night, walks toward it and captures the frame, then captures
+# the night sky from the room's roof, the full moon and the stars over the flat land from two places
+# and headings, reads a cloud's underside overhead at noon, captures the sun and its glow at noon
+# and at dusk, a pillar's shadow under the morning sun, and the window of every item's icon, then
+# swims the player out of a pool onto its bank and reads a white sheep's wool in the shade, and over
+# seed 1's overworld stands the player over each of the eight biomes the climate gained and captures
+# it, reads the chest of seed 1's nearest mineshaft, compares the caves' noises read on the GPU with
+# the CPU's and reads the drawn land's edge against the sky. A second run that keeps its files, in a
+# data folder of its own, then takes a screenshot with F2. It fails where the game does not open or
+# answer, global illumination takes no screen probes, F1 or F3 does not hide the HUD or show the
+# overlay, the player did not move or did not climb out onto the bank, the wool in shade is not a
+# gray, a cloud's underside overhead at noon is dark, a biome is not found or not where it was
+# found, the mineshaft's chest holds no rails or torches, the GPU's readings of the caves' noises
+# are not the CPU's, the land's edge steps to the sky beyond it, more than 400 draws of sections are
+# recorded there, the layer reported an error, or F2 left no screenshot of the window's size, and
+# says why in an error annotation, so the run's page names it.
 #
 #   build/play.sh
 #
@@ -121,6 +122,32 @@ check "the screen probes"
 probes=$(ask gi.state | grep "screen probes")
 echo "$probes"
 [[ "$probes" == "screen probes every "* ]] || fail "global illumination takes no screen probes, $probes"
+
+check "the interface's keys"
+# The engine's F1 hides the HUD and shows it again, the hotbar's gray slots along the window's foot
+# over the grass's yellow and green, and its F3 shows the debug overlay with the game's sections in
+# the window's top left corner and hides it again, its dark backing over the sky's blue, each read as
+# the mean blue of the pixels where it is drawn.
+blue() { ask voxel.color "$@" | sed -nE 's/.* blue ([0-9.]+) .*/\1/p'; }
+ask voxel.pixel 1 1 1 > /dev/null
+cmd frames.wait 2
+shown=$(blue 384 640 512 72)
+cmd input.key F1 1
+cmd frames.wait 3
+hidden=$(blue 384 640 512 72)
+cmd input.key F1 1
+cmd frames.wait 3
+back=$(blue 384 640 512 72)
+sky=$(blue 8 8 400 240)
+cmd input.key F3 1
+cmd frames.wait 3
+overlay=$(blue 8 8 400 240)
+cmd input.key F3 1
+cmd frames.wait 3
+echo "the foot's blue $shown, $hidden under F1 and $back again, the corner's blue $sky and $overlay under F3"
+awk -v s="$shown" -v h="$hidden" -v b="$back" 'BEGIN { exit !(s - h > 30 && b - s < 2 && s - b < 2) }' \
+  || fail "F1 does not hide the HUD and show it again, the foot's blue reading $shown, $hidden and $back"
+awk -v s="$sky" -v o="$overlay" 'BEGIN { exit !(s - o > 30) }' || fail "F3 does not show the debug overlay over the window's corner, its blue reading $sky and $overlay"
 
 check "the lamp's room"
 # The room is closed, so at night the lamp is its only light, and the player stands at its south

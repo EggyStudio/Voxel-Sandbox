@@ -8,6 +8,49 @@ notes written beside them as Markdown files named the same way. A line under Don
 
 ## 2026-10-26
 
+![](.github/devlog/2026-10-26-item-133-canopy.webp)
+Seed 1's rain forest floor at -640, 55, 638 at noon at sky level 13, seen along it from its grass,
+under the whole floor of the sky's light on the left and on the right under the engine's light
+through the leaves with 0.65 of that floor, a little darker and closer to the source's level 13.
+
+# Item 133, the canopy's floor on 3DEngine 5.2.319
+
+On 5.2.319 the merge of the cascades sees past the leaves and a ray's reach stops where it does, so
+the engine's light through a canopy reaches its floor. Read with the three default packs at noon, in
+Release, on tuned's power-saving profile with the processor's energy preference at power, no other
+program on the GPU but where said.
+
+The grass on the flat world under jungle leaves two deep and under oak leaves two deep, against the
+grass in a wall's shade on open ground, a pixel's luminance each, with the leaves passing half of
+global illumination's light a block or none, and with item 117's floor of the sky's light at a share
+of its strength.
+
+| Floor's strength | Jungle, leaves pass half | Oak, leaves pass half | Jungle, leaves pass none | Oak, leaves pass none | Open shade |
+|---|---|---|---|---|---|
+| 1 | 46.4 | 46.4 | 46.4 | 46.4 | 44.4 |
+| 0.75 | 38.6 | 38.6 | | | 44.4 |
+| 0.6 | 34.1 | 33.9 | | | 44.4 |
+| 0.5 | 32.9 | 32.7 | | | 44.4 |
+| 0 | 32.9 | 32.7 | 24.5 | 26.1 | 44.4 |
+
+The engine alone lights the canopy's floor to 0.74 of the open shade, the whole floor lifted it to
+1.05, past the open ground's own, and the floor at 0.65, the game's from this item, lifts it to 35.4
+and 35.1, 0.80 of the open shade, as the source lights level 13 against 15. Seed 1's jungle at -624,
+53, 616 reads a capture's mean of 141.3 where the whole floor read 143.7, its forest at 0, 75, 0
+147.0 where it read 151.8, and the rain forest's floor at -640, 55, 638 138.2 where it read 141.6.
+
+The cost at seed 1's cherry grove at 1920 by 1080 at High, a profile over 300 frames, read in turns
+with the leaves and the plants passing their shares and passing none.
+
+| | Frame | Global illumination | Scene pass | Shadows |
+|---|---|---|---|---|
+| Passing their shares | 19.58, 19.51 ms | 6.14, 6.09 ms | 7.13, 7.18 ms | 4.55, 4.49 ms |
+| Passing none | 16.70, 16.64 ms | 3.44, 3.42 ms | 7.06, 7.05 ms | 4.46, 4.44 ms |
+
+Two more readings of each ran while another program held 56 to 77 percent of the GPU and are left
+out. The rays crossing the grove's leaves cost global illumination about 2.7 ms at 1080p, which goes
+to the engine.
+
 # Item 133, the leaves let the light through on 3DEngine 5.2.316
 
 The leaf blocks' faces are a part of their own whose material lets 0.5 of global illumination's light
@@ -32,7 +75,7 @@ item 117's floor of the sky's light holds the floor where it stood.
 The frame at the grove at 1920 by 1080 at High could not be read cleanly. Another program held up to
 81 percent of the GPU by turns while the GPU's clock stood at 2,490 MHz, and the same build read 20.8,
 31.7 and 42.3 ms. The two readings with no other program on the GPU gave the frame 20.8 ms before and
-22.7 after and global illumination 3.6 ms and 7.0, the rays now crossing leaves where they stopped.
+22.7 after and global illumination 3.6 ms and 7.0, the rays crossing leaves where they stopped.
 
 # Item 95, every part of a section an entity
 
@@ -62,6 +105,8 @@ the water.
 Done that day
 
 - Item 95 at `a4d383c`. The world's sections become mesh entities the engine draws (Decision 43).
+- Item 133 at `1944378`. The leaves let the engine's light through, and item 117's floor is read
+  again beside it.
 
 ## 2026-10-25
 
@@ -390,7 +435,7 @@ and fades over half a second.
 
 ![](.github/devlog/2026-10-24-item-121-shade.webp)
 A tree's shadow on a village's grass at noon before and after the sky's light on the land was drawn
-toward a white of its own brightness, the shadow now the ground darker and not blue.
+toward a white of its own brightness, the shadow then the ground darker and not blue.
 
 ![](.github/devlog/2026-10-24-item-122-loading.webp)
 The loading screen a world opens behind in the red of the source's own loading screen.
@@ -437,8 +482,8 @@ The options with Video Settings among the areas' screens, and the screen of the 
 resolution, the frame limit and vsync.
 
 ![](.github/devlog/2026-10-24-item-94-arrows.webp)
-A skeleton at night in the flat world, whose arrows, now entities of the engine's ECS, took eight of
-the player's twenty points of health in five seconds.
+A skeleton at night in the flat world, whose arrows, since then entities of the engine's ECS, took
+eight of the player's twenty points of health in five seconds.
 
 ![](.github/devlog/2026-10-24-item-94-tnt.webp)
 A TNT lit in the flat world a half second after it popped up from its cell, burning as an entity of

@@ -18,6 +18,7 @@ public enum Menu
     Particles,
     Sounds,
     SkyColor,
+    Debug,
 }
 
 /// <summary>
@@ -90,7 +91,7 @@ public sealed class Menus
         _chosen = null;
         Open = Open switch
         {
-            Menu.Packs or Menu.Video or Menu.Render or Menu.PostProcessing or Menu.SkyAndVisuals or Menu.Sounds => Menu.Options,
+            Menu.Packs or Menu.Video or Menu.Render or Menu.PostProcessing or Menu.SkyAndVisuals or Menu.Sounds or Menu.Debug => Menu.Options,
             Menu.SkyColor => Menu.SkyColors,
             Menu.SkyColors or Menu.Particles => Menu.SkyAndVisuals,
             Menu.Options => Menu.Pause,
@@ -153,10 +154,16 @@ public sealed class Menus
             case Menu.SkyColor:
                 DrawSkyColor(screens, s, height);
                 return;
+            case Menu.Debug:
+                DrawScreen(screens.Debug, s, height);
+                return;
         }
 
-        Title("Options", top);
         var general = screens.General.Options;
+        // The settings' rows and the four rows of buttons under them, placed as the other screens are,
+        // so Done stays in a short window.
+        top = TopFor((general.Count + 1) / 2 + 4);
+        Title("Options", top);
         for (int i = 0; i < general.Count; i++) Draw(general[i], Cell(i % 2, i / 2, top));
         // The buttons to the other screens in rows of two under the settings.
         var below = (general.Count + 1) / 2;
@@ -170,7 +177,8 @@ public sealed class Menus
             (_chosen, _fetchSeen, _packScroll) = (null, null, 0);
             Open = Menu.Packs;
         }
-        if (Gui.Button("Done", Row(below + 3))) Open = Menu.Pause;
+        if (Gui.Button("Debug Settings...", Cell(0, below + 3, top))) Open = Menu.Debug;
+        if (Gui.Button("Done", Row(below + 4))) Open = Menu.Pause;
     }
 
     // A cell of two columns of 150, as Minecraft lays its options out.

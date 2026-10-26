@@ -288,9 +288,29 @@ public sealed class OptionScreens
             Loudness("Ambience", () => sounds.Ambience, v => sounds.Ambience = v),
         ], []);
 
+        // The first two change what each section holds, so the sections are shaded again a few a
+        // frame, or what is drawn of them.
+        var windows = game.Windows;
+        Debug = new("Debug Settings",
+        [
+            Switch("Light Levels", () => renderer.LightLevels, on =>
+            {
+                renderer.LightLevels = on;
+                game.World.ReshadeAll();
+            }),
+            Switch("Cull Unseen Sections", () => renderer.Cull, on => renderer.Cull = on),
+            Switch("Global Illumination Window", () => windows.BounceWindow, on => windows.BounceWindow = on),
+            Switch("Frame Profile Window", () => windows.ProfileWindow, on => windows.ProfileWindow = on),
+            Switch("Effects Window", () => windows.PostProcessWindow, on => windows.PostProcessWindow = on),
+        ], []);
+
         Colors = SkyColorsOf(colors);
         SkyColors = colors;
     }
+
+    // A switch the options file leaves out, as the Debug screen's are.
+    private static Option Switch(string name, Func<bool> get, Action<bool> set) =>
+        new(name, () => get() ? 1 : 0, value => set(value >= 0.5f)) { Choices = ["Off", "On"], Kept = false };
 
     /// <summary>The options' own settings, over the buttons to the other screens.</summary>
     public OptionScreen General { get; }
@@ -311,12 +331,18 @@ public sealed class OptionScreens
     /// <summary>How loud the sounds play, all of them, the steps and the places' sounds.</summary>
     public OptionScreen Sounds { get; }
 
+    /// <summary>
+    /// The switches for looking into the frame, the light levels, the leaving out of unseen sections
+    /// and the engine's windows, none kept in the options file, since a player sets none of them.
+    /// </summary>
+    public OptionScreen Debug { get; }
+
     /// <summary>The sky's colors, each set on a screen of its own.</summary>
     public IReadOnlyList<SkyColor> Colors { get; }
 
     public SkyColors SkyColors { get; }
 
-    /// <summary>The screens of settings by the name a command and the options file give each, general, video, render, post, sky, particles, sounds and colors, the last every channel of every color.</summary>
+    /// <summary>The screens of settings by the name a command and the options file give each, general, video, render, post, sky, particles, sounds, debug and colors, the last every channel of every color.</summary>
     public IEnumerable<(string Name, IReadOnlyList<Option> Options)> All()
     {
         yield return ("general", General.Options);
@@ -326,6 +352,7 @@ public sealed class OptionScreens
         yield return ("sky", SkyAndVisuals.Options);
         yield return ("particles", Particles.Options);
         yield return ("sounds", Sounds.Options);
+        yield return ("debug", Debug.Options);
         yield return ("colors", ChannelsOf(Colors, SkyColors));
     }
 

@@ -100,12 +100,12 @@ with its history.
 | E | In creative every item, to put any of them in the chosen slot, in survival and adventure the inventory, and in spectator nothing |
 | Q | Throw one of the chosen slot's items, or with Left Control its stack |
 | F2 | Saves a screenshot of the frame as a PNG in the `screenshots` folder beside the saves, named by the time, as Minecraft's does, and says so at the lower left |
-| F3 | The F3 window, with what the frame holds and costs, the toggles of debugging and the world's kind, seed and mode, opened as F3 is let go |
+| F3 | The engine's debug overlay, the system, the camera, the frame and the memory with the game's sections of the player, the world's generation, the light, the sky, the sections and the mobs, shown as F3 is let go with no other key |
 | F3 with F4 | The mode switcher, F4 stepping through creative, survival, adventure and spectator while F3 is held, and the mode chosen played as F3 is let go |
 | F3 with T | Reads the resource packs again from their files, as Minecraft's does |
 | G | The next quality of global illumination, Off after High |
 | C, held | Zoom, the view narrowed to a quarter over a tenth of a second and the mouse's turn with it, the wheel narrowing it further to a tenth, the key set in the options |
-| F1 | Hide the crosshair, the hotbar and the outline |
+| F1 | Hide the crosshair, the hotbar, the hand and the outline, the engine's hiding of the interface |
 | F5 | The next view, the player's own eye, a camera behind the player and one in front of it looking back, as Minecraft's F5 steps them |
 | Escape | Shut the window open, go back a menu, or open the menu, which holds the world still |
 
@@ -695,7 +695,7 @@ them out of the scene's distance field, so a pig's pink does not reach the grass
 </tr></table>
 
 A world plays in creative mode, as a test of the light needs, in survival, in adventure or in
-spectator, which the switcher, `voxel.mode` and the F3 window choose and the save keeps. F3
+spectator, which the switcher and `voxel.mode` choose and the save keeps. F3
 held with F4 opens the switcher over the middle of the window, the four modes' icons in boxes under
 the chosen mode's name, as Minecraft's is, creative's grass block and survival's iron sword from the
 items and adventure's map and spectator's eye drawn for it. It opens on the mode played before the
@@ -828,10 +828,13 @@ Quit. The options are in two columns of buttons and sliders as Minecraft lays it
 field of view, the mouse's sensitivity, the interface's scale, automatic or 1 to 4, whether full
 rows of the HUD fade, and the zoom's key, C, V, Z, X, R or Left Alt, with a button to each screen of
 settings by its area, Video Settings, Render Settings, Post Processing, Sky and Visuals, Music and
-Sounds and Resource Packs. A setting's slider moves by its step, a button steps through its choices, each takes effect
-at once, and Done goes back a screen. The window F3 opens is the engine's ImGui, a tool for the
-developer, with what the frame holds and costs, the toggles of debugging and the world's kind, seed
-and mode.
+Sounds, Resource Packs and Debug Settings. A setting's slider moves by its step, a button steps
+through its choices, each takes effect at once, and Done goes back a screen. The Debug Settings
+screen holds what a developer turns, which the options file leaves out. F3 shows the engine's debug
+overlay, text over the world as Minecraft's debug screen is, the engine's lines of the system, the
+camera, the frame and the memory and under them the game's sections, the player's place and aim, the
+world's generation with the biome and the climate at the feet, the light at the eye, the hour, the
+sections loaded, waiting and drawn, and the mobs.
 
 | Screen | Setting | Reach | Starts at |
 |---|---|---|---|
@@ -873,6 +876,9 @@ and mode.
 | | Haze by Height, the haze thinning over land high above the sea, and Morning Haze, the haze thickening about sunrise | Off, On | On |
 | Particles, from Sky and Visuals | Rain Splashes, Falling Leaves, Cave Dust and Wakes, each how thick it is | 0 to 200% by 10 | 100% |
 | Music and Sounds | Master Volume, Footsteps and Ambience | 0 to 100% by 5 | 100% |
+| Debug Settings | Light Levels, each corner darkened where neither the sky nor a block's light reaches it, the sections shaded again | Off, On | On |
+| | Cull Unseen Sections, the flood's leaving out of the sections the eye cannot see | Off, On | On |
+| | Global Illumination Window, Frame Profile Window and Effects Window, the engine's windows of what global illumination holds, the frame's profile and the effects over the frame | Off, On | Off |
 | Sky Colors, from Sky and Visuals | Noon Sunlight, Low Sunlight, Moonlight and Night Tint, each a light by its hue | red, green and blue from 0 to 255 | the modpack's shader's |
 | | Day Sky, Day Horizon, Sunset Horizon, Night Sky and Night Horizon | red, green and blue from 0 to 255 | the modpack's shader's |
 
@@ -1205,8 +1211,8 @@ what is behind it is set or taken, since over 24 sections a column it walks thou
 ms of each frame at seed 1's cherry grove at 12 columns. A section the flood leaves out is not
 meshed until a flood reaches it, so the stone under the land within reach is meshed only where a
 cave opens to it, which in a flight east over seed 1's cherry grove held about 4,400 sections and
-took the game's update from 1.3 ms a frame to 0.7 or 0.9. `voxel.cull` and the F3 window turn
-it off. Sections are not culled to the view's frustum, because a mesh left out of a frame leaves the
+took the game's update from 1.3 ms a frame to 0.7 or 0.9. `voxel.cull` and the Debug Settings
+screen turn it off. Sections are not culled to the view's frustum, because a mesh left out of a frame leaves the
 field, and the indirect light it reflected or blocked goes with it until the field settles again,
 where the land the flood leaves out lies behind walls the field holds, so a cave lit by a glowstone
 looks the same either way. Each of the engine's passes leaves out on its own the sections whose
@@ -1280,9 +1286,10 @@ the field's shade beside a wall, and at night the sky's light is next to nothing
 by day under leaves, in a cave's mouth and inside a house by its windows, as the source's levels
 light them. The plants and a broken block's bits take the same floor at their cells' levels.
 
-The F3 window turns the light levels and the shaded corners off, each on its own, to see
-global illumination alone, and opens the engine's windows of what global illumination holds, of the
-frame's profile, and of the effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
+The Debug Settings screen turns the light levels off and the Render Settings' Corner Shade at 0 the
+shaded corners, each on its own, to see global illumination alone, and the Debug Settings screen
+opens the engine's windows of what global illumination holds, of the frame's profile, and of the
+effects over the frame, the tonemap, exposure, grading, vignette, FXAA,
 depth of field, motion blur and bloom, each set at once as it is changed. Global illumination
 takes the engine's screen probes at Medium and High, each pixel's light traced from its own
 surface, and Low leaves them out for the cascades' light alone, as the engine keys them to its
@@ -1491,8 +1498,8 @@ the player respawns, spiders that climb walls, and a bow and armor for the playe
 
 Every section within the render distance that the eye can see is drawn each frame, so the render
 distance sets most of the frame's cost. It is 12 columns by default, 192 blocks, and from 2 to 16 on
-the Render Settings screen and through `voxel.distance`, the F3 window's first lines giving the
-frame's time, draws and triangles, and a save keeps no distance of its own. The sections are drawn
+the Render Settings screen and through `voxel.distance`, the F3 overlay giving the frame's time and
+its Sections the draws and triangles, and a save keeps no distance of its own. The sections are drawn
 through the terrain's own shader, which keeps the positions their meshes hold, and the game marks it
 so with `SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and
 each of the sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the

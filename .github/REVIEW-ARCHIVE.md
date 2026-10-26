@@ -1866,6 +1866,253 @@ before a batch.
     section part a mesh entity with its flags on 5.2.316, the picture the same and the frame as it
     was, the DrawMesh loop gone.
 
+133. **The leaves let the engine's light through, and item 117's floor is read again beside it.**
+    From the engine's item 100 and the word of 2026-10-26 at 00:36. The engine's LightThrough on
+    both materials sets the share of light passing a unit of a surface's depth, the cascades' and
+    the screen probes' rays crossing up to four such surfaces, and its second part at `a16227a7`,
+    not yet in a package, sets a crossing's reach where the ray stops and lets the merge see past
+    leaves, so a canopy's floor takes about a third of the sky light it held back where it took
+    none. Two parts. On 5.2.316 the leaves' and the plants' materials take a LightThrough from the
+    pack's leaf opacity, about a half for a leaf block a unit thick, the rain forest's floor and the
+    oak grove's read before and after with item 117's sky-level floor as it stands, and the cost
+    read at the grove at 1080p at High; on the package carrying `a16227a7`, the same readings again,
+    and item 117's floor lowered or taken out where the engine's light carries the canopy on its
+    own, the floor kept only where the readings say it still must, with a before-and-after picture
+    of the rain forest's floor at noon. Two commits. A snag read at 00:40 and the way through,
+    taken. With the three default packs every leaf tile is fully opaque, the seven leaf kinds
+    keeping all 256 pixels at the 0.5 cutoff, so the leaves sit in the Solid part with the stone and
+    a share from the pack's opacity would be 0, while a share on the Solid material would let light
+    through stone. The leaf blocks' faces go to an eighth part, Foliage, drawn and cast as the Solid
+    part is through a material of its own with LightThrough set, its share 0.5 a unit as the
+    source's leaves let light through, and where a pack cuts its leaves one less the tiles' mean
+    coverage squared for the two faces a ray crosses in a block, no less than 0.5; the plants'
+    material takes one less their tiles' mean coverage, which matters to the screen probes' rays
+    alone since the plants bounce no light. A part more means an entity more a section where it has
+    leaves, about 600 at the grove, and the leaves leave the Solid mesh the field keeps. The first
+    part at `48e5bea` on 2026-10-26, the Foliage part with its share, the floors unmoved on 5.2.316
+    as expected and the global illumination's cost at the grove a lead of 3.6 to 7.0 ms on one pair;
+    the second part on the package carrying `a16227a7`, the floors and the cost read on a quiet GPU
+    and item 117's floor lowered where the engine carries the canopy, the cost's lead going to the
+    engine as an ask if it holds. Done at `1944378` on 2026-10-26 with the second part on 5.2.319,
+    the floor lowered to 0.65 of item 117's and not taken out, the engine alone carrying the canopy
+    to 0.74 of the open shade and the two together to 0.80, the rain forest's floor pictured, the
+    crossings' 2.7 ms at the grove to the engine as its item 127.
+
+89. **The clouds are not drawn black by the fire's uniform.** Found at item 46's retake on
+    2026-10-24: in every daytime view the clouds' undersides drew a dark navy near black, where the
+    pictures of `7039d5a` from 2026-10-21 showed them light gray. The cause, read by the coder:
+    `ee557b3` gave the terrain shader a `flames` uniform naming the fire's tile, whose faces draw at
+    twice their color, and the clouds' own copy of the shader never sets it, so it reads 0, the
+    clouds' tile, and every cloud face drew at nought times its color, black, hazed to navy, tops
+    and undersides alike. The mend: the uniform holds the tile plus one, 0 naming none, so a copy
+    that sets nothing matches no face, and the clouds keep their own shading; a test reading a
+    cloud's underside at a known daytime view against a bound, failing without the mend. One commit,
+    small, before item 46's final run so the README's pictures show lit clouds. Done at `cfdc298` on
+    2026-10-24.
+
+55. **The plants cast shadows, cut by their texture (Decision 27).** The owner wrote shortly before
+    07:12 on 2026-10-21, seeing the README's pictures, that the grass blades and the plants are to
+    cast shadows too, fitting as they are pixelated. The cutout mesh casts no shadow today, so the
+    grass, the flowers and the wheat throw none. With it casting, the sun's shadow map must cut each
+    blade by its texture's alpha, or a blade casts a whole quad's shadow; read first whether the
+    engine's shadow pass draws a mask material through the program's own shader, which samples the
+    atlas, or through its own depth shader without it, and where it cannot cut them, ask the engine
+    in its ASKS.md with the reading and keep the plants shadowless until the package. The shadow's
+    pixels step with the sun's map, which the owner reads as fitting the look; the plants stay out
+    of the scene's field, so the global illumination is untouched. Tests: a blade's shadow on the
+    ground read from a capture's pixels as narrower than its quad, and a capture of a meadow at a
+    low sun in the record. One commit, small, or the ask. Read at `bc02459` on 2026-10-21: the
+    shadow pass does not cut a masked surface drawn through a program's shader, so the entry is in
+    the engine's ASKS.md as its item 79 and the game takes the shadows when the package brings the
+    cut; the capture committed. The engine's item 79 is in 5.2.215, pushed to the feed at 21:04 on
+    2026-10-23; this item follows item 88 once the feed lists it. Done at `d7c4892` on 2026-10-24 on
+    5.2.215, the departures and the cost in the head.
+
+67. **The inventory screens take no player key, draw a dragged stack every frame, and dropped items
+    wear the pack's pictures.** The owner wrote on 2026-10-23 (Decision 34) that in the crafting HUD
+    Ctrl crouches though a screen is open, that a stack held by the left button or dragged with Ctrl
+    is not shown moving until the button is released, and that dropped items are not textured with
+    the resource pack. The mend in three parts: while a screen is open no key of the player's acts,
+    crouch, jump, sprint and the hotbar among them, as the source's screens take the keyboard; a
+    stack picked up or dragged is drawn under the pointer every frame the button is held, the slots
+    it passes marked as the source marks them; and a dropped item in the world wears the pack's
+    picture of its block or item as the blocks do, the game's own art without a pack. Tests: a key
+    pressed with a screen open moving nothing, the dragged stack's place read from the frame
+    mid-drag, and a dropped item's pixel with the test pack. One or two commits. Done at `073d84b`
+    on 2026-10-24, the departures in the head; the held stack's lag stays for the owner's eye on a
+    real mouse.
+
+68. **Breaking a block shows the cracks, throws particles of its side texture, and keeps its
+    progress across jumps.** The owner wrote on 2026-10-23 (Decision 34) that breaking shows no
+    texture for breaking, asking for it with Bare Bones loaded and the game's own behavior without,
+    that breaking should throw the side texture as particles dropping as the source does, and that a
+    block out of reach hit between jumps should keep its breaking state so it breaks over several
+    jumps as the source lets it. The mend: the ten destroy stages drawn over the block being broken,
+    the pack's destroy_stage pictures with a pack and the game's own set without; particles cut from
+    the block's side texture thrown at a hit and at the break, falling and fading as the source's
+    do; and the progress on a block kept while the button stays held and the same block is aimed
+    again within the source's delay, so a block above reach breaks over a few jumps. Tests: the
+    stage picture on the block at a known progress, the particles' count and fall, and the progress
+    kept across a lost and regained aim. Two commits, the cracks and the particles, then the
+    progress. Done at `8bc0796` and `7da1d96` on 2026-10-24, the departures in the head.
+
+69. **Felling a tree takes its logs and leaves, some logs falling, and gravity blocks fall (Decision
+    35).** The owner wrote on 2026-10-23 (Decision 34) that trees should break all wood and break
+    leaves with a particle effect dropping the leaves, with some wooden blocks dropping down still,
+    and in that regard sand and the like dropping. The mend: breaking a log the trunk stands on
+    fells the tree, its logs breaking from the cut upward with their drops, its leaves decaying over
+    a few seconds with leaf particles and the source's drops, and a share of the logs falling as
+    blocks that land and settle; sand, red sand, gravel and concrete powder fall as blocks when
+    unsupported, as the source's gravity blocks do, landing as blocks or breaking on a non-solid as
+    the source has it, the owner's cobble read as that list unless they say otherwise. Tests: a
+    tree's logs and leaves gone after the cut with the drops counted, a falling log landing, and a
+    sand column falling onto a floor. Two commits, the gravity blocks, then the felling. Done at
+    `cc4f29a` and `45b4b93` on 2026-10-24, the departures in the head.
+
+72. **Fire, a block that burns, animated and emissive (Decision 34).** The owner wrote on 2026-10-23
+    (Decision 34) that fire is missing and could show the radiance cascades. The mend: a fire block
+    kind with the source's animated picture through item 39's frames, emissive into the field so the
+    cascades carry its light, lit on a flammable block's top by a flint and steel item and by TNT's
+    blast, burning out in the source's time where nothing feeds it and spreading to a flammable
+    neighbor at the source's chance within a small radius, so a house burns and a stone floor does
+    not; a test of a fire placed on planks spreading and one on stone dying, and a night capture of
+    a fire lighting a room. One commit, after item 73. Done at `ee557b3` on 2026-10-24, the
+    departures in the head; TNT's blast lights nothing as the source's does not, at `edbc3b2`.
+
+73. **TNT and the creeper's blast.** The owner wrote on 2026-10-23 (Decision 34) asking for TNT and
+    the creeper's explosion. The mend: a TNT block primed by a hit with flint and steel or by a
+    neighboring blast, flashing white over its fuse of four seconds as the source's does, then
+    exploding with the source's ray-cast destruction at power 4, blocks in the blast dropping at the
+    source's chance, the player knocked back and hurt by distance; the creeper swelling and hissing
+    for a second and a half within reach of the player and exploding at power 3, as the source's
+    does, with smoke and flash particles; the blast's light a flash the cascades carry for a frame
+    or two. Tests: a TNT's crater's counts, the creeper's swell and blast on the flat world, and a
+    capture. Two commits, TNT, then the creeper. TNT at `1eeeeff` on 2026-10-24, the departures in
+    the head; the creeper's commit next, its hiss waiting on the game having sound. The creeper at
+    `cba35ca`, the cloud an engine particle sheet of the pack's frames and the flash a point light;
+    item 73 done.
+
+74. **A held light lights the ground around the player.** The owner wrote on 2026-10-23 (Decision
+    34) that holding a light should dynamically illuminate the area around. The mend: a torch,
+    lantern, glowstone or other emissive block held in hand gives a point light at the player with
+    the block's color and reach, following the player each frame, and the field taking it so the
+    cascades carry it; the same for a dropped one lying in the world; a test reading the floor's
+    light at night with a torch in hand against none. One commit, small, after item 75. Done at
+    `2aea2bf` on 2026-10-24, the light casting shadows, the departures in the head.
+
+75. **The player's hand and held item in view.** The owner wrote on 2026-10-23 (Decision 34) that
+    the player's hand and the items should be displayed in view. The mend: a first-person arm and
+    the held item drawn in the camera's frame as the source draws them, a block as a cube, an item
+    as its picture extruded, swinging on a hit or a use and bobbing with the walk, drawn after the
+    world with its own depth so it never cuts into walls, hidden with the HUD under F1; a test
+    reading the hand's pixels at a known view and a capture. One commit. Done at `1dce7b7` on
+    2026-10-24, the departures in the head. The empty arm goes by the owner's word, Decision 38, at
+    `adefc9d`.
+
+78. **Grass as the source places it, with the two-block grass.** The owner wrote on 2026-10-23
+    (Decision 34) that there is far too much grass, asking for the source's balance, and that the
+    source had two-block-high grass. The mend: the plains', forests' and other biomes' grass and
+    flowers placed by the source's patch features at the source's counts and chances, read as
+    numbers from its worldgen data, rather than by the game's density, and tall grass as a two-block
+    plant with its two pictures; a test of a plains chunk's grass count within the source's range
+    and the tall grass standing on two blocks; the plains village picture taken again. One commit.
+    Done at `b032e76` on 2026-10-24, the departures in the head.
+
+79. **Swimming as the source has it, no launch out of the water.** The owner wrote on 2026-10-23
+    (Decision 34) that the player should not jump out of the water automatically or with such force,
+    asking for the source's way, where jumping in water lifts the player to a high point, lets them
+    sink and rise again, and lets them climb out at the high point. The mend: the source's water
+    movement, a swim-up impulse on jump held, gravity and drag in water as the source's numbers give
+    them, the bob at the surface, and the step out onto a block at the surface's high point, no
+    launch; a test of the player's height over time in deep water with jump held, bobbing within the
+    source's band, and the climb out at a bank. One commit. Done at `526f20b` on 2026-10-24, the
+    departures in the head; a one-block bank climbable is the owner's to choose.
+
+80. **Villages spaced as the source spaces them.** The owner wrote on 2026-10-23 (Decision 34) that
+    there are too many villages too near. The mend: villages placed by the source's structure set
+    rules, a spacing of 34 chunks with a separation of 8 and the salt's random grid, so two villages
+    never stand within eight chunks and most are a few hundred blocks apart; a test counting
+    villages over a 64-chunk square within the source's bound. One commit, small. Done at `9b25aa3`
+    on 2026-10-24, the game's own hash in place of the source's salted random.
+
+81. **Biomes placed by the source's climate, so a badlands does not border a forest.** The owner
+    wrote on 2026-10-23 (Decision 34) that a mesa biome stands right next to green land, asking
+    whether that fits the source's logic and whether temperature, weirdness and the other values are
+    accounted for as the source does. The reading first: the game's biome choice against the
+    source's multi-noise, temperature, humidity, continentalness, erosion, depth and weirdness with
+    the source's parameter table, said in the commit; then the mend, the source's table taken as
+    numbers so badlands sit in hot dry land beside savanna and desert with the source's transitions,
+    or, where the game keeps its own climate, a border rule keeping badlands off forests. A test of
+    a map's biome pairs holding no pair the source never makes. One commit. Done at `8da806a` on
+    2026-10-24, the game's climate kept and the choice mended.
+
+83. **Glass without the diagonal streaks, its borders connecting across neighbors.** The owner wrote
+    on 2026-10-23 (Decision 34) to make the glass not have the diagonal streaks and to connect the
+    borders so the middle of two glass blocks carries no border, as connected glass has it. The
+    mend: the game's own glass picture redrawn without the streaks, and glass faces drawn with
+    connected borders, a face's edge border left out where the neighbor along that edge is glass of
+    the same kind, as the modpack's connected textures do, the pack's border pieces read where the
+    pack gives them and the game's own otherwise; a test of two glass blocks side by side showing
+    one border around both. One commit. Done at `dd64fd0` on 2026-10-24, the departures in the head.
+
+90. **The frame at a render distance of 12 comes back under 16.7 ms with the taller world, the main
+    thread's draws read first.** Item 26's readings on 2026-10-24: at 12 the frame stands at 17.5 ms
+    with far land off and up to 23.4 with it, where the GPU takes 14.3 to 15.0, so the main thread
+    binds the frame, drawing the taller world's sections, 5,064 at the cherry grove view, one draw
+    each. Read first where the main thread's time goes at that view through the engine's profile,
+    the draws' recording, the sections' culling, the far tiles and the rest, and say the numbers;
+    then the mend by the reading, the sections of a column drawn as one through the engine's mesh
+    over buffers with an indirect draw, or the draws recorded once and kept while nothing changes,
+    whichever the reading names, holding the frame under 16.7 ms at 12 with far land at 32 on the
+    development machine's GPU; a test of the draw count at a known view against a bound. One or two
+    commits, before the items in order. Done at `ba60ae4` on 2026-10-24, the flood kept until its
+    key changes, the numbers in the head; the GPU at 14.5 ms is the engine's bound, no item.
+
+91. **The screen probes stay off by default (Decision 42).** The owner played on 2026-10-24 and saw
+    black spreading across the screen in places, gone with the screen probes off, and the light
+    spotty, noisy and unstable on movement; the black is the engine's item 90, a glow light's
+    non-number the probes' history keeps, mended in the engine's tree and in the package after
+    5.2.215, and the spots, the noise and the shift are the engine's sixth term, the probes' own,
+    read under its item 71 and left as a limit. So the game calls
+    SetGlobalIlluminationScreenProbes(false) at its start and keeps its setting for turning them on,
+    with the capture of a view with the probes off; the play check that reads the light holds as it
+    stands or moves to the probes off. One commit, small, first. Done at `23aa4ff` on 2026-10-24, a
+    checkbox and no e3d verb. Superseded on 2026-10-25 by item 131, the probes on by default
+    (Decision 48).
+
+92. **Far land goes (Decision 41).** The owner played on 2026-10-24 and found the far land looking
+    bad, and said to remove it. FarLand, its rings, tiles and skirts, FarCache and the far folder of
+    the save, the generator's Surface where the far land alone read it, voxel.far, the settings
+    slider, the play check of the far land and the README's words and costs table go, the taller
+    world and the sections by reach of item 26's first two parts staying; the haze ends at the near
+    land as before item 26's third part; the README's world pictures taken again through pictures.sh
+    without far land. One commit, after item 91. Done at `2263618` on 2026-10-24, the pictures taken
+    again, old saves' far folder left unread.
+
+38. **The screen probes off by default, and the cascades' faults given to the engine with repros
+    (Decision 16).** The owner's word of about 01:00 on 2026-10-21: the game is not to enable the
+    screen probes, whose look is pixelated, the cascades without them being the better option for
+    the game's art, and the cascades still show faults. Two parts. First, now: an entry in the
+    engine's ASKS.md as Decision 26 has it, with a repro of each fault the owner names, the world's
+    seed, the place, the hour, the commands that put the camera there and a capture, the light
+    block's light leaking through the thin gap at the corner of two columns that hold it off, a
+    penumbra on the ground with zig-zags, the screen probes shifting on movement, z-fighting between
+    the global illumination and the opaque textures where it shows, and the noise, read in the game
+    at `28eb41c` on 5.2.190 with `voxel.gi high`, and beside each what `gi.screenprobe off` changes;
+    the engine's item 71 takes them. Second, when the package brings the engine's call that leaves
+    the screen probes out: the game calls it at start, off by default, a setting and `voxel.gi`
+    taking a word for them, the README's paragraph on the light saying why, and the measurement rows
+    and the captures made again without them. The entry also reads the model pass, `gpu.hdr_scene`
+    in the profile, with `gi.toggle screen off` against on, in a scene of many light blocks in view,
+    a village at night or a room of forty glowstones, since without the screen's probes the engine
+    takes the glow lights at each pixel and the cost grows with the lights in view, 0.3 to 1.0 ms on
+    four emitters in the engine's reading, which the engine's item 71 bounds. The first part before
+    item 37, the second when its package is listed. First part done at `404ab74` on 2026-10-21 with
+    the entry in the engine's ASKS.md, as the head says; the second part waits on the package. The
+    second part is moot since 2026-10-25, item 131 turning the probes on by default (Decision 48)
+    and the engine's item 103 taking the call away, so the item is done with its first part, closed
+    on 2026-10-26.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
