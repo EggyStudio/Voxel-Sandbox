@@ -13,6 +13,11 @@ Seed 1's rain forest floor at -640, 55, 638 at noon at sky level 13, seen along 
 under the whole floor of the sky's light on the left and on the right under the engine's light
 through the leaves with 0.65 of that floor, a little darker and closer to the source's level 13.
 
+![](.github/devlog/2026-10-26-item-54-overlay.webp)
+The engine's debug overlay F3 shows over seed 1's plains village at noon, the engine's lines of the
+system, the camera, the frame, the memory and the GPU, and under them on the left the game's
+sections of the player, the world's generation, the light, the sky, the sections and the mobs.
+
 # Item 133, the canopy's floor on 3DEngine 5.2.319
 
 On 5.2.319 the merge of the cascades sees past the leaves and a ray's reach stops where it does, so
@@ -104,6 +109,8 @@ the water.
 
 Done that day
 
+- Item 54 at `7f59530`. The game takes the engine's F1 and F3, its HUD in the hidden scope and its
+  developer's parts as overlay sections (Decision 26).
 - Item 95 at `a4d383c`. The world's sections become mesh entities the engine draws (Decision 43).
 - Item 133 at `1944378`. The leaves let the engine's light through, and item 117's floor is read
   again beside it.

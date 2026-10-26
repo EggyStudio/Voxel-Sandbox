@@ -1281,7 +1281,10 @@ brightness setting, so level 13 reads 0.80 of 15 on the screen, at 0.65 of its s
 engine's light passes the leaves, half of it through each leaf block, so it lights the
 grass under a canopy two leaves deep at noon to 32.9 where the grass in a wall's shade on open ground
 reads 44.4, 0.74 of it, and the floor lifts it to about 0.80, as the source lights level 13, where
-the whole floor lifted it to 46.4, past the open ground's own. A face at level 15 has open sky over it, which the field sees, and takes no floor, which keeps
+the whole floor lifted it to 46.4, past the open ground's own. A leaf's face carries a level of 14
+at most, so the floor lifts the leaves' sides in a canopy's pockets, open to the sky straight up,
+where global illumination's rays meet the leaves around and the sky only grazing, which left 13
+percent of a view under seed 1's rain forest near black. A face at level 15 has open sky over it, which the field sees, and takes no floor, which keeps
 the field's shade beside a wall, and at night the sky's light is next to nothing, so the floor holds
 by day under leaves, in a cave's mouth and inside a house by its windows, as the source's levels
 light them. The plants and a broken block's bits take the same floor at their cells' levels.

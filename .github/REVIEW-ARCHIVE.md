@@ -2113,6 +2113,37 @@ before a batch.
     and the engine's item 103 taking the call away, so the item is done with its first part, closed
     on 2026-10-26.
 
+54. **The game takes the engine's F1 and F3, its HUD in the hidden scope and its developer's parts
+    as overlay sections (Decision 26).** The owner asked shortly before 07:05 on 2026-10-21 for F1
+    to hide the interface as Minecraft does, as an engine feature, F2 the screenshot, and F3 a debug
+    overlay like the newest Minecraft's, sorted in parts logically with modules a game adds, world
+    generation among them, showing the system, the camera and the renderer, memory, fps and
+    frametime with a graph like the RivaTuner overlay's, both for BevyCSharp and 3DEngine, F1 hiding
+    the interface and ImGui but not the F3 overlay so everything hides but the overlay over the
+    renderer, and Shift+F3 showing the frame debugger too; and answered the reviewer's questions
+    shortly before 07:06: the interface hidden by a scope, F3 the overlay's on its release alone
+    with any chord left to the program, the look Minecraft's with no header, window styling or
+    border, text on a transparent backing, and the order as the reviewer sees fit. When the package
+    brings the engine's item 78, the game's HUD goes inside the engine's interface scope so F1 hides
+    it, and its screens, the inventory, the tables, the menu and the options, stay outside the scope
+    and never hide, as the source hides its HUD and not its screens, the F3 settings window of the
+    game's own gives way, its developer's parts becoming sections of the engine's overlay, the
+    world's generation, the biome and the climate at the eye, the light levels, the loaded and drawn
+    columns and sections, the mobs and the streaming, with the game's own settings moved to the
+    options screen of item 23, and the game's F3 chords stay, F3 with F4 the switcher and F3 with T
+    the reload, which the engine's rule leaves to the program; the engine's performance window
+    hidden off screen since item 40 is no longer needed. Tests: F1 leaving the frame without the HUD
+    read from its pixels, and the game's sections in the overlay's text. One commit, when the
+    package comes. From the engine on 2026-10-24: the package after 5.2.215 has no
+    SetProfileWindowKey, F3 showing the debug overlay in its place through SetDebugOverlayKey(Key),
+    Key.Null turning it off, and SetUiHiddenKey(Key) beside it for F1, so the game's
+    SetProfileWindowKey(Key.Null) of item 55 becomes SetDebugOverlayKey(Key.Null) when that package
+    comes, and SetUiHiddenKey(Key.Null) where it keeps F1. On 2026-10-26 the F3 window's parts found
+    their homes, Decision 50, the World part's kind, seed and opening going to item 134 with
+    voxel.world keeping them meanwhile. Done at `7f59530` on 2026-10-26, the F3 window gone into the
+    engine's overlay sections and a Debug Settings screen, the HUD and the hand under the engine's
+    F1, Decision 50, the World part to item 134.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

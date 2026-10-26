@@ -506,7 +506,12 @@ public sealed class SectionMesher
             // A corner of water's top carries the depth under it where an overlay's tile would be.
             var carried = faces == Water && face == 2 ? tiles & ~(511u << 9) | (uint)DepthAt(block + corner) << 9 : tiles;
             corner.Y = corner.Y == 1 ? top : bottom;
-            faces.Add(block + corner, face, i, shade, color, carried, albedo, (int)MathF.Round((float)sky / open));
+            // A leaf's face carries a sky level of 14 at most, so the terrain's floor of the sky's
+            // light, which fades out at 15 for the faces the sky's light reaches whole, lights the
+            // leaves' sides in a canopy's pockets, open to the sky straight up and lit by the source at
+            // 15, where global illumination's rays meet the leaves around and the sky only grazing.
+            var level = (int)MathF.Round((float)sky / open);
+            faces.Add(block + corner, face, i, shade, color, carried, albedo, faces == Foliage ? Math.Min(level, Lighting.Max - 1) : level);
         }
 
         // The quad is split along the diagonal whose corners are less closed, so a closed corner

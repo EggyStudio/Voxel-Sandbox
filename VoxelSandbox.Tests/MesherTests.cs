@@ -383,4 +383,17 @@ public class MesherTests
         }
         Assert.Equal(once.Emitters, later.Emitters);
     }
+
+    [Fact]
+    public void A_Leaf_Face_Under_The_Open_Sky_Carries_Sky_Level_14_So_The_Terrains_Floor_Lifts_It_And_Stone_Carries_15()
+    {
+        var world = Floor();
+        world.SetBlock(5, 20, 5, BlockId.JungleLeaves);
+        world.SetBlock(9, 20, 9, BlockId.Stone);
+        var mesher = Meshed(world);
+        // Every corner of the leaf's six faces looks into air under the open sky, at level 15.
+        Assert.Equal(6 * 4, mesher.Foliage.Count);
+        Assert.All(Enumerable.Range(0, mesher.Foliage.Count), i => Assert.Equal(14, mesher.Foliage.SkyOf(i)));
+        Assert.Contains(Enumerable.Range(0, mesher.Solid.Count), i => mesher.Solid.SkyOf(i) == 15);
+    }
 }

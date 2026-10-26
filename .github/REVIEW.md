@@ -5,28 +5,45 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `1944378`, item 133's second part, the canopy's floor on 5.2.319, read at 05:03 on
-2026-10-26, pushed at 05:05 once the run of `48e5bea` ended green, its own run watched, carrying the
-review's files, DEVLOG.md, a note and a captioned picture, with an ASKS.md entry in the engine's
-tree. The package pinned to 5.2.319; ChunkRenderer.SkyFloor defaults to 0.65, set into looks.z as
-how much of item 117's floor is taken away so the clouds' copy keeps it whole, SetLooks running at
-construction too since a transient run never sent the looks, which is why the first final reading
-still showed the whole floor; play.sh's jungle floor reads 36.5 against the shade's 44.6, 0.82 above
-its 0.72, the README's floor paragraph giving the readings. On the flat world the open shade reads
-44.4; the engine alone, the floor off, lights the grass under jungle leaves two deep to 32.9 and
-under oak leaves to 32.7 with the leaves passing half, against 24.5 and 26.1 passing none, 0.74 of
-the open shade, where item 117's whole floor read 46.4, past the open shade's own; the floor at
-0.75, 0.6, 0.5 and 0 reads 38.6, 34.1, 32.9 and 32.9 under jungle, and at 0.65 the flat canopies
-read 35.4 and 35.1, 0.80 of the open shade as the source lights level 13 against 15, so the floor is
-lowered and not taken out. Seed 1's capture means with the whole floor against 0.65, the jungle
-143.7 against 141.3, the forest 151.8 against 147.0 and the rain forest's floor 141.6 against 138.2,
-the picture. The cost at the grove at 1920 by 1080 at High on quiet runs, the same build with the
-shares against a scratch copy with none, global illumination 6.14 and 6.09 ms against 3.44 and 3.42
-and the frame 19.58 and 19.51 against 16.70 and 16.64, the scene pass and the shadows within 0.1 ms,
-two more pairs under another program's 56 to 77% of the GPU left out; it holds, so the 2.7 ms went
-to the engine as an ASKS.md entry, item 127 there, after its item 112. Every reading on the
-power-saving profile with the processor's energy preference at power. The strict build clean, 354
-tests, play.sh 342 s.
+Reviewed up to `7f59530`, item 54, the engine's F1 and F3 taken by the game, read at 05:25 on
+2026-10-26, carrying the review's files with Replies, DEVLOG.md, a captioned picture and the leaves
+note's mend, pushed at 05:43 once the run of `1944378` ended green, its own run watched. Program
+leaves F1 and F3 to the engine, the HUD, the hand and the block outline inside BeginUi and EndUi so
+F1 hides them, voxel.hud still hiding them for the capture scripts; the F3 window is gone,
+SettingsWindow becoming DebugWindows with the engine's three windows and item 40's off-screen
+performance window going; OverlaySections adds Player, Generation, Light, Sky, Sections and Mobs; a
+Debug Settings screen reached from Options holds Light Levels, Cull Unseen Sections and the three
+window toggles, none kept across runs, voxel.options taking debug; the Options page is placed by
+TopFor so Done stays on screen at GUI scale 3 in 720 pixels; the F3 with F4 and F3 with T chords
+stay. A headless test reads each section's lines and removes each by name, and play.sh's new check
+of the interface's keys reads the foot's blue 70.7, 0.0 under F1 and 70.7 again, and the corner's
+blue 230.2 and 167.9 under F3; the README's controls, options table and F3 passages follow, Decision
+50. The Reply notes AGENTS.md's Ui row still naming the settings window. The strict build clean, 355
+tests, play.sh 368 s. The owner, shown item 133's rain forest picture, wrote that the forest floor
+has black sides and blocks, something of the cascades' light below the trees; the coder reads the
+faces, their sky levels and the light with the floor on and off and the gi.toggle parts one by one,
+an item to follow. After `1944378`, item 133's second part, the canopy's floor on 5.2.319, read at
+05:03 on 2026-10-26, pushed at 05:05 once the run of `48e5bea` ended green, its own run green at
+05:40 with play in 35 minutes, carrying the review's files, DEVLOG.md, a note and a captioned
+picture, with an ASKS.md entry in the engine's tree. The package pinned to 5.2.319;
+ChunkRenderer.SkyFloor defaults to 0.65, set into looks.z as how much of item 117's floor is taken
+away so the clouds' copy keeps it whole, SetLooks running at construction too since a transient run
+never sent the looks, which is why the first final reading still showed the whole floor; play.sh's
+jungle floor reads 36.5 against the shade's 44.6, 0.82 above its 0.72, the README's floor paragraph
+giving the readings. On the flat world the open shade reads 44.4; the engine alone, the floor off,
+lights the grass under jungle leaves two deep to 32.9 and under oak leaves to 32.7 with the leaves
+passing half, against 24.5 and 26.1 passing none, 0.74 of the open shade, where item 117's whole
+floor read 46.4, past the open shade's own; the floor at 0.75, 0.6, 0.5 and 0 reads 38.6, 34.1, 32.9
+and 32.9 under jungle, and at 0.65 the flat canopies read 35.4 and 35.1, 0.80 of the open shade as
+the source lights level 13 against 15, so the floor is lowered and not taken out. Seed 1's capture
+means with the whole floor against 0.65, the jungle 143.7 against 141.3, the forest 151.8 against
+147.0 and the rain forest's floor 141.6 against 138.2, the picture. The cost at the grove at 1920 by
+1080 at High on quiet runs, the same build with the shares against a scratch copy with none, global
+illumination 6.14 and 6.09 ms against 3.44 and 3.42 and the frame 19.58 and 19.51 against 16.70 and
+16.64, the scene pass and the shadows within 0.1 ms, two more pairs under another program's 56 to
+77% of the GPU left out; it holds, so the 2.7 ms went to the engine as an ASKS.md entry, item 127
+there, after its item 112. Every reading on the power-saving profile with the processor's energy
+preference at power. The strict build clean, 354 tests, play.sh 342 s.
 
 Before it, `48e5bea` came, item 133's first part, the Foliage part and its share of light, pushed at
 01:44 on 2026-10-26, its run green at 02:42.
@@ -67,34 +84,26 @@ full.
     lands. The second commit at `9d4b295` on 2026-10-24, the depth, the edge and the sky's fresnel,
     the water a mesh of its own; the shore's mirror with the package carrying the engine's item 112.
 
-54. **The game takes the engine's F1 and F3, its HUD in the hidden scope and its developer's parts
-    as overlay sections (Decision 26).** The owner asked shortly before 07:05 on 2026-10-21 for F1
-    to hide the interface as Minecraft does, as an engine feature, F2 the screenshot, and F3 a debug
-    overlay like the newest Minecraft's, sorted in parts logically with modules a game adds, world
-    generation among them, showing the system, the camera and the renderer, memory, fps and
-    frametime with a graph like the RivaTuner overlay's, both for BevyCSharp and 3DEngine, F1 hiding
-    the interface and ImGui but not the F3 overlay so everything hides but the overlay over the
-    renderer, and Shift+F3 showing the frame debugger too; and answered the reviewer's questions
-    shortly before 07:06: the interface hidden by a scope, F3 the overlay's on its release alone
-    with any chord left to the program, the look Minecraft's with no header, window styling or
-    border, text on a transparent backing, and the order as the reviewer sees fit. When the package
-    brings the engine's item 78, the game's HUD goes inside the engine's interface scope so F1 hides
-    it, and its screens, the inventory, the tables, the menu and the options, stay outside the scope
-    and never hide, as the source hides its HUD and not its screens, the F3 settings window of the
-    game's own gives way, its developer's parts becoming sections of the engine's overlay, the
-    world's generation, the biome and the climate at the eye, the light levels, the loaded and drawn
-    columns and sections, the mobs and the streaming, with the game's own settings moved to the
-    options screen of item 23, and the game's F3 chords stay, F3 with F4 the switcher and F3 with T
-    the reload, which the engine's rule leaves to the program; the engine's performance window
-    hidden off screen since item 40 is no longer needed. Tests: F1 leaving the frame without the HUD
-    read from its pixels, and the game's sections in the overlay's text. One commit, when the
-    package comes. From the engine on 2026-10-24: the package after 5.2.215 has no
-    SetProfileWindowKey, F3 showing the debug overlay in its place through SetDebugOverlayKey(Key),
-    Key.Null turning it off, and SetUiHiddenKey(Key) beside it for F1, so the game's
-    SetProfileWindowKey(Key.Null) of item 55 becomes SetDebugOverlayKey(Key.Null) when that package
-    comes, and SetUiHiddenKey(Key.Null) where it keeps F1. On 2026-10-26 the F3 window's parts found
-    their homes, Decision 50, the World part's kind, seed and opening going to item 134 with
-    voxel.world keeping them meanwhile.
+135. **A leaf block's faces take the sky floor at level 15 as at 14.** From the owner's word on item
+    133's rain forest picture on 2026-10-26, the forest floor showing black sides and blocks under
+    the trees. The coder's reading at seed 1's rain forest floor at noon found every near-black
+    pixel a jungle or oak leaf face, south or west, 5 to 10 blocks off, facing air at sky level 15
+    inside a pocket of the canopy open to the sky straight up; the screen probes change nothing, the
+    cascades give such a face about nothing since the rays leaving a vertical face in a narrow
+    pocket meet leaves within a block or two and the sky at grazing angles alone, and the game's
+    floor gives it nothing since it fades out from 14 to 15 so a wall on open ground keeps the
+    engine's shade, the one face at sky 14 lifted to 0,19,0 by the floor and 0,0,0 without; the
+    near-black share of the view 0.138 at `a4d383c` and 0.126 as committed, so it stood before item
+    133, and the canopy's floor is not black at any depth, the grass under 2, 3, 4 and 6 leaves
+    33.1, 27.8, 26.1 and 27.8 against the shade's 43.5. So leaf blocks' faces carry their sky level
+    at most 14, the floor applying to them at 15 as at 14, only leaves changing so a wall on open
+    ground keeps its shade, and the haze's share at a leaf moving from skyBrightness(15) to (14),
+    which the eye's own level overrides in the open; the near-black share of that view read before
+    and after, the picture with the near-black pixels marked beside the mended view, and a test of a
+    leaf face at sky 15 reading the floor's lift. One commit, small, before item 134. The engine's
+    part, a vertical face in a narrow pocket of a canopy taking about no light from the cascades, is
+    read as the light such a pocket gets and not a fault, no ask sent unless the owner reads the
+    mended view otherwise.
 
 134. **A world screen in the pause menu, the saves listed to open and a new world begun.** From item
     54's move of the F3 window on 2026-10-26, Decision 50. The pause menu gains World, listing the
