@@ -2239,6 +2239,58 @@ before a batch.
     s locally. Done at `a528c79` and `3a99729` on 2026-10-24 with the play job's climb answered
     under item 27's part B, archived on 2026-10-26.
 
+27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
+    word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
+    two noises are both near zero, caverns where a third is high below a depth, and ravines; it
+    gains the source's three kinds as numbers, cheese caves from a large three-dimensional noise's
+    low values, spaghetti tunnels from two noises thinned by a third, noodle caves thinner still,
+    and aquifers setting water and lava levels in caves by depth, with the deep sections item 26
+    gives them, and a cave's lighting from the sky above through its openings. After item 26. Two
+    commits, the caves, then the aquifers. The lush caves of the source, moss, glow berries hanging
+    from the roof and vines over clear pools, join the kinds (Decision 21). Found by item 26's
+    second part on 2026-10-24: a cave at minus 36 under ground at 64 takes the sky's light through
+    global illumination, its floor reading 13 to 26 at noon against 0 to 11 at midnight, since the
+    engine's field reaches 64 up from the eye and a ray leaving it counts as sky; the engine's item
+    72 gives the field a far cascade a ray reads before the sky, in the package after 5.2.215, so
+    this item takes it when that package comes and reads the cave again. Part A at `d8a05a1` on
+    2026-10-24, the caves and the ores, the departures in the head. Part B at `9cb81ad`, the
+    aquifers with lava, the departures in the head; the lush caves part C. Part C at `c8dbbee`, the
+    departures in the head; item 27 done, the deep caves' sky light read again when the engine's
+    package comes. The owner saw at about 10:5x on 2026-10-24 the sun's light leaking onto the tops
+    of blocks in caves; the engine's item 94 reads whether it is the sun's map, whose cascades may
+    leave the ground above a cave's view out of their depth, or the field's top, which item 72's far
+    cascade answers; the game reads it first at a cave of the owner's kind, the tops' light with the
+    shadows off and on and with global illumination off and on, and when the package comes it sets
+    SetSceneField's far cascade so a cave's rays meet the ground above before the sky. The owner
+    added at 10:51 that the sun shows in a cave at a distance, an opening far off the likely way in;
+    past the engine's shadow distance of 150 nothing casts a shadow until item 72's fill cascade, in
+    the package after 5.2.215, so the far parts of a cave are sunlit on 5.2.215 whatever the map's
+    range near the eye, and the game's reading tells the near from the far. The cave reading of
+    10:59 is written under the engine's item 94, the near sun the map's and the far sun and the blue
+    item 72's. The owner added that the global illumination's qualities move where a black cave's
+    ambient fog color begins, near at Low and far at High, and that it shows at a distance even at
+    High; that is the counted cascades' reach and the sky past them, and the game sets the engine's
+    far cascade through SetSceneField when the package comes, so the far rays of a cave meet the
+    ground before the sky at every quality, read again then. The package part at `758e9df` on
+    2026-10-24, 5.2.281 pinned with the keys renamed, the far cascade left off and the cave's
+    readings unchanged, said in the head; the far cascade set once the engine's item 102 mends its
+    slab, and the cave read again with the engine's item 101. The pin of 5.2.283 at `3d70b20`, the
+    grove's frame 19 to 22 ms where 5.2.281 read 33 to 35 and 5.2.215 15 to 18, the cave unchanged.
+    The pin of 5.2.291 at `9dad43e` on 2026-10-25, the grove's frame as 5.2.283's. The last part
+    taken on 2026-10-26 on 5.2.319, the far cascade set through SetSceneField since the engine's
+    item 102 mended its slab in 5.2.313, the deep cave read again at every quality for its far walls
+    meeting the ground before the sky, and the cost at the grove, with a captioned picture. Read at
+    06:3x on 2026-10-26 with SetSceneField(4, 0.25, 2, 32768, 192), the deep cave's far walls at Low
+    darkening by about a quarter, their rays meeting rock where they met the sky, Medium and High
+    unchanged with the tops at 90 blocks black already, and the grove at 1920 by 1080 paying 1.1 ms
+    of global illumination and 0.5 to 1 ms of the scene pass, 1.6 to 2 ms of the frame at both
+    qualities; so the far cascade ships off by default behind a Far Cascade toggle on Render
+    Settings, its reach following the render distance, the README's options table saying it is for
+    Low underground, the readings in a note and the cave at Low pictured off and on, and the item
+    closes with it, the choice open to the owner in the game. Done at `f1aa450` on 2026-10-26, the
+    far cascade off by default behind Render Settings' Far Cascade with its reach the render
+    distance, the cave at Low pictured off and on; the item closed with every part.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

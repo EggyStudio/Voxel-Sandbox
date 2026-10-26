@@ -348,8 +348,14 @@ five hide it under the water's own darker color, and the water clears toward its
 columns beside it hold none, so it meets the bank with no hard line. Over that it shows the sky as
 the frame draws it along the view's mirror, Schlick's fresnel giving more of it the lower the eye
 looks, by as much of the sky as reaches the water, so the sea pales toward the horizon and a pool
-under the ground mirrors none of it. The shore and the land across the water are not mirrored,
-which waits on a planar reflection the engine is asked for.
+under the ground mirrors none of it. The water most of the view looks down on mirrors the shore and
+the land across it too, through the engine's planar reflection, the game setting the plane at that
+water's top each frame from fifteen rays across the view's lower half, an eighth under its blocks'
+tops, and none where no water is in view or the eye is under water, so the mirrored view is drawn
+only while it shows. The engine mirrors one plane, so water at another height takes the sky's light
+alone. Along seed 1's nearest river at 1920 by 1080 the mirror costs about 2.6 ms of the frame, its
+drawing taking 2.6 ms of the GPU and 2.9 of the processor, which overlap, and Render Settings turns
+it off.
 
 Water flows as Minecraft's does, a block every quarter second. It falls into the air under it, and
 where it stands on ground or on a source it spreads sideways, a level further from its source for
@@ -860,6 +866,7 @@ sections loaded, waiting and drawn, and the mobs.
 | | Field Cell, the finest cascade's cell | 0.125 to 1 block by 0.125 | 0.25 |
 | | Cascades a Frame, built again each frame | 1 to 8 | 2 |
 | | Far Cascade, a cascade past the four reaching the render distance, which keeps a deep cave's far walls from the sky's light at Low and costs about 2 ms of the frame | Off, On | Off |
+| | Water Reflections, the water in view mirroring the shore, about 2.6 ms of the frame while water shows | Off, On | On |
 | Post Processing | Bloom | 0 to 2 by 0.05 | 0.1 |
 | | Bloom Threshold, the light past white bloom spreads from | 0.5 to 8 by 0.25 | 1 |
 | | Ambient Occlusion | 0 to 1 by 0.05 | 0 |

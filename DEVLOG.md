@@ -28,6 +28,11 @@ The pause menu's World screen on the left, two worlds saved, overworld-1 open an
 and on the right its New World screen with the overworld chosen and the seed voxel sandbox typed
 into its field.
 
+![](.github/devlog/2026-10-26-item-27-far-cascade.webp)
+Seed 1's deep cave at -59.5, -4, -91.5 at noon at Low, brightened four times to show it, its far
+walls lit by the sky's light its rays reach past the four cascades on the left and darker with the
+far cascade on the right, where those rays meet the rock.
+
 # Item 133, the canopy's floor on 3DEngine 5.2.319
 
 On 5.2.319 the merge of the cascades sees past the leaves and a ray's reach stops where it does, so
@@ -92,6 +97,36 @@ The frame at the grove at 1920 by 1080 at High could not be read cleanly. Anothe
 31.7 and 42.3 ms. The two readings with no other program on the GPU gave the frame 20.8 ms before and
 22.7 after and global illumination 3.6 ms and 7.0, the rays crossing leaves where they stopped.
 
+# Item 27, the far cascade
+
+The engine's far cascade on 3DEngine 5.2.319, set through `SetSceneField` past the four counted
+cascades to reach the render distance, 192 blocks at 12 columns, read in one session in Release with
+the three default packs on tuned's power-saving profile with the processor's energy preference at
+power.
+
+Seed 1's deep cave at -59.5, -4, -91.5 at noon, the tops of the blocks 45 and 90 blocks ahead, each
+a pixel's red, green and blue.
+
+| Quality | Far cascade off | Far cascade on |
+|---|---|---|
+| Low | 22, 13, 7 and 22, 13, 7 | 17, 9, 3 and 18, 10, 4 |
+| Medium | 0, 0, 0 and 22, 13, 7 | 0, 0, 0 and 22, 13, 6 |
+| High | 0, 0, 0 and 0, 0, 0 | 0, 0, 0 and 0, 0, 0 |
+
+Seed 1's cherry grove at 1920 by 1080 at hour 16, a profile over 300 frames, the readings with no
+other program on the GPU.
+
+| | Frame | Global illumination | Scene pass |
+|---|---|---|---|
+| Low, off | 17.2 ms | 3.06 ms | 6.92 ms |
+| Low, on | 19.4 and 19.1 ms | 4.16 and 4.11 ms | 8.03 and 7.94 ms |
+| High, off | 21.6 ms | 6.35 ms | 7.80 ms |
+| High, on | 23.2 and 24.6 ms | 7.50 and 7.30 ms | 8.35 and 8.28 ms |
+
+The far cascade darkens the cave's far walls at Low by about a quarter, its rays meeting the rock
+where they met the sky, changes nothing seen at Medium and High, and costs 1.6 to 2 ms of the frame
+at both, so it is off by default and Render Settings turns it on.
+
 # Item 95, every part of a section an entity
 
 The frame at item 93's views, seed 1's cherry grove and plains village at hour 16, the three default
@@ -119,6 +154,8 @@ the water.
 
 Done that day
 
+- Item 27 at `f1aa450`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
+  aquifers.
 - Item 54 at `7f59530`. The game takes the engine's F1 and F3, its HUD in the hidden scope and its
   developer's parts as overlay sections (Decision 26).
 - Item 95 at `a4d383c`. The world's sections become mesh entities the engine draws (Decision 43).
@@ -324,8 +361,6 @@ shadows and up to 1.5 ms off global illumination against 5.2.291 within the nois
 
 Done that day
 
-- Item 27 at `9dad43e`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
-  aquifers.
 - Item 28 at `79ad110`. The looks Shine shows, done as the game's own, bloom on emissive blocks,
   colored light from emissive blocks, a rim around blocks, and an unshaded look.
 - Item 30 at `87d089e`. Entity models, textures and animations read from the player's packs in

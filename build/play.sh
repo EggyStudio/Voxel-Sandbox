@@ -519,10 +519,12 @@ for i in $(seq 0 15); do
 done
 
 check "the pool's reflection"
-# A pool beside a wall of red concrete at noon reflects nothing of the wall. Read on the water where
-# the wall's mirror image would lie, its red stays at least 8 levels under its green, where the
-# glossy water reflecting the wall through the scene's distance field read red 134 to green 132. Its
-# bed is white concrete, so the red of the dirt a block of water shows does not read as the wall's.
+# A pool beside a wall of red concrete at noon mirrors the wall through the engine's planar
+# reflection, the plane at the water's top, read on the water where the wall's mirror image lies,
+# its red at least 8 levels over its green, and with Water Reflections off it reflects nothing of the
+# wall, its red at least 8 under its green, where the glossy water reflecting the wall through the
+# scene's distance field read red 134 to green 132. Its bed is white concrete, so the red of the dirt
+# a block of water shows does not read as the wall's.
 cmd voxel.fill 60 2 30 66 2 36 white_concrete
 cmd voxel.fill 60 3 30 66 3 36 water
 cmd voxel.fill 60 4 29 66 8 29 red_concrete
@@ -531,11 +533,18 @@ cmd voxel.look 0 -8
 cmd frames.wait 30
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
+water() { printf '%s\n' "$1" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p'; }
 mirror=$(ask voxel.pixel 63.5 3.876 33.5)
-echo "the water where the wall would mirror, $mirror"
-read -r wr wg wb <<< "$(printf '%s\n' "$mirror" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p')"
-[ -n "$wb" ] || fail "voxel.pixel read no water, saying $mirror"
-[ $((wr + 8)) -le "$wg" ] || fail "the water reflects the red wall beside it, $mirror"
+cmd voxel.options render Water_Reflections 0
+cmd frames.wait 30
+plain=$(ask voxel.pixel 63.5 3.876 33.5)
+cmd voxel.options render Water_Reflections 1
+echo "the water where the wall mirrors, $mirror, and with Water Reflections off, $plain"
+read -r wr wg wb <<< "$(water "$mirror")"
+read -r pr pg pb <<< "$(water "$plain")"
+[ -n "$wb" ] && [ -n "$pb" ] || fail "voxel.pixel read no water, saying $mirror and $plain"
+[ "$wr" -ge $((wg + 8)) ] || fail "the water does not mirror the red wall beside it, $mirror"
+[ $((pr + 8)) -le "$pg" ] || fail "the water with Water Reflections off reflects the red wall beside it, $plain"
 
 check "the water's depth"
 # A pool lined with red concrete at noon, one lane a block deep and one five, seen from above while
@@ -544,7 +553,8 @@ check "the water's depth"
 # water's own darker color hides it, its red at least 25 levels under its green. Seen low across the
 # pool, the deep lane's far end, where the eye's mirror reaches the sky over the horizon, is lighter
 # than its near end by at least 32 levels of luminance, where water showing no sky read 23 lighter,
-# as calm water shows the sky the lower the eye looks.
+# as calm water shows the sky the lower the eye looks, read with Water Reflections off, since the
+# plane's mirror shows the bank there, as the pool's reflection reads it.
 cmd voxel.fill 80 -3 40 92 3 56 red_concrete
 cmd voxel.fill 80 3 40 84 3 56 water
 cmd voxel.fill 88 -1 40 92 3 56 water
@@ -563,11 +573,13 @@ read -r dr dg _ <<< "$(printf '%s\n' "$deep" | sed -nE 's/^red ([0-9]+), green (
 [ "$sr" -ge $((sg + 40)) ] || fail "the red bed under a block of water does not show plainly, $shallow"
 [ $((dr + 25)) -le "$dg" ] || fail "the red bed under five blocks of water shows through, $deep"
 cmd voxel.look 0 -8
+cmd voxel.options render Water_Reflections 0
 cmd frames.wait 30
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 near=$(ask voxel.pixel 90.5 3.88 55.5)
 far=$(ask voxel.pixel 90.5 3.88 41.5)
+cmd voxel.options render Water_Reflections 1
 echo "the deep lane seen low, near $near, far $far"
 lum() { printf '%s\n' "$1" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+).*/\1 \2 \3/p' | awk '{ printf "%d", 0.2126 * $1 + 0.7152 * $2 + 0.0722 * $3 }'; }
 nl=$(lum "$near"); fl=$(lum "$far")

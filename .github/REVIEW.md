@@ -5,25 +5,35 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `5145d2f`, item 134, the World and New World screens, read at 06:09 on 2026-10-26,
-carrying the review's files with a Reply, DEVLOG.md and a captioned picture, held until the run of
-`0ba4cb4` ends. The pause menu gains World between Options and Save the World; the World screen
-lists WorldSave.Saved, the folders under the root with a readable world.json, last played first, six
-at a time under the wheel, each by name and kind of seed with the open one marked, a button opening
-a save through NextWorld, which carries a save name, SwitchWorld saving and leaving first, a
-transient run saying it keeps no saves; the New World screen has a World Type button cycling
-Generators.Kinds, a seed field, Random Seed, Create New World and Cancel, Menus.Begin and
-Menus.SeedOf reading a whole number as it is, a longer one folded, other words hashed as Java's
-String.hashCode and a blank field as random, the field the game's own Gui.TextField over the
-engine's GetCharPressed, IsKeyPressedRepeat and SetTextInputArea, the keys held while the screen is
-open so typing g steps no quality; the HUD's help line reads F3 debug where it read F3 settings,
-left from item 54. A test opens seed 42 from overworld and 42, seed 99162322 from flat and hello,
-and reads -5 with spaces around it; the README's pause menu paragraph follows. The Reply says the
-engine has no text field widget of its own, so the seed is typed into the game's field, which goes
-to the engine's ASKS.md. The picture was taken with XDG_DATA_HOME on a scratch folder, the owner's
-saves untouched. The strict build clean, 357 tests, play.sh 350 s. After `0ba4cb4`, item 135, the
-leaf faces' sky floor, read at 05:54 on 2026-10-26, carrying the review's files, DEVLOG.md and a
-captioned picture, pushed at 06:21 once the run of `7f59530` ended green, its own run watched.
+Reviewed up to `f1aa450`, item 27's last part, the far cascade behind a toggle, read at 06:26 on
+2026-10-26, carrying the review's files with a Reply, DEVLOG.md, a note and a captioned picture,
+pushed at 08:38 once the run of `5145d2f` ended green, its own run green at 09:43 with play in 65
+minutes. LightSettings.FarCascade is false by default with its comment saying why and FarReach is
+the render distance's blocks, ApplyField passing the reach or 0, RenderDistance's setter applying
+the field again when the reach changes, Render Settings gaining Far Cascade kept in the options
+file, and the README's options table its row in one sentence, that it keeps a deep cave's far walls
+from the sky's light at Low and costs about 2 ms of the frame; the note holds the cave and grove
+tables and the pair shows the deep cave at Low off and on, brightened four times. The strict build
+clean, 357 tests, play.sh 329 s. After `5145d2f`, item 134, the World and New World screens, read at
+06:09 on 2026-10-26, carrying the review's files with a Reply, DEVLOG.md and a captioned picture,
+pushed at 07:30 once the run of `0ba4cb4` ended green, its own run green at 08:35 with play in 65
+minutes. The pause menu gains World between Options and Save the World; the World screen lists
+WorldSave.Saved, the folders under the root with a readable world.json, last played first, six at a
+time under the wheel, each by name and kind of seed with the open one marked, a button opening a
+save through NextWorld, which carries a save name, SwitchWorld saving and leaving first, a transient
+run saying it keeps no saves; the New World screen has a World Type button cycling Generators.Kinds,
+a seed field, Random Seed, Create New World and Cancel, Menus.Begin and Menus.SeedOf reading a whole
+number as it is, a longer one folded, other words hashed as Java's String.hashCode and a blank field
+as random, the field the game's own Gui.TextField over the engine's GetCharPressed,
+IsKeyPressedRepeat and SetTextInputArea, the keys held while the screen is open so typing g steps no
+quality; the HUD's help line reads F3 debug where it read F3 settings, left from item 54. A test
+opens seed 42 from overworld and 42, seed 99162322 from flat and hello, and reads -5 with spaces
+around it; the README's pause menu paragraph follows. The Reply says the engine has no text field
+widget of its own, so the seed is typed into the game's field, which goes to the engine's ASKS.md.
+The picture was taken with XDG_DATA_HOME on a scratch folder, the owner's saves untouched. The
+strict build clean, 357 tests, play.sh 350 s. After `0ba4cb4`, item 135, the leaf faces' sky floor,
+read at 05:54 on 2026-10-26, carrying the review's files, DEVLOG.md and a captioned picture, pushed
+at 06:21 once the run of `7f59530` ended green, its own run green at 07:27 with play in 65 minutes.
 SectionMesher gives a Foliage face's corners a sky level of 14 at most so the floor's fade at 15
 does not reach the leaves, other faces unchanged, a MesherTests case reading a jungle leaf in open
 air at 14 on all 24 corners and a stone face at 15, the README's floor paragraph saying why. On the
@@ -111,55 +121,26 @@ full.
     lands. The second commit at `9d4b295` on 2026-10-24, the depth, the edge and the sky's fresnel,
     the water a mesh of its own; the shore's mirror with the package carrying the engine's item 112.
 
-27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
-    word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
-    two noises are both near zero, caverns where a third is high below a depth, and ravines; it
-    gains the source's three kinds as numbers, cheese caves from a large three-dimensional noise's
-    low values, spaghetti tunnels from two noises thinned by a third, noodle caves thinner still,
-    and aquifers setting water and lava levels in caves by depth, with the deep sections item 26
-    gives them, and a cave's lighting from the sky above through its openings. After item 26. Two
-    commits, the caves, then the aquifers. The lush caves of the source, moss, glow berries hanging
-    from the roof and vines over clear pools, join the kinds (Decision 21). Found by item 26's
-    second part on 2026-10-24: a cave at minus 36 under ground at 64 takes the sky's light through
-    global illumination, its floor reading 13 to 26 at noon against 0 to 11 at midnight, since the
-    engine's field reaches 64 up from the eye and a ray leaving it counts as sky; the engine's item
-    72 gives the field a far cascade a ray reads before the sky, in the package after 5.2.215, so
-    this item takes it when that package comes and reads the cave again. Part A at `d8a05a1` on
-    2026-10-24, the caves and the ores, the departures in the head. Part B at `9cb81ad`, the
-    aquifers with lava, the departures in the head; the lush caves part C. Part C at `c8dbbee`, the
-    departures in the head; item 27 done, the deep caves' sky light read again when the engine's
-    package comes. The owner saw at about 10:5x on 2026-10-24 the sun's light leaking onto the tops
-    of blocks in caves; the engine's item 94 reads whether it is the sun's map, whose cascades may
-    leave the ground above a cave's view out of their depth, or the field's top, which item 72's far
-    cascade answers; the game reads it first at a cave of the owner's kind, the tops' light with the
-    shadows off and on and with global illumination off and on, and when the package comes it sets
-    SetSceneField's far cascade so a cave's rays meet the ground above before the sky. The owner
-    added at 10:51 that the sun shows in a cave at a distance, an opening far off the likely way in;
-    past the engine's shadow distance of 150 nothing casts a shadow until item 72's fill cascade, in
-    the package after 5.2.215, so the far parts of a cave are sunlit on 5.2.215 whatever the map's
-    range near the eye, and the game's reading tells the near from the far. The cave reading of
-    10:59 is written under the engine's item 94, the near sun the map's and the far sun and the blue
-    item 72's. The owner added that the global illumination's qualities move where a black cave's
-    ambient fog color begins, near at Low and far at High, and that it shows at a distance even at
-    High; that is the counted cascades' reach and the sky past them, and the game sets the engine's
-    far cascade through SetSceneField when the package comes, so the far rays of a cave meet the
-    ground before the sky at every quality, read again then. The package part at `758e9df` on
-    2026-10-24, 5.2.281 pinned with the keys renamed, the far cascade left off and the cave's
-    readings unchanged, said in the head; the far cascade set once the engine's item 102 mends its
-    slab, and the cave read again with the engine's item 101. The pin of 5.2.283 at `3d70b20`, the
-    grove's frame 19 to 22 ms where 5.2.281 read 33 to 35 and 5.2.215 15 to 18, the cave unchanged.
-    The pin of 5.2.291 at `9dad43e` on 2026-10-25, the grove's frame as 5.2.283's. The last part
-    taken on 2026-10-26 on 5.2.319, the far cascade set through SetSceneField since the engine's
-    item 102 mended its slab in 5.2.313, the deep cave read again at every quality for its far walls
-    meeting the ground before the sky, and the cost at the grove, with a captioned picture. Read at
-    06:3x on 2026-10-26 with SetSceneField(4, 0.25, 2, 32768, 192), the deep cave's far walls at Low
-    darkening by about a quarter, their rays meeting rock where they met the sky, Medium and High
-    unchanged with the tops at 90 blocks black already, and the grove at 1920 by 1080 paying 1.1 ms
-    of global illumination and 0.5 to 1 ms of the scene pass, 1.6 to 2 ms of the frame at both
-    qualities; so the far cascade ships off by default behind a Far Cascade toggle on Render
-    Settings, its reach following the render distance, the README's options table saying it is for
-    Low underground, the readings in a note and the cave at Low pictured off and on, and the item
-    closes with it, the choice open to the owner in the game.
+136. **The sun's shadows soften with the distance from their caster.** From the game's item 43's ask
+    of 2026-10-24, answered by the engine's item 111 at `45edfbf6` in 5.2.322,
+    SetShadowSoftness(size) as the sun's width across in degrees, 0 by default keeping the sharp
+    edge. The game sets the width from a Render Settings slider, Soft Shadows from 0 to 5 degrees
+    kept in the options file, its default chosen from readings at noon and at hour 16 at seed 1's
+    village at 0.53 degrees, the sun seen from the earth, at 1.5 and at 3, pictured against 0 with
+    the frame's cost at the grove at 1920 by 1080 at Low and High, the default the one nearest the
+    look of a warm low sun with long soft shadows at under a millisecond of the frame, the README's
+    options table saying so and the readings in a note. One commit, after item 42.
+
+137. **The seed field edits through the engine's EditText.** From item 134's own field and the
+    engine's item 128 at `0754b975`, on the package carrying it. The New World screen's seed field
+    becomes a TextEdit the engine's EditText updates, gaining paste, a selection, word moves and
+    Tab, IsTextInputActive replacing the game's own key gate on the screen, the box, the text and
+    the caret drawn by the game in the pack's look; the pack's bitmap font, ascii.png on a 16 by 16
+    grid with its own glyph widths, is not an engine Font, so the caret a click places is measured
+    either in a Font built from the sheet through LoadFontFromImage or, where the widths cannot be
+    given that way, through a measure the engine's EditText takes, asked in ASKS.md first; a test
+    typing and pasting a seed through the screen, and the README's pause menu paragraph. One commit,
+    small, after item 136.
 
 29. **Generation and meshing on the GPU, the blocks kept on the CPU (Decision 12).** The owner's
     word of about 00:30 on 2026-10-21: compute shaders for generation and the rest are a big one.

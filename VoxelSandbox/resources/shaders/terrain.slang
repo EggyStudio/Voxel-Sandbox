@@ -401,6 +401,10 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
         // light otherwise, so a pool under the ground mirrors none of it.
         float open = streams.uv2.y > 0.0 ? streams.uv2.y / 15.0 : streams.uv2.x;
         float3 sky = hazeColor(-reflect(-v, float3(0.0, 1.0, 0.0)), 1.0) * open;
+        // Where the water lies in the plane the game sets at its top, it mirrors the shore and the sky
+        // as the frame draws them, in place of the sky's light alone.
+        float4 mirror = mirrored(streams.base.position, streams.base.world, float3(0.0, 1.0, 0.0), 0.0);
+        sky = lerp(sky, mirror.rgb, mirror.a);
         float covered = fresnel + (1.0 - fresnel) * alpha;
         shown = (fresnel * sky + (1.0 - fresnel) * alpha * shown) / max(covered, 1e-4);
         color.a = covered;

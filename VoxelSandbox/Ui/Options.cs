@@ -195,6 +195,7 @@ public sealed class OptionScreens
                 light.FarCascade = on;
                 light.ApplyField();
             }),
+            Option.Toggle("Water Reflections", () => game.Mirror.Enabled, on => game.Mirror.Enabled = on),
         ], []);
 
         PostProcessing = new("Post Processing",

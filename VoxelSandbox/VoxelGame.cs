@@ -302,6 +302,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The engine's windows the Debug screen of the options turns on.</summary>
     public DebugWindows Windows { get; } = new();
 
+    /// <summary>The plane the water in view mirrors the shore and the sky in, set each frame.</summary>
+    public WaterMirror Mirror { get; } = new();
+
     /// <summary>How many columns around the player are drawn, and two more loaded.</summary>
     /// <remarks>
     /// Twelve by default, 192 blocks. Over the first seed's spawn at noon, seen from above the
@@ -1177,6 +1180,7 @@ public sealed class VoxelGame : IDisposable
         else Renderer.Fog(Sky.Horizon, float.MaxValue, float.MaxValue);
 
         _laps.Restart();
+        Mirror.Update(World, Player.Camera, Player.EyeInWater);
         BeginDrawing();
         // The frame's first stage may have opened a world, so the loading screen is chosen once the
         // frame has begun.

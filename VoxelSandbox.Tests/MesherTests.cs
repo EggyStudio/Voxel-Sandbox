@@ -1,3 +1,4 @@
+using System.Numerics;
 using Engine;
 using Xunit;
 
@@ -395,5 +396,16 @@ public class MesherTests
         Assert.Equal(6 * 4, mesher.Foliage.Count);
         Assert.All(Enumerable.Range(0, mesher.Foliage.Count), i => Assert.Equal(14, mesher.Foliage.SkyOf(i)));
         Assert.Contains(Enumerable.Range(0, mesher.Solid.Count), i => mesher.Solid.SkyOf(i) == 15);
+    }
+
+    [Fact]
+    public void The_Waters_Mirror_Stands_At_A_Pools_Top_An_Eighth_Under_Its_Blocks_And_Stone_Hides_It()
+    {
+        var world = Floor();
+        world.SetBlock(8, 20, 8, BlockId.Water);
+        var down = Vector3.Normalize(new Vector3(0.01f, -1, 0.01f));
+        Assert.Equal(20.875f, WaterMirror.WaterTop(world, new Vector3(8.5f, 26, 8.5f), down));
+        world.SetBlock(8, 23, 8, BlockId.Stone);
+        Assert.Null(WaterMirror.WaterTop(world, new Vector3(8.5f, 26, 8.5f), down));
     }
 }
