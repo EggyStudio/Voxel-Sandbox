@@ -38,6 +38,12 @@ Seed 1's nearest river at 104, 46, -72 at noon from over its bank, the water sho
 alone on the left and on the right mirroring the far bank's trees and a pig through the engine's
 planar reflection, its plane at the water's top at 48.875.
 
+![](.github/devlog/2026-10-26-item-136-soft-shadows.webp)
+Seed 1's plains village at hour 16 from 550.5, 72, -356.5, the oaks' long shadows on the grass with
+the sun 0 degrees across at the top left, 0.53 at the top right, 1.5, the default, at the bottom
+left and 3 at the bottom right, the edges stepping along the blocks' pixels at 0 and softening
+toward each shadow's far end as the sun widens.
+
 # Item 133, the canopy's floor on 3DEngine 5.2.319
 
 On 5.2.319 the merge of the cascades sees past the leaves and a ray's reach stops where it does, so
@@ -101,6 +107,42 @@ The frame at the grove at 1920 by 1080 at High could not be read cleanly. Anothe
 81 percent of the GPU by turns while the GPU's clock stood at 2,490 MHz, and the same build read 20.8,
 31.7 and 42.3 ms. The two readings with no other program on the GPU gave the frame 20.8 ms before and
 22.7 after and global illumination 3.6 ms and 7.0, the rays crossing leaves where they stopped.
+
+# Item 136, soft shadows
+
+The sun's width through the engine's `SetShadowSoftness` on 3DEngine 5.2.322, read in one session in
+Release with the three default packs on tuned's power-saving profile with the processor's energy
+preference at power.
+
+Seed 1's plains village from 550.5, 72, -356.5, looking at 45 degrees and 17 down, at noon and at
+hour 16, the sun 0, 0.53, 1.5 and 3 degrees across, a capture of each at 1280 by 720. At noon the
+oaks' shadows lie under them, short, and the four widths differ little. At hour 16 the shadows run
+long, and at 0 their edges step along the pixels of the blocks they cross the whole way. At 0.53 the
+far ends soften a little and the steps show along most of each edge. At 1.5 each shadow is sharp at
+the trunk and soft toward its far end, the steps gone there, the crown's shape still read in it. At 3
+the far half of each crown's shadow is a smear, as a cloud's shadow is.
+
+Seed 1's cherry grove at 1920 by 1080 at hour 16, a profile over 300 frames for each width, in two
+rounds. Where another program used the GPU during a reading, it is named.
+
+| | Frame | Scene pass | Shadow maps |
+|---|---|---|---|
+| Low, 0 | 16.46 and 17.25 ms, the second with a test run at 14% | 6.73 and 7.28 ms | 4.69 and 4.95 ms |
+| Low, 0.53 | 16.94 and 17.39 ms | 7.50 and 7.75 ms | 4.75 and 4.75 ms |
+| Low, 1.5 | 16.87 and 16.80 ms | 7.51 and 7.41 ms | 4.62 and 4.68 ms |
+| Low, 3 | 17.00 and 16.77 ms, the first with a test run at 12% | 7.54 and 7.47 ms | 4.68 and 4.59 ms |
+| High, 0 | 19.69 and 19.81 ms | 7.27 and 7.29 ms | 4.65 and 4.69 ms |
+| High, 0.53 | 20.78 and 20.14 ms | 7.94 and 7.85 ms | 4.85 and 4.61 ms |
+| High, 1.5 | 20.40 and 20.38 ms | 7.91 and 7.90 ms | 4.69 and 4.63 ms |
+| High, 3 | 21.30 and 20.66 ms, both with a test run at 12% | 8.29 and 7.94 ms | 4.91 and 4.72 ms |
+
+Any width costs the scene pass, where each point looks over the shadow map for what shades it, about
+0.6 ms at High against 0, and 3 up to 1 ms. The shadow maps cost the same at every width. The frame
+at High grows by about 0.6 ms at 1.5, and at Low it moves less than the rounds differ.
+
+1.5 is the default, the width nearest a warm low sun's long soft shadows at under a millisecond of
+the frame, where 0.53 keeps most of the steps and 3 loses the crowns' shapes. Render Settings sets it
+from 0 to 5 degrees, and the options file keeps it.
 
 # Item 27, the far cascade
 
@@ -171,6 +213,7 @@ Done that day
 - Item 134 at `5145d2f`. A world screen in the pause menu, the saves listed to open and a new world
   begun.
 - Item 135 at `0ba4cb4`. A leaf block's faces take the sky floor at level 15 as at 14.
+- Item 136 at `6001eed`. The sun's shadows soften with the distance from their caster.
 
 ## 2026-10-25
 

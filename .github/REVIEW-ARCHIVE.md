@@ -2319,6 +2319,18 @@ before a batch.
     water's top behind Water Reflections, the river mirroring the far bank pictured, 2.6 ms of the
     frame at 1920 by 1080.
 
+136. **The sun's shadows soften with the distance from their caster.** From the game's item 43's ask
+    of 2026-10-24, answered by the engine's item 111 at `45edfbf6` in 5.2.322,
+    SetShadowSoftness(size) as the sun's width across in degrees, 0 by default keeping the sharp
+    edge. The game sets the width from a Render Settings slider, Soft Shadows from 0 to 5 degrees
+    kept in the options file, its default chosen from readings at noon and at hour 16 at seed 1's
+    village at 0.53 degrees, the sun seen from the earth, at 1.5 and at 3, pictured against 0 with
+    the frame's cost at the grove at 1920 by 1080 at Low and High, the default the one nearest the
+    look of a warm low sun with long soft shadows at under a millisecond of the frame, the README's
+    options table saying so and the readings in a note. One commit, after item 42. Done at `6001eed`
+    on 2026-10-26, Soft Shadows on Render Settings with 1.5 degrees the default, the village's oaks
+    at hour 16 pictured at 0, 0.53, 1.5 and 3, the frame at High 0.6 ms more at the grove.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
