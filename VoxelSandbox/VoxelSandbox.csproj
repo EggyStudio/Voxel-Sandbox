@@ -10,7 +10,7 @@
     <!-- The package carries the generator that registers the game's [Command]s, and the fixes an
          editor offers for its diagnostics, as analyzers. -->
     <ItemGroup>
-        <PackageReference Include="3DEngine" Version="5.2.316" />
+        <PackageReference Include="3DEngine" Version="5.2.319" />
     </ItemGroup>
 
     <!-- The game's own shaders, found beside the program as resources/shaders. -->

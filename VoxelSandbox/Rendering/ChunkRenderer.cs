@@ -208,6 +208,7 @@ public sealed class ChunkRenderer : IDisposable
         _eyeCovered = GetShaderLocation(_shader, "eyeCovered");
         _flames = GetShaderLocation(_shader, "flames");
         _looks = GetShaderLocation(_shader, "looks");
+        SetLooks();
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
         (_animations, _ticks) = (GetShaderLocation(_shader, "animations"), GetShaderLocation(_shader, "ticks"));
         _lampCubes = [.. Surfaces.All.Select(s => LampParts[s.Id] is { } shown ? LampCube(shown, new Vector2(16))
@@ -416,7 +417,29 @@ public sealed class ChunkRenderer : IDisposable
         }
     }
 
-    private void SetLooks() => SetShaderValue(_shader, _looks, new Vector4(_rim, _unshaded ? 1 : 0, 0, 0));
+    /// <summary>
+    /// How much of the floor of the sky's light by a face's sky level the terrain keeps, from 0 to
+    /// 1, 0.65 by default.
+    /// </summary>
+    /// <remarks>
+    /// The engine's light passes the leaves, so grass under a canopy two leaves deep at noon takes
+    /// 0.74 of the light of grass in a wall's shade on open ground from the engine alone, the floor
+    /// whole lifted it to 1.05, past the open ground's own, and 0.65 of it lifts it to about 0.80,
+    /// as the source lights the canopy's level 13 against the open sky's 15.
+    /// </remarks>
+    public float SkyFloor
+    {
+        get => _skyFloor;
+        set
+        {
+            _skyFloor = Math.Clamp(value, 0, 1);
+            SetLooks();
+        }
+    }
+
+    private float _skyFloor = 0.65f;
+
+    private void SetLooks() => SetShaderValue(_shader, _looks, new Vector4(_rim, _unshaded ? 1 : 0, 1 - _skyFloor, 0));
 
     /// <summary>
     /// The light an emissive surface gives at a glow of 1 in linear light, its surface's emission, or

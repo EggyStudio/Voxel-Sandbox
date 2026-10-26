@@ -8,6 +8,32 @@ notes written beside them as Markdown files named the same way. A line under Don
 
 ## 2026-10-26
 
+# Item 133, the leaves let the light through on 3DEngine 5.2.316
+
+The leaf blocks' faces are a part of their own whose material lets 0.5 of global illumination's light
+through a unit of depth, the three default packs' leaves being whole, and the plants' material lets
+through 0.71, the share of their tiles left clear. Read with the three default packs at noon, in
+Release, on tuned's power-saving profile with the processor's energy preference at power.
+
+| | Before | After |
+|---|---|---|
+| Flat world, grass under jungle leaves two deep | 46.4 | 46.4 |
+| Flat world, grass under oak leaves two deep | 46.4 | 46.4 |
+| Flat world, grass in a wall's shade on open ground | 43.5 | 43.7 |
+| Seed 1's jungle at -624, 53, 616, sky level 13, the capture's mean | 143.6 | 143.7 |
+| Seed 1's forest at 0, 75, 0, sky level 15, the capture's mean | 151.7 | 151.8 |
+| Entities drawn at the cherry grove | 1,690 | 2,271 |
+| Entities drawn at the plains village | 1,569 | 1,925 |
+
+The floors under the leaves read the same, each a pixel's luminance or a capture's mean, since on
+this package a ray crosses the leaves and the merge of the cascades does not yet see past them, and
+item 117's floor of the sky's light holds the floor where it stood.
+
+The frame at the grove at 1920 by 1080 at High could not be read cleanly. Another program held up to
+81 percent of the GPU by turns while the GPU's clock stood at 2,490 MHz, and the same build read 20.8,
+31.7 and 42.3 ms. The two readings with no other program on the GPU gave the frame 20.8 ms before and
+22.7 after and global illumination 3.6 ms and 7.0, the rays now crossing leaves where they stopped.
+
 # Item 95, every part of a section an entity
 
 The frame at item 93's views, seed 1's cherry grove and plains village at hour 16, the three default

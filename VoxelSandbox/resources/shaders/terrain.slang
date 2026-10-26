@@ -35,8 +35,9 @@ uniform float eyeCovered;
 // the same two of lava, which the source draws at its full light too.
 uniform float4 flames;
 // The looks the settings choose, how much brighter the rim along each block's edges is than its
-// face, 0 for none, and 1 where every open face takes the sun's light as one facing it does, with
-// its shadows kept, and 0 where a face takes it by how far it turns toward the sun.
+// face, 0 for none, 1 where every open face takes the sun's light as one facing it does, with its
+// shadows kept, and 0 where a face takes it by how far it turns toward the sun, and how much of the
+// floor of the sky's light is taken away, 0 for none, as in the clouds' copy that sets nothing.
 uniform float4 looks;
 
 // How much of the haze the dome shows at a height above the horizon in degrees, between the rings of
@@ -282,7 +283,7 @@ float3 litStepped(float3 albedo, ModelVertexOutput input, float sky)
         float reached = lightReaching(pixelMiddle(input.world, geometric) + geometric * 0.5, toSun, heldOut);
         light.diffuse += sun.colorAndShadow.xyz * albedo * max(reached - shadow * max(dot(geometric, toSun), 0.0), 0.0);
     }
-    return toDisplay(max(light.diffuse + light.specular + emitted(input), skyFloor(albedo, input, sky)));
+    return toDisplay(max(light.diffuse + light.specular + emitted(input), skyFloor(albedo, input, sky) * (1.0 - looks.z)));
 }
 
 // How much of a rim a point of a whole block's face lies in, the pixel of its texture along each of

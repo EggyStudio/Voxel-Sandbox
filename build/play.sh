@@ -860,9 +860,9 @@ check "the jungle's floor"
 # The grass under a canopy of jungle leaves two deep at noon, at the sky level of 13 the leaves leave
 # it, read from straight above against the grass in the shade of a wall on open ground, at sky level
 # 15, the two within three of the source's levels of each other, either at least 0.72 of the other's
-# light, since the terrain's floor of the sky's light lifts the canopy's floor, which the scene's
-# field holds the leaves solid over, where it read half the shade's light, 20 against 42. The torch
-# held before is put away, since its light would fall on both.
+# light, since the engine's light passes the leaves and the terrain's floor of the sky's light at 0.65
+# of its strength tops it up, where the leaves held solid with no floor left half the shade's light,
+# 20 against 42. The torch held before is put away, since its light would fall on both.
 cmd voxel.time 12
 cmd voxel.kill all
 cmd voxel.select stone

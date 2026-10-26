@@ -5,27 +5,46 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `a4d383c`, item 95's last parts, every section part a mesh entity on 5.2.316, pushed
-at 00:36 on 2026-10-26 once the run of `c802dea` went green, the run watched, carrying the review's
-files and DEVLOG.md with a note. The seven parts are entities, Look copying CastsShadows and
-BouncesLight so the plants stay out of the field and the glass, the ice, the water and the cut-out
-glass cast nothing; the engine sorting blended entities by their transform's translation, the
-see-through and water parts stand at the middle of their own faces rounded to whole blocks and Keep
-moves the Transform when that middle changes; Place shows the solid, the cut-out and the solid
-cut-out to the casters as shadow-only and the see-through, the water, the cut-out glass and the
-molten where seen; Draw keeps the lamps' instanced cubes and the dome alone, the game's DrawMesh
-loop and its see-through sort gone; SectionPart gains the four kinds and the README's entity
-paragraph describes all seven with the blended order. Against `cc49c81` on 5.2.313 with four parts
-on DrawMesh, voxel.state's counts are identical in four views, the captures within an RMSE of
-0.0016, the lava lake matching within 0.0015 once voxel.ticks 0 held its texture, and a glass pane
-over a pool matching to the pixel from above and from under the water. The frame at item 93's views
-in Release, read before, after, after and before on powersave with nothing else on the GPU, the
-grove at 1920 by 1080 19.9 and 20.1 ms before and 19.1 and 18.8 after, at 1280 by 720 15.8 and 16.2
-before and 16.1 and 16.3 after, the village at 1920 by 1080 19.4 throughout, so the frame is as it
-was, the global illumination 0.5 to 0.9 ms less, likely the package, and the scene pass at 1280 by
-720 about 0.7 more, the two not told apart; entities.drawn 1,690 against 1,059 at the grove, the
-play run reading 256 entities against 145 at the land's edge. 353 tests, play.sh 371 s on the RTX
-and 1,467 s on local lavapipe under load, both reading the water's ticks.
+Reviewed up to `48e5bea`, item 133's first part, the Foliage part and its share of light, read at
+01:11 on 2026-10-26, carrying the review's files and DEVLOG.md with a note, pushed at 01:44 on
+2026-10-26 once the run of `a4d383c` ended green, its own run green at 02:42, play 58 minutes, the
+tests three. SectionMesher sends the leaf blocks' faces, whole or cut, to a Foliage part, the
+eighth, shown and cast as the Solid one; ChunkRenderer.SharesOf gives the shares with each atlas,
+the leaves 0.5 or one less the mean coverage squared where a pack cuts them and no less than 0.5,
+the plants one less their cut tiles' mean coverage, the foliage material Opaque or Mask by whether
+the pack cuts; TerrainAtlas.Coverage reads a tile's share kept at the 0.5 cutoff and Look copies
+LightThrough; a CutoutTests case reads no pack giving 0.5 and 0, framed leaves holding 0.5 with
+grass at 0.25 and a one-pixel rim 0.586, and the README names eight parts and the shares. On the
+default packs the game reads LightThrough 0.5 and 0.71, and at noon in Release on powersave the
+floors hold, grass under jungle leaves two deep 46.4 before and after, under oak leaves 46.4 and
+46.4, the open shade 43.5 and 43.7, seed 1's jungle at sky 13 a capture mean of 143.6 and 143.7 and
+the forest 151.7 and 151.8, as expected without the merge of `a16227a7`, item 117's floor holding
+them; entities.drawn 1,690 to 2,271 at the grove and 1,569 to 1,925 at the village, the play run 346
+draws at the land's edge against 258 under its 400. The grove's cost at 1920 by 1080 could not be
+read cleanly, the engine's scratch program holding up to 81% of the GPU by turns; the two quiet runs
+give the frame 20.8 before and 22.7 after and the global illumination 3.6 against 7.0 ms, which fits
+rays crossing leaves, one pair and a lead until a quiet GPU. 354 tests, play.sh 323 s on the GPU.
+After `a4d383c`, item 95's last parts, every section part a mesh entity on 5.2.316, pushed at 00:36
+on 2026-10-26 once the run of `c802dea` went green, the run watched, carrying the review's files and
+DEVLOG. The run went green at 01:39, play 63 minutes, the tests two.md with a note. The seven parts
+are entities, Look copying CastsShadows and BouncesLight so the plants stay out of the field and the
+glass, the ice, the water and the cut-out glass cast nothing; the engine sorting blended entities by
+their transform's translation, the see-through and water parts stand at the middle of their own
+faces rounded to whole blocks and Keep moves the Transform when that middle changes; Place shows the
+solid, the cut-out and the solid cut-out to the casters as shadow-only and the see-through, the
+water, the cut-out glass and the molten where seen; Draw keeps the lamps' instanced cubes and the
+dome alone, the game's DrawMesh loop and its see-through sort gone; SectionPart gains the four kinds
+and the README's entity paragraph describes all seven with the blended order. Against `cc49c81` on
+5.2.313 with four parts on DrawMesh, voxel.state's counts are identical in four views, the captures
+within an RMSE of 0.0016, the lava lake matching within 0.0015 once voxel.ticks 0 held its texture,
+and a glass pane over a pool matching to the pixel from above and from under the water. The frame at
+item 93's views in Release, read before, after, after and before on powersave with nothing else on
+the GPU, the grove at 1920 by 1080 19.9 and 20.1 ms before and 19.1 and 18.8 after, at 1280 by 720
+15.8 and 16.2 before and 16.1 and 16.3 after, the village at 1920 by 1080 19.4 throughout, so the
+frame is as it was, the global illumination 0.5 to 0.9 ms less, likely the package, and the scene
+pass at 1280 by 720 about 0.7 more, the two not told apart; entities.drawn 1,690 against 1,059 at
+the grove, the play run reading 256 entities against 145 at the land's edge. 353 tests, play.sh 371
+s on the RTX and 1,467 s on local lavapipe under load, both reading the water's ticks.
 
 Before it, `c802dea` came, the costs read on powersave, with `cc49c81`, the README's costs, pushed
 at 20:57 on 2026-10-25, its run red on the runners' dotnet install and green on the second attempt
@@ -536,7 +555,12 @@ full.
     coverage squared for the two faces a ray crosses in a block, no less than 0.5; the plants'
     material takes one less their tiles' mean coverage, which matters to the screen probes' rays
     alone since the plants bounce no light. A part more means an entity more a section where it has
-    leaves, about 600 at the grove, and the leaves leave the Solid mesh the field keeps.
+    leaves, about 600 at the grove, and the leaves leave the Solid mesh the field keeps. The first
+    part at `48e5bea` on 2026-10-26, the Foliage part with its share, the floors unmoved on 5.2.316
+    as expected and the global illumination's cost at the grove a lead of 3.6 to 7.0 ms on one pair;
+    the second part on the package carrying `a16227a7`, the floors and the cost read on a quiet GPU
+    and item 117's floor lowered where the engine carries the canopy, the cost's lead going to the
+    engine as an ask if it holds.
 
 ## Verdicts
 

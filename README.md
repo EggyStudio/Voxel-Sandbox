@@ -1271,10 +1271,11 @@ again when it changes.
 Each corner also carries its sky level to the terrain shader, which keeps a face's light no less
 than the sky's light from all around at the hour, as the engine lights an open face by the
 environment the game gives the sky, under that level on the source's brightness curve at its default
-brightness setting, so level 13 reads 0.80 of 15 on the screen. The scene's distance field holds
-leaves solid, so the engine's own light leaves the floor under a canopy at noon at 20 where the
-shade of a wall on open ground reads 42, and the floor lifts it to 42, as the source lights it at
-13. A face at level 15 has open sky over it, which the field sees, and takes no floor, which keeps
+brightness setting, so level 13 reads 0.80 of 15 on the screen, at 0.65 of its strength. The
+engine's light passes the leaves, half of it through each leaf block, so it lights the
+grass under a canopy two leaves deep at noon to 32.9 where the grass in a wall's shade on open ground
+reads 44.4, 0.74 of it, and the floor lifts it to about 0.80, as the source lights level 13, where
+the whole floor lifted it to 46.4, past the open ground's own. A face at level 15 has open sky over it, which the field sees, and takes no floor, which keeps
 the field's shade beside a wall, and at night the sky's light is next to nothing, so the floor holds
 by day under leaves, in a cave's mouth and inside a house by its windows, as the source's levels
 light them. The plants and a broken block's bits take the same floor at their cells' levels.
