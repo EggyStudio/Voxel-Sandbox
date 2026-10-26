@@ -18,6 +18,13 @@ public sealed class CutoutTests : IDisposable
         return x is >= 4 and < 12 && y is >= 4 and < 12 ? new byte[] { 0, 0, 0, 0 } : new byte[] { 200, 200, 200, 255 };
     })], 16, 16);
 
+    // A picture sixteen square of a one-pixel rim, clear inside, 60 of its 256 pixels kept.
+    private static Image Rim() => new([.. Enumerable.Range(0, 256).SelectMany(i =>
+    {
+        int x = i % 16, y = i / 16;
+        return x is 0 or 15 || y is 0 or 15 ? new byte[] { 60, 120, 40, 255 } : new byte[] { 0, 0, 0, 0 };
+    })], 16, 16);
+
     private static Image Plain(byte alpha) => new([.. Enumerable.Range(0, 256).SelectMany(_ => new byte[] { 120, 160, 200, alpha })], 16, 16);
 
     // The atlas of a pack of the textures given, as a folder.
@@ -75,16 +82,36 @@ public sealed class CutoutTests : IDisposable
         Assert.False(mesher.Atlas.Hides(BlockId.OakLeaves));
         Assert.True(mesher.Mesh(world, new SectionKey(0, 1, 0)));
         // Six faces a leaf, the two between them among them, but the first's bottom, which the stone
-        // under it hides, cut out and casting a shadow, and the stone's top under the leaf among its
-        // solid faces.
-        Assert.Equal(11 * 4, mesher.SolidCutout.Count);
+        // under it hides, among the leaves' own faces, which let a share of the light through, and the
+        // stone's top under the leaf among its solid faces.
+        Assert.Equal(11 * 4, mesher.Foliage.Count);
+        Assert.Equal(0, mesher.SolidCutout.Count);
         Assert.Contains(Enumerable.Range(0, mesher.Solid.Count), i => mesher.Solid.Unpack(i).Face == 2 && mesher.Solid.Positions[i].Y == 4);
 
-        // With no pack the leaves are whole and hide the faces beside them.
+        // With no pack the leaves are whole and hide the faces beside them, four of the first's and
+        // five of the second's left, among the leaves' own still.
         mesher.Atlas = TerrainAtlas.None;
         Assert.True(mesher.Mesh(world, new SectionKey(0, 1, 0)));
+        Assert.Equal(9 * 4, mesher.Foliage.Count);
         Assert.Equal(0, mesher.SolidCutout.Count);
         Assert.DoesNotContain(Enumerable.Range(0, mesher.Solid.Count), i => mesher.Solid.Unpack(i).Face == 2 && mesher.Solid.Positions[i].Y == 4);
+    }
+
+    [Fact]
+    public void The_Leaves_Pass_Half_The_Light_Or_What_A_Packs_Sparse_Leaves_Leave_Clear_And_A_Plant_What_Its_Tile_Leaves()
+    {
+        // Whole leaves pass half, as the source's leaves let the light through, and the game's own
+        // masks of the plants, which no pack cuts, pass none.
+        Assert.Equal((0.5f, 0f, false), ChunkRenderer.SharesOf(TerrainAtlas.None));
+        // Leaves framed as a pack's glass is keep three quarters of their pixels, so a block's two
+        // faces would pass a sixteenth, and the half holds, and grass so framed passes a quarter.
+        var framed = ChunkRenderer.SharesOf(Atlas(("block/oak_leaves", Framed()), ("block/short_grass", Framed())));
+        Assert.True(framed.LeavesCut);
+        Assert.Equal(0.5f, framed.Leaves);
+        Assert.Equal(0.25f, framed.Plants, 3);
+        // Leaves of a rim keep 60 of 256 pixels, so a block's two faces pass more than half.
+        var rim = ChunkRenderer.SharesOf(Atlas(("block/oak_leaves", Rim())));
+        Assert.Equal((1 - 60 / 256f) * (1 - 60 / 256f), rim.Leaves, 4);
     }
 
     [Fact]

@@ -6,6 +6,37 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 notes written beside them as Markdown files named the same way. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
+## 2026-10-26
+
+# Item 95, every part of a section an entity
+
+The frame at item 93's views, seed 1's cherry grove and plains village at hour 16, the three default
+packs, render distance 12, High with the screen's probes, unlimited frames, offscreen on the RTX 4070
+Laptop GPU, each a profile over 300 frames in a Release build, read in the order before, after,
+after, before. The machine ran tuned's power-saving profile with the processor's energy preference
+at power, no other program used the GPU, and the processor's load from other programs ran from 7 to
+22. Before is `cc49c81` on 3DEngine 5.2.313 with the plants, the glass, the ice, the water and the
+glass a pack cuts out drawn through `DrawMesh`, after is the same on 5.2.316 with them as entities.
+Times are in milliseconds.
+
+| View | Frame before | Frame after | Scene pass before | Scene pass after | Global illumination before | Global illumination after |
+|---|---|---|---|---|---|---|
+| grove at 1920 by 1080 | 19.9, 20.1 | 19.1, 18.8 | 9.3, 9.4 | 9.4, 9.1 | 4.2, 4.3 | 3.4, 3.4 |
+| grove at 1280 by 720 | 15.8, 16.2 | 16.1, 16.3 | 6.0, 6.3 | 7.0, 7.0 | 3.6, 3.7 | 3.0, 3.2 |
+| village at 1920 by 1080 | 19.4, 33.7 | 19.4, 19.4 | 10.6, 15.5 | 10.9, 11.0 | 3.0, 5.7 | 2.9, 2.6 |
+| village at 1280 by 720 | 15.1, 30.7 | 15.5, 15.6 | 6.7, 11.6 | 7.6, 7.7 | 2.7, 5.9 | 2.6, 2.4 |
+
+The second reading of the village before ran while the load rose, every pass at once. The engine
+draws 1,690 entities at the grove and 1,569 at the village where it drew 1,059 and 976, the game's
+draws and triangles the same. The captures at the grove, the village and the ravine match the
+builds' within an RMSE of 0.0016, the lava lake's with its animation held at one tick within 0.0015,
+and a glass pane two blocks over a pool of water matches to the pixel seen from above and from under
+the water.
+
+Done that day
+
+- Item 95 at `a4d383c`. The world's sections become mesh entities the engine draws (Decision 43).
+
 ## 2026-10-25
 
 ![](.github/devlog/2026-10-25-item-32-snow-layer.webp)

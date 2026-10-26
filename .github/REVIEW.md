@@ -5,94 +5,34 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `c802dea`, the costs read on powersave, read at 20:30 on 2026-10-25, carrying
-REVIEW.md. The owner said the machine was switched to its performance profile once today where it
-sits at powersave, so the day's absolute readings may lean; the journal holds no time for the
-switch, and the machine stands on powersave with the CPU's energy preference at power. The distance
-table read again on powersave with the engine's scratch program holding 20 to 27% of the GPU gives
-frames of 16.7, 17.6 and 21.1 ms, the GPU 12.4, 17.7 and 19.4, the CPU's passes 5.7, 10.4 and 16.0
-and 1,016, 1,393 and 1,960 MB, within the other programs' noise of the reading before, 12 columns at
-the edge of 60 a second with the GPU bounding it; the README says so with both frames, and the costs
-note adds the powersave reading and that the first reading's profile is not known. The day's
-comparisons stand as relative readings, each interleaved, ABCCBA for item 95 and ABBA for item 29's
-settles and flights, every repeat agreeing with its pair where a switch between them would have
-shown as a split, and item 95's halved scene pass GPU-side in every pair; the absolute numbers carry
-the noise the notes name. 353 tests, play.sh 324 s on the GPU. After `cc49c81`, the README's costs
-read again, read at 20:21 on 2026-10-25, carrying REVIEW.md and DEVLOG.md with a note, pushed with
-`c802dea` at 20:57 on 2026-10-25 once the run of `bb0b9bb` went green, its run red within a minute
-on the runners' dotnet install, Verdict 7, and green on the second attempt at 22:32 once the feed
-settled, the play job 66 minutes. The distance table reads frames of 16.7, 16.7 and 23.8 ms at 8, 12
-and 16 columns, the GPU 12.1, 16.6 and 23.8, the CPU's passes 6.5, 11.0 and 17.7 and 1,029, 1,308
-and 1,942 MB resident, its lead sentence naming the probes on, a Debug build and the eastward view
-from the spawn, the frame keeping 60 a second at 8 and 12 and losing it at 16 to the GPU; the
-lavapipe line 0.85, 1.13, 1.60 and 2.18 s with the probes on; the flights sentence saying the game
-joins columns on the main thread and meshes their sections on the workers, the old flight numbers
-kept with the probes off. The note holds the load's caveat, the draws and the triangles, the
-readings before and the flights read under load. 353 tests, play.sh 353 s on the GPU. After
-`bb0b9bb`, item 29's meshing on the workers, pushed at 19:49 on 2026-10-25 once the run of `117392b`
-went green, its run green at 20:56 with the play job 67 minutes, the probes' and not the workers',
-every check within 0.97 to 1.09 of the run of `117392b` and 1.1 to 1.3 times the run of `0babebb`
-before the probes, the rain's splashes the largest at 683 s against 528, a sixth of the job, leaving
-23 minutes under the limit on a slow runner and the first place to cut should a later item need it,
-carrying the review's files and a devlog note. SectionMesher splits into Gather on the main thread,
-the fill and, for a section holding water, a copy of the 18 by 32 by 18 cells the water's depth
-reads, and Build reading the mesher's own arrays alone, Mesh calling both; ChunkRenderer keeps a
-stack of 64 meshers with a semaphore letting half the cores up to 16 build at once, the sends
-numbered from one counter so a stale result is dropped, edits meshed synchronously, a section of air
-let go in the loop with no mesher, the loop parking far sections and filing unseen ones with every
-mesher lent, and voxel.state and the F3 window counting the sections lent and not yet taken in as to
-mesh so the play script's meshed wait holds; a test gathers a section, changes the world, builds and
-reads the faces equal to those meshed before the change. With the machine's load at 6 to 12, Release
-flights at distance 12 read update.mesh 0.32, 0.23 and 0.46 ms against 0.26, 3.28 and 3.71 and the
-frames 25.9, 31.5 and 30.0 against 25.4, 37.7 and 45.1, the settle after a teleport 5, 3 and 3 s
-against 6, 5 and 5 with update.mesh 2 to 3 ms against 4 to 6, and Debug on lavapipe pinned to four
-cores at distance 4 settles in 64 and 73 s against 59 and 74 with update.mesh 4 ms against 10 to 12;
-a first version with eight meshers and a round a frame settled in 9 to 13 s since every air section
-waited a frame for a worker. 353 tests, play.sh 322 s on the GPU. After `117392b`, Verdict 6's mend,
-pushed at 18:34 on 2026-10-25 after the red run of `b7608c7` ended, its run green at 19:41 with the
-play job 67 minutes under the limit of 90, the water check reading its ticks, carrying REVIEW.md and
-DEVLOG.md. ChunkRenderer gains HeldTicks and voxel.ticks holds the animated textures and the lamps
-at a tick, the play run reading the pool at ticks 0 to 3 for white and black alternating in green
-and setting off, without a sleep, the README's commands paragraph naming it. 352 tests, play.sh 199
-s on the RTX and 1,267 s on local lavapipe with validation, both reading the water's green at the
-four ticks as 114, 70, 114 and 70. Item 29's workers next, whose first settle reading showed the
-land settling four times slower, 9 to 13 s against 2 to 3 with frames of 9 to 12 ms against 19 to
-58, eight meshers with a frame's round trip meshing too few sections a second, so the meshers in
-flight rise and the settle and the flights are read again before the commit. After `b7608c7`, item
-95's first commit, three of the section's parts as mesh entities on 5.2.313, pushed at 17:34 on
-2026-10-25 once the run of `ddede23` went green, its run red on the play job at 17:53 with the three
-test jobs green, Verdict 6, carrying NORM.md, the review's files and DEVLOG.md with a note. The
-solid, the solid cut-out and the molten parts are entities with an uploaded Mesh, an ECS Material
-through the terrain shader copying the ModelMaterial's alpha mode, cutoff, roughness and emission
-with DoubleSided false since the ECS Material defaults to double-sided, a Transform, Visible,
-ShadowOnly and the game's SectionPart naming the section and the kind, the molten's material written
-again when the lamps rebuild; a Place pass sets Visible and ShadowOnly writing what changed, run
-when the flood, the casters, the reach or a section's parts change, caching the shown sections and
-the lamps' lists; the plants, the glass, the ice, the water and the cut-out glass stay on DrawMesh
-each frame, the casters' plants shadow-only. LightSettings' ScreenProbes and its call are gone, the
-quality's summary saying the engine traces the probes at Medium and High, the headless options test
-holding the quality at High, the README's probes sentence and a paragraph on the entities; the play
-run's draws check reads entities.drawn and fails at 0, 145 at the land's edge. In the four views of
-item 93 voxel.state counts the same sections, draws, triangles, lamps and culled in both 5.2.313
-builds, the captures within an RMSE of 0.0011 and at most 5 pixels past 3%. The note's readings,
-Release at distance 12 and High with the probes, read twice a build interleaved with the engine's
-game holding 10 to 50% of the GPU, the grove at 1920 by 1080 on 5.2.291 a frame of 41.5 to 46.6 ms
-with the scene pass 19.8 to 23.6, on 5.2.313 with DrawMesh 35.1 to 45.7 and 19.8 to 21.2, and with
-the entities 23.2 to 24.0 and 9.8 to 10.3; at 1280 by 720 the grove 29 to 33 against 19.6 to 20.0
-and the village 27.5 to 29.5 against 19.2 to 20.0; the CPU's recording of the passes more than
-halved, the grove's cpu.shadows 8.6 to 11.9 ms against 4.5 to 6.1, the game's draw.sections 0.65 to
-1.8 ms from 1.2 to 6, MeshEntityDraws 0.25 to 0.33 ms; why the GPU's scene pass halves with the same
-pixels lies inside the engine, untraced, the engine's item 125. The package alone, both builds on
-DrawMesh, took 1 to 2 ms off the shadows and up to 1.5 off the global illumination within the load's
-noise, the scene pass the same. 352 tests, play.sh 389 s on the GPU, the README's costs not read
-again on a loaded GPU.
+Reviewed up to `a4d383c`, item 95's last parts, every section part a mesh entity on 5.2.316, pushed
+at 00:36 on 2026-10-26 once the run of `c802dea` went green, the run watched, carrying the review's
+files and DEVLOG.md with a note. The seven parts are entities, Look copying CastsShadows and
+BouncesLight so the plants stay out of the field and the glass, the ice, the water and the cut-out
+glass cast nothing; the engine sorting blended entities by their transform's translation, the
+see-through and water parts stand at the middle of their own faces rounded to whole blocks and Keep
+moves the Transform when that middle changes; Place shows the solid, the cut-out and the solid
+cut-out to the casters as shadow-only and the see-through, the water, the cut-out glass and the
+molten where seen; Draw keeps the lamps' instanced cubes and the dome alone, the game's DrawMesh
+loop and its see-through sort gone; SectionPart gains the four kinds and the README's entity
+paragraph describes all seven with the blended order. Against `cc49c81` on 5.2.313 with four parts
+on DrawMesh, voxel.state's counts are identical in four views, the captures within an RMSE of
+0.0016, the lava lake matching within 0.0015 once voxel.ticks 0 held its texture, and a glass pane
+over a pool matching to the pixel from above and from under the water. The frame at item 93's views
+in Release, read before, after, after and before on powersave with nothing else on the GPU, the
+grove at 1920 by 1080 19.9 and 20.1 ms before and 19.1 and 18.8 after, at 1280 by 720 15.8 and 16.2
+before and 16.1 and 16.3 after, the village at 1920 by 1080 19.4 throughout, so the frame is as it
+was, the global illumination 0.5 to 0.9 ms less, likely the package, and the scene pass at 1280 by
+720 about 0.7 more, the two not told apart; entities.drawn 1,690 against 1,059 at the grove, the
+play run reading 256 entities against 145 at the land's edge. 353 tests, play.sh 371 s on the RTX
+and 1,467 s on local lavapipe under load, both reading the water's ticks.
+
+Before it, `c802dea` came, the costs read on powersave, with `cc49c81`, the README's costs, pushed
+at 20:57 on 2026-10-25, its run red on the runners' dotnet install and green on the second attempt
+at 22:32, Verdict 7, the play job 66 minutes.
 
 Before it, `ddede23` came, Verdict 5's mend, pushed at 11:57 on 2026-10-25, its run green at 13:00
 with the play job 63 minutes.
-
-Before it, `1767348` came, item 132, the tree's sweep for N 4.7 and STYLE.md, pushed at 11:05 on
-2026-10-25 after the lost run of `f97a4c9`, item 131, Verdict 5, its run green at 11:56 with the
-play job 49 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -423,45 +363,6 @@ full.
     headings with a comma after the game's name and six sentences split or recast, the engine's next
     batch carrying it; the file's header lines are the engine's sweep's, item 93 there.
 
-95. **The world's sections become mesh entities the engine draws (Decision 43).** Each meshed
-    section becomes an entity with the engine's Mesh, Material and Transform and a component of the
-    game's naming its column and height, made and replaced by the main thread when a worker's mesh
-    arrives as today, despawned when the section leaves the reach, so the engine's model pass draws,
-    culls and keeps them with its change detection and the game's loop of DrawMesh over every
-    section, with item 90's kept flood, goes; the lava's and the plants' parts as entities of their
-    own materials. The frame read before and after at item 93's views and the draw count test kept
-    on the engine's count. Generation and meshing stay on the workers. One or two commits, after
-    item 94. The coder's reading at 21:19 on 2026-10-24 found the engine's mesh entity path short of
-    a section in six ways, no shader on the ECS Material, a Mesh of positions, normals and uvs
-    alone, looks forgotten past 4,096, a mesh not drawn in a frame freed, no visibility or
-    shadow-only component and the entity draws not in the profile, which the engine takes as its
-    item 108 through ASKS.md; the flood stays as the game's visibility, a Visible component the
-    engine honors once it has one, and the shadow-only draw of item 123 the ShadowOnly component.
-    Waits on the package carrying the engine's item 108; item 96 taken before it. Read on 5.2.313's
-    source at 17:06 on 2026-10-25, a gap and a split, taken. A mesh entity cannot say it casts no
-    shadow or bounces no light, the ECS Material having neither flag and MeshEntityDraws building
-    every entity's draw with both true, while four of a section's seven parts need one through
-    ModelMaterial today, the see-through glass and ice, the water and a pack's cut-out glass casting
-    no shadow, which also keeps them out of the field that would hold a window as solid, and the
-    plants bouncing no light so the field holds no grass. The three parts needing neither move first
-    in one commit, the solid, the solid cut-out and the molten, each an entity with its uploaded
-    mesh, a white Material with the terrain shader and its alpha mode, a Transform, Visible from the
-    flood and ShadowOnly for the casters written where they change, and a SectionPart component
-    naming the section and the part; the cut-out plants, the see-through, the water, the cut-out
-    glass, the lamps' instanced cubes and the dome stay on DrawMesh; an ASKS.md entry in the
-    engine's tree asks for CastsShadows and BouncesLight on the ECS Material or a component for
-    each, the engine's item 124 under Decision 68, after which the rest move; the draw count test
-    reads entities.drawn plus the draws left, and the frame is read three ways, 5.2.291, 5.2.313
-    with DrawMesh and 5.2.313 with the entities, so the package's own change shows apart. nuget.org
-    served 5.2.313 late, its flat container at 404 at 17:04. The first commit at `b7608c7` on
-    2026-10-25, the three flagless parts as entities on 5.2.313, the grove's frame from about 43 ms
-    to 23.6 at 1080p with the scene pass halved, the readings in the devlog's note; the four flagged
-    parts move on the package carrying the engine's item 124, which closes this item. The README's
-    costs at `cc49c81` on 2026-10-25, the distance table with the probes on keeping 60 a second at
-    12 columns where it lost it before, the flights left for a quiet GPU. Read again on powersave at
-    `c802dea`, 12 columns at the edge of 60 a second, the README saying so with both frames and the
-    note naming the profile's doubt.
-
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
     two noises are both near zero, caverns where a third is high below a depth, and ravines; it
@@ -612,6 +513,30 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
+
+133. **The leaves let the engine's light through, and item 117's floor is read again beside it.**
+    From the engine's item 100 and the word of 2026-10-26 at 00:36. The engine's LightThrough on
+    both materials sets the share of light passing a unit of a surface's depth, the cascades' and
+    the screen probes' rays crossing up to four such surfaces, and its second part at `a16227a7`,
+    not yet in a package, sets a crossing's reach where the ray stops and lets the merge see past
+    leaves, so a canopy's floor takes about a third of the sky light it held back where it took
+    none. Two parts. On 5.2.316 the leaves' and the plants' materials take a LightThrough from the
+    pack's leaf opacity, about a half for a leaf block a unit thick, the rain forest's floor and the
+    oak grove's read before and after with item 117's sky-level floor as it stands, and the cost
+    read at the grove at 1080p at High; on the package carrying `a16227a7`, the same readings again,
+    and item 117's floor lowered or taken out where the engine's light carries the canopy on its
+    own, the floor kept only where the readings say it still must, with a before-and-after picture
+    of the rain forest's floor at noon. Two commits. A snag read at 00:40 and the way through,
+    taken. With the three default packs every leaf tile is fully opaque, the seven leaf kinds
+    keeping all 256 pixels at the 0.5 cutoff, so the leaves sit in the Solid part with the stone and
+    a share from the pack's opacity would be 0, while a share on the Solid material would let light
+    through stone. The leaf blocks' faces go to an eighth part, Foliage, drawn and cast as the Solid
+    part is through a material of its own with LightThrough set, its share 0.5 a unit as the
+    source's leaves let light through, and where a pack cuts its leaves one less the tiles' mean
+    coverage squared for the two faces a ray crosses in a block, no less than 0.5; the plants'
+    material takes one less their tiles' mean coverage, which matters to the screen probes' rays
+    alone since the plants bounce no light. A part more means an entity more a section where it has
+    leaves, about 600 at the grove, and the leaves leave the Solid mesh the field keeps.
 
 ## Verdicts
 

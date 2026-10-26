@@ -231,6 +231,13 @@ public sealed class SectionMesher
     /// <summary>The last section's faces of lava, which are drawn with its surface's emission, so the scene's distance field takes their light from the mesh.</summary>
     public Faces Molten { get; } = new();
 
+    /// <summary>
+    /// The last section's faces of leaf blocks, whole or cut out where a pack's texture is clear,
+    /// drawn and cast as the solid faces are through a material of their own that lets a share of
+    /// global illumination's light through, as a canopy does.
+    /// </summary>
+    public Faces Foliage { get; } = new();
+
     /// <summary>The emissive blocks of the last section, by their index in it.</summary>
     public List<(int Index, BlockId Block)> Emitters { get; } = [];
 
@@ -318,6 +325,7 @@ public sealed class SectionMesher
         CutoutGlass.Clear();
         SolidCutout.Clear();
         Molten.Clear();
+        Foliage.Clear();
         Emitters.Clear();
         _origin = (key.X * Section.Size, key.Y * Section.Size, key.Z * Section.Size);
 
@@ -381,7 +389,8 @@ public sealed class SectionMesher
                             if (bottom >= top) continue;
                         }
                         else if (!Shows(block, info.Kind, neighbor)) continue;
-                        Add(face == 2 ? info.Top : face == 3 ? info.Bottom : info.Side, info.Kind == BlockKind.Glass || Atlas.CutOut(block), info.Kind, face, at, new Vector3(x, y, z), bottom, top);
+                        Add(face == 2 ? info.Top : face == 3 ? info.Bottom : info.Side, info.Kind == BlockKind.Glass || Atlas.CutOut(block), info.Kind, face, at, new Vector3(x, y, z), bottom, top,
+                            Blocks.IsLeaves(block));
                     }
                 }
     }
@@ -460,7 +469,7 @@ public sealed class SectionMesher
 
     // A face of a block, its corners on the cell's floor raised to bottom and those on its ceiling
     // lowered to top, for water and for a side shown only above the water beside it.
-    private void Add(int surface, bool cuttable, BlockKind kind, int face, int at, Vector3 block, float bottom, float top)
+    private void Add(int surface, bool cuttable, BlockKind kind, int face, int at, Vector3 block, float bottom, float top, bool leaves = false)
     {
         // A tinted surface takes its column's grass or foliage color at the block's place.
         var place = (int)block.Z * Section.Size + (int)block.X;
@@ -473,7 +482,7 @@ public sealed class SectionMesher
             if (ConnectedTile(rule, numbers, surface, face, at, block) is { } connected) tiles = tiles & ~511u | (uint)connected;
         }
         else if (kind == BlockKind.Glass && Atlas.Tile(surface) != 0 && BlockGroups.Glass.Contains((BlockId)_blocks[at])) tiles = Joined(tiles, face, at);
-        var faces = FacesOf(surface, cuttable, kind);
+        var faces = leaves ? Foliage : FacesOf(surface, cuttable, kind);
         var first = (uint)faces.Count;
         var front = at + Steps[face];
         Span<int> occlusion = stackalloc int[4];

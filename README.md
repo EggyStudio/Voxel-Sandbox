@@ -1221,12 +1221,15 @@ the sun's light through 70 blocks of rock without them and 0 with them, as with 
 cherry grove in the open the flood leaves out little toward the sun, 20 draws, and the frame reads
 19.0 to 19.5 ms with them and without them in one run.
 
-Each of a section's seven parts, its solid faces, its plants, its glass and ice, its water, the glass
-and the faces a pack cuts out and its lava, is an entity the engine draws, a `Mesh` of the part's
-upload, a `Material` through the terrain shader, a `Transform`, the engine's `Visible` and
-`ShadowOnly`, and the game's `SectionPart` naming the section and the part. Each material says what
-the part's `ModelMaterial` says of its shadow and of the scene's distance field, so the plants stay
-out of the field and the glass, ice and water cast no shadow. The flood writes `Visible` and
+Each of a section's eight parts, its solid faces, its leaves, its plants, its glass and ice, its
+water, the glass and the faces a pack cuts out and its lava, is an entity the engine draws, a `Mesh`
+of the part's upload, a `Material` through the terrain shader, a `Transform`, the engine's `Visible`
+and `ShadowOnly`, and the game's `SectionPart` naming the section and the part. Each material says
+what the part's `ModelMaterial` says of its shadow and of the scene's distance field, so the plants
+stay out of the field and the glass, ice and water cast no shadow. The leaves' material lets half of
+global illumination's light through a block, as the source's leaves let the light through, or more
+where a pack's cut-out leaves leave more of their pictures clear across a block's two faces, and the
+plants' lets through the share of their pictures left clear, which the screen's probes cross. The flood writes `Visible` and
 `ShadowOnly` only where its answer for a section changes, so a frame standing still costs the game
 no call for them, and the engine's model pass gathers them with its change detection. The engine
 draws the blended parts, glass, ice and water, farthest first by where each stands, so each stands

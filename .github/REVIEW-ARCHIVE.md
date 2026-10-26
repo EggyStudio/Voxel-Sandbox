@@ -1825,6 +1825,47 @@ before a batch.
     STYLE.md not forbidding them. One commit. Done at `1767348` on 2026-10-25, forty-four
     replacements and the greps clean, the pack called the reference modpack.
 
+95. **The world's sections become mesh entities the engine draws (Decision 43).** Each meshed
+    section becomes an entity with the engine's Mesh, Material and Transform and a component of the
+    game's naming its column and height, made and replaced by the main thread when a worker's mesh
+    arrives as today, despawned when the section leaves the reach, so the engine's model pass draws,
+    culls and keeps them with its change detection and the game's loop of DrawMesh over every
+    section, with item 90's kept flood, goes; the lava's and the plants' parts as entities of their
+    own materials. The frame read before and after at item 93's views and the draw count test kept
+    on the engine's count. Generation and meshing stay on the workers. One or two commits, after
+    item 94. The coder's reading at 21:19 on 2026-10-24 found the engine's mesh entity path short of
+    a section in six ways, no shader on the ECS Material, a Mesh of positions, normals and uvs
+    alone, looks forgotten past 4,096, a mesh not drawn in a frame freed, no visibility or
+    shadow-only component and the entity draws not in the profile, which the engine takes as its
+    item 108 through ASKS.md; the flood stays as the game's visibility, a Visible component the
+    engine honors once it has one, and the shadow-only draw of item 123 the ShadowOnly component.
+    Waits on the package carrying the engine's item 108; item 96 taken before it. Read on 5.2.313's
+    source at 17:06 on 2026-10-25, a gap and a split, taken. A mesh entity cannot say it casts no
+    shadow or bounces no light, the ECS Material having neither flag and MeshEntityDraws building
+    every entity's draw with both true, while four of a section's seven parts need one through
+    ModelMaterial today, the see-through glass and ice, the water and a pack's cut-out glass casting
+    no shadow, which also keeps them out of the field that would hold a window as solid, and the
+    plants bouncing no light so the field holds no grass. The three parts needing neither move first
+    in one commit, the solid, the solid cut-out and the molten, each an entity with its uploaded
+    mesh, a white Material with the terrain shader and its alpha mode, a Transform, Visible from the
+    flood and ShadowOnly for the casters written where they change, and a SectionPart component
+    naming the section and the part; the cut-out plants, the see-through, the water, the cut-out
+    glass, the lamps' instanced cubes and the dome stay on DrawMesh; an ASKS.md entry in the
+    engine's tree asks for CastsShadows and BouncesLight on the ECS Material or a component for
+    each, the engine's item 124 under Decision 68, after which the rest move; the draw count test
+    reads entities.drawn plus the draws left, and the frame is read three ways, 5.2.291, 5.2.313
+    with DrawMesh and 5.2.313 with the entities, so the package's own change shows apart. nuget.org
+    served 5.2.313 late, its flat container at 404 at 17:04. The first commit at `b7608c7` on
+    2026-10-25, the three flagless parts as entities on 5.2.313, the grove's frame from about 43 ms
+    to 23.6 at 1080p with the scene pass halved, the readings in the devlog's note; the four flagged
+    parts move on the package carrying the engine's item 124, which closes this item. The README's
+    costs at `cc49c81` on 2026-10-25, the distance table with the probes on keeping 60 a second at
+    12 columns where it lost it before, the flights left for a quiet GPU. Read again on powersave at
+    `c802dea`, 12 columns at the edge of 60 a second, the README saying so with both frames and the
+    note naming the profile's doubt. Done at `a4d383c` on 2026-10-26 with the last four parts, every
+    section part a mesh entity with its flags on 5.2.316, the picture the same and the frame as it
+    was, the DrawMesh loop gone.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

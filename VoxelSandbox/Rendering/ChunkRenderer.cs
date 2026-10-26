@@ -94,10 +94,10 @@ public sealed class ChunkRenderer : IDisposable
 
     private sealed class SectionMeshes
     {
-        public readonly Part Solid = new(), SeeThrough = new(), Water = new(), Cutout = new(), CutoutGlass = new(), SolidCutout = new(), Molten = new();
+        public readonly Part Solid = new(), SeeThrough = new(), Water = new(), Cutout = new(), CutoutGlass = new(), SolidCutout = new(), Molten = new(), Foliage = new();
         public readonly List<(int Surface, Matrix4x4 At)> Emitters = [];
 
-        public Part[] Parts => [Solid, SeeThrough, Water, Cutout, CutoutGlass, SolidCutout, Molten];
+        public Part[] Parts => [Solid, SeeThrough, Water, Cutout, CutoutGlass, SolidCutout, Molten, Foliage];
     }
 
     // Every section's opaque faces are drawn with the first, their colors in their vertices, and
@@ -116,8 +116,10 @@ public sealed class ChunkRenderer : IDisposable
     // mesh, so a lake lights its cave with one draw where a lamp's cube for each block would be
     // thousands; the field reads a mesh made again without its light for a few frames, which a lake
     // seldom is. All six are drawn through the game's terrain shader, the engine's light with a haze.
-    private readonly ModelMaterial _terrain, _clear, _water, _cutout, _cutoutGlass, _solidCutout, _haze;
-    private ModelMaterial _molten;
+    private readonly ModelMaterial _terrain, _clear, _water, _cutoutGlass, _solidCutout, _haze;
+    // The plants' and the leaves' materials, each letting a share of global illumination's light
+    // through, made again as the atlas changes, and lava's.
+    private ModelMaterial _cutout, _foliage, _molten;
 
     // Each of a section's seven parts is an entity the engine draws, a Mesh of the part's upload, a
     // Material through the terrain shader with its material's shadow and its share in the scene's
@@ -125,7 +127,7 @@ public sealed class ChunkRenderer : IDisposable
     // model pass gathers them with its change detection and a section standing still costs no call.
     // Visible and ShadowOnly are written where the flood's answer for the section changes.
     private readonly EcsWorld _ecs;
-    private Material _terrainLook, _clearLook, _waterLook, _cutoutLook, _cutoutGlassLook, _solidCutoutLook, _moltenLook;
+    private Material _terrainLook, _clearLook, _waterLook, _cutoutLook, _cutoutGlassLook, _solidCutoutLook, _moltenLook, _foliageLook;
     // The eye's column, render distance and culling the last placement was made for, and whether a
     // section's parts or lamps changed since.
     private (int X, int Z, int Distance, bool Cull)? _placedFor;
@@ -218,11 +220,10 @@ public sealed class ChunkRenderer : IDisposable
         // Water is see-through as glass is, its material's alpha of 253 telling the terrain shader
         // its faces carry the water's depth, which it darkens and clears the water by.
         _water = _clear with { Color = new Color(255, 255, 255, 253) };
-        _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, BouncesLight = false, Shader = _shader };
         _cutoutGlass = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, CastsShadows = false, Shader = _shader };
         _solidCutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, Shader = _shader };
         (_terrainLook, _clearLook, _waterLook) = (Look(_terrain), Look(_clear), Look(_water));
-        (_cutoutLook, _cutoutGlassLook, _solidCutoutLook) = (Look(_cutout), Look(_cutoutGlass), Look(_solidCutout));
+        (_cutoutGlassLook, _solidCutoutLook) = (Look(_cutoutGlass), Look(_solidCutout));
         _haze = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Blend, CastsShadows = false, Shader = _shader };
         var dome = HazeDome.Build();
         _dome = UploadMesh([.. dome.Positions], [.. dome.Indices], MeshStream.From(MeshStreamFormat.UInt2, dome.Packed.ToArray().AsSpan()), null);
@@ -281,8 +282,50 @@ public sealed class ChunkRenderer : IDisposable
             SetShaderValue(_shader, _flames, new Vector4(value.Tile(Surfaces.Fire) is > 0 and var flames ? flames + 1 : 0, FlamesShown,
                 value.Tile(Surfaces.Lava) is > 0 and var lava ? lava + 1 : 0, LavaShown));
             LoadLamps();
+            Shares();
         }
     }
+
+    // The surfaces of the leaf blocks and of the plants' walls, whose tiles the shares of light
+    // through them are read from.
+    private static readonly int[] LeafSurfaces = [.. Blocks.All.Where(b => Blocks.IsLeaves(b.Id)).SelectMany(b => new[] { b.Top, b.Side, b.Bottom }).Distinct()];
+    private static readonly int[] PlantSurfaces = [.. Blocks.All.Where(b => b.Shape is not null)
+        .SelectMany(b => b.Shape!.Pieces.Where(p => b.Shape.Cutout || p.Plane).Select(p => p.Surface)).Distinct()];
+
+    // The leaves' and the plants' materials for the atlas, the scene's light passing a leaf block
+    // by half, as the source's leaves let the light through, or by what a pack's cut-out leaves
+    // leave clear across a block's two faces where that is more, and passing a plant by the share
+    // of its tiles left clear, which the screen's probes take, the scene's field holding no plant.
+    private void Shares()
+    {
+        var (leaves, plants, cut) = SharesOf(_mesher.Atlas);
+        _foliage = new ModelMaterial(Color.White)
+        {
+            AlphaMode = cut ? MaterialAlphaMode.Mask : MaterialAlphaMode.Opaque, Roughness = 0.9f, LightThrough = leaves, Shader = _shader,
+        };
+        _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, BouncesLight = false, LightThrough = plants, Shader = _shader };
+        (_foliageLook, _cutoutLook) = (Look(_foliage), Look(_cutout));
+        foreach (var entry in _sections.Values)
+        {
+            if (entry.Foliage.Entity >= 0) _ecs.Update(entry.Foliage.Entity, _foliageLook);
+            if (entry.Cutout.Entity >= 0) _ecs.Update(entry.Cutout.Entity, _cutoutLook);
+        }
+    }
+
+    /// <summary>
+    /// The shares of global illumination's light passing a unit of a leaf block's depth and of a
+    /// plant's for an atlas, and whether it cuts any leaves out.
+    /// </summary>
+    public static (float Leaves, float Plants, bool LeavesCut) SharesOf(TerrainAtlas atlas)
+    {
+        float? Mean(IEnumerable<int> surfaces) => surfaces.Select(atlas.Coverage).OfType<float>().DefaultIfEmpty(-1).Average() is var mean and >= 0 ? mean : null;
+        var cut = LeafSurfaces.Where(atlas.Cuts).ToList();
+        var leaves = Mean(cut) is { } covered ? Math.Max(0.5f, (1 - covered) * (1 - covered)) : 0.5f;
+        return (leaves, 1 - (Mean(PlantSurfaces.Where(atlas.Cuts)) ?? 1), cut.Count > 0);
+    }
+
+    /// <summary>The share of global illumination's light passing a unit of a leaf block's depth, and of a plant's.</summary>
+    public (float Leaves, float Plants) LightThrough => (_foliage.LightThrough, _cutout.LightThrough);
 
     // The emissive blocks' textures and the maps of their emission from the atlas, and their
     // materials, again as the atlas or the lamps' color changes, since each map is divided by the
@@ -743,7 +786,7 @@ public sealed class ChunkRenderer : IDisposable
             return;
         }
         if (mesher.Solid.Count == 0 && mesher.SeeThrough.Count == 0 && mesher.Water.Count == 0 && mesher.Cutout.Count == 0 && mesher.CutoutGlass.Count == 0 && mesher.SolidCutout.Count == 0
-            && mesher.Molten.Count == 0 && mesher.Emitters.Count == 0)
+            && mesher.Molten.Count == 0 && mesher.Foliage.Count == 0 && mesher.Emitters.Count == 0)
         {
             Forget(key);
             return;
@@ -758,7 +801,9 @@ public sealed class ChunkRenderer : IDisposable
         entry.CutoutGlass.Take(mesher.CutoutGlass);
         entry.SolidCutout.Take(mesher.SolidCutout);
         entry.Molten.Take(mesher.Molten);
+        entry.Foliage.Take(mesher.Foliage);
         Keep(key, entry.Solid, SectionPart.Solid, _terrainLook);
+        Keep(key, entry.Foliage, SectionPart.Foliage, _foliageLook);
         Keep(key, entry.SeeThrough, SectionPart.SeeThrough, _clearLook);
         Keep(key, entry.Water, SectionPart.Water, _waterLook);
         Keep(key, entry.Cutout, SectionPart.Cutout, _cutoutLook);
@@ -780,6 +825,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         AlphaMode = material.AlphaMode, AlphaCutoff = material.AlphaCutoff, RoughnessFactor = material.Roughness, DoubleSided = material.DoubleSided,
         EmissiveFactor = LinearOf(material.Emissive) * material.EmissiveIntensity, CastsShadows = material.CastsShadows, BouncesLight = material.BouncesLight,
+        LightThrough = material.LightThrough,
         Shader = _shader,
     };
 
@@ -925,7 +971,7 @@ public sealed class ChunkRenderer : IDisposable
             // The parts that cast a shadow are drawn into the shadow maps alone where the section
             // casts alone, and the glass, the water and the lava, which the flood's casters leave
             // out, only where it is seen.
-            foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.Cutout, entry.SolidCutout])
+            foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.Foliage, entry.Cutout, entry.SolidCutout])
                 Show(part, seen || castsAlone, castsAlone);
             foreach (var part in (ReadOnlySpan<Part>)[entry.SeeThrough, entry.Water, entry.CutoutGlass, entry.Molten])
                 Show(part, seen, false);
@@ -936,7 +982,7 @@ public sealed class ChunkRenderer : IDisposable
                 culled++;
                 if (!castsAlone) continue;
                 casting++;
-                foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.Cutout, entry.SolidCutout])
+                foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.Foliage, entry.Cutout, entry.SolidCutout])
                     if (part.Mesh.IsValid) castDraws++;
                 continue;
             }

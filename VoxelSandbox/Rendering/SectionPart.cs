@@ -26,4 +26,7 @@ public readonly record struct SectionPart(SectionKey Section, int Kind)
 
     /// <summary>The water, blended over what lies behind.</summary>
     public const int Water = 6;
+
+    /// <summary>The leaf blocks' faces, which let a share of the light through.</summary>
+    public const int Foliage = 7;
 }

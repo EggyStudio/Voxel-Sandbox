@@ -452,6 +452,20 @@ public sealed class TerrainAtlas
     /// <summary>A surface's tile alone, for an emissive block's cube drawn with a texture of its own, or null where it has none.</summary>
     public Image? Picture(int surface) => _tile[surface] == 0 ? null : new Image(_pictures[_tile[surface]], Pixels, Pixels);
 
+    /// <summary>
+    /// The share of a surface's tile a cut-out face keeps, its pixels of an alpha of a half or more,
+    /// or null for a surface no pack gives a tile.
+    /// </summary>
+    public float? Coverage(int surface)
+    {
+        if (_tile[surface] == 0) return null;
+        var pixels = _pictures[_tile[surface]];
+        var kept = 0;
+        for (int at = 3; at < pixels.Length; at += 4)
+            if (pixels[at] >= 128) kept++;
+        return kept / (pixels.Length / 4f);
+    }
+
     /// <summary>The atlas's pixels, a row at a time from the top, four bytes a pixel, each tile two by two in its cell from a half tile in.</summary>
     public byte[] Image()
     {
