@@ -54,7 +54,7 @@ public sealed class Menus
     // screen's kind and the seed typed.
     private IReadOnlyList<(string Name, string Kind, int Seed)> _saves = [];
     private int _worldScroll, _kind;
-    private string _seedText = "";
+    private TextEdit _seed = new("");
     // The packs on as the screen last read them, so a fetch that turns the default packs on while it
     // is open shows them, and whether a default pack is missing as the fetch last stood, worked out
     // as it changes rather than each frame, since it reads every default pack's bytes.
@@ -381,12 +381,15 @@ public sealed class Menus
                 Open = Menu.None;
             }
         }
-        if (Gui.Button("New World...", Wide(Shown)))
-        {
-            (_kind, _seedText) = (0, "");
-            Open = Menu.NewWorld;
-        }
+        if (Gui.Button("New World...", Wide(Shown))) OpenNewWorld();
         if (Gui.Button("Done", Wide(Shown + 1))) Open = Menu.Pause;
+    }
+
+    /// <summary>Opens the screen of a new world, its seed's field empty and holding the keyboard, so a seed is typed at once.</summary>
+    public void OpenNewWorld()
+    {
+        (_kind, _seed) = (0, new TextEdit("") { Focused = true });
+        Open = Menu.NewWorld;
     }
 
     // A world begun of a kind and a seed, typed or offered at random, as Minecraft's screen of a new
@@ -400,9 +403,10 @@ public sealed class Menus
         if (Gui.Button($"World Type: {char.ToUpperInvariant(kinds[_kind][0])}{kinds[_kind][1..]}", Wide(0))) _kind = (_kind + 1) % kinds.Length;
         var gray = new Color(160, 160, 160, 255);
         Gui.Text("Seed for the world, a random one where blank", (int)Wide(1).X, (int)Wide(1).Y + 6 * s, gray);
-        _seedText = Gui.TextField(_seedText, Wide(2), 32);
-        if (Gui.Button("Random Seed", Wide(3))) _seedText = Random.Shared.Next().ToString(CultureInfo.InvariantCulture);
-        if (Gui.Button("Create New World", Wide(4))) Begin(game, kinds[_kind], _seedText);
+        // Enter in the field begins the world, as the button below does.
+        var entered = Gui.TextField(ref _seed, Wide(2), 32);
+        if (Gui.Button("Random Seed", Wide(3))) _seed = new TextEdit(Random.Shared.Next().ToString(CultureInfo.InvariantCulture));
+        if (Gui.Button("Create New World", Wide(4)) || entered) Begin(game, kinds[_kind], _seed.Text);
         if (Gui.Button("Cancel", Wide(5))) Open = Menu.World;
     }
 

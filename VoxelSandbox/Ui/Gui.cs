@@ -139,26 +139,43 @@ public static class Gui
     /// <summary>A button of the interface's, lit under the pointer with its label yellow, as Minecraft's is.</summary>
     /// <returns>Whether it was clicked this frame.</returns>
     /// <summary>
-    /// A field of typed text as Minecraft's edit boxes are, a black box in a gray border with its text
-    /// and a blinking caret, taking the characters typed this frame and Backspace, which repeats while
-    /// held, to so many characters, and placing the input method's window beside it.
+    /// A field of typed text as Minecraft's edit boxes are, a black box in a gray border with its text,
+    /// its selection and a blinking caret, the engine's text edit taking the typing, the clipboard,
+    /// the pointer and Tab, measured in the pack's font so the caret a click places stands between
+    /// the glyphs drawn.
     /// </summary>
-    /// <returns>The text with what was typed this frame.</returns>
-    public static string TextField(string text, Rectangle box, int most)
+    /// <returns>Whether Enter was pressed in it.</returns>
+    public static bool TextField(ref TextEdit edit, Rectangle box, int most)
     {
-        SetTextInputArea(box, text.Length);
-        for (var typed = GetCharPressed(); typed != 0; typed = GetCharPressed())
-            if (typed >= ' ' && typed != 127 && text.Length < most) text += char.ConvertFromUtf32(typed);
-        if (text.Length > 0 && (IsKeyPressed(Key.Backspace) || IsKeyPressedRepeat(Key.Backspace))) text = text[..^1];
         var s = Scale;
+        var (font, size) = PackGui.Font is { } pack ? (pack.Measure, 8f * s) : (GetFontDefault(10 * s), 10f * s);
+        // The engine starts the text a quarter of the font's size in from the left of the box it
+        // measures in, so that box is the field's two pixels in, which puts the text four in, as
+        // Minecraft's is.
+        var measured = new Rectangle(box.X + 2 * s, box.Y, box.Width - 4 * s, box.Height);
+        var entered = EditText(ref edit, measured, most, font, size);
         DrawRectangleRec(box, new Color(160, 160, 160, 255));
         DrawRectangleRec(new Rectangle(box.X + s, box.Y + s, box.Width - 2 * s, box.Height - 2 * s), Color.Black);
-        var y = (int)(box.Y + (box.Height - 8 * s) / 2);
+        var text = edit.Text ?? "";
+        int x = (int)(measured.X + size / 4 - edit.Scroll), y = (int)(box.Y + (box.Height - size) / 2);
+        BeginScissorMode((int)box.X + s, (int)box.Y + s, (int)box.Width - 2 * s, (int)box.Height - 2 * s);
+        if (edit.Caret != edit.Anchor)
+        {
+            int from = TextWidth(text[..Math.Min(edit.Caret, edit.Anchor)]), to = TextWidth(text[..Math.Max(edit.Caret, edit.Anchor)]);
+            DrawRectangle(x + from, y - s, to - from, (int)size + 2 * s, new Color(0, 0, 255, 160));
+        }
         var ink = new Color(224, 224, 224, 255);
-        Text(text, (int)box.X + 4 * s, y, ink);
-        // The caret blinks a third of a second on and off, as Minecraft's does.
-        if ((int)(GetTime() * 3) % 2 == 0) Text("_", (int)box.X + 4 * s + TextWidth(text), y, ink);
-        return text;
+        Text(text, x, y, ink);
+        // The caret blinks a third of a second on and off, an underscore past the text's end and a
+        // line between its characters, as Minecraft's does.
+        if (edit.Focused && (int)(GetTime() * 3) % 2 == 0)
+        {
+            var at = x + TextWidth(text[..edit.Caret]);
+            if (edit.Caret == text.Length) Text("_", at, y, ink);
+            else DrawRectangle(at, y - s, s, (int)size + 2 * s, ink);
+        }
+        EndScissorMode();
+        return entered;
     }
 
     public static bool Button(string label, Rectangle box)

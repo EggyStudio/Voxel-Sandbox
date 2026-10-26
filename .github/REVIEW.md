@@ -5,12 +5,15 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `6001eed`, item 136, the sun's width behind a slider, read at 10:32 on 2026-10-26,
-carrying the review's files, DEVLOG.md, a note and a captioned picture, held until the run of
-`7c36ec8` ends. Render Settings gains Soft Shadows from 0 to 5 degrees by 0.01, kept in the options
-file, the default 1.5; at seed 1's village at hour 16 the width 0 steps along the blocks' pixels the
-whole way, 0.53 keeps most of the steps, 1.5 is sharp at the trunk and soft toward the far end with
-the crown still read, and 3 smears the crowns' far halves, the four differing little at noon. At the
+Reviewed up to `4aef50c`, the README's quick links, read at 10:46 on 2026-10-26, README.md with the
+review's files and DEVLOG.md and no code, pushed with `6001eed` in one push at 11:32 once the run of
+`7c36ec8` ended green, so the owner's links show, its run green at 12:45 with play in 73 minutes.
+After `6001eed`, item 136, the sun's width behind a slider, read at 10:32 on 2026-10-26, carrying
+the review's files, DEVLOG.md, a note and a captioned picture, pushed with `4aef50c` at 11:32.
+Render Settings gains Soft Shadows from 0 to 5 degrees by 0.01, kept in the options file, the
+default 1.5; at seed 1's village at hour 16 the width 0 steps along the blocks' pixels the whole
+way, 0.53 keeps most of the steps, 1.5 is sharp at the trunk and soft toward the far end with the
+crown still read, and 3 smears the crowns' far halves, the four differing little at noon. At the
 cherry grove at 1920 by 1080 in two rounds the scene pass grows about 0.6 ms at High for any width,
 3 up to 1.0, the shadow maps costing the same at every width, the frame at High 19.7 and 19.8 ms
 going to 20.4 and 20.4 at 1.5 and at Low moving less than the rounds differ, 16.5 and 17.3 against
@@ -21,21 +24,21 @@ splitting glyph runs by a key color, so the game builds a Font from the pack's s
 glyph's run as wide as its advance and a magenta column between, EditText measuring at spacing 0 so
 its caret lands where PackFont draws; no ask needed, the item waiting on the eighth package. After
 `7c36ec8`, item 42's last part, the water's mirror on 5.2.322, read at 10:17 on 2026-10-26, pushed
-at 10:18 once the run of `f1aa450` ended green, its own run watched, carrying the review's files,
-DEVLOG.md and a captioned picture. WaterMirror sets the engine's plane each frame at the water's
-top, an eighth under its blocks' tops, found by 15 rays across the view's lower half taking the most
-common water top, no plane when no water is in view, when the eye is under water or when the setting
-is off, Water Reflections on Render Settings on by default, the terrain shader's water branch
-reading mirrored over the sky's share; the plane at seed 1's nearest river at 104, 46, -72 is
-48.875. At 1920 by 1080 the frame reads 22.8 ms on against 20.2 off, cpu.mirror 2.9 ms and
-gpu.mirror 2.6 overlapping, a second round under another dotnet on the GPU left out; play.sh's pool
-mirrors the red wall at 168, 146, 166 and not with the setting off at 159, 179, 210, the water's
-depth check reading its fresnel with the reflections off since the mirror carries the shore's colors
-into it, and a MesherTests case finds the water's top through a ray and none under stone. The strict
-build clean, 358 tests, play.sh 406 s on the GPU and 1,807 s on lavapipe. The owner asked at 10:45
-on 2026-10-26 for quick links to the devlog and the engine's cheat sheet at the very top of the
-README, plain links to the files; the reviewer wrote the line as the README's first line with full
-addresses as N 4.3 has them, the coder committing README.md alone.
+at 10:18 once the run of `f1aa450` ended green, its own run green at 11:26 with play in 68 minutes,
+carrying the review's files, DEVLOG.md and a captioned picture. WaterMirror sets the engine's plane
+each frame at the water's top, an eighth under its blocks' tops, found by 15 rays across the view's
+lower half taking the most common water top, no plane when no water is in view, when the eye is
+under water or when the setting is off, Water Reflections on Render Settings on by default, the
+terrain shader's water branch reading mirrored over the sky's share; the plane at seed 1's nearest
+river at 104, 46, -72 is 48.875. At 1920 by 1080 the frame reads 22.8 ms on against 20.2 off,
+cpu.mirror 2.9 ms and gpu.mirror 2.6 overlapping, a second round under another dotnet on the GPU
+left out; play.sh's pool mirrors the red wall at 168, 146, 166 and not with the setting off at 159,
+179, 210, the water's depth check reading its fresnel with the reflections off since the mirror
+carries the shore's colors into it, and a MesherTests case finds the water's top through a ray and
+none under stone. The strict build clean, 358 tests, play.sh 406 s on the GPU and 1,807 s on
+lavapipe. The owner asked at 10:45 on 2026-10-26 for quick links to the devlog and the engine's
+cheat sheet at the very top of the README, plain links to the files; the reviewer wrote the line as
+the README's first line with full addresses as N 4.3 has them, the coder committing README.md alone.
 
 Before it, `f1aa450` came, item 27's last part, the far cascade behind a toggle, pushed at 08:38 on
 2026-10-26, its run green at 09:43.

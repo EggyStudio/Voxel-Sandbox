@@ -1,5 +1,6 @@
 using Engine;
 using Xunit;
+using static Engine.E3D;
 
 namespace VoxelSandbox.Tests;
 
@@ -80,5 +81,39 @@ public sealed class HeadlessGameTests
         headless.Step(2);
         Assert.Equal(("flat", 99162322), (game.World.Generator.Name, game.World.Generator.Seed));
         Assert.Equal(-5, Menus.SeedOf(" -5 "));
+    }
+
+    [Fact]
+    public void The_New_World_Screen_Opens_With_Its_Seeds_Field_Holding_The_Keyboard()
+    {
+        // The field takes the typing from the screen's first frame, so the game's own keys stand
+        // aside. Typing and pasting into it go through e3d, which build/play.sh does.
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        headless.Step(2);
+        Assert.False(IsTextInputActive());
+        game.Menus.OpenNewWorld();
+        headless.Step(2);
+        Assert.True(IsTextInputActive());
+        Assert.Equal(Menu.NewWorld, game.Menus.Open);
+    }
+
+    [Fact]
+    public void A_Pack_Fonts_Engine_Font_Measures_Each_Glyph_As_Wide_As_Its_Advance()
+    {
+        // A's lit to its fifth column on a sheet of sixteen pixels a glyph, so the engine's font
+        // measures text at eight pixels as the sheet draws it, at twice that size twice as wide. The
+        // font's atlas is a texture, so a game stands for the window.
+        using var headless = new HeadlessGame();
+        var sheet = GenImageColor(256, 256, Color.Blank);
+        int left = 'A' % 16 * 16, top = 'A' / 16 * 16;
+        for (int y = 0; y < 16; y++)
+            for (int x = 0; x < 10; x++)
+                sheet.Data[((top + y) * sheet.Width + left + x) * 4 + 3] = 255;
+        var advances = PackFont.Advances(sheet);
+        var font = PackFont.MeasureOf(sheet, advances);
+        Assert.Equal(8, font.BaseSize);
+        Assert.Equal(6 + 4 + 4 + 6, MeasureTextEx(font, "A BA", 8, 0).X);
+        Assert.Equal(2 * (6 + 4), MeasureTextEx(font, "A ", 16, 0).X);
     }
 }

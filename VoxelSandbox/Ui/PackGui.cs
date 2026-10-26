@@ -168,7 +168,7 @@ public sealed class PackFont
 {
     private readonly int[] _advance;
 
-    private PackFont(Texture2D texture, int cell, int[] advance) => (Texture, Cell, _advance) = (texture, cell, advance);
+    private PackFont(Texture2D texture, int cell, int[] advance, Font measure) => (Texture, Cell, _advance, Measure) = (texture, cell, advance, measure);
 
     /// <summary>The sheet.</summary>
     public Texture2D Texture { get; }
@@ -176,13 +176,52 @@ public sealed class PackFont
     /// <summary>A glyph's cell in the sheet's pixels.</summary>
     public int Cell { get; }
 
+    /// <summary>
+    /// An engine font of the sheet's printable glyphs eight pixels high, each as wide as its advance,
+    /// which the engine's text edit measures in, so the caret a click places stands between the glyphs
+    /// the sheet draws.
+    /// </summary>
+    public Font Measure { get; }
+
     /// <summary>The font of a sheet, or null for one whose sides are not sixteen cells.</summary>
     public static PackFont? From(Image sheet)
     {
         if (sheet.Width < 16 || sheet.Width != sheet.Height || sheet.Width % 16 != 0) return null;
         var texture = LoadTextureFromImage(sheet);
         SetTextureFilter(texture, TextureFilter.Point);
-        return new PackFont(texture, sheet.Width / 16, Advances(sheet));
+        var advances = Advances(sheet);
+        return new PackFont(texture, sheet.Width / 16, advances, MeasureOf(sheet, advances));
+    }
+
+    /// <summary>The engine font <see cref="Measure"/> is of a sheet and its glyphs' advances.</summary>
+    /// <remarks>
+    /// The sheet's printable glyphs are laid in one row for the engine's LoadFontFromImage, which takes
+    /// each run of pixels between columns of a key color as a glyph as wide as the run. Each glyph's
+    /// lit columns and its gap are one run as wide as its advance, scaled to Minecraft's eight pixels,
+    /// a column of a color the sheet never holds before each and a row of it above and below.
+    /// </remarks>
+    public static Font MeasureOf(Image sheet, int[] advances)
+    {
+        var key = new Color(255, 0, 255, 255);
+        var width = 1;
+        for (int c = ' '; c <= '~'; c++) width += advances[c] + 1;
+        var row = GenImageColor(width, 10, key);
+        var cell = sheet.Width / 16;
+        var x = 1;
+        for (int c = ' '; c <= '~'; c++)
+        {
+            for (int gx = 0; gx < advances[c]; gx++)
+                for (int gy = 0; gy < 8; gy++)
+                {
+                    int sx = gx * cell / 8, sy = gy * cell / 8;
+                    var color = sx < cell ? GetImageColor(sheet, c % 16 * cell + sx, c / 16 * cell + sy) : Color.Blank;
+                    ImageDrawPixel(ref row, x + gx, 1 + gy, color.A == 0 ? Color.Blank : color);
+                }
+            x += advances[c] + 1;
+        }
+        var font = LoadFontFromImage(row, key, ' ');
+        UnloadImage(row);
+        return font;
     }
 
     /// <summary>

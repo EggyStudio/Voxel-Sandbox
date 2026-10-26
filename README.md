@@ -836,8 +836,11 @@ Save and Quit. World lists the worlds saved, the one played last first, six at a
 mouse's wheel, each by its name, its kind and its seed with the open one marked, a button opening
 it, the world open saved and left first, and its New World begins an overworld or a flat world of
 a seed typed into its field, a whole number taken as it reads and other words hashed into one as
-Minecraft hashes them, or a random one where the field is blank or Random Seed fills it. A transient
-run keeps no saves and lists none. The options are in two columns of buttons and sliders as Minecraft lays its options out, the
+Minecraft hashes them, or a random one where the field is blank or Random Seed fills it. The field
+is the engine's text edit drawn in the pack's font, holding the keyboard as the screen opens, with a
+caret a click places between the glyphs, a selection by Shift or a drag, Control's moves by words,
+the clipboard's copy, cut and paste, and Enter beginning the world, and Escape going back. A
+transient run keeps no saves and lists none. The options are in two columns of buttons and sliders as Minecraft lays its options out, the
 field of view, the mouse's sensitivity, the interface's scale, automatic or 1 to 4, whether full
 rows of the HUD fade, and the zoom's key, C, V, Z, X, R or Left Alt, with a button to each screen of
 settings by its area, Video Settings, Render Settings, Post Processing, Sky and Visuals, Music and

@@ -574,10 +574,12 @@ public sealed class VoxelGame : IDisposable
         _sinceSave += seconds;
         if (_sinceSave > SaveSeconds) SaveWorld();
         var io = ImGui.GetIO();
-        // A field taking typed text takes the keys too, so a seed typed acts no toggle.
-        var keys = _keys = !io.WantTextInput && Menus.Open != Menu.NewWorld;
+        // A field taking typed text takes the keys too, so a seed typed acts no toggle, though Escape,
+        // which no field takes, still goes back from its screen.
+        var keys = _keys = !io.WantTextInput && !IsTextInputActive();
 
         if (keys) Toggles();
+        else if (IsTextInputActive() && IsKeyPressed(Key.Escape) && Menus.Open != Menu.None) Menus.Back();
         // A click takes the cursor back unless it falls on a window of the game's own or of ImGui's.
         if (!_captured && IsMouseButtonPressed(MouseButton.Left) && !io.WantCaptureMouse && !InventoryOpen && Menus.Open == Menu.None)
         {

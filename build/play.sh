@@ -1134,6 +1134,31 @@ done
 echo "the options screens' $walked settings each set and set back"
 [ "$walked" -ge 48 ] || fail "the options screens hold $walked settings, where 48 were written"
 
+check "the seed's field"
+# Escape opens the game's menu, World and New World open the screen of a new world at the window's
+# 1280 by 720, the interface at three times its pixels, and its seed's field holds the keyboard as it
+# opens. 123 typed and 45 pasted from the clipboard with Control and V make the seed Enter begins
+# the world of, which switches the world, so it comes last. Control is held by a command in the
+# background and V pressed once input.state reads Control down, since each e3d call takes a few
+# frames to start.
+cmd input.key Escape 1
+cmd input.click 640 402
+cmd frames.wait 2
+cmd input.click 640 582
+cmd frames.wait 2
+cmd input.text 123
+./e3d eval 'SetClipboardText("45")' --quiet --timeout 600 --session "$pid" > /dev/null 2> "$said" || fail "./e3d eval SetClipboardText ended with $?, $(head -n 1 "$said")"
+cmd input.key LeftControl 120 &
+held=$!
+for i in $(seq 1 50); do ask input.state | grep -q '^keys: .*LeftControl' && break; done
+cmd input.key V 1
+wait "$held" || fail "./e3d command input.key LeftControl ended with an error"
+cmd input.key Enter 1
+cmd frames.wait 3
+seeded=$(ask voxel.state | grep -o "world [a-z]* of seed [0-9-]*")
+echo "the seed's field began the $seeded"
+[ "$seeded" = "world overworld of seed 12345" ] || fail "the seed typed and pasted began the $seeded, where the overworld of seed 12345 was typed"
+
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
@@ -1170,4 +1195,4 @@ size=$(perl -e 'open my $png, "<", shift or exit; binmode $png; read $png, my $h
 [ "$size" = "1280 720" ] || fail "the screenshot is $size pixels, where the window's 1280 by 720 is asked"
 
 check ""
-echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a grass wall as bright above the eye as below, saw the sky alone over a tall grass's blades, saw a pool reflect nothing of a red wall, saw deep water darker than shallow and the sky in water seen low, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, opened a mineshaft's chest of rails or torches, read the caves' noises on the GPU as on the CPU, saw the rain splash on a meadow within its particles' budget, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, drew with no validation error, wrote $name on F2 and kept its options in a file"
+echo "Voxel Sandbox walked $distance blocks toward a glowstone in a closed room, saw a lantern's light fall smoothly across the floor, climbed out of a pool onto its bank, saw a sheep's wool in shade gray, saw a creeper's front at noon with no bands, saw a zombie's face as bright above the eye as below it, saw a sapling above the eye lit as one below, saw a grass wall as bright above the eye as below, saw the sky alone over a tall grass's blades, saw a pool mirror a red wall with its reflections on and none of it with them off, saw deep water darker than shallow and the sky in water seen low, saw a zombie wear a pack's picture, saw a red wall through a pane of glass's clear middle and a lit furnace's top above its front, saw water's frames in turn, saw the stars at dawn darken none of the sky, saw a cloud's underside lit by day, saw a tunnel's bits lit alike by its walls, placed blocks into plants' cells, saw a held torch light the ground alike from four headings, saw no line along a fire's top, opened a mineshaft's chest of rails or torches, read the caves' noises on the GPU as on the CPU, saw the rain splash on a meadow within its particles' budget, drew no more than 400 draws of sections at the land's edge, set and set back each setting of the options screens, typed and pasted a seed into the New World screen, drew with no validation error, wrote $name on F2 and kept its options in a file"
