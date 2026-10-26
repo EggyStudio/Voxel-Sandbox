@@ -70,6 +70,11 @@ public sealed class LightSettings
         // blur lays a soft fringe beside the map's edges, which step along the blocks' pixels, and
         // kept past the map, where the land has no other shadow of the sun.
         SetContactShadows(ContactShadows.PastShadowMap);
+        // The engine's fill, a drawing of the land's depth past the shadow map's reach, is left off.
+        // The contact shadows shade that land already, and with the fill on, three views at noon and
+        // at hour 16 changed in no pixel but the clouds' and the mobs' as they moved, where the fill
+        // drew 2,085 sections at 12 columns for 2 to 3 ms of the CPU and 3 to 5.5 of the GPU.
+        SetShadowFill(false);
         ApplyCurve();
         SetColorGrading(Contrast, Saturation, Color.White);
     }

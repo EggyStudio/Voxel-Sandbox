@@ -5,25 +5,42 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `b25e668`, item 137, the seed field on the engine's EditText, on 5.2.326, pushed at
-13:52 on 2026-10-26 once the run of `4aef50c` ended green, its own run watched, carrying REVIEW.md.
-The seed field is a TextEdit through EditText with a font and size, the font PackFont.MeasureOf, the
-sheet's printable glyphs in one row for LoadFontFromImage with each run as wide as its advance and
-magenta columns between, a headless test reading it measuring as the sheet draws at 8 and 16 pixels,
-the default font at ten times the scale without a pack; the game draws the box, the text, a blue
-selection and the caret, the box EditText measures in two pixels inside the field's so the text sits
-four in as before, a click placing the caret between glyphs live; the field holds the keyboard as
-the screen opens, Enter begins the world, the key gate is IsTextInputActive and Escape goes back
-while the field holds the keyboard. The game's tests cannot inject input, ConsoleHost and Input's
-setters being internal, so the unit test reads the field holding the keyboard on open and play.sh's
-new check goes Escape, World and New World by clicks, sends 123 through input.text and 45 through
-the clipboard with Control held by a background key and V sent once input.state reads Control down,
-Enter then giving the world of seed 12345, run last since it switches the world, 9 s on the GPU and
-lavapipe's first run in CI; play's closing line no longer says the pool reflects nothing. Global
-illumination at the grove at 1920 by 1080 at hour 16 alternating 5.2.322 and 5.2.326 reads High 6.09
-and 6.62 ms going to 5.37 and 5.32 and Low 3.07 and 3.30 to 2.58 and 2.60, the frame at High 20.4
-and 21.9 to 19.3 and 19.0, the engine's item 127 holding in the game. The strict build clean, 360
-tests, play.sh 459 s.
+Reviewed up to `9c07673`, item 138, the costs table read again, read at 14:0x on 2026-10-26,
+carrying the review's files and DEVLOG.md with a note, pushed at 15:11 once the run of `b25e668`
+ended green, its own run watched. A departure, the table's view was wrong since `cc49c81`,
+distance95.sh teleporting to 0.5, 79, 0.5 without flying so the player stood in the spawn oak's
+crown with a leaf block filling much of the frame, a fault recorded once for item 16 and repeated;
+the readings fly at y 90 over the spawn looking east over the forest to the sea. On 5.2.326 at every
+default, Debug, three packs, 1280 by 720 offscreen on powersave, twelve readings alternated 8, 12
+and 16 columns up and down, each marked quiet only with nothing else on the GPU at its end, 8
+columns read the frame 16.7 ms keeping 60, the GPU 11.2, the CPU's passes 9.7 and 1,083 MB, 12 the
+frame 20.4 from 17.5 to 21.5, the GPU 16.6, the CPU 16.7 and 1,477 MB, and 16 the frame 30.2, the
+GPU 24.6, the CPU 25.6 and 2,255 MB; the shadows 2.5, 4.7 and 7.4 ms on the GPU, the README's line
+that they take about the same from 8 to 16 false and replaced, the sea's mirror 0.5, 1.4 and 2.9 ms
+on the GPU and 0.8, 2.0 and 3.6 on the CPU. So 12 columns no longer holds 60 from the open view, the
+README saying so and RenderDistance's remarks rewritten from these numbers where they claimed 6.9 ms
+to spare; the default stays 12, the ApplyField comment mended, the flights and lavapipe's line
+standing as read at `bb0b9bb`, the plants paragraph's claim of 60 at 12 over the plains stale and to
+item 139. The strict build clean, 360 tests, play.sh 480 s. After `b25e668`, item 137, the seed
+field on the engine's EditText, on 5.2.326, pushed at 13:52 on 2026-10-26 once the run of `4aef50c`
+ended green, its own run green at 15:09 with play in 77 minutes, lavapipe's first run of the seed
+check passing, carrying REVIEW.md. The seed field is a TextEdit through EditText with a font and
+size, the font PackFont.MeasureOf, the sheet's printable glyphs in one row for LoadFontFromImage
+with each run as wide as its advance and magenta columns between, a headless test reading it
+measuring as the sheet draws at 8 and 16 pixels, the default font at ten times the scale without a
+pack; the game draws the box, the text, a blue selection and the caret, the box EditText measures in
+two pixels inside the field's so the text sits four in as before, a click placing the caret between
+glyphs live; the field holds the keyboard as the screen opens, Enter begins the world, the key gate
+is IsTextInputActive and Escape goes back while the field holds the keyboard. The game's tests
+cannot inject input, ConsoleHost and Input's setters being internal, so the unit test reads the
+field holding the keyboard on open and play.sh's new check goes Escape, World and New World by
+clicks, sends 123 through input.text and 45 through the clipboard with Control held by a background
+key and V sent once input.state reads Control down, Enter then giving the world of seed 12345, run
+last since it switches the world, 9 s on the GPU and lavapipe's first run in CI; play's closing line
+no longer says the pool reflects nothing. Global illumination at the grove at 1920 by 1080 at hour
+16 alternating 5.2.322 and 5.2.326 reads High 6.09 and 6.62 ms going to 5.37 and 5.32 and Low 3.07
+and 3.30 to 2.58 and 2.60, the frame at High 20.4 and 21.9 to 19.3 and 19.0, the engine's item 127
+holding in the game. The strict build clean, 360 tests, play.sh 459 s.
 
 Before it, `4aef50c` came with `6001eed`, the README's quick links and item 136, pushed at 11:32 on
 2026-10-26, its run green at 12:45.
@@ -150,17 +167,20 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-138. **The README's costs table is read again at the defaults on 5.2.326.** Proposed by the coder on
-    2026-10-26. The table read at `cc49c81` no longer matches the default frame, since the defaults
-    gained the sun's width at 1.5 degrees, about 0.6 ms more at High, and the water's mirror, 2.6 ms
-    where water shows, while 5.2.326's cheaper crossings took about 0.8 ms off global illumination
-    at High; the table's views are read again on 5.2.326 at the defaults, alternated against nothing
-    on the GPU with the power profile stated, in one docs commit with a note. With it the comment
-    above ApplyField in LightSettings.cs, which still says the engine's far cascade is left off at
-    the camera's far plane with 74-block cells at about 5 ms, says what stands since item 27, the
-    Far Cascade setting reaching the render distance with six-block cells at 1.6 to 2 ms, off by
-    default. A pool above a river taking the sky alone, the engine mirroring one plane, is left as a
-    lead until the owner remarks on it. One commit, small.
+139. **The frame at 12 columns comes back under 16.7 ms at the defaults.** From item 138's reading
+    of 2026-10-26, the open view over the spawn at 1280 by 720 reading 20.4 ms at 12 columns, the
+    GPU 16.6 and the CPU's passes 16.7, where item 90 read under 16.7 at `ba60ae4`; since then the
+    defaults gained the sun's width, the water's mirror and the leaves' share of light, and the
+    passes' CPU time grew with the sections as mesh entities. The time is read for where it went
+    since item 90, the CPU's recording of the depth pass, the cascades, the mirror pass and the
+    scene pass by draws at 8, 12 and 16 columns with the draws counted, and the GPU's shadows,
+    global illumination, mirror and scene; what is the engine's, the per-draw recording of a frame
+    drawn four times over for 2,000 and more section draws, goes to its ASKS.md as an entry with the
+    table, since the engine's own note under its item 112 named the recording as the mirror's CPU
+    share, and what is the game's, a mirror plane set with no water in view or a shadow setting out
+    of step with the distance, is mended here; the default stays 12 by item 90's decision until the
+    engine answers, and the plants paragraph's claim of 60 at 12 over the plains is read again and
+    rewritten. One commit, the reading and the entry, the game's mends with it.
 
 ## Verdicts
 

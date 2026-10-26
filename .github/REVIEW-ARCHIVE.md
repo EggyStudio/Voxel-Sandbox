@@ -2343,6 +2343,21 @@ before a batch.
     small, after item 136. Done at `b25e668` on 2026-10-26 on 5.2.326, the seed field a TextEdit
     measured in a Font built from the pack's sheet, play.sh typing and pasting a seed.
 
+138. **The README's costs table is read again at the defaults on 5.2.326.** Proposed by the coder on
+    2026-10-26. The table read at `cc49c81` no longer matches the default frame, since the defaults
+    gained the sun's width at 1.5 degrees, about 0.6 ms more at High, and the water's mirror, 2.6 ms
+    where water shows, while 5.2.326's cheaper crossings took about 0.8 ms off global illumination
+    at High; the table's views are read again on 5.2.326 at the defaults, alternated against nothing
+    on the GPU with the power profile stated, in one docs commit with a note. With it the comment
+    above ApplyField in LightSettings.cs, which still says the engine's far cascade is left off at
+    the camera's far plane with 74-block cells at about 5 ms, says what stands since item 27, the
+    Far Cascade setting reaching the render distance with six-block cells at 1.6 to 2 ms, off by
+    default. A pool above a river taking the sky alone, the engine mirroring one plane, is left as a
+    lead until the owner remarks on it. One commit, small. Done at `9c07673` on 2026-10-26, the view
+    mended to a flight over the spawn, 12 columns at 20.4 ms and no longer 60 from the open view,
+    the shadows' and the mirror's shares read, the comment mended; the frame's return to 60 at 12 is
+    item 139.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

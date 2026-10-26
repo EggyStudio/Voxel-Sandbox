@@ -1528,22 +1528,28 @@ each of the sun's three shadow cascades', leaves out the sections whose boxes it
 at a height of 90 over seed 1's spawn at noon, looking east over the forest to the sea, at 1280 by
 720 offscreen on the development machine's RTX 4070 Laptop GPU with the three default packs and
 every setting at its default, in a Debug build on the machine's power-saving profile, the frame
-keeps 60 a second at 8 columns and loses it at 12, where it takes 17.5 to 21.5 ms, the GPU's work
-and the CPU's passes each about 16 ms of it. The sun's shadows take 2.5 ms of the GPU at 8 columns,
-4.7 at 12 and 7.4 at 16, and the sea's mirror 0.5, 1.4 and 2.9 ms of the GPU and 0.8, 2.0 and 3.6
-of the CPU. The frame's time, the GPU's and the CPU's passes' in milliseconds, the middle of the
+keeps 60 a second at 8 columns, stands at the edge of it at 12, where it takes 16.7 to 17.1 ms, the
+GPU's work and the CPU's passes each about 13 ms of it, and loses it at 16, where the CPU's passes
+bound it at 21 ms. The sun's shadows take 0.8 ms of the GPU at every distance, since the engine's
+fill of the land past the shadow map is left off, the contact shadows shading that land, and the
+sea's mirror 0.7, 1.6 and 3.0 ms of the GPU and 0.9, 1.9 and 3.4 of the CPU. Each section a pass
+draws costs the main thread 3 to 5 µs to record, and the passes draw the sections four times, the
+depth's, the camera's, the mirror's and the cascades', so at 12 columns the frame's 2,300 draws take
+about 9 ms of the main thread. The frame's time, the GPU's and the CPU's passes' in milliseconds, the middle of the
 readings with no other program on the GPU, and the memory the game holds:
 
 | columns | frame | GPU | CPU's passes | memory |
 |---|---|---|---|---|
-| 8 | 16.7 | 11.2 | 9.7 | 1,083 MB |
-| 12 | 20.4 | 16.6 | 16.7 | 1,477 MB |
-| 16 | 30.2 | 24.6 | 25.6 | 2,255 MB |
+| 8 | 16.7 | 9.1 | 8.3 | 1,100 MB |
+| 12 | 16.9 | 12.8 | 12.9 | 1,476 MB |
+| 16 | 25.5 | 16.6 | 21.1 | 2,206 MB |
 
 The plants are most of what a meadow draws. Over seed 1's plains at noon at 12 columns, from 20
-blocks up at -288, 64 looking east, they take the frame from 1.18 million triangles to 1.64, the
-window's model pass from 7.7 ms to 10.1 and the GPU's passes from 13.1 ms to 14.9, the mean of three
-sessions each, and the frame keeps 60 a second. They cast no shadow and the scene's distance field
+blocks up at -288, 64 looking east, read on 2026-10-21, they take the frame from 1.18 million
+triangles to 1.64, the window's model pass from 7.7 ms to 10.1 and the GPU's passes from 13.1 ms to
+14.9, the mean of three sessions each. The generator's climate lays savanna hills there, and at the
+defaults the same view takes the frame 16.7 to 17.0 ms, at the edge of 60 a second, the GPU's passes
+10.2 to 10.9 ms and the CPU's 10.8 to 11.1. They cast no shadow and the scene's distance field
 holds none of them, so the shadows and global illumination take no more for them. A column takes
 about as long to generate with them.
 

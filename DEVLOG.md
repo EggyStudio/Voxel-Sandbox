@@ -150,6 +150,55 @@ at High grows by about 0.6 ms at 1.5, and at Low it moves less than the rounds d
 the frame, where 0.53 keeps most of the steps and 3 loses the crowns' shapes. Render Settings sets it
 from 0 to 5 degrees, and the options file keeps it.
 
+# Item 138, the README's costs read again
+
+The README's table of the frame by render distance, read on `b25e668` with 3DEngine 5.2.326 and
+every setting at its default (the sun 1.5 degrees across, the water's mirror on), in a Debug build
+with the three default packs, offscreen at 1280 by 720, on tuned's power-saving profile with the
+processor's energy preference at power. One session read 8, 12 and 16 columns in four passes, up,
+down, up and down, each reading waiting for a GPU no other program used, a profile over ten seconds,
+marked quiet where no other program used the GPU at its end either.
+
+## The view
+
+The table's view is seed 1's spawn at noon looking east over the forest to the sea. The script the
+table was read with before, at `cc49c81`, teleported to 0.5, 79, 0.5 without flying, so the player
+stood in the spawn oak's crown with a leaf block a block and a half ahead, which a capture showed
+filling much of the frame. These readings fly at a height of 90 at the same place, the view a
+capture shows open over the forest to the shore and the sea.
+
+## Readings
+
+Frame, the GPU's passes and the CPU's passes in milliseconds, the sea's mirror of the CPU and the
+GPU, with the other programs on the GPU at a reading's end where any were.
+
+| Columns | Frame | GPU | CPU's passes | Mirror, CPU and GPU | Others |
+|---|---|---|---|---|---|
+| 8 | 16.74 | 10.77 | 7.66 | 0.76 and 0.55 | a test run at 9% |
+| 8 | 16.69 | 11.11 | 8.07 | 0.78 and 0.52 | a test run at 23% |
+| 8 | 16.69 | 11.43 | 9.11 | 0.88 and 0.51 | none |
+| 8 | 16.67 | 10.92 | 10.34 | 0.97 and 0.52 | none |
+| 12 | 20.44 | 16.08 | 16.65 | 1.96 and 1.34 | none |
+| 12 | 18.61 | 16.91 | 15.19 | 1.86 and 1.41 | a test run at 12% |
+| 12 | 17.50 | 16.55 | 14.47 | 1.80 and 1.43 | none |
+| 12 | 21.49 | 16.58 | 17.39 | 2.10 and 1.38 | none |
+| 16 | 30.31 | 24.70 | 25.11 | 3.51 and 2.89 | a test run at 33% |
+| 16 | 29.24 | 24.34 | 24.80 | 3.54 and 2.88 | none |
+| 16 | 30.16 | 24.58 | 25.59 | 3.62 and 2.97 | none |
+| 16 | 34.56 | 24.62 | 29.10 | 4.07 and 2.93 | none |
+
+The README takes the middle of the quiet readings, at 8 columns the mean of two, which gives 16.7,
+11.2 and 9.7 ms at 8, 20.4, 16.6 and 16.7 ms at 12, and 30.2, 24.6 and 25.6 ms at 16. The game held
+1,083, 1,477 and 2,255 MB as each distance was first reached, and the frame made 1,097 draws of 0.63
+million triangles at 8, 2,252 of 1.24 million at 12 and 3,742 of 2.02 million at 16. The sun's
+shadows took 2.5, 4.7 and 7.4 ms of the GPU and global illumination 3.7 to 4.2 at every distance.
+
+At 8 columns the frame keeps 60 a second, held there by the frame's pacing. At 12 the GPU's work and
+the CPU's passes each take about 16 ms, and the frame 17.5 to 21.5 ms. Readings on the same build an
+hour before, from the oak's crown, gave 16.7 to 17.0 ms at 12 with nothing on the GPU, so the open
+view costs the frame about 3 ms there. The flights over unloaded land and lavapipe's line stand as
+read at `bb0b9bb`.
+
 # Item 27, the far cascade
 
 The engine's far cascade on 3DEngine 5.2.319, set through `SetSceneField` past the four counted
@@ -221,6 +270,7 @@ Done that day
 - Item 135 at `0ba4cb4`. A leaf block's faces take the sky floor at level 15 as at 14.
 - Item 136 at `6001eed`. The sun's shadows soften with the distance from their caster.
 - Item 137 at `b25e668`. The seed field edits through the engine's EditText.
+- Item 138 at `9c07673`. The README's costs table is read again at the defaults on 5.2.326.
 
 ## 2026-10-25
 
