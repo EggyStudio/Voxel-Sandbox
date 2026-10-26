@@ -5,89 +5,25 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `f1aa450`, item 27's last part, the far cascade behind a toggle, read at 06:26 on
-2026-10-26, carrying the review's files with a Reply, DEVLOG.md, a note and a captioned picture,
-pushed at 08:38 once the run of `5145d2f` ended green, its own run green at 09:43 with play in 65
-minutes. LightSettings.FarCascade is false by default with its comment saying why and FarReach is
-the render distance's blocks, ApplyField passing the reach or 0, RenderDistance's setter applying
-the field again when the reach changes, Render Settings gaining Far Cascade kept in the options
-file, and the README's options table its row in one sentence, that it keeps a deep cave's far walls
-from the sky's light at Low and costs about 2 ms of the frame; the note holds the cave and grove
-tables and the pair shows the deep cave at Low off and on, brightened four times. The strict build
-clean, 357 tests, play.sh 329 s. After `5145d2f`, item 134, the World and New World screens, read at
-06:09 on 2026-10-26, carrying the review's files with a Reply, DEVLOG.md and a captioned picture,
-pushed at 07:30 once the run of `0ba4cb4` ended green, its own run green at 08:35 with play in 65
-minutes. The pause menu gains World between Options and Save the World; the World screen lists
-WorldSave.Saved, the folders under the root with a readable world.json, last played first, six at a
-time under the wheel, each by name and kind of seed with the open one marked, a button opening a
-save through NextWorld, which carries a save name, SwitchWorld saving and leaving first, a transient
-run saying it keeps no saves; the New World screen has a World Type button cycling Generators.Kinds,
-a seed field, Random Seed, Create New World and Cancel, Menus.Begin and Menus.SeedOf reading a whole
-number as it is, a longer one folded, other words hashed as Java's String.hashCode and a blank field
-as random, the field the game's own Gui.TextField over the engine's GetCharPressed,
-IsKeyPressedRepeat and SetTextInputArea, the keys held while the screen is open so typing g steps no
-quality; the HUD's help line reads F3 debug where it read F3 settings, left from item 54. A test
-opens seed 42 from overworld and 42, seed 99162322 from flat and hello, and reads -5 with spaces
-around it; the README's pause menu paragraph follows. The Reply says the engine has no text field
-widget of its own, so the seed is typed into the game's field, which goes to the engine's ASKS.md.
-The picture was taken with XDG_DATA_HOME on a scratch folder, the owner's saves untouched. The
-strict build clean, 357 tests, play.sh 350 s. After `0ba4cb4`, item 135, the leaf faces' sky floor,
-read at 05:54 on 2026-10-26, carrying the review's files, DEVLOG.md and a captioned picture, pushed
-at 06:21 once the run of `7f59530` ended green, its own run green at 07:27 with play in 65 minutes.
-SectionMesher gives a Foliage face's corners a sky level of 14 at most so the floor's fade at 15
-does not reach the leaves, other faces unchanged, a MesherTests case reading a jungle leaf in open
-air at 14 on all 24 corners and a stone face at 15, the README's floor paragraph saying why. On the
-rain forest view in Release on powersave the near-black share at the 2% threshold goes from 0.126 to
-0.000001 and at 3% from 0.143 to 0.0007, the four first black pixels reading 0,29,0, 0,25,0, 0,26,0
-and 0,29,0 where they read 0,0,0 to 0,6,0; the grove at 1280 by 720 at hour 16 moves by an RMSE of
-0.0049 with 209 pixels past 3%, the cherry leaves' shaded sides lightening, and the village is
-unchanged at 0.0003. The strict build clean, 356 tests, play.sh 382 s with the jungle floor at 36.5
-against 44.6 as before. After `7f59530`, item 54, the engine's F1 and F3 taken by the game, read at
-05:25 on 2026-10-26, carrying the review's files with Replies, DEVLOG.md, a captioned picture and
-the leaves note's mend, pushed at 05:43 once the run of `1944378` ended green, its own run green at
-06:17 with play in 34 minutes. Program leaves F1 and F3 to the engine, the HUD, the hand and the
-block outline inside BeginUi and EndUi so F1 hides them, voxel.hud still hiding them for the capture
-scripts; the F3 window is gone, SettingsWindow becoming DebugWindows with the engine's three windows
-and item 40's off-screen performance window going; OverlaySections adds Player, Generation, Light,
-Sky, Sections and Mobs; a Debug Settings screen reached from Options holds Light Levels, Cull Unseen
-Sections and the three window toggles, none kept across runs, voxel.options taking debug; the
-Options page is placed by TopFor so Done stays on screen at GUI scale 3 in 720 pixels; the F3 with
-F4 and F3 with T chords stay. A headless test reads each section's lines and removes each by name,
-and play.sh's new check of the interface's keys reads the foot's blue 70.7, 0.0 under F1 and 70.7
-again, and the corner's blue 230.2 and 167.9 under F3; the README's controls, options table and F3
-passages follow, Decision 50. The Reply notes AGENTS.md's Ui row still naming the settings window.
-The strict build clean, 355 tests, play.sh 368 s. The owner, shown item 133's rain forest picture,
-wrote that the forest floor has black sides and blocks, something of the cascades' light below the
-trees; the coder reads the faces, their sky levels and the light with the floor on and off and the
-gi.toggle parts one by one, an item to follow. After `1944378`, item 133's second part, the canopy's
-floor on 5.2.319, read at 05:03 on 2026-10-26, pushed at 05:05 once the run of `48e5bea` ended
-green, its own run green at 05:40 with play in 35 minutes, carrying the review's files, DEVLOG.md, a
-note and a captioned picture, with an ASKS.md entry in the engine's tree. The package pinned to
-5.2.319; ChunkRenderer.SkyFloor defaults to 0.65, set into looks.z as how much of item 117's floor
-is taken away so the clouds' copy keeps it whole, SetLooks running at construction too since a
-transient run never sent the looks, which is why the first final reading still showed the whole
-floor; play.sh's jungle floor reads 36.5 against the shade's 44.6, 0.82 above its 0.72, the README's
-floor paragraph giving the readings. On the flat world the open shade reads 44.4; the engine alone,
-the floor off, lights the grass under jungle leaves two deep to 32.9 and under oak leaves to 32.7
-with the leaves passing half, against 24.5 and 26.1 passing none, 0.74 of the open shade, where item
-117's whole floor read 46.4, past the open shade's own; the floor at 0.75, 0.6, 0.5 and 0 reads
-38.6, 34.1, 32.9 and 32.9 under jungle, and at 0.65 the flat canopies read 35.4 and 35.1, 0.80 of
-the open shade as the source lights level 13 against 15, so the floor is lowered and not taken out.
-Seed 1's capture means with the whole floor against 0.65, the jungle 143.7 against 141.3, the forest
-151.8 against 147.0 and the rain forest's floor 141.6 against 138.2, the picture. The cost at the
-grove at 1920 by 1080 at High on quiet runs, the same build with the shares against a scratch copy
-with none, global illumination 6.14 and 6.09 ms against 3.44 and 3.42 and the frame 19.58 and 19.51
-against 16.70 and 16.64, the scene pass and the shadows within 0.1 ms, two more pairs under another
-program's 56 to 77% of the GPU left out; it holds, so the 2.7 ms went to the engine as an ASKS.md
-entry, item 127 there, after its item 112. Every reading on the power-saving profile with the
-processor's energy preference at power. The strict build clean, 354 tests, play.sh 342 s.
+Reviewed up to `7c36ec8`, item 42's last part, the water's mirror on 5.2.322, read at 10:17 on
+2026-10-26, pushed at 10:18 once the run of `f1aa450` ended green, its own run watched, carrying the
+review's files, DEVLOG.md and a captioned picture. WaterMirror sets the engine's plane each frame at
+the water's top, an eighth under its blocks' tops, found by 15 rays across the view's lower half
+taking the most common water top, no plane when no water is in view, when the eye is under water or
+when the setting is off, Water Reflections on Render Settings on by default, the terrain shader's
+water branch reading mirrored over the sky's share; the plane at seed 1's nearest river at 104, 46,
+-72 is 48.875. At 1920 by 1080 the frame reads 22.8 ms on against 20.2 off, cpu.mirror 2.9 ms and
+gpu.mirror 2.6 overlapping, a second round under another dotnet on the GPU left out; play.sh's pool
+mirrors the red wall at 168, 146, 166 and not with the setting off at 159, 179, 210, the water's
+depth check reading its fresnel with the reflections off since the mirror carries the shore's colors
+into it, and a MesherTests case finds the water's top through a ray and none under stone. The strict
+build clean, 358 tests, play.sh 406 s on the GPU and 1,807 s on lavapipe.
+
+Before it, `f1aa450` came, item 27's last part, the far cascade behind a toggle, pushed at 08:38 on
+2026-10-26, its run green at 09:43.
 
 Before it, `48e5bea` came, item 133's first part, the Foliage part and its share of light, pushed at
 01:44 on 2026-10-26, its run green at 02:42.
-
-Before it, `c802dea` came, the costs read on powersave, with `cc49c81`, the README's costs, pushed
-at 20:57 on 2026-10-25, its run red on the runners' dotnet install and green on the second attempt
-at 22:32, Verdict 7, the play job 66 minutes.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -95,31 +31,6 @@ read whole before a batch; the archive is read when an item or a verdict named h
 full.
 
 ## Now
-
-42. **Water that mirrors the sky and the shore, with the bed seen through it (Decision 21).** The
-    look the owner aims at shows calm water mirroring the sky and the shore and clear pools in
-    caves. The game's water gains a surface of its own: the sky and the land across the water
-    reflected in it, through the engine's reflections where they reach a flat surface and a planar
-    reflection of the game's own where they do not, read first and said; the bed seen through the
-    water, refracted a little and darkened with depth by the water's color, so a pool reads clear
-    and a lake reads deep; a slow wave in the normal so the reflection moves; the water's edge drawn
-    where it meets a block without a hard line; and the view from under the water tinted and fogged
-    as the source's is. Captures of a lake at noon and at a low sun and of a cave pool in the
-    record, beside the modpack's own pictures. Tests: the reflection's picture read in a capture's
-    pixels where the sky should mirror, and the bed's color darkening with depth in a laid pool.
-    After item 27. Two commits, the reflection, then the depth and the edge. The reading at 22:47 on
-    2026-10-24 on 5.2.283, the engine's traced reflection for a glossy surface under roughness 0.5
-    going through the frame before's picture, the field's cascades and the GPU's rays, the box
-    reflection probes for a room, and no planar mirror and no reflection call for a surface the
-    transparent pass draws; the water at roughness 0.05 read live looks as it does rough, the river
-    in the haze with no shore or sky in it and the pool by the red wall 143, 128, 183 where the
-    wall's image would lie, a blur and not a mirror. The call is the coder's, the mirror asked of
-    the engine as its item 112, a planar reflection at a height a program's material reads as a
-    texture, and the cheap part built first as this item's second commit, the sky's color in a
-    fresnel by the view's angle from the environment map, the bed seen through the water darkened
-    with depth, the edge and the view from under, with the shore's mirror when the engine's plane
-    lands. The second commit at `9d4b295` on 2026-10-24, the depth, the edge and the sky's fresnel,
-    the water a mesh of its own; the shore's mirror with the package carrying the engine's item 112.
 
 136. **The sun's shadows soften with the distance from their caster.** From the game's item 43's ask
     of 2026-10-24, answered by the engine's item 111 at `45edfbf6` in 5.2.322,

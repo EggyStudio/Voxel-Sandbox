@@ -33,6 +33,11 @@ Seed 1's deep cave at -59.5, -4, -91.5 at noon at Low, brightened four times to 
 walls lit by the sky's light its rays reach past the four cascades on the left and darker with the
 far cascade on the right, where those rays meet the rock.
 
+![](.github/devlog/2026-10-26-item-42-mirror.webp)
+Seed 1's nearest river at 104, 46, -72 at noon from over its bank, the water showing the sky's light
+alone on the left and on the right mirroring the far bank's trees and a pig through the engine's
+planar reflection, its plane at the water's top at 48.875.
+
 # Item 133, the canopy's floor on 3DEngine 5.2.319
 
 On 5.2.319 the merge of the cascades sees past the leaves and a ray's reach stops where it does, so
@@ -156,6 +161,8 @@ Done that day
 
 - Item 27 at `f1aa450`. Caves as the source's newer ones, cheese, spaghetti and noodle, with
   aquifers.
+- Item 42 at `7c36ec8`. Water that mirrors the sky and the shore, with the bed seen through it
+  (Decision 21).
 - Item 54 at `7f59530`. The game takes the engine's F1 and F3, its HUD in the hidden scope and its
   developer's parts as overlay sections (Decision 26).
 - Item 95 at `a4d383c`. The world's sections become mesh entities the engine draws (Decision 43).

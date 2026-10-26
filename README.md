@@ -857,6 +857,7 @@ sections loaded, waiting and drawn, and the mobs.
 | | GPU Generation, the caves' noises read on the GPU | Off, On | On |
 | | Global Illumination | Off, Low, Medium, High | High |
 | | Shadow Distance | 16 to 192 blocks by 8 | 64 |
+| | Soft Shadows, how wide the sun looks across, which softens a shadow's edge the further it falls from what casts it, about 0.6 ms of the frame | 0 to 5 degrees by 0.01 | 1.5 |
 | | Corner Shade | 0 to 100% by 5, the sections shaded again as it is let go | 50% |
 | | Emission, what every emissive surface's light is multiplied by | 0 to 4 by 0.1 | 1 |
 | | Colored Lamps, each emissive block's light its own color or white as bright | Off, On | On |

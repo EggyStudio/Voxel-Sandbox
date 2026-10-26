@@ -2291,6 +2291,34 @@ before a batch.
     far cascade off by default behind Render Settings' Far Cascade with its reach the render
     distance, the cave at Low pictured off and on; the item closed with every part.
 
+42. **Water that mirrors the sky and the shore, with the bed seen through it (Decision 21).** The
+    look the owner aims at shows calm water mirroring the sky and the shore and clear pools in
+    caves. The game's water gains a surface of its own: the sky and the land across the water
+    reflected in it, through the engine's reflections where they reach a flat surface and a planar
+    reflection of the game's own where they do not, read first and said; the bed seen through the
+    water, refracted a little and darkened with depth by the water's color, so a pool reads clear
+    and a lake reads deep; a slow wave in the normal so the reflection moves; the water's edge drawn
+    where it meets a block without a hard line; and the view from under the water tinted and fogged
+    as the source's is. Captures of a lake at noon and at a low sun and of a cave pool in the
+    record, beside the modpack's own pictures. Tests: the reflection's picture read in a capture's
+    pixels where the sky should mirror, and the bed's color darkening with depth in a laid pool.
+    After item 27. Two commits, the reflection, then the depth and the edge. The reading at 22:47 on
+    2026-10-24 on 5.2.283, the engine's traced reflection for a glossy surface under roughness 0.5
+    going through the frame before's picture, the field's cascades and the GPU's rays, the box
+    reflection probes for a room, and no planar mirror and no reflection call for a surface the
+    transparent pass draws; the water at roughness 0.05 read live looks as it does rough, the river
+    in the haze with no shore or sky in it and the pool by the red wall 143, 128, 183 where the
+    wall's image would lie, a blur and not a mirror. The call is the coder's, the mirror asked of
+    the engine as its item 112, a planar reflection at a height a program's material reads as a
+    texture, and the cheap part built first as this item's second commit, the sky's color in a
+    fresnel by the view's angle from the environment map, the bed seen through the water darkened
+    with depth, the edge and the view from under, with the shore's mirror when the engine's plane
+    lands. The second commit at `9d4b295` on 2026-10-24, the depth, the edge and the sky's fresnel,
+    the water a mesh of its own; the shore's mirror with the package carrying the engine's item 112.
+    Done at `7c36ec8` on 2026-10-26 on 5.2.322, the shore's mirror through the engine's plane at the
+    water's top behind Water Reflections, the river mirroring the far bank pictured, 2.6 ms of the
+    frame at 1920 by 1080.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

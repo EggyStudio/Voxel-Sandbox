@@ -168,6 +168,11 @@ public sealed class OptionScreens
                 light.ShadowDistance = v;
                 SetShadowDistance(v);
             }) { Low = 16, High = 192, Step = 8, Format = v => $"{v:0} blocks" },
+            new("Soft Shadows", () => light.ShadowSoftness, v =>
+            {
+                light.ShadowSoftness = v;
+                SetShadowSoftness(v);
+            }) { High = 5, Step = 0.01f, Format = v => $"{v:0.00} degrees" },
             // The sections are shaded again once the slider is let go, rather than each frame it moves.
             new("Corner Shade", () => renderer.CornerStrength * 100, v => renderer.CornerStrength = v / 100)
                 { High = 100, Step = 5, Format = Option.Percent, Settled = game.World.ReshadeAll },

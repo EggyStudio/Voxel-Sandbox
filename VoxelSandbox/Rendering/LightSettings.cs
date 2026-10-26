@@ -32,6 +32,11 @@ public sealed class LightSettings
     // and takes a millisecond off the frame at 1920 by 1080 against 96, where 48 lost the trees' shadows
     // fifty blocks off.
     public float ShadowDistance = 64;
+    // The sun looks 1.5 degrees across, three times as wide as from the earth, which softens a tree's
+    // long shadow in the afternoon toward its far end and keeps it sharp at the trunk, where 0.53 left
+    // the shadows' edges stepping along the pixels of the blocks they cross and 3 blurred a crown's
+    // shadow into a smear, for about 0.6 ms of the frame at High at the cherry grove at 1920 by 1080.
+    public float ShadowSoftness = 1.5f;
     // A tenth of the light past 1 spread around it, a faint glow about a flame or a lamp, where more
     // spreads a halo far wider than the flame's own block.
     public float Bloom = 0.1f;
@@ -60,6 +65,7 @@ public sealed class LightSettings
         SetAmbientOcclusion(Occlusion);
         ApplyExposure();
         SetShadowDistance(ShadowDistance);
+        SetShadowSoftness(ShadowSoftness);
         // The sun's contact shadows are left out where the shadow map holds a point, since their
         // blur lays a soft fringe beside the map's edges, which step along the blocks' pixels, and
         // kept past the map, where the land has no other shadow of the sun.
