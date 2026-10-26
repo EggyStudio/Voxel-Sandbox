@@ -44,6 +44,12 @@ the sun 0 degrees across at the top left, 0.53 at the top right, 1.5, the defaul
 left and 3 at the bottom right, the edges stepping along the blocks' pixels at 0 and softening
 toward each shadow's far end as the sun widens.
 
+![](.github/devlog/2026-10-26-item-137-seed-field.webp)
+The New World screen at 1280 by 720 in the default packs' font, the seed Glacier Bay 7 typed into
+its field and selected whole with Control and A above, and below it the caret a click placed between
+Glacier and the space after it, the engine's text edit measuring in a font built from the pack's
+sheet.
+
 # Item 133, the canopy's floor on 3DEngine 5.2.319
 
 On 5.2.319 the merge of the cascades sees past the leaves and a ray's reach stops where it does, so
@@ -214,6 +220,7 @@ Done that day
   begun.
 - Item 135 at `0ba4cb4`. A leaf block's faces take the sky floor at level 15 as at 14.
 - Item 136 at `6001eed`. The sun's shadows soften with the distance from their caster.
+- Item 137 at `b25e668`. The seed field edits through the engine's EditText.
 
 ## 2026-10-25
 

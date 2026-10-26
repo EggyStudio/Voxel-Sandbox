@@ -2331,6 +2331,18 @@ before a batch.
     on 2026-10-26, Soft Shadows on Render Settings with 1.5 degrees the default, the village's oaks
     at hour 16 pictured at 0, 0.53, 1.5 and 3, the frame at High 0.6 ms more at the grove.
 
+137. **The seed field edits through the engine's EditText.** From item 134's own field and the
+    engine's item 128 at `0754b975`, on the package carrying it. The New World screen's seed field
+    becomes a TextEdit the engine's EditText updates, gaining paste, a selection, word moves and
+    Tab, IsTextInputActive replacing the game's own key gate on the screen, the box, the text and
+    the caret drawn by the game in the pack's look; the pack's bitmap font, ascii.png on a 16 by 16
+    grid with its own glyph widths, is not an engine Font, so the caret a click places is measured
+    either in a Font built from the sheet through LoadFontFromImage or, where the widths cannot be
+    given that way, through a measure the engine's EditText takes, asked in ASKS.md first; a test
+    typing and pasting a seed through the screen, and the README's pause menu paragraph. One commit,
+    small, after item 136. Done at `b25e668` on 2026-10-26 on 5.2.326, the seed field a TextEdit
+    measured in a Font built from the pack's sheet, play.sh typing and pasting a seed.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

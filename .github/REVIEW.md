@@ -5,46 +5,31 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `4aef50c`, the README's quick links, read at 10:46 on 2026-10-26, README.md with the
-review's files and DEVLOG.md and no code, pushed with `6001eed` in one push at 11:32 once the run of
-`7c36ec8` ended green, so the owner's links show, its run green at 12:45 with play in 73 minutes.
-After `6001eed`, item 136, the sun's width behind a slider, read at 10:32 on 2026-10-26, carrying
-the review's files, DEVLOG.md, a note and a captioned picture, pushed with `4aef50c` at 11:32.
-Render Settings gains Soft Shadows from 0 to 5 degrees by 0.01, kept in the options file, the
-default 1.5; at seed 1's village at hour 16 the width 0 steps along the blocks' pixels the whole
-way, 0.53 keeps most of the steps, 1.5 is sharp at the trunk and soft toward the far end with the
-crown still read, and 3 smears the crowns' far halves, the four differing little at noon. At the
-cherry grove at 1920 by 1080 in two rounds the scene pass grows about 0.6 ms at High for any width,
-3 up to 1.0, the shadow maps costing the same at every width, the frame at High 19.7 and 19.8 ms
-going to 20.4 and 20.4 at 1.5 and at Low moving less than the rounds differ, 16.5 and 17.3 against
-16.9 and 16.8, other sessions' test runs at 12 to 14% of the GPU through four readings named in the
-note. The strict build clean, 358 tests, play.sh 461 s with the pillar's shadow and the poppy's 7 of
-49 dark points passing at 1.5. For item 137 LoadFontFromImage serves without an engine change,
-splitting glyph runs by a key color, so the game builds a Font from the pack's sheet with each
-glyph's run as wide as its advance and a magenta column between, EditText measuring at spacing 0 so
-its caret lands where PackFont draws; no ask needed, the item waiting on the eighth package. After
-`7c36ec8`, item 42's last part, the water's mirror on 5.2.322, read at 10:17 on 2026-10-26, pushed
-at 10:18 once the run of `f1aa450` ended green, its own run green at 11:26 with play in 68 minutes,
-carrying the review's files, DEVLOG.md and a captioned picture. WaterMirror sets the engine's plane
-each frame at the water's top, an eighth under its blocks' tops, found by 15 rays across the view's
-lower half taking the most common water top, no plane when no water is in view, when the eye is
-under water or when the setting is off, Water Reflections on Render Settings on by default, the
-terrain shader's water branch reading mirrored over the sky's share; the plane at seed 1's nearest
-river at 104, 46, -72 is 48.875. At 1920 by 1080 the frame reads 22.8 ms on against 20.2 off,
-cpu.mirror 2.9 ms and gpu.mirror 2.6 overlapping, a second round under another dotnet on the GPU
-left out; play.sh's pool mirrors the red wall at 168, 146, 166 and not with the setting off at 159,
-179, 210, the water's depth check reading its fresnel with the reflections off since the mirror
-carries the shore's colors into it, and a MesherTests case finds the water's top through a ray and
-none under stone. The strict build clean, 358 tests, play.sh 406 s on the GPU and 1,807 s on
-lavapipe. The owner asked at 10:45 on 2026-10-26 for quick links to the devlog and the engine's
-cheat sheet at the very top of the README, plain links to the files; the reviewer wrote the line as
-the README's first line with full addresses as N 4.3 has them, the coder committing README.md alone.
+Reviewed up to `b25e668`, item 137, the seed field on the engine's EditText, on 5.2.326, pushed at
+13:52 on 2026-10-26 once the run of `4aef50c` ended green, its own run watched, carrying REVIEW.md.
+The seed field is a TextEdit through EditText with a font and size, the font PackFont.MeasureOf, the
+sheet's printable glyphs in one row for LoadFontFromImage with each run as wide as its advance and
+magenta columns between, a headless test reading it measuring as the sheet draws at 8 and 16 pixels,
+the default font at ten times the scale without a pack; the game draws the box, the text, a blue
+selection and the caret, the box EditText measures in two pixels inside the field's so the text sits
+four in as before, a click placing the caret between glyphs live; the field holds the keyboard as
+the screen opens, Enter begins the world, the key gate is IsTextInputActive and Escape goes back
+while the field holds the keyboard. The game's tests cannot inject input, ConsoleHost and Input's
+setters being internal, so the unit test reads the field holding the keyboard on open and play.sh's
+new check goes Escape, World and New World by clicks, sends 123 through input.text and 45 through
+the clipboard with Control held by a background key and V sent once input.state reads Control down,
+Enter then giving the world of seed 12345, run last since it switches the world, 9 s on the GPU and
+lavapipe's first run in CI; play's closing line no longer says the pool reflects nothing. Global
+illumination at the grove at 1920 by 1080 at hour 16 alternating 5.2.322 and 5.2.326 reads High 6.09
+and 6.62 ms going to 5.37 and 5.32 and Low 3.07 and 3.30 to 2.58 and 2.60, the frame at High 20.4
+and 21.9 to 19.3 and 19.0, the engine's item 127 holding in the game. The strict build clean, 360
+tests, play.sh 459 s.
+
+Before it, `4aef50c` came with `6001eed`, the README's quick links and item 136, pushed at 11:32 on
+2026-10-26, its run green at 12:45.
 
 Before it, `f1aa450` came, item 27's last part, the far cascade behind a toggle, pushed at 08:38 on
 2026-10-26, its run green at 09:43.
-
-Before it, `48e5bea` came, item 133's first part, the Foliage part and its share of light, pushed at
-01:44 on 2026-10-26, its run green at 02:42.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -52,17 +37,6 @@ read whole before a batch; the archive is read when an item or a verdict named h
 full.
 
 ## Now
-
-137. **The seed field edits through the engine's EditText.** From item 134's own field and the
-    engine's item 128 at `0754b975`, on the package carrying it. The New World screen's seed field
-    becomes a TextEdit the engine's EditText updates, gaining paste, a selection, word moves and
-    Tab, IsTextInputActive replacing the game's own key gate on the screen, the box, the text and
-    the caret drawn by the game in the pack's look; the pack's bitmap font, ascii.png on a 16 by 16
-    grid with its own glyph widths, is not an engine Font, so the caret a click places is measured
-    either in a Font built from the sheet through LoadFontFromImage or, where the widths cannot be
-    given that way, through a measure the engine's EditText takes, asked in ASKS.md first; a test
-    typing and pasting a seed through the screen, and the README's pause menu paragraph. One commit,
-    small, after item 136.
 
 29. **Generation and meshing on the GPU, the blocks kept on the CPU (Decision 12).** The owner's
     word of about 00:30 on 2026-10-21: compute shaders for generation and the rest are a big one.
@@ -175,6 +149,18 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
+
+138. **The README's costs table is read again at the defaults on 5.2.326.** Proposed by the coder on
+    2026-10-26. The table read at `cc49c81` no longer matches the default frame, since the defaults
+    gained the sun's width at 1.5 degrees, about 0.6 ms more at High, and the water's mirror, 2.6 ms
+    where water shows, while 5.2.326's cheaper crossings took about 0.8 ms off global illumination
+    at High; the table's views are read again on 5.2.326 at the defaults, alternated against nothing
+    on the GPU with the power profile stated, in one docs commit with a note. With it the comment
+    above ApplyField in LightSettings.cs, which still says the engine's far cascade is left off at
+    the camera's far plane with 74-block cells at about 5 ms, says what stands since item 27, the
+    Far Cascade setting reaching the render distance with six-block cells at 1.6 to 2 ms, off by
+    default. A pool above a river taking the sky alone, the engine mirroring one plane, is left as a
+    lead until the owner remarks on it. One commit, small.
 
 ## Verdicts
 

@@ -307,18 +307,15 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>How many columns around the player are drawn, and two more loaded.</summary>
     /// <remarks>
-    /// Twelve by default, 192 blocks. Over the first seed's spawn at noon, seen from above the
-    /// forest at 1280 by 720 on the development machine's RTX 4070 Laptop GPU, the frame holds 60 a
-    /// second there with 6.9 ms of each frame to spare, its GPU's work 9.5 ms, where 8 columns take
-    /// 6.6 with 11.3 to spare, 14 take 11.3 with 3.2 to spare and 16 take 12.8 and lose the 60 a
-    /// second, the main thread bounding the frame, the game's update and drawing with the engine's
-    /// render work. So 12 keeps twice the margin of 14, the most that holds. Every section the eye
-    /// can see within it is drawn each frame, since one left out leaves the scene field, and each of
-    /// the engine's passes leaves out the sections whose boxes it cannot see, the terrain's shader
-    /// keeping its positions, so the shadows, though they reach 96 blocks, take 1.2 ms at 12 columns
-    /// and at 16, and global illumination 1.4. Flying over land not yet loaded, the main thread
-    /// meshes and joins the columns that come into reach, and the frame takes 18 to 19 ms at 8
-    /// columns and 21 to 29 at 12.
+    /// Twelve by default, 192 blocks. Flying at a height of 90 over the first seed's spawn at noon,
+    /// looking east over the forest to the sea at 1280 by 720 on the development machine's RTX 4070
+    /// Laptop GPU with every setting at its default, the frame takes 17.5 to 21.5 ms at 12 columns,
+    /// the GPU's work and the CPU's passes each about 16 ms of it, where 8 columns keep 60 a second
+    /// with the GPU's work at 11.2 ms and 16 take about 30 ms. Every section the eye can see within
+    /// it is drawn each frame, since one left out leaves the scene field, and each of the engine's
+    /// passes leaves out the sections whose boxes it cannot see, the terrain's shader keeping its
+    /// positions. Flying over land not yet loaded, the main thread joins the columns that come into
+    /// reach, and the frame takes 18 to 19 ms at 8 columns and 21 to 29 at 12.
     /// </remarks>
     public int RenderDistance
     {

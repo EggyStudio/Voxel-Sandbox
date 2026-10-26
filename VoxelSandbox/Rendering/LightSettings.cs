@@ -74,10 +74,10 @@ public sealed class LightSettings
         SetColorGrading(Contrast, Saturation, Color.White);
     }
 
-    // The engine's far cascade is left off. Reaching the camera's far plane its cells are 74 blocks
-    // wide, which hold the ground about the eye as a slab and took a quarter of the sky's blue from a
-    // wall beside a pane of glass, cost the scene pass about 5 ms at the cherry grove at 1920 by 1080,
-    // and left the light deep in a cave as it was.
+    // The scene's field takes the four cascades and, where Far Cascade is on, a far one reaching the
+    // render distance's blocks, its cells six blocks wide at 12 columns, rather than the camera's far
+    // plane, whose cells 74 blocks wide hold the ground about the eye as a slab and took a quarter of
+    // the sky's blue from a wall beside a pane of glass.
     public void ApplyField() => SetSceneField(Cascades, CellSize, Budget, farCascade: FarCascade ? FarReach : 0);
 
     /// <summary>Brings the frame's light under 1 by the curve of the four numbers, which chooses that curve.</summary>

@@ -1524,19 +1524,21 @@ the Render Settings screen and through `voxel.distance`, the F3 overlay giving t
 its Sections the draws and triangles, and a save keeps no distance of its own. The sections are drawn
 through the terrain's own shader, which keeps the positions their meshes hold, and the game marks it
 so with `SetShaderKeepsPositions`, so each of the engine's passes, the camera's, the depth's and
-each of the sun's three shadow cascades', leaves out the sections whose boxes it cannot see, and the
-shadows take about the same from 8 columns to 16. Over seed 1's spawn at noon, looking east over
-the forest to the sea, at 1280 by 720 offscreen on the development machine's RTX 4070 Laptop GPU
-with the three default packs and the screen's probes on, in a Debug build, the frame keeps 60 a
-second at 8 columns, stands at the edge of it at 12, where the GPU's work bounds it and two readings
-gave the frame 16.7 and 17.6 ms, and loses it at 16. The frame's time, the GPU's and the CPU's
-passes' in milliseconds and the memory the game holds:
+each of the sun's three shadow cascades', leaves out the sections whose boxes it cannot see. Flying
+at a height of 90 over seed 1's spawn at noon, looking east over the forest to the sea, at 1280 by
+720 offscreen on the development machine's RTX 4070 Laptop GPU with the three default packs and
+every setting at its default, in a Debug build on the machine's power-saving profile, the frame
+keeps 60 a second at 8 columns and loses it at 12, where it takes 17.5 to 21.5 ms, the GPU's work
+and the CPU's passes each about 16 ms of it. The sun's shadows take 2.5 ms of the GPU at 8 columns,
+4.7 at 12 and 7.4 at 16, and the sea's mirror 0.5, 1.4 and 2.9 ms of the GPU and 0.8, 2.0 and 3.6
+of the CPU. The frame's time, the GPU's and the CPU's passes' in milliseconds, the middle of the
+readings with no other program on the GPU, and the memory the game holds:
 
 | columns | frame | GPU | CPU's passes | memory |
 |---|---|---|---|---|
-| 8 | 16.7 | 12.1 | 6.5 | 1,029 MB |
-| 12 | 16.7 | 16.6 | 11.0 | 1,308 MB |
-| 16 | 23.8 | 23.8 | 17.7 | 1,942 MB |
+| 8 | 16.7 | 11.2 | 9.7 | 1,083 MB |
+| 12 | 20.4 | 16.6 | 16.7 | 1,477 MB |
+| 16 | 30.2 | 24.6 | 25.6 | 2,255 MB |
 
 The plants are most of what a meadow draws. Over seed 1's plains at noon at 12 columns, from 20
 blocks up at -288, 64 looking east, they take the frame from 1.18 million triangles to 1.64, the
