@@ -65,4 +65,20 @@ public sealed class HeadlessGameTests
         // Each is the engine's overlay's, which takes it away again by its name.
         foreach (var name in OverlaySections.Names) Assert.True(E3D.RemoveDebugOverlaySection(name), name);
     }
+
+    [Fact]
+    public void The_New_World_Screen_Begins_A_World_Of_The_Kind_And_The_Seed_Typed()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        game.Menus.Begin(game, "overworld", "42");
+        headless.Step(2);
+        Assert.Equal(("overworld", 42), (game.World.Generator.Name, game.World.Generator.Seed));
+        Assert.Equal(Menu.None, game.Menus.Open);
+        // Words are hashed into a seed as Minecraft hashes them, and a number is taken as it reads.
+        game.Menus.Begin(game, "flat", "hello");
+        headless.Step(2);
+        Assert.Equal(("flat", 99162322), (game.World.Generator.Name, game.World.Generator.Seed));
+        Assert.Equal(-5, Menus.SeedOf(" -5 "));
+    }
 }

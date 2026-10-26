@@ -2144,6 +2144,29 @@ before a batch.
     engine's overlay sections and a Debug Settings screen, the HUD and the hand under the engine's
     F1, Decision 50, the World part to item 134.
 
+135. **A leaf block's faces take the sky floor at level 15 as at 14.** From the owner's word on item
+    133's rain forest picture on 2026-10-26, the forest floor showing black sides and blocks under
+    the trees. The coder's reading at seed 1's rain forest floor at noon found every near-black
+    pixel a jungle or oak leaf face, south or west, 5 to 10 blocks off, facing air at sky level 15
+    inside a pocket of the canopy open to the sky straight up; the screen probes change nothing, the
+    cascades give such a face about nothing since the rays leaving a vertical face in a narrow
+    pocket meet leaves within a block or two and the sky at grazing angles alone, and the game's
+    floor gives it nothing since it fades out from 14 to 15 so a wall on open ground keeps the
+    engine's shade, the one face at sky 14 lifted to 0,19,0 by the floor and 0,0,0 without; the
+    near-black share of the view 0.138 at `a4d383c` and 0.126 as committed, so it stood before item
+    133, and the canopy's floor is not black at any depth, the grass under 2, 3, 4 and 6 leaves
+    33.1, 27.8, 26.1 and 27.8 against the shade's 43.5. So leaf blocks' faces carry their sky level
+    at most 14, the floor applying to them at 15 as at 14, only leaves changing so a wall on open
+    ground keeps its shade, and the haze's share at a leaf moving from skyBrightness(15) to (14),
+    which the eye's own level overrides in the open; the near-black share of that view read before
+    and after, the picture with the near-black pixels marked beside the mended view, and a test of a
+    leaf face at sky 15 reading the floor's lift. One commit, small, before item 134. The engine's
+    part, a vertical face in a narrow pocket of a canopy taking about no light from the cascades, is
+    read as the light such a pocket gets and not a fault, no ask sent unless the owner reads the
+    mended view otherwise. Done at `0ba4cb4` on 2026-10-26, the leaf faces' sky level 14 at most,
+    the near-black share of the rain forest view from 0.126 to about nothing, the marked view
+    pictured beside the mended one.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

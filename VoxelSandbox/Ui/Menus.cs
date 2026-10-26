@@ -1,3 +1,4 @@
+using System.Globalization;
 using Engine;
 using static Engine.E3D;
 
@@ -19,6 +20,8 @@ public enum Menu
     Sounds,
     SkyColor,
     Debug,
+    World,
+    NewWorld,
 }
 
 /// <summary>
@@ -47,6 +50,11 @@ public sealed class Menus
     private List<string>? _chosen;
     private IReadOnlyList<string> _available = [];
     private int _packScroll;
+    // The saves listed as the World screen opened and how far its list is scrolled, and the New World
+    // screen's kind and the seed typed.
+    private IReadOnlyList<(string Name, string Kind, int Seed)> _saves = [];
+    private int _worldScroll, _kind;
+    private string _seedText = "";
     // The packs on as the screen last read them, so a fetch that turns the default packs on while it
     // is open shows them, and whether a default pack is missing as the fetch last stood, worked out
     // as it changes rather than each frame, since it reads every default pack's bytes.
@@ -94,7 +102,8 @@ public sealed class Menus
             Menu.Packs or Menu.Video or Menu.Render or Menu.PostProcessing or Menu.SkyAndVisuals or Menu.Sounds or Menu.Debug => Menu.Options,
             Menu.SkyColor => Menu.SkyColors,
             Menu.SkyColors or Menu.Particles => Menu.SkyAndVisuals,
-            Menu.Options => Menu.Pause,
+            Menu.Options or Menu.World => Menu.Pause,
+            Menu.NewWorld => Menu.World,
             _ => Menu.None,
         };
     }
@@ -114,12 +123,27 @@ public sealed class Menus
             Title("Game Menu", top);
             if (Gui.Button("Back to Game", Row(0))) Open = Menu.None;
             if (Gui.Button("Options...", Row(1))) Open = Menu.Options;
-            if (Gui.Button("Save the World", Row(2))) game.SaveWorld();
-            if (Gui.Button("Save and Quit", Row(3)))
+            if (Gui.Button("World...", Row(2)))
+            {
+                (_saves, _worldScroll) = (game.Transient ? [] : WorldSave.Saved(), 0);
+                Open = Menu.World;
+            }
+            if (Gui.Button("Save the World", Row(3))) game.SaveWorld();
+            if (Gui.Button("Save and Quit", Row(4)))
             {
                 game.SaveWorld();
                 QuitAsked = true;
             }
+            return;
+        }
+        if (Open == Menu.World)
+        {
+            DrawWorlds(game, s, height);
+            return;
+        }
+        if (Open == Menu.NewWorld)
+        {
+            DrawNewWorld(game, s, height);
             return;
         }
         if (Open == Menu.Packs)
@@ -333,6 +357,79 @@ public sealed class Menus
         if (Gui.TextWidth(text) <= width) return text;
         while (text.Length > 1 && Gui.TextWidth(text + "...") > width) text = text[..^1];
         return text + "...";
+    }
+
+    // The saves to open, the one played last first, six at a time under the wheel, the open one
+    // marked, and the button to the New World screen under them.
+    private void DrawWorlds(VoxelGame game, int s, int height)
+    {
+        const int Shown = 6;
+        var top = TopFor(Shown + 1);
+        Title("World", top);
+        Rectangle Wide(int row) => new(GetScreenWidth() / 2 - 155 * s, top + (row * 24 + 16) * s, 310 * s, height);
+        var gray = new Color(160, 160, 160, 255);
+        if (game.Transient) Gui.Centered("A transient run keeps no saves", Wide(0), gray);
+        else if (_saves.Count == 0) Gui.Centered("No world is saved yet", Wide(0), gray);
+        _worldScroll = Math.Clamp(_worldScroll - (int)GetMouseWheelMove(), 0, Math.Max(0, _saves.Count - Shown));
+        for (int i = 0; i < Math.Min(Shown, _saves.Count - _worldScroll); i++)
+        {
+            var (name, kind, seed) = _saves[_worldScroll + i];
+            var open = name == game.WorldName;
+            if (Gui.Button($"{name}, {kind} of seed {seed}{(open ? ", open" : "")}", Wide(i)) && !open)
+            {
+                game.NextWorld = (kind, seed, name);
+                Open = Menu.None;
+            }
+        }
+        if (Gui.Button("New World...", Wide(Shown)))
+        {
+            (_kind, _seedText) = (0, "");
+            Open = Menu.NewWorld;
+        }
+        if (Gui.Button("Done", Wide(Shown + 1))) Open = Menu.Pause;
+    }
+
+    // A world begun of a kind and a seed, typed or offered at random, as Minecraft's screen of a new
+    // world begins one.
+    private void DrawNewWorld(VoxelGame game, int s, int height)
+    {
+        var top = TopFor(6);
+        Title("Create New World", top);
+        Rectangle Wide(int row) => new(GetScreenWidth() / 2 - 155 * s, top + (row * 24 + 16) * s, 310 * s, height);
+        var kinds = Generators.Kinds;
+        if (Gui.Button($"World Type: {char.ToUpperInvariant(kinds[_kind][0])}{kinds[_kind][1..]}", Wide(0))) _kind = (_kind + 1) % kinds.Length;
+        var gray = new Color(160, 160, 160, 255);
+        Gui.Text("Seed for the world, a random one where blank", (int)Wide(1).X, (int)Wide(1).Y + 6 * s, gray);
+        _seedText = Gui.TextField(_seedText, Wide(2), 32);
+        if (Gui.Button("Random Seed", Wide(3))) _seedText = Random.Shared.Next().ToString(CultureInfo.InvariantCulture);
+        if (Gui.Button("Create New World", Wide(4))) Begin(game, kinds[_kind], _seedText);
+        if (Gui.Button("Cancel", Wide(5))) Open = Menu.World;
+    }
+
+    /// <summary>
+    /// Begins a world of a kind with the seed a text gives, the world open saved and left at the
+    /// start of the next frame, or opens the one saved of that kind and seed, as the Create New World
+    /// button does.
+    /// </summary>
+    public void Begin(VoxelGame game, string kind, string seedText)
+    {
+        game.NextWorld = (kind, SeedOf(seedText), null);
+        Open = Menu.None;
+    }
+
+    /// <summary>
+    /// The seed a text gives, the whole number it reads as, a longer number folded into one, or other
+    /// text hashed as Minecraft hashes a seed's words, and a random one for none.
+    /// </summary>
+    public static int SeedOf(string text)
+    {
+        text = text.Trim();
+        if (text.Length == 0) return Random.Shared.Next();
+        if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var whole)) return whole;
+        if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number)) return (int)(number ^ (number >>> 32));
+        var hash = 0;
+        foreach (var c in text) hash = unchecked(31 * hash + c);
+        return hash;
     }
 
     private static void Title(string text, int top) => Gui.Text(text, (GetScreenWidth() - Gui.TextWidth(text)) / 2, top - 4 * Gui.Scale, Color.White);

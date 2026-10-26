@@ -216,7 +216,7 @@ public static class GameCommands
     {
         if (Game is not { } game) return "no world is loaded";
         if (Generators.Create(kind, seed) is null) return $"no world is called {kind}, which is {string.Join(" or ", Generators.Kinds)}";
-        game.NextWorld = (kind.ToLowerInvariant(), seed);
+        game.NextWorld = (kind.ToLowerInvariant(), seed, null);
         return $"the {kind.ToLowerInvariant()} world of seed {seed} opens next frame";
     }
 

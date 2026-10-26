@@ -123,7 +123,7 @@ public static class Hud
     public static void DrawHelp(GlobalIllumination light, GameMode mode)
     {
         var holding = !mode.Touches() ? "" : $"E {(mode.Lives() ? "inventory" : "items")}   Q throw   ";
-        var text = $"F3 settings   F3+F4 mode   {holding}G light: {light}   F1 hide   {mode}";
+        var text = $"F3 debug   F3+F4 mode   {holding}G light: {light}   F1 hide   {mode}";
         DrawText(text, 11, 11, 10, new Color(0, 0, 0, 160));
         DrawText(text, 10, 10, 10, Color.White);
     }

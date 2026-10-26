@@ -5,11 +5,21 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `7f59530`, item 54, the engine's F1 and F3 taken by the game, read at 05:25 on
-2026-10-26, carrying the review's files with Replies, DEVLOG.md, a captioned picture and the leaves
-note's mend, pushed at 05:43 once the run of `1944378` ended green, its own run watched. Program
-leaves F1 and F3 to the engine, the HUD, the hand and the block outline inside BeginUi and EndUi so
-F1 hides them, voxel.hud still hiding them for the capture scripts; the F3 window is gone,
+Reviewed up to `0ba4cb4`, item 135, the leaf faces' sky floor, read at 05:54 on 2026-10-26, carrying
+the review's files, DEVLOG.md and a captioned picture, held until the run of `7f59530` ends.
+SectionMesher gives a Foliage face's corners a sky level of 14 at most so the floor's fade at 15
+does not reach the leaves, other faces unchanged, a MesherTests case reading a jungle leaf in open
+air at 14 on all 24 corners and a stone face at 15, the README's floor paragraph saying why. On the
+rain forest view in Release on powersave the near-black share at the 2% threshold goes from 0.126 to
+0.000001 and at 3% from 0.143 to 0.0007, the four first black pixels reading 0,29,0, 0,25,0, 0,26,0
+and 0,29,0 where they read 0,0,0 to 0,6,0; the grove at 1280 by 720 at hour 16 moves by an RMSE of
+0.0049 with 209 pixels past 3%, the cherry leaves' shaded sides lightening, and the village is
+unchanged at 0.0003. The strict build clean, 356 tests, play.sh 382 s with the jungle floor at 36.5
+against 44.6 as before. After `7f59530`, item 54, the engine's F1 and F3 taken by the game, read at
+05:25 on 2026-10-26, carrying the review's files with Replies, DEVLOG.md, a captioned picture and
+the leaves note's mend, pushed at 05:43 once the run of `1944378` ended green, its own run watched.
+Program leaves F1 and F3 to the engine, the HUD, the hand and the block outline inside BeginUi and
+EndUi so F1 hides them, voxel.hud still hiding them for the capture scripts; the F3 window is gone,
 SettingsWindow becoming DebugWindows with the engine's three windows and item 40's off-screen
 performance window going; OverlaySections adds Player, Generation, Light, Sky, Sections and Mobs; a
 Debug Settings screen reached from Options holds Light Levels, Cull Unseen Sections and the three
@@ -83,27 +93,6 @@ full.
     with depth, the edge and the view from under, with the shore's mirror when the engine's plane
     lands. The second commit at `9d4b295` on 2026-10-24, the depth, the edge and the sky's fresnel,
     the water a mesh of its own; the shore's mirror with the package carrying the engine's item 112.
-
-135. **A leaf block's faces take the sky floor at level 15 as at 14.** From the owner's word on item
-    133's rain forest picture on 2026-10-26, the forest floor showing black sides and blocks under
-    the trees. The coder's reading at seed 1's rain forest floor at noon found every near-black
-    pixel a jungle or oak leaf face, south or west, 5 to 10 blocks off, facing air at sky level 15
-    inside a pocket of the canopy open to the sky straight up; the screen probes change nothing, the
-    cascades give such a face about nothing since the rays leaving a vertical face in a narrow
-    pocket meet leaves within a block or two and the sky at grazing angles alone, and the game's
-    floor gives it nothing since it fades out from 14 to 15 so a wall on open ground keeps the
-    engine's shade, the one face at sky 14 lifted to 0,19,0 by the floor and 0,0,0 without; the
-    near-black share of the view 0.138 at `a4d383c` and 0.126 as committed, so it stood before item
-    133, and the canopy's floor is not black at any depth, the grass under 2, 3, 4 and 6 leaves
-    33.1, 27.8, 26.1 and 27.8 against the shade's 43.5. So leaf blocks' faces carry their sky level
-    at most 14, the floor applying to them at 15 as at 14, only leaves changing so a wall on open
-    ground keeps its shade, and the haze's share at a leaf moving from skyBrightness(15) to (14),
-    which the eye's own level overrides in the open; the near-black share of that view read before
-    and after, the picture with the near-black pixels marked beside the mended view, and a test of a
-    leaf face at sky 15 reading the floor's lift. One commit, small, before item 134. The engine's
-    part, a vertical face in a narrow pocket of a canopy taking about no light from the cascades, is
-    read as the light such a pocket gets and not a fault, no ask sent unless the owner reads the
-    mended view otherwise.
 
 134. **A world screen in the pause menu, the saves listed to open and a new world begun.** From item
     54's move of the F3 window on 2026-10-26, Decision 50. The pause menu gains World, listing the
@@ -909,3 +898,9 @@ options and the menu already had are the shaded corners, which Render Settings' 
 turns off, the mode, which F3 with F4 switches, and saving, which the game menu's Save the World
 does. AGENTS.md's row for `VoxelSandbox/Ui` names the settings window, which item 54 takes away, and
 the row is the owner's to change.
+
+Item 134. The engine's interface has no text field of its own, but it gives the characters typed
+(`GetCharPressed`), a key's repeat (`IsKeyPressedRepeat`) and the input method's place
+(`SetTextInputArea`), so the seed is typed into a field the game draws in its own interface's look,
+and the toggles' keys are held while it is open.
+

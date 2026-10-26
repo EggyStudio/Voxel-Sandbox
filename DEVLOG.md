@@ -18,6 +18,11 @@ The engine's debug overlay F3 shows over seed 1's plains village at noon, the en
 system, the camera, the frame, the memory and the GPU, and under them on the left the game's
 sections of the player, the world's generation, the light, the sky, the sections and the mobs.
 
+![](.github/devlog/2026-10-26-item-135-leaves.webp)
+Seed 1's rain forest at -640, 55, 638 at noon seen east along its floor, the leaves' sides in the
+canopy's pockets near black on the left, marked in magenta, 13 percent of the view, and on the right
+lit by the floor of the sky's light, the leaves carrying a sky level of 14 at most.
+
 # Item 133, the canopy's floor on 3DEngine 5.2.319
 
 On 5.2.319 the merge of the cascades sees past the leaves and a ray's reach stops where it does, so
@@ -114,6 +119,7 @@ Done that day
 - Item 95 at `a4d383c`. The world's sections become mesh entities the engine draws (Decision 43).
 - Item 133 at `1944378`. The leaves let the engine's light through, and item 117's floor is read
   again beside it.
+- Item 135 at `0ba4cb4`. A leaf block's faces take the sky floor at level 15 as at 14.
 
 ## 2026-10-25
 

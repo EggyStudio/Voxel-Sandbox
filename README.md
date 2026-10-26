@@ -823,8 +823,13 @@ the pointer is lit and its item named in a tooltip, with a tool's uses left, and
 follows the pointer.
 
 Escape opens the game's menu over the darkened world, which holds the world still while it is open,
-as Minecraft's does when played alone, with Back to Game, the options, Save the World, and Save and
-Quit. The options are in two columns of buttons and sliders as Minecraft lays its options out, the
+as Minecraft's does when played alone, with Back to Game, the options, World, Save the World, and
+Save and Quit. World lists the worlds saved, the one played last first, six at a time under the
+mouse's wheel, each by its name, its kind and its seed with the open one marked, a button opening
+it, the world open saved and left first, and its New World begins an overworld or a flat world of
+a seed typed into its field, a whole number taken as it reads and other words hashed into one as
+Minecraft hashes them, or a random one where the field is blank or Random Seed fills it. A transient
+run keeps no saves and lists none. The options are in two columns of buttons and sliders as Minecraft lays its options out, the
 field of view, the mouse's sensitivity, the interface's scale, automatic or 1 to 4, whether full
 rows of the HUD fade, and the zoom's key, C, V, Z, X, R or Left Alt, with a button to each screen of
 settings by its area, Video Settings, Render Settings, Post Processing, Sky and Visuals, Music and

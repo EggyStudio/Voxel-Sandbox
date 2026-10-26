@@ -170,6 +170,31 @@ public sealed class WorldSave
         _changedRegions.Clear();
     }
 
+    /// <summary>
+    /// The worlds saved under <see cref="Root"/>, the one played last first, each by its folder's name
+    /// with its kind and seed, a folder whose info cannot be read left out.
+    /// </summary>
+    public static IReadOnlyList<(string Name, string Kind, int Seed)> Saved()
+    {
+        if (!Directory.Exists(Root)) return [];
+        var found = new List<(string Name, string Kind, int Seed, DateTime Played)>();
+        foreach (var folder in Directory.GetDirectories(Root))
+        {
+            var path = Path.Combine(folder, "world.json");
+            if (!File.Exists(path)) continue;
+            try
+            {
+                if (JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.WorldInfo) is { } info)
+                    found.Add((Path.GetFileName(folder), info.Kind, info.Seed, File.GetLastWriteTimeUtc(path)));
+            }
+            catch (Exception ex) when (ex is IOException or JsonException)
+            {
+                // A world whose info cannot be read is left out, as opening it would begin it anew.
+            }
+        }
+        return [.. found.OrderByDescending(w => w.Played).Select(w => (w.Name, w.Kind, w.Seed))];
+    }
+
     /// <summary>The world's info, or null for a folder never saved into.</summary>
     public WorldInfo? ReadInfo()
     {

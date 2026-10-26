@@ -138,6 +138,29 @@ public static class Gui
 
     /// <summary>A button of the interface's, lit under the pointer with its label yellow, as Minecraft's is.</summary>
     /// <returns>Whether it was clicked this frame.</returns>
+    /// <summary>
+    /// A field of typed text as Minecraft's edit boxes are, a black box in a gray border with its text
+    /// and a blinking caret, taking the characters typed this frame and Backspace, which repeats while
+    /// held, to so many characters, and placing the input method's window beside it.
+    /// </summary>
+    /// <returns>The text with what was typed this frame.</returns>
+    public static string TextField(string text, Rectangle box, int most)
+    {
+        SetTextInputArea(box, text.Length);
+        for (var typed = GetCharPressed(); typed != 0; typed = GetCharPressed())
+            if (typed >= ' ' && typed != 127 && text.Length < most) text += char.ConvertFromUtf32(typed);
+        if (text.Length > 0 && (IsKeyPressed(Key.Backspace) || IsKeyPressedRepeat(Key.Backspace))) text = text[..^1];
+        var s = Scale;
+        DrawRectangleRec(box, new Color(160, 160, 160, 255));
+        DrawRectangleRec(new Rectangle(box.X + s, box.Y + s, box.Width - 2 * s, box.Height - 2 * s), Color.Black);
+        var y = (int)(box.Y + (box.Height - 8 * s) / 2);
+        var ink = new Color(224, 224, 224, 255);
+        Text(text, (int)box.X + 4 * s, y, ink);
+        // The caret blinks a third of a second on and off, as Minecraft's does.
+        if ((int)(GetTime() * 3) % 2 == 0) Text("_", (int)box.X + 4 * s + TextWidth(text), y, ink);
+        return text;
+    }
+
     public static bool Button(string label, Rectangle box)
     {
         var over = Over(box);

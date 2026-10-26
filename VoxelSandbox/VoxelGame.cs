@@ -367,14 +367,20 @@ public sealed class VoxelGame : IDisposable
     /// <summary>A recording of the picture's change around a motion, which <c>voxel.flicker</c> starts, read a frame at a time.</summary>
     public FlickerRun? Flicker { get; set; }
 
-    /// <summary>A world asked for by a command or the settings window by its kind and seed, opened at the start of the next frame.</summary>
-    public (string Kind, int Seed)? NextWorld { get; set; }
+    /// <summary>
+    /// A world asked for by a command or the world screens by its kind and seed, and by the name of
+    /// its save where it is one listed, opened at the start of the next frame.
+    /// </summary>
+    public (string Kind, int Seed, string? Name)? NextWorld { get; set; }
 
-    /// <summary>Saves the world loaded and opens the one saved under a kind and seed, or begins it.</summary>
-    public void SwitchWorld(string kind, int seed)
+    /// <summary>Whether the run saves nothing, so no world is saved or listed.</summary>
+    public bool Transient => _transient;
+
+    /// <summary>Saves the world loaded and opens the one saved under a name, or under its kind and seed, or begins it.</summary>
+    public void SwitchWorld(string kind, int seed, string? name = null)
     {
         SaveWorld();
-        Open(kind, seed, null);
+        Open(kind, seed, name);
     }
 
     private void Open(string kind, int seed, string? name)
@@ -534,7 +540,7 @@ public sealed class VoxelGame : IDisposable
         if (NextWorld is { } next)
         {
             NextWorld = null;
-            SwitchWorld(next.Kind, next.Seed);
+            SwitchWorld(next.Kind, next.Seed, next.Name);
         }
         if (Loading)
         {
@@ -552,7 +558,8 @@ public sealed class VoxelGame : IDisposable
         _sinceSave += seconds;
         if (_sinceSave > SaveSeconds) SaveWorld();
         var io = ImGui.GetIO();
-        var keys = _keys = !io.WantTextInput;
+        // A field taking typed text takes the keys too, so a seed typed acts no toggle.
+        var keys = _keys = !io.WantTextInput && Menus.Open != Menu.NewWorld;
 
         if (keys) Toggles();
         // A click takes the cursor back unless it falls on a window of the game's own or of ImGui's.
