@@ -5,8 +5,25 @@ code and the history and writes none of the game. The Now list is read before a 
 and before each commit. This file has one writer. The session doing the work edits the Replies
 section only. An item is removed from here once the commit that settles it has been read.
 
-Reviewed up to `0ba4cb4`, item 135, the leaf faces' sky floor, read at 05:54 on 2026-10-26, carrying
-the review's files, DEVLOG.md and a captioned picture, held until the run of `7f59530` ends.
+Reviewed up to `5145d2f`, item 134, the World and New World screens, read at 06:09 on 2026-10-26,
+carrying the review's files with a Reply, DEVLOG.md and a captioned picture, held until the run of
+`0ba4cb4` ends. The pause menu gains World between Options and Save the World; the World screen
+lists WorldSave.Saved, the folders under the root with a readable world.json, last played first, six
+at a time under the wheel, each by name and kind of seed with the open one marked, a button opening
+a save through NextWorld, which carries a save name, SwitchWorld saving and leaving first, a
+transient run saying it keeps no saves; the New World screen has a World Type button cycling
+Generators.Kinds, a seed field, Random Seed, Create New World and Cancel, Menus.Begin and
+Menus.SeedOf reading a whole number as it is, a longer one folded, other words hashed as Java's
+String.hashCode and a blank field as random, the field the game's own Gui.TextField over the
+engine's GetCharPressed, IsKeyPressedRepeat and SetTextInputArea, the keys held while the screen is
+open so typing g steps no quality; the HUD's help line reads F3 debug where it read F3 settings,
+left from item 54. A test opens seed 42 from overworld and 42, seed 99162322 from flat and hello,
+and reads -5 with spaces around it; the README's pause menu paragraph follows. The Reply says the
+engine has no text field widget of its own, so the seed is typed into the game's field, which goes
+to the engine's ASKS.md. The picture was taken with XDG_DATA_HOME on a scratch folder, the owner's
+saves untouched. The strict build clean, 357 tests, play.sh 350 s. After `0ba4cb4`, item 135, the
+leaf faces' sky floor, read at 05:54 on 2026-10-26, carrying the review's files, DEVLOG.md and a
+captioned picture, pushed at 06:21 once the run of `7f59530` ended green, its own run watched.
 SectionMesher gives a Foliage face's corners a sky level of 14 at most so the floor's fade at 15
 does not reach the leaves, other faces unchanged, a MesherTests case reading a jungle leaf in open
 air at 14 on all 24 corners and a stone face at 15, the README's floor paragraph saying why. On the
@@ -17,43 +34,43 @@ and 0,29,0 where they read 0,0,0 to 0,6,0; the grove at 1280 by 720 at hour 16 m
 unchanged at 0.0003. The strict build clean, 356 tests, play.sh 382 s with the jungle floor at 36.5
 against 44.6 as before. After `7f59530`, item 54, the engine's F1 and F3 taken by the game, read at
 05:25 on 2026-10-26, carrying the review's files with Replies, DEVLOG.md, a captioned picture and
-the leaves note's mend, pushed at 05:43 once the run of `1944378` ended green, its own run watched.
-Program leaves F1 and F3 to the engine, the HUD, the hand and the block outline inside BeginUi and
-EndUi so F1 hides them, voxel.hud still hiding them for the capture scripts; the F3 window is gone,
-SettingsWindow becoming DebugWindows with the engine's three windows and item 40's off-screen
-performance window going; OverlaySections adds Player, Generation, Light, Sky, Sections and Mobs; a
-Debug Settings screen reached from Options holds Light Levels, Cull Unseen Sections and the three
-window toggles, none kept across runs, voxel.options taking debug; the Options page is placed by
-TopFor so Done stays on screen at GUI scale 3 in 720 pixels; the F3 with F4 and F3 with T chords
-stay. A headless test reads each section's lines and removes each by name, and play.sh's new check
-of the interface's keys reads the foot's blue 70.7, 0.0 under F1 and 70.7 again, and the corner's
-blue 230.2 and 167.9 under F3; the README's controls, options table and F3 passages follow, Decision
-50. The Reply notes AGENTS.md's Ui row still naming the settings window. The strict build clean, 355
-tests, play.sh 368 s. The owner, shown item 133's rain forest picture, wrote that the forest floor
-has black sides and blocks, something of the cascades' light below the trees; the coder reads the
-faces, their sky levels and the light with the floor on and off and the gi.toggle parts one by one,
-an item to follow. After `1944378`, item 133's second part, the canopy's floor on 5.2.319, read at
-05:03 on 2026-10-26, pushed at 05:05 once the run of `48e5bea` ended green, its own run green at
-05:40 with play in 35 minutes, carrying the review's files, DEVLOG.md, a note and a captioned
-picture, with an ASKS.md entry in the engine's tree. The package pinned to 5.2.319;
-ChunkRenderer.SkyFloor defaults to 0.65, set into looks.z as how much of item 117's floor is taken
-away so the clouds' copy keeps it whole, SetLooks running at construction too since a transient run
-never sent the looks, which is why the first final reading still showed the whole floor; play.sh's
-jungle floor reads 36.5 against the shade's 44.6, 0.82 above its 0.72, the README's floor paragraph
-giving the readings. On the flat world the open shade reads 44.4; the engine alone, the floor off,
-lights the grass under jungle leaves two deep to 32.9 and under oak leaves to 32.7 with the leaves
-passing half, against 24.5 and 26.1 passing none, 0.74 of the open shade, where item 117's whole
-floor read 46.4, past the open shade's own; the floor at 0.75, 0.6, 0.5 and 0 reads 38.6, 34.1, 32.9
-and 32.9 under jungle, and at 0.65 the flat canopies read 35.4 and 35.1, 0.80 of the open shade as
-the source lights level 13 against 15, so the floor is lowered and not taken out. Seed 1's capture
-means with the whole floor against 0.65, the jungle 143.7 against 141.3, the forest 151.8 against
-147.0 and the rain forest's floor 141.6 against 138.2, the picture. The cost at the grove at 1920 by
-1080 at High on quiet runs, the same build with the shares against a scratch copy with none, global
-illumination 6.14 and 6.09 ms against 3.44 and 3.42 and the frame 19.58 and 19.51 against 16.70 and
-16.64, the scene pass and the shadows within 0.1 ms, two more pairs under another program's 56 to
-77% of the GPU left out; it holds, so the 2.7 ms went to the engine as an ASKS.md entry, item 127
-there, after its item 112. Every reading on the power-saving profile with the processor's energy
-preference at power. The strict build clean, 354 tests, play.sh 342 s.
+the leaves note's mend, pushed at 05:43 once the run of `1944378` ended green, its own run green at
+06:17 with play in 34 minutes. Program leaves F1 and F3 to the engine, the HUD, the hand and the
+block outline inside BeginUi and EndUi so F1 hides them, voxel.hud still hiding them for the capture
+scripts; the F3 window is gone, SettingsWindow becoming DebugWindows with the engine's three windows
+and item 40's off-screen performance window going; OverlaySections adds Player, Generation, Light,
+Sky, Sections and Mobs; a Debug Settings screen reached from Options holds Light Levels, Cull Unseen
+Sections and the three window toggles, none kept across runs, voxel.options taking debug; the
+Options page is placed by TopFor so Done stays on screen at GUI scale 3 in 720 pixels; the F3 with
+F4 and F3 with T chords stay. A headless test reads each section's lines and removes each by name,
+and play.sh's new check of the interface's keys reads the foot's blue 70.7, 0.0 under F1 and 70.7
+again, and the corner's blue 230.2 and 167.9 under F3; the README's controls, options table and F3
+passages follow, Decision 50. The Reply notes AGENTS.md's Ui row still naming the settings window.
+The strict build clean, 355 tests, play.sh 368 s. The owner, shown item 133's rain forest picture,
+wrote that the forest floor has black sides and blocks, something of the cascades' light below the
+trees; the coder reads the faces, their sky levels and the light with the floor on and off and the
+gi.toggle parts one by one, an item to follow. After `1944378`, item 133's second part, the canopy's
+floor on 5.2.319, read at 05:03 on 2026-10-26, pushed at 05:05 once the run of `48e5bea` ended
+green, its own run green at 05:40 with play in 35 minutes, carrying the review's files, DEVLOG.md, a
+note and a captioned picture, with an ASKS.md entry in the engine's tree. The package pinned to
+5.2.319; ChunkRenderer.SkyFloor defaults to 0.65, set into looks.z as how much of item 117's floor
+is taken away so the clouds' copy keeps it whole, SetLooks running at construction too since a
+transient run never sent the looks, which is why the first final reading still showed the whole
+floor; play.sh's jungle floor reads 36.5 against the shade's 44.6, 0.82 above its 0.72, the README's
+floor paragraph giving the readings. On the flat world the open shade reads 44.4; the engine alone,
+the floor off, lights the grass under jungle leaves two deep to 32.9 and under oak leaves to 32.7
+with the leaves passing half, against 24.5 and 26.1 passing none, 0.74 of the open shade, where item
+117's whole floor read 46.4, past the open shade's own; the floor at 0.75, 0.6, 0.5 and 0 reads
+38.6, 34.1, 32.9 and 32.9 under jungle, and at 0.65 the flat canopies read 35.4 and 35.1, 0.80 of
+the open shade as the source lights level 13 against 15, so the floor is lowered and not taken out.
+Seed 1's capture means with the whole floor against 0.65, the jungle 143.7 against 141.3, the forest
+151.8 against 147.0 and the rain forest's floor 141.6 against 138.2, the picture. The cost at the
+grove at 1920 by 1080 at High on quiet runs, the same build with the shares against a scratch copy
+with none, global illumination 6.14 and 6.09 ms against 3.44 and 3.42 and the frame 19.58 and 19.51
+against 16.70 and 16.64, the scene pass and the shadows within 0.1 ms, two more pairs under another
+program's 56 to 77% of the GPU left out; it holds, so the 2.7 ms went to the engine as an ASKS.md
+entry, item 127 there, after its item 112. Every reading on the power-saving profile with the
+processor's energy preference at power. The strict build clean, 354 tests, play.sh 342 s.
 
 Before it, `48e5bea` came, item 133's first part, the Foliage part and its share of light, pushed at
 01:44 on 2026-10-26, its run green at 02:42.
@@ -94,73 +111,6 @@ full.
     lands. The second commit at `9d4b295` on 2026-10-24, the depth, the edge and the sky's fresnel,
     the water a mesh of its own; the shore's mirror with the package carrying the engine's item 112.
 
-134. **A world screen in the pause menu, the saves listed to open and a new world begun.** From item
-    54's move of the F3 window on 2026-10-26, Decision 50. The pause menu gains World, listing the
-    saves under the save root by name with the open one marked, each opened by its button, and New
-    World beginning an Overworld or a Flat world with a seed, typed where the engine's interface has
-    a text field and otherwise stepped by buttons with a random one offered, the game saving and
-    leaving the open world before it opens another as voxel.world does; a test opening a second
-    world from the screen and reading its seed, and a captioned picture. One commit, after item 54.
-
-26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
-    world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's
-    word: a column is 16 by 16 by 128, make it cubic at 16 or 32 or do a level of detail, where an
-    earlier level of detail scaled far blocks by powers of two so they looked as big as near ones,
-    which looked wrong. The reviewer's reading: meshing, drawing and culling go by 16-cubed sections
-    already, and generation, streaming and saving by whole columns; the terrain's generation needs
-    the column's context, the heightmap, the biome and the surface, so it stays by column, and the
-    world grows to 24 sections, 384 blocks from minus 64 to 320 as the source's, with the deep
-    sections for caves; streaming, meshing and saving go by section with a distance in three
-    dimensions, so a far column's deep sections are neither meshed nor kept, and a column is
-    generated whole once and its sections saved apart. Far land is drawn at a coarser level by
-    distance, each doubling of the distance halving the detail, a far section meshed from blocks
-    merged two by two by two and then four by four by four into cubes of the merged size at their
-    own place, so the world keeps its size and far blocks look smaller with distance as near ones
-    do, lit flat with no ambient occlusion and no entities, the coarse levels made from the
-    generator's surface alone, the heightmap and the top blocks, without the column's full blocks,
-    so a far column costs a surface and not a volume; the earlier level of detail scaled the far
-    blocks up to look as big as near ones, which is the thing to avoid. The render distance of near
-    sections stays at the setting, and the far levels reach as far as the setting for them, with the
-    memory and the frame read at 8, 12 and 16 near and 32 and 64 far. Read first, with the costs of
-    the three parts and the form of the coarse mesh said before any commit: the taller world and the
-    sections' streaming and saving, then the far levels. The far levels read first from the saved
-    world, the sections a player has already visited and saved, before the generator's surface, as
-    the modpack's far-chunk cache keeps far land drawn from what was seen (Decision 14). Three or
-    four commits. The reading before any commit, at 07:10 on 2026-10-24 on seed 1 at three places: a
-    column generates in 9 to 11 ms and lights in 1.2 to 1.8, 100 KB in memory, a section meshes in
-    0.6 to 1.2 ms, the surface alone costs a tenth of a column; the taller world of 24 sections from
-    minus 64 to 320 at an estimated 15 to 20 ms a column and three times the memory, 147 MB at a
-    distance of 12, old saves read as 0 to 127 with the ground below generated and the format given
-    a version; a sphere of sections at 8, 12 and 16 keeping 47, 65 and 78 percent of the cylinder, a
-    column generated whole once and its far sections saved and let go, an unloaded section opaque to
-    its neighbors; the far rings by doubling, 12 to 24, 24 to 48 and 48 to 64 columns, cells of 2 to
-    the k blocks in tiles of 16 by 16, from saved tops first and the generator's surface otherwise,
-    boxes at their own place in the top block's average color, flat lit, hazed, no shadows, field,
-    plants or mobs, the surface sampled to 64 columns in under a second on the workers. Four commits
-    as said. Deepslate comes with part 1 as the source lays it below 0, its ores and caves with item
-    27; the far reach in columns and the rings by doubling as read. Part 1 at `d2f8b0b` on
-    2026-10-24, the costs in the head. Part 2 at `1b53cee`, the numbers in the head. Part 3 at
-    `3d7b1ed`, off by default until part 4. Part 4 at `a528c79`, far land on at 32 by default, the
-    readings in the head; item 26 done, held for the push. The world pictures are taken again with
-    far land in a small commit after item 90's reading. The pictures at `3a99729`. The play job's
-    climb read at 09:4x from the runs' logs: the 31 checks took 2,090 s with far land against 1,452
-    without, every check 30 to 45 percent slower, since far land's tiles are drawn every frame by
-    lavapipe's software rasterizer with the near land at two to four columns; so with item 27's part
-    B play.sh keeps far land off from the start and a short check turns it on at 6 over the last
-    biome and reads tiles drawn within 300 frames, the other checks' readings unchanged, 145 to 115
-    s locally.
-
-97. **The game's entries in the engine's ASKS.md hold no colon inside a running sentence.** The
-    owner wrote at about 10:3x on 2026-10-24 that some documents join sentences with a colon and
-    that STYLE.md forbids it; the entries this session wrote in the engine's ASKS.md hold 24 such
-    lines, found by STYLE.md's awk over the Markdown files outside their code. Each is recast as
-    STYLE.md says, a sentence of its own or the same sentence recast, a label at a line's end left
-    as it is, the Review lines being the reviewing session's; the recast goes into the engine's tree
-    as the entries do and the engine's next batch carries it. Small, after items 92 and 93 and
-    before item 94. Done in the engine's tree at 10:4x on 2026-10-24, 21 lines recast, the 15
-    headings with a comma after the game's name and six sentences split or recast, the engine's next
-    batch carrying it; the file's header lines are the engine's sweep's, item 93 there.
-
 27. **Caves as the source's newer ones, cheese, spaghetti and noodle, with aquifers.** The owner's
     word: caves are a big one, the source's newer ones are beautiful. The world has tunnels where
     two noises are both near zero, caverns where a third is high below a depth, and ravines; it
@@ -198,7 +148,18 @@ full.
     readings unchanged, said in the head; the far cascade set once the engine's item 102 mends its
     slab, and the cave read again with the engine's item 101. The pin of 5.2.283 at `3d70b20`, the
     grove's frame 19 to 22 ms where 5.2.281 read 33 to 35 and 5.2.215 15 to 18, the cave unchanged.
-    The pin of 5.2.291 at `9dad43e` on 2026-10-25, the grove's frame as 5.2.283's.
+    The pin of 5.2.291 at `9dad43e` on 2026-10-25, the grove's frame as 5.2.283's. The last part
+    taken on 2026-10-26 on 5.2.319, the far cascade set through SetSceneField since the engine's
+    item 102 mended its slab in 5.2.313, the deep cave read again at every quality for its far walls
+    meeting the ground before the sky, and the cost at the grove, with a captioned picture. Read at
+    06:3x on 2026-10-26 with SetSceneField(4, 0.25, 2, 32768, 192), the deep cave's far walls at Low
+    darkening by about a quarter, their rays meeting rock where they met the sky, Medium and High
+    unchanged with the tops at 90 blocks black already, and the grove at 1920 by 1080 paying 1.1 ms
+    of global illumination and 0.5 to 1 ms of the scene pass, 1.6 to 2 ms of the frame at both
+    qualities; so the far cascade ships off by default behind a Far Cascade toggle on Render
+    Settings, its reach following the render distance, the README's options table saying it is for
+    Low underground, the readings in a note and the cave at Low pictured off and on, and the item
+    closes with it, the choice open to the owner in the game.
 
 29. **Generation and meshing on the GPU, the blocks kept on the CPU (Decision 12).** The owner's
     word of about 00:30 on 2026-10-21: compute shaders for generation and the rest are a big one.
@@ -904,3 +865,6 @@ Item 134. The engine's interface has no text field of its own, but it gives the 
 (`SetTextInputArea`), so the seed is typed into a field the game draws in its own interface's look,
 and the toggles' keys are held while it is open.
 
+Item 27. The far cascade ships off by default with a Far Cascade toggle on Render Settings, its reach
+the render distance's, the reviewer's call on the readings, since it darkens the deep cave's far
+walls at Low alone and costs 1.6 to 2 ms of the frame at Low and High.

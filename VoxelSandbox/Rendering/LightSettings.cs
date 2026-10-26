@@ -20,6 +20,13 @@ public sealed class LightSettings
     // Two cascades built again a frame, so the four an edit touches are built within two frames of
     // its meshes settling.
     public int Budget = 2;
+    // A far cascade past the four reaching as far as the land drawn, the render distance's blocks,
+    // so a ray leaving the counted cascades meets the hills and the rock it holds before the sky, its
+    // cells as wide as that reach takes at 64 a side, six blocks at 12 columns. It is off, since it
+    // darkens a deep cave's far walls at Low alone and costs 1.6 to 2 ms of the frame at 1920 by 1080
+    // at Low and High alike, and Render Settings turns it on.
+    public bool FarCascade;
+    public float FarReach = 12 * Section.Size;
 
     // The sun's shadows reach 64 blocks, which keeps a village's trees' shadows in a view across it
     // and takes a millisecond off the frame at 1920 by 1080 against 96, where 48 lost the trees' shadows
@@ -65,7 +72,7 @@ public sealed class LightSettings
     // wide, which hold the ground about the eye as a slab and took a quarter of the sky's blue from a
     // wall beside a pane of glass, cost the scene pass about 5 ms at the cherry grove at 1920 by 1080,
     // and left the light deep in a cave as it was.
-    public void ApplyField() => SetSceneField(Cascades, CellSize, Budget);
+    public void ApplyField() => SetSceneField(Cascades, CellSize, Budget, farCascade: FarCascade ? FarReach : 0);
 
     /// <summary>Brings the frame's light under 1 by the curve of the four numbers, which chooses that curve.</summary>
     public void ApplyCurve() => SetTonemapCurve(CurveExposure, CurveWhite, CurveLower, CurveUpper);

@@ -2167,6 +2167,78 @@ before a batch.
     the near-black share of the rain forest view from 0.126 to about nothing, the marked view
     pictured beside the mended one.
 
+134. **A world screen in the pause menu, the saves listed to open and a new world begun.** From item
+    54's move of the F3 window on 2026-10-26, Decision 50. The pause menu gains World, listing the
+    saves under the save root by name with the open one marked, each opened by its button, and New
+    World beginning an Overworld or a Flat world with a seed, typed where the engine's interface has
+    a text field and otherwise stepped by buttons with a random one offered, the game saving and
+    leaving the open world before it opens another as voxel.world does; a test opening a second
+    world from the screen and reading its seed, and a captioned picture. One commit, after item 54.
+    Done at `5145d2f` on 2026-10-26, the World screen listing the saves and the New World screen
+    with a typed seed, the engine's missing text field to ASKS.md.
+
+97. **The game's entries in the engine's ASKS.md hold no colon inside a running sentence.** The
+    owner wrote at about 10:3x on 2026-10-24 that some documents join sentences with a colon and
+    that STYLE.md forbids it; the entries this session wrote in the engine's ASKS.md hold 24 such
+    lines, found by STYLE.md's awk over the Markdown files outside their code. Each is recast as
+    STYLE.md says, a sentence of its own or the same sentence recast, a label at a line's end left
+    as it is, the Review lines being the reviewing session's; the recast goes into the engine's tree
+    as the entries do and the engine's next batch carries it. Small, after items 92 and 93 and
+    before item 94. Done in the engine's tree at 10:4x on 2026-10-24, 21 lines recast, the 15
+    headings with a comma after the game's name and six sentences split or recast, the engine's next
+    batch carrying it; the file's header lines are the engine's sweep's, item 93 there. The engine's
+    batches of 2026-10-24 and 2026-10-25 carried the recast, and the one join left, at the update's
+    rule, was recast in the engine's tree on 2026-10-26; done that day.
+
+26. **The world's layout: sections streamed, meshed and saved in three dimensions with a taller
+    world, and far land drawn at a coarser level by distance, the blocks' size kept.** The owner's
+    word: a column is 16 by 16 by 128, make it cubic at 16 or 32 or do a level of detail, where an
+    earlier level of detail scaled far blocks by powers of two so they looked as big as near ones,
+    which looked wrong. The reviewer's reading: meshing, drawing and culling go by 16-cubed sections
+    already, and generation, streaming and saving by whole columns; the terrain's generation needs
+    the column's context, the heightmap, the biome and the surface, so it stays by column, and the
+    world grows to 24 sections, 384 blocks from minus 64 to 320 as the source's, with the deep
+    sections for caves; streaming, meshing and saving go by section with a distance in three
+    dimensions, so a far column's deep sections are neither meshed nor kept, and a column is
+    generated whole once and its sections saved apart. Far land is drawn at a coarser level by
+    distance, each doubling of the distance halving the detail, a far section meshed from blocks
+    merged two by two by two and then four by four by four into cubes of the merged size at their
+    own place, so the world keeps its size and far blocks look smaller with distance as near ones
+    do, lit flat with no ambient occlusion and no entities, the coarse levels made from the
+    generator's surface alone, the heightmap and the top blocks, without the column's full blocks,
+    so a far column costs a surface and not a volume; the earlier level of detail scaled the far
+    blocks up to look as big as near ones, which is the thing to avoid. The render distance of near
+    sections stays at the setting, and the far levels reach as far as the setting for them, with the
+    memory and the frame read at 8, 12 and 16 near and 32 and 64 far. Read first, with the costs of
+    the three parts and the form of the coarse mesh said before any commit: the taller world and the
+    sections' streaming and saving, then the far levels. The far levels read first from the saved
+    world, the sections a player has already visited and saved, before the generator's surface, as
+    the modpack's far-chunk cache keeps far land drawn from what was seen (Decision 14). Three or
+    four commits. The reading before any commit, at 07:10 on 2026-10-24 on seed 1 at three places: a
+    column generates in 9 to 11 ms and lights in 1.2 to 1.8, 100 KB in memory, a section meshes in
+    0.6 to 1.2 ms, the surface alone costs a tenth of a column; the taller world of 24 sections from
+    minus 64 to 320 at an estimated 15 to 20 ms a column and three times the memory, 147 MB at a
+    distance of 12, old saves read as 0 to 127 with the ground below generated and the format given
+    a version; a sphere of sections at 8, 12 and 16 keeping 47, 65 and 78 percent of the cylinder, a
+    column generated whole once and its far sections saved and let go, an unloaded section opaque to
+    its neighbors; the far rings by doubling, 12 to 24, 24 to 48 and 48 to 64 columns, cells of 2 to
+    the k blocks in tiles of 16 by 16, from saved tops first and the generator's surface otherwise,
+    boxes at their own place in the top block's average color, flat lit, hazed, no shadows, field,
+    plants or mobs, the surface sampled to 64 columns in under a second on the workers. Four commits
+    as said. Deepslate comes with part 1 as the source lays it below 0, its ores and caves with item
+    27; the far reach in columns and the rings by doubling as read. Part 1 at `d2f8b0b` on
+    2026-10-24, the costs in the head. Part 2 at `1b53cee`, the numbers in the head. Part 3 at
+    `3d7b1ed`, off by default until part 4. Part 4 at `a528c79`, far land on at 32 by default, the
+    readings in the head; item 26 done, held for the push. The world pictures are taken again with
+    far land in a small commit after item 90's reading. The pictures at `3a99729`. The play job's
+    climb read at 09:4x from the runs' logs: the 31 checks took 2,090 s with far land against 1,452
+    without, every check 30 to 45 percent slower, since far land's tiles are drawn every frame by
+    lavapipe's software rasterizer with the near land at two to four columns; so with item 27's part
+    B play.sh keeps far land off from the start and a short check turns it on at 6 over the last
+    biome and reads tiles drawn within 300 frames, the other checks' readings unchanged, 145 to 115
+    s locally. Done at `a528c79` and `3a99729` on 2026-10-24 with the play job's climb answered
+    under item 27's part B, archived on 2026-10-26.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

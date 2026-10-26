@@ -317,7 +317,20 @@ public sealed class VoxelGame : IDisposable
     /// meshes and joins the columns that come into reach, and the frame takes 18 to 19 ms at 8
     /// columns and 21 to 29 at 12.
     /// </remarks>
-    public int RenderDistance { get; set; } = 12;
+    public int RenderDistance
+    {
+        get => _renderDistance;
+        set
+        {
+            _renderDistance = value;
+            // The far cascade reaches as far as the land drawn.
+            if (Light.FarReach == value * Section.Size) return;
+            Light.FarReach = value * Section.Size;
+            Light.ApplyField();
+        }
+    }
+
+    private int _renderDistance = 12;
 
     /// <summary>The block the crosshair rests on, as of this frame, or null where a mob stands before it.</summary>
     public BlockHit? Target { get; private set; }

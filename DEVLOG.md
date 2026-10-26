@@ -23,6 +23,11 @@ Seed 1's rain forest at -640, 55, 638 at noon seen east along its floor, the lea
 canopy's pockets near black on the left, marked in magenta, 13 percent of the view, and on the right
 lit by the floor of the sky's light, the leaves carrying a sky level of 14 at most.
 
+![](.github/devlog/2026-10-26-item-134-worlds.webp)
+The pause menu's World screen on the left, two worlds saved, overworld-1 open and flat-7 beside it,
+and on the right its New World screen with the overworld chosen and the seed voxel sandbox typed
+into its field.
+
 # Item 133, the canopy's floor on 3DEngine 5.2.319
 
 On 5.2.319 the merge of the cascades sees past the leaves and a ray's reach stops where it does, so
@@ -119,6 +124,8 @@ Done that day
 - Item 95 at `a4d383c`. The world's sections become mesh entities the engine draws (Decision 43).
 - Item 133 at `1944378`. The leaves let the engine's light through, and item 117's floor is read
   again beside it.
+- Item 134 at `5145d2f`. A world screen in the pause menu, the saves listed to open and a new world
+  begun.
 - Item 135 at `0ba4cb4`. A leaf block's faces take the sky floor at level 15 as at 14.
 
 ## 2026-10-25
@@ -549,7 +556,7 @@ glow berries light them, and clear pools in rims of clay. (`c8dbbee`)
 
 Done that day
 
-- Item 26 at `3a99729`. The world's layout, sections streamed, meshed and saved in three dimensions
+- Item 26 at `a528c79`. The world's layout, sections streamed, meshed and saved in three dimensions
   with a taller world, and far land drawn at a coarser level by distance, the blocks' size kept.
 - Item 43 at `4b398bd`. The sun's look, warm and low with long soft shadows, and a blue haze over
   distant land (Decision 21).

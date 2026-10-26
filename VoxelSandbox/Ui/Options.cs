@@ -190,6 +190,11 @@ public sealed class OptionScreens
                 light.Budget = (int)v;
                 light.ApplyField();
             }) { Low = 1, High = 8, Step = 1 },
+            Option.Toggle("Far Cascade", () => light.FarCascade, on =>
+            {
+                light.FarCascade = on;
+                light.ApplyField();
+            }),
         ], []);
 
         PostProcessing = new("Post Processing",

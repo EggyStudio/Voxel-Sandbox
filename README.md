@@ -859,6 +859,7 @@ sections loaded, waiting and drawn, and the mobs.
 | | Field Cascades, the scene's distance field's | 1 to 8 | 4 |
 | | Field Cell, the finest cascade's cell | 0.125 to 1 block by 0.125 | 0.25 |
 | | Cascades a Frame, built again each frame | 1 to 8 | 2 |
+| | Far Cascade, a cascade past the four reaching the render distance, which keeps a deep cave's far walls from the sky's light at Low and costs about 2 ms of the frame | Off, On | Off |
 | Post Processing | Bloom | 0 to 2 by 0.05 | 0.1 |
 | | Bloom Threshold, the light past white bloom spreads from | 0.5 to 8 by 0.25 | 1 |
 | | Ambient Occlusion | 0 to 1 by 0.05 | 0 |
