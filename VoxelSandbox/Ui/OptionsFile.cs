@@ -17,6 +17,18 @@ namespace VoxelSandbox;
 /// </remarks>
 public sealed class OptionsFile(string root)
 {
+    /// <summary>The file's version, its first line, raised as a default changes.</summary>
+    public const int Version = 2;
+
+    // The defaults changed since a version, each with the value it had before. A file of an older
+    // version holds every setting as it stood, so a line holding a value since replaced as the default
+    // is read as that default rather than a choice, and the new default stands.
+    private static readonly (int Since, string Key, string Old)[] ChangedDefaults =
+    [
+        // The sun was a point before Soft Shadows came, and the engine's width of 0 stood in files.
+        (2, "render.Soft_Shadows", "0"),
+    ];
+
     // The text last read or written, so leaving a screen with nothing changed writes nothing.
     private string? _held;
 
@@ -31,7 +43,7 @@ public sealed class OptionsFile(string root)
     /// <summary>The file's text for the settings as they stand, one line to each one kept.</summary>
     public static string Text(IEnumerable<(string Name, IReadOnlyList<Option> Options)> screens)
     {
-        var text = new System.Text.StringBuilder();
+        var text = new System.Text.StringBuilder().Append("version:").Append(Version).Append('\n');
         foreach (var (screen, options) in screens)
             foreach (var option in options.Where(o => o.Kept))
                 text.Append(Key(screen, option)).Append(':').Append(ValueOf(option)).Append('\n');
@@ -63,12 +75,18 @@ public sealed class OptionsFile(string root)
         foreach (var (screen, options) in screens)
             foreach (var option in options.Where(o => o.Kept))
                 kept[Key(screen, option)] = option;
+        var lines = text.Split('\n');
+        var version = lines.FirstOrDefault(l => l.StartsWith("version:", StringComparison.Ordinal)) is { } first
+            && int.TryParse(first["version:".Length..].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var number) ? number : 1;
         var set = 0;
-        foreach (var line in text.Split('\n'))
+        foreach (var line in lines)
         {
             var colon = line.IndexOf(':');
-            if (colon < 0 || !kept.TryGetValue(line[..colon].Trim(), out var option)) continue;
-            if (Parse(option, line[(colon + 1)..].Trim()) is not { } value) continue;
+            if (colon < 0) continue;
+            var (key, written) = (line[..colon].Trim(), line[(colon + 1)..].Trim());
+            if (!kept.TryGetValue(key, out var option)) continue;
+            if (ChangedDefaults.Any(d => version < d.Since && d.Key.Equals(key, StringComparison.OrdinalIgnoreCase) && d.Old.Equals(written, StringComparison.OrdinalIgnoreCase))) continue;
+            if (Parse(option, written) is not { } value) continue;
             option.Change(value);
             option.Settled?.Invoke();
             set++;

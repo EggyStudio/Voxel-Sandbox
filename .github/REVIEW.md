@@ -1,13 +1,20 @@
 # Review
 
-Reviewed up to `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the sessions were
-paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673` (138);
-`b25e668` (137); `4aef50c` with `6001eed` (the README's quick links, 136); `7c36ec8` (42); `f1aa450`
-(27); `5145d2f` (134); `0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133); `a4d383c`
-(95). Each commit's detail stands in its item in REVIEW-ARCHIVE.md, its devlog note and its own
-words. On 2026-10-30 at 18:0x the owner wrote items 140 and 141 (Decision 51), the README's links as
-the devlog and 3DEngine, a Rust voxel engine as the performance reference (Decision 52), and asked
-that the sessions spend fewer tokens at the same quality, N 7.7.
+Reviewed up to `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01 with play
+in 40 minutes. The start restores the options file's resolution and mode right after InitWindow,
+before the game is built, the window appearing as saved about 8 s before the world loads where it
+changed after; no monitor setting exists to read, and a hidden window cannot be shown later since
+the engine takes a program-set hidden window as a --hidden run; the test reads the values and a
+missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
+Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
+first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
+sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
+(138); `b25e668` (137); `4aef50c` with `6001eed` (the README's quick links, 136); `7c36ec8` (42);
+`f1aa450` (27); `5145d2f` (134); `0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133);
+`a4d383c` (95). Each commit's detail stands in its item in REVIEW-ARCHIVE.md, its devlog note and
+its own words. On 2026-10-30 at 18:0x the owner wrote items 140 and 141 (Decision 51), the README's
+links as the devlog and 3DEngine, a Rust voxel engine as the performance reference (Decision 52),
+and asked that the sessions spend fewer tokens at the same quality, N 7.7.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -128,16 +135,6 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-140. **The window opens at its saved size and mode.** The owner wrote on 2026-10-30 that the
-    window's settings, its size and mode, are applied after the window has loaded, which looks odd,
-    and that the start should read them somehow if that does not overcomplicate things. Program.cs
-    opens the window at 1280 by 720 and the options are applied once the game is up; the start reads
-    the options file first, the saved size, the window mode, fullscreen or borderless, and the
-    monitor if kept, and opens the window with them, falling back to 1280 by 720 windowed where the
-    file is missing or unreadable, the rest of the options applied as before; a headless test writes
-    an options file and reads the window's size and mode from the start, and the README's options
-    paragraph says the window opens as saved. One commit, small.
-
 141. **The far cascade is on by default and the shadow distance is 128 blocks.** The owner's word of
     2026-10-30, Decision 51, over item 27's call of 2026-10-26. LightSettings.FarCascade defaults to
     true and ShadowDistance to 128 where it is 64, Render Settings' toggle and the options file
@@ -145,6 +142,37 @@ full.
     GPU with the profile stated, the frame at 8, 12 and 16 columns and the shadows' share, and the
     deep cave and the village pictured at the new defaults; a saved options file keeps a player's
     own choice. One commit, small, with a note.
+
+142. **The window shows what the devlog's pictures show.** The owner wrote on 2026-10-30 that the
+    game run by hand does not look like the devlog's pictures, the engine's cascade lighting among
+    the differences, where the pictures come from offscreen and headless runs. A reading first, in
+    the owner's own way of running with the same build, window size and mode. The owner's options
+    file is read and each render setting printed against the default, since a kept setting from an
+    older build, the quality, the probes, the far cascade or the sun's width, stands over a new
+    default; a window screenshot at the devlog pictures' views and hours is read against offscreen
+    captures of the same views, pixel by pixel, the window's swapchain format and tone mapping
+    against the capture's; and the first seconds after the window opens and the view under movement
+    are read against a still that settled, since the cascades and the screen probes converge over
+    frames. Then the mend for what the reading shows, a changed default taking precedence over an
+    older kept value where the owner never chose it, a window path matching the capture's, or the
+    README saying what settles and how long; what is the engine's goes to ASKS.md. First, before
+    item 141 if the reading is quick, with a note and the pair of pictures. The owner added that the
+    game is run with dotnet run, the bin folder deleted at times, so the build is current and the
+    changes show, and that the sessions may open a window on this machine and capture it; the
+    reading runs windowed the owner's way, a Debug build by dotnet run, and compares the window's
+    screenshot with the pictures. The owner sent the engine's item 97 picture as the game's most
+    visible glitch, black specks over every surface, which the engine read on lavapipe alone and
+    mended at `1703c54e`, in no package yet; the ninth pack run started for it, the game to pin the
+    package, and the reading asks first which Vulkan device the owner's run uses, the log's device
+    line read, since specks the RTX never showed point at a software or integrated device chosen
+    under the owner's profile. The device read on 2026-10-30, a plain windowed dotnet run with the
+    owner's options picking the RTX 4070 Laptop GPU on SDL's x11 path with a B8G8R8A8Unorm swapchain
+    presented immediately, no device variable set, so the specks the owner sees have another cause
+    than the device, the package's mend pending; a side finding for the engine, the window 2560 by
+    1440 from the start under item 140 while the swapchain stays 1280 by 720 from the loading
+    screen's first frame at 2.35 s until the first present after the load reports it out of date at
+    10.86 s, the engine to recreate the swapchain on a resize before the first frame, an ASKS.md
+    entry.
 
 ## Verdicts
 

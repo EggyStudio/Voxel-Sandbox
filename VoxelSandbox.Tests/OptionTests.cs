@@ -36,7 +36,7 @@ public sealed class OptionTests : IDisposable
         var file = new OptionsFile(_folder);
         var before = new Held { Distance = 6, Quality = GlobalIllumination.Medium, Hour = 3 };
         Assert.True(file.Write(before.Screens()));
-        Assert.Equal(["render.Render_Distance:6", "render.Global_Illumination:Medium"], File.ReadAllLines(file.File));
+        Assert.Equal([$"version:{OptionsFile.Version}", "render.Render_Distance:6", "render.Global_Illumination:Medium"], File.ReadAllLines(file.File));
         // Nothing changed, nothing written.
         Assert.False(file.Write(before.Screens()));
 

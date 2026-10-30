@@ -2375,6 +2375,17 @@ before a batch.
     2026-10-26, the shadow fill off as the game's mend with the frame at 12 columns back to 16.7 to
     17.1 ms, the recording's cost to the engine as its item 132, the default kept at 12.
 
+140. **The window opens at its saved size and mode.** The owner wrote on 2026-10-30 that the
+    window's settings, its size and mode, are applied after the window has loaded, which looks odd,
+    and that the start should read them somehow if that does not overcomplicate things. Program.cs
+    opens the window at 1280 by 720 and the options are applied once the game is up; the start reads
+    the options file first, the saved size, the window mode, fullscreen or borderless, and the
+    monitor if kept, and opens the window with them, falling back to 1280 by 720 windowed where the
+    file is missing or unreadable, the rest of the options applied as before; a headless test writes
+    an options file and reads the window's size and mode from the start, and the README's options
+    paragraph says the window opens as saved. One commit, small. Done at `5c80c99` on 2026-10-30,
+    the departures in the head.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

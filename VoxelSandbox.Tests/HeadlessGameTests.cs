@@ -52,6 +52,34 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Kept_Value_Equal_To_A_Default_Since_Changed_Gives_Way_To_The_New_Default_In_An_Older_File()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            var file = new OptionsFile(folder);
+            Directory.CreateDirectory(folder);
+            var screens = game.Menus.Screens(game).All();
+            // A file of no version holds every setting as it stood, Soft Shadows at the 0 it held
+            // before its default was 1.5, so that line is read as the old default.
+            File.WriteAllText(file.File, "render.Soft_Shadows:0\nrender.Render_Distance:6\n");
+            Assert.Equal(1, file.Read(screens));
+            Assert.Equal((1.5f, 6), (game.Light.ShadowSoftness, game.RenderDistance));
+            // Written again, the file says its version, and a 0 chosen since stands.
+            Assert.StartsWith($"version:{OptionsFile.Version}\n", OptionsFile.Text(screens));
+            File.WriteAllText(file.File, $"version:{OptionsFile.Version}\nrender.Soft_Shadows:0\n");
+            Assert.Equal(1, file.Read(screens));
+            Assert.Equal(0f, game.Light.ShadowSoftness);
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void The_Start_Reads_The_Windows_Mode_And_Resolution_From_The_Options_File()
     {
         using var headless = new HeadlessGame();

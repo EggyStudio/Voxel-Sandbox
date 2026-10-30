@@ -911,7 +911,9 @@ line a setting, its screen, general for the options' own, and its name joined by
 words by underscores, then a colon and its value, as `render.Render_Distance:12` or
 `video.Window_Mode:Borderless`. The game reads it as it starts and writes it as a screen of the menu
 is left, or as `voxel.options` or G changes a setting, and a line it cannot read leaves its setting
-at the default above. The window's resolution and mode are read first, as the window opens and
+at the default above. Its first line is its version, and in a file of an older version a line
+holding the value a setting's default had before it changed is read as that default, so a changed
+default stands where the player never chose the old one. The window's resolution and mode are read first, as the window opens and
 before the world loads, so it shows as it was left, 1280 by 720 in a window where the file keeps
 neither. The time, the daylight cycle and the moon are the world's, which its save keeps, and a
 transient run neither reads the file nor writes it.
@@ -1545,6 +1547,12 @@ readings with no other program on the GPU, and the memory the game holds:
 | 8 | 16.7 | 9.1 | 8.3 | 1,100 MB |
 | 12 | 16.9 | 12.8 | 12.9 | 1,476 MB |
 | 16 | 25.5 | 16.6 | 21.1 | 2,206 MB |
+
+A window of 2560 by 1440 draws four times the pixels, and over the plains village at hour 16 the
+frame takes about 45 ms there, Debug and Release alike, the GPU bounding it, global illumination
+about 9.5 ms of it. A frame captured offscreen and the window's own frame of the same view differ by
+under 1 percent. After the camera turns, the screen's light settles within about 20 frames, a second
+at that size.
 
 The plants are most of what a meadow draws. Over seed 1's plains at noon at 12 columns, from 20
 blocks up at -288, 64 looking east, read on 2026-10-21, they take the frame from 1.18 million

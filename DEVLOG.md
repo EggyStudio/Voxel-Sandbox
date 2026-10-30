@@ -6,6 +6,12 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 notes written beside them as Markdown files named the same way. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
+## 2026-10-30
+
+Done that day
+
+- Item 140 at `5c80c99`. The window opens at its saved size and mode.
+
 ## 2026-10-26
 
 ![](.github/devlog/2026-10-26-item-133-canopy.webp)
