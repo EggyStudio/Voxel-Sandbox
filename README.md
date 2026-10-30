@@ -153,7 +153,8 @@ looked at from the terminal. A closed room lit by one lamp, at night:
 ```
 
 `voxel.state` says where the player stands and looks, what is loaded and drawn, the hour, the day
-and the light, and the block the eye is inside where it is in one. `voxel.fill`, `voxel.room` and
+and the light, and the block the eye is inside where it is in one, and `voxel.frames` the median,
+the 99th part and the slowest of the last 600 frames' times. `voxel.fill`, `voxel.room` and
 `voxel.set` change blocks, `voxel.tp`, `voxel.look` and `voxel.fly` move the player, `voxel.break`
 and `voxel.place` act as the mouse buttons do, `voxel.time`, `voxel.day` and `voxel.cycle` set the
 sky, `voxel.clouds` shows or hides the clouds and places their drift, `voxel.distance` the render

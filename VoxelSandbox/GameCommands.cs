@@ -18,6 +18,14 @@ public static class GameCommands
     /// <summary>The game being played, which <c>./e3d eval</c> reaches too.</summary>
     public static VoxelGame? Game { get; internal set; }
 
+    [Command("voxel.frames", "The median, the 99th part and the slowest of the last 600 frames' times, in ms")]
+    internal static string Frames()
+    {
+        if (Game is not { } game) return "no world is loaded";
+        var (median, p99, slowest, count) = game.FrameTimes();
+        return string.Create(CultureInfo.InvariantCulture, $"over {count} frames, median {median:0.00} ms, 99th part {p99:0.00} ms, slowest {slowest:0.00} ms");
+    }
+
     [Command("voxel.state", "Where the player stands and looks, the block looked at, the columns and sections loaded, the frame's draws, the hour and the light")]
     internal static string State()
     {

@@ -27,6 +27,12 @@ left its light casting shadows on 3DEngine 5.2.326, the grass's blades shading e
 patches and a seam of the light's shadow down the middle, and on the right a plain point light with
 no shadow on 5.2.333, the grass lit evenly about the player.
 
+![](.github/devlog/2026-10-30-item-148-cactus.webp)
+Two cacti on the sand of seed 1's desert by its village at 687, 57, -725 in the game's own pictures,
+shown four times their size, on the left each side a pixel in and as wide as the whole cell, its
+edges showing a pixel past the sides beside them as a line down each corner, and on the right a
+plain box, each side a pixel in and as wide as the box.
+
 # Item 141, the far cascade on and the shadows at 128 blocks
 
 The far cascade on by default and the sun's shadows reaching 128 blocks, read in a Debug build with
@@ -189,6 +195,22 @@ alike, the edges of two stars and a cloud against the sky and a tree's crown aga
 speck lies on a lit surface before or after the pin on this GPU, as the engine read. The grass's
 blades shaded each other in dark patches under the light's shadow and are lit evenly without it.
 
+# Item 148, the cactus a plain box
+
+A cactus whose side picture cuts nothing out, the game's own pictures, is a plain box, its sides a
+pixel in from the cell's and as wide as the box, showing the picture's middle fourteen pixels
+across, its top and bottom across the whole cell as before. A pack's side picture that is clear at
+its edges, as the source's is for its thorns, keeps the source's model, each side as wide as the
+cell. The mesher chooses by the atlas, a shape's plain pieces standing where none of its pictures
+cuts anything out.
+
+Read at seed 1's desert by its village, two cacti set on the sand at 687, 57, -725 and 685, 57,
+-724, seen from 690.5, 63, -722.5 looking northwest and 12 down at 15:00 with no pack. With the
+source's sides each vertical edge shows a line, the side's edge a pixel past the side beside it,
+and with the plain box the edges are clean, the top's pixel past the sides as in the source.
+MesherTests reads the plain box's sides a pixel in and none past the box, and CutoutTests the
+source's sides across the whole cell under a pack whose side picture is clear at its edges.
+
 Done that day
 
 - Item 140 at `5c80c99`. The window opens at its saved size and mode.
@@ -197,6 +219,7 @@ Done that day
 - Item 143 at `5f31bdf`. Sections are drawn in groups of several, so a frame makes a quarter of its
   draws.
 - Item 147 at `b5626c6`. The held light casts no shadow.
+- Item 148 at `5d96667`. The cactus without a pack is a plain inset box.
 
 ## 2026-10-26
 

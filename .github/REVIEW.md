@@ -16,31 +16,35 @@ the engine's item 145. After it `b5626c6`, item 147, pushed at 21:59: 5.2.333 pi
 dropped lights plain point lights, the grove's frame at 1920 by 1080 with a torch 22.9 to 23.2 ms
 going to 21.8 to 22.6 and the GPU's shadows 4.0 to 3.3; the specks read on a midnight meadow, 17
 black pixels among lit neighbors going to 4, the 13 gone a seam of the held light's shadow and the 4
-left stars and edges against the sky, none on a lit surface before or after. The window path matches
-offscreen, an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to 0.002
-fresh at 1280 by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release both
-run about 46 ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at
-720p; the owner's file kept Soft_Shadows 0, never chosen. The options file's first line is its
-version, 2, and an older file's line equal to a default since changed reads as that default; the
-note is 2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md,
-its item 134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01
-with play in 40 minutes. The start restores the options file's resolution and mode right after
-InitWindow, before the game is built, the window appearing as saved about 8 s before the world loads
-where it changed after; no monitor setting exists to read, and a hidden window cannot be shown later
-since the engine takes a program-set hidden window as a --hidden run; the test reads the values and
-a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
-Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
-first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
-sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
-(138); `b25e668` (137); `4aef50c` with `6001eed` (the README's quick links, 136); `7c36ec8` (42);
-`f1aa450` (27); `5145d2f` (134); `0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133);
-`a4d383c` (95). Each commit's detail stands in its item in REVIEW-ARCHIVE.md, its devlog note and
-its own words. On 2026-10-30 at 18:0x the owner wrote items 140 and 141 (Decision 51), the README's
-links as the devlog and 3DEngine, a Rust voxel engine as the performance reference (Decision 52),
-and asked that the sessions spend fewer tokens at the same quality, N 7.7. Item 144 closed at its
-count on 2026-10-30, the quads merging to 81 to 89% and not half; 143's other 245 MB is the driver's
-too, the ring's mapped memory counted as the device mapping and its shared backing, the game's own
-arrays 68 MB more.
+left stars and edges against the sky, none on a lit surface before or after. After it `5d96667`,
+item 148, held until the run of `b5626c6` ends: BlockShape gains plain pieces the mesher draws where
+none of the shape's pictures cut anything out, so the game's own pictures give the cactus an inset
+box with the sides a pixel in and the top and bottom as before, while a pack whose cactus side is
+clear at its edges keeps the source's sides; tests in MesherTests and CutoutTests, two cacti on the
+desert pictured before and after. The window path matches offscreen, an RMSE of 0.004 to 0.007 with
+the owner's options at 2560 by 1440 and 0.001 to 0.002 fresh at 1280 by 720, cloud edges mostly; a
+turn settles in about 22 frames; Debug and Release both run about 46 ms at 2560 by 1440, GPU-bound
+at 22 frames a second against the pictures' 17 ms at 720p; the owner's file kept Soft_Shadows 0,
+never chosen. The options file's first line is its version, 2, and an older file's line equal to a
+default since changed reads as that default; the note is 2026-10-30-item-142-run-by-hand.md. The
+swapchain finding stands in the engine's ASKS.md, its item 134. Before it `5c80c99`, item 140,
+pushed at 18:21 on 2026-10-30, its run green at 19:01 with play in 40 minutes. The start restores
+the options file's resolution and mode right after InitWindow, before the game is built, the window
+appearing as saved about 8 s before the world loads where it changed after; no monitor setting
+exists to read, and a hidden window cannot be shown later since the engine takes a program-set
+hidden window as a --hidden run; the test reads the values and a missing file's 1280 by 720.
+AGENTS.md's REVIEW.md line reads the head, the batch's items and the Replies by the owner's word in
+the coder's session. It carries NORM.md with N 7.7 and the README's first line. Before it `fc0937a`,
+item 139, pushed by the owner's hand on 2026-10-26 while the sessions were paused until 2026-10-30,
+its run green. Before it on 2026-10-26, each green: `9c07673` (138); `b25e668` (137); `4aef50c` with
+`6001eed` (the README's quick links, 136); `7c36ec8` (42); `f1aa450` (27); `5145d2f` (134);
+`0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133); `a4d383c` (95). Each commit's detail
+stands in its item in REVIEW-ARCHIVE.md, its devlog note and its own words. On 2026-10-30 at 18:0x
+the owner wrote items 140 and 141 (Decision 51), the README's links as the devlog and 3DEngine, a
+Rust voxel engine as the performance reference (Decision 52), and asked that the sessions spend
+fewer tokens at the same quality, N 7.7. Item 144 closed at its count on 2026-10-30, the quads
+merging to 81 to 89% and not half; 143's other 245 MB is the driver's too, the ring's mapped memory
+counted as the device mapping and its shared backing, the game's own arrays 68 MB more.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -160,15 +164,6 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
-
-148. **The cactus without a pack is a plain inset box.** The owner wrote on 2026-10-30 that with the
-    game's own pictures the cactus's faces extending a pixel out look weird, since the picture has
-    no transparent thorns to carry, and asked for the same dimensions, a pixel inset on the sides,
-    with no face extending past the box, cubic. With the game's own pictures the cactus's sides
-    stand a pixel in from the block's faces as before and the thorn's extension of a pixel is
-    dropped, the top and bottom as they are, the faces' texture coordinates following the inset; a
-    pack's own model keeps its shape. A mesher test reads the cactus's side faces at the inset and
-    none past the box, and the desert pictured before and after. One commit, small, after item 147.
 
 145. **Streaming spends a time budget a frame.** Decision 52's fourth proposal. The reference spends
     3 ms a frame starting generation and 4 ms meshing, ordered by distance then facing; the game's

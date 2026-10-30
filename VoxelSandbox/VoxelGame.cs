@@ -698,6 +698,18 @@ public sealed class VoxelGame : IDisposable
     }
 
     private double _streamMs, _meshMs;
+
+    // The last frames' times, for their spread as a flight reads it.
+    private readonly float[] _frames = new float[600];
+    private int _framesSeen;
+
+    /// <summary>The median, the 99th part and the slowest of the last 600 frames' times in ms, or of as many as there were.</summary>
+    public (float Median, float P99, float Slowest, int Count) FrameTimes()
+    {
+        var times = _frames.Take(Math.Min(_framesSeen, _frames.Length)).Select(t => t * 1000).Order().ToArray();
+        if (times.Length == 0) return (0, 0, 0, 0);
+        return (times[times.Length / 2], times[Math.Min(times.Length - 1, (int)(times.Length * 0.99f))], times[^1], times.Length);
+    }
     // The sky's light level at the eye as the haze takes it, eased.
     private float _eyeSky = Lighting.Max;
 
@@ -1160,6 +1172,7 @@ public sealed class VoxelGame : IDisposable
 
     public void Draw()
     {
+        _frames[_framesSeen++ % _frames.Length] = GetFrameTime();
         // The haze begins two thirds of the way to the render distance and covers the world at it,
         // each point fading into the sky drawn behind it, so a mountain's top high against the sky
         // fades into the sky's blue, and under water it is the water's blue and covers it within 16

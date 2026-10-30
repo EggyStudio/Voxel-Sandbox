@@ -2466,6 +2466,17 @@ before a batch.
     on 2026-10-30 with the 5.2.333 pin, the held and dropped lights plain, the shadows 0.7 ms less
     at the grove.
 
+148. **The cactus without a pack is a plain inset box.** The owner wrote on 2026-10-30 that with the
+    game's own pictures the cactus's faces extending a pixel out look weird, since the picture has
+    no transparent thorns to carry, and asked for the same dimensions, a pixel inset on the sides,
+    with no face extending past the box, cubic. With the game's own pictures the cactus's sides
+    stand a pixel in from the block's faces as before and the thorn's extension of a pixel is
+    dropped, the top and bottom as they are, the faces' texture coordinates following the inset; a
+    pack's own model keeps its shape. A mesher test reads the cactus's side faces at the inset and
+    none past the box, and the desert pictured before and after. One commit, small, after item 147.
+    Done at `5d96667` on 2026-10-30, plain pieces where no picture cuts, the pack's source shape
+    kept where its side is clear at the edges.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
