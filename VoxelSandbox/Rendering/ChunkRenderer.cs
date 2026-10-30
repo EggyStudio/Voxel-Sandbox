@@ -45,6 +45,7 @@ public sealed class ChunkRenderer : IDisposable
         public Vector3[] Positions = [];
         public uint[] Indices = [];
         public uint[] Packed = [];
+        public Color[] Colors = [];
         // Where a blended part's entity stands in its section, the middle of its faces to the
         // nearest block, its positions held from there, since the engine draws blended entities
         // farthest first by where each stands, so a section's water and its glass each sort by
@@ -52,7 +53,13 @@ public sealed class ChunkRenderer : IDisposable
         // the water. A part drawn solid stands at the section's corner.
         public Vector3 Center;
 
-        public void Take(SectionMesher.Faces faces, bool centered = false)
+        public bool HasFaces => Positions.Length > 0;
+
+        public int Triangles => Indices.Length / 3;
+
+        // Takes a meshing's faces, uploading them as the part's own mesh unless its group draws them,
+        // and says whether they changed, the light alone or the faces too.
+        public Change Take(SectionMesher.Faces faces, bool centered = false, bool upload = true)
         {
             var positions = CollectionsMarshal.AsSpan(faces.Positions);
             if (centered && positions.Length > 0)
@@ -71,18 +78,22 @@ public sealed class ChunkRenderer : IDisposable
             {
                 // A relight writes the packed bytes, eight a vertex, and the colors global
                 // illumination reads, the positions kept.
-                if (packed.SequenceEqual(Packed)) return;
-                UpdateMeshBuffer<uint>(Mesh, MeshStreamBuffer, packed, 0);
-                UpdateMeshBuffer<Color>(Mesh, 3, CollectionsMarshal.AsSpan(faces.Colors), 0);
-                Packed = packed.ToArray();
-                return;
+                if (packed.SequenceEqual(Packed)) return Change.None;
+                (Packed, Colors) = (packed.ToArray(), faces.Colors.ToArray());
+                if (upload)
+                {
+                    UpdateMeshBuffer<uint>(Mesh, MeshStreamBuffer, Packed, 0);
+                    UpdateMeshBuffer<Color>(Mesh, 3, Colors, 0);
+                }
+                return Change.Light;
             }
             Forget();
             // The store keeps the arrays it is given until the frame uploads them, so each mesh has
             // arrays of its own that nothing changes afterward. The colors go with the upload for the
             // scene's light field, which reads its colors from them.
-            (Positions, Indices, Packed) = (positions.ToArray(), indices.ToArray(), packed.ToArray());
-            Mesh = Positions.Length > 0 ? UploadMesh(Positions, Indices, MeshStream.From(MeshStreamFormat.UInt2, Packed.AsSpan()), faces.Colors.ToArray()) : default;
+            (Positions, Indices, Packed, Colors) = (positions.ToArray(), indices.ToArray(), packed.ToArray(), faces.Colors.ToArray());
+            Mesh = upload && Positions.Length > 0 ? UploadMesh(Positions, Indices, MeshStream.From(MeshStreamFormat.UInt2, Packed.AsSpan()), Colors.ToArray()) : default;
+            return Change.Faces;
         }
 
         public void Forget()
@@ -92,13 +103,57 @@ public sealed class ChunkRenderer : IDisposable
         }
     }
 
+    private enum Change { None, Light, Faces }
+
     private sealed class SectionMeshes
     {
         public readonly Part Solid = new(), SeeThrough = new(), Water = new(), Cutout = new(), CutoutGlass = new(), SolidCutout = new(), Molten = new(), Foliage = new();
         public readonly List<(int Surface, Matrix4x4 At)> Emitters = [];
 
         public Part[] Parts => [Solid, SeeThrough, Water, Cutout, CutoutGlass, SolidCutout, Molten, Foliage];
+
+        // The parts a group draws, in the order of a group's parts.
+        public Part[] Grouped => [Solid, Foliage, Cutout, SolidCutout, Molten];
     }
+
+    // The sections two by two across and one high whose opaque and cut-out parts are drawn as one
+    // entity each, a quarter of the draws a part of each section made where the four hold it, since
+    // the engine records each draw in each of its passes, the depth's, the camera's, the mirror's
+    // and the cascades', at 3 to 5 µs of the main thread. A group two sections high drew the caves'
+    // sections under the land beside the land seen, which the flood leaves out alone, for 3 to 4 ms
+    // more of the GPU at 12 columns. The blended parts stay a section's own, since the engine draws
+    // them farthest first by where each entity stands. A group's mesh is made again from its
+    // sections' arrays at most once a frame, and its streams written in place where only the light
+    // of its sections changed, so the scene's field keeps it settled. The engine keeps a mesh whose
+    // stream is written in place in a ring of mapped buffers from then on, a group's four times a
+    // section's, so the driver maps about 255 MB more at 8 columns.
+    private sealed class Group
+    {
+        public readonly GroupPart[] Parts =
+            [new(SectionPart.Solid), new(SectionPart.Foliage), new(SectionPart.Cutout), new(SectionPart.SolidCutout), new(SectionPart.Molten)];
+        public Change Change;
+    }
+
+    private sealed class GroupPart(int kind)
+    {
+        public readonly int Kind = kind;
+        public ModelMesh Mesh;
+        public int Entity = -1;
+        public bool Seen, Casts;
+
+        public void Forget()
+        {
+            if (Mesh.IsValid) UnloadMesh(Mesh);
+            Mesh = default;
+        }
+    }
+
+    // How many sections a group spans along each axis, as powers of two, two across and one high.
+    private const int GroupX = 1, GroupY = 0, GroupZ = 1;
+
+    private static (int X, int Y, int Z) GroupOf(SectionKey key) => (key.X >> GroupX, key.Y >> GroupY, key.Z >> GroupZ);
+
+    private readonly Dictionary<(int X, int Y, int Z), Group> _groups = [];
 
     // Every section's opaque faces are drawn with the first, their colors in their vertices, and
     // its see-through faces with the second, each vertex's alpha its surface's. An alpha under 255
@@ -306,11 +361,9 @@ public sealed class ChunkRenderer : IDisposable
         };
         _cutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, BouncesLight = false, LightThrough = plants, Shader = _shader };
         (_foliageLook, _cutoutLook) = (Look(_foliage), Look(_cutout));
-        foreach (var entry in _sections.Values)
-        {
-            if (entry.Foliage.Entity >= 0) _ecs.Update(entry.Foliage.Entity, _foliageLook);
-            if (entry.Cutout.Entity >= 0) _ecs.Update(entry.Cutout.Entity, _cutoutLook);
-        }
+        foreach (var group in _groups.Values)
+            foreach (var part in group.Parts)
+                if (part.Entity >= 0 && part.Kind is SectionPart.Foliage or SectionPart.Cutout) _ecs.Update(part.Entity, LookOf(part.Kind));
     }
 
     /// <summary>
@@ -553,8 +606,8 @@ public sealed class ChunkRenderer : IDisposable
             AlphaMode = MaterialAlphaMode.Opaque, Roughness = lava.Roughness, Shader = _shader, Emissive = lava.Emissive, EmissiveIntensity = lava.EmissiveIntensity,
         };
         _moltenLook = Look(_molten);
-        foreach (var entry in _sections.Values)
-            if (entry.Molten.Entity >= 0) _ecs.Update(entry.Molten.Entity, _moltenLook);
+        foreach (var group in _groups.Values)
+            if (group.Parts[4].Entity >= 0) _ecs.Update(group.Parts[4].Entity, _moltenLook);
         _lamps = [.. Surfaces.All.Select(s => _lampTextures[s.Id].IsValid
             ? Lamp(s) with { Color = Color.White, Texture = _lampTextures[s.Id], EmissiveMap = _lampEmission[s.Id] }
             : s.Unseen ? Lamp(s) with { AlphaMode = MaterialAlphaMode.Mask, Color = s.Color with { A = 0 } }
@@ -679,6 +732,7 @@ public sealed class ChunkRenderer : IDisposable
             if (!Remesh(world, key)) world.Loaded.Add(key);
         world.Reshaded.ExceptWith(world.Edited);
         world.Edited.Clear();
+        Rebuild();
 
         var at = Reach.Of(eye);
         if (_reachedFor != (at, renderDistance))
@@ -817,22 +871,21 @@ public sealed class ChunkRenderer : IDisposable
         if (!_sections.TryGetValue(key, out var entry))
             _sections[key] = entry = new SectionMeshes();
 
-        entry.Solid.Take(mesher.Solid);
         entry.SeeThrough.Take(mesher.SeeThrough, centered: true);
         entry.Water.Take(mesher.Water, centered: true);
-        entry.Cutout.Take(mesher.Cutout);
         entry.CutoutGlass.Take(mesher.CutoutGlass);
-        entry.SolidCutout.Take(mesher.SolidCutout);
-        entry.Molten.Take(mesher.Molten);
-        entry.Foliage.Take(mesher.Foliage);
-        Keep(key, entry.Solid, SectionPart.Solid, _terrainLook);
-        Keep(key, entry.Foliage, SectionPart.Foliage, _foliageLook);
         Keep(key, entry.SeeThrough, SectionPart.SeeThrough, _clearLook);
         Keep(key, entry.Water, SectionPart.Water, _waterLook);
-        Keep(key, entry.Cutout, SectionPart.Cutout, _cutoutLook);
         Keep(key, entry.CutoutGlass, SectionPart.CutoutGlass, _cutoutGlassLook);
-        Keep(key, entry.SolidCutout, SectionPart.SolidCutout, _solidCutoutLook);
-        Keep(key, entry.Molten, SectionPart.Molten, _moltenLook);
+        // The opaque and cut-out parts keep their arrays for their group, which draws them.
+        var change = Change.None;
+        foreach (var (part, faces) in (ReadOnlySpan<(Part, SectionMesher.Faces)>)[(entry.Solid, mesher.Solid), (entry.Foliage, mesher.Foliage),
+            (entry.Cutout, mesher.Cutout), (entry.SolidCutout, mesher.SolidCutout), (entry.Molten, mesher.Molten)])
+        {
+            var made = part.Take(faces, upload: false);
+            if (made > change) change = made;
+        }
+        Regroup(key, change);
         _changed = true;
 
         entry.Emitters.Clear();
@@ -887,11 +940,11 @@ public sealed class ChunkRenderer : IDisposable
 
     // Shows a part's entity, or draws it into the shadow maps alone, or hides it, writing only what
     // changed, so the model pass gathers again only the chunks of the sections the flood changed.
-    private void Show(Part part, bool shown, bool shadowOnly)
+    private void Show(int entity, bool shown, bool shadowOnly)
     {
-        if (part.Entity < 0) return;
-        if (_ecs.GetReadOnly<Visible>(part.Entity).Value != shown) _ecs.Update(part.Entity, new Visible(shown));
-        if (_ecs.GetReadOnly<ShadowOnly>(part.Entity).Value != shadowOnly) _ecs.Update(part.Entity, new ShadowOnly(shadowOnly));
+        if (entity < 0) return;
+        if (_ecs.GetReadOnly<Visible>(entity).Value != shown) _ecs.Update(entity, new Visible(shown));
+        if (_ecs.GetReadOnly<ShadowOnly>(entity).Value != shadowOnly) _ecs.Update(entity, new ShadowOnly(shadowOnly));
     }
 
     private void Forget(SectionKey key)
@@ -901,6 +954,116 @@ public sealed class ChunkRenderer : IDisposable
         _changed = true;
         foreach (var part in entry.Parts) Drop(part);
         foreach (var part in entry.Parts) part.Forget();
+        if (entry.Grouped.Any(part => part.HasFaces)) Regroup(key, Change.Faces);
+    }
+
+    // Marks a section's group to be made again in the next update, or its light written, the
+    // greater change of its sections standing.
+    private void Regroup(SectionKey key, Change change)
+    {
+        if (change == Change.None) return;
+        var at = GroupOf(key);
+        if (!_groups.TryGetValue(at, out var group)) _groups[at] = group = new Group();
+        if (change > group.Change) group.Change = change;
+    }
+
+    // Makes each group whose sections changed again from their arrays, a mesh of each part over the
+    // sections that hold it, standing at the group's corner, or writes their light where only it
+    // changed, and lets a group whose sections hold nothing go.
+    private void Rebuild()
+    {
+        List<(int X, int Y, int Z)>? empty = null;
+        foreach (var (at, group) in _groups)
+        {
+            if (group.Change == Change.None) continue;
+            var change = group.Change;
+            group.Change = Change.None;
+            _changed = true;
+            var corner = new SectionKey(at.X << GroupX, at.Y << GroupY, at.Z << GroupZ);
+            var origin = corner.Origin;
+            var held = false;
+            for (int k = 0; k < group.Parts.Length; k++)
+            {
+                var part = group.Parts[k];
+                _members.Clear();
+                for (int i = 0; i < 1 << (GroupX + GroupY + GroupZ); i++)
+                {
+                    var key = new SectionKey(corner.X + (i & ((1 << GroupX) - 1)), corner.Y + ((i >> GroupX) & ((1 << GroupY) - 1)), corner.Z + (i >> (GroupX + GroupY)));
+                    if (_sections.TryGetValue(key, out var entry) && entry.Grouped[k].HasFaces) _members.Add((key, entry.Grouped[k]));
+                }
+                if (_members.Count == 0)
+                {
+                    DropGroupPart(part);
+                    continue;
+                }
+                held = true;
+                int vertices = 0, indices = 0;
+                foreach (var (_, member) in _members) (vertices, indices) = (vertices + member.Positions.Length, indices + member.Indices.Length);
+                var packed = new uint[vertices * 2];
+                var colors = new Color[vertices];
+                var placed = 0;
+                foreach (var (_, member) in _members)
+                {
+                    member.Packed.CopyTo(packed, placed * 2);
+                    member.Colors.CopyTo(colors, placed);
+                    placed += member.Positions.Length;
+                }
+                // Where the light alone changed, the faces are the same and the streams are written
+                // whole in place, which keeps the mesh the scene's field knows settled, the engine
+                // writing a stream into the next of a ring of buffers.
+                if (change == Change.Light && part.Mesh.IsValid && part.Mesh.VertexCount == vertices)
+                {
+                    UpdateMeshBuffer<uint>(part.Mesh, MeshStreamBuffer, packed, 0);
+                    UpdateMeshBuffer<Color>(part.Mesh, 3, colors, 0);
+                    continue;
+                }
+                var positions = new Vector3[vertices];
+                var triangles = new uint[indices];
+                (placed, indices) = (0, 0);
+                foreach (var (key, member) in _members)
+                {
+                    var offset = key.Origin - origin;
+                    for (int v = 0; v < member.Positions.Length; v++) positions[placed + v] = member.Positions[v] + offset;
+                    for (int t = 0; t < member.Indices.Length; t++) triangles[indices + t] = member.Indices[t] + (uint)placed;
+                    placed += member.Positions.Length;
+                    indices += member.Indices.Length;
+                }
+                part.Forget();
+                part.Mesh = UploadMesh(positions, triangles, MeshStream.From(MeshStreamFormat.UInt2, packed.AsSpan()), colors);
+                if (part.Entity < 0)
+                {
+                    part.Entity = _ecs.Spawn();
+                    _ecs.Add(part.Entity, new Mesh(part.Mesh));
+                    _ecs.Add(part.Entity, LookOf(part.Kind));
+                    _ecs.Add(part.Entity, new Transform(origin));
+                    _ecs.Add(part.Entity, new Visible(false));
+                    _ecs.Add(part.Entity, new ShadowOnly(false));
+                    _ecs.Add(part.Entity, new SectionPart(corner, part.Kind));
+                }
+                else _ecs.Update(part.Entity, new Mesh(part.Mesh));
+            }
+            if (!held) (empty ??= []).Add(at);
+        }
+        if (empty is null) return;
+        foreach (var at in empty) _groups.Remove(at);
+    }
+
+    private readonly List<(SectionKey Key, Part Part)> _members = [];
+
+    private Material LookOf(int kind) => kind switch
+    {
+        SectionPart.Solid => _terrainLook,
+        SectionPart.Foliage => _foliageLook,
+        SectionPart.Cutout => _cutoutLook,
+        SectionPart.SolidCutout => _solidCutoutLook,
+        _ => _moltenLook,
+    };
+
+    private void DropGroupPart(GroupPart part)
+    {
+        if (part.Entity >= 0) _ecs.Despawn(part.Entity);
+        part.Entity = -1;
+        part.Forget();
     }
 
     /// <summary>Lets go of the meshes of a column's sections, as it unloads.</summary>
@@ -918,6 +1081,9 @@ public sealed class ChunkRenderer : IDisposable
     public void Clear()
     {
         foreach (var key in _sections.Keys.ToList()) Forget(key);
+        foreach (var group in _groups.Values)
+            foreach (var part in group.Parts) DropGroupPart(part);
+        _groups.Clear();
         _asked.Clear();
         _parked.Clear();
         _unseen.Clear();
@@ -985,43 +1151,62 @@ public sealed class ChunkRenderer : IDisposable
         var reach = renderDistance * renderDistance + renderDistance;
         int draws = 0, triangles = 0, culled = 0, deep = 0, deepTriangles = 0, casting = 0, castDraws = 0;
         foreach (var list in _emitterDraws) list.Clear();
+        foreach (var group in _groups.Values)
+            foreach (var part in group.Parts) part.Seen = part.Casts = false;
         foreach (var (key, entry) in _sections)
         {
             int dx = key.X - cx, dz = key.Z - cz;
             var within = dx * dx + dz * dz <= reach;
             var seen = within && (!Cull || _visibility.Sees(key));
             var castsAlone = within && !seen && _casters.Contains(key);
-            // The parts that cast a shadow are drawn into the shadow maps alone where the section
-            // casts alone, and the glass, the water and the lava, which the flood's casters leave
-            // out, only where it is seen.
-            foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.Foliage, entry.Cutout, entry.SolidCutout])
-                Show(part, seen || castsAlone, castsAlone);
-            foreach (var part in (ReadOnlySpan<Part>)[entry.SeeThrough, entry.Water, entry.CutoutGlass, entry.Molten])
-                Show(part, seen, false);
+            // The glass and the water, which the flood's casters leave out, are drawn only where the
+            // section is seen. A group draws its parts where one of its sections holding them is
+            // seen, and its parts that cast a shadow, all but the lava, into the shadow maps alone
+            // where none is seen and one casts alone.
+            foreach (var part in (ReadOnlySpan<Part>)[entry.SeeThrough, entry.Water, entry.CutoutGlass]) Show(part.Entity, seen, false);
+            if (_groups.TryGetValue(GroupOf(key), out var group))
+            {
+                var grouped = entry.Grouped;
+                for (int k = 0; k < grouped.Length; k++)
+                {
+                    if (!grouped[k].HasFaces) continue;
+                    group.Parts[k].Seen |= seen;
+                    group.Parts[k].Casts |= castsAlone && group.Parts[k].Kind != SectionPart.Molten;
+                }
+            }
             if (!within) continue;
             foreach (var (surface, at) in entry.Emitters) _emitterDraws[surface].Add(at);
             if (!seen)
             {
                 culled++;
-                if (!castsAlone) continue;
-                casting++;
-                foreach (var part in (ReadOnlySpan<Part>)[entry.Solid, entry.Foliage, entry.Cutout, entry.SolidCutout])
-                    if (part.Mesh.IsValid) castDraws++;
+                if (castsAlone) casting++;
                 continue;
             }
             if (world.TryGetColumn(key.X, key.Z, out var column) && key.Y < column.FloorSection)
             {
                 deep++;
-                deepTriangles += entry.Solid.Mesh.TriangleCount + entry.Cutout.Mesh.TriangleCount + entry.CutoutGlass.Mesh.TriangleCount
-                    + entry.SolidCutout.Mesh.TriangleCount + entry.Molten.Mesh.TriangleCount + entry.SeeThrough.Mesh.TriangleCount + entry.Water.Mesh.TriangleCount;
+                deepTriangles += entry.Solid.Triangles + entry.Cutout.Triangles + entry.CutoutGlass.Triangles
+                    + entry.SolidCutout.Triangles + entry.Molten.Triangles + entry.SeeThrough.Triangles + entry.Water.Triangles;
             }
-            foreach (var part in entry.Parts)
+            foreach (var part in (ReadOnlySpan<Part>)[entry.SeeThrough, entry.Water, entry.CutoutGlass])
             {
                 if (!part.Mesh.IsValid) continue;
                 draws++;
                 triangles += part.Mesh.TriangleCount;
             }
         }
+        foreach (var group in _groups.Values)
+            foreach (var part in group.Parts)
+            {
+                Show(part.Entity, part.Seen || part.Casts, !part.Seen && part.Casts);
+                if (!part.Mesh.IsValid) continue;
+                if (part.Seen)
+                {
+                    draws++;
+                    triangles += part.Mesh.TriangleCount;
+                }
+                else if (part.Casts) castDraws++;
+            }
         (_placedDraws, _placedTriangles, Culled, Deep, Casting) = (draws, triangles, culled, (deep, deepTriangles), (casting, castDraws));
         SetProfileValue("draw.sections.shadow", castDraws);
     }

@@ -2419,6 +2419,15 @@ before a batch.
     0 read as the default through the options file's version, the frame at 2560 by 1440 GPU-bound at
     about 46 ms; the specks wait on the package.
 
+141. **The far cascade is on by default and the shadow distance is 128 blocks.** The owner's word of
+    2026-10-30, Decision 51, over item 27's call of 2026-10-26. LightSettings.FarCascade defaults to
+    true and ShadowDistance to 128 where it is 64, Render Settings' toggle and the options file
+    following, the README's options table and the costs table read again at the defaults on a quiet
+    GPU with the profile stated, the frame at 8, 12 and 16 columns and the shadows' share, and the
+    deep cave and the village pictured at the new defaults; a saved options file keeps a player's
+    own choice. One commit, small, with a note. Done at `2c458b0` on 2026-10-30, the frame at 12
+    columns 17.0 ms at the new defaults.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

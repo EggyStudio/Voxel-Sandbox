@@ -1251,9 +1251,11 @@ cherry grove in the open the flood leaves out little toward the sun, 20 draws, a
 19.0 to 19.5 ms with them and without them in one run.
 
 Each of a section's eight parts, its solid faces, its leaves, its plants, its glass and ice, its
-water, the glass and the faces a pack cuts out and its lava, is an entity the engine draws, a `Mesh`
-of the part's upload, a `Material` through the terrain shader, a `Transform`, the engine's `Visible`
-and `ShadowOnly`, and the game's `SectionPart` naming the section and the part. Each material says
+water, the glass and the faces a pack cuts out and its lava, is drawn by an entity of the engine's,
+a `Mesh`, a `Material` through the terrain shader, a `Transform`, the engine's `Visible` and
+`ShadowOnly`, and the game's `SectionPart` naming the section and the part. The glass, ice and
+water are each a section's own entity, and the other parts of the four sections two by two across
+one entity each, drawn where one of the four holding it is seen. Each material says
 what the part's `ModelMaterial` says of its shadow and of the scene's distance field, so the plants
 stay out of the field and the glass, ice and water cast no shadow. The leaves' material lets half of
 global illumination's light through a block, as the source's leaves let the light through, or more
@@ -1532,23 +1534,27 @@ each of the sun's three shadow cascades', leaves out the sections whose boxes it
 at a height of 90 over seed 1's spawn at noon, looking east over the forest to the sea, at 1280 by
 720 offscreen on the development machine's RTX 4070 Laptop GPU with the three default packs and
 every setting at its default, in a Debug build on the machine's power-saving profile, the frame
-keeps 60 a second at 8 columns, stands at the edge of it at 12, where it takes 16.8 to 17.4 ms, the
-GPU's work about 15.6 ms of it and the CPU's passes 13.3, and loses it at 16, where it takes 26.5 to
-26.8 ms, the GPU's work and the CPU's passes each about 21 ms. The sun's shadows reach 128 blocks
-and take 2.1 to 2.6 ms of the GPU at every distance, where 64 blocks took 0.8. The engine's fill of
-the land past the shadow map is left off, the contact shadows shading that land. The far cascade
-takes about 1.9 ms more of the GPU at 12 columns, and the sea's mirror 0.7, 1.4 and 3.0 ms of the
-GPU and 0.9, 1.9 and 3.4 of the CPU. Each section a pass draws costs the main thread 3 to 5 µs to
-record, and the passes draw the sections four times, the depth's, the camera's, the mirror's and the
-cascades', so at 12 columns the frame's 3,100 draws take about 10 ms of the main thread. The frame's
-time, the GPU's and the CPU's passes' in milliseconds, the middle of the readings with no other
-program on the GPU, and the memory the game holds:
+keeps 60 a second at 8 columns, stands at the edge of it at 12, where it takes 17.1 to 17.3 ms, the
+GPU's work bounding it, and loses it at 16, where it takes 23.4 to 25.6 ms, the GPU's work about 23
+ms of it. The sun's shadows reach 128 blocks and take 2.1 to 2.6 ms of the GPU at every distance,
+where 64 blocks took 0.8. The engine's fill of the land past the shadow map is left off, the contact
+shadows shading that land. The far cascade takes about 1.9 ms more of the GPU at 12 columns, and the
+sea's mirror 0.7, 1.4 and 3.0 ms of the GPU and 0.9, 1.9 and 3.4 of the CPU. Each draw costs the
+main thread 3 to 5 µs to record in each pass, and the passes draw the land four times, the depth's,
+the camera's, the mirror's and the cascades', so the sections' opaque and cut-out parts are drawn in
+groups of two by two sections across, 1,380 draws at 12 columns for about 5 ms of the main thread
+where a draw of each section's part made 3,150 for about 10. A group two sections high drew the
+caves under the land seen beside it, for 3 to 4 ms more of the GPU at 12 columns. The groups hold
+more memory, about 500 MB at 8 and 12 columns and 60 at 16, the driver mapping the ring of buffers
+the engine keeps for a mesh whose light is written in place, a group's four times a section's. The
+frame's time, the GPU's and the CPU's passes' in milliseconds, the middle of the readings with no
+other program on the GPU, and the memory the game holds:
 
 | columns | frame | GPU | CPU's passes | memory |
 |---|---|---|---|---|
-| 8 | 16.7 | 12.0 | 7.9 | 1,117 MB |
-| 12 | 17.0 | 15.6 | 13.3 | 1,455 MB |
-| 16 | 26.6 | 21.1 | 22.2 | 2,266 MB |
+| 8 | 16.7 | 12.3 | 4.2 | 1,626 MB |
+| 12 | 17.2 | 17.2 | 8.4 | 1,884 MB |
+| 16 | 24.5 | 23.3 | 14.5 | 2,353 MB |
 
 A window of 2560 by 1440 draws four times the pixels, and over the plains village at hour 16 the
 frame takes about 45 ms there, Debug and Release alike, the GPU bounding it, global illumination

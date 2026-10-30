@@ -1,9 +1,14 @@
 # Review
 
-Reviewed up to `7508d5e`, item 142, pushed at 19:18 on 2026-10-30, the run watched. The window path
-matches offscreen, an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to
-0.002 fresh at 1280 by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release
-both run about 46 ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at
+Reviewed up to `7508d5e`, item 142, pushed at 19:18 on 2026-10-30, its run green at 20:31 with play
+in 73 minutes. After it `2c458b0`, item 141, pushed at 20:36 and watched: FarCascade true and
+ShadowDistance 128, the options file at version 3 so an older file's values take the new defaults;
+the quiet table at 1280 by 720 reads 8 columns at 16.7 ms, 12 at 17.0 and 16 at 26.6, the 128-block
+shadows adding 1.8 ms of the GPU and 1 of the CPU at 12 with the cascade draws 389 to 1,300 and the
+far cascade 1.9 of the GPU, the far oak's shadow and the cave pictured. The window path matches
+offscreen, an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to 0.002
+fresh at 1280 by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release both
+run about 46 ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at
 720p; the owner's file kept Soft_Shadows 0, never chosen. The options file's first line is its
 version, 2, and an older file's line equal to a default since changed reads as that default; the
 note is 2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md,
@@ -142,13 +147,35 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-141. **The far cascade is on by default and the shadow distance is 128 blocks.** The owner's word of
-    2026-10-30, Decision 51, over item 27's call of 2026-10-26. LightSettings.FarCascade defaults to
-    true and ShadowDistance to 128 where it is 64, Render Settings' toggle and the options file
-    following, the README's options table and the costs table read again at the defaults on a quiet
-    GPU with the profile stated, the frame at 8, 12 and 16 columns and the shadows' share, and the
-    deep cave and the village pictured at the new defaults; a saved options file keeps a player's
-    own choice. One commit, small, with a note.
+143. **Sections are drawn in groups of several, so a frame makes a quarter of its draws.** Decision
+    52's first proposal, from the reference's merging of 2 by 2 by 2 chunks into one mesh a part. At
+    12 columns the game makes about 3,100 draws, some 10 ms of the main thread at 3 to 5
+    microseconds a draw a pass, and at 16 columns the CPU's passes reach 22 ms; the sections of a
+    column two tall, or 2 by 2 by 2, are meshed as one entity a part, an edit remeshing the group
+    and the flood culling going coarser by the group. Read by the draws and the CPU's passes at 8,
+    12 and 16 columns before and after, 16 columns expected to fall toward its GPU's 21 ms, and the
+    frame's picture unchanged. It overlaps the engine's item 132, which waits behind the cascades,
+    so this goes first. One or two commits.
+
+144. **Opaque faces of one kind are merged into larger quads where it halves the triangles.**
+    Decision 52's third proposal. The reference merges faces of equal block, occlusion, light and
+    tint with border fans against cracks, where the game draws a quad a face, 1.24 million triangles
+    at 12 columns; smooth light and the corner shade make many faces unequal, so a reading first,
+    the mesher counting the faces that would merge at the spawn and the village, and the merge goes
+    ahead only where the triangles halve, lowering the depth, shadow and scene passes. One commit
+    for the reading, one more if it goes ahead, after item 143.
+
+145. **Streaming spends a time budget a frame.** Decision 52's fourth proposal. The reference spends
+    3 ms a frame starting generation and 4 ms meshing, ordered by distance then facing; the game's
+    flights read 18 to 19 ms at 8 columns and 21 to 29 at 12. The stream's work on the main thread
+    is held to a budget a frame in that order. Read by the flight's frame at its 99th part and the
+    stream's main-thread ms a frame before and after. One commit, after item 144.
+
+146. **The columns past 8 draw at double cells.** Decision 52's sixth proposal, large. The reference
+    draws coarser octree levels far out with a dithered cross-fade; the game's columns past 8 are
+    meshed at double cells and cross-faded. Read by the draws, the triangles and the frame at 16
+    columns before and after, and the far land's picture. After item 145, in phases the coder
+    proposes.
 
 ## Verdicts
 
@@ -240,5 +267,11 @@ each in full under Decisions in REVIEW-ARCHIVE.md.
     2026-10-30 at github.com/rornic/ochre for the voxel sandbox's performance; the game's session
     reads it for what it does about meshing, drawing and streaming that the game does not, and
     proposes items from it with readings, the engine taking what is the engine's through ASKS.md.
+    Read on 2026-10-30, six proposals in the order the readings say binds the frame: the game's
+    sections drawn in groups (item 143), shadow casters culled to each cascade's slice swept toward
+    the sun (the engine's, by ASKS.md), faces merged where the triangles halve (144), streaming by a
+    time budget (145), packed vertices (the engine's, by ASKS.md) and the far columns at double
+    cells (146); the reference has no occlusion culling, where the game's flood culling stands
+    ahead.
 
 ## Replies
