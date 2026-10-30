@@ -1048,8 +1048,14 @@ awk -v s="$splashes" -v e="$emitters" 'BEGIN { exit !(s > 5 && e > 0 && e <= 11)
   || fail "the rain on the meadow keeps ${splashes:-no} drops of its splashes alive from ${emitters:-no} emitters, where more than 5 from 1 to 11 were written"
 awk -v a="$alive" -v b="$budget" 'BEGIN { exit !(b > 0 && a <= b) }' || fail "the particles keep $alive alive over their budget of ${budget:-none}"
 cmd voxel.options particles Rain_Splashes 0
-cmd frames.wait 300
-splashes=$(profiled particles.splashes)
+# The count falls by about a twentieth a frame, the game's step held to 0.05 s, so under one drop
+# in about 80 frames, and it is read every 20 frames up to 300, where 300 waited on lavapipe took
+# nine minutes.
+for i in $(seq 1 15); do
+  cmd frames.wait 20
+  splashes=$(profiled particles.splashes)
+  awk -v s="$splashes" 'BEGIN { exit !(s != "" && s < 1) }' && break
+done
 awk -v s="$splashes" 'BEGIN { exit !(s != "" && s < 1) }' || fail "the rain on the meadow keeps ${splashes:-no} drops of its splashes alive with Rain Splashes at none"
 cmd voxel.options particles Rain_Splashes 100
 cmd voxel.weather days
@@ -1148,7 +1154,12 @@ cmd input.click 640 582
 cmd frames.wait 2
 cmd input.text 123
 ./e3d eval 'SetClipboardText("45")' --quiet --timeout 600 --session "$pid" > /dev/null 2> "$said" || fail "./e3d eval SetClipboardText ended with $?, $(head -n 1 "$said")"
-cmd input.key LeftControl 120 &
+# Control is held about a second, as many frames as a second of the median frame takes and 30 at
+# least, since e3d's calls take a few frames and a wall clock's time between them, where a fixed 120
+# held lavapipe's walk 90 frames past V.
+median=$(ask voxel.frames | sed -nE 's/.*median ([0-9.]+) ms.*/\1/p')
+hold=$(awk -v m="${median:-17}" 'BEGIN { f = int(1000 / (m > 0 ? m : 17)); print f < 30 ? 30 : f }')
+cmd input.key LeftControl "$hold" &
 held=$!
 for i in $(seq 1 50); do ask input.state | grep -q '^keys: .*LeftControl' && break; done
 cmd input.key V 1

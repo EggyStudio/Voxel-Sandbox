@@ -238,6 +238,33 @@ and with the plain box the edges are clean, the top's pixel past the sides as in
 MesherTests reads the plain box's sides a pixel in and none past the box, and CutoutTests the
 source's sides across the whole cell under a pack whose side picture is clear at its edges.
 
+# Item 149, the flood spread over frames
+
+The flood of the open cells as the eye steps into the next section takes 2 ms a frame and goes on
+in the frames after, the last whole flood drawn meanwhile, and the sun's casters are found in the
+frame after a flood finishes. A jump of more than a section floods at once. Read in Debug builds
+with the three default packs, offscreen at 1280 by 720, on tuned's power-saving profile with the
+processor's energy preference at power, the build with the flood and the casters in one frame and
+the build spreading them read in turns.
+
+Timed through eval at seed 1's spawn at 12 columns, a flood over the 9,700 to 9,900 sections it
+reaches took 3.8 to 4.4 ms with each section's joins kept and 7.7 to 32 ms where it worked them out,
+the casters' search 3.2 to 4.1 ms and the placing of the sections 0.8 to 1.6 ms.
+
+The step test flew the eye at a height of 100 over the spawn's loaded land 16 blocks east and back
+six times, then a jump of 48 and a step back twice, a `voxel.frames` read after each step giving the
+most a frame's flood, casters and placing took since the step, and `profile.slowest` the engine's
+scene field in the step's slowest frame, set apart since it is the engine's item 146.
+
+| Step | Placing, all in one frame | Placing, spread | Scene field |
+|---|---|---|---|
+| One section, six steps, two runs | 9.24 to 17.70 ms | 4.90 to 7.14 ms | 2.8 to 39.9 ms in both |
+| A jump of three sections | 24.67 to 36.93 ms | 21.93 to 29.07 ms | 28.3 to 57.9 ms in both |
+| One section after a jump | 16.36 to 17.14 ms | 6.97 to 8.15 ms | 14.8 to 31.7 ms in both |
+
+The scene field's work as the eye crosses stays the frame's largest part, 12 to 58 ms of the CPU,
+and the frames' 99th part with it.
+
 Done that day
 
 - Item 140 at `5c80c99`. The window opens at its saved size and mode.
@@ -248,6 +275,7 @@ Done that day
 - Item 145 at `a272e45`. Streaming spends a time budget a frame.
 - Item 147 at `b5626c6`. The held light casts no shadow.
 - Item 148 at `5d96667`. The cactus without a pack is a plain inset box.
+- Item 149 at `17704ca`. The flood and the casters' search at a crossing leave the frame.
 
 ## 2026-10-26
 

@@ -2485,6 +2485,15 @@ before a batch.
     `a272e45` on 2026-10-30 with the reading and voxel.frames, the budget left out, the crossings'
     cost to the engine's item 146 and the game's item 149.
 
+149. **The flood and the casters' search at a crossing leave the frame.** From item 145's reading on
+    2026-10-30, a step of one section over loaded land costing the game's flood culling and the sun
+    casters' search 9 to 15 ms of the frame when a section is first crossed. The two run off the
+    main thread or spread over frames at a crossing, the frame keeping the last result meanwhile;
+    read by the same step test, the frame's slowest and 99th part at 8 and 12 columns before and
+    after with the engine's field cost set apart. One or two commits. Done at `17704ca` on
+    2026-10-30, the flood spread at 2 ms a frame at a step and the casters after it, the step's
+    placing peak about halved, the engine's field left to its item 146.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

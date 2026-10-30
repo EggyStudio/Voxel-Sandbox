@@ -28,19 +28,26 @@ the slowest frames, 64 to 79 ms, are the engine's scene field at 8 to 30 ms of C
 own drawing up to 20, a step of one section over loaded land giving 32 to 82 ms frames with the
 field 12 to 42 ms at every step and the flood and casters 9 to 15 at a section first crossed;
 voxel.frames reads the median, 99th part and slowest of the last 600 frames; the field's crossings
-to the engine as its item 146, the flood and casters item 149. The window path matches offscreen, an
-RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to 0.002 fresh at 1280 by
-720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release both run about 46 ms
-at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at 720p; the owner's
-file kept Soft_Shadows 0, never chosen. The options file's first line is its version, 2, and an
-older file's line equal to a default since changed reads as that default; the note is
-2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md, its item
-134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01 with play
-in 40 minutes. The start restores the options file's resolution and mode right after InitWindow,
-before the game is built, the window appearing as saved about 8 s before the world loads where it
-changed after; no monitor setting exists to read, and a hidden window cannot be shown later since
-the engine takes a program-set hidden window as a --hidden run; the test reads the values and a
-missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
+to the engine as its item 146, the flood and casters item 149. After it `17704ca`, item 149, held
+until the run of `a272e45` ends, the flood taking a budget of 2 ms a frame at a step into an
+adjacent section with the last whole flood kept and a flood under way run to its end, a jump of more
+than a section flooding at once so teleports and the captures stay exact, the casters' search in the
+frame after; the placing peak at a step 9.2 to 17.7 ms going to 4.9 to 7.1 and after a jump 16 to 17
+to 7 to 8, the engine's field 12 to 58 ms of CPU set apart with the 99th part staying with it;
+voxel.frames gains the peaks of the flood, the casters and the placing. The play job's time has
+grown from 68 to 84 minutes over five runs against its limit of 90, item 150. The window path
+matches offscreen, an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to
+0.002 fresh at 1280 by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release
+both run about 46 ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at
+720p; the owner's file kept Soft_Shadows 0, never chosen. The options file's first line is its
+version, 2, and an older file's line equal to a default since changed reads as that default; the
+note is 2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md,
+its item 134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01
+with play in 40 minutes. The start restores the options file's resolution and mode right after
+InitWindow, before the game is built, the window appearing as saved about 8 s before the world loads
+where it changed after; no monitor setting exists to read, and a hidden window cannot be shown later
+since the engine takes a program-set hidden window as a --hidden run; the test reads the values and
+a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
 Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
 first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
 sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
@@ -173,12 +180,13 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-149. **The flood and the casters' search at a crossing leave the frame.** From item 145's reading on
-    2026-10-30, a step of one section over loaded land costing the game's flood culling and the sun
-    casters' search 9 to 15 ms of the frame when a section is first crossed. The two run off the
-    main thread or spread over frames at a crossing, the frame keeping the last result meanwhile;
-    read by the same step test, the frame's slowest and 99th part at 8 and 12 columns before and
-    after with the engine's field cost set apart. One or two commits.
+150. **The play job keeps clear of its time limit.** From the coder's note of 2026-10-30, the play
+    job's time grown from 68 to 73, 77, 80 and 84 minutes over the last five runs against its limit
+    of 90, the defaults of item 141, the new checks and lavapipe's pace among the likely causes. The
+    limit goes to 150 minutes at once, since the Actions bill is no concern, and the checks' times
+    are read from the last run's log and listed in a note, the growth named check by check; a check
+    that reads nothing a cheaper one does not is shortened or dropped with its reason, and the
+    README's play paragraph says the job's time. One commit, small, first.
 
 ## Verdicts
 
