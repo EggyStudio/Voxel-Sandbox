@@ -5,19 +5,25 @@ in 73 minutes. After it `2c458b0`, item 141, pushed at 20:36 and watched: FarCas
 ShadowDistance 128, the options file at version 3 so an older file's values take the new defaults;
 the quiet table at 1280 by 720 reads 8 columns at 16.7 ms, 12 at 17.0 and 16 at 26.6, the 128-block
 shadows adding 1.8 ms of the GPU and 1 of the CPU at 12 with the cascade draws 389 to 1,300 and the
-far cascade 1.9 of the GPU, the far oak's shadow and the cave pictured. The window path matches
-offscreen, an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to 0.002
-fresh at 1280 by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release both
-run about 46 ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at
-720p; the owner's file kept Soft_Shadows 0, never chosen. The options file's first line is its
-version, 2, and an older file's line equal to a default since changed reads as that default; the
-note is 2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md,
-its item 134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01
-with play in 40 minutes. The start restores the options file's resolution and mode right after
-InitWindow, before the game is built, the window appearing as saved about 8 s before the world loads
-where it changed after; no monitor setting exists to read, and a hidden window cannot be shown later
-since the engine takes a program-set hidden window as a --hidden run; the test reads the values and
-a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
+far cascade 1.9 of the GPU, the far oak's shadow and the cave pictured. After it `5f31bdf`, item
+143, held until the run of `2c458b0` ends, the sections grouped 2 by 2 across and one high since
+groups two high drew the caves under the land and cost the GPU 3 to 4 ms at 12 columns; at 12 the
+draws 3,150 to 1,380, the CPU's passes 13.4 to 7.4 and 9.5 ms, the frame 17.1 to 17.3 GPU-bound, at
+16 the frame 27 to 31 going to 23 to 26; the pictures the same within 0.0016; memory about 500 MB
+higher at 8 and 12 columns, 255 MB of it the engine's ring of mapped buffers kept for good for a
+mesh written in place, an ASKS.md entry, the engine's item 145. The window path matches offscreen,
+an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to 0.002 fresh at 1280
+by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release both run about 46
+ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at 720p; the owner's
+file kept Soft_Shadows 0, never chosen. The options file's first line is its version, 2, and an
+older file's line equal to a default since changed reads as that default; the note is
+2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md, its item
+134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01 with play
+in 40 minutes. The start restores the options file's resolution and mode right after InitWindow,
+before the game is built, the window appearing as saved about 8 s before the world loads where it
+changed after; no monitor setting exists to read, and a hidden window cannot be shown later since
+the engine takes a program-set hidden window as a --hidden run; the test reads the values and a
+missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
 Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
 first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
 sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
@@ -26,7 +32,10 @@ sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, e
 `a4d383c` (95). Each commit's detail stands in its item in REVIEW-ARCHIVE.md, its devlog note and
 its own words. On 2026-10-30 at 18:0x the owner wrote items 140 and 141 (Decision 51), the README's
 links as the devlog and 3DEngine, a Rust voxel engine as the performance reference (Decision 52),
-and asked that the sessions spend fewer tokens at the same quality, N 7.7.
+and asked that the sessions spend fewer tokens at the same quality, N 7.7. Item 144 closed at its
+count on 2026-10-30, the quads merging to 81 to 89% and not half; 143's other 245 MB is the driver's
+too, the ring's mapped memory counted as the device mapping and its shared backing, the game's own
+arrays 68 MB more.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -147,35 +156,26 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-143. **Sections are drawn in groups of several, so a frame makes a quarter of its draws.** Decision
-    52's first proposal, from the reference's merging of 2 by 2 by 2 chunks into one mesh a part. At
-    12 columns the game makes about 3,100 draws, some 10 ms of the main thread at 3 to 5
-    microseconds a draw a pass, and at 16 columns the CPU's passes reach 22 ms; the sections of a
-    column two tall, or 2 by 2 by 2, are meshed as one entity a part, an edit remeshing the group
-    and the flood culling going coarser by the group. Read by the draws and the CPU's passes at 8,
-    12 and 16 columns before and after, 16 columns expected to fall toward its GPU's 21 ms, and the
-    frame's picture unchanged. It overlaps the engine's item 132, which waits behind the cascades,
-    so this goes first. One or two commits.
+147. **The held light casts no shadow.** The owner's word of 2026-10-30, Decision 54, over item 74's
+    light casting shadows. A light held in the hand, the torch and the like, is a plain point light
+    with no shadow map, the ground and the walls around the player lit as before; the play check of
+    item 74 reads the light with a torch in hand against none as it does, and the cost of a held
+    light at the grove read before and after. One commit, small, before item 144.
 
-144. **Opaque faces of one kind are merged into larger quads where it halves the triangles.**
-    Decision 52's third proposal. The reference merges faces of equal block, occlusion, light and
-    tint with border fans against cracks, where the game draws a quad a face, 1.24 million triangles
-    at 12 columns; smooth light and the corner shade make many faces unequal, so a reading first,
-    the mesher counting the faces that would merge at the spawn and the village, and the merge goes
-    ahead only where the triangles halve, lowering the depth, shadow and scene passes. One commit
-    for the reading, one more if it goes ahead, after item 143.
+148. **The cactus without a pack is a plain inset box.** The owner wrote on 2026-10-30 that with the
+    game's own pictures the cactus's faces extending a pixel out look weird, since the picture has
+    no transparent thorns to carry, and asked for the same dimensions, a pixel inset on the sides,
+    with no face extending past the box, cubic. With the game's own pictures the cactus's sides
+    stand a pixel in from the block's faces as before and the thorn's extension of a pixel is
+    dropped, the top and bottom as they are, the faces' texture coordinates following the inset; a
+    pack's own model keeps its shape. A mesher test reads the cactus's side faces at the inset and
+    none past the box, and the desert pictured before and after. One commit, small, after item 147.
 
 145. **Streaming spends a time budget a frame.** Decision 52's fourth proposal. The reference spends
     3 ms a frame starting generation and 4 ms meshing, ordered by distance then facing; the game's
     flights read 18 to 19 ms at 8 columns and 21 to 29 at 12. The stream's work on the main thread
     is held to a budget a frame in that order. Read by the flight's frame at its 99th part and the
     stream's main-thread ms a frame before and after. One commit, after item 144.
-
-146. **The columns past 8 draw at double cells.** Decision 52's sixth proposal, large. The reference
-    draws coarser octree levels far out with a dithered cross-fade; the game's columns past 8 are
-    meshed at double cells and cross-faded. Read by the draws, the triangles and the frame at 16
-    columns before and after, and the far land's picture. After item 145, in phases the coder
-    proposes.
 
 ## Verdicts
 
@@ -273,5 +273,14 @@ each in full under Decisions in REVIEW-ARCHIVE.md.
     time budget (145), packed vertices (the engine's, by ASKS.md) and the far columns at double
     cells (146); the reference has no occlusion culling, where the game's flood culling stands
     ahead.
+
+53. **No far land in the game.** The owner wrote on 2026-10-30, "also no farlands in voxel sandbox
+    to be clear", holding to Decision 41 of 2026-10-24 that took the far land out; item 146, the
+    columns past 8 drawn at double cells from the Rust engine's octree levels, is withdrawn, and no
+    level of detail past the render distance is proposed again without the owner's word.
+
+54. **Held lights are plain lights without shadows.** The owner wrote on 2026-10-30 that the
+    handheld lights in the voxel sandbox are simple lights and are not to be given shadows, over
+    item 74 of 2026-10-24 where the held light cast them; item 147 takes the shadow off.
 
 ## Replies

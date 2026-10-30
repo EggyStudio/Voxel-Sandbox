@@ -761,8 +761,8 @@ that gives light, a torch, a lantern or glowstone, lights the ground about the p
 the hand, and about itself where it lies dropped, a point light of its own color at the player's own
 place, the body's middle a third of a block under the eye, so no turn of the view swings it and no
 wall the player faces takes it in, or at the stack reaching as many blocks as its level of light,
-which casts shadows, so it lights no room through a wall, and which global illumination carries on
-to the walls around as it carries a placed one's. The held and the nearest three dropped lights
+a plain light with no shadow, which lights what lies within its reach, through a wall too, and
+which global illumination carries on to the walls around as it carries a placed one's. The held and the nearest three dropped lights
 shine, and a torch in the hand lights the ground a block off about as a torch standing there does.
 
 The inventory holds 36 slots of up to 64 of an item, the hotbar its first nine. E opens it in

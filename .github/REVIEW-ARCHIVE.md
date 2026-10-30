@@ -2428,6 +2428,36 @@ before a batch.
     own choice. One commit, small, with a note. Done at `2c458b0` on 2026-10-30, the frame at 12
     columns 17.0 ms at the new defaults.
 
+143. **Sections are drawn in groups of several, so a frame makes a quarter of its draws.** Decision
+    52's first proposal, from the reference's merging of 2 by 2 by 2 chunks into one mesh a part. At
+    12 columns the game makes about 3,100 draws, some 10 ms of the main thread at 3 to 5
+    microseconds a draw a pass, and at 16 columns the CPU's passes reach 22 ms; the sections of a
+    column two tall, or 2 by 2 by 2, are meshed as one entity a part, an edit remeshing the group
+    and the flood culling going coarser by the group. Read by the draws and the CPU's passes at 8,
+    12 and 16 columns before and after, 16 columns expected to fall toward its GPU's 21 ms, and the
+    frame's picture unchanged. It overlaps the engine's item 132, which waits behind the cascades,
+    so this goes first. One or two commits. Done at `5f31bdf` on 2026-10-30, groups 2 by 2 across
+    and one high, the draws at 12 columns 3,150 to 1,380 and the frame at 16 from 27 to 31 to 23 to
+    26 ms, the memory's 500 MB more a lead with the engine's ring its larger part.
+
+146. **The columns past 8 draw at double cells.** Decision 52's sixth proposal, large. The reference
+    draws coarser octree levels far out with a dithered cross-fade; the game's columns past 8 are
+    meshed at double cells and cross-faded. Read by the draws, the triangles and the frame at 16
+    columns before and after, and the far land's picture. After item 145, in phases the coder
+    proposes. Withdrawn on 2026-10-30 by the owner's word, no far land in the game, Decision 53.
+
+144. **Opaque faces of one kind are merged into larger quads where it halves the triangles.**
+    Decision 52's third proposal. The reference merges faces of equal block, occlusion, light and
+    tint with border fans against cracks, where the game draws a quad a face, 1.24 million triangles
+    at 12 columns; smooth light and the corner shade make many faces unequal, so a reading first,
+    the mesher counting the faces that would merge at the spawn and the village, and the merge goes
+    ahead only where the triangles halve, lowering the depth, shadow and scene passes. One commit
+    for the reading, one more if it goes ahead, after item 143. Counted on 2026-10-30 on a live
+    game, the spawn's 356,437 solid quads merging to 318,082 and the village's 329,184 to 267,356,
+    only 18 and 31% of whole faces flat at all four corners since smooth light and the corner shade
+    vary by corner, far from halving; closed at the count by its own rule, the reading in the
+    Replies.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

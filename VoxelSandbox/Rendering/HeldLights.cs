@@ -18,10 +18,11 @@ namespace VoxelSandbox;
 /// since the engine shades a point light standing at the camera with black specks on lavapipe.
 /// </para>
 /// <para>
-/// Each light casts shadows, so it lights no room through a wall, and global illumination takes
+/// Each light is a plain point light with no shadow map, which costs no drawing of the land around
+/// it, and lights what lies within its reach, through a wall too, while global illumination takes
 /// the lights where the scene's distance field lets them through, so the cascades carry a held
 /// torch's light on to the walls around as they carry a placed one's. The held and the nearest
-/// three dropped lights are kept, within the engine's twelve lights that cast shadows all around.
+/// three dropped lights are kept.
 /// </para>
 /// </remarks>
 public sealed class HeldLights : IDisposable
@@ -62,8 +63,8 @@ public sealed class HeldLights : IDisposable
             var info = Blocks.Get(block);
             var (color, most) = ChunkRenderer.Split(lightOf(info.Side));
             var intensity = Strength * info.Light / 15f * most;
-            if (i == _lights.Count) _lights.Add((CreatePointLight(at, color, intensity, info.Light, castsShadows: true), block));
-            else if (_lights[i].Block == BlockId.Air) _lights[i] = (CreatePointLight(at, color, intensity, info.Light, castsShadows: true), block);
+            if (i == _lights.Count) _lights.Add((CreatePointLight(at, color, intensity, info.Light, castsShadows: false), block));
+            else if (_lights[i].Block == BlockId.Air) _lights[i] = (CreatePointLight(at, color, intensity, info.Light, castsShadows: false), block);
             else
             {
                 // The color is set each frame too, so the lamps' color setting reaches a light already lit.
