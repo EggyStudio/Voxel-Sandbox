@@ -1234,7 +1234,11 @@ land under the ground and behind a cave's or a closed room's walls is left out. 
 section it leaves by the faces the open cells around the eye reach. The flood is kept until the eye
 enters another section or leaves it by other faces, a column comes or goes, or a block that may hide
 what is behind it is set or taken, since over 24 sections a column it walks thousands and took 4.8
-ms of each frame at seed 1's cherry grove at 12 columns. A section the flood leaves out is not
+ms of each frame at seed 1's cherry grove at 12 columns. As the eye steps into the next section the
+flood takes 2 ms a frame and goes on in the frames after, the last whole flood drawn meanwhile, and
+the shadow's casters are found in the frame after it finishes, which took the most a frame spends
+placing the sections at a step from 9 to 18 ms to 5 to 7, while a jump of more than a section, as a
+teleport, floods at once. A section the flood leaves out is not
 meshed until a flood reaches it, so the stone under the land within reach is meshed only where a
 cave opens to it, which in a flight east over seed 1's cherry grove held about 4,400 sections and
 took the game's update from 1.3 ms a frame to 0.7 or 0.9. `voxel.cull` and the Debug Settings

@@ -6,45 +6,53 @@ minutes: FarCascade true and ShadowDistance 128, the options file at version 3 s
 values take the new defaults; the quiet table at 1280 by 720 reads 8 columns at 16.7 ms, 12 at 17.0
 and 16 at 26.6, the 128-block shadows adding 1.8 ms of the GPU and 1 of the CPU at 12 with the
 cascade draws 389 to 1,300 and the far cascade 1.9 of the GPU, the far oak's shadow and the cave
-pictured. After it `5f31bdf`, item 143, pushed with `b5626c6` at 21:59 and the run of `b5626c6`
-watched, the sections grouped 2 by 2 across and one high since groups two high drew the caves under
-the land and cost the GPU 3 to 4 ms at 12 columns; at 12 the draws 3,150 to 1,380, the CPU's passes
-13.4 to 7.4 and 9.5 ms, the frame 17.1 to 17.3 GPU-bound, at 16 the frame 27 to 31 going to 23 to
-26; the pictures the same within 0.0016; memory about 500 MB higher at 8 and 12 columns, 255 MB of
-it the engine's ring of mapped buffers kept for good for a mesh written in place, an ASKS.md entry,
-the engine's item 145. After it `b5626c6`, item 147, pushed at 21:59: 5.2.333 pinned, held and
-dropped lights plain point lights, the grove's frame at 1920 by 1080 with a torch 22.9 to 23.2 ms
-going to 21.8 to 22.6 and the GPU's shadows 4.0 to 3.3; the specks read on a midnight meadow, 17
-black pixels among lit neighbors going to 4, the 13 gone a seam of the held light's shadow and the 4
-left stars and edges against the sky, none on a lit surface before or after. After it `5d96667`,
-item 148, held until the run of `b5626c6` ends: BlockShape gains plain pieces the mesher draws where
-none of the shape's pictures cut anything out, so the game's own pictures give the cactus an inset
-box with the sides a pixel in and the top and bottom as before, while a pack whose cactus side is
-clear at its edges keeps the source's sides; tests in MesherTests and CutoutTests, two cacti on the
-desert pictured before and after. The window path matches offscreen, an RMSE of 0.004 to 0.007 with
-the owner's options at 2560 by 1440 and 0.001 to 0.002 fresh at 1280 by 720, cloud edges mostly; a
-turn settles in about 22 frames; Debug and Release both run about 46 ms at 2560 by 1440, GPU-bound
-at 22 frames a second against the pictures' 17 ms at 720p; the owner's file kept Soft_Shadows 0,
-never chosen. The options file's first line is its version, 2, and an older file's line equal to a
-default since changed reads as that default; the note is 2026-10-30-item-142-run-by-hand.md. The
-swapchain finding stands in the engine's ASKS.md, its item 134. Before it `5c80c99`, item 140,
-pushed at 18:21 on 2026-10-30, its run green at 19:01 with play in 40 minutes. The start restores
-the options file's resolution and mode right after InitWindow, before the game is built, the window
-appearing as saved about 8 s before the world loads where it changed after; no monitor setting
-exists to read, and a hidden window cannot be shown later since the engine takes a program-set
-hidden window as a --hidden run; the test reads the values and a missing file's 1280 by 720.
-AGENTS.md's REVIEW.md line reads the head, the batch's items and the Replies by the owner's word in
-the coder's session. It carries NORM.md with N 7.7 and the README's first line. Before it `fc0937a`,
-item 139, pushed by the owner's hand on 2026-10-26 while the sessions were paused until 2026-10-30,
-its run green. Before it on 2026-10-26, each green: `9c07673` (138); `b25e668` (137); `4aef50c` with
-`6001eed` (the README's quick links, 136); `7c36ec8` (42); `f1aa450` (27); `5145d2f` (134);
-`0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133); `a4d383c` (95). Each commit's detail
-stands in its item in REVIEW-ARCHIVE.md, its devlog note and its own words. On 2026-10-30 at 18:0x
-the owner wrote items 140 and 141 (Decision 51), the README's links as the devlog and 3DEngine, a
-Rust voxel engine as the performance reference (Decision 52), and asked that the sessions spend
-fewer tokens at the same quality, N 7.7. Item 144 closed at its count on 2026-10-30, the quads
-merging to 81 to 89% and not half; 143's other 245 MB is the driver's too, the ring's mapped memory
-counted as the device mapping and its shared backing, the game's own arrays 68 MB more.
+pictured. After it `5f31bdf`, item 143, pushed with `b5626c6` at 21:59, the run of `b5626c6` green
+at 23:23 with play in 84 minutes, the sections grouped 2 by 2 across and one high since groups two
+high drew the caves under the land and cost the GPU 3 to 4 ms at 12 columns; at 12 the draws 3,150
+to 1,380, the CPU's passes 13.4 to 7.4 and 9.5 ms, the frame 17.1 to 17.3 GPU-bound, at 16 the frame
+27 to 31 going to 23 to 26; the pictures the same within 0.0016; memory about 500 MB higher at 8 and
+12 columns, 255 MB of it the engine's ring of mapped buffers kept for good for a mesh written in
+place, an ASKS.md entry, the engine's item 145. After it `b5626c6`, item 147, pushed at 21:59:
+5.2.333 pinned, held and dropped lights plain point lights, the grove's frame at 1920 by 1080 with a
+torch 22.9 to 23.2 ms going to 21.8 to 22.6 and the GPU's shadows 4.0 to 3.3; the specks read on a
+midnight meadow, 17 black pixels among lit neighbors going to 4, the 13 gone a seam of the held
+light's shadow and the 4 left stars and edges against the sky, none on a lit surface before or
+after. After it `5d96667`, item 148, pushed with `a272e45` at 23:27: BlockShape gains plain pieces
+the mesher draws where none of the shape's pictures cut anything out, so the game's own pictures
+give the cactus an inset box with the sides a pixel in and the top and bottom as before, while a
+pack whose cactus side is clear at its edges keeps the source's sides; tests in MesherTests and
+CutoutTests, two cacti on the desert pictured before and after. After it `a272e45`, item 145, pushed
+at 23:27 and watched, the time budget built and left out since flights read no gain, 12 columns at a
+99th part of 86 to 105 ms without and 92 to 110 with, 8 at 49 to 72 and 47 to 55, within the noise;
+the slowest frames, 64 to 79 ms, are the engine's scene field at 8 to 30 ms of CPU and the game's
+own drawing up to 20, a step of one section over loaded land giving 32 to 82 ms frames with the
+field 12 to 42 ms at every step and the flood and casters 9 to 15 at a section first crossed;
+voxel.frames reads the median, 99th part and slowest of the last 600 frames; the field's crossings
+to the engine as its item 146, the flood and casters item 149. The window path matches offscreen, an
+RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to 0.002 fresh at 1280 by
+720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release both run about 46 ms
+at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at 720p; the owner's
+file kept Soft_Shadows 0, never chosen. The options file's first line is its version, 2, and an
+older file's line equal to a default since changed reads as that default; the note is
+2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md, its item
+134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01 with play
+in 40 minutes. The start restores the options file's resolution and mode right after InitWindow,
+before the game is built, the window appearing as saved about 8 s before the world loads where it
+changed after; no monitor setting exists to read, and a hidden window cannot be shown later since
+the engine takes a program-set hidden window as a --hidden run; the test reads the values and a
+missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
+Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
+first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
+sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
+(138); `b25e668` (137); `4aef50c` with `6001eed` (the README's quick links, 136); `7c36ec8` (42);
+`f1aa450` (27); `5145d2f` (134); `0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133);
+`a4d383c` (95). Each commit's detail stands in its item in REVIEW-ARCHIVE.md, its devlog note and
+its own words. On 2026-10-30 at 18:0x the owner wrote items 140 and 141 (Decision 51), the README's
+links as the devlog and 3DEngine, a Rust voxel engine as the performance reference (Decision 52),
+and asked that the sessions spend fewer tokens at the same quality, N 7.7. Item 144 closed at its
+count on 2026-10-30, the quads merging to 81 to 89% and not half; 143's other 245 MB is the driver's
+too, the ring's mapped memory counted as the device mapping and its shared backing, the game's own
+arrays 68 MB more.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -165,11 +173,12 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-145. **Streaming spends a time budget a frame.** Decision 52's fourth proposal. The reference spends
-    3 ms a frame starting generation and 4 ms meshing, ordered by distance then facing; the game's
-    flights read 18 to 19 ms at 8 columns and 21 to 29 at 12. The stream's work on the main thread
-    is held to a budget a frame in that order. Read by the flight's frame at its 99th part and the
-    stream's main-thread ms a frame before and after. One commit, after item 144.
+149. **The flood and the casters' search at a crossing leave the frame.** From item 145's reading on
+    2026-10-30, a step of one section over loaded land costing the game's flood culling and the sun
+    casters' search 9 to 15 ms of the frame when a section is first crossed. The two run off the
+    main thread or spread over frames at a crossing, the frame keeping the last result meanwhile;
+    read by the same step test, the frame's slowest and 99th part at 8 and 12 columns before and
+    after with the engine's field cost set apart. One or two commits.
 
 ## Verdicts
 

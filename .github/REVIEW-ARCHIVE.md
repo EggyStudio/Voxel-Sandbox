@@ -2477,6 +2477,14 @@ before a batch.
     Done at `5d96667` on 2026-10-30, plain pieces where no picture cuts, the pack's source shape
     kept where its side is clear at the edges.
 
+145. **Streaming spends a time budget a frame.** Decision 52's fourth proposal. The reference spends
+    3 ms a frame starting generation and 4 ms meshing, ordered by distance then facing; the game's
+    flights read 18 to 19 ms at 8 columns and 21 to 29 at 12. The stream's work on the main thread
+    is held to a budget a frame in that order. Read by the flight's frame at its 99th part and the
+    stream's main-thread ms a frame before and after. One commit, after item 144. Closed at
+    `a272e45` on 2026-10-30 with the reading and voxel.frames, the budget left out, the crossings'
+    cost to the engine's item 146 and the game's item 149.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

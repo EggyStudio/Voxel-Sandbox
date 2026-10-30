@@ -164,6 +164,33 @@ is written in place in a ring of mapped buffers from then on, and a group's ring
 Uploading a relit group again held 371 MB, but gives the scene's field a new mesh to settle, so the
 light is written in place, and the ring is an entry of the engine's ASKS.md.
 
+# Item 145, the stream's budget
+
+Flights of ten seconds east over land not yet loaded on seed 1, flying at sprint from 0, 4000 and
+-4000, Debug, offscreen at 1280 by 720, the frames unlimited, on tuned's power-saving profile with
+the processor's energy preference at power. A build taking in the workers' finished columns within
+3 ms a frame, nearest first and those ahead first within a ring of two columns, and meshing in that
+order, against the same build taking every finished column in at once and meshing nearest first,
+read in turns by a new `voxel.frames`, the median, the 99th part and the slowest of the last 600
+frames. Test runs of other sessions held 2 to 31 percent of the GPU during most flights.
+
+| | Median | 99th part | Slowest |
+|---|---|---|---|
+| 12 columns, all at once | 22.81 to 26.34 ms | 85.83 to 104.63 ms | 112.55 to 250.00 ms |
+| 12 columns, the budget | 25.60 to 28.11 ms | 92.07 to 109.86 ms | 122.71 to 250.00 ms |
+| 8 columns, all at once | 16.54 to 21.96 ms | 49.48 to 72.29 ms | 56.28 to 250.00 ms |
+| 8 columns, the budget | 16.14 to 17.54 ms | 46.69 to 54.60 ms | 56.55 to 250.00 ms |
+
+The budget moves neither part past the other programs' noise. The slowest frames of the flights
+read 64 to 79 ms with the engine's scene field taking 7.8 to 30.2 ms of the CPU and the game's own
+drawing up to 20 ms, in either build. Stepping the eye a section over land already loaded, with no
+column to take in, read 32 to 82 ms frames, the scene field 12 to 42 ms of the CPU at every step and
+the game's drawing 9 to 15 ms at a section first crossed, its flood of the open cells and its casters
+of the sun's shadow found again, and a still frame 17.3 ms. The flights' slow frames are the eye's
+crossings, not the columns joining, so the budget and the order are left out and `voxel.frames`
+kept. The scene field's work as the eye crosses is an entry of the engine's ASKS.md, and the
+flood's and the casters' is the game's to move off the main thread.
+
 # Item 147, the held light without a shadow
 
 The light of a torch, a lantern or glowstone in the hand or dropped is a plain point light with no
@@ -218,6 +245,7 @@ Done that day
 - Item 142 at `7508d5e`. The window shows what the devlog's pictures show.
 - Item 143 at `5f31bdf`. Sections are drawn in groups of several, so a frame makes a quarter of its
   draws.
+- Item 145 at `a272e45`. Streaming spends a time budget a frame.
 - Item 147 at `b5626c6`. The held light casts no shadow.
 - Item 148 at `5d96667`. The cactus without a pack is a plain inset box.
 

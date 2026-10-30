@@ -528,6 +528,13 @@ public sealed class ChunkRenderer : IDisposable
     }
 
     private readonly Visibility _visibility = new();
+    // The time a frame gives a flood begun as the eye steps into the next section, which goes on in
+    // the frames after, the last whole flood drawn meanwhile.
+    private const double FloodBudgetMs = 2;
+    private bool _castsDue;
+
+    /// <summary>The most a frame's flood, casters' search and placement of the sections took, in ms, since it was last set to 0.</summary>
+    public double PeakMs { get; set; }
 
     /// <summary>
     /// Whether the sections the eye cannot see through open cells are left undrawn, as
@@ -1107,20 +1114,29 @@ public sealed class ChunkRenderer : IDisposable
         var laps = System.Diagnostics.Stopwatch.StartNew();
         // The sections held back as unseen that a new flood reaches or that now cast toward the light,
         // or all of them once culling is off, are meshed from the next update.
-        var flooded = Cull && _visibility.Flood(world, eye, renderDistance, Atlas);
-        var cast = Cull && (flooded || _castFor != (Casts ? towardLight : Vector3.Zero, shadowDistance));
-        if (cast) FindCasters(eye, towardLight, shadowDistance, (renderDistance + 1) * Section.Size);
+        var flooded = Cull && _visibility.Flood(world, eye, renderDistance, Atlas, FloodBudgetMs);
+        // The casters of a finished flood are found in the frame after it, so neither frame takes
+        // both, about 3 ms of their search and up to 2 of the flood's.
+        var cast = Cull && (!flooded && _castsDue || _castFor != (Casts ? towardLight : Vector3.Zero, shadowDistance));
+        _castsDue |= flooded;
+        if (cast)
+        {
+            FindCasters(eye, towardLight, shadowDistance, (renderDistance + 1) * Section.Size);
+            _castsDue = false;
+        }
         if (flooded || cast || !Cull && _unseen.Count > 0)
         {
             foreach (var key in _unseen)
                 if (_visibility.Sees(key) || _casters.Contains(key) || !Cull) world.Loaded.Add(key);
             _unseen.ExceptWith(world.Loaded);
         }
-        SetProfileValue("draw.sections.flood", laps.Elapsed.TotalMilliseconds);
+        var flood = laps.Elapsed.TotalMilliseconds;
+        SetProfileValue("draw.sections.flood", flood);
         laps.Restart();
         if (flooded || cast || _changed || _placedFor != (cx, cz, renderDistance, Cull)) Place(world, cx, cz, renderDistance);
         int draws = _placedDraws, triangles = _placedTriangles, lamps = 0;
         SetProfileValue("draw.sections.opaque", laps.Elapsed.TotalMilliseconds);
+        PeakMs = Math.Max(PeakMs, flood + laps.Elapsed.TotalMilliseconds);
         for (int surface = 0; surface < _emitterDraws.Length; surface++)
         {
             var list = _emitterDraws[surface];

@@ -26,7 +26,7 @@ public sealed class Visibility
 {
     private static readonly (int X, int Y, int Z)[] Steps = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)];
 
-    private readonly HashSet<SectionKey> _seen = [];
+    private HashSet<SectionKey> _seen = [], _next = [];
     private readonly Queue<(SectionKey Key, int From, int Ways)> _queue = new();
 
     /// <summary>The sections the last <see cref="Flood"/> reached.</summary>
@@ -151,6 +151,11 @@ public sealed class Visibility
         return _exits;
     }
 
+    // A flood under way, what it was started for, its start, the faces it leaves its start by and
+    // the reach it is held to.
+    private (SectionKey Start, int Exits, int Openings, int Distance, int Atlas)? _floodingFor;
+    private int _reach;
+
     /// <summary>
     /// Floods from the section holding the eye through the sections of the loaded columns within a
     /// render distance of it, as <see cref="Seen"/> then holds, unless nothing it depends on
@@ -158,21 +163,43 @@ public sealed class Visibility
     /// world's <see cref="VoxelWorld.Openings"/>, the render distance and the atlas, which keeps
     /// the last flood's sections.
     /// </summary>
-    /// <returns>Whether it flooded anew.</returns>
-    public bool Flood(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance, TerrainAtlas? atlas = null)
+    /// <remarks>
+    /// Where the eye has stepped into a section beside the last flood's, the flood takes at most
+    /// <paramref name="budgetMs"/> a frame and goes on in the frames after, <see cref="Seen"/>
+    /// keeping the last whole flood's sections meanwhile, since a flood over the sections of 12
+    /// columns took 4 ms with each section's joins kept and up to 32 where it worked them out, all
+    /// in the frame the eye crossed. A flood under way runs to its end before another begins, so
+    /// the world's openings changing every frame as columns arrive still sees each flood finished.
+    /// A jump of more than a section floods at once, as a teleport's first frame does.
+    /// </remarks>
+    /// <returns>Whether a flood finished in this call.</returns>
+    public bool Flood(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance, TerrainAtlas? atlas = null, double budgetMs = double.PositiveInfinity)
     {
         atlas ??= TerrainAtlas.None;
-        var start = Reach.Of(eye);
-        var exits = ExitsKept(world, eye, atlas);
-        if (_floodedFor == (start, exits, world.Openings, renderDistance, atlas.Serial)) return false;
-        _floodedFor = (start, exits, world.Openings, renderDistance, atlas.Serial);
-        _seen.Clear();
-        _queue.Clear();
-        Culled = exits >= 0;
-        if (!Culled) return true;
-        var reach = renderDistance * renderDistance + renderDistance;
-        _seen.Add(start);
-        _queue.Enqueue((start, -1, 0));
+        if (_floodingFor is null)
+        {
+            var start = Reach.Of(eye);
+            var exits = ExitsKept(world, eye, atlas);
+            var wanted = (start, exits, world.Openings, renderDistance, atlas.Serial);
+            if (_floodedFor == wanted) return false;
+            // A step into a section beside the last flood's start spreads, and any other change floods at once.
+            if (_floodedFor is not { } last || Math.Abs(last.Start.X - start.X) > 1 || Math.Abs(last.Start.Y - start.Y) > 1 || Math.Abs(last.Start.Z - start.Z) > 1)
+                budgetMs = double.PositiveInfinity;
+            _floodingFor = wanted;
+            _next.Clear();
+            _queue.Clear();
+            if (exits < 0)
+            {
+                Finish(culled: false);
+                return true;
+            }
+            _reach = renderDistance * renderDistance + renderDistance;
+            _next.Add(start);
+            _queue.Enqueue((start, -1, 0));
+        }
+        var (from, ways) = (_floodingFor.Value.Start, _floodingFor.Value.Exits);
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        var steps = 0;
         while (_queue.TryDequeue(out var at))
         {
             if (!world.TryGetColumn(at.Key.X, at.Key.Z, out var column)) continue;
@@ -182,15 +209,27 @@ public sealed class Visibility
                 // Never back the way any step of the flood went, and out only through a face the cells
                 // joined to the one it came in by.
                 if ((at.Ways & 1 << (d ^ 1)) != 0) continue;
-                if (at.From >= 0 ? (joins >> (at.From * 6 + d) & 1) == 0 : (exits >> d & 1) == 0) continue;
+                if (at.From >= 0 ? (joins >> (at.From * 6 + d) & 1) == 0 : (ways >> d & 1) == 0) continue;
                 var next = new SectionKey(at.Key.X + Steps[d].X, at.Key.Y + Steps[d].Y, at.Key.Z + Steps[d].Z);
-                if (next.Y is < ChunkColumn.BottomSection or >= ChunkColumn.CeilingSection || !_seen.Add(next)) continue;
-                int dx = next.X - start.X, dz = next.Z - start.Z;
-                if (dx * dx + dz * dz > reach || !world.HasColumn(next.X, next.Z)) continue;
+                if (next.Y is < ChunkColumn.BottomSection or >= ChunkColumn.CeilingSection || !_next.Add(next)) continue;
+                int dx = next.X - from.X, dz = next.Z - from.Z;
+                if (dx * dx + dz * dz > _reach || !world.HasColumn(next.X, next.Z)) continue;
                 _queue.Enqueue((next, d ^ 1, at.Ways | 1 << d));
             }
+            if ((++steps & 15) == 0 && watch.Elapsed.TotalMilliseconds > budgetMs) return false;
         }
+        Finish(culled: true);
         return true;
+    }
+
+    // Makes the flood under way the last whole one.
+    private void Finish(bool culled)
+    {
+        (_seen, _next) = (_next, _seen);
+        _next.Clear();
+        Culled = culled;
+        _floodedFor = _floodingFor;
+        _floodingFor = null;
     }
 
     /// <summary>Whether the last flood reached a section, every one where it left nothing out.</summary>
