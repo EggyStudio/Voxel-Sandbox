@@ -1,29 +1,34 @@
 # Review
 
 Reviewed up to `7508d5e`, item 142, pushed at 19:18 on 2026-10-30, its run green at 20:31 with play
-in 73 minutes. After it `2c458b0`, item 141, pushed at 20:36 and watched: FarCascade true and
-ShadowDistance 128, the options file at version 3 so an older file's values take the new defaults;
-the quiet table at 1280 by 720 reads 8 columns at 16.7 ms, 12 at 17.0 and 16 at 26.6, the 128-block
-shadows adding 1.8 ms of the GPU and 1 of the CPU at 12 with the cascade draws 389 to 1,300 and the
-far cascade 1.9 of the GPU, the far oak's shadow and the cave pictured. After it `5f31bdf`, item
-143, held until the run of `2c458b0` ends, the sections grouped 2 by 2 across and one high since
-groups two high drew the caves under the land and cost the GPU 3 to 4 ms at 12 columns; at 12 the
-draws 3,150 to 1,380, the CPU's passes 13.4 to 7.4 and 9.5 ms, the frame 17.1 to 17.3 GPU-bound, at
-16 the frame 27 to 31 going to 23 to 26; the pictures the same within 0.0016; memory about 500 MB
-higher at 8 and 12 columns, 255 MB of it the engine's ring of mapped buffers kept for good for a
-mesh written in place, an ASKS.md entry, the engine's item 145. The window path matches offscreen,
-an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to 0.002 fresh at 1280
-by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release both run about 46
-ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at 720p; the owner's
-file kept Soft_Shadows 0, never chosen. The options file's first line is its version, 2, and an
-older file's line equal to a default since changed reads as that default; the note is
-2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md, its item
-134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01 with play
-in 40 minutes. The start restores the options file's resolution and mode right after InitWindow,
-before the game is built, the window appearing as saved about 8 s before the world loads where it
-changed after; no monitor setting exists to read, and a hidden window cannot be shown later since
-the engine takes a program-set hidden window as a --hidden run; the test reads the values and a
-missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
+in 73 minutes. After it `2c458b0`, item 141, pushed at 20:36, its run green at 21:56 with play in 80
+minutes: FarCascade true and ShadowDistance 128, the options file at version 3 so an older file's
+values take the new defaults; the quiet table at 1280 by 720 reads 8 columns at 16.7 ms, 12 at 17.0
+and 16 at 26.6, the 128-block shadows adding 1.8 ms of the GPU and 1 of the CPU at 12 with the
+cascade draws 389 to 1,300 and the far cascade 1.9 of the GPU, the far oak's shadow and the cave
+pictured. After it `5f31bdf`, item 143, pushed with `b5626c6` at 21:59 and the run of `b5626c6`
+watched, the sections grouped 2 by 2 across and one high since groups two high drew the caves under
+the land and cost the GPU 3 to 4 ms at 12 columns; at 12 the draws 3,150 to 1,380, the CPU's passes
+13.4 to 7.4 and 9.5 ms, the frame 17.1 to 17.3 GPU-bound, at 16 the frame 27 to 31 going to 23 to
+26; the pictures the same within 0.0016; memory about 500 MB higher at 8 and 12 columns, 255 MB of
+it the engine's ring of mapped buffers kept for good for a mesh written in place, an ASKS.md entry,
+the engine's item 145. After it `b5626c6`, item 147, pushed at 21:59: 5.2.333 pinned, held and
+dropped lights plain point lights, the grove's frame at 1920 by 1080 with a torch 22.9 to 23.2 ms
+going to 21.8 to 22.6 and the GPU's shadows 4.0 to 3.3; the specks read on a midnight meadow, 17
+black pixels among lit neighbors going to 4, the 13 gone a seam of the held light's shadow and the 4
+left stars and edges against the sky, none on a lit surface before or after. The window path matches
+offscreen, an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to 0.002
+fresh at 1280 by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release both
+run about 46 ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at
+720p; the owner's file kept Soft_Shadows 0, never chosen. The options file's first line is its
+version, 2, and an older file's line equal to a default since changed reads as that default; the
+note is 2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md,
+its item 134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01
+with play in 40 minutes. The start restores the options file's resolution and mode right after
+InitWindow, before the game is built, the window appearing as saved about 8 s before the world loads
+where it changed after; no monitor setting exists to read, and a hidden window cannot be shown later
+since the engine takes a program-set hidden window as a --hidden run; the test reads the values and
+a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
 Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
 first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
 sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
@@ -155,12 +160,6 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
-
-147. **The held light casts no shadow.** The owner's word of 2026-10-30, Decision 54, over item 74's
-    light casting shadows. A light held in the hand, the torch and the like, is a plain point light
-    with no shadow map, the ground and the walls around the player lit as before; the play check of
-    item 74 reads the light with a torch in hand against none as it does, and the cost of a held
-    light at the grove read before and after. One commit, small, before item 144.
 
 148. **The cactus without a pack is a plain inset box.** The owner wrote on 2026-10-30 that with the
     game's own pictures the cactus's faces extending a pixel out look weird, since the picture has

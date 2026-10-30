@@ -93,9 +93,10 @@ public readonly record struct Box(Vector3 Min, Vector3 Max)
 public sealed class BlockShape
 {
     public BlockShape(Facing facing, Piece[] pieces, bool falls = true, bool solid = false, bool upper = false, bool open = false, Box[]? collision = null, StairForm? form = null,
-        bool cutout = false, PlantOffset offset = PlantOffset.None, Box[]? outline = null, bool whole = false)
+        bool cutout = false, PlantOffset offset = PlantOffset.None, Box[]? outline = null, bool whole = false, Piece[]? plain = null)
     {
         Facing = facing;
+        Plain = plain;
         Whole = whole;
         Form = form;
         Cutout = cutout;
@@ -154,6 +155,12 @@ public sealed class BlockShape
     public bool Whole { get; }
 
     public IReadOnlyList<Piece> Pieces { get; }
+
+    /// <summary>
+    /// The pieces drawn in place of <see cref="Pieces"/> where the pictures cut nothing out, or none
+    /// for a shape drawn alike under every picture.
+    /// </summary>
+    public IReadOnlyList<Piece>? Plain { get; }
 
     /// <summary>The boxes that stop the player, none for one the player walks through.</summary>
     public IReadOnlyList<Box> Collision { get; }
@@ -282,8 +289,11 @@ public sealed class BlockShape
     /// on the edges stick out past the sides beside them. Each face shows its whole picture as a part,
     /// laid as one laid by its place would be, so its corners carry their places and its shadow is cut
     /// where the picture is clear, and the top's clear border, a pixel past the sides, casts no band
-    /// of shadow down them. The source's box stops the player, a pixel in at each side and a pixel
-    /// short of the top, and its outline is a pixel in at each side.
+    /// of shadow down them. Where the side's picture cuts nothing out, as the game's own does not,
+    /// the cactus is a plain box instead, its sides a pixel in from the cell's showing the picture's
+    /// middle fourteen pixels across, so no side shows its edge a pixel past the sides beside it.
+    /// The source's box stops the player, a pixel in at each side and a pixel short of the top, and
+    /// its outline is a pixel in at each side.
     /// </summary>
     public static BlockShape Cactus(int top, int side, int bottom) => new(Facing.Up,
     [
@@ -292,7 +302,13 @@ public sealed class BlockShape
         new(new Vector3(0, 0, 1) / 16, new Vector3(16, 16, 15) / 16, side, Parts: WholePicture, Faces: 1 << 4 | 1 << 5),
         new(new Vector3(1, 0, 0) / 16, new Vector3(15, 16, 16) / 16, side, Parts: WholePicture, Faces: 1 << 0 | 1 << 1),
     ], falls: false, solid: true, collision: [new Box(new Vector3(1, 0, 1) / 16, new Vector3(15, 15, 15) / 16)],
-        outline: [new Box(new Vector3(1, 0, 1) / 16, new Vector3(15, 16, 15) / 16)], whole: true);
+        outline: [new Box(new Vector3(1, 0, 1) / 16, new Vector3(15, 16, 15) / 16)], whole: true,
+        plain:
+        [
+            new(Vector3.Zero, Vector3.One, top, Parts: WholePicture, Faces: 1 << 2),
+            new(Vector3.Zero, Vector3.One, bottom, Parts: WholePicture, Faces: 1 << 3),
+            new(new Vector3(1, 0, 1) / 16, new Vector3(15, 16, 15) / 16, side, Parts: Shows(1, 0, 15, 16, 0, 0, 16, 16, 0, 0, 16, 16), Faces: 1 << 0 | 1 << 1 | 1 << 4 | 1 << 5),
+        ]);
 
     private static readonly Parts WholePicture = Shows(0, 0, 16, 16, 0, 0, 16, 16, 0, 0, 16, 16);
 

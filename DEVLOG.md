@@ -21,6 +21,12 @@ shadow map does, and below, seed 1's deep cave at -59.5, -4, -91.5 at noon at Lo
 times, its far wall lit evenly by the sky's light with the far cascade off on the left and its
 blocks lit only by their faces' own share with it on at the right.
 
+![](.github/devlog/2026-10-30-item-147-held-light.webp)
+Seed 1's plains village's meadow at midnight from 560.5, 66, -350.5 with a torch in hand, on the
+left its light casting shadows on 3DEngine 5.2.326, the grass's blades shading each other in dark
+patches and a seam of the light's shadow down the middle, and on the right a plain point light with
+no shadow on 5.2.333, the grass lit evenly about the player.
+
 # Item 141, the far cascade on and the shadows at 128 blocks
 
 The far cascade on by default and the sun's shadows reaching 128 blocks, read in a Debug build with
@@ -152,6 +158,37 @@ is written in place in a ring of mapped buffers from then on, and a group's ring
 Uploading a relit group again held 371 MB, but gives the scene's field a new mesh to settle, so the
 light is written in place, and the ring is an entry of the engine's ASKS.md.
 
+# Item 147, the held light without a shadow
+
+The light of a torch, a lantern or glowstone in the hand or dropped is a plain point light with no
+shadow map, and the game is pinned to 3DEngine 5.2.333, which carries the engine's mend of the
+specks of its item 97. Read in Debug builds with the three default packs, offscreen, on tuned's
+power-saving profile with the processor's energy preference at power.
+
+## The cost
+
+Seed 1's cherry grove at 1920 by 1080 at hour 16 with a torch in hand, a profile over eight
+seconds, two readings to a session, sessions taken in turns. Another program used the GPU during
+some readings, which put the frame at 31 to 32 ms in either build, so those are left out.
+
+| | Frame | GPU's shadows | CPU's shadows |
+|---|---|---|---|
+| The light casting shadows, 5.2.326 | 22.87 and 23.24 ms | 3.95 and 4.09 ms | 1.60 and 1.93 ms |
+| A plain point light, 5.2.326 | 21.84 and 22.60 ms | 3.31 and 3.34 ms | 1.32 and 1.35 ms |
+| A plain point light, 5.2.333 | 21.77 and 24.61 ms | 3.43 and 3.89 ms | 1.29 and 1.29 ms |
+
+The held light's shadow map cost about 0.7 ms of the GPU and 0.3 to 0.5 ms of the CPU.
+
+## The specks
+
+The meadow by the plains village at midnight from 560.5, 66, -350.5 looking north and 20 down, a
+torch in hand, at 1280 by 720 on the RTX 4070 Laptop GPU. The pixels under 6 of 255 whose 5 by 5
+neighbors read over 40 number 17 with the light casting shadows, 13 of them a seam of its shadow
+down the middle of the view below the eye, and 4 with a plain point light on 5.2.326 and on 5.2.333
+alike, the edges of two stars and a cloud against the sky and a tree's crown against the sky. No
+speck lies on a lit surface before or after the pin on this GPU, as the engine read. The grass's
+blades shaded each other in dark patches under the light's shadow and are lit evenly without it.
+
 Done that day
 
 - Item 140 at `5c80c99`. The window opens at its saved size and mode.
@@ -159,6 +196,7 @@ Done that day
 - Item 142 at `7508d5e`. The window shows what the devlog's pictures show.
 - Item 143 at `5f31bdf`. Sections are drawn in groups of several, so a frame makes a quarter of its
   draws.
+- Item 147 at `b5626c6`. The held light casts no shadow.
 
 ## 2026-10-26
 

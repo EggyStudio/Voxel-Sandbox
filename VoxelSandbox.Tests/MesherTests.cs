@@ -212,14 +212,15 @@ public class MesherTests
     }
 
     [Fact]
-    public void A_Cactus_Is_The_Sources_Model_Its_Sides_A_Pixel_In_Across_The_Whole_Cell_And_Its_Box_A_Pixel_In()
+    public void A_Cactus_Of_The_Games_Own_Pictures_Is_A_Plain_Box_Its_Sides_A_Pixel_In_And_None_Past_It()
     {
         var world = Floor();
         world.SetBlock(8, 20, 8, BlockId.Stone);
         world.SetBlock(8, 21, 8, BlockId.Cactus);
 
         // The cactus's cell is 5 to 6 in the section. Its bottom on the stone is left out, and the
-        // stone's top under it, which the cactus does not hide, lies at 5.
+        // stone's top under it, which the cactus does not hide, lies at 5. The game's own side
+        // picture cuts nothing out, so each side stands a pixel in and spans the box's width alone.
         var faces = Meshed(world).Solid;
         var quads = Enumerable.Range(0, faces.Count / 4)
             .Select(q => (faces.Unpack(4 * q).Face,
@@ -230,11 +231,11 @@ public class MesherTests
         const float In = 1 / 16f, Out = 15 / 16f;
         (int, System.Numerics.Vector3, System.Numerics.Vector3)[] model =
         [
-            (0, new(8 + Out, 5, 8), new(8 + Out, 6, 9)),
-            (1, new(8 + In, 5, 8), new(8 + In, 6, 9)),
+            (0, new(8 + Out, 5, 8 + In), new(8 + Out, 6, 8 + Out)),
+            (1, new(8 + In, 5, 8 + In), new(8 + In, 6, 8 + Out)),
             (2, new(8, 6, 8), new(9, 6, 9)),
-            (4, new(8, 5, 8 + Out), new(9, 6, 8 + Out)),
-            (5, new(8, 5, 8 + In), new(9, 6, 8 + In)),
+            (4, new(8 + In, 5, 8 + Out), new(8 + Out, 6, 8 + Out)),
+            (5, new(8 + In, 5, 8 + In), new(8 + Out, 6, 8 + In)),
         ];
         Assert.Equal(model.Length, quads.Length);
         for (int i = 0; i < model.Length; i++)

@@ -2458,6 +2458,14 @@ before a batch.
     vary by corner, far from halving; closed at the count by its own rule, the reading in the
     Replies.
 
+147. **The held light casts no shadow.** The owner's word of 2026-10-30, Decision 54, over item 74's
+    light casting shadows. A light held in the hand, the torch and the like, is a plain point light
+    with no shadow map, the ground and the walls around the player lit as before; the play check of
+    item 74 reads the light with a torch in hand against none as it does, and the cost of a held
+    light at the grove read before and after. One commit, small, before item 144. Done at `b5626c6`
+    on 2026-10-30 with the 5.2.333 pin, the held and dropped lights plain, the shadows 0.7 ms less
+    at the grove.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

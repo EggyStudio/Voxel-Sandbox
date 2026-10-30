@@ -45,6 +45,22 @@ public sealed class CutoutTests : IDisposable
     private static VoxelWorld Floor() => Laid.World(c => c.Set(0, 0, 0, BlockId.Bedrock));
 
     [Fact]
+    public void A_Cactus_Under_A_Pack_Whose_Side_Is_Clear_At_Its_Edges_Keeps_The_Sources_Sides_Across_The_Whole_Cell()
+    {
+        var world = Floor();
+        world.SetBlock(8, 1, 8, BlockId.Cactus);
+        var mesher = new SectionMesher { Atlas = Atlas(("block/cactus_side", Framed())) };
+        Assert.True(mesher.Mesh(world, new SectionKey(0, 0, 0)));
+        // The side toward -z stands a pixel in and spans the whole cell, its clear edges the
+        // source's thorns.
+        var faces = new[] { mesher.Solid, mesher.Cutout, mesher.SolidCutout };
+        var spans = faces.SelectMany(f => Enumerable.Range(0, f.Count / 4).Select(q => Enumerable.Range(4 * q, 4).Select(i => f.Positions[i]).ToArray()))
+            .Where(quad => quad.All(p => MathF.Abs(p.Z - (8 + 1 / 16f)) < 1e-5f))
+            .Select(quad => (quad.Min(p => p.X), quad.Max(p => p.X)));
+        Assert.Contains((8f, 9f), spans);
+    }
+
+    [Fact]
     public void A_Texture_Clear_In_Some_Pixels_Cuts_Out_And_One_Partly_Clear_Blends()
     {
         var atlas = Atlas(("block/glass", Framed()), ("block/ice", Plain(128)), ("block/stone", Plain(255)), ("block/cactus_side", Framed()));

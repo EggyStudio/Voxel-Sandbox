@@ -588,7 +588,8 @@ public sealed class SectionMesher
         var kept = LightLevels ? MathF.Pow(Lit(Math.Max(sky, lit)), 1 / 2.2f) : 1;
         var place = (int)block.Z * Section.Size + (int)block.X;
         var offset = Offset(shape.Offset, _origin.X + (int)block.X, _origin.Z + (int)block.Z);
-        foreach (var piece in shape.Pieces)
+        var pieces = shape.Plain is { } plain && !shape.Pieces.Any(p => Atlas.Cuts(p.Surface)) ? plain : shape.Pieces;
+        foreach (var piece in pieces)
         {
             if (piece.Glows) continue;
             var faces = shape.Cutout || piece.Plane ? Cutout : FacesOf(piece.Surface, true, BlockKind.Shaped);
