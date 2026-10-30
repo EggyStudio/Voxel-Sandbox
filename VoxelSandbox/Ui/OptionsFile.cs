@@ -18,7 +18,7 @@ namespace VoxelSandbox;
 public sealed class OptionsFile(string root)
 {
     /// <summary>The file's version, its first line, raised as a default changes.</summary>
-    public const int Version = 2;
+    public const int Version = 3;
 
     // The defaults changed since a version, each with the value it had before. A file of an older
     // version holds every setting as it stood, so a line holding a value since replaced as the default
@@ -27,6 +27,9 @@ public sealed class OptionsFile(string root)
     [
         // The sun was a point before Soft Shadows came, and the engine's width of 0 stood in files.
         (2, "render.Soft_Shadows", "0"),
+        // The far cascade was off and the sun's shadows reached 64 blocks.
+        (3, "render.Far_Cascade", "Off"),
+        (3, "render.Shadow_Distance", "64"),
     ];
 
     // The text last read or written, so leaving a screen with nothing changed writes nothing.

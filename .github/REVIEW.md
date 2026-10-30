@@ -1,11 +1,18 @@
 # Review
 
-Reviewed up to `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01 with play
-in 40 minutes. The start restores the options file's resolution and mode right after InitWindow,
-before the game is built, the window appearing as saved about 8 s before the world loads where it
-changed after; no monitor setting exists to read, and a hidden window cannot be shown later since
-the engine takes a program-set hidden window as a --hidden run; the test reads the values and a
-missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
+Reviewed up to `7508d5e`, item 142, pushed at 19:18 on 2026-10-30, the run watched. The window path
+matches offscreen, an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to
+0.002 fresh at 1280 by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release
+both run about 46 ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at
+720p; the owner's file kept Soft_Shadows 0, never chosen. The options file's first line is its
+version, 2, and an older file's line equal to a default since changed reads as that default; the
+note is 2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md,
+its item 134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01
+with play in 40 minutes. The start restores the options file's resolution and mode right after
+InitWindow, before the game is built, the window appearing as saved about 8 s before the world loads
+where it changed after; no monitor setting exists to read, and a hidden window cannot be shown later
+since the engine takes a program-set hidden window as a --hidden run; the test reads the values and
+a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
 Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
 first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
 sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
@@ -142,37 +149,6 @@ full.
     GPU with the profile stated, the frame at 8, 12 and 16 columns and the shadows' share, and the
     deep cave and the village pictured at the new defaults; a saved options file keeps a player's
     own choice. One commit, small, with a note.
-
-142. **The window shows what the devlog's pictures show.** The owner wrote on 2026-10-30 that the
-    game run by hand does not look like the devlog's pictures, the engine's cascade lighting among
-    the differences, where the pictures come from offscreen and headless runs. A reading first, in
-    the owner's own way of running with the same build, window size and mode. The owner's options
-    file is read and each render setting printed against the default, since a kept setting from an
-    older build, the quality, the probes, the far cascade or the sun's width, stands over a new
-    default; a window screenshot at the devlog pictures' views and hours is read against offscreen
-    captures of the same views, pixel by pixel, the window's swapchain format and tone mapping
-    against the capture's; and the first seconds after the window opens and the view under movement
-    are read against a still that settled, since the cascades and the screen probes converge over
-    frames. Then the mend for what the reading shows, a changed default taking precedence over an
-    older kept value where the owner never chose it, a window path matching the capture's, or the
-    README saying what settles and how long; what is the engine's goes to ASKS.md. First, before
-    item 141 if the reading is quick, with a note and the pair of pictures. The owner added that the
-    game is run with dotnet run, the bin folder deleted at times, so the build is current and the
-    changes show, and that the sessions may open a window on this machine and capture it; the
-    reading runs windowed the owner's way, a Debug build by dotnet run, and compares the window's
-    screenshot with the pictures. The owner sent the engine's item 97 picture as the game's most
-    visible glitch, black specks over every surface, which the engine read on lavapipe alone and
-    mended at `1703c54e`, in no package yet; the ninth pack run started for it, the game to pin the
-    package, and the reading asks first which Vulkan device the owner's run uses, the log's device
-    line read, since specks the RTX never showed point at a software or integrated device chosen
-    under the owner's profile. The device read on 2026-10-30, a plain windowed dotnet run with the
-    owner's options picking the RTX 4070 Laptop GPU on SDL's x11 path with a B8G8R8A8Unorm swapchain
-    presented immediately, no device variable set, so the specks the owner sees have another cause
-    than the device, the package's mend pending; a side finding for the engine, the window 2560 by
-    1440 from the start under item 140 while the swapchain stays 1280 by 720 from the loading
-    screen's first frame at 2.35 s until the first present after the load reports it out of date at
-    10.86 s, the engine to recreate the swapchain on a resize before the first frame, an ASKS.md
-    entry.
 
 ## Verdicts
 

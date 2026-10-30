@@ -22,16 +22,16 @@ public sealed class LightSettings
     public int Budget = 2;
     // A far cascade past the four reaching as far as the land drawn, the render distance's blocks,
     // so a ray leaving the counted cascades meets the hills and the rock it holds before the sky, its
-    // cells as wide as that reach takes at 64 a side, six blocks at 12 columns. It is off, since it
-    // darkens a deep cave's far walls at Low alone and costs 1.6 to 2 ms of the frame at 1920 by 1080
-    // at Low and High alike, and Render Settings turns it on.
-    public bool FarCascade;
+    // cells as wide as that reach takes at 64 a side, six blocks at 12 columns. It is on, so a deep
+    // cave's far walls take the rock's dark rather than the sky's light at Low, for 1.6 to 2 ms of the
+    // frame at 1920 by 1080 at Low and High alike, and Render Settings turns it off.
+    public bool FarCascade = true;
     public float FarReach = 12 * Section.Size;
 
-    // The sun's shadows reach 64 blocks, which keeps a village's trees' shadows in a view across it
-    // and takes a millisecond off the frame at 1920 by 1080 against 96, where 48 lost the trees' shadows
-    // fifty blocks off.
-    public float ShadowDistance = 64;
+    // The sun's shadows reach 128 blocks, which keeps an oak's shadow dark fifty to a hundred blocks
+    // off across a village, where 64 left it the contact shadows' faint one, for 1.3 to 1.8 ms more of
+    // the GPU and about 1 ms more of the CPU at 1280 by 720.
+    public float ShadowDistance = 128;
     // The sun looks 1.5 degrees across, three times as wide as from the earth, which softens a tree's
     // long shadow in the afternoon toward its far end and keeps it sharp at the trunk, where 0.53 left
     // the shadows' edges stepping along the pixels of the blocks they cross and 3 blurred a crown's

@@ -2386,6 +2386,39 @@ before a batch.
     paragraph says the window opens as saved. One commit, small. Done at `5c80c99` on 2026-10-30,
     the departures in the head.
 
+142. **The window shows what the devlog's pictures show.** The owner wrote on 2026-10-30 that the
+    game run by hand does not look like the devlog's pictures, the engine's cascade lighting among
+    the differences, where the pictures come from offscreen and headless runs. A reading first, in
+    the owner's own way of running with the same build, window size and mode. The owner's options
+    file is read and each render setting printed against the default, since a kept setting from an
+    older build, the quality, the probes, the far cascade or the sun's width, stands over a new
+    default; a window screenshot at the devlog pictures' views and hours is read against offscreen
+    captures of the same views, pixel by pixel, the window's swapchain format and tone mapping
+    against the capture's; and the first seconds after the window opens and the view under movement
+    are read against a still that settled, since the cascades and the screen probes converge over
+    frames. Then the mend for what the reading shows, a changed default taking precedence over an
+    older kept value where the owner never chose it, a window path matching the capture's, or the
+    README saying what settles and how long; what is the engine's goes to ASKS.md. First, before
+    item 141 if the reading is quick, with a note and the pair of pictures. The owner added that the
+    game is run with dotnet run, the bin folder deleted at times, so the build is current and the
+    changes show, and that the sessions may open a window on this machine and capture it; the
+    reading runs windowed the owner's way, a Debug build by dotnet run, and compares the window's
+    screenshot with the pictures. The owner sent the engine's item 97 picture as the game's most
+    visible glitch, black specks over every surface, which the engine read on lavapipe alone and
+    mended at `1703c54e`, in no package yet; the ninth pack run started for it, the game to pin the
+    package, and the reading asks first which Vulkan device the owner's run uses, the log's device
+    line read, since specks the RTX never showed point at a software or integrated device chosen
+    under the owner's profile. The device read on 2026-10-30, a plain windowed dotnet run with the
+    owner's options picking the RTX 4070 Laptop GPU on SDL's x11 path with a B8G8R8A8Unorm swapchain
+    presented immediately, no device variable set, so the specks the owner sees have another cause
+    than the device, the package's mend pending; a side finding for the engine, the window 2560 by
+    1440 from the start under item 140 while the swapchain stays 1280 by 720 from the loading
+    screen's first frame at 2.35 s until the first present after the load reports it out of date at
+    10.86 s, the engine to recreate the swapchain on a resize before the first frame, an ASKS.md
+    entry. Done at `7508d5e` on 2026-10-30, the window matching offscreen, the old kept Soft_Shadows
+    0 read as the default through the options file's version, the frame at 2560 by 1440 GPU-bound at
+    about 46 ms; the specks wait on the package.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

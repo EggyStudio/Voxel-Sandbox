@@ -313,13 +313,13 @@ public sealed class VoxelGame : IDisposable
     /// <remarks>
     /// Twelve by default, 192 blocks. Flying at a height of 90 over the first seed's spawn at noon,
     /// looking east over the forest to the sea at 1280 by 720 on the development machine's RTX 4070
-    /// Laptop GPU with every setting at its default, the frame takes 16.7 to 17.1 ms at 12 columns,
-    /// the GPU's work and the CPU's passes each about 13 ms of it, where 8 columns keep 60 a second
-    /// and 16 take 25.5 ms, the CPU's passes bounding it at 21. Every section the eye can see within
-    /// it is drawn each frame, since one left out leaves the scene field, and each of the engine's
-    /// passes leaves out the sections whose boxes it cannot see, the terrain's shader keeping its
-    /// positions. Flying over land not yet loaded, the main thread joins the columns that come into
-    /// reach, and the frame takes 18 to 19 ms at 8 columns and 21 to 29 at 12.
+    /// Laptop GPU with every setting at its default, the frame takes 16.8 to 17.4 ms at 12 columns,
+    /// the GPU's work about 15.6 ms of it and the CPU's passes 13.3, where 8 columns keep 60 a
+    /// second and 16 take about 26.6 ms. Every section the eye can see within it is drawn each
+    /// frame, since one left out leaves the scene field, and each of the engine's passes leaves out
+    /// the sections whose boxes it cannot see, the terrain's shader keeping its positions. Flying
+    /// over land not yet loaded, the main thread joins the columns that come into reach, and the
+    /// frame takes 18 to 19 ms at 8 columns and 21 to 29 at 12.
     /// </remarks>
     public int RenderDistance
     {

@@ -861,7 +861,7 @@ sections loaded, waiting and drawn, and the mobs.
 | Render Settings | Render Distance | 2 to 16 chunks | 12 |
 | | GPU Generation, the caves' noises read on the GPU | Off, On | On |
 | | Global Illumination | Off, Low, Medium, High | High |
-| | Shadow Distance | 16 to 192 blocks by 8 | 64 |
+| | Shadow Distance | 16 to 192 blocks by 8 | 128 |
 | | Soft Shadows, how wide the sun looks across, which softens a shadow's edge the further it falls from what casts it, about 0.6 ms of the frame | 0 to 5 degrees by 0.01 | 1.5 |
 | | Corner Shade | 0 to 100% by 5, the sections shaded again as it is let go | 50% |
 | | Emission, what every emissive surface's light is multiplied by | 0 to 4 by 0.1 | 1 |
@@ -871,7 +871,7 @@ sections loaded, waiting and drawn, and the mobs.
 | | Field Cascades, the scene's distance field's | 1 to 8 | 4 |
 | | Field Cell, the finest cascade's cell | 0.125 to 1 block by 0.125 | 0.25 |
 | | Cascades a Frame, built again each frame | 1 to 8 | 2 |
-| | Far Cascade, a cascade past the four reaching the render distance, which keeps a deep cave's far walls from the sky's light at Low and costs about 2 ms of the frame | Off, On | Off |
+| | Far Cascade, a cascade past the four reaching the render distance, which keeps a deep cave's far walls from the sky's light at Low and costs about 2 ms of the GPU | Off, On | On |
 | | Water Reflections, the water in view mirroring the shore, about 2.6 ms of the frame while water shows | Off, On | On |
 | Post Processing | Bloom | 0 to 2 by 0.05 | 0.1 |
 | | Bloom Threshold, the light past white bloom spreads from | 0.5 to 8 by 0.25 | 1 |
@@ -1532,21 +1532,23 @@ each of the sun's three shadow cascades', leaves out the sections whose boxes it
 at a height of 90 over seed 1's spawn at noon, looking east over the forest to the sea, at 1280 by
 720 offscreen on the development machine's RTX 4070 Laptop GPU with the three default packs and
 every setting at its default, in a Debug build on the machine's power-saving profile, the frame
-keeps 60 a second at 8 columns, stands at the edge of it at 12, where it takes 16.7 to 17.1 ms, the
-GPU's work and the CPU's passes each about 13 ms of it, and loses it at 16, where the CPU's passes
-bound it at 21 ms. The sun's shadows take 0.8 ms of the GPU at every distance, since the engine's
-fill of the land past the shadow map is left off, the contact shadows shading that land, and the
-sea's mirror 0.7, 1.6 and 3.0 ms of the GPU and 0.9, 1.9 and 3.4 of the CPU. Each section a pass
-draws costs the main thread 3 to 5 µs to record, and the passes draw the sections four times, the
-depth's, the camera's, the mirror's and the cascades', so at 12 columns the frame's 2,300 draws take
-about 9 ms of the main thread. The frame's time, the GPU's and the CPU's passes' in milliseconds, the middle of the
-readings with no other program on the GPU, and the memory the game holds:
+keeps 60 a second at 8 columns, stands at the edge of it at 12, where it takes 16.8 to 17.4 ms, the
+GPU's work about 15.6 ms of it and the CPU's passes 13.3, and loses it at 16, where it takes 26.5 to
+26.8 ms, the GPU's work and the CPU's passes each about 21 ms. The sun's shadows reach 128 blocks
+and take 2.1 to 2.6 ms of the GPU at every distance, where 64 blocks took 0.8. The engine's fill of
+the land past the shadow map is left off, the contact shadows shading that land. The far cascade
+takes about 1.9 ms more of the GPU at 12 columns, and the sea's mirror 0.7, 1.4 and 3.0 ms of the
+GPU and 0.9, 1.9 and 3.4 of the CPU. Each section a pass draws costs the main thread 3 to 5 µs to
+record, and the passes draw the sections four times, the depth's, the camera's, the mirror's and the
+cascades', so at 12 columns the frame's 3,100 draws take about 10 ms of the main thread. The frame's
+time, the GPU's and the CPU's passes' in milliseconds, the middle of the readings with no other
+program on the GPU, and the memory the game holds:
 
 | columns | frame | GPU | CPU's passes | memory |
 |---|---|---|---|---|
-| 8 | 16.7 | 9.1 | 8.3 | 1,100 MB |
-| 12 | 16.9 | 12.8 | 12.9 | 1,476 MB |
-| 16 | 25.5 | 16.6 | 21.1 | 2,206 MB |
+| 8 | 16.7 | 12.0 | 7.9 | 1,117 MB |
+| 12 | 17.0 | 15.6 | 13.3 | 1,455 MB |
+| 16 | 26.6 | 21.1 | 22.2 | 2,266 MB |
 
 A window of 2560 by 1440 draws four times the pixels, and over the plains village at hour 16 the
 frame takes about 45 ms there, Debug and Release alike, the GPU bounding it, global illumination
