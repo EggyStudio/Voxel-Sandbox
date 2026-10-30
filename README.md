@@ -1,4 +1,4 @@
-[Devlog](https://github.com/EggyStudio/Voxel-Sandbox/blob/main/DEVLOG.md) · [3DEngine cheat sheet](https://github.com/EggyStudio/3DEngine/blob/main/CHEATSHEET.md)
+[Devlog](https://github.com/EggyStudio/Voxel-Sandbox/blob/main/DEVLOG.md) · [3DEngine](https://github.com/EggyStudio/3DEngine)
 
 # Voxel Sandbox
 
@@ -911,8 +911,10 @@ line a setting, its screen, general for the options' own, and its name joined by
 words by underscores, then a colon and its value, as `render.Render_Distance:12` or
 `video.Window_Mode:Borderless`. The game reads it as it starts and writes it as a screen of the menu
 is left, or as `voxel.options` or G changes a setting, and a line it cannot read leaves its setting
-at the default above. The time, the daylight cycle and the moon are the world's, which its save
-keeps, and a transient run neither reads the file nor writes it.
+at the default above. The window's resolution and mode are read first, as the window opens and
+before the world loads, so it shows as it was left, 1280 by 720 in a window where the file keeps
+neither. The time, the daylight cycle and the moon are the world's, which its save keeps, and a
+transient run neither reads the file nor writes it.
 
 A world opens behind a black loading screen, with the world's name over a bar of how far its loading
 has come, and under it, while the default packs are fetched, a line and a bar of their own. Half the

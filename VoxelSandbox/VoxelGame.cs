@@ -48,9 +48,10 @@ public sealed class VoxelGame : IDisposable
     /// transient run leaves alone, so it is drawn the same on every machine. Where the setting names
     /// none yet, as at the first start, the default packs are fetched and turned on once they are in.
     /// </summary>
-    public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null)
+    public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null, VideoSettings? video = null)
     {
         _transient = transient;
+        Video = video ?? new VideoSettings();
         // The game, its step and the inventory are the engine's resources, and the player an entity
         // of its controller, its body, its vitals and its hand, which the behaviors reach.
         var app = GetApp().World;
@@ -298,6 +299,9 @@ public sealed class VoxelGame : IDisposable
     public (int X, int Y, int Z)? BreakingAt => _breaking.At;
 
     public float BreakProgress => _breaking.Progress;
+
+    /// <summary>The window's mode, its resolution, the frame limit and vsync, made as the window opened, so its first size stands for Current.</summary>
+    public VideoSettings Video { get; }
 
     /// <summary>The engine's windows the Debug screen of the options turns on.</summary>
     public DebugWindows Windows { get; } = new();

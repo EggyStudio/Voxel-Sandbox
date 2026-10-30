@@ -76,6 +76,19 @@ public sealed class OptionsFile(string root)
         return set;
     }
 
+    /// <summary>The value the file keeps for a setting, or none where the file is missing or holds no line of it that reads.</summary>
+    public float? Find(string screen, Option option)
+    {
+        if (!System.IO.File.Exists(File)) return null;
+        var key = Key(screen, option);
+        foreach (var line in System.IO.File.ReadAllLines(File))
+        {
+            var colon = line.IndexOf(':');
+            if (colon >= 0 && line[..colon].Trim().Equals(key, StringComparison.OrdinalIgnoreCase)) return Parse(option, line[(colon + 1)..].Trim());
+        }
+        return null;
+    }
+
     // A choice by its name with its words joined by underscores, a number with a point.
     private static string ValueOf(Option option) => option.Choices is not null
         ? option.Shown.Replace(' ', '_')

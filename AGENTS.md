@@ -101,10 +101,11 @@ release of the zips.
   `.github/STYLE.md` is read and applied to what is staged, the message included.
   `.github/COMMITS.md` has the exact form, that pass, and how to split a batch that shares a file
   with another.
-- `.github/REVIEW.md` is read before a batch is started and before each commit. A second session
-  writes it after reading the code and the history, and its Now list comes before any other order
-  of work. Only its Replies section is edited here, for an item that is disputed, blocked or done,
-  and the file is committed with whichever batch comes next.
+- `.github/REVIEW.md`'s head, the items of the batch and the Replies are read before a batch is
+  started and before each commit. A second session writes it after reading the code and the
+  history, and its Now list comes before any other order of work. Only its Replies section is
+  edited here, for an item that is disputed, blocked or done, and the file is committed with
+  whichever batch comes next.
 - `.github/NORM.md` holds the rules the game keeps, each with a number, a reason and what checks
   it, and is written by the session that writes REVIEW.md. A rule read as wrong, or a fault of a
   kind no rule names, is said with a line under Replies in REVIEW.md beginning `Rule:`. A row that

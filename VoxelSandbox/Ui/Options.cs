@@ -141,14 +141,11 @@ public sealed class OptionScreens
             new("Zoom Key", () => Array.IndexOf(ZoomKeys, player.Zoom.Key), v => player.Zoom.Key = ZoomKeys[(int)v]) { Choices = [.. ZoomKeys.Select(k => k.ToString())] },
         ], []);
 
-        var video = VideoSettings = new VideoSettings();
+        var video = VideoSettings = game.Video;
         Video = new("Video Settings",
         [
-            new("Window Mode", () => VideoSettings.WindowMode, v => video.SetWindowMode((int)v)) { Choices = VideoSettings.WindowModes },
-            // The window or the monitor changes once the slider is let go, rather than through every
-            // size it passes.
-            new("Resolution", () => video.Resolution, v => video.Resolution = (int)v)
-                { High = Math.Max(1, video.Modes.Length), Step = 1, Format = v => video.ResolutionName((int)v), Settled = video.ApplyResolution },
+            WindowModeOf(video),
+            ResolutionOf(video),
             new("Frame Limit", () => video.FrameLimit, v => video.SetFrameLimit((int)v))
                 { Low = 10, High = VideoSettings.Unlimited, Step = 10, Format = v => v >= VideoSettings.Unlimited ? "Unlimited" : $"{v:0} fps" },
             Option.Toggle("VSync", () => VideoSettings.Vsync, VideoSettings.SetVsync),
@@ -368,6 +365,16 @@ public sealed class OptionScreens
     }
 
     /// <summary>Every channel of every color, each named by its color and its channel.</summary>
+    /// <summary>The Video Settings screen's window mode, which the start reads from the options file before the window's first frame.</summary>
+    public static Option WindowModeOf(VideoSettings video) =>
+        new("Window Mode", () => VideoSettings.WindowMode, v => video.SetWindowMode((int)v)) { Choices = VideoSettings.WindowModes };
+
+    /// <summary>The Video Settings screen's resolution, which the start reads from the options file before the window's first frame.</summary>
+    /// <remarks>The window or the monitor changes once the slider is let go, rather than through every size it passes.</remarks>
+    public static Option ResolutionOf(VideoSettings video) =>
+        new("Resolution", () => video.Resolution, v => video.Resolution = (int)v)
+            { High = Math.Max(1, video.Modes.Length), Step = 1, Format = v => video.ResolutionName((int)v), Settled = video.ApplyResolution };
+
     // A loudness from none to full, shown as a share.
     private static Option Loudness(string name, Func<float> get, Action<float> set) =>
         new(name, () => get() * 100, v => set(v / 100)) { High = 100, Step = 5, Format = Option.Percent };

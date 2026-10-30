@@ -50,6 +50,11 @@ its field and selected whole with Control and A above, and below it the caret a 
 Glacier and the space after it, the engine's text edit measuring in a font built from the pack's
 sheet.
 
+![](.github/devlog/2026-10-26-item-139-fill.webp)
+Seed 1's plains village at hour 16 from 550.5, 72, -356.5 at 12 columns, the engine's shadow fill of
+the land past the shadow map on at the left and off at the right, the land's shadows alike in both,
+the contact shadows shading the far land, where the fill drew 2,085 sections a frame.
+
 # Item 133, the canopy's floor on 3DEngine 5.2.319
 
 On 5.2.319 the merge of the cascades sees past the leaves and a ray's reach stops where it does, so
@@ -199,6 +204,84 @@ hour before, from the oak's crown, gave 16.7 to 17.0 ms at 12 with nothing on th
 view costs the frame about 3 ms there. The flights over unloaded land and lavapipe's line stand as
 read at `bb0b9bb`.
 
+# Item 139, the frame at 12 columns
+
+Where the frame's time went since item 90, read in Debug builds with the three default packs,
+offscreen at 1280 by 720, flying at a height of 90 over seed 1's spawn at noon looking east over the
+forest to the sea, on tuned's power-saving profile with the processor's energy preference at power.
+Each reading waited for a GPU no other program used and took a profile over ten seconds. Item 90's
+build is `ba60ae4` on 3DEngine 5.2.215, the defaults' build `b25e668` on 5.2.326, and the mended
+build the same with the engine's shadow fill left off.
+
+A first round of these readings ran with a session of the game left open beside them, drawing at
+69 percent of the GPU, and doubled every pass. It is left out, and the readings below are those
+taken with it stopped.
+
+## At 12 columns
+
+Milliseconds a frame, the CPU's recording of each pass and the GPU's work in it, two or three
+readings each.
+
+| | Item 90 | Defaults, the fill on | Mended, the fill off |
+|---|---|---|---|
+| Frame | 16.84 to 16.99 | 17.05 to 22.77 | 16.71 to 17.08 |
+| CPU, the depth pass | 2.07 to 2.18 | 2.22 to 2.75 | 2.31 to 2.40 |
+| CPU, the shadows | 1.98 to 2.06 | 3.95 to 5.04 | 2.06 to 2.12 |
+| CPU, the mirror | none | 1.74 to 2.11 | 1.81 to 1.87 |
+| CPU, the scene pass | 3.11 to 3.36 | 3.05 to 3.50 | 3.08 to 3.28 |
+| CPU, global illumination | 1.18 to 1.46 | 1.69 to 2.42 | 1.69 to 1.78 |
+| CPU, the model batches | 0.77 to 0.79 | 0.84 to 1.30 | 0.90 to 0.96 |
+| The main thread's Last stage, the render graph's | 10.20 to 10.44 | 14.60 to 18.67 | 12.92 to 13.23 |
+| GPU, the depth pass | 1.93 to 2.02 | 1.51 to 1.90 | 1.57 to 1.74 |
+| GPU, the shadows | 1.53 to 1.57 | 4.50 to 5.81 | 0.79 to 0.90 |
+| GPU, the mirror | none | 1.27 to 1.90 | 1.51 to 1.80 |
+| GPU, the scene pass | 7.22 to 7.63 | 4.30 to 6.17 | 4.16 to 5.43 |
+| GPU, global illumination | 2.38 to 2.49 | 3.71 to 4.66 | 3.71 to 4.01 |
+| Draws, all passes | 1,891 to 1,943 | 4,331 to 4,380 | 2,226 to 2,322 |
+
+At 12 columns item 90's passes drew 713 to 761 sections in the camera's, 600 to 648 in the depth's
+and 572 to 578 in the cascades'. The defaults' drew 1,180 to 1,204, 653 to 675 and 389 to 413, and
+the fill 2,085 to 2,112. The mended drew 1,185 to 1,228, 658 to 699 and 383 to 407. The camera's
+count holds the mirror's draws, 1,185 with the mirror and 762 with it off, so the mirror draws about
+420 sections.
+
+Since item 90 the engine's shadow fill drew the land past the shadow map, 2,085 more draws for 2 to
+3 ms of the CPU and 3.5 to 5 more of the GPU, the mirror took 1.8 ms of the CPU and 1.5 of the GPU,
+and global illumination 0.3 to 0.5 ms more of the CPU and 1.3 to 1.5 more of the GPU, which these
+readings do not divide further, where the scene pass took 2 to 3 ms less of the GPU.
+
+## The fill
+
+The fill on and off at seed 1's spawn, the plains village and from 120 over the spawn looking
+southwest at the hills, at hour 16 and at noon, at 12 columns. Of 921,600 pixels, 50 to 1,393
+differed by more than 4 percent, the clouds' edges and the mobs as they moved, and no shadow. The
+contact shadows past the shadow map shade the far land with the fill off. It is left off.
+
+## The mended frame by distance
+
+Twelve readings in one session, 8, 12 and 16 columns up, down, up and down, the quiet ones.
+
+| Columns | Frame | GPU | CPU's passes | Last stage | Draws | Memory as first reached |
+|---|---|---|---|---|---|---|
+| 8 | 16.67 and 16.78 | 8.71 and 9.58 | 8.07 and 8.48 | 8.38 and 8.79 | 1,173 to 1,215 | 1,100 MB |
+| 12 | 16.71, 16.94 and 17.08 | 12.29 to 13.34 | 12.60 to 12.91 | 12.92 to 13.23 | 2,226 to 2,322 | 1,476 MB |
+| 16 | 25.33, 25.48 and 25.99 | 16.40 to 18.10 | 20.54 to 21.51 | 20.92 to 21.92 | 3,837 to 3,901 | 2,206 MB |
+
+The passes' recording at 12 columns, the depth's 2.3 ms for 670 draws, the camera's 3.1 for about
+780, the mirror's 1.85 for about 420 and the cascades' 2.1 for about 400, are 3 to 5 µs a draw, 9.4
+ms of the main thread's 13. At 16 the CPU's passes bound the frame at 21 ms against the GPU's 16.5.
+The recording a draw costs is the engine's, an entry in its ASKS.md, and the frame at 12 stands at
+the edge of 16.7 ms until it falls.
+
+## The mirror and the plains
+
+The mirror's plane is set at none of seed 1's cherry grove, plains village, jungle and the plains
+view at -288, 64, where no ray of the fifteen meets water, and at the spawn the sea fills the view's
+right. The plains view, 20 blocks over the ground at -288, 64 looking east and 15 down, savanna
+hills by the generator's climate, takes the frame 16.71, 16.88 and 17.03 ms on the mended build,
+the GPU's passes 10.15 to 10.85 and the CPU's 10.75 to 11.10, with 1,983 draws of 0.92 million
+triangles.
+
 # Item 27, the far cascade
 
 The engine's far cascade on 3DEngine 5.2.319, set through `SetSceneField` past the four counted
@@ -271,6 +354,7 @@ Done that day
 - Item 136 at `6001eed`. The sun's shadows soften with the distance from their caster.
 - Item 137 at `b25e668`. The seed field edits through the engine's EditText.
 - Item 138 at `9c07673`. The README's costs table is read again at the defaults on 5.2.326.
+- Item 139 at `fc0937a`. The frame at 12 columns comes back under 16.7 ms at the defaults.
 
 ## 2026-10-25
 

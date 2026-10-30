@@ -71,6 +71,24 @@ public sealed class VideoSettings
         }
     }
 
+    /// <summary>
+    /// Puts the window into the resolution and the mode an options file keeps, a window of the size
+    /// it opened at where the file keeps neither.
+    /// </summary>
+    /// <remarks>
+    /// The start calls it before the window's first frame and before the world opens, so the window
+    /// shows as it was left rather than changing once the game is up. The resolution is set before
+    /// the mode, so a fullscreen window changes the monitor's mode once.
+    /// </remarks>
+    public void Restore(OptionsFile file)
+    {
+        var resolution = OptionScreens.ResolutionOf(this);
+        if (file.Find("video", resolution) is { } chosen) resolution.Change(chosen);
+        var mode = file.Find("video", OptionScreens.WindowModeOf(this)) is { } kept ? (int)kept : 0;
+        if (mode != 0) SetWindowMode(mode);
+        else ApplyResolution();
+    }
+
     /// <summary>Holds the frames to a rate, or leaves them unlimited at <see cref="Unlimited"/>.</summary>
     public void SetFrameLimit(int fps)
     {

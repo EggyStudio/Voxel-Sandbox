@@ -52,6 +52,37 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void The_Start_Reads_The_Windows_Mode_And_Resolution_From_The_Options_File()
+    {
+        using var headless = new HeadlessGame();
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            var video = new VideoSettings();
+            var (width, height) = (GetScreenWidth(), GetScreenHeight());
+            // With no file the window keeps the size it opened at, in a window.
+            video.Restore(new OptionsFile(folder));
+            Assert.Equal((0, width, height), (VideoSettings.WindowMode, GetScreenWidth(), GetScreenHeight()));
+            var file = new OptionsFile(folder);
+            Directory.CreateDirectory(folder);
+            File.WriteAllText(file.File, "video.Window_Mode:Borderless\nvideo.Resolution:1\nrender.Render_Distance:6\n");
+            Assert.Equal(2f, file.Find("video", OptionScreens.WindowModeOf(video)));
+            Assert.Equal(1f, file.Find("video", OptionScreens.ResolutionOf(video)));
+            // A run with no window holds no monitor's modes nor a borderless state, so the
+            // resolution read is what it shows, the mode being the engine's window's alone.
+            video.Restore(file);
+            Assert.Equal(1, video.Resolution);
+            // A mode the file cannot read leaves the window in a window.
+            File.WriteAllText(file.File, "video.Window_Mode:Sideways\n");
+            Assert.Null(file.Find("video", OptionScreens.WindowModeOf(video)));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void The_Debug_Overlay_Holds_The_Games_Sections_Of_The_Player_Generation_Light_Sky_Sections_And_Mobs()
     {
         using var headless = new HeadlessGame();

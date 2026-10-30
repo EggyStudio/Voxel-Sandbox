@@ -24,6 +24,11 @@ for (int i = 0; i < args.Length; i++)
 
 SetConfigFlags(ConfigFlags.WindowResizable);
 InitWindow(1280, 720, "Voxel Sandbox");
+// The window takes the resolution and the mode the options file keeps before its first frame and
+// before the world opens, so it shows as it was left, and 1280 by 720 in a window where the file
+// keeps neither. A transient run reads no options.
+var video = new VideoSettings();
+if (!transient) video.Restore(OptionsFile.Default);
 // Escape frees the cursor, as it opens Minecraft's menu, rather than closing the window.
 SetExitKey(Key.Null);
 // F1 hides the HUD and F3 shows the debug overlay, the engine's own, as Minecraft's do, and F2 is the
@@ -32,7 +37,7 @@ SetExitKey(Key.Null);
 InitAudioDevice();
 SetScreenshotKey(Key.Null);
 
-using (var game = new VoxelGame(flat ? "flat" : "overworld", seed, name, transient, packs))
+using (var game = new VoxelGame(flat ? "flat" : "overworld", seed, name, transient, packs, video))
 {
     GameCommands.Game = game;
     OverlaySections.Add(game);
