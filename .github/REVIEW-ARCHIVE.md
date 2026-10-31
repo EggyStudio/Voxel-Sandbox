@@ -2510,6 +2510,21 @@ before a batch.
     README's play paragraph says the job's time. One commit, small, first. Done at `8a1e308` on
     2026-10-31, the limit 150, two waits shortened to what they read, none dropped.
 
+151. **The 250 ms frame after a jump of three sections is not the field's.** Read at `7bd8f1c` on
+    2026-10-31 with 5.2.342 pinned, the step after the first three-section jump reads a frame of
+    about 250 ms in every round of both packages while cpu.scene_field stays under 20 ms, so the
+    cost is the game's own, the sections' meshing, the streamer's load, the flood or the casters'
+    search at a jump, read by the profile's rows in that frame. A reading first with the frame's
+    rows named, then the mend where it is the game's and small, else an ASKS.md entry where it is
+    the engine's. One commit, after the pin's run. Done at `efbb357` on 2026-10-31, a reading. The
+    frame is held at the profile's cap; its length is 23.7 to 24.0 s, cpu.mirror 22.5 to 23.0 s, the
+    field 2.6 to 6.6 ms, the first frame SetReflectionPlane is set in, the first water 64 blocks
+    east of seed 1's spawn; later frames with the plane read cpu.mirror 0.9 to 4.6 ms, and with the
+    driver's shader cache at a fresh folder a first run 23.7 s and a second 1.1 s, so the driver
+    compiles the mirrored pass's pipelines, which the engine's cache holds in memory alone. The mend
+    is the engine's, item 147, the pipeline cache kept between runs and the pipelines made ahead; no
+    game stopgap, the engine's mend being near. The note 2026-10-31-item-151-mirror.md.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

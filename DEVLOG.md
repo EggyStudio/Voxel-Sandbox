@@ -13,10 +13,60 @@ The same two cacti in the same scene, shown four times their size, on the left t
 its top across the whole cell, a pixel past the sides as a lid and a lip where the two stack, and on
 the right its top and bottom a pixel in as its sides are.
 
+![](.github/devlog/2026-10-31-item-145-package-342-cave.webp)
+Seed 1's deep cave at -59.5, -4, -91.5 at noon at Low with the far cascade on, brightened six times,
+with 5.2.333 on the left and 5.2.342 on the right, its far wall darker where the rock the eye cannot
+see stays in the field.
+
+# The engine's 5.2.342, item 145's steps read again
+
+The engine's 5.2.342 keeps the field's pool of the build's meshes and the shadow-only draws in its
+scene field (its item 146), asked by the game's item 145. Read on seed 1's spawn at 12 columns,
+Debug, offscreen at 1280 by 720, on tuned's power-saving profile with the processor's energy
+preference at power, other sessions' tests holding up to 29 percent of the GPU, with 5.2.333 and
+5.2.342 in turns, two rounds each. The eye stepped 16 blocks east and back six times at a height of
+100, then jumped 48 and stepped 16 twice, `voxel.frames` read after the six steps and
+`profile.slowest` after each.
+
+| | 5.2.333 | 5.2.342 |
+|---|---|---|
+| The six steps' 99th part | 49.3 and 85.1 ms | 37.8 and 43.8 ms |
+| The six steps' slowest frame | 62.7 and 95.4 ms | 49.8 and 58.4 ms |
+| The six steps' median | 19.7 and 36.8 ms | 17.9 and 16.7 ms |
+| `cpu.scene_field` at a step | 11.7 to 42.2 ms | 0.7 to 19.6 ms, most under 4 |
+| `cpu.scene_field` at a jump | 36.5 to 59.2 ms | 25.5 to 40.9 ms |
+
+The second round of 5.2.333 ran beside another session's tests, its median twice the others', and
+its 99th part with it. The step after the first jump reads a frame of 250 ms in every round of both
+packages with the field under 20 ms in it, so that frame is none of the field's. In seed 1's deep cave
+at -59.5, -4, -91.5 at noon at Low the far wall's light with the far cascade on falls from a mean
+luma of 0.398 to 0.245, the rock the eye cannot see kept in the field, and with it off reads 0.778
+in both. At High the cave is black with either package.
+
+# Item 151, the 250 ms frame after a jump
+
+The step after the first jump of three sections read a frame held at 250 ms in every round of item
+145's steps on both packages. `profile.slowest` names it, `cpu.mirror` at 22.5 to 23.0 s in that
+frame, the wall clock 23.7 to 24.0 s, the field 2.6 to 6.6 ms and the game's update 3.9 to 6.3 ms.
+Over seed 1 the first water comes into view 64 blocks east of the spawn, where the game first sets
+the engine's reflection plane. Later frames with the plane, the eye leaving the water and coming back
+and Water Reflections turned off and on again, read `cpu.mirror` at 0.9 to 4.6 ms.
+
+With `__GL_SHADER_DISK_CACHE_PATH` naming a folder of its own, a first run read 23.7 s and a second
+1.1 s, so the time is the NVIDIA driver (615.78.08) compiling the pipelines the engine makes for the
+mirrored view's render pass. The driver's default cache on this machine holds 1.1 GB across six
+programs and served none of the game's runs. Read on 5.2.342, Debug, offscreen at 1280 by 720 on
+the RTX 4070 Laptop GPU, on tuned's power-saving profile with the processor's energy preference at
+power. The game's own work is none of it, so the mend is the engine's, an entry of its ASKS.md
+asking for pipelines made before the frame that first needs them or a pipeline cache of its own kept
+between runs.
+
 Done that day
 
+- Item 145 at `7bd8f1c`. Streaming spends a time budget a frame.
 - Item 148 at `adf5141`. The cactus without a pack is a plain inset box.
 - Item 150 at `8a1e308`. The play job keeps clear of its time limit.
+- Item 151 at `efbb357`. The 250 ms frame after a jump of three sections is not the field's.
 
 ## 2026-10-30
 
@@ -328,7 +378,6 @@ Done that day
 - Item 142 at `7508d5e`. The window shows what the devlog's pictures show.
 - Item 143 at `5f31bdf`. Sections are drawn in groups of several, so a frame makes a quarter of its
   draws.
-- Item 145 at `a272e45`. Streaming spends a time budget a frame.
 - Item 147 at `b5626c6`. The held light casts no shadow.
 - Item 149 at `17704ca`. The flood and the casters' search at a crossing leave the frame.
 
@@ -904,52 +953,30 @@ Done that day
 ## 2026-10-24
 
 ![](.github/devlog/2026-10-24-breaking-pair.webp)
-Breaking stone in survival, Bare Bones' destroy stage on the left and the game's own cracks with no
-pack on the right, with the bits cut from the stone's side.
-
 ![](.github/devlog/2026-10-24-curve-choice.webp)
-The plains village under the modpack's own tonemap curve at three saturations, beside today's
-Reinhard look and the modpack.
-
 ![](.github/devlog/2026-10-24-hand-three.webp)
-The hand in view under Bare Bones, holding stone, holding a stick a pixel deep, and the empty arm
-wearing Steve's sleeve.
+AGENTS.md lists the devlog of what landed by day and says the reviewing session pushes main once the
+previous build run has ended, and the devlog comes in with its pictures. (`bfc4d39`)
 
 ![](.github/devlog/2026-10-24-fire1.webp)
-A fire lighting a closed stone room at night, its flames the source's models over the pack's
-animated fire.
-
 ![](.github/devlog/2026-10-24-use2.webp)
-The fires a TNT's blast leaves in its crater.
+A TNT's blast lights no fire, as Minecraft's own TNT lights none. (`edbc3b2`)
 
 ![](.github/devlog/2026-10-24-drag-pair.webp)
-A dragged stack over the inventory, its shares lit on the slots it passes (item 67).
-
 ![](.github/devlog/2026-10-24-fell-pair.webp)
-An oak before and after felling, its logs taken and a log landed (item 69).
-
 ![](.github/devlog/2026-10-24-fire-all.webp)
-Fire spreading over planks by the source's odds, from the first flame to the burn-out (item 72).
-
 ![](.github/devlog/2026-10-24-hand-four.webp)
-The hand in view in four states, with stone, with a stick, empty and with the HUD hidden (item 75).
-
 ![](.github/devlog/2026-10-24-swell-all.webp)
-The creeper's swell and flash before it goes off, and its blast's cloud (item 73).
-
 ![](.github/devlog/2026-10-24-tnt-all.webp)
-TNT from its placing to its crater, the fuse, the flash, the swell and the blast (item 73).
-
 ![](.github/devlog/2026-10-24-views-40.webp)
-The world views retaken at a field of view of 40, the village views moved (item 46).
-
 ![](.github/devlog/2026-10-24-views-70.webp)
-The world views at a field of view of 70, before the retake (item 46).
+The visibility flood is kept until the eye's section, its faces out or the world's openings change,
+which over the taller world took 4.8 ms of each frame at 12 columns, and the play script bounds the
+draws at a known view. (`ba60ae4`)
 
 ![](.github/devlog/2026-10-24-trees-cmp.webp)
-Trees before and after the caves and ravines carve ahead of them, the coast by seed 1's first ravine
-in the middle row where leaf clusters floated before, and the ravine's magma under the canopy below
-(item 99).
+Felling follows a log to all 26 blocks about it, under the cut too, so a lower tree whose branch
+touches fells whole, and the leaves decay one to two seconds after the last log. (`54fc848`)
 
 ![](.github/devlog/2026-10-24-item-103-fire-line.webp)
 A fire under a resource pack at night, read while a carried texture's place came to be kept half a
@@ -1177,21 +1204,14 @@ Done that day
 ## 2026-10-23
 
 ![](.github/devlog/2026-10-23-grass-fixed-crop.webp)
-
 ![](.github/devlog/2026-10-23-grass-now-crop.webp)
-The grass before and after its tint followed the biome (item 70).
-
 ![](.github/devlog/2026-10-23-lamps-crop.webp)
-A lantern beside a glowstone block, the small emitters' light (item 39).
-
 ![](.github/devlog/2026-10-23-pool-before-crop.webp)
-A pool before and after its surface stopped reflecting the scene field, the water rough for the
-present (item 86).
-
 ![](.github/devlog/2026-10-23-pool-rough-crop.webp)
-
 ![](.github/devlog/2026-10-23-village-ab.webp)
-A village before and after the grass and the paths were mended (item 70).
+The visibility flood is kept until the eye's section, its faces out or the world's openings change,
+which over the taller world took 4.8 ms of each frame at 12 columns, and the play script bounds the
+draws at a known view. (`ba60ae4`)
 
 Done that day
 
@@ -1211,86 +1231,37 @@ Done that day
 ## 2026-10-21
 
 ![](.github/devlog/2026-10-21-edges.webp)
-At a render distance of 4, from high, from low and at night, the land fades into a dome of the
-haze's color below the horizon, with no dark band.
-
 ![](.github/devlog/2026-10-21-hud-sheet.webp)
-
 ![](.github/devlog/2026-10-21-menus-sheet.webp)
-
 ![](.github/devlog/2026-10-21-own-art.webp)
-The game's own art with no pack. The planks in this sheet are the first try; they became boards
-after.
-
 ![](.github/devlog/2026-10-21-packs-interface.webp)
-With the packs Bare Bones, Recolorful Containers and qrafty's font, Bare Bones' HUD and buttons,
-Recolorful's inventory and furnace, and the pack's font.
-
 ![](.github/devlog/2026-10-21-rows2.webp)
-Plants as flat crossed planes, lit as brightly as the ground, the game's own art on the left and
-Bare Bones on the right.
-
 ![](.github/devlog/2026-10-21-trees-sheet.webp)
-Acacias in the savanna, the cherry grove's pink crowns, the dark forest with giant mushrooms, and
-the jungle floor under its canopy, all with Bare Bones.
-
 ![](.github/devlog/2026-10-21-windows-sheet2.webp)
-The new interface, the inventory, furnace and creative windows, the Escape menu and options, and the
-HUD with its hearts fading when full and returning after a hit.
+AGENTS.md lists the devlog of what landed by day and says the reviewing session pushes main once the
+previous build run has ended, and the devlog comes in with its pictures. (`bfc4d39`)
 
 ![](.github/devlog/2026-10-21-bb-above.webp)
-Bare Bones from above, the cliffs and the sea (item 24).
-
 ![](.github/devlog/2026-10-21-blocks-crop.webp)
-A door, a trapdoor and a furnace among the blocks (item 39).
-
 ![](.github/devlog/2026-10-21-craft-crop.webp)
-The inventory's crafting grid making planks (item 20).
-
 ![](.github/devlog/2026-10-21-creeper-ab.webp)
-The creeper before and after its face was redrawn (item 61).
-
 ![](.github/devlog/2026-10-21-faces-crop.webp)
-The zombie and the villager with their faces at a sixteenth (item 62).
-
 ![](.github/devlog/2026-10-21-green-compare.webp)
-The grade compared on the plains village, the greens under the candidate settings (item 58).
-
 ![](.github/devlog/2026-10-21-hud-0-crop.webp)
-The HUD with the hotbar, the hearts and the held block's name (item 23).
-
 ![](.github/devlog/2026-10-21-modes-sheet.webp)
-Survival and creative told apart by the HUD, the hearts and the hunger (item 19).
-
 ![](.github/devlog/2026-10-21-outline-sheet.webp)
-The block outline on a stair, a slab and a fence (item 21).
-
 ![](.github/devlog/2026-10-21-own-table-crop.webp)
-The game's own crafting table art with no pack (item 24).
-
 ![](.github/devlog/2026-10-21-previews.webp)
-Views of the world as the pictures were first chosen.
-
 ![](.github/devlog/2026-10-21-room-before.webp)
-A lantern's room before the lamps' light was read again (item 39).
-
 ![](.github/devlog/2026-10-21-room-pair.webp)
-A room's lamps under two packs (item 24).
-
 ![](.github/devlog/2026-10-21-rows.webp)
-The villagers in their professions' robes (item 65).
-
 ![](.github/devlog/2026-10-21-scenes-sheet.webp)
-Lamps in the open and in a room, the readings of the global illumination's faults (item 38).
-
 ![](.github/devlog/2026-10-21-sheet1.webp)
-The README's world pictures as a sheet, the first set at a field of view of 70.
-
 ![](.github/devlog/2026-10-21-sheets.webp)
-The zombie's and the villager's skin layers as the pack lays them (item 62).
-
 ![](.github/devlog/2026-10-21-stars-three.webp)
-The stars at night in three readings against the source's (item 52).
+The visibility flood is kept until the eye's section, its faces out or the world's openings change,
+which over the taller world took 4.8 ms of each frame at 12 columns, and the play script bounds the
+draws at a known view. (`ba60ae4`)
 
 ![](.github/assets/mobs/chicken.webp)
 ![](.github/assets/mobs/cow.webp)
@@ -1416,17 +1387,15 @@ Done that day
 ## 2026-10-20
 
 ![](.github/devlog/2026-10-20-all-after.webp)
-Each mob in the game after the walk fix, with Minecraft 26.3's outline in red, standing and mid-
-stride.
-
 ![](.github/devlog/2026-10-20-all-mobs.webp)
-Each mob in the game with Minecraft 26.3's outline in red, standing and mid-stride, through the same
-camera. The villager at full size second.
-
 ![](.github/devlog/2026-10-20-villager.webp)
+AGENTS.md lists the devlog of what landed by day and says the reviewing session pushes main once the
+previous build run has ended, and the devlog comes in with its pictures. (`bfc4d39`)
 
 ![](.github/devlog/2026-10-20-frame-pair.webp)
-A lamp's light on the walls as the engine's glow light draws it, two frames apart (item 15).
+The visibility flood is kept until the eye's section, its faces out or the world's openings change,
+which over the taller world took 4.8 ms of each frame at 12 columns, and the play script bounds the
+draws at a known view. (`ba60ae4`)
 
 Done that day
 
@@ -1439,11 +1408,10 @@ Done that day
 ## 2026-10-19
 
 ![](.github/devlog/2026-10-19-models-side.webp)
-The mobs from the side, the pig, the cow, the sheep, the chicken, the villager, the zombie, the
-skeleton, the creeper and the spider.
-
 ![](.github/devlog/2026-10-19-q-all.webp)
-The sun over the plains at the global illumination's qualities, the halo read against the sky.
+The visibility flood is kept until the eye's section, its faces out or the world's openings change,
+which over the taller world took 4.8 ms of each frame at 12 columns, and the play script bounds the
+draws at a known view. (`ba60ae4`)
 
 Done that day
 

@@ -363,10 +363,12 @@ tops, and none where no water is in view or the eye is under water, so the mirro
 only while it shows. The engine mirrors one plane, so water at another height takes the sky's light
 alone. Along seed 1's nearest river at 1920 by 1080 the mirror costs about 2.6 ms of the frame, its
 drawing taking 2.6 ms of the GPU and 2.9 of the processor, which overlap, and Render Settings turns
-it off. The first frame the plane is set in a run makes the mirrored view's pipelines, which the
-driver of the RTX 4070 Laptop GPU compiled in 22.5 s with its cache cold and too fast to read with it
-warm (`profile.slowest`), so a first sight of water where the driver's cache misses holds the game
-that long, an entry of the engine's ASKS.md.
+it off. The first frame the plane is set in a run asks for the mirrored view's pipelines, which the
+engine's 5.2 made in that frame, the driver of the RTX 4070 Laptop GPU compiling them in 22.5 s with
+its cache cold. The engine's 6.0.11 makes them on worker threads and keeps the compiled pipelines in
+a file beside the program between runs, the window showing the mirrored view once it is drawn with
+all of them, and the ten frames from that first one take 1.3 s with both caches cold and 1.0 s with
+them warm, the slowest 107.5 and 91.1 ms (`profile.slowest`).
 
 Water flows as Minecraft's does, a block every quarter second. It falls into the air under it, and
 where it stands on ground or on a source it spreads sideways, a level further from its source for
@@ -1267,7 +1269,7 @@ the sun's light through 70 blocks of rock without them and 0 with them, as with 
 357 shadow-only draws and 1.4 ms more of the frame, where culling off costs 28 ms more. The field
 holds the shadow-only draws as it holds the drawn ones, so the rock left out of the view stands
 between the cave and the sky in the indirect light as well, the deep cave's far wall at Low with the
-far cascade on reading a mean luma of 0.245 where a field without them read 0.398. Over the
+far cascade on reading a mean luma of 0.245 of 255 where a field without them read 0.398. Over the
 cherry grove in the open the flood leaves out little toward the sun, 20 draws, and the frame reads
 19.0 to 19.5 ms with them and without them in one run.
 
@@ -1560,11 +1562,14 @@ GPU's work bounding it, and loses it at 16, where it takes 23.4 to 25.6 ms, the 
 ms of it. The sun's shadows reach 128 blocks and take 2.1 to 2.6 ms of the GPU at every distance,
 where 64 blocks took 0.8. The engine's fill of the land past the shadow map is left off, the contact
 shadows shading that land. The far cascade takes about 1.9 ms more of the GPU at 12 columns, and the
-sea's mirror 0.7, 1.4 and 3.0 ms of the GPU and 0.9, 1.9 and 3.4 of the CPU. Each draw costs the
-main thread 3 to 5 µs to record in each pass, and the passes draw the land four times, the depth's,
-the camera's, the mirror's and the cascades', so the sections' opaque and cut-out parts are drawn in
-groups of two by two sections across, 1,380 draws at 12 columns for about 5 ms of the main thread
-where a draw of each section's part made 3,150 for about 10. A group two sections high drew the
+sea's mirror 0.7, 1.4 and 3.0 ms of the GPU and 0.9, 1.9 and 3.4 of the CPU. The passes draw the
+land four times, the depth's, the camera's, the mirror's and the cascades', and with each draw
+costing the main thread 3 to 5 µs to record in each pass on the engine's 5.2, the sections' opaque
+and cut-out parts are drawn in groups of two by two sections across, 1,380 draws at 12 columns for
+about 5 ms of the main thread where a draw of each section's part made 3,150 for about 10. The
+engine's 6.0.11 records a draw in 1.5 to 1.8 µs, so at 16 columns the four passes take 3.0 to 3.4
+ms of the main thread for about 1,950 draws where 5.2.342 took 7.6 to 7.8 in the same hour, and the
+frame there stays the GPU's, 23.0 to 23.1 ms where 23.8 to 24.0 (`profile`). A group two sections high drew the
 caves under the land seen beside it, for 3 to 4 ms more of the GPU at 12 columns. The groups hold
 more memory, about 500 MB at 8 and 12 columns and 60 at 16, the driver mapping the ring of buffers
 the engine keeps for a mesh whose light is written in place, a group's four times a section's. The
