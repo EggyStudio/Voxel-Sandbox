@@ -220,7 +220,8 @@ public class MesherTests
 
         // The cactus's cell is 5 to 6 in the section. Its bottom on the stone is left out, and the
         // stone's top under it, which the cactus does not hide, lies at 5. The game's own side
-        // picture cuts nothing out, so each side stands a pixel in and spans the box's width alone.
+        // picture cuts nothing out, so each side stands a pixel in and spans the box's width alone,
+        // and the top spans the box alone, reaching no pixel past the sides.
         var faces = Meshed(world).Solid;
         var quads = Enumerable.Range(0, faces.Count / 4)
             .Select(q => (faces.Unpack(4 * q).Face,
@@ -233,7 +234,7 @@ public class MesherTests
         [
             (0, new(8 + Out, 5, 8 + In), new(8 + Out, 6, 8 + Out)),
             (1, new(8 + In, 5, 8 + In), new(8 + In, 6, 8 + Out)),
-            (2, new(8, 6, 8), new(9, 6, 9)),
+            (2, new(8 + In, 6, 8 + In), new(8 + Out, 6, 8 + Out)),
             (4, new(8 + In, 5, 8 + Out), new(8 + Out, 6, 8 + Out)),
             (5, new(8 + In, 5, 8 + In), new(8 + Out, 6, 8 + In)),
         ];

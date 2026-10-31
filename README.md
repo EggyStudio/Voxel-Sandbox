@@ -1164,8 +1164,9 @@ Bones' leaves are covered in every pixel and so stay whole. A texture partly cle
 blends as before. The cactus is Minecraft's model, its top and bottom across the whole cell and each
 side a pixel in from its side of the cell and as wide as the cell, so its pictures' clear edges are
 cut out, shadow and all, and the thorns on them stick out past the sides beside them. Where its
-side's picture cuts nothing out, as the game's own does not, it is a plain box instead, each side a
-pixel in and as wide as the box, showing its picture's middle fourteen pixels across. Its box stops
+side's picture cuts nothing out, as the game's own does not, it is a plain box instead, a pixel in
+from each side of the cell, its top and bottom too, each face showing its picture's middle fourteen
+pixels across. Its box stops
 the player a pixel in at each side and a pixel short of its top, as Minecraft's does. An emissive
 block's cube is drawn with its texture, and one whose faces differ, the lit furnace, with its top's,
 its sides' and its bottom's laid side by side, so it shows the furnace's top above its front, its

@@ -2494,6 +2494,15 @@ before a batch.
     2026-10-30, the flood spread at 2 ms a frame at a step and the casters after it, the step's
     placing peak about halved, the engine's field left to its item 146.
 
+150. **The play job keeps clear of its time limit.** From the coder's note of 2026-10-30, the play
+    job's time grown from 68 to 73, 77, 80 and 84 minutes over the last five runs against its limit
+    of 90, the defaults of item 141, the new checks and lavapipe's pace among the likely causes. The
+    limit goes to 150 minutes at once, since the Actions bill is no concern, and the checks' times
+    are read from the last run's log and listed in a note, the growth named check by check; a check
+    that reads nothing a cheaper one does not is shortened or dropped with its reason, and the
+    README's play paragraph says the job's time. One commit, small, first. Done at `8a1e308` on
+    2026-10-31, the limit 150, two waits shortened to what they read, none dropped.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

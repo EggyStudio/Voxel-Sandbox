@@ -290,8 +290,9 @@ public sealed class BlockShape
     /// laid as one laid by its place would be, so its corners carry their places and its shadow is cut
     /// where the picture is clear, and the top's clear border, a pixel past the sides, casts no band
     /// of shadow down them. Where the side's picture cuts nothing out, as the game's own does not,
-    /// the cactus is a plain box instead, its sides a pixel in from the cell's showing the picture's
-    /// middle fourteen pixels across, so no side shows its edge a pixel past the sides beside it.
+    /// the cactus is a plain box instead, a pixel in from each side of the cell, its top and bottom
+    /// as well as its sides, each face showing the middle fourteen pixels of its picture across, so
+    /// no face reaches a pixel past the faces beside it.
     /// The source's box stops the player, a pixel in at each side and a pixel short of the top, and
     /// its outline is a pixel in at each side.
     /// </summary>
@@ -305,10 +306,14 @@ public sealed class BlockShape
         outline: [new Box(new Vector3(1, 0, 1) / 16, new Vector3(15, 16, 15) / 16)], whole: true,
         plain:
         [
-            new(Vector3.Zero, Vector3.One, top, Parts: WholePicture, Faces: 1 << 2),
-            new(Vector3.Zero, Vector3.One, bottom, Parts: WholePicture, Faces: 1 << 3),
-            new(new Vector3(1, 0, 1) / 16, new Vector3(15, 16, 15) / 16, side, Parts: Shows(1, 0, 15, 16, 0, 0, 16, 16, 0, 0, 16, 16), Faces: 1 << 0 | 1 << 1 | 1 << 4 | 1 << 5),
+            new(new Vector3(1, 0, 1) / 16, new Vector3(15, 16, 15) / 16, side, Parts: Middle, Faces: 1 << 0 | 1 << 1 | 1 << 4 | 1 << 5),
+            new(new Vector3(1, 0, 1) / 16, new Vector3(15, 16, 15) / 16, top, Parts: Middle, Faces: 1 << 2),
+            new(new Vector3(1, 0, 1) / 16, new Vector3(15, 16, 15) / 16, bottom, Parts: Middle, Faces: 1 << 3),
         ]);
+
+    // The middle fourteen pixels of each picture across, and of the top's and bottom's both ways,
+    // which a box standing a pixel in from each side of the cell shows.
+    private static readonly Parts Middle = Shows(1, 0, 15, 16, 1, 1, 15, 15, 1, 1, 15, 15);
 
     private static readonly Parts WholePicture = Shows(0, 0, 16, 16, 0, 0, 16, 16, 0, 0, 16, 16);
 

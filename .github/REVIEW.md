@@ -22,44 +22,49 @@ the mesher draws where none of the shape's pictures cut anything out, so the gam
 give the cactus an inset box with the sides a pixel in and the top and bottom as before, while a
 pack whose cactus side is clear at its edges keeps the source's sides; tests in MesherTests and
 CutoutTests, two cacti on the desert pictured before and after. After it `a272e45`, item 145, pushed
-at 23:27 and watched, the time budget built and left out since flights read no gain, 12 columns at a
-99th part of 86 to 105 ms without and 92 to 110 with, 8 at 49 to 72 and 47 to 55, within the noise;
-the slowest frames, 64 to 79 ms, are the engine's scene field at 8 to 30 ms of CPU and the game's
-own drawing up to 20, a step of one section over loaded land giving 32 to 82 ms frames with the
-field 12 to 42 ms at every step and the flood and casters 9 to 15 at a section first crossed;
-voxel.frames reads the median, 99th part and slowest of the last 600 frames; the field's crossings
-to the engine as its item 146, the flood and casters item 149. After it `17704ca`, item 149, held
-until the run of `a272e45` ends, the flood taking a budget of 2 ms a frame at a step into an
+at 23:27, its run green at 00:29 with play in 61 minutes, the time budget built and left out since
+flights read no gain, 12 columns at a 99th part of 86 to 105 ms without and 92 to 110 with, 8 at 49
+to 72 and 47 to 55, within the noise; the slowest frames, 64 to 79 ms, are the engine's scene field
+at 8 to 30 ms of CPU and the game's own drawing up to 20, a step of one section over loaded land
+giving 32 to 82 ms frames with the field 12 to 42 ms at every step and the flood and casters 9 to 15
+at a section first crossed; voxel.frames reads the median, 99th part and slowest of the last 600
+frames; the field's crossings to the engine as its item 146, the flood and casters item 149. After
+it `17704ca`, item 149, pushed with `8a1e308` at 00:31, the run of `8a1e308` green at 01:28 with
+play in 57 minutes under the new limit, the flood taking a budget of 2 ms a frame at a step into an
 adjacent section with the last whole flood kept and a flood under way run to its end, a jump of more
 than a section flooding at once so teleports and the captures stay exact, the casters' search in the
 frame after; the placing peak at a step 9.2 to 17.7 ms going to 4.9 to 7.1 and after a jump 16 to 17
 to 7 to 8, the engine's field 12 to 58 ms of CPU set apart with the 99th part staying with it;
 voxel.frames gains the peaks of the flood, the casters and the placing. The play job's time has
-grown from 68 to 84 minutes over five runs against its limit of 90, item 150. The window path
-matches offscreen, an RMSE of 0.004 to 0.007 with the owner's options at 2560 by 1440 and 0.001 to
-0.002 fresh at 1280 by 720, cloud edges mostly; a turn settles in about 22 frames; Debug and Release
-both run about 46 ms at 2560 by 1440, GPU-bound at 22 frames a second against the pictures' 17 ms at
-720p; the owner's file kept Soft_Shadows 0, never chosen. The options file's first line is its
-version, 2, and an older file's line equal to a default since changed reads as that default; the
-note is 2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the engine's ASKS.md,
-its item 134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01
-with play in 40 minutes. The start restores the options file's resolution and mode right after
-InitWindow, before the game is built, the window appearing as saved about 8 s before the world loads
-where it changed after; no monitor setting exists to read, and a hidden window cannot be shown later
-since the engine takes a program-set hidden window as a --hidden run; the test reads the values and
-a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
-Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
-first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
-sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
-(138); `b25e668` (137); `4aef50c` with `6001eed` (the README's quick links, 136); `7c36ec8` (42);
-`f1aa450` (27); `5145d2f` (134); `0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133);
-`a4d383c` (95). Each commit's detail stands in its item in REVIEW-ARCHIVE.md, its devlog note and
-its own words. On 2026-10-30 at 18:0x the owner wrote items 140 and 141 (Decision 51), the README's
-links as the devlog and 3DEngine, a Rust voxel engine as the performance reference (Decision 52),
-and asked that the sessions spend fewer tokens at the same quality, N 7.7. Item 144 closed at its
-count on 2026-10-30, the quads merging to 81 to 89% and not half; 143's other 245 MB is the driver's
-too, the ring's mapped memory counted as the device mapping and its shared backing, the game's own
-arrays 68 MB more.
+grown from 68 to 84 minutes over five runs against its limit of 90, item 150. After it `8a1e308`,
+item 150, pushed at 00:31, the play job's limit at 150 minutes, the checks summing 4,568 to 4,983 s
+over two runs after item 141 gave lavapipe more to draw, the rain's splashes the largest at 795 s
+and read every 20 frames until they fall under one where 300 frames waited, the seed's field holding
+Control about a second of frames, none dropped, the README's play paragraph gained; local lavapipe
+play 1,840 s. The window path matches offscreen, an RMSE of 0.004 to 0.007 with the owner's options
+at 2560 by 1440 and 0.001 to 0.002 fresh at 1280 by 720, cloud edges mostly; a turn settles in about
+22 frames; Debug and Release both run about 46 ms at 2560 by 1440, GPU-bound at 22 frames a second
+against the pictures' 17 ms at 720p; the owner's file kept Soft_Shadows 0, never chosen. The options
+file's first line is its version, 2, and an older file's line equal to a default since changed reads
+as that default; the note is 2026-10-30-item-142-run-by-hand.md. The swapchain finding stands in the
+engine's ASKS.md, its item 134. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its
+run green at 19:01 with play in 40 minutes. The start restores the options file's resolution and
+mode right after InitWindow, before the game is built, the window appearing as saved about 8 s
+before the world loads where it changed after; no monitor setting exists to read, and a hidden
+window cannot be shown later since the engine takes a program-set hidden window as a --hidden run;
+the test reads the values and a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the
+head, the batch's items and the Replies by the owner's word in the coder's session. It carries
+NORM.md with N 7.7 and the README's first line. Before it `fc0937a`, item 139, pushed by the owner's
+hand on 2026-10-26 while the sessions were paused until 2026-10-30, its run green. Before it on
+2026-10-26, each green: `9c07673` (138); `b25e668` (137); `4aef50c` with `6001eed` (the README's
+quick links, 136); `7c36ec8` (42); `f1aa450` (27); `5145d2f` (134); `0ba4cb4` (135); `7f59530` (54);
+`1944378` and `48e5bea` (133); `a4d383c` (95). Each commit's detail stands in its item in
+REVIEW-ARCHIVE.md, its devlog note and its own words. On 2026-10-30 at 18:0x the owner wrote items
+140 and 141 (Decision 51), the README's links as the devlog and 3DEngine, a Rust voxel engine as the
+performance reference (Decision 52), and asked that the sessions spend fewer tokens at the same
+quality, N 7.7. Item 144 closed at its count on 2026-10-30, the quads merging to 81 to 89% and not
+half; 143's other 245 MB is the driver's too, the ring's mapped memory counted as the device mapping
+and its shared backing, the game's own arrays 68 MB more.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -179,14 +184,6 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
-
-150. **The play job keeps clear of its time limit.** From the coder's note of 2026-10-30, the play
-    job's time grown from 68 to 73, 77, 80 and 84 minutes over the last five runs against its limit
-    of 90, the defaults of item 141, the new checks and lavapipe's pace among the likely causes. The
-    limit goes to 150 minutes at once, since the Actions bill is no concern, and the checks' times
-    are read from the last run's log and listed in a note, the growth named check by check; a check
-    that reads nothing a cheaper one does not is shortened or dropped with its reason, and the
-    README's play paragraph says the job's time. One commit, small, first.
 
 ## Verdicts
 
