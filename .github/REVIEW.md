@@ -4,45 +4,54 @@ Reviewed up to `adf5141`, item 148's second commit on the owner's word, pushed a
 2026-10-31 after the run of `8a1e308` went green at 01:28, its run green at 09:35 with play in 76
 minutes. After it `7e052e8`, the version to 0.2 in build/version.txt, moved by the reviewer on the
 owner's word of 2026-10-31 (Decision 57) after 235 commits on 0.1 since 2026-10-17, items 1 to 150
-among them, pushed at 12:43, its run awaited. The plain cactus box insets its top and bottom a pixel
-as its sides are, each face the middle fourteen pixels of its picture through BlockShape.cs's shared
-middle part, no lid past the sides and no lip where two stack, a pack's cut side keeping its model;
-MesherTests' top expectation, the README and the 148 note follow, with a captioned pair; 364 tests,
-the GPU play in 402 s. Before it `8a1e308`, item 150, pushed at 00:31, the play job's limit at 150
-minutes, the checks summing 4,568 to 4,983 s over two runs after item 141 gave lavapipe more to
-draw, the rain's splashes the largest at 795 s and read every 20 frames until they fall under one
-where 300 frames waited, the seed's field holding Control about a second of frames, none dropped,
-the README's play paragraph gained. Before it `17704ca`, item 149, pushed with `8a1e308` at 00:31,
-the run of `8a1e308` green at 01:28 with play in 57 minutes under the new limit, the flood taking a
-budget of 2 ms a frame at a step into an adjacent section with the last whole flood kept and a flood
-under way run to its end, a jump of more than a section flooding at once so teleports and the
-captures stay exact, the casters' search in the frame after. Before it `a272e45`, item 145, pushed
-at 23:27, its run green at 00:29 with play in 61 minutes, the time budget built and left out since
-flights read no gain, 12 columns at a 99th part of 86 to 105 ms without and 92 to 110 with, 8 at 49
-to 72 and 47 to 55, within the noise. Before it `5d96667`, item 148, pushed with `a272e45` at 23:27.
-Before it `b5626c6`, item 147, pushed at 21:59. Before it `5f31bdf`, item 143, pushed with `b5626c6`
-at 21:59, the run of `b5626c6` green at 23:23 with play in 84 minutes, the sections grouped 2 by 2
-across and one high since groups two high drew the caves under the land and cost the GPU 3 to 4 ms
-at 12 columns. Before it `2c458b0`, item 141, pushed at 20:36, its run green at 21:56 with play in
-80 minutes. Before it `7508d5e`, item 142, pushed at 19:18 on 2026-10-30, its run green at 20:31
-with play in 73 minutes. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green
-at 19:01 with play in 40 minutes. The start restores the options file's resolution and mode right
-after InitWindow, before the game is built, the window appearing as saved about 8 s before the world
-loads where it changed after; no monitor setting exists to read, and a hidden window cannot be shown
-later since the engine takes a program-set hidden window as a --hidden run; the test reads the
-values and a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's
-items and the Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and
-the README's first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26
-while the sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green:
-`9c07673` (138); `b25e668` (137); `4aef50c` with `6001eed` (the README's quick links, 136);
-`7c36ec8` (42); `f1aa450` (27); `5145d2f` (134); `0ba4cb4` (135); `7f59530` (54); `1944378` and
-`48e5bea` (133); `a4d383c` (95). Each commit's detail stands in its item in REVIEW-ARCHIVE.md, its
-devlog note and its own words. On 2026-10-30 at 18:0x the owner wrote items 140 and 141 (Decision
-51), the README's links as the devlog and 3DEngine, a Rust voxel engine as the performance reference
-(Decision 52), and asked that the sessions spend fewer tokens at the same quality, N 7.7. Item 144
-closed at its count on 2026-10-30, the quads merging to 81 to 89% and not half; 143's other 245 MB
-is the driver's too, the ring's mapped memory counted as the device mapping and its shared backing,
-the game's own arrays 68 MB more.
+among them, pushed at 12:43, its run awaited. After it `7bd8f1c`, the pin of 5.2.342, held until the
+run of `7e052e8` ends; over the six one-section steps at 12 columns the 99th part reads 37.8 and
+43.8 ms where 49.3 and 85.1 on 5.2.333, the slowest 49.8 and 58.4 where 62.7 and 95.4,
+cpu.scene_field a step 0.7 to 19.6 and mostly under 4 where 11.7 to 42.2, a jump of three sections
+25.5 to 40.9 where 36.5 to 59.2, 333's second round beside other tests on the GPU with its median
+doubled; the deep cave black at High under both packages, at Low with the far cascade its far wall's
+mean luma 0.245 where 0.398, the field holding the hidden rock as item 146 meant; a pair and a note
+named item 145 under .github/devlog, the README saying the step's cost and the shadow-only draws
+held in the field; 364 tests, the GPU play in 459 s. The frame of 250 ms after the first jump, in
+every round of both packages with the field under 20 ms, is item 151. The plain cactus box insets
+its top and bottom a pixel as its sides are, each face the middle fourteen pixels of its picture
+through BlockShape.cs's shared middle part, no lid past the sides and no lip where two stack, a
+pack's cut side keeping its model; MesherTests' top expectation, the README and the 148 note follow,
+with a captioned pair; 364 tests, the GPU play in 402 s. Before it `8a1e308`, item 150, pushed at
+00:31, the play job's limit at 150 minutes, the checks summing 4,568 to 4,983 s over two runs after
+item 141 gave lavapipe more to draw, the rain's splashes the largest at 795 s and read every 20
+frames until they fall under one where 300 frames waited, the seed's field holding Control about a
+second of frames, none dropped, the README's play paragraph gained. Before it `17704ca`, item 149,
+pushed with `8a1e308` at 00:31, the run of `8a1e308` green at 01:28 with play in 57 minutes under
+the new limit, the flood taking a budget of 2 ms a frame at a step into an adjacent section with the
+last whole flood kept and a flood under way run to its end, a jump of more than a section flooding
+at once so teleports and the captures stay exact, the casters' search in the frame after. Before it
+`a272e45`, item 145, pushed at 23:27, its run green at 00:29 with play in 61 minutes, the time
+budget built and left out since flights read no gain, 12 columns at a 99th part of 86 to 105 ms
+without and 92 to 110 with, 8 at 49 to 72 and 47 to 55, within the noise. Before it `5d96667`, item
+148, pushed with `a272e45` at 23:27. Before it `b5626c6`, item 147, pushed at 21:59. Before it
+`5f31bdf`, item 143, pushed with `b5626c6` at 21:59, the run of `b5626c6` green at 23:23 with play
+in 84 minutes, the sections grouped 2 by 2 across and one high since groups two high drew the caves
+under the land and cost the GPU 3 to 4 ms at 12 columns. Before it `2c458b0`, item 141, pushed at
+20:36, its run green at 21:56 with play in 80 minutes. Before it `7508d5e`, item 142, pushed at
+19:18 on 2026-10-30, its run green at 20:31 with play in 73 minutes. Before it `5c80c99`, item 140,
+pushed at 18:21 on 2026-10-30, its run green at 19:01 with play in 40 minutes. The start restores
+the options file's resolution and mode right after InitWindow, before the game is built, the window
+appearing as saved about 8 s before the world loads where it changed after; no monitor setting
+exists to read, and a hidden window cannot be shown later since the engine takes a program-set
+hidden window as a --hidden run; the test reads the values and a missing file's 1280 by 720.
+AGENTS.md's REVIEW.md line reads the head, the batch's items and the Replies by the owner's word in
+the coder's session. It carries NORM.md with N 7.7 and the README's first line. Before it `fc0937a`,
+item 139, pushed by the owner's hand on 2026-10-26 while the sessions were paused until 2026-10-30,
+its run green. Before it on 2026-10-26, each green: `9c07673` (138); `b25e668` (137); `4aef50c` with
+`6001eed` (the README's quick links, 136); `7c36ec8` (42); `f1aa450` (27); `5145d2f` (134);
+`0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133); `a4d383c` (95). Each commit's detail
+stands in its item in REVIEW-ARCHIVE.md, its devlog note and its own words. On 2026-10-30 at 18:0x
+the owner wrote items 140 and 141 (Decision 51), the README's links as the devlog and 3DEngine, a
+Rust voxel engine as the performance reference (Decision 52), and asked that the sessions spend
+fewer tokens at the same quality, N 7.7. Item 144 closed at its count on 2026-10-30, the quads
+merging to 81 to 89% and not half; 143's other 245 MB is the driver's too, the ring's mapped memory
+counted as the device mapping and its shared backing, the game's own arrays 68 MB more.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -162,6 +171,14 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
+
+151. **The 250 ms frame after a jump of three sections is not the field's.** Read at `7bd8f1c` on
+    2026-10-31 with 5.2.342 pinned, the step after the first three-section jump reads a frame of
+    about 250 ms in every round of both packages while cpu.scene_field stays under 20 ms, so the
+    cost is the game's own, the sections' meshing, the streamer's load, the flood or the casters'
+    search at a jump, read by the profile's rows in that frame. A reading first with the frame's
+    rows named, then the mend where it is the game's and small, else an ASKS.md entry where it is
+    the engine's. One commit, after the pin's run.
 
 ## Verdicts
 

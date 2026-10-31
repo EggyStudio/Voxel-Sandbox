@@ -2487,7 +2487,10 @@ before a batch.
     is held to a budget a frame in that order. Read by the flight's frame at its 99th part and the
     stream's main-thread ms a frame before and after. One commit, after item 144. Closed at
     `a272e45` on 2026-10-30 with the reading and voxel.frames, the budget left out, the crossings'
-    cost to the engine's item 146 and the game's item 149.
+    cost to the engine's item 146 and the game's item 149. The engine's answer, its item 146,
+    arrived in 5.2.342 and is pinned at `7bd8f1c` on 2026-10-31, the six steps' 99th part at 12
+    columns 49.3 and 85.1 ms to 37.8 and 43.8 and the slowest 62.7 and 95.4 to 49.8 and 58.4, the
+    pair and the note under .github/devlog named by this item.
 
 149. **The flood and the casters' search at a crossing leave the frame.** From item 145's reading on
     2026-10-30, a step of one section over loaded land costing the game's flood culling and the sun

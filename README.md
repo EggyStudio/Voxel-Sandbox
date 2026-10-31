@@ -363,7 +363,10 @@ tops, and none where no water is in view or the eye is under water, so the mirro
 only while it shows. The engine mirrors one plane, so water at another height takes the sky's light
 alone. Along seed 1's nearest river at 1920 by 1080 the mirror costs about 2.6 ms of the frame, its
 drawing taking 2.6 ms of the GPU and 2.9 of the processor, which overlap, and Render Settings turns
-it off.
+it off. The first frame the plane is set in a run makes the mirrored view's pipelines, which the
+driver of the RTX 4070 Laptop GPU compiled in 22.5 s with its cache cold and too fast to read with it
+warm (`profile.slowest`), so a first sight of water where the driver's cache misses holds the game
+that long, an entry of the engine's ASKS.md.
 
 Water flows as Minecraft's does, a block every quarter second. It falls into the air under it, and
 where it stands on ground or on a source it spreads sideways, a level further from its source for
