@@ -18,6 +18,9 @@ msbuild.log
 /captures/
 # The engine as the build workflow checks it out, for its e3d.
 /.engine/
+# Every picture taken while working, each day's in a folder with its captions (N 4.10), kept on the
+# machine that took them and never committed.
+/.github/dump/
 
 # Compiled Slang, written beside the program that ran a shader. A shipped build carries the cache
 # the pack run fills, so a copy in git would go stale with every shader edit.

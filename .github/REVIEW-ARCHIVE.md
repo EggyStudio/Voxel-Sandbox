@@ -2475,7 +2475,11 @@ before a batch.
     pack's own model keeps its shape. A mesher test reads the cactus's side faces at the inset and
     none past the box, and the desert pictured before and after. One commit, small, after item 147.
     Done at `5d96667` on 2026-10-30, plain pieces where no picture cuts, the pack's source shape
-    kept where its side is clear at the edges.
+    kept where its side is clear at the edges. The owner wrote on 2026-10-31 that the top faces on
+    the right were still too big; at `adf5141` the top and bottom are inset a pixel too, each face
+    the middle fourteen pixels of its picture through BlockShape.cs's shared middle part, no lid
+    past the sides and no lip where two stack, a pack's cut side keeping its model, the pair
+    pictured. Done again at `adf5141`.
 
 145. **Streaming spends a time budget a frame.** Decision 52's fourth proposal. The reference spends
     3 ms a frame starting generation and 4 ms meshing, ordered by distance then facing; the game's

@@ -74,6 +74,35 @@ Markdown file named the same way, as `2026-10-25-item-122-resolution.md`, and DE
 on its day under the pictures. By review, the reviewer reading each commit for the pictures its
 report names and regenerating DEVLOG.md as it archives an item.
 
+**N 4.9 A picture shows what the words claim, and carries nothing for form's sake.** A plain
+capture, a pair before and after or a collage of views on a white ground, as the sessions made them
+before 2026-10-31, is the form by default, and the caption says which is which. Where a picture
+reads something, the session adds what that reading needs and no more, as 3DEngine's canopy and
+grove sheets of item 136 did. A title and a label a panel go where several panels could be confused;
+a box is drawn at a place only where a number read there is given in the caption or the note, never
+a box with no reading; a difference panel against a reference, or a plot, as the light hall's floor
+against the turn in BevyCSharp's item 82, goes where it says more than the frames do; and every
+panel keeps the same view and exposure. The ground stays white, with labels in dark text. The owner,
+shown the kinds on 2026-10-31, keeps the plain form as it was and asks that a sheet's parts come
+from its reading and not from a list. By review.
+
+**N 4.10 Every picture a session makes is kept in the repository's dump folder, apart from the
+devlog's chosen few.** N 4.8 keeps the pictures chosen for the devlog; the rest, every shot,
+comparison and sheet a session makes while it works, went to its scratch space and was gone with the
+session. Each goes as it is made, as captured, into `.github/dump/<date>/` under the repository,
+named by the time, the item and a word, as `09-41-item-83-meadow-before.png`, with a line in that
+day's `captions.md`, the file's name then a bar then one sentence, written as the shot is taken. The
+folder is in `.gitignore` and never committed; the owner reads it and prunes it by day. A
+recording's frames and any set of pictures past a few hundred megabytes go there as well, under a
+folder of their own, and never into a session's scratch space, which is RAM-backed and held 8.8 GB
+of one recording's frames on 2026-10-31 until the machine ran short and another session broke; a
+finished experiment's frames are deleted at once. A session takes its shots there directly rather
+than copying them after, so nothing is lost when a session ends or the machine restarts. Every
+picture a session reads or compares is also shown to the owner in the session as it is made, with
+its sentence, since the owner follows the work by its pictures and a capture compared behind the
+scenes and never shown is work the owner cannot see. By review, the reviewer reading a day's folder
+against the items worked.
+
 ## 6 Build and package
 
 **N 6.1 A build has no warnings, and a warning fails the workflow.** A warning left standing hides
@@ -148,6 +177,8 @@ capture, and closed when read. By review.
 | N 4.3 | to check at the first commit |
 | N 4.7 | to check at the first commit |
 | N 4.8 | by review |
+| N 4.9 | by review |
+| N 4.10 | by review |
 | N 6.1 | to check at the first push |
 | N 6.2 | to check at the first push |
 | N 6.6 | to check at the first commit |

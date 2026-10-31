@@ -8,8 +8,14 @@ notes written beside them as Markdown files named the same way. A line under Don
 
 ## 2026-10-31
 
+![](.github/devlog/2026-10-31-item-148-cactus-top.webp)
+The same two cacti in the same scene, shown four times their size, on the left the plain box with
+its top across the whole cell, a pixel past the sides as a lid and a lip where the two stack, and on
+the right its top and bottom a pixel in as its sides are.
+
 Done that day
 
+- Item 148 at `adf5141`. The cactus without a pack is a plain inset box.
 - Item 150 at `8a1e308`. The play job keeps clear of its time limit.
 
 ## 2026-10-30
@@ -244,6 +250,11 @@ and with the plain box the edges are clean, the top's pixel past the sides as in
 MesherTests reads the plain box's sides a pixel in and none past the box, and CutoutTests the
 source's sides across the whole cell under a pack whose side picture is clear at its edges.
 
+On 31 October the plain box's top and bottom went a pixel in as well, since a top reaching a pixel
+past the sides read as a lid too big for the box and left a lip where two cacti stack. Each shows
+the middle fourteen pixels of its picture both ways. In the same scene the lid and the lip are gone
+(2026-10-31-item-148-cactus-top.webp), and MesherTests reads the top a pixel in at each side.
+
 # Item 149, the flood spread over frames
 
 The flood of the open cells as the eye steps into the next section takes 2 ms a frame and goes on
@@ -319,7 +330,6 @@ Done that day
   draws.
 - Item 145 at `a272e45`. Streaming spends a time budget a frame.
 - Item 147 at `b5626c6`. The held light casts no shadow.
-- Item 148 at `5d96667`. The cactus without a pack is a plain inset box.
 - Item 149 at `17704ca`. The flood and the casters' search at a crossing leave the frame.
 
 ## 2026-10-26

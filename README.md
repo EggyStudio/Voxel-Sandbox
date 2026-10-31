@@ -1244,7 +1244,9 @@ ms of each frame at seed 1's cherry grove at 12 columns. As the eye steps into t
 flood takes 2 ms a frame and goes on in the frames after, the last whole flood drawn meanwhile, and
 the shadow's casters are found in the frame after it finishes, which took the most a frame spends
 placing the sections at a step from 9 to 18 ms to 5 to 7, while a jump of more than a section, as a
-teleport, floods at once. A section the flood leaves out is not
+teleport, floods at once. At a step the engine's scene field takes 0.7 to 19.6 ms of the frame, most
+often under 4, and over six steps of a section the frames' 99th part reads 38 to 44 ms and the
+slowest 50 to 58 (`voxel.frames`, `profile.slowest`). A section the flood leaves out is not
 meshed until a flood reaches it, so the stone under the land within reach is meshed only where a
 cave opens to it, which in a flight east over seed 1's cherry grove held about 4,400 sections and
 took the game's update from 1.3 ms a frame to 0.7 or 0.9. `voxel.cull` and the Debug Settings
@@ -1259,7 +1261,10 @@ maps alone, through the engine's shadow-only draw, and meshed as the drawn ones 
 again when a flood changes what is drawn, the light turns or the shadow distance changes. In seed
 1's deep cave at -59.5, -4, -91.5 at noon, the tops of the blocks 45 blocks ahead read 35, 29, 20 in
 the sun's light through 70 blocks of rock without them and 0 with them, as with culling off, from
-357 shadow-only draws and 1.4 ms more of the frame, where culling off costs 28 ms more. Over the
+357 shadow-only draws and 1.4 ms more of the frame, where culling off costs 28 ms more. The field
+holds the shadow-only draws as it holds the drawn ones, so the rock left out of the view stands
+between the cave and the sky in the indirect light as well, the deep cave's far wall at Low with the
+far cascade on reading a mean luma of 0.245 where a field without them read 0.398. Over the
 cherry grove in the open the flood leaves out little toward the sun, 20 draws, and the frame reads
 19.0 to 19.5 ms with them and without them in one run.
 
