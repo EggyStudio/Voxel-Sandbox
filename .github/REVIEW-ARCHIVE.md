@@ -2533,6 +2533,15 @@ before a batch.
     the note 2026-10-31-item-152-package-6011.md and the collage
     2026-10-31-item-152-jump-first.webp; the Review lines in the engine's ASKS.md.
 
+153. **The package 6.0.14 pinned and its mends read.** Done at `23ba89e` on 2026-11-01. The engine's
+    151, static mesh buffers in device memory, took the GPU's passes at item 139's view from 12.8 to
+    9.3 ms at 8 columns, 17.4 to 11.8 at 12 and 22.8 to 13.6 at 16, the shadows from 2.2 to 2.6 ms
+    to under half, the depth pass at 16 from 3.1 to 0.19, the mirror from 3.0 to 1.1 and the scene
+    from 8.8 to 6.6, global illumination at 5.2 either way, so the frame holds 60 at 8 and 12
+    columns and reads 16.9 ms at 16 where 22.8; the four passes' CPU unchanged at 1.7 microseconds a
+    draw; the spawn view identical within 3 of 255. The note 2026-11-01-item-153-package-6014.md,
+    the README's costs rewritten, the Review line in the engine's ASKS.md under the cascades' entry.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the

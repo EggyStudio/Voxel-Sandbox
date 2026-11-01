@@ -6,6 +6,52 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 notes written beside them as Markdown files named the same way. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
+## 2026-11-01
+
+# The engine's 6.0.14, the frame by distance
+
+The engine's 6.0.14 keeps a mesh's vertex and index buffers in the GPU's own memory where 6.0.11 kept
+them in the processor's, read over the bus in every pass (its item 151). Item 139's view, flying at
+a height of 90 over seed 1's spawn at noon looking east, the three default packs, Debug, offscreen at
+1280 by 720, on tuned's power-saving profile with the processor's energy preference at power, each
+reading over ten seconds with no other program on the GPU (`profile`, `models.draws`). Two rounds of
+each package in the same hour, 6.0.11's 8 and 12 columns of its second round left out since another
+program drew on the GPU through them. The frame is held at 60 a second, so it reads 16.67 ms where
+the work takes less.
+
+| | 6.0.11 | 6.0.14 |
+|---|---|---|
+| Frame at 8 | 16.67 | 17.14 and 16.68 |
+| Frame at 12 | 17.43 | 16.67 and 16.70 |
+| Frame at 16 | 22.82 and 22.93 | 16.94 and 16.91 |
+| GPU's passes at 8 | 12.77 | 9.37 and 9.32 |
+| GPU's passes at 12 | 17.41 | 11.81 and 11.83 |
+| GPU's passes at 16 | 22.80 and 22.89 | 13.56 and 13.63 |
+| GPU, the depth pass at 16 | 3.11 and 3.12 | 0.19 and 0.19 |
+| GPU, the shadows at 8 | 2.23 | 0.41 and 0.42 |
+| GPU, the shadows at 12 | 2.61 | 0.45 and 0.45 |
+| GPU, the shadows at 16 | 2.60 and 2.60 | 0.45 and 0.47 |
+| GPU, the mirror at 16 | 2.95 and 2.97 | 1.07 and 1.08 |
+| GPU, the scene pass at 16 | 8.80 and 8.82 | 6.55 and 6.58 |
+| GPU, global illumination at 16 | 5.19 and 5.24 | 5.15 and 5.17 |
+| CPU, the four passes at 16 | 4.42 and 3.46 | 3.36 and 3.35 |
+| Draws at 16 | 1,978 and 1,978 | 1,930 and 1,942 |
+| Memory at 16 | 2,844 and 2,737 MB | 2,678 and 2,526 MB |
+
+Item 152 read 6.0.11 at 16 columns at 23.13 and 23.01 ms, the GPU's passes 23.12 and 22.99, the
+shadows 2.64 and 2.55 and the four passes 3.44 and 2.96, as here. On 6.0.14 every pass that draws
+the land costs the GPU less, the depth pass a sixteenth, the shadows a sixth and the mirror a third,
+and global illumination reads the same. The frame at 16 columns keeps 60 a second but for a few
+frames, its GPU at 13.6 ms and its main thread's last stage at 7.0 and 7.2. The four passes'
+recording on the CPU is unchanged, 1.7 µs a draw.
+
+Seed 1's spawn from 90 high looking east and down, settled after a jump of 48 blocks, reads the same
+with both packages, no pixel apart by more than 3 of 255.
+
+Done that day
+
+- Item 153 at `23ba89e`. The package 6.0.14 pinned and its mends read.
+
 ## 2026-10-31
 
 ![](.github/devlog/2026-10-31-item-148-cactus-top.webp)
