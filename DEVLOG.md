@@ -18,6 +18,11 @@ Seed 1's deep cave at -59.5, -4, -91.5 at noon at Low with the far cascade on, b
 with 5.2.333 on the left and 5.2.342 on the right, its far wall darker where the rock the eye cannot
 see stays in the field.
 
+![](.github/devlog/2026-10-31-item-152-jump-first.webp)
+Seed 1's spawn the first frame after a jump of 48 blocks on the engine's 5.2.342 and 6.0.11 above,
+and below in dark the pixels each differs from its own frame 240 by more than 8 of 255, 8,421 and
+3,480.
+
 # The engine's 5.2.342, item 145's steps read again
 
 The engine's 5.2.342 keeps the field's pool of the build's meshes and the shadow-only draws in its
@@ -61,12 +66,71 @@ power. The game's own work is none of it, so the mend is the engine's, an entry 
 asking for pipelines made before the frame that first needs them or a pipeline cache of its own kept
 between runs.
 
+# The engine's 6.0.11, the first water, the passes' recording and the first frames
+
+The engine's 6.0.11 makes the mirrored view's pipelines on worker threads and keeps the driver's
+compiled pipelines in a file beside the program between runs (its item 147), records a pass's
+unmoving draws for less (its item 132), and lets a mesh that arrived in the scene field stand in for
+nothing until it is built where 5.2 stamped its box (its item 150). Read against 5.2.342 in Debug,
+offscreen at 1280 by 720, on tuned's power-saving profile with the processor's energy preference at
+power.
+
+## The first water
+
+As item 151 read it, the eye settled over seed 1's spawn and moved 64 blocks east over the river,
+the first frame with a reflection plane, then ten frames timed on the wall clock with
+`profile.slowest`, the driver's cache in a folder of its own through `__GL_SHADER_DISK_CACHE_PATH`.
+
+| Caches | 5.2.342, item 151 | 6.0.11 |
+|---|---|---|
+| Both cold | 23.7 to 24.0 s, `cpu.mirror` 22.5 to 23.0 s | 1.3 s, the slowest frame 107.5 ms, `cpu.mirror` 3.2 ms |
+| Both warm, the second run | 1.1 s | 1.0 s, the slowest frame 91.1 ms |
+| The driver's cold, the engine's file kept | none | 1.0 s, the slowest frame 68.4 ms, `cpu.mirror` 0.3 ms |
+
+A shot every 30 frames after the first, with both caches cold, differed from the last at 41 s in
+20,111 pixels at 1.6 s, as the warm run's first shot did in 18,784 while the light settled after the
+move, and matched it from 2.8 s on but for 22 pixels of the river within 11 of 255 until 13 s.
+
+## The passes' recording
+
+Item 139's view, flying at a height of 90 over seed 1's spawn at noon looking east, the three
+default packs, each reading over ten seconds with no other program on the GPU (`profile`,
+`models.draws`), one round of each package in the same hour.
+
+| At 16 columns | 5.2.342 | 6.0.11 |
+|---|---|---|
+| Frame | 23.95 and 23.84 ms | 23.13 and 23.01 ms |
+| GPU's passes | 23.93 and 23.81 | 23.12 and 22.99 |
+| CPU, the depth pass | 1.83 and 1.75 | 1.03 and 0.88 |
+| CPU, the shadows | 1.81 and 1.73 | 1.00 and 0.85 |
+| CPU, the mirror | 1.40 and 1.33 | 0.53 and 0.46 |
+| CPU, the scene pass | 2.79 and 2.74 | 0.88 and 0.77 |
+| The four passes | 7.83 and 7.55 | 3.44 and 2.96 |
+| Draws, all passes | 1,962 and 1,961 | 1,954 and 1,942 |
+
+The four passes record a draw in 1.5 to 1.8 µs where 3.9 to 4.0, against item 139's 3 to 5 µs on
+5.2.326, whose 16 columns drew 3,837 to 3,901 before the sections were grouped. The frame at 16
+stays the GPU's. A second round ran beside another program on the GPU and is left out.
+
+## The first frames
+
+The deep cave of seed 1 at -59.5, -4, -91.5 at Low with the far cascade on, the eye dropped into it
+from 80 blocks over, reads the same with both packages from the first frame, 779 pixels apart by at
+most 2 of 255 there and 4 to 6 by 1 from frame 8, a mean luma of 0.47 of 255. Over the land the
+change shows. The eye jumped 48 blocks south to seed 1's spawn at 90 looking east and down, and the
+first frame differs from frame 240 in 8,421 pixels by more than 8 of 255 on 5.2.342, the shaded
+sides of the canopy under the eye lighter than they settle, a mean of 36.5 of 255 where 24.8, and in
+3,480 on 6.0.11, the shore most of them. From frame 4 the two read alike, 3,746 and 3,480, and both settle by frame 32.
+
+The cave's luma in item 145's note, 0.398 and 0.245, and the README's with it, are of 255.
+
 Done that day
 
 - Item 145 at `7bd8f1c`. Streaming spends a time budget a frame.
 - Item 148 at `adf5141`. The cactus without a pack is a plain inset box.
 - Item 150 at `8a1e308`. The play job keeps clear of its time limit.
 - Item 151 at `efbb357`. The 250 ms frame after a jump of three sections is not the field's.
+- Item 152 at `8efd1d0`. The package 6.0.11 pinned and its mends read.
 
 ## 2026-10-30
 

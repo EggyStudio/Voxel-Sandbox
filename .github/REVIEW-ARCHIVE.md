@@ -2525,6 +2525,14 @@ before a batch.
     is the engine's, item 147, the pipeline cache kept between runs and the pipelines made ahead; no
     game stopgap, the engine's mend being near. The note 2026-10-31-item-151-mirror.md.
 
+152. **The package 6.0.11 pinned and its mends read.** Done at `8efd1d0` on 2026-10-31. The engine's
+    147 took the first water's frames from 23.7 s to 1.3 with both caches cold and 1.0 warm, its 132
+    the four passes' main thread at 16 columns from 7.6 and 7.8 ms to 3.0 and 3.4, 1.5 to 1.8
+    microseconds a draw where 3.9 to 4.0, the frame the GPU's at 23.0 ms, and its 150 the first
+    frame after a jump 3,480 pixels off the settled frame where 8,421, the deep cave at Low alike;
+    the note 2026-10-31-item-152-package-6011.md and the collage
+    2026-10-31-item-152-jump-first.webp; the Review lines in the engine's ASKS.md.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
