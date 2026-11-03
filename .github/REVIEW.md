@@ -48,7 +48,9 @@ the owner wrote items 140 and 141 (Decision 51), the README's links as the devlo
 Rust voxel engine as the performance reference (Decision 52), and asked that the sessions spend
 fewer tokens at the same quality, N 7.7. Item 144 closed at its count on 2026-10-30, the quads
 merging to 81 to 89% and not half; 143's other 245 MB is the driver's too, the ring's mapped memory
-counted as the device mapping and its shared backing, the game's own arrays 68 MB more.
+counted as the device mapping and its shared backing, the game's own arrays 68 MB more. After it
+`ca7ee6d`, the review's files alone, item 153's record and the regenerated devlog, pushed at 13:44
+on 2026-11-01, its run green at 15:09 on the three systems.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -168,6 +170,19 @@ full.
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
+
+154. **The grove's global illumination at the game's settings against the engine's budgets.** From
+    the engine's item 140 on 2026-11-03, read in a scratch build of this game's source against the
+    engine's 5d0c44e4 at seed 1, the spawn, 16:00 and distance 12, on the quiet RTX 4070:
+    gpu.global_illumination at 1080p, 1440p and 4K reads Low 4.49, 4.82 and 5.61 ms, Medium 6.79,
+    7.01 and 8.01, High 8.05, 8.25 and 9.33, the distance to the reference 0.10 at every size; the
+    engine's budgets at its own settings are under 2, 3 and 4 ms at 1080p, and the game's source of
+    2026-10-25 read 2.3 at High there, so the rest is the game's choices since, the screen probes
+    turned on at about 3.3 ms of High's 8.05 and the far cascade reaching the land drawn. When the
+    next package is pinned, the game weighs those two against its frame at each quality, the screen
+    probes' quality or their reach, the far cascade's reach, read by the same measure at the spawn
+    and by the 139 view, and records what it keeps; nothing is owed by the engine here. After the
+    next package.
 
 ## Verdicts
 
@@ -301,5 +316,13 @@ each in full under Decisions in REVIEW-ARCHIVE.md.
     has taken, a capability or a changed surface that a package or release carries, and the major on
     the owner's word. The game moves to 0.2 at `7e052e8`, 0.1 having stood since 2026-10-17 over 235
     commits.
+
+58. **No one is named in a picture.** The owner wrote in the 3DEngine coder's session on 2026-11-03
+    before 08:05, seeing a reading sheet whose label called a reference picture theirs, that
+    pictures and comparisons must not mention the owner, as the rule for documents has it. So N 4.10
+    says a picture's labels, its file name and its captions line name no person and no session, a
+    picture the owner sent being a screenshot and their reference picture the reference; the engine
+    session relabelled the sheet, renamed the dump's files and reworded its captions back to
+    2026-10-31, and read the 59 comparison sheets' labels clean.
 
 ## Replies
