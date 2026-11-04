@@ -6,6 +6,110 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 notes written beside them as Markdown files named the same way. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
+## 2026-11-04
+
+![](.github/devlog/2026-11-04-item-154-cave-far.webp)
+Seed 1's deep cave at noon at 1920 by 1080 on the engine's 6.0.91, brightened six times, at Low
+above and High below, with the far cascade on the left and off on the right, its far walls taking
+the sky's light without it.
+
+![](.github/devlog/2026-11-04-item-155-grove-ahead.webp)
+Seed 1's cherry grove at High at 1920 by 1080 on the engine's 6.0.91 with the scene's field around
+the eye on the left and 8 blocks ahead of it on the right, the boxed ground below at full size and
+its difference four times over, 5,531 pixels more than 8 of 255 apart.
+
+# The engine's 6.0.91, global illumination at the game's settings
+
+The engine's 6.0.91 carries its items 139 to 145 and 166 to 201, among them the far cascade's cost,
+the glow lights past the four brightest, the sections' indices in two bytes and their positions
+packed, and Vulkan 1.4 asked outright, which the development machine's driver 615.78 offers. Read
+in Debug offscreen on tuned's power-saving profile, the three default packs, the render distance 12,
+two readings of 300 frames a setting, a reading repeated where another program drew on the GPU
+through it (`profile`), and each frame's linear light against a reference path-traced at 256 paths
+a pixel bouncing until they end (`gi.reference`, `gi.compare`), the distance the mean of each
+pixel's difference over the reference's mean light, as the engine's item 140 measured it.
+
+## Global illumination at the cherry grove
+
+Seed 1's cherry grove at -736, 79, -960 at hour 16 looking 345 and 12 down, at 1920 by 1080, the
+GPU's time of global illumination in milliseconds and the frame's distance to its reference.
+
+| Settings | Low | Medium | High |
+|---|---|---|---|
+| The game's | 3.48 to 3.83, 0.173 | 5.67 to 5.78, 0.166 | 6.56 to 6.83, 0.166 |
+| The far cascade off | 3.07 to 3.25, 0.173 | 4.99 to 5.11, 0.167 | 6.02 to 6.29, 0.166 |
+| The far cascade at 96 blocks | 3.66 to 3.73, 0.173 | 5.69 to 5.79, 0.166 | 6.77 to 6.87, 0.166 |
+| The screen's probes off | | 3.27 to 3.41, 0.172 | 4.08 to 4.15, 0.172 |
+
+The engine's budgets at its own settings are 2, 3 and 4 ms at that size, and 6.0.14 read the grove
+at the game's settings in the same hour at 3.96 to 4.12, 6.49 and 7.32 to 7.44, at a distance of
+0.174, 0.164 and 0.162. The screen's probes take 2.3 to 2.5 ms of Medium and 2.4 to 2.7 of High,
+and the far cascade 0.4 to 0.7 of global illumination and 0.6 to 1.1 of the GPU's whole frame, 15.4,
+17.1 to 17.2 and 18.5 ms at Low, Medium and High. A far cascade reaching 96 blocks costs and reads
+the same as one reaching the 192 drawn.
+
+Seed 1's deep cave at -59.5, -4, -91.5 at noon looking north reads black at every quality, as its
+reference does, its mean linear light 1.0 to 1.4 hundred-thousandths where the reference's is a
+millionth. With the far cascade off its far walls take the sky's light, 4.5 ten-thousandths at High,
+the shot's mean 2.13 of 255 at Low and 0.41 at High where 0.00 with it on.
+
+The game keeps both. The far cascade holds the cave's dark for about a millisecond of the GPU and
+reaches all the land drawn, since half the reach saves nothing. The screen's probes stay at Medium
+and High as the engine sets them, High the default, its frame 0.166 from the reference where 0.172
+without them, and Medium reads the same 0.166 as High for about 1 ms less.
+
+## The frame by distance
+
+Item 139's view, flying at a height of 90 over seed 1's spawn at noon looking east, at 1280 by 720,
+two rounds of each package in the same hour and two more of 6.0.91 at 8 and 12 columns, since other
+programs drew on the GPU through some, those left out. Two readings of 6.0.91 whose CPU's passes read
+half again to three times the others', as when another program shares the processor, the frame at
+18.9 and 20.8 ms, are left out for the frame and the CPU. The frame is held at 60 a second, so it
+reads 16.67 ms where the work takes less.
+
+| | 6.0.14 | 6.0.91 |
+|---|---|---|
+| Frame at 8, 12 and 16 | 16.72, 16.68 and 16.77 | 16.67, 16.67 and 16.68 |
+| GPU's passes at 8 | 10.15 | 10.38 and 12.15 |
+| GPU's passes at 12 | 12.18 and 12.86 | 11.72 and 12.59 |
+| GPU's passes at 16 | 14.01 | 12.53 and 12.71 |
+| GPU, the scene pass at 16 | 6.81 | 5.13 and 5.26 |
+| GPU, the mirror at 16 | 1.09 | 0.60 |
+| GPU, global illumination at 12 | 5.29 and 5.64 | 6.33 and 7.11 |
+| Memory at 12 | 2,098 and 2,413 MB | 1,468 and 1,562 MB |
+| Memory at 16 | 2,603 MB | 1,826 and 1,910 MB |
+
+At 16 columns the GPU's work falls by 1.3 to 1.5 ms, the scene pass and the mirror the most of it,
+and the memory the game holds by 540 to 950 MB at 12 and 16 columns. Global illumination over the
+open land at that size reads 6.1 to 7.6 ms across the runs where 5.3 to 5.6 on 6.0.14, though
+at the grove at 1920 by 1080 it reads less.
+
+# The scene's field ahead of the eye
+
+The game sets the scene's field's centre through the engine's `SetSceneFieldCenter` each frame,
+ahead of the camera along its view by half the finest cascade's width, 64 cells of 0.25, eight
+blocks, where the engine centred it on the camera and the finest cascade spent half its width behind
+the player. Read on the engine's 6.0.91 at 1920 by 1080 as item 154 read it, at the cherry grove,
+the deep cave and the open land from 90 over seed 1's spawn at noon looking east, the field around
+the eye and ahead of it in the same run, two readings of 300 frames each.
+
+| | Around the eye | Ahead |
+|---|---|---|
+| Grove, global illumination at Low | 3.48 to 3.83 ms, 0.173 | 3.57 to 3.60 ms, 0.171 |
+| Grove, at Medium | 5.67 to 5.78, 0.166 | 5.60 to 5.64, 0.164 |
+| Grove, at High | 6.56 to 6.83, 0.166 | 6.62 to 6.65, 0.164 |
+| Open land over the spawn at High | 6.23 to 6.39, 0.780 | 6.08 and 6.09, 0.776 |
+| The frame at the spawn at High at 12 columns | 16.11 to 17.58 | 16.60 and 16.86 |
+| The GPU's part of it | 14.29 to 14.77 | 14.20 and 14.21 |
+| Deep cave's mean linear light at High | 1.0 hundred-thousandths | 2.0 hundred-thousandths |
+
+The grove ahead reads a little nearer its reference at every quality, its frames 5,531 pixels apart
+by more than 8 of 255, the shade under the near crown and the ground below it, and the cave is
+black in both shots where its reference's light is a millionth. Turning the eye through the full
+circle over 240 frames, three degrees every two, the grove's frame at High reads 24.1 and 27.9 ms
+ahead against 24.3 and 23.9 around the eye, the field's CPU 1.15 and 1.31 ms against 1.10 and 1.02
+and the slowest frame 155 and 127 ms against 250 and 207.
+
 ## 2026-11-01
 
 # The engine's 6.0.14, the frame by distance

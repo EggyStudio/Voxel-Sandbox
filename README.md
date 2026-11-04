@@ -1570,7 +1570,10 @@ to 5.3, the mirror's to 0.6 and the memory the game holds at 12 columns from 2,0
 reach 128 blocks and take 0.4 to 0.5 ms of the GPU at every distance, where 2.2 to 2.6 on 6.0.11.
 The engine's fill of the land past the shadow map is left off, the contact
 shadows shading that land. The far cascade takes 0.6 to 1.1 ms more of the GPU at seed 1's cherry
-grove at 1920 by 1080, and the sea's mirror 0.4, 0.5 and 0.6 ms of the GPU at 8, 12 and 16 columns
+grove at 1920 by 1080. The scene's field lies ahead of the eye along its view by half its finest
+cascade's width, eight blocks at the default cell, so that cascade holds the land looked at, and
+the grove reads 0.164 from a path-traced reference where 0.166 with the field around the eye, at
+the same cost within 0.2 ms. The sea's mirror takes 0.4, 0.5 and 0.6 ms of the GPU at 8, 12 and 16 columns
 and 0.2, 0.3 and 0.5 of the CPU. The passes draw the
 land four times, the depth's, the camera's, the mirror's and the cascades', and with each draw
 costing the main thread 3 to 5 µs to record in each pass on the engine's 5.2, the sections' opaque

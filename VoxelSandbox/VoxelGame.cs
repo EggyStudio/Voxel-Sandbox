@@ -1197,6 +1197,7 @@ public sealed class VoxelGame : IDisposable
 
         _laps.Restart();
         Mirror.Update(World, Player.Camera, Player.EyeInWater);
+        Light.CenterField(Player.Camera);
         BeginDrawing();
         // The frame's first stage may have opened a world, so the loading screen is chosen once the
         // frame has begun.

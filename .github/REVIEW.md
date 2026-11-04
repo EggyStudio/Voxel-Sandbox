@@ -10,13 +10,15 @@ frame held at 60 at 8 and 12 and 16.9 ms at 16 where 22.8, the four passes' CPU 
 owner from the dump; the README's frame paragraph, the shadows' and the mirror's costs and the table
 rewritten to 6.0.14's readings; 364 tests, the GPU play in 331 s. After it `56e1372`, the review's
 files alone, the norm's rule 4.10 and item 154's record, pushed at 14:51 on 2026-11-03, with no run
-since the build passes over the review's files; it keeps the form. Before it `8efd1d0`, item 152,
-the pin of 6.0.11, pushed at 23:07 on 2026-10-31, its run green at 00:30 with play in 82 minutes,
-recorded under the item in REVIEW-ARCHIVE.md. Before it `efbb357`, item 151, pushed with `7bd8f1c`
-at 13:40, its run green at 14:43 with play in 61 minutes, the first mirror frame's 24 s read as the
-driver's compile, recorded under the item in REVIEW-ARCHIVE.md. Before it `7e052e8`, the version to
-0.2, pushed at 12:43, its run green at 13:40. Before it `adf5141`, item 148's second commit, pushed
-at 08:17, its run green at 09:35 with play in 76 minutes. Before it `8a1e308`, item 150, pushed at
+since the build passes over the review's files; it keeps the form. After it `6eb6540`, item 154, the
+game on 6.0.91 with its far cascade and screen probes kept, pushed at 17:07 on 2026-11-04, its run
+awaited; it keeps the form and carries the review's files. Before it `8efd1d0`, item 152, the pin of
+6.0.11, pushed at 23:07 on 2026-10-31, its run green at 00:30 with play in 82 minutes, recorded
+under the item in REVIEW-ARCHIVE.md. Before it `efbb357`, item 151, pushed with `7bd8f1c` at 13:40,
+its run green at 14:43 with play in 61 minutes, the first mirror frame's 24 s read as the driver's
+compile, recorded under the item in REVIEW-ARCHIVE.md. Before it `7e052e8`, the version to 0.2,
+pushed at 12:43, its run green at 13:40. Before it `adf5141`, item 148's second commit, pushed at
+08:17, its run green at 09:35 with play in 76 minutes. Before it `8a1e308`, item 150, pushed at
 00:31, the play job's limit at 150 minutes, the checks summing 4,568 to 4,983 s over two runs after
 item 141 gave lavapipe more to draw, the rain's splashes the largest at 795 s and read every 20
 frames until they fall under one where 300 frames waited, the seed's field holding Control about a
@@ -190,7 +192,21 @@ full.
     brightest (192), the thin-wall hold at a wall's foot (193), the lamp march's clearance (195),
     the sections' two-byte indices and packed positions (144), a relight no longer uploading the
     section whole (145), every linear texture sampler at 16 (201) and Vulkan 1.4 asked outright
-    (182). The game takes it, runs its suite, and reads this item, then 155.
+    (182). The game takes it, runs its suite, and reads this item, then 155. Done at 6eb6540, pushed
+    at 17:07 on 2026-11-04, the game pinned to 6.0.91. At seed 1's cherry grove at 1920 by 1080 in
+    Debug, GI at the game's settings reads 3.48 to 3.83 ms at Low, 5.67 to 5.78 at Medium and 6.56
+    to 6.83 at High with the distance to a 256-path reference 0.173, 0.166 and 0.166, against 3.96
+    to 4.12, 6.49 and 7.32 to 7.44 on 6.0.14; the screen probes cost 2.3 to 2.7 ms of Medium and
+    High for 0.006 of distance; the far cascade costs 0.4 to 0.7 ms of GI and 0.6 to 1.1 of the
+    frame and without it the deep cave's far walls take the sky's light, so the game keeps both at
+    reach 192 with High the default, Medium reading the same distance for about a millisecond less,
+    left for the owner to weigh. The frame at item 139's view at 720p holds 60 at 8, 12 and 16
+    columns on both packages, the GPU at 16 columns 12.5 to 12.7 ms where 14.0, the memory at 12
+    columns 1,468 to 1,562 MB where 2,098 to 2,413. The README takes the far cascade row, the cost
+    table and the corner's eighteen bytes with 144's packing. GI over the open land at 720p reads
+    6.1 to 7.6 ms on 6.0.91 where 5.3 to 5.6 on 6.0.14, the engine's item 202. The note and the cave
+    picture under .github/devlog; strict build clean, 364 tests, the play 277 s. The README's eight
+    "colour" are a pack's proper name and its addresses, which keep their maker's spelling.
 
 155. **The scene field's centre ahead of the camera.** From the engine's item 196 on 2026-11-04. The
     game sets no centre, so the engine centres its field and probes on the camera and the finest
@@ -199,7 +215,23 @@ full.
     as Sponza sets it with the camera plus half the view. Set the field's centre ahead of the camera
     along its view by half the finest cascade's width through SetSceneFieldCenter, read by the
     grove's and the cave's GI against the engine's references and by the frame at the twelve-column
-    settings. After the next package, with 154.
+    settings. After the next package, with 154. From the engine's 197 on 2026-11-04: centred on the
+    eye, cascade 1's layers in the engine's bay and aisle read 1.17 of their reference at one bounce
+    against 1.02 centred ahead, the placement's own first-bounce excess, and the engine's 199 (the
+    probes' faces at their surfaces) raises the pier's join by 4 to 10 points around the eye while
+    lowering it ahead; the centre ahead is the mend for both. Done at c6ac101, read at 17:14, to
+    push after 6eb6540's run. Each frame before BeginDrawing the game sets the field's centre to the
+    camera plus its forward by half the finest cascade's width, eight blocks at the default cell,
+    following the Field Cell setting. The grove's distance 0.171, 0.164 and 0.164 ahead against
+    0.173, 0.166 and 0.166 around the eye at the three qualities, GI's cost the same within 0.2 ms,
+    the shots differing under the near crown; the open land over the spawn at twelve columns at High
+    0.776 against 0.780 with the frame and the GPU within their spread; the cave black both ways; a
+    full turn over 240 frames 24.1 and 27.9 ms ahead against 24.3 and 23.9, the field's CPU time
+    1.15 to 1.3 against 1.0 to 1.1. So the gain is about 1% in the grove where the engine's aisle
+    went from 17 to 29% over to within 5, a cheaper placement's benefit being the bay-and-aisle kind
+    of space the game has few of. The README's eight "colour" are a pack's proper name and its
+    addresses and stay. The note and the grove picture under .github/devlog; strict build clean, 364
+    tests, the play 247 s.
 
 156. **The ground's atlas takes the anisotropic filter.** Decision 59 on 2026-11-04. The engine's
     item 201 filters every linear texture sampler at 16, but the ground does not move, since
