@@ -10,6 +10,14 @@ public sealed class LightSettings
     /// The quality of global illumination, the highest by default, since the game is made to show it,
     /// the engine tracing the screen's probes at Medium and High.
     /// </summary>
+    /// <remarks>
+    /// At seed 1's cherry grove at 1920 by 1080 on the engine's 6.0.91 it takes 3.5 to 3.8 ms of the
+    /// GPU at Low, 5.7 to 5.8 at Medium and 6.6 to 6.8 at High, past the engine's 2, 3 and 4 at its own
+    /// settings by the screen's probes, 2.3 to 2.5 ms of Medium and 2.4 to 2.7 of High, and by the far
+    /// cascade's 0.4 to 0.7. The probes are kept, the frame's light differing from a path-traced
+    /// reference's by 0.166 of it with them and 0.172 without, and Medium reads the same 0.166 as High
+    /// for about 1 ms less.
+    /// </remarks>
     public GlobalIllumination Quality = GlobalIllumination.High;
 
     // Four cascades of 0.25 cover 128 blocks across around the eye, a third of the 384 drawn at the
@@ -23,8 +31,11 @@ public sealed class LightSettings
     // A far cascade past the four reaching as far as the land drawn, the render distance's blocks,
     // so a ray leaving the counted cascades meets the hills and the rock it holds before the sky, its
     // cells as wide as that reach takes at 64 a side, six blocks at 12 columns. It is on, so a deep
-    // cave's far walls take the rock's dark rather than the sky's light at Low, for 1.6 to 2 ms of the
-    // frame at 1920 by 1080 at Low and High alike, and Render Settings turns it off.
+    // cave's far walls take the rock's dark rather than the sky's light, seed 1's deep cave at noon at
+    // 1920 by 1080 reading black as its reference does where without it the walls read a mean of 2.1
+    // of 255 at Low and 0.4 at High. On the engine's 6.0.91 it takes 0.6 to 1.1 ms of the GPU at seed
+    // 1's cherry grove at that size, 0.4 to 0.7 of it global illumination's, and a reach of 96 blocks
+    // costs and reads the same, so it reaches all the land drawn. Render Settings turns it off.
     public bool FarCascade = true;
     public float FarReach = 12 * Section.Size;
 

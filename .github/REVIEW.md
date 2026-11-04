@@ -8,8 +8,10 @@ package in the same hour at item 139's view, the GPU's passes at 8 columns 12.8 
 frame held at 60 at 8 and 12 and 16.9 ms at 16 where 22.8, the four passes' CPU at 16 unchanged at
 1.7 microseconds a draw; the spawn view settled identical within 3 of 255, the pair shown to the
 owner from the dump; the README's frame paragraph, the shadows' and the mirror's costs and the table
-rewritten to 6.0.14's readings; 364 tests, the GPU play in 331 s. Before it `8efd1d0`, item 152, the
-pin of 6.0.11, pushed at 23:07 on 2026-10-31, its run green at 00:30 with play in 82 minutes,
+rewritten to 6.0.14's readings; 364 tests, the GPU play in 331 s. After it `56e1372`, the review's
+files alone, the norm's rule 4.10 and item 154's record, pushed at 14:51 on 2026-11-03, with no run
+since the build passes over the review's files; it keeps the form. Before it `8efd1d0`, item 152,
+the pin of 6.0.11, pushed at 23:07 on 2026-10-31, its run green at 00:30 with play in 82 minutes,
 recorded under the item in REVIEW-ARCHIVE.md. Before it `efbb357`, item 151, pushed with `7bd8f1c`
 at 13:40, its run green at 14:43 with play in 61 minutes, the first mirror frame's 24 s read as the
 driver's compile, recorded under the item in REVIEW-ARCHIVE.md. Before it `7e052e8`, the version to
@@ -182,7 +184,34 @@ full.
     next package is pinned, the game weighs those two against its frame at each quality, the screen
     probes' quality or their reach, the far cascade's reach, read by the same measure at the spawn
     and by the 139 view, and records what it keeps; nothing is owed by the engine here. After the
-    next package.
+    next package. The package arrived at 15:29 on 2026-11-04 as 3DEngine 6.0.91 from the engine's
+    fourteenth pack run, the first since 6.0.14, carrying the engine's items 139 to 145 and 166 to
+    201 of the week, among them the far cascade's cost (140, 141), the glow lights past the four
+    brightest (192), the thin-wall hold at a wall's foot (193), the lamp march's clearance (195),
+    the sections' two-byte indices and packed positions (144), a relight no longer uploading the
+    section whole (145), every linear texture sampler at 16 (201) and Vulkan 1.4 asked outright
+    (182). The game takes it, runs its suite, and reads this item, then 155.
+
+155. **The scene field's centre ahead of the camera.** From the engine's item 196 on 2026-11-04. The
+    game sets no centre, so the engine centres its field and probes on the camera and the finest
+    cascade spends half its width behind the player; in the engine's reading of a bay and an aisle,
+    an aisle centred on the eye read 17 to 29% over its reference against within 5% centred ahead,
+    as Sponza sets it with the camera plus half the view. Set the field's centre ahead of the camera
+    along its view by half the finest cascade's width through SetSceneFieldCenter, read by the
+    grove's and the cave's GI against the engine's references and by the frame at the twelve-column
+    settings. After the next package, with 154.
+
+156. **The ground's atlas takes the anisotropic filter.** Decision 59 on 2026-11-04. The engine's
+    item 201 filters every linear texture sampler at 16, but the ground does not move, since
+    ChunkRenderer sets its atlas to TextureFilter.Point and terrain.slang reads it with SampleLevel
+    at a level of its own choosing, which takes no anisotropy. The ground takes the 16 once the
+    atlas is sampled linearly with gradients (Sample or SampleGrad) at Trilinear, each tile's mips
+    clamped so neighbours do not bleed across tile edges, read by the ground at a grazing angle
+    against the picture before and by the frame; the owner says whether the blocks keep their pixel
+    look, which Point gives and the 16 would soften. After the next package, with 154 and 155.
+    Closed at 11:40 on 2026-11-04 on the owner's word, "Voxle sandbox is pixel filtering so no
+    changes needed I think", the blocks keeping their pixel look, the atlas at Point, nothing
+    changing.
 
 ## Verdicts
 
@@ -324,5 +353,15 @@ each in full under Decisions in REVIEW-ARCHIVE.md.
     picture the owner sent being a screenshot and their reference picture the reference; the engine
     session relabelled the sheet, renamed the dump's files and reworded its captions back to
     2026-10-31, and read the 59 comparison sheets' labels clean.
+
+59. **Anisotropic filtering at 16 everywhere.** The owner wrote on 2026-11-04 at 11:07, "Anisotropic
+   filtering is at x16 everywhere because it is cheap and on steep angles it is visually better." So
+   every sampler that reads a texture, colour, normal, surface or atlas, filters anisotropically at
+   16, or at the device's most where it offers less, at every quality and with no knob; the shadow,
+   probe and table samplers that are not textures keep their own filters. The game's textures read
+   through the engine's samplers, so it comes with the engine's item 201 and the next package; the
+   game sets nothing. At 11:40 the owner added that the game is pixel filtering and needs no change,
+   so its atlas stays at Point and item 156 is closed.
+
 
 ## Replies

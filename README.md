@@ -882,7 +882,7 @@ sections loaded, waiting and drawn, and the mobs.
 | | Field Cascades, the scene's distance field's | 1 to 8 | 4 |
 | | Field Cell, the finest cascade's cell | 0.125 to 1 block by 0.125 | 0.25 |
 | | Cascades a Frame, built again each frame | 1 to 8 | 2 |
-| | Far Cascade, a cascade past the four reaching the render distance, which keeps a deep cave's far walls from the sky's light at Low and costs about 2 ms of the GPU | Off, On | On |
+| | Far Cascade, a cascade past the four reaching the render distance, which keeps a deep cave's far walls from the sky's light and costs about 1 ms of the GPU | Off, On | On |
 | | Water Reflections, the water in view mirroring the shore, about 2.6 ms of the frame while water shows | Off, On | On |
 | Post Processing | Bloom | 0 to 2 by 0.05 | 0.1 |
 | | Bloom Threshold, the light past white bloom spreads from | 0.5 to 8 by 0.25 | 1 |
@@ -1210,7 +1210,10 @@ that one keeps the game's own.
 ## How the world is drawn
 
 A section of 16 blocks a side is one mesh in one white material, each corner of a face its position
-and eight packed bytes of the game's own, twenty bytes a corner on the GPU. The bytes hold the face
+and eight packed bytes of the game's own. The engine's 6.0.91 keeps the positions in three 16-bit
+integers where the device reads them so, as the RTX 4070 does, and the indices in two bytes, so a
+corner takes eighteen bytes on the GPU with the four of its color, where twenty-four with floats.
+The bytes hold the face
 the corner lies on, which of the face's corners it is, its shade, its surface's tiles in the atlas
 of the resource packs and the color it carries, and `VoxelSandbox/resources/shaders/terrain.slang`
 unpacks them, taking the normal by table and the tile tinted by the color under the shade. The
@@ -1557,16 +1560,18 @@ each of the sun's three shadow cascades', leaves out the sections whose boxes it
 at a height of 90 over seed 1's spawn at noon, looking east over the forest to the sea, at 1280 by
 720 offscreen on the development machine's RTX 4070 Laptop GPU with the three default packs and
 every setting at its default, in a Debug build on the machine's power-saving profile, the frame
-keeps 60 a second at 8 and 12 columns and stands at the edge of it at 16, where it takes 16.9 ms,
-the GPU's work 13.6 of it, where on the engine's 6.0.11 it took 22.8 to 22.9, the GPU's work all of
-it. The engine's 6.0.14 keeps the meshes' buffers in the GPU's own memory where 6.0.11 read them from
-the processor's over the bus in every pass, which took the depth pass at 16 columns from 3.1 ms of
-the GPU to 0.2, the mirror's from 3.0 to 1.1 and the camera's from 8.8 to 6.6. The sun's shadows
+keeps 60 a second at 8, 12 and 16 columns on the engine's 6.0.91, the GPU's work 12.5 to 12.7 ms of
+it at 16, where on the engine's 6.0.11 it took 22.8 to 22.9, the GPU's work all of it. The engine's
+6.0.14 keeps the meshes' buffers in the GPU's own memory where 6.0.11 read them from the processor's
+over the bus in every pass, which took the depth pass at 16 columns from 3.1 ms of the GPU to 0.2,
+the mirror's from 3.0 to 1.1 and the camera's from 8.8 to 6.6, and 6.0.91 takes the camera's to 5.1
+to 5.3, the mirror's to 0.6 and the memory the game holds at 12 columns from 2,098 to 2,413 MB to
+1,468 to 1,562. The sun's shadows
 reach 128 blocks and take 0.4 to 0.5 ms of the GPU at every distance, where 2.2 to 2.6 on 6.0.11.
 The engine's fill of the land past the shadow map is left off, the contact
-shadows shading that land. The far cascade takes about 1.9 ms more of the GPU at 12 columns, and the
-sea's mirror 0.6, 1.0 and 1.1 ms of the GPU at 8, 12 and 16 columns and 0.2 to 0.4, 0.3 and 0.5
-of the CPU. The passes draw the
+shadows shading that land. The far cascade takes 0.6 to 1.1 ms more of the GPU at seed 1's cherry
+grove at 1920 by 1080, and the sea's mirror 0.4, 0.5 and 0.6 ms of the GPU at 8, 12 and 16 columns
+and 0.2, 0.3 and 0.5 of the CPU. The passes draw the
 land four times, the depth's, the camera's, the mirror's and the cascades', and with each draw
 costing the main thread 3 to 5 µs to record in each pass on the engine's 5.2, the sections' opaque
 and cut-out parts are drawn in groups of two by two sections across, 1,380 draws at 12 columns for
@@ -1577,14 +1582,14 @@ frame there stays the GPU's, 23.0 to 23.1 ms where 23.8 to 24.0 (`profile`). A g
 caves under the land seen beside it, for 3 to 4 ms more of the GPU at 12 columns. The groups hold
 more memory, about 500 MB at 8 and 12 columns and 60 at 16, the driver mapping the ring of buffers
 the engine keeps for a mesh whose light is written in place, a group's four times a section's. The
-frame's time, the GPU's and the CPU's passes' in milliseconds, two readings each on the engine's
-6.0.14 with no other program on the GPU (`profile`), and the memory the game holds:
+frame's time, the GPU's and the CPU's passes' in milliseconds, two to four readings each on the
+engine's 6.0.91 with no other program on the GPU (`profile`), and the memory the game holds:
 
 | columns | frame | GPU | CPU's passes | memory |
 |---|---|---|---|---|
-| 8 | 16.7 to 17.1 | 9.3 to 9.4 | 3.3 to 6.9 | 1,669 to 1,837 MB |
-| 12 | 16.7 | 11.8 | 4.7 to 5.0 | 1,986 to 2,117 MB |
-| 16 | 16.9 | 13.6 | 6.7 to 6.8 | 2,526 to 2,678 MB |
+| 8 | 16.7 | 10.4 to 12.2 | 3.2 to 3.5 | 1,250 to 1,294 MB |
+| 12 | 16.7 | 11.7 to 12.6 | 4.7 to 5.3 | 1,468 to 1,562 MB |
+| 16 | 16.7 | 12.5 to 12.7 | 6.1 | 1,826 to 1,910 MB |
 
 A window of 2560 by 1440 draws four times the pixels, and over the plains village at hour 16 the
 frame takes about 45 ms there, Debug and Release alike, the GPU bounding it, global illumination
