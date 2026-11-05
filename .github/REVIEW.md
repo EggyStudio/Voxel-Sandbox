@@ -12,49 +12,54 @@ rewritten to 6.0.14's readings; 364 tests, the GPU play in 331 s. After it `56e1
 files alone, the norm's rule 4.10 and item 154's record, pushed at 14:51 on 2026-11-03, with no run
 since the build passes over the review's files; it keeps the form. After it `6eb6540`, item 154, the
 game on 6.0.91 with its far cascade and screen probes kept, pushed at 17:07 on 2026-11-04, its run
-awaited; it keeps the form and carries the review's files. Before it `8efd1d0`, item 152, the pin of
-6.0.11, pushed at 23:07 on 2026-10-31, its run green at 00:30 with play in 82 minutes, recorded
-under the item in REVIEW-ARCHIVE.md. Before it `efbb357`, item 151, pushed with `7bd8f1c` at 13:40,
-its run green at 14:43 with play in 61 minutes, the first mirror frame's 24 s read as the driver's
-compile, recorded under the item in REVIEW-ARCHIVE.md. Before it `7e052e8`, the version to 0.2,
-pushed at 12:43, its run green at 13:40. Before it `adf5141`, item 148's second commit, pushed at
-08:17, its run green at 09:35 with play in 76 minutes. Before it `8a1e308`, item 150, pushed at
-00:31, the play job's limit at 150 minutes, the checks summing 4,568 to 4,983 s over two runs after
-item 141 gave lavapipe more to draw, the rain's splashes the largest at 795 s and read every 20
-frames until they fall under one where 300 frames waited, the seed's field holding Control about a
-second of frames, none dropped, the README's play paragraph gained. Before it `17704ca`, item 149,
-pushed with `8a1e308` at 00:31, the run of `8a1e308` green at 01:28 with play in 57 minutes under
-the new limit, the flood taking a budget of 2 ms a frame at a step into an adjacent section with the
-last whole flood kept and a flood under way run to its end, a jump of more than a section flooding
-at once so teleports and the captures stay exact, the casters' search in the frame after. Before it
-`a272e45`, item 145, pushed at 23:27, its run green at 00:29 with play in 61 minutes, the time
-budget built and left out since flights read no gain, 12 columns at a 99th part of 86 to 105 ms
-without and 92 to 110 with, 8 at 49 to 72 and 47 to 55, within the noise. Before it `5d96667`, item
-148, pushed with `a272e45` at 23:27. Before it `b5626c6`, item 147, pushed at 21:59. Before it
-`5f31bdf`, item 143, pushed with `b5626c6` at 21:59, the run of `b5626c6` green at 23:23 with play
-in 84 minutes, the sections grouped 2 by 2 across and one high since groups two high drew the caves
-under the land and cost the GPU 3 to 4 ms at 12 columns. Before it `2c458b0`, item 141, pushed at
-20:36, its run green at 21:56 with play in 80 minutes. Before it `7508d5e`, item 142, pushed at
-19:18 on 2026-10-30, its run green at 20:31 with play in 73 minutes. Before it `5c80c99`, item 140,
-pushed at 18:21 on 2026-10-30, its run green at 19:01 with play in 40 minutes. The start restores
-the options file's resolution and mode right after InitWindow, before the game is built, the window
-appearing as saved about 8 s before the world loads where it changed after; no monitor setting
-exists to read, and a hidden window cannot be shown later since the engine takes a program-set
-hidden window as a --hidden run; the test reads the values and a missing file's 1280 by 720.
-AGENTS.md's REVIEW.md line reads the head, the batch's items and the Replies by the owner's word in
-the coder's session. It carries NORM.md with N 7.7 and the README's first line. Before it `fc0937a`,
-item 139, pushed by the owner's hand on 2026-10-26 while the sessions were paused until 2026-10-30,
-its run green. Before it on 2026-10-26, each green: `9c07673` (138); `b25e668` (137); `4aef50c` with
-`6001eed` (the README's quick links, 136); `7c36ec8` (42); `f1aa450` (27); `5145d2f` (134);
-`0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133); `a4d383c` (95). Each commit's detail
-stands in its item in REVIEW-ARCHIVE.md, its devlog note and its own words. On 2026-10-30 at 18:0x
-the owner wrote items 140 and 141 (Decision 51), the README's links as the devlog and 3DEngine, a
-Rust voxel engine as the performance reference (Decision 52), and asked that the sessions spend
-fewer tokens at the same quality, N 7.7. Item 144 closed at its count on 2026-10-30, the quads
-merging to 81 to 89% and not half; 143's other 245 MB is the driver's too, the ring's mapped memory
-counted as the device mapping and its shared backing, the game's own arrays 68 MB more. After it
-`ca7ee6d`, the review's files alone, item 153's record and the regenerated devlog, pushed at 13:44
-on 2026-11-01, its run green at 15:09 on the three systems.
+red at 18:15 on macOS alone, the job never acquired by a hosted runner for the macOS capacity notice
+and cancelled at its 15 minutes, the play in 65 minutes and the Windows and Linux tests green,
+nothing of the game's in it; it keeps the form and carries the review's files. After it `fe3638e`,
+item 155, the field's center ahead of the eye, pushed at 18:17, its run green at 19:33 with the play
+in 76 minutes and the three tests in 2 to 3 minutes, macOS acquired this time, the newest green
+commit; it keeps the form and carries the review's files and the devlog. Before it `8efd1d0`, item
+152, the pin of 6.0.11, pushed at 23:07 on 2026-10-31, its run green at 00:30 with play in 82
+minutes, recorded under the item in REVIEW-ARCHIVE.md. Before it `efbb357`, item 151, pushed with
+`7bd8f1c` at 13:40, its run green at 14:43 with play in 61 minutes, the first mirror frame's 24 s
+read as the driver's compile, recorded under the item in REVIEW-ARCHIVE.md. Before it `7e052e8`, the
+version to 0.2, pushed at 12:43, its run green at 13:40. Before it `adf5141`, item 148's second
+commit, pushed at 08:17, its run green at 09:35 with play in 76 minutes. Before it `8a1e308`, item
+150, pushed at 00:31, the play job's limit at 150 minutes, the checks summing 4,568 to 4,983 s over
+two runs after item 141 gave lavapipe more to draw, the rain's splashes the largest at 795 s and
+read every 20 frames until they fall under one where 300 frames waited, the seed's field holding
+Control about a second of frames, none dropped, the README's play paragraph gained. Before it
+`17704ca`, item 149, pushed with `8a1e308` at 00:31, the run of `8a1e308` green at 01:28 with play
+in 57 minutes under the new limit, the flood taking a budget of 2 ms a frame at a step into an
+adjacent section with the last whole flood kept and a flood under way run to its end, a jump of more
+than a section flooding at once so teleports and the captures stay exact, the casters' search in the
+frame after. Before it `a272e45`, item 145, pushed at 23:27, its run green at 00:29 with play in 61
+minutes, the time budget built and left out since flights read no gain, 12 columns at a 99th part of
+86 to 105 ms without and 92 to 110 with, 8 at 49 to 72 and 47 to 55, within the noise. Before it
+`5d96667`, item 148, pushed with `a272e45` at 23:27. Before it `b5626c6`, item 147, pushed at 21:59.
+Before it `5f31bdf`, item 143, pushed with `b5626c6` at 21:59, the run of `b5626c6` green at 23:23
+with play in 84 minutes, the sections grouped 2 by 2 across and one high since groups two high drew
+the caves under the land and cost the GPU 3 to 4 ms at 12 columns. Before it `2c458b0`, item 141,
+pushed at 20:36, its run green at 21:56 with play in 80 minutes. Before it `7508d5e`, item 142,
+pushed at 19:18 on 2026-10-30, its run green at 20:31 with play in 73 minutes. Before it `5c80c99`,
+item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01 with play in 40 minutes. The start
+restores the options file's resolution and mode right after InitWindow, before the game is built,
+the window appearing as saved about 8 s before the world loads where it changed after; no monitor
+setting exists to read, and a hidden window cannot be shown later since the engine takes a
+program-set hidden window as a --hidden run; the test reads the values and a missing file's 1280 by
+720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the Replies by the owner's
+word in the coder's session. It carries NORM.md with N 7.7 and the README's first line. Before it
+`fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the sessions were paused until
+2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673` (138); `b25e668` (137);
+`4aef50c` with `6001eed` (the README's quick links, 136); `7c36ec8` (42); `f1aa450` (27); `5145d2f`
+(134); `0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133); `a4d383c` (95). Each commit's
+detail stands in its item in REVIEW-ARCHIVE.md, its devlog note and its own words. On 2026-10-30 at
+18:0x the owner wrote items 140 and 141 (Decision 51), the README's links as the devlog and
+3DEngine, a Rust voxel engine as the performance reference (Decision 52), and asked that the
+sessions spend fewer tokens at the same quality, N 7.7. Item 144 closed at its count on 2026-10-30,
+the quads merging to 81 to 89% and not half; 143's other 245 MB is the driver's too, the ring's
+mapped memory counted as the device mapping and its shared backing, the game's own arrays 68 MB
+more. After it `ca7ee6d`, the review's files alone, item 153's record and the regenerated devlog,
+pushed at 13:44 on 2026-11-01, its run green at 15:09 on the three systems.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -208,37 +213,37 @@ full.
     picture under .github/devlog; strict build clean, 364 tests, the play 277 s. The README's eight
     "colour" are a pack's proper name and its addresses, which keep their maker's spelling.
 
-155. **The scene field's centre ahead of the camera.** From the engine's item 196 on 2026-11-04. The
-    game sets no centre, so the engine centres its field and probes on the camera and the finest
+155. **The scene field's center ahead of the camera.** From the engine's item 196 on 2026-11-04. The
+    game sets no center, so the engine centers its field and probes on the camera and the finest
     cascade spends half its width behind the player; in the engine's reading of a bay and an aisle,
-    an aisle centred on the eye read 17 to 29% over its reference against within 5% centred ahead,
-    as Sponza sets it with the camera plus half the view. Set the field's centre ahead of the camera
+    an aisle centered on the eye read 17 to 29% over its reference against within 5% centered ahead,
+    as Sponza sets it with the camera plus half the view. Set the field's center ahead of the camera
     along its view by half the finest cascade's width through SetSceneFieldCenter, read by the
     grove's and the cave's GI against the engine's references and by the frame at the twelve-column
-    settings. After the next package, with 154. From the engine's 197 on 2026-11-04: centred on the
+    settings. After the next package, with 154. From the engine's 197 on 2026-11-04: centered on the
     eye, cascade 1's layers in the engine's bay and aisle read 1.17 of their reference at one bounce
-    against 1.02 centred ahead, the placement's own first-bounce excess, and the engine's 199 (the
+    against 1.02 centered ahead, the placement's own first-bounce excess, and the engine's 199 (the
     probes' faces at their surfaces) raises the pier's join by 4 to 10 points around the eye while
-    lowering it ahead; the centre ahead is the mend for both. Done at c6ac101, read at 17:14, to
-    push after 6eb6540's run. Each frame before BeginDrawing the game sets the field's centre to the
-    camera plus its forward by half the finest cascade's width, eight blocks at the default cell,
-    following the Field Cell setting. The grove's distance 0.171, 0.164 and 0.164 ahead against
-    0.173, 0.166 and 0.166 around the eye at the three qualities, GI's cost the same within 0.2 ms,
-    the shots differing under the near crown; the open land over the spawn at twelve columns at High
-    0.776 against 0.780 with the frame and the GPU within their spread; the cave black both ways; a
-    full turn over 240 frames 24.1 and 27.9 ms ahead against 24.3 and 23.9, the field's CPU time
-    1.15 to 1.3 against 1.0 to 1.1. So the gain is about 1% in the grove where the engine's aisle
-    went from 17 to 29% over to within 5, a cheaper placement's benefit being the bay-and-aisle kind
-    of space the game has few of. The README's eight "colour" are a pack's proper name and its
-    addresses and stay. The note and the grove picture under .github/devlog; strict build clean, 364
-    tests, the play 247 s.
+    lowering it ahead; the center ahead is the mend for both. Done at fe3638e (c6ac101 amended
+    before its push to carry the day's devlog), read at 17:14, to push after 6eb6540's run. Each
+    frame before BeginDrawing the game sets the field's center to the camera plus its forward by
+    half the finest cascade's width, eight blocks at the default cell, following the Field Cell
+    setting. The grove's distance 0.171, 0.164 and 0.164 ahead against 0.173, 0.166 and 0.166 around
+    the eye at the three qualities, GI's cost the same within 0.2 ms, the shots differing under the
+    near crown; the open land over the spawn at twelve columns at High 0.776 against 0.780 with the
+    frame and the GPU within their spread; the cave black both ways; a full turn over 240 frames
+    24.1 and 27.9 ms ahead against 24.3 and 23.9, the field's CPU time 1.15 to 1.3 against 1.0 to
+    1.1. So the gain is about 1% in the grove where the engine's aisle went from 17 to 29% over to
+    within 5, a cheaper placement's benefit being the bay-and-aisle kind of space the game has few
+    of. The README's eight "colour" are a pack's proper name and its addresses and stay. The note
+    and the grove picture under .github/devlog; strict build clean, 364 tests, the play 247 s.
 
 156. **The ground's atlas takes the anisotropic filter.** Decision 59 on 2026-11-04. The engine's
     item 201 filters every linear texture sampler at 16, but the ground does not move, since
     ChunkRenderer sets its atlas to TextureFilter.Point and terrain.slang reads it with SampleLevel
     at a level of its own choosing, which takes no anisotropy. The ground takes the 16 once the
     atlas is sampled linearly with gradients (Sample or SampleGrad) at Trilinear, each tile's mips
-    clamped so neighbours do not bleed across tile edges, read by the ground at a grazing angle
+    clamped so neighbors do not bleed across tile edges, read by the ground at a grazing angle
     against the picture before and by the frame; the owner says whether the blocks keep their pixel
     look, which Point gives and the 16 would soften. After the next package, with 154 and 155.
     Closed at 11:40 on 2026-11-04 on the owner's word, "Voxle sandbox is pixel filtering so no
@@ -388,7 +393,7 @@ each in full under Decisions in REVIEW-ARCHIVE.md.
 
 59. **Anisotropic filtering at 16 everywhere.** The owner wrote on 2026-11-04 at 11:07, "Anisotropic
    filtering is at x16 everywhere because it is cheap and on steep angles it is visually better." So
-   every sampler that reads a texture, colour, normal, surface or atlas, filters anisotropically at
+   every sampler that reads a texture, color, normal, surface or atlas, filters anisotropically at
    16, or at the device's most where it offers less, at every quality and with no knob; the shadow,
    probe and table samplers that are not textures keep their own filters. The game's textures read
    through the engine's samplers, so it comes with the engine's item 201 and the next package; the
