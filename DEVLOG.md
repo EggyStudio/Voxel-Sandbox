@@ -110,6 +110,11 @@ circle over 240 frames, three degrees every two, the grove's frame at High reads
 ahead against 24.3 and 23.9 around the eye, the field's CPU 1.15 and 1.31 ms against 1.10 and 1.02
 and the slowest frame 155 and 127 ms against 250 and 207.
 
+Done that day
+
+- Item 154 at `6eb6540`. The grove's global illumination at the game's settings against the engine's
+  budgets.
+
 ## 2026-11-01
 
 # The engine's 6.0.14, the frame by distance
