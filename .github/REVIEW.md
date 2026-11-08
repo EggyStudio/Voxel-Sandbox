@@ -20,48 +20,51 @@ in 76 minutes and the three tests in 2 to 3 minutes, macOS acquired this time, t
 commit; it keeps the form and carries the review's files and the devlog. After it `7a548ff`, the
 review's files alone, the heads' runs, items 154 to 156 as they closed and the spellings made
 American, pushed at 10:45 on 2026-11-05, with no run since the build passes over the review's files;
-it keeps the form. Before it `8efd1d0`, item 152, the pin of 6.0.11, pushed at 23:07 on 2026-10-31,
-its run green at 00:30 with play in 82 minutes, recorded under the item in REVIEW-ARCHIVE.md. Before
-it `efbb357`, item 151, pushed with `7bd8f1c` at 13:40, its run green at 14:43 with play in 61
-minutes, the first mirror frame's 24 s read as the driver's compile, recorded under the item in
-REVIEW-ARCHIVE.md. Before it `7e052e8`, the version to 0.2, pushed at 12:43, its run green at 13:40.
-Before it `adf5141`, item 148's second commit, pushed at 08:17, its run green at 09:35 with play in
-76 minutes. Before it `8a1e308`, item 150, pushed at 00:31, the play job's limit at 150 minutes, the
-checks summing 4,568 to 4,983 s over two runs after item 141 gave lavapipe more to draw, the rain's
-splashes the largest at 795 s and read every 20 frames until they fall under one where 300 frames
-waited, the seed's field holding Control about a second of frames, none dropped, the README's play
-paragraph gained. Before it `17704ca`, item 149, pushed with `8a1e308` at 00:31, the run of
-`8a1e308` green at 01:28 with play in 57 minutes under the new limit, the flood taking a budget of 2
-ms a frame at a step into an adjacent section with the last whole flood kept and a flood under way
-run to its end, a jump of more than a section flooding at once so teleports and the captures stay
-exact, the casters' search in the frame after. Before it `a272e45`, item 145, pushed at 23:27, its
-run green at 00:29 with play in 61 minutes, the time budget built and left out since flights read no
-gain, 12 columns at a 99th part of 86 to 105 ms without and 92 to 110 with, 8 at 49 to 72 and 47 to
-55, within the noise. Before it `5d96667`, item 148, pushed with `a272e45` at 23:27. Before it
-`b5626c6`, item 147, pushed at 21:59. Before it `5f31bdf`, item 143, pushed with `b5626c6` at 21:59,
-the run of `b5626c6` green at 23:23 with play in 84 minutes, the sections grouped 2 by 2 across and
-one high since groups two high drew the caves under the land and cost the GPU 3 to 4 ms at 12
-columns. Before it `2c458b0`, item 141, pushed at 20:36, its run green at 21:56 with play in 80
-minutes. Before it `7508d5e`, item 142, pushed at 19:18 on 2026-10-30, its run green at 20:31 with
-play in 73 minutes. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at
-19:01 with play in 40 minutes. The start restores the options file's resolution and mode right after
-InitWindow, before the game is built, the window appearing as saved about 8 s before the world loads
-where it changed after; no monitor setting exists to read, and a hidden window cannot be shown later
-since the engine takes a program-set hidden window as a --hidden run; the test reads the values and
-a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
-Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
-first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
-sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
-(138); `b25e668` (137); `4aef50c` with `6001eed` (the README's quick links, 136); `7c36ec8` (42);
-`f1aa450` (27); `5145d2f` (134); `0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133);
-`a4d383c` (95). Each commit's detail stands in its item in REVIEW-ARCHIVE.md, its devlog note and
-its own words. On 2026-10-30 at 18:0x the owner wrote items 140 and 141 (Decision 51), the README's
-links as the devlog and 3DEngine, a Rust voxel engine as the performance reference (Decision 52),
-and asked that the sessions spend fewer tokens at the same quality, N 7.7. Item 144 closed at its
-count on 2026-10-30, the quads merging to 81 to 89% and not half; 143's other 245 MB is the driver's
-too, the ring's mapped memory counted as the device mapping and its shared backing, the game's own
-arrays 68 MB more. After it `ca7ee6d`, the review's files alone, item 153's record and the
-regenerated devlog, pushed at 13:44 on 2026-11-01, its run green at 15:09 on the three systems.
+it keeps the form. After it `f37154b`, the review's record with its done hash in backticks and the
+devlog, pushed at 18:52 on 2026-11-06, its run green at 20:24 with play in 92 minutes and the tests
+in one to two, since the devlog is among the build's paths; it keeps the form. Before it `8efd1d0`,
+item 152, the pin of 6.0.11, pushed at 23:07 on 2026-10-31, its run green at 00:30 with play in 82
+minutes, recorded under the item in REVIEW-ARCHIVE.md. Before it `efbb357`, item 151, pushed with
+`7bd8f1c` at 13:40, its run green at 14:43 with play in 61 minutes, the first mirror frame's 24 s
+read as the driver's compile, recorded under the item in REVIEW-ARCHIVE.md. Before it `7e052e8`, the
+version to 0.2, pushed at 12:43, its run green at 13:40. Before it `adf5141`, item 148's second
+commit, pushed at 08:17, its run green at 09:35 with play in 76 minutes. Before it `8a1e308`, item
+150, pushed at 00:31, the play job's limit at 150 minutes, the checks summing 4,568 to 4,983 s over
+two runs after item 141 gave lavapipe more to draw, the rain's splashes the largest at 795 s and
+read every 20 frames until they fall under one where 300 frames waited, the seed's field holding
+Control about a second of frames, none dropped, the README's play paragraph gained. Before it
+`17704ca`, item 149, pushed with `8a1e308` at 00:31, the run of `8a1e308` green at 01:28 with play
+in 57 minutes under the new limit, the flood taking a budget of 2 ms a frame at a step into an
+adjacent section with the last whole flood kept and a flood under way run to its end, a jump of more
+than a section flooding at once so teleports and the captures stay exact, the casters' search in the
+frame after. Before it `a272e45`, item 145, pushed at 23:27, its run green at 00:29 with play in 61
+minutes, the time budget built and left out since flights read no gain, 12 columns at a 99th part of
+86 to 105 ms without and 92 to 110 with, 8 at 49 to 72 and 47 to 55, within the noise. Before it
+`5d96667`, item 148, pushed with `a272e45` at 23:27. Before it `b5626c6`, item 147, pushed at 21:59.
+Before it `5f31bdf`, item 143, pushed with `b5626c6` at 21:59, the run of `b5626c6` green at 23:23
+with play in 84 minutes, the sections grouped 2 by 2 across and one high since groups two high drew
+the caves under the land and cost the GPU 3 to 4 ms at 12 columns. Before it `2c458b0`, item 141,
+pushed at 20:36, its run green at 21:56 with play in 80 minutes. Before it `7508d5e`, item 142,
+pushed at 19:18 on 2026-10-30, its run green at 20:31 with play in 73 minutes. Before it `5c80c99`,
+item 140, pushed at 18:21 on 2026-10-30, its run green at 19:01 with play in 40 minutes. The start
+restores the options file's resolution and mode right after InitWindow, before the game is built,
+the window appearing as saved about 8 s before the world loads where it changed after; no monitor
+setting exists to read, and a hidden window cannot be shown later since the engine takes a program-
+set hidden window as a --hidden run; the test reads the values and a missing file's 1280 by 720.
+AGENTS.md's REVIEW.md line reads the head, the batch's items and the Replies by the owner's word in
+the coder's session. It carries NORM.md with N 7.7 and the README's first line. Before it `fc0937a`,
+item 139, pushed by the owner's hand on 2026-10-26 while the sessions were paused until 2026-10-30,
+its run green. Before it on 2026-10-26, each green: `9c07673` (138); `b25e668` (137); `4aef50c` with
+`6001eed` (the README's quick links, 136); `7c36ec8` (42); `f1aa450` (27); `5145d2f` (134);
+`0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133); `a4d383c` (95). Each commit's detail
+stands in its item in REVIEW-ARCHIVE.md, its devlog note and its own words. On 2026-10-30 at 18:0x
+the owner wrote items 140 and 141 (Decision 51), the README's links as the devlog and 3DEngine, a
+Rust voxel engine as the performance reference (Decision 52), and asked that the sessions spend
+fewer tokens at the same quality, N 7.7. Item 144 closed at its count on 2026-10-30, the quads
+merging to 81 to 89% and not half; 143's other 245 MB is the driver's too, the ring's mapped memory
+counted as the device mapping and its shared backing, the game's own arrays 68 MB more. After it
+`ca7ee6d`, the review's files alone, item 153's record and the regenerated devlog, pushed at 13:44
+on 2026-11-01, its run green at 15:09 on the three systems.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -252,6 +255,20 @@ full.
     changes needed I think", the blocks keeping their pixel look, the atlas at Point, nothing
     changing.
 
+157. **The version and its tags in the documents.** Decision 60 on 2026-11-08. COMMITS.md gains a
+    section on the version, `build/version.txt`'s major and minor raised by this session or the
+    reviewer in a commit of its own when a step is done and the changes behind it are meaningful,
+    the major at a step the size of a release, and the tags of the letter v and the version that the
+    reviewer sets on that commit and on a release build's commit, no other. When the session next
+    wakes for the engine's package.
+
+158. **The license is the MPL 2.0.** Decision 61 on 2026-11-08. `LICENSE` holds the Mozilla Public
+    License Version 2.0 in its standard text, as both engines' do, in place of the MIT text whose
+    copyright line named a person; the MPL carries no such line. Every mention of MIT in the tree
+    follows, and nothing in the tree names a person, read with a case-insensitive search for the two
+    parts of the name over every file. One commit, told to the reviewer, who pushes it; the game's
+    package rests as it is. Before 157, when the session wakes.
+
 ## Verdicts
 
 No verdict is open. Verdicts 1 to 7 are settled, said under each in REVIEW-ARCHIVE.md.
@@ -402,5 +419,25 @@ each in full under Decisions in REVIEW-ARCHIVE.md.
    game sets nothing. At 11:40 the owner added that the game is pixel filtering and needs no change,
    so its atlas stays at Point and item 156 is closed.
 
+60. **Version tags.** The owner wrote at about 14:00 on 2026-11-08, having tagged every commit of
+    the Unity Essentials repositories as `v2.0.30` and the like, that the three projects take tags
+    too, and answered the review's questions at 14:1x. The form is `v6.0.91`, the letter v before
+    `build/version.sh`'s number. Tags go on each major or minor change and on the commits packages
+    were built from, since "doing every commit clutters it and is unnecessary as we want to focus
+    the version tags to releases time apart with meaningful changes and not commits apart". The
+    major and the minor are the sessions' to raise, "each session working on the project can decide
+    when the time is right to rise that number in minor or major as each commit counts as patch",
+    with "full liberty" when "a step is done and meaningful changes were done". N 6.3 holds the rule
+    and the reviewer sets the tags as it pushes. `v0.2.0` marks `7e052e8`, which set 0.2 (Decision
+    57), set at 14:12; a release build of `build/publish.sh` is tagged when the owner names one.
+    Decision 57 stands with the game's session able to raise the version as well as the reviewer.
+
+61. **No personal name in any repository.** On 2026-11-08 at about 15:35 the owner showed the
+    account's code search finding the personal name in six files of four repositories, this game's
+    `LICENSE` among them, after asking the same morning that the name stand nowhere, and at about
+    15:55 asked that the game's license be the Mozilla Public License Version 2.0, as the engines'
+    are; the MPL names no holder. The history's authors are not rewritten here, since the review's
+    files, the devlog and the package's release notes cite the commits by their hashes, and the
+    commits' noreply address is the account's already.
 
 ## Replies
