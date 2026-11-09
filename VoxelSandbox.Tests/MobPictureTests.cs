@@ -126,8 +126,8 @@ public class MobPictureTests
     [Fact]
     public void A_Cows_Picture_Half_As_Tall_Is_Laid_As_Before_Its_Muzzle()
     {
-        // Bare Bones' cow of 64 by 32 on the layout of 64 by 64, the same offsets but for the muzzle,
-        // at row 33, which the picture does not reach.
+        // The default packs' cow of 64 by 32 on the layout of 64 by 64, the same offsets but for
+        // the muzzle, at row 33, which the picture does not reach.
         var cow = MobKinds.Cow;
         var old = new Image(Enumerable.Repeat((byte)255, 64 * 32 * 4).ToArray(), 64, 32);
         Assert.True(MobRenderer.Fits(old, cow.PictureSize));

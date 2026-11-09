@@ -169,7 +169,7 @@ public sealed record ChestLoot(string Name, ChestLoot.Pool[] Pools)
         new(2, 6, [new(Items.Diamond, 3, 1, 3), new(Items.IronIngot, 10, 1, 5), new(Items.GoldIngot, 15, 2, 7), new(Items.Emerald, 2, 1, 3), new(Items.Bone, 20, 4, 6), new(Items.RottenFlesh, 16, 3, 7)]),
     ]);
 
-    /// <summary>A witch's hut's, which the source's hut has none of and the modpack's holds, what a witch keeps that the game has.</summary>
+    /// <summary>A witch's hut's, which the source's hut has none of, what a witch keeps that the game has.</summary>
     public static readonly ChestLoot WitchHut = new("witch_hut",
     [
         new(2, 5, [new(Items.SpiderEye, 10, 1, 3), new(Items.String, 10, 1, 4), new(Items.Redstone, 8, 1, 4), new(Items.RottenFlesh, 6, 1, 3), new(Items.Apple, 5, 1, 2), new(Items.Feather, 5, 1, 3)]),

@@ -7,9 +7,9 @@ namespace VoxelSandbox.Tests;
 /// <summary>A pack's models of the mobs in OptiFine's form read into the game's pieces, their roles in the gait, their boxes and their faces' parts of the picture.</summary>
 public sealed class PackModelTests
 {
-    // A cow of the form, a body whose head lies inside it as Fresh Animations lays it, turned a
-    // quarter about x as the source lays a cow's body, and four legs pivoted at their hooves, on a
-    // picture four times the source's.
+    // A cow of the form, a body whose head lies inside it as a pack may lay it, turned a quarter
+    // about x as the source lays a cow's body, and four legs pivoted at their hooves, on a picture
+    // four times the source's.
     private const string Cow = """
         {
           "textureSize": [256, 128],
@@ -102,7 +102,8 @@ public sealed class PackModelTests
     [Fact]
     public void Fresh_Animations_Where_The_Machine_Has_It_Models_Every_Kind_The_Game_Has_With_A_Head_That_Turns()
     {
-        // The copy in the reference folder over the checkout, which no other machine has.
+        // The pack's copy where the machine keeps one above the checkout, the test passing on one
+        // that keeps none.
         var folder = new DirectoryInfo(AppContext.BaseDirectory);
         while (folder is not null && !File.Exists(Path.Combine(folder.FullName, ".ref", "resourcepacks", "FreshAnimations_v1.9.2.zip"))) folder = folder.Parent;
         if (folder is null) return;

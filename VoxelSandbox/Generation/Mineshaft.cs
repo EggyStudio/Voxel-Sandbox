@@ -16,7 +16,7 @@ namespace VoxelSandbox;
 /// it crosses lays out the same pieces and builds its own part of them.
 /// </para>
 /// <para>
-/// The source holds its corridors up with fences under a plank, and the modpack's mineshafts with
+/// The source holds its corridors up with fences under a plank, and the game's mineshafts with
 /// posts of logs, its wood the biome's, acacia in the savanna, spruce in the taiga, birch in the birch
 /// forest, jungle wood in the jungle, cherry in the cherry grove and dark oak in the dark forest and
 /// the badlands, where the source's own is dark oak, and hang lanterns from some of their beams. A

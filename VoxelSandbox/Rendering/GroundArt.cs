@@ -13,9 +13,9 @@ namespace VoxelSandbox;
 /// the grass is, and it is laid over whatever tile the grass has, a pack's or the game's white one,
 /// which keeps the way it lies, since a pack draws its grass's streaks one way, the patch and the
 /// decor turning over it instead. A pebble's and a blossom's pixels keep their own colors, laid as
-/// a layer of decor over the grass, clear elsewhere. The weights follow those of the grass's looks
-/// in the reference modpack, about four blocks in five plain, one in twelve clover and a few in a
-/// hundred stones or flowers.
+/// a layer of decor over the grass, clear elsewhere. The weights keep the grass mostly plain, about
+/// four blocks in five, with one in twelve clover and a few in a hundred stones or flowers, so the
+/// decor reads as scattered over the ground rather than as a pattern.
 /// </remarks>
 public static class GroundArt
 {

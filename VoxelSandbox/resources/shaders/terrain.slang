@@ -62,11 +62,11 @@ float heightShare(float eyeY, float pointY)
     return abs(across) < 1e-3 ? exp(-h0) : (exp(-h0) - exp(-h1)) / across;
 }
 
-// The color a point fades into, the sky drawn behind it as the engine's sky shader draws it along the
-// ray from the eye, under the share of the haze dome's band at the ray's height, so a block high
-// against the sky fades into the sky's blue and one at the horizon into the horizon's haze, as the
-// modpack's shader fades its land. Under water, and on the dome itself, whose band is blended over
-// the sky, it is the haze's color alone.
+// The color a point fades into, the sky drawn behind it as the engine's sky shader draws it along
+// the ray from the eye, under the share of the haze dome's band at the ray's height, so a block
+// high against the sky fades into the sky's blue and one at the horizon into the horizon's haze.
+// Under water, and on the dome itself, whose band is blended over the sky, it is the haze's color
+// alone.
 float3 hazeColor(float3 toEye, float distance)
 {
     if (atmosphere.z == 0.0 || distance > atmosphere.w) return fogColor.rgb;
@@ -210,8 +210,8 @@ float4 tileColor(uint tile, float2 place, float level)
 }
 
 // How many steps a block's face is across in the grid each point's shadow from the sun is taken on,
-// eight, as the modpack's shader steps its shadows with the settings it is played with, half a
-// texture's sixteen pixels.
+// eight, half a texture's sixteen pixels, so a shadow's edge steps by two of a texture's pixels
+// and reads as part of the blocks' art rather than a smooth line across it.
 static const float LightSteps = 8.0;
 
 // A point of a face moved to the middle of the step it lies in, along the face alone, so every
@@ -409,9 +409,9 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
         shown = (fresnel * sky + (1.0 - fresnel) * alpha * shown) / max(covered, 1e-4);
         color.a = covered;
     }
-    // The land's edge fades into the haze, and the atmosphere hazes it from near on as the modpack's
-    // shader's does, its share growing as one less e to the minus the cube of the distance, by the
-    // haze's density along the ray, thinner over the land high above the sea.
+    // The land's edge fades into the haze, and the atmosphere hazes it from near on, its share
+    // growing as one less e to the minus the cube of the distance, so the near land stays clear, by
+    // the haze's density along the ray, thinner over the land high above the sea.
     float distance = length(streams.base.toEye);
     float density = heightShare(streams.base.world.y + streams.base.toEye.y, streams.base.world.y);
     float aerial = atmosphere.x * (1.0 - exp(-distance * distance * distance * 1e-6 * atmosphere.y * density));

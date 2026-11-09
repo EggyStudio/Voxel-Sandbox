@@ -14,8 +14,8 @@ public readonly record struct GuiSprite(int X, int Y, int Width, int Height, int
 
 /// <summary>
 /// The interface's pictures, painted once into an atlas of RGBA bytes in the game's own flat look,
-/// a dark outline, a pixel of light above and of shade below and plain colors, as Bare Bones draws
-/// Minecraft's, the panels and the buttons drawn stretched between edges that keep their size.
+/// a dark outline, a pixel of light above and of shade below and plain colors, the panels and the
+/// buttons drawn stretched between edges that keep their size.
 /// </summary>
 /// <remarks>
 /// Each picture is in the interface's own pixels, which <see cref="Gui"/> draws at a whole number

@@ -64,7 +64,11 @@ fewer tokens at the same quality, N 7.7. Item 144 closed at its count on 2026-10
 merging to 81 to 89% and not half; 143's other 245 MB is the driver's too, the ring's mapped memory
 counted as the device mapping and its shared backing, the game's own arrays 68 MB more. After it
 `ca7ee6d`, the review's files alone, item 153's record and the regenerated devlog, pushed at 13:44
-on 2026-11-01, its run green at 15:09 on the three systems.
+on 2026-11-01, its run green at 15:09 on the three systems. After it `06fd267`, item 158, the
+license as the Mozilla Public License 2.0 in its standard text, pushed at 15:30 on 2026-11-08, its
+run red at 16:30 in the play job alone, the game's process gone at the ambient occlusion toggle
+after 58 minutes of passed checks, nothing of the commit's (Verdict 8), the job rerun at 16:34; it
+keeps the form and carries the review's file.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -267,11 +271,39 @@ full.
     copyright line named a person; the MPL carries no such line. Every mention of MIT in the tree
     follows, and nothing in the tree names a person, read with a case-insensitive search for the two
     parts of the name over every file. One commit, told to the reviewer, who pushes it; the game's
-    package rests as it is. Before 157, when the session wakes.
+    package rests as it is. Before 157, when the session wakes. Done at `06fd267`, pushed at 15:30
+    on 2026-11-08, the text mozilla.org's, nothing else in the tree naming MIT or a person.
+
+159. **The middle dot out.** Decision 62 on 2026-11-08. The README's first line, changed in the
+    tree, goes in the next commit, and STYLE.md's Punctuation gains the sentence that the middle dot
+    is not used, a row of links separated by a space, a list by commas and a product said in words;
+    nothing else in the tree carries one. With 157, when the session wakes. With it, by Decision 63,
+    STYLE.md's Register gains the sentence that a comment stands on the code's own terms, and the
+    game's comments that explain by another product, an outside asset's file name, the owner, a
+    reference picture or a session's doing are rewritten in the game's terms, Minecraft's names kept
+    where the game takes a rule or a number from the game it follows, as STYLE.md allows.
 
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 7 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdict 8 is open, the play job's exit being the engine's fault (3DEngine item 223). Verdicts 1 to 7 are settled, said under each in REVIEW-ARCHIVE.md.
+
+8. **The play job of `06fd267` ended with the game gone.** The run of 06fd267, the license alone
+    with the review's file, went red at 16:30 on 2026-11-08 in its play job at 58 minutes, after
+    every check to the land's edge had passed, when `voxel.options post Ambient_Occlusion 0` found
+    the game's process gone, its log ending in a stack through `E3D.EndDrawing` from
+    `VoxelGame.Draw`; the three test jobs were green in two minutes. Nothing of the commit's touches
+    the game or the engine, which rests at 6.0.91, and the same script passed on f37154b, so the
+    exit is read as the runner's or lavapipe's unless it repeats. The play job is rerun at 16:34; if
+    it ends red the same way, the item is the coder's, to read the game's log of the exit and hold
+    the option's toggle in a test. The rerun ended the same way at 17:20, at 45 minutes, so the exit
+    is the engine's and not the runner's. The game's own log from the play artifact has it, at 2,648
+    s a NullReferenceException inside a memory copy in `SceneFieldRenderer.Pool`, called from
+    `Record` and `Draw` in the render graph, then an AccessViolationException on the same copy and
+    the process gone, seconds after the scene's distance field was made three times in two seconds
+    with 5, 4 and 5 cascades as the ambient occlusion option was posted. The fault is 3DEngine's at
+    6.0.91, the pool's buffers copied after the field's cascade count changed under them, and it is
+    the engine's item 223; the game's run stays red until the engine's fix is packed and the game
+    pins that package, and the game's session has nothing to mend. Recorded at 17:24.
 
 ## Decisions
 
@@ -432,12 +464,30 @@ each in full under Decisions in REVIEW-ARCHIVE.md.
     57), set at 14:12; a release build of `build/publish.sh` is tagged when the owner names one.
     Decision 57 stands with the game's session able to raise the version as well as the reviewer.
 
-61. **No personal name in any repository.** On 2026-11-08 at about 15:35 the owner showed the
+61. **No personal name in any repository.** On 2026-11-08 at about 15:25 the owner showed the
     account's code search finding the personal name in six files of four repositories, this game's
-    `LICENSE` among them, after asking the same morning that the name stand nowhere, and at about
-    15:55 asked that the game's license be the Mozilla Public License Version 2.0, as the engines'
+    `LICENSE` among them, after asking the same morning that the name stand nowhere, and at about 15:27 asked that the game's license be the Mozilla Public License Version 2.0, as the engines'
     are; the MPL names no holder. The history's authors are not rewritten here, since the review's
     files, the devlog and the package's release notes cite the commits by their hashes, and the
     commits' noreply address is the account's already.
+
+62. **No middle dot.** The owner wrote at 17:57 and 18:00 on 2026-11-08 that the middle dot is not
+    used, the README's top links separated by a space alone and the dot nowhere else; the reviewer
+    changed the README's first line in the tree on their word, for the next commit to carry (item
+    159). The rule goes into STYLE.md's Punctuation as the shared text has it everywhere.
+
+63. **Comments on the code's own terms.** The owner read a comment of scenes_sponza at about 19:00
+    on 2026-11-08, "The frame graded as that scene's HDRP profile grades it, by the look of its AgX
+    - Powerful.exr, a lookup build/unity-lut.py writes from that strip, a gamma of w 0.225, and a
+    bloom of intensity 0.25, threshold 0.333 and scatter 0.7, worked out as HDRP works them out",
+    and wrote that it "sounds just bad", reads as an em dash, and "is taking too much liberty of
+    outside knowledge and in-process session knowledge", in scenes_sponza explicitly and probably
+    everywhere else. The rule from it, in STYLE.md's Register and as N 4.11, is that a comment
+    stands on the code's own terms. It says what the code does and why in the engine's words; a
+    number taken from elsewhere stands with the reason it is right here, what it makes the frame or
+    the program do, and the source is named once in the documents' references and not in the
+    comment; the file names of outside assets, another product's profile or process as the
+    explanation, "as X works it out", and the facts of the sessions' work are not written in a
+    comment. Item 159 carries STYLE.md's sentence and the game's own sweep.
 
 ## Replies

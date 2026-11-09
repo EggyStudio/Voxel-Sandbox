@@ -3,9 +3,9 @@ using Engine;
 namespace VoxelSandbox;
 
 /// <summary>
-/// The zoom its key gives while held, as the modpack's zoom does, the view narrowed to a quarter of
-/// its field over a tenth of a second and widened back as the key is let go, the wheel narrowing it
-/// further while held to a tenth.
+/// The zoom its key gives while held, the view narrowed to a quarter of its field over a tenth of a
+/// second and widened back as the key is let go, the wheel narrowing it further while held to a
+/// tenth.
 /// </summary>
 /// <remarks>
 /// The share of the field shown also scales the mouse's turn, so a pixel turns the view as far

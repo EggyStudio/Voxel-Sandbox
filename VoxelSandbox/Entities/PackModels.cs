@@ -14,8 +14,8 @@ namespace VoxelSandbox;
 /// source's parts, its head, its body, its legs, its arms and its wings, by which each takes its
 /// role in the game's gait. A part's boxes and every box nested in it are placed by the turns and
 /// moves of the parts they lie in, so a piece of the game's model is a top part with all it holds,
-/// and a part nested in another but named for a role, as Fresh Animations lays its head inside its
-/// body as <c>head2</c>, is lifted out into a piece of its own, so the head still turns with the look.
+/// and a part nested in another but named for a role, as a pack may lay a head inside its body as
+/// <c>head2</c>, is lifted out into a piece of its own, so the head still turns with the look.
 /// A model's animations are expressions the game takes none of, so every part stands as the file
 /// places it and moves only as the game's gait moves it.
 /// </para>
@@ -27,8 +27,8 @@ namespace VoxelSandbox;
 /// the part holding them. Each turn is in degrees about x, then y, then z, about the part's pivot.
 /// A box's faces take the parts of the picture each names, or the source's layout from its offset,
 /// in the model's size of picture, scaled to the size the game lays its kind's picture at, and a
-/// leg's or an arm's pivot standing low in it, as Fresh Animations stands its cow's legs on their
-/// pivots at the hoof, is set at the top of its boxes, where the gait swings it from.
+/// leg's or an arm's pivot standing low in it, as a pack may stand a cow's legs on pivots at the
+/// hoof, is set at the top of its boxes, where the gait swings it from.
 /// </para>
 /// </remarks>
 public static class PackModels
@@ -97,8 +97,8 @@ public static class PackModels
         using var document = JsonDocument.Parse(json);
         var root = document.RootElement;
         var size = root.TryGetProperty("textureSize", out var given) ? new Vector2(given[0].GetSingle(), given[1].GetSingle()) : kind.PictureSize;
-        // The model's pixels of picture in the kind's, as Fresh Animations gives its pictures' parts
-        // on a picture four times the source's.
+        // The model's pixels of picture in the kind's, since a pack may give its pictures' parts on a
+        // picture four times the source's.
         var scale = kind.PictureSize.X / size.X;
         var pieces = new List<Piece>();
         foreach (var top in root.GetProperty("models").EnumerateArray())

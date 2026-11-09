@@ -1185,12 +1185,11 @@ public sealed class VoxelGame : IDisposable
         var (skyAtEye, _) = World.GetLight((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
         _eyeSky += (skyAtEye - _eyeSky) * MathF.Min(1, GetFrameTime() * 8);
         if (Player.EyeInWater) Renderer.Fog(new Color(24, 52, 120), 2, 16);
-        // Over that the atmosphere hazes the land as the reference modpack's shader does with its
-        // settings, its fog's strength of 0.95 less the 0.25 it keeps in clear weather, held to
-        // 0.325 of that under its altitude of 300, which lies over the whole world, so a share of
-        // 0.23 at most, growing half as fast as at its distance setting of 100, and as much slower
-        // as the render distance is past twelve columns. The haze thins over the land high above
-        // the sea and thickens about sunrise, each as its setting says.
+        // Over that the atmosphere hazes the land from near on, by a share of 0.23 at most, a
+        // strength of 0.95 less the 0.25 kept back in clear weather and 0.325 of the rest, so the
+        // farthest land keeps more than three quarters of its color, its growth 0.5 up to twelve
+        // columns and as much slower as the render distance is past them. The haze thins over the
+        // land high above the sea and thickens about sunrise, each as its setting says.
         else if (Fog) Renderer.Fog(Sky.Horizon, reach * 0.65f, reach * 0.95f, (0.95f - 0.25f) * 0.325f,
             0.5f * MathF.Min(1, 192 / reach) * (MorningHaze ? Haze.Dawn(Sky.Hour) : 1), sky: true, byHeight: HazeByHeight, eyeSky: _eyeSky);
         else Renderer.Fog(Sky.Horizon, float.MaxValue, float.MaxValue);

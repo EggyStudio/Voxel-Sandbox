@@ -6,6 +6,12 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 notes written beside them as Markdown files named the same way. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
+## 2026-11-08
+
+Done that day
+
+- Item 158 at `06fd267`. The license is the MPL 2.0.
+
 ## 2026-11-04
 
 ![](.github/devlog/2026-11-04-item-154-cave-far.webp)

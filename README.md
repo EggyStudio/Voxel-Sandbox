@@ -1,4 +1,4 @@
-[Devlog](https://github.com/EggyStudio/Voxel-Sandbox/blob/main/DEVLOG.md) · [3DEngine](https://github.com/EggyStudio/3DEngine)
+[Devlog](https://github.com/EggyStudio/Voxel-Sandbox/blob/main/DEVLOG.md) [3DEngine](https://github.com/EggyStudio/3DEngine)
 
 # Voxel Sandbox
 

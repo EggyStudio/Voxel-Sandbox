@@ -5,10 +5,10 @@ using static Engine.E3D;
 namespace VoxelSandbox;
 
 /// <summary>
-/// The world's small moving things of the modpack's kind, raindrops splashing on the blocks they
-/// meet and spreading in rings where they meet water, leaves falling from leaf blocks and turning
-/// as they fall, dust drifting in the caves with spores where moss grows, and the wakes of the
-/// player and the mobs moving through water, with embers rising where lava lies near in the dark.
+/// The world's small moving things, raindrops splashing on the blocks they meet and spreading in
+/// rings where they meet water, leaves falling from leaf blocks and turning as they fall, dust
+/// drifting in the caves with spores where moss grows, and the wakes of the player and the mobs
+/// moving through water, with embers rising where lava lies near in the dark.
 /// </summary>
 /// <remarks>
 /// <para>

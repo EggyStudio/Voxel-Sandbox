@@ -9,6 +9,9 @@ given file.
 
 Em dashes and en dashes are not used. Neither `—` nor `–`, in any file.
 
+The middle dot `·` is not used either. A row of links is separated by a space, a list by commas,
+and a product is said in words or with the word dot.
+
 The spaced hyphen ` - ` is not sentence punctuation. Replace it according to the relationship
 between the clauses.
 
@@ -162,12 +165,22 @@ is and does. Another product is named only where a rule or a number is taken fro
 player's sizes and speeds and the light levels are taken from Minecraft. A description holds no
 plan, so no line says what a thing is the start of or grows toward.
 
+A comment stands on the code's own terms. It says what the code does and why in the game's words,
+and a number taken from elsewhere stands with the reason it is right here, what it makes the frame
+or the game do, its source named once in the documents and not in the comment. The file name of an
+outside asset, another product's look, profile or process given as the explanation, a reference
+picture, and the facts of the work that made the code, a review's verdict, a commit's run or a
+session's finding, are not written in a comment, since a reader of the source has none of them.
+Minecraft is named where the game takes a rule or a number from it, and a resource pack's format
+where the game reads it, as OptiFine's connected textures are.
+
 | instead of | write |
 |---|---|
 | `the light that bounces`, `the bounce` | `global illumination`, or `radiance cascades` where the technique is meant and `indirect light` where its effect is |
 | `a block that gives off light`, `a glowing block` | `an emissive block` |
 | `drives the running game`, `driving a session` | `controls the running game through the command line`, `scripting a session` |
 | `a drive of the game` | `a scripted run of the game` |
+| `// The modpack's shader's curve with the modpack's own settings` | `// The tonemap curve, its exposure 0.9, white curve 1.3, lower curve 1.05 and upper 1.0, which brings the sun's light under white with the darks a little deeper than Reinhard's` |
 | `A voxel game in the manner of Minecraft, and the ground floor of a larger one` | `A voxel game set in an endless generated world whose blocks are placed and broken, with its light, its water, its mobs and the items they drop` |
 
 The idioms in the manner of, the ground floor of, out of the box, under the hood, at a glance, a
@@ -259,6 +272,11 @@ git grep -n -i -E "light that bounces|the bounce|bounc(e|es|ing) (no )?light|giv
 # The likenesses and idioms the register replaces. A word in its literal sense is left, so each hit
 # is read.
 git grep -n -i -E "in the manner of|ground floor|out of the box|under the hood|at a glance|a handful of|a great deal of|in the wild|plumbing|a long way" -- ':!.github/REVIEW.md'
+
+# Comments that lean on another product, a named pack's look, a reference picture, a review's
+# records or a commit's run. A script names the pack it turns on, so the hits are read rather than
+# counted.
+git grep -n -i -E "modpack|Aurora|Complementary|Bare Bones|Fresh Animations|reference (modpack|picture|copy|folder)|REVIEW\.md|Verdict [0-9]|[0-9a-f]{8}'s run" -- '*.cs' '*.slang' '*.sh' '*.py' '*.yml' | grep -E "//|#|/\*"
 
 # Padded section banners.
 grep -rn "// -- .*--" --include=*.cs --include=*.slang .

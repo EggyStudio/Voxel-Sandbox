@@ -8,10 +8,11 @@ namespace VoxelSandbox;
 /// <remarks>
 /// <para>
 /// The haze's share at a point is the most of it times one less e to the minus the cube of the
-/// distance times its growth, as the modpack's shader's, with the growth taken by the density along
-/// the ray from the eye. The density is whole at the sea's level and under it and falls by e over
-/// each <see cref="Scale"/> blocks above it, so a valley holds its haze and a peak eighty blocks over
-/// the sea about two fifths of it, its mean along the ray reckoned whole rather than sampled.
+/// distance times its growth, so the land near the eye stays clear and the far land fades fast,
+/// with the growth taken by the density along the ray from the eye. The density is whole at the
+/// sea's level and under it and falls by e over each <see cref="Scale"/> blocks above it, so a
+/// valley holds its haze and a peak eighty blocks over the sea about two fifths of it, its mean
+/// along the ray reckoned whole rather than sampled.
 /// </para>
 /// <para>
 /// The morning thickens it, as the land's mist at dawn does, the growth two and a half times its

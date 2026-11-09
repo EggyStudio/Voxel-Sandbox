@@ -5,7 +5,7 @@ namespace VoxelSandbox.Tests;
 
 public class SkyTests
 {
-    // The sky's colors as they start, the modpack's shader's.
+    // The sky's colors as they start, the defaults.
     private static readonly SkyColors Colors = new();
 
     [Fact]

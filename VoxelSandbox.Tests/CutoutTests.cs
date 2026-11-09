@@ -133,7 +133,8 @@ public sealed class CutoutTests : IDisposable
     [Fact]
     public void Glass_Keeps_Its_Frame_And_Loses_The_Streaks_Across_Its_Pane()
     {
-        // A frame a pixel wide about a clear pane with a streak across it, as Bare Bones draws its glass.
+        // A frame a pixel wide about a clear pane with a streak across it, as the default packs
+        // draw their glass.
         var streaked = new Image([.. Enumerable.Range(0, 256).SelectMany(i =>
         {
             int x = i % 16, y = i / 16;

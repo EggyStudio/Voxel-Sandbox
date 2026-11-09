@@ -67,6 +67,17 @@ git commit -F /tmp/msg
 A message that reads right in `git log --format='%B' | cat -v` shows `M-bM-^@M-^N` three times on
 the first line, an empty second line and the sentence on the third.
 
+## The version
+
+The version is `build/version.sh`'s, the major and the minor written in `build/version.txt` and the
+patch the number of commits since that file last changed, so every commit is a patch. The game's
+session or the reviewing session raises the minor in a commit that changes `build/version.txt`
+alone, once a step is done and the changes behind it are meaningful, and the major at a step the
+size of a release. The commit's message keeps the form above, as `7e052e8`'s "The version moves to
+0.2." does. The reviewing session tags that commit and the commit a GitHub release of the pack
+workflow was made from, and no other, with the letter v and the version, such as `v0.2.0`, so the
+tags mark releases with meaningful changes between them rather than single commits.
+
 ## A batch that shares a file with another
 
 When two batches touch one file, only the first batch's hunks are staged, so each commit holds one

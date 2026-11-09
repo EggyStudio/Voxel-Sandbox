@@ -92,8 +92,8 @@ public sealed class JungleTemple : Structure
 
 /// <summary>
 /// A witch's hut in the swamp, a room of spruce planks on posts of oak over the ground or the
-/// water, with a porch at its door, windows of fences, a roof of spruce stairs, a crafting table and,
-/// as the modpack's huts have, a chest of what a witch keeps.
+/// water, with a porch at its door, windows of fences, a roof of spruce stairs, a crafting table and
+/// a chest of what a witch keeps.
 /// </summary>
 /// <remarks>
 /// The source's swamp huts stand one to each square of 32 chunks, at a chunk among its first 24,
@@ -164,8 +164,8 @@ public sealed class WitchHut : Structure
 /// <remarks>
 /// The source's outposts stand one to each square of 32 chunks, at a chunk among its first 24, in one
 /// square in five, on the plains, the desert, the savanna, the taiga and the snowy plains, and never
-/// within ten chunks of a village. The tower is the modpack's watchtower's look, logs of dark oak at
-/// its corners, walls of its planks and floors of birch over a base of cobblestone.
+/// within ten chunks of a village. The tower has logs of dark oak at its corners, walls of its planks
+/// and floors of birch over a base of cobblestone.
 /// </remarks>
 public sealed class PillagerOutpost : Structure
 {

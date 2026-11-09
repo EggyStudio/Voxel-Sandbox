@@ -421,12 +421,11 @@ public sealed class SectionMesher
     // terrain shader lays a texture on a face of each direction, by their numbers in Steps.
     private static readonly (int Right, int Down)[] TextureWays = [(5, 3), (4, 3), (0, 4), (0, 5), (0, 3), (1, 3)];
 
-    // A face of glass a pack draws in a frame carries which of its eight neighbors in the face's plane
-    // are the same glass, in its overlay's bits with both untinted flags, so the terrain shader leaves
-    // out the frame's edges and corners toward them and two panes side by side show one frame about
-    // both, as the modpack's connected textures draw them. The bits are the right, left, lower and
-    // upper neighbors as the texture lies on the face, then the lower right, lower left, upper right
-    // and upper left.
+    // A face of glass a pack draws in a frame carries which of its eight neighbors in the face's
+    // plane are the same glass, in its overlay's bits with both untinted flags, so the terrain
+    // shader leaves out the frame's edges and corners toward them and two panes side by side show
+    // one frame about both. The bits are the right, left, lower and upper neighbors as the texture
+    // lies on the face, then the lower right, lower left, upper right and upper left.
     private uint Joined(uint tiles, int face, int at)
     {
         var (right, down) = TextureWays[face];

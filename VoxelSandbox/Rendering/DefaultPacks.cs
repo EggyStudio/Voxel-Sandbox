@@ -19,8 +19,8 @@ public enum FetchState
 /// <summary>
 /// The resource packs the game is drawn with by default, which the repository does not hold, since
 /// their terms let no one but their makers hand them out, and which the game fetches from the
-/// makers' own pages on Modrinth into its folder of packs the first time it starts, as a Modrinth
-/// modpack names its files rather than holding them.
+/// makers' own pages on Modrinth into its folder of packs the first time it starts, naming each file
+/// rather than holding it.
 /// </summary>
 /// <remarks>
 /// <para>

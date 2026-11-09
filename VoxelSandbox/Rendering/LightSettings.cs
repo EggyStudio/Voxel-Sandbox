@@ -56,16 +56,15 @@ public sealed class LightSettings
     public float BloomThreshold = 1;
     public float Occlusion;
     public bool AutoExposure;
-    // The light is raised by 1.6 before the modpack's curve, which gives a village's roofs and wheat in
-    // the afternoon the brightness of the modpack's pictures, the middle levels within 3 of Reinhard's
-    // curve at 1.7, which matched them, the darks deeper by the curve's lower power and the lights
-    // brighter.
+    // The light is raised by 1.6 before the curve, which keeps a village's roofs and wheat in the
+    // afternoon sun bright, the middle levels within 3 of Reinhard's curve at 1.7, the darks deeper by
+    // the curve's lower power and the lights brighter.
     public float Exposure = 1.6f;
-    // The frame graded as vividly as the modpack's pictures, whose shader's warm light and deep shade
-    // saturate them, each channel pushed from the middle gray by 1.12 and the color by 1.4.
+    // The frame graded vividly, each channel pushed from the middle gray by 1.12 and the color by 1.4,
+    // so the sun's warm light and the deep shade stay apart through the curve.
     public float Contrast = 1.12f, Saturation = 1.4f;
-    // The modpack's shader's curve with the modpack's own settings, its exposure 0.9,
-    // white curve 1.3, lower curve 1.05 and upper 1.0.
+    // The tonemap curve, its exposure 0.9, white curve 1.3, lower curve 1.05 and upper 1.0, which
+    // brings the sun's light under white with the darks a little deeper than Reinhard's.
     public float CurveExposure = 0.9f, CurveWhite = 1.3f, CurveLower = 1.05f, CurveUpper = 1f;
 
     public void ApplyAll()

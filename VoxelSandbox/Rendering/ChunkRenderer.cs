@@ -431,10 +431,10 @@ public sealed class ChunkRenderer : IDisposable
     /// </para>
     /// <para>
     /// The color is the surface's own rather than one read from a pack's texture. The mean of a
-    /// pack's lamp's pixels by how much each emits is far paler, Bare Bones's glowstone 255, 228,
-    /// 133 against 255, 200, 120 and its soul lantern 186, 252, 255 against 70, 210, 255, since its
-    /// brightest pixels are nearly white, and graded at a saturation of 1.4 the glowstone's turned a
-    /// white room olive.
+    /// pack's lamp's pixels by how much each emits is far paler, the default packs' glowstone 255,
+    /// 228, 133 against 255, 200, 120 and its soul lantern 186, 252, 255 against 70, 210, 255,
+    /// since its brightest pixels are nearly white, and graded at a saturation of 1.4 the
+    /// glowstone's turned a white room olive.
     /// </para>
     /// </remarks>
     public bool ColoredLamps

@@ -78,7 +78,7 @@ public static class Biomes
     public static readonly Biome Beach = new("beach", BlockId.Sand, BlockId.Sand, BlockId.Sandstone, []) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(145, 189, 89), FoliageColor = new Color(119, 171, 47), Id = 13 };
     public static readonly Biome River = new("river", BlockId.Sand, BlockId.Sand, BlockId.Air, []) { Patches = [PlantPatch.FlowerDefault, PlantPatch.GrassBadlands], GrassColor = new Color(142, 185, 113), FoliageColor = new Color(113, 167, 77), Id = 14 };
     // The cherry grove on raised ground where it is cool and wet, its grass and leaves a light
-    // green of their own, as the gallery of the reference modpack shows it.
+    // green of their own under the pink crowns.
     public static readonly Biome CherryGrove = new("cherry grove", BlockId.Grass, BlockId.Dirt, BlockId.Air, [(Cherry, 14)])
     {
         Patches = [PlantPatch.TallGrass2, PlantPatch.GrassPlain, PlantPatch.FlowerCherry],

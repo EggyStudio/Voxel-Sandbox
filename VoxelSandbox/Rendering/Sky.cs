@@ -380,10 +380,9 @@ public sealed class Sky : IDisposable
     }
 
     // The stars, spread evenly over the sky from a fixed hash, so each run has the same ones, as
-    // the modpack's shader, Aurora's Shaders after Complementary, draws its own, as squares of
-    // StarDegrees, each as bright as 40 times the square of how far the product of three noises
-    // passes 0.7, the product drawn until it passes, so most are faint and a few bright, in a cool
-    // white, the light taken to sRGB levels.
+    // squares of StarDegrees, each as bright as 40 times the square of how far the product of three
+    // noises passes 0.7, the product drawn until it passes, so most are faint and a few bright, in
+    // a cool white, the light taken to sRGB levels.
     private static (Vector3, Vector3, Vector3, Vector3)[] PlaceStars()
     {
         var half = StarDistance * MathF.Tan(float.DegreesToRadians(StarDegrees)) / 2;
@@ -422,7 +421,7 @@ public sealed class Sky : IDisposable
             // from one to the other, so the shadows do not jump with it.
             if (toLight.Y > -0.05f)
             {
-                // The shader's light by the sun's height, its hue as the color and its largest part as
+                // The sunlight by the sun's height, its hue as the color and its largest part as
                 // the strength, so the hue never clips.
                 var light = Colors.SunLight(toLight.Y);
                 var most = MathF.Max(light.X, MathF.Max(light.Y, light.Z));

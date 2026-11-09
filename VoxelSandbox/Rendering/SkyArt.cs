@@ -7,16 +7,15 @@ namespace VoxelSandbox;
 /// </summary>
 /// <remarks>
 /// The sun and the moon take the shape of Minecraft's default ones, a square body 8 pixels across
-/// at the middle of a picture 32 across, with a faint glow around it falling from the body's edge to
-/// nothing before the picture's edge. They are painted at <see cref="Fine"/> texels to each of those
-/// pixels, as Bare Bones paints its own, so the body keeps its square pixels and the glow falls
-/// smoothly rather than in the source's steps of a pixel. The pictures are added to the sky, as
-/// Minecraft adds its sun and moon, each texel's color by its alpha, so the glow brightens the sky
-/// behind it. The moon's phases are one sheet four across and
-/// two down, phase 0 the full moon at the top left and 4 the new moon at the bottom left, in
-/// Minecraft's order, waning through the first row and waxing through the second. Each phase has a
-/// clear pixel around it in the sheet, since a sample at the edge of a phase, taken without
-/// filtering, may land on the pixel past it.
+/// at the middle of a picture 32 across, with a faint glow around it falling from the body's edge
+/// to nothing before the picture's edge. They are painted at <see cref="Fine"/> texels to each of
+/// those pixels, so the body keeps its square pixels and the glow falls smoothly rather than in the
+/// source's steps of a pixel. The pictures are added to the sky, as Minecraft adds its sun and
+/// moon, each texel's color by its alpha, so the glow brightens the sky behind it. The moon's
+/// phases are one sheet four across and two down, phase 0 the full moon at the top left and 4 the
+/// new moon at the bottom left, in Minecraft's order, waning through the first row and waxing
+/// through the second. Each phase has a clear pixel around it in the sheet, since a sample at the
+/// edge of a phase, taken without filtering, may land on the pixel past it.
 /// </remarks>
 public static class SkyArt
 {
@@ -100,7 +99,7 @@ public static class SkyArt
     /// <summary>
     /// How bright the glow is at a texel of a picture, from nothing to <see cref="GlowPeak"/>,
     /// falling evenly from the body's edge to nothing at <see cref="GlowReach"/> pixels from the
-    /// middle, as Bare Bones' glow falls.
+    /// middle.
     /// </summary>
     public static float Glow(int x, int y)
     {
