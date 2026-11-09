@@ -73,12 +73,14 @@ jobs:
 
       # After the game's checkout, which would clear the folder. The ref is the commit the package
       # VoxelSandbox.csproj names was packed from and moves with each pin of the package, so e3d
-      # speaks as the game's engine does.
+      # speaks as the game's engine does. The engine carries its modules, as Sky, as git
+      # submodules its projects reference, so the checkout takes them.
       - uses: actions/checkout@v7
         with:
           repository: EggyStudio/3DEngine
           ref: 8dba0d1c42e7b891f254a5941f1f69a1105e24d2
           path: .engine
+          submodules: true
 
       - uses: actions/setup-dotnet@v6
         with:

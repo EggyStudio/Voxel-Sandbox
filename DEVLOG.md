@@ -1200,6 +1200,13 @@ Done that day
 
 ![](.github/devlog/2026-10-24-breaking-pair.webp)
 ![](.github/devlog/2026-10-24-curve-choice.webp)
+AGENTS.md lists the devlog of what landed by day and says the reviewing session pushes main once the
+previous build run has ended, and the devlog comes in with its pictures. (`bfc4d39`)
+
+![](.github/devlog/2026-10-24-glass-joined.webp)
+Glass under Bare Bones, its streaks gone, where panes of the same glass join into one frame, with a
+corner kept inside the L at the right end.
+
 ![](.github/devlog/2026-10-24-hand-three.webp)
 AGENTS.md lists the devlog of what landed by day and says the reviewing session pushes main once the
 previous build run has ended, and the devlog comes in with its pictures. (`bfc4d39`)
