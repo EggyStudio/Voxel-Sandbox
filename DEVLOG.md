@@ -25,6 +25,7 @@ Done that day
 - Item 157 at `8d8d1b2`. The version and its tags in the documents.
 - Item 159 at `8d8d1b2`. The middle dot out.
 - Item 160 at `8d8d1b2`. The game on 6.1.12.
+- Item 161 at `f43aa9e`. The workflows' engine ref and the readings in comments.
 
 ## 2026-11-08
 

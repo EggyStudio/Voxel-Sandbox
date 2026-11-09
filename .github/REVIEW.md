@@ -3,9 +3,11 @@
 Reviewed up to `8d8d1b2`, item 160, the pin of 6.1.12 with items 157 and 159, pushed at 07:00 on
 2026-11-09, its run green at 08:26 with the play in 85 minutes and the three test jobs in about two,
 the play through the ambient occlusion toggle where 06fd267's twice ended in the engine's fault,
-which settles Verdict 8; it keeps the form and carries the review's files. Nothing is pushed after
-it. Before it `23ba89e`, item 153, the pin of 6.0.14, pushed at 04:46 on 2026-11-01 after the run of
-`8efd1d0` went green at 00:30, its run green at 06:07 with play in 81 minutes. Two rounds of each
+which settles Verdict 8; it keeps the form and carries the review's files. After it `f43aa9e`, item
+161, the workflows' engine checkout at the package's commit and the lighting comments without their
+readings, pushed at 08:36 on 2026-11-09 with a run on it; it keeps the form and carries the review's
+files. Before it `23ba89e`, item 153, the pin of 6.0.14, pushed at 04:46 on 2026-11-01 after the run
+of `8efd1d0` went green at 00:30, its run green at 06:07 with play in 81 minutes. Two rounds of each
 package in the same hour at item 139's view, the GPU's passes at 8 columns 12.8 ms to 9.3, at 12
 17.4 to 11.8 and at 16 22.8 to 13.6, gpu.shadows 2.2 to 2.6 to 0.41 to 0.47, the depth pass at 16
 3.1 to 0.19, the mirror 3.0 to 1.1, the scene 8.8 to 6.6, global illumination 5.2 either way, the
@@ -311,7 +313,18 @@ full.
     commit and moves with each pin, so the engine's tools the workflows run match the package. With
     it, by the widened N 4.11 in the game's NORM.md, the readings in LightSettings' comments, the
     grove's milliseconds and the distances to the path-traced reference, go to the review's records
-    and the comments keep the reason alone. With the next batch.
+    and the comments keep the reason alone. With the next batch. Done at `f43aa9e`, pushed at 08:36
+    on 2026-11-09; both workflows check the engine out at 8dba0d1c with a comment naming no version
+    or hash, every reading is out of the lighting settings' comments, and STYLE.md's Register cites
+    N 4.11.
+
+162. **The last readings in comments.** From the session's report of 2026-11-09, under N 4.11. Seven
+    comment lines outside the lighting settings still carry readings, in ChunkRenderer.cs at 123,
+    548 and 1119, Visibility.cs at 170 and VoxelGame.cs at 316, 317 and 321, the frame's
+    milliseconds at 8, 12 and 16 columns among them; each keeps its reason and loses the figure, the
+    readings standing in the review and RENDERING.md where they are recorded; VoxelGame.cs's 4 ms at
+    line 16 is a setting and stays. One small commit when the session next wakes, before the
+    engine's next pin.
 
 ## Verdicts
 

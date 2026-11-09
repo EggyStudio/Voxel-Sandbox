@@ -119,9 +119,9 @@ public sealed class ChunkRenderer : IDisposable
     // The sections two by two across and one high whose opaque and cut-out parts are drawn as one
     // entity each, a quarter of the draws a part of each section made where the four hold it, since
     // the engine records each draw in each of its passes, the depth's, the camera's, the mirror's
-    // and the cascades', at 3 to 5 µs of the main thread. A group two sections high drew the caves'
-    // sections under the land beside the land seen, which the flood leaves out alone, for 3 to 4 ms
-    // more of the GPU at 12 columns. The blended parts stay a section's own, since the engine draws
+    // and the cascades', on the main thread. A group two sections high would draw the caves'
+    // sections under the land beside the land seen, which the flood leaves out alone, for more of
+    // the GPU's time. The blended parts stay a section's own, since the engine draws
     // them farthest first by where each entity stands. A group's mesh is made again from its
     // sections' arrays at most once a frame, and its streams written in place where only the light
     // of its sections changed, so the scene's field keeps it settled. The engine keeps a mesh whose
@@ -545,8 +545,7 @@ public sealed class ChunkRenderer : IDisposable
     /// A section left undrawn also leaves the scene's distance field, which builds its cascades again
     /// as sections come into sight and go out of it. The land the flood leaves out lies behind walls
     /// the drawn sections hold, the walls of a cave or a closed room, so the eye sees the same light
-    /// either way, a cave lit by a glowstone within 2 of 255 in every pixel, and a cave in a hill
-    /// stays dark at noon.
+    /// either way, a glowstone's in a cave and the dark of a cave in a hill at noon.
     /// </para>
     /// <para>
     /// The sun's shadow is another matter, since the rock over a cave stands between the light and
@@ -1115,8 +1114,8 @@ public sealed class ChunkRenderer : IDisposable
         // The sections held back as unseen that a new flood reaches or that now cast toward the light,
         // or all of them once culling is off, are meshed from the next update.
         var flooded = Cull && _visibility.Flood(world, eye, renderDistance, Atlas, FloodBudgetMs);
-        // The casters of a finished flood are found in the frame after it, so neither frame takes
-        // both, about 3 ms of their search and up to 2 of the flood's.
+        // The casters of a finished flood are found in the frame after it, so no frame takes both
+        // the flood and the search for its casters.
         var cast = Cull && (!flooded && _castsDue || _castFor != (Casts ? towardLight : Vector3.Zero, shadowDistance));
         _castsDue |= flooded;
         if (cast)

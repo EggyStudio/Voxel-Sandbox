@@ -166,11 +166,11 @@ public sealed class Visibility
     /// <remarks>
     /// Where the eye has stepped into a section beside the last flood's, the flood takes at most
     /// <paramref name="budgetMs"/> a frame and goes on in the frames after, <see cref="Seen"/>
-    /// keeping the last whole flood's sections meanwhile, since a flood over the sections of 12
-    /// columns took 4 ms with each section's joins kept and up to 32 where it worked them out, all
-    /// in the frame the eye crossed. A flood under way runs to its end before another begins, so
-    /// the world's openings changing every frame as columns arrive still sees each flood finished.
-    /// A jump of more than a section floods at once, as a teleport's first frame does.
+    /// keeping the last whole flood's sections meanwhile, so the frame the eye crosses in is not
+    /// held by a flood over every section within the render distance, longest where it works out
+    /// the sections' joins. A flood under way runs to its end before another begins, so the world's
+    /// openings changing every frame as columns arrive still sees each flood finished. A jump of
+    /// more than a section floods at once, as a teleport's first frame does.
     /// </remarks>
     /// <returns>Whether a flood finished in this call.</returns>
     public bool Flood(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance, TerrainAtlas? atlas = null, double budgetMs = double.PositiveInfinity)
