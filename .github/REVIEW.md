@@ -1,7 +1,11 @@
 # Review
 
-Reviewed up to `23ba89e`, item 153, the pin of 6.0.14, pushed at 04:46 on 2026-11-01 after the run
-of `8efd1d0` went green at 00:30, its run green at 06:07 with play in 81 minutes. Two rounds of each
+Reviewed up to `8d8d1b2`, item 160, the pin of 6.1.12 with items 157 and 159, pushed at 07:00 on
+2026-11-09, its run green at 08:26 with the play in 85 minutes and the three test jobs in about two,
+the play through the ambient occlusion toggle where 06fd267's twice ended in the engine's fault,
+which settles Verdict 8; it keeps the form and carries the review's files. Nothing is pushed after
+it. Before it `23ba89e`, item 153, the pin of 6.0.14, pushed at 04:46 on 2026-11-01 after the run of
+`8efd1d0` went green at 00:30, its run green at 06:07 with play in 81 minutes. Two rounds of each
 package in the same hour at item 139's view, the GPU's passes at 8 columns 12.8 ms to 9.3, at 12
 17.4 to 11.8 and at 16 22.8 to 13.6, gpu.shadows 2.2 to 2.6 to 0.41 to 0.47, the depth pass at 16
 3.1 to 0.19, the mirror 3.0 to 1.1, the scene 8.8 to 6.6, global illumination 5.2 either way, the
@@ -67,8 +71,9 @@ counted as the device mapping and its shared backing, the game's own arrays 68 M
 on 2026-11-01, its run green at 15:09 on the three systems. After it `06fd267`, item 158, the
 license as the Mozilla Public License 2.0 in its standard text, pushed at 15:30 on 2026-11-08, its
 run red at 16:30 in the play job alone, the game's process gone at the ambient occlusion toggle
-after 58 minutes of passed checks, nothing of the commit's (Verdict 8), the job rerun at 16:34; it
-keeps the form and carries the review's file.
+after 58 minutes of passed checks, nothing of the commit's (Verdict 8), the job rerun at 16:34 and
+red the same way, the exit the engine's (Verdict 8); it keeps the form and carries the review's
+file.
 
 Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
@@ -264,7 +269,9 @@ full.
     reviewer in a commit of its own when a step is done and the changes behind it are meaningful,
     the major at a step the size of a release, and the tags of the letter v and the version that the
     reviewer sets on that commit and on a release build's commit, no other. When the session next
-    wakes for the engine's package.
+    wakes for the engine's package. Done at `8d8d1b2`, pushed at 07:00 on 2026-11-09; COMMITS.md's
+    section on the version, the tags on the commit that raises it and on a release build's commit,
+    7e052e8 the example.
 
 158. **The license is the MPL 2.0.** Decision 61 on 2026-11-08. `LICENSE` holds the Mozilla Public
     License Version 2.0 in its standard text, as both engines' do, in place of the MIT text whose
@@ -281,29 +288,34 @@ full.
     STYLE.md's Register gains the sentence that a comment stands on the code's own terms, and the
     game's comments that explain by another product, an outside asset's file name, the owner, a
     reference picture or a session's doing are rewritten in the game's terms, Minecraft's names kept
-    where the game takes a rule or a number from the game it follows, as STYLE.md allows.
+    where the game takes a rule or a number from the game it follows, as STYLE.md allows. Done at
+    `8d8d1b2`, pushed at 07:00 on 2026-11-09; STYLE.md's paragraph on the middle dot and its
+    Register sentence in the game's words, Minecraft named where a rule or a number comes from it
+    and a pack's format where the game reads it, with a check; some 45 comments in 27 files
+    rewritten to what a number or a look makes the frame do, the modpack, its shaders, the galleries
+    and the reference copies gone from them.
+
+160. **The game on 6.1.12.** The engine's package of 2026-11-09 from its 8dba0d1c, tagged v6.1.12,
+    carrying the mend of the exit that ended the play at the ambient occlusion toggle (engine item
+    223, Verdict 8 here), the night sky from the Sky module, the flicker's mend, the lamps through
+    their glass and the metals form. Done at `8d8d1b2`, pushed at 07:00 on 2026-11-09; the project
+    references 6.1.12, the strict build clean, 364 tests, the scripted play through every option on
+    this machine in 388 s, the grove and the snowy village within a quarter of a level of 6.0.91's
+    frames in the mean, the sheet in the dump and sent; the README's readings taken on 6.0.91 stand,
+    since the frame draws the same.
+
+161. **The workflows' engine ref and the readings in comments.** From the session's report of
+    2026-11-09. The build and pack workflows check the engine out at d3473746 and say it is the
+    commit the package names, 5.2.215, which has been false since the pins after it; the ref follows
+    the pin from here, 8dba0d1c for 6.1.12, and the comment says that the ref is the package's
+    commit and moves with each pin, so the engine's tools the workflows run match the package. With
+    it, by the widened N 4.11 in the game's NORM.md, the readings in LightSettings' comments, the
+    grove's milliseconds and the distances to the path-traced reference, go to the review's records
+    and the comments keep the reason alone. With the next batch.
 
 ## Verdicts
 
-Verdict 8 is open, the play job's exit being the engine's fault (3DEngine item 223). Verdicts 1 to 7 are settled, said under each in REVIEW-ARCHIVE.md.
-
-8. **The play job of `06fd267` ended with the game gone.** The run of 06fd267, the license alone
-    with the review's file, went red at 16:30 on 2026-11-08 in its play job at 58 minutes, after
-    every check to the land's edge had passed, when `voxel.options post Ambient_Occlusion 0` found
-    the game's process gone, its log ending in a stack through `E3D.EndDrawing` from
-    `VoxelGame.Draw`; the three test jobs were green in two minutes. Nothing of the commit's touches
-    the game or the engine, which rests at 6.0.91, and the same script passed on f37154b, so the
-    exit is read as the runner's or lavapipe's unless it repeats. The play job is rerun at 16:34; if
-    it ends red the same way, the item is the coder's, to read the game's log of the exit and hold
-    the option's toggle in a test. The rerun ended the same way at 17:20, at 45 minutes, so the exit
-    is the engine's and not the runner's. The game's own log from the play artifact has it, at 2,648
-    s a NullReferenceException inside a memory copy in `SceneFieldRenderer.Pool`, called from
-    `Record` and `Draw` in the render graph, then an AccessViolationException on the same copy and
-    the process gone, seconds after the scene's distance field was made three times in two seconds
-    with 5, 4 and 5 cascades as the ambient occlusion option was posted. The fault is 3DEngine's at
-    6.0.91, the pool's buffers copied after the field's cascade count changed under them, and it is
-    the engine's item 223; the game's run stays red until the engine's fix is packed and the game
-    pins that package, and the game's session has nothing to mend. Recorded at 17:24.
+No verdict is open. Verdicts 1 to 8 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 

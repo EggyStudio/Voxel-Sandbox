@@ -165,14 +165,14 @@ is and does. Another product is named only where a rule or a number is taken fro
 player's sizes and speeds and the light levels are taken from Minecraft. A description holds no
 plan, so no line says what a thing is the start of or grows toward.
 
-A comment stands on the code's own terms. It says what the code does and why in the game's words,
-and a number taken from elsewhere stands with the reason it is right here, what it makes the frame
-or the game do, its source named once in the documents and not in the comment. The file name of an
-outside asset, another product's look, profile or process given as the explanation, a reference
-picture, and the facts of the work that made the code, a review's verdict, a commit's run or a
-session's finding, are not written in a comment, since a reader of the source has none of them.
-Minecraft is named where the game takes a rule or a number from it, and a resource pack's format
-where the game reads it, as OptiFine's connected textures are.
+A comment stands on the code's own terms (NORM.md, N 4.11). It says what the code does and why in
+the game's words, and a number taken from elsewhere stands with the reason it is right here, what it
+makes the frame or the game do, its source named once in the documents and not in the comment. The
+file name of an outside asset, another product's look, profile or process given as the explanation,
+a reference picture, and the facts of the work that made the code, a review's verdict, a commit's
+run or a session's finding, are not written in a comment, since a reader of the source has none of
+them. Minecraft is named where the game takes a rule or a number from it, and a resource pack's
+format where the game reads it, as OptiFine's connected textures are.
 
 | instead of | write |
 |---|---|

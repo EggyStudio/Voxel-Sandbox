@@ -106,6 +106,19 @@ compares is also shown to the owner in the session as it is made, with its sente
 follows the work by its pictures and a capture compared behind the scenes and never shown is work
 the owner cannot see. By review, the reviewer reading a day's folder against the items worked.
 
+**N 4.11 A comment stands on the code's own terms.** It says what the code does and why in the
+game's words, and a number taken from elsewhere stands with the reason it is right here, what it
+makes the frame or the program do, the source named once in the documents' references and not in the
+comment. The file names of outside assets, another product's profile or process as the explanation,
+"as X works it out", and the facts of the sessions' work are not written in a comment, since a
+reader of the source has none of them; a comment carries no reading of before and after, no cost in
+milliseconds or bytes and no account of the trials that led to the code, which are the review's
+records and go stale at the first tuning, and a number stands in a comment only where the code's
+choice depends on it, with its reason. Minecraft is named where the game takes a rule or a number
+from the game it follows, and a pack's format where the game reads it (STYLE.md). A comparison test
+names the reference it compares against, since the comparison is the test. The owner asked for it on
+2026-11-08 and 2026-11-09. By review, and by STYLE.md's search, read rather than counted.
+
 ## 6 Build and package
 
 **N 6.1 A build has no warnings, and a warning fails the workflow.** A warning left standing hides
@@ -182,6 +195,7 @@ capture, and closed when read. By review.
 | N 4.8 | by review |
 | N 4.9 | by review |
 | N 4.10 | by review |
+| N 4.11 | by review, and STYLE.md's search |
 | N 6.1 | to check at the first push |
 | N 6.2 | to check at the first push |
 | N 6.6 | to check at the first commit |

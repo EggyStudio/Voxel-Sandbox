@@ -11,12 +11,8 @@ public sealed class LightSettings
     /// the engine tracing the screen's probes at Medium and High.
     /// </summary>
     /// <remarks>
-    /// At seed 1's cherry grove at 1920 by 1080 on the engine's 6.0.91 it takes 3.5 to 3.8 ms of the
-    /// GPU at Low, 5.7 to 5.8 at Medium and 6.6 to 6.8 at High, past the engine's 2, 3 and 4 at its own
-    /// settings by the screen's probes, 2.3 to 2.5 ms of Medium and 2.4 to 2.7 of High, and by the far
-    /// cascade's 0.4 to 0.7. The probes are kept, the frame's light differing from a path-traced
-    /// reference's by 0.166 of it with them and 0.172 without, and Medium reads the same 0.166 as High
-    /// for about 1 ms less.
+    /// The screen's probes are kept at Medium and High, though they take a share of the GPU's time,
+    /// since they bring the frame's light nearer the light a path tracer finds in the same view.
     /// </remarks>
     public GlobalIllumination Quality = GlobalIllumination.High;
 
@@ -31,22 +27,18 @@ public sealed class LightSettings
     // A far cascade past the four reaching as far as the land drawn, the render distance's blocks,
     // so a ray leaving the counted cascades meets the hills and the rock it holds before the sky, its
     // cells as wide as that reach takes at 64 a side, six blocks at 12 columns. It is on, so a deep
-    // cave's far walls take the rock's dark rather than the sky's light, seed 1's deep cave at noon at
-    // 1920 by 1080 reading black as its reference does where without it the walls read a mean of 2.1
-    // of 255 at Low and 0.4 at High. On the engine's 6.0.91 it takes 0.6 to 1.1 ms of the GPU at seed
-    // 1's cherry grove at that size, 0.4 to 0.7 of it global illumination's, and a reach of 96 blocks
-    // costs and reads the same, so it reaches all the land drawn. Render Settings turns it off.
+    // cave's far walls take the rock's dark rather than the sky's light, and it reaches all the land
+    // drawn, since a shorter reach costs the frame the same. Render Settings turns it off.
     public bool FarCascade = true;
     public float FarReach = 12 * Section.Size;
 
     // The sun's shadows reach 128 blocks, which keeps an oak's shadow dark fifty to a hundred blocks
-    // off across a village, where 64 left it the contact shadows' faint one, for 1.3 to 1.8 ms more of
-    // the GPU and about 1 ms more of the CPU at 1280 by 720.
+    // off across a village, where 64 left it the contact shadows' faint one.
     public float ShadowDistance = 128;
     // The sun looks 1.5 degrees across, three times as wide as from the earth, which softens a tree's
     // long shadow in the afternoon toward its far end and keeps it sharp at the trunk, where 0.53 left
     // the shadows' edges stepping along the pixels of the blocks they cross and 3 blurred a crown's
-    // shadow into a smear, for about 0.6 ms of the frame at High at the cherry grove at 1920 by 1080.
+    // shadow into a smear.
     public float ShadowSoftness = 1.5f;
     // A tenth of the light past 1 spread around it, a faint glow about a flame or a lamp, where more
     // spreads a halo far wider than the flame's own block.
@@ -57,8 +49,8 @@ public sealed class LightSettings
     public float Occlusion;
     public bool AutoExposure;
     // The light is raised by 1.6 before the curve, which keeps a village's roofs and wheat in the
-    // afternoon sun bright, the middle levels within 3 of Reinhard's curve at 1.7, the darks deeper by
-    // the curve's lower power and the lights brighter.
+    // afternoon sun bright, the middle levels near Reinhard's curve, the darks deeper by the curve's
+    // lower power and the lights brighter.
     public float Exposure = 1.6f;
     // The frame graded vividly, each channel pushed from the middle gray by 1.12 and the color by 1.4,
     // so the sun's warm light and the deep shade stay apart through the curve.
@@ -80,10 +72,9 @@ public sealed class LightSettings
         // blur lays a soft fringe beside the map's edges, which step along the blocks' pixels, and
         // kept past the map, where the land has no other shadow of the sun.
         SetContactShadows(ContactShadows.PastShadowMap);
-        // The engine's fill, a drawing of the land's depth past the shadow map's reach, is left off.
-        // The contact shadows shade that land already, and with the fill on, three views at noon and
-        // at hour 16 changed in no pixel but the clouds' and the mobs' as they moved, where the fill
-        // drew 2,085 sections at 12 columns for 2 to 3 ms of the CPU and 3 to 5.5 of the GPU.
+        // The engine's fill, a drawing of the land's depth past the shadow map's reach, is left off,
+        // since the contact shadows shade that land already and the fill draws every section past the
+        // map once more on the CPU and the GPU for no change to the frame.
         SetShadowFill(false);
         ApplyCurve();
         SetColorGrading(Contrast, Saturation, Color.White);
@@ -91,17 +82,13 @@ public sealed class LightSettings
 
     // The scene's field takes the four cascades and, where Far Cascade is on, a far one reaching the
     // render distance's blocks, its cells six blocks wide at 12 columns, rather than the camera's far
-    // plane, whose cells 74 blocks wide hold the ground about the eye as a slab and took a quarter of
-    // the sky's blue from a wall beside a pane of glass.
+    // plane, whose cells 74 blocks wide hold the ground about the eye as a slab and take the sky's
+    // blue from a wall beside a pane of glass.
     public void ApplyField() => SetSceneField(Cascades, CellSize, Budget, farCascade: FarCascade ? FarReach : 0);
 
     // The field lies ahead of the camera along its view by half the finest cascade's width, 64 cells
-    // of 0.25, so that cascade holds the eight blocks before the eye where, around the eye, half of it
-    // lay behind the player. At seed 1's cherry grove at 1920 by 1080 on the engine's 6.0.91 the frame
-    // reads 0.164 from a path-traced reference where 0.166 around the eye, global illumination's cost
-    // the same within 0.2 ms at every quality, the open land over the spawn 0.776 where 0.780 and the
-    // deep cave black either way, and a turn of the full circle over 240 frames reads 24 to 28 ms a
-    // frame where 24.
+    // of 0.25, so that cascade holds the eight blocks before the eye rather than half of it lying
+    // behind the player, for the same cost to global illumination.
     public bool FieldAhead = true;
 
     /// <summary>Lays the scene's field around the point the frame's view is about, for the camera given.</summary>

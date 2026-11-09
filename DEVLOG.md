@@ -6,6 +6,26 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 notes written beside them as Markdown files named the same way. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
+## 2026-11-09
+
+# The engine's 6.1.12
+
+The engine's 6.1.12 carries its item 223, the device mapping a memory block once where a buffer the
+CPU writes is carved from it, whose fault ended the build workflow's play of the game at the ambient
+occlusion toggle in a run and its rerun. On the development machine's RTX 4070 the scripted run of
+`build/play.sh` passed on 6.1.12 under Vulkan's validation layer in 388 s, every setting of the
+options screens set and set back, and the 364 tests passed.
+
+Seed 1's cherry grove at hour 16 and seed 6's snowy village at hour 21 with its lamps, at High at
+1280 by 720 on tuned's power-saving profile, differ between 6.0.91 and 6.1.12 by a mean of 0.19 and
+0.25 of 255, at most 51 and 36 at a pixel, with 0.01% and 1.4% of the pixels past 8.
+
+Done that day
+
+- Item 157 at `8d8d1b2`. The version and its tags in the documents.
+- Item 159 at `8d8d1b2`. The middle dot out.
+- Item 160 at `8d8d1b2`. The game on 6.1.12.
+
 ## 2026-11-08
 
 Done that day

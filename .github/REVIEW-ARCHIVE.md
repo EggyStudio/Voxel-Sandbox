@@ -2656,6 +2656,26 @@ before a batch.
     2026-10-25 by the second attempt, green on the four jobs once Microsoft's feed served the
     release.
 
+8. **The play job of `06fd267` ended with the game gone.** The run of 06fd267, the license alone
+    with the review's file, went red at 16:30 on 2026-11-08 in its play job at 58 minutes, after
+    every check to the land's edge had passed, when `voxel.options post Ambient_Occlusion 0` found
+    the game's process gone, its log ending in a stack through `E3D.EndDrawing` from
+    `VoxelGame.Draw`; the three test jobs were green in two minutes. Nothing of the commit's touches
+    the game or the engine, which rests at 6.0.91, and the same script passed on f37154b, so the
+    exit is read as the runner's or lavapipe's unless it repeats. The play job is rerun at 16:34; if
+    it ends red the same way, the item is the coder's, to read the game's log of the exit and hold
+    the option's toggle in a test. The rerun ended the same way at 17:20, at 45 minutes, so the exit
+    is the engine's and not the runner's. The game's own log from the play artifact has it, at 2,648
+    s a NullReferenceException inside a memory copy in `SceneFieldRenderer.Pool`, called from
+    `Record` and `Draw` in the render graph, then an AccessViolationException on the same copy and
+    the process gone, seconds after the scene's distance field was made three times in two seconds
+    with 5, 4 and 5 cascades as the ambient occlusion option was posted. The fault is 3DEngine's at
+    6.0.91, the pool's buffers copied after the field's cascade count changed under them, and it is
+    the engine's item 223; the game's run stays red until the engine's fix is packed and the game
+    pins that package, and the game's session has nothing to mend. Recorded at 17:24. Settled, the
+    play through the toggle and every check green on 8d8d1b2's run at 08:26 on 2026-11-09, the game
+    on the engine's 6.1.12 with its item 223.
+
 ## Decisions
 
 1. **The old game is replaced in place, its history kept.** The owner chose on 2026-10-17 that the
