@@ -26,6 +26,8 @@ Done that day
 - Item 159 at `8d8d1b2`. The middle dot out.
 - Item 160 at `8d8d1b2`. The game on 6.1.12.
 - Item 161 at `f43aa9e`. The workflows' engine ref and the readings in comments.
+- Item 162 at `9a3ec77`. The last readings in comments.
+- Item 163 at `4e956bc`. The engine checkouts take the submodules.
 
 ## 2026-11-08
 
@@ -141,6 +143,7 @@ Done that day
 
 - Item 154 at `6eb6540`. The grove's global illumination at the game's settings against the engine's
   budgets.
+- Item 155 at `fe3638e`. The scene field's center ahead of the camera.
 
 ## 2026-11-01
 
@@ -1200,13 +1203,6 @@ Done that day
 
 ![](.github/devlog/2026-10-24-breaking-pair.webp)
 ![](.github/devlog/2026-10-24-curve-choice.webp)
-AGENTS.md lists the devlog of what landed by day and says the reviewing session pushes main once the
-previous build run has ended, and the devlog comes in with its pictures. (`bfc4d39`)
-
-![](.github/devlog/2026-10-24-glass-joined.webp)
-Glass under Bare Bones, its streaks gone, where panes of the same glass join into one frame, with a
-corner kept inside the L at the right end.
-
 ![](.github/devlog/2026-10-24-hand-three.webp)
 AGENTS.md lists the devlog of what landed by day and says the reviewing session pushes main once the
 previous build run has ended, and the devlog comes in with its pictures. (`bfc4d39`)
@@ -1370,6 +1366,10 @@ seabed's steps gone under it, the cave's pools clear and the shallow lane's bed 
 ![](.github/devlog/2026-10-24-item-32-weather.webp)
 Seed 1's forest from over its trees and seed 6's snowy village, clear on the left and under the
 weather's full turn on the right, rain over the forest and snow on the village under a grayed sky.
+
+![](.github/devlog/2026-10-24-glass-joined.webp)
+Glass under Bare Bones, its streaks gone, where panes of the same glass join into one frame, with a
+corner kept inside the L at the right end.
 
 ![](.github/assets/world/plant-shadows.webp)
 The plants cast the shadows of their blades and flowers on the 3DEngine 5.2.215 package, the terrain

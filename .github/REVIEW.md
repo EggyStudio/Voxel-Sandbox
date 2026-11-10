@@ -1,181 +1,41 @@
 # Review
 
-Reviewed up to `8d8d1b2`, item 160, the pin of 6.1.12 with items 157 and 159, pushed at 07:00 on
-2026-11-09, its run green at 08:26 with the play in 85 minutes and the three test jobs in about two,
-the play through the ambient occlusion toggle where 06fd267's twice ended in the engine's fault,
-which settles Verdict 8; it keeps the form and carries the review's files. After it `f43aa9e`, item
-161, the workflows' engine checkout at the package's commit and the lighting comments without their
-readings, pushed at 08:36 on 2026-11-09, its run red at 08:39 in the play job after 54 seconds, the
-engine's build without the Sky module, Verdict 9; it keeps the form and carries the review's files.
-After it `9a3ec77`, item 162, the last readings out of the comments, committed at 08:43 on
-2026-11-09 and waiting on item 163's commit to be pushed with it; it keeps the form and carries the
-review's files. Before it `23ba89e`, item 153, the pin of 6.0.14, pushed at 04:46 on 2026-11-01
-after the run of `8efd1d0` went green at 00:30, its run green at 06:07 with play in 81 minutes. Two
-rounds of each package in the same hour at item 139's view, the GPU's passes at 8 columns 12.8 ms to
-9.3, at 12 17.4 to 11.8 and at 16 22.8 to 13.6, gpu.shadows 2.2 to 2.6 to 0.41 to 0.47, the depth
-pass at 16 3.1 to 0.19, the mirror 3.0 to 1.1, the scene 8.8 to 6.6, global illumination 5.2 either
-way, the frame held at 60 at 8 and 12 and 16.9 ms at 16 where 22.8, the four passes' CPU at 16
-unchanged at 1.7 microseconds a draw; the spawn view settled identical within 3 of 255, the pair
-shown to the owner from the dump; the README's frame paragraph, the shadows' and the mirror's costs
-and the table rewritten to 6.0.14's readings; 364 tests, the GPU play in 331 s. After it `56e1372`,
-the review's files alone, the norm's rule 4.10 and item 154's record, pushed at 14:51 on 2026-11-03,
-with no run since the build passes over the review's files; it keeps the form. After it `6eb6540`,
-item 154, the game on 6.0.91 with its far cascade and screen probes kept, pushed at 17:07 on
-2026-11-04, its run red at 18:15 on macOS alone, the job never acquired by a hosted runner for the
-macOS capacity notice and cancelled at its 15 minutes, the play in 65 minutes and the Windows and
-Linux tests green, nothing of the game's in it; it keeps the form and carries the review's files.
-After it `fe3638e`, item 155, the field's center ahead of the eye, pushed at 18:17, its run green at
-19:33 with the play in 76 minutes and the three tests in 2 to 3 minutes, macOS acquired this time,
-the newest green commit; it keeps the form and carries the review's files and the devlog. After it
-`7a548ff`, the review's files alone, the heads' runs, items 154 to 156 as they closed and the
-spellings made American, pushed at 10:45 on 2026-11-05, with no run since the build passes over the
-review's files; it keeps the form. After it `f37154b`, the review's record with its done hash in
-backticks and the devlog, pushed at 18:52 on 2026-11-06, its run green at 20:24 with play in 92
-minutes and the tests in one to two, since the devlog is among the build's paths; it keeps the form.
-Before it `8efd1d0`, item 152, the pin of 6.0.11, pushed at 23:07 on 2026-10-31, its run green at
-00:30 with play in 82 minutes, recorded under the item in REVIEW-ARCHIVE.md. Before it `efbb357`,
-item 151, pushed with `7bd8f1c` at 13:40, its run green at 14:43 with play in 61 minutes, the first
-mirror frame's 24 s read as the driver's compile, recorded under the item in REVIEW-ARCHIVE.md.
-Before it `7e052e8`, the version to 0.2, pushed at 12:43, its run green at 13:40. Before it
-`adf5141`, item 148's second commit, pushed at 08:17, its run green at 09:35 with play in 76
-minutes. Before it `8a1e308`, item 150, pushed at 00:31, the play job's limit at 150 minutes, the
-checks summing 4,568 to 4,983 s over two runs after item 141 gave lavapipe more to draw, the rain's
-splashes the largest at 795 s and read every 20 frames until they fall under one where 300 frames
-waited, the seed's field holding Control about a second of frames, none dropped, the README's play
-paragraph gained. Before it `17704ca`, item 149, pushed with `8a1e308` at 00:31, the run of
-`8a1e308` green at 01:28 with play in 57 minutes under the new limit, the flood taking a budget of 2
-ms a frame at a step into an adjacent section with the last whole flood kept and a flood under way
-run to its end, a jump of more than a section flooding at once so teleports and the captures stay
-exact, the casters' search in the frame after. Before it `a272e45`, item 145, pushed at 23:27, its
-run green at 00:29 with play in 61 minutes, the time budget built and left out since flights read no
-gain, 12 columns at a 99th part of 86 to 105 ms without and 92 to 110 with, 8 at 49 to 72 and 47 to
-55, within the noise. Before it `5d96667`, item 148, pushed with `a272e45` at 23:27. Before it
-`b5626c6`, item 147, pushed at 21:59. Before it `5f31bdf`, item 143, pushed with `b5626c6` at 21:59,
-the run of `b5626c6` green at 23:23 with play in 84 minutes, the sections grouped 2 by 2 across and
-one high since groups two high drew the caves under the land and cost the GPU 3 to 4 ms at 12
-columns. Before it `2c458b0`, item 141, pushed at 20:36, its run green at 21:56 with play in 80
-minutes. Before it `7508d5e`, item 142, pushed at 19:18 on 2026-10-30, its run green at 20:31 with
-play in 73 minutes. Before it `5c80c99`, item 140, pushed at 18:21 on 2026-10-30, its run green at
-19:01 with play in 40 minutes. The start restores the options file's resolution and mode right after
-InitWindow, before the game is built, the window appearing as saved about 8 s before the world loads
-where it changed after; no monitor setting exists to read, and a hidden window cannot be shown later
-since the engine takes a program- set hidden window as a --hidden run; the test reads the values and
-a missing file's 1280 by 720. AGENTS.md's REVIEW.md line reads the head, the batch's items and the
-Replies by the owner's word in the coder's session. It carries NORM.md with N 7.7 and the README's
-first line. Before it `fc0937a`, item 139, pushed by the owner's hand on 2026-10-26 while the
-sessions were paused until 2026-10-30, its run green. Before it on 2026-10-26, each green: `9c07673`
-(138); `b25e668` (137); `4aef50c` with `6001eed` (the README's quick links, 136); `7c36ec8` (42);
-`f1aa450` (27); `5145d2f` (134); `0ba4cb4` (135); `7f59530` (54); `1944378` and `48e5bea` (133);
-`a4d383c` (95). Each commit's detail stands in its item in REVIEW-ARCHIVE.md, its devlog note and
-its own words. On 2026-10-30 at 18:0x the owner wrote items 140 and 141 (Decision 51), the README's
-links as the devlog and 3DEngine, a Rust voxel engine as the performance reference (Decision 52),
-and asked that the sessions spend fewer tokens at the same quality, N 7.7. Item 144 closed at its
-count on 2026-10-30, the quads merging to 81 to 89% and not half; 143's other 245 MB is the driver's
-too, the ring's mapped memory counted as the device mapping and its shared backing, the game's own
-arrays 68 MB more. After it `ca7ee6d`, the review's files alone, item 153's record and the
-regenerated devlog, pushed at 13:44 on 2026-11-01, its run green at 15:09 on the three systems.
-After it `06fd267`, item 158, the license as the Mozilla Public License 2.0 in its standard text,
-pushed at 15:30 on 2026-11-08, its run red at 16:30 in the play job alone, the game's process gone
-at the ambient occlusion toggle after 58 minutes of passed checks, nothing of the commit's (Verdict
-8), the job rerun at 16:34 and red the same way, the exit the engine's (Verdict 8); it keeps the
-form and carries the review's file.
+Reviewed up to `4e956bc`, items 162 and 163, the last readings out of the comments and the engine
+checkouts taking the submodules, pushed at 08:47 on 2026-11-09 with `9a3ec77` and one run on the
+last, green at 10:07 with the play in 80 minutes and the three test jobs in about two, which settled
+Verdict 9; they keep the form and carry the review's files. Nothing is pushed after it. The game
+stands at 0.2, tagged `v0.2.0`, and is pinned to the engine's 6.1.12 since `8d8d1b2`; the engine's
+6.2.12 of 02:34 on 2026-11-10, from its `94097b62`, is the next pin, the first package with the
+flicker mend and the lamps, with item 165 and the reads of item 166 taken again. Item 166 is read
+twice by 22:37 on 2026-11-09, turns clean at every speed, a walk showing the difference between two
+settlings of one place in the screen probes' tiles, the engine's item 246, and the clouds stepping
+as the far cascade moves, its item 245. Every push and run before `4e956bc` since 2026-10-23 stands
+in REVIEW-ARCHIVE.md under Head records.
 
-Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md beside this file, their
-numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
-read whole before a batch; the archive is read when an item or a verdict named here is wanted in
-full.
+Next the pin of the engine's next package with 165, and 167 at the pin that carries the engine's
+244. Item 29's second part and 114's second part wait on the owner's word. A program on the GPU runs
+under the lock (N 7.9).
+
+REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
+parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
+moved there on 2026-10-23 and again on 2026-11-09 so that this file holds the current work alone and
+stays under 100 KB, read at each watch tick; a batch reads this file's head, its items and the
+Replies (N 7.7), and the archive when an item, a verdict or a decision named here is wanted in full.
 
 ## Now
 
-29. **Generation and meshing on the GPU, the blocks kept on the CPU (Decision 12).** The owner's
-    word of about 00:30 on 2026-10-21: compute shaders for generation and the rest are a big one.
-    The reading at `5cd1521`: each column is generated on a worker task off the main thread, and
-    item 16's flight readings put the frame's cost on the main thread in the join and the meshing,
-    21 to 29 ms a frame at 12 columns, so generation on the GPU makes columns arrive faster and
-    meshing on the GPU is what cuts the frame; the engine's compute, `LoadComputeShader`, the shader
-    buffers and `ComputeShaderDispatch`, reads a buffer back only through `ReadShaderBuffer`, which
-    holds the program until the GPU has caught up, and draws nothing a shader wrote as a mesh. The
-    approach: the blocks stay in memory on the CPU, since collisions, edits, light and saves read
-    them there and a column's blocks are about 100 KB, cheap to read back; the GPU computes what is
-    heavy, the noise fields and the meshes. Three parts, each after the engine's package brings what
-    it needs, asked in the engine's ASKS.md by the game's coder with the readings above. Part one,
-    the fields, after the engine reads a buffer back without a wait (its item 68): a compute shader
-    a batch of columns writes the terrain's density, the biome's climate values and item 27's cave
-    noises as fields of 16 by 16 by the world's height, 16 bits a cell, read back a frame or more
-    later while the game goes on, and the generator on the CPU places blocks from the fields as it
-    does from its noises today; the noise written as integer hashes in fixed point in both the
-    shader and C#, so the two give one field, and the CPU's functions kept as the path for a device
-    without compute, for the tests and for `voxel.gpu off`, a setting; a test that both paths give
-    the same field for a seed on a column, bit for bit, and the play run on lavapipe on the CPU path
-    and once on the GPU path. Part two, the meshing, after the engine draws a mesh over buffers a
-    shader wrote with a count the shader writes (its item 69): a compute mesher a section, the
-    section's blocks uploaded as 4 KB and its six neighbors' faces, writing the positions and item
-    7's packed stream into the mesh's buffers with the ambient occlusion of item 22 as a uniform,
-    the engine drawing them with no upload and the global illumination reading them as any mesh; an
-    edit uploads the section's blocks and dispatches again; the frame's meshing cost then read
-    against item 16's 21 to 29 ms, the CPU mesher kept for the path without compute and as the
-    reference the GPU mesh is tested against by triangle count and bounds. Part three, the far
-    levels of item 26 on the GPU, the heightmap and the top blocks of a far column computed and
-    meshed there without the column's blocks, so far land costs the CPU nothing but a dispatch.
-    Light levels, the flood of sky and block light, stay on the CPU until the three parts are read,
-    and are a fourth part if their cost shows. Item 26's reading says where the GPU path changes its
-    costs. Three or four commits, one a part, each after its package. Asked at 06:12 on 2026-10-25
-    whether the fixed-point noise, which moves every seed's land, keeps a generator version in
-    WorldInfo so worlds saved before keep the float noise or replaces it outright with seams in old
-    worlds, the review chose outright, under the rule of 2026-10-23 that nothing is kept for
-    upgrading before a release, the tests and play.sh pinned to the new places in the same commit
-    and seed 1's places read again for the records, the owner's saved worlds generated anew; the
-    owner says otherwise if the saved worlds are to keep their land. Corrected at 06:13, the change
-    is far smaller than asked, the noises being Perlin's improved noise over a permutation table
-    shuffled from the seed, which a fixed-point port keeps with the same gradients, fades and lerps,
-    so the values differ by the rounding alone, about 1e-5, and the blocks that change are those
-    where a height or a cave's density sits at a rounding edge, a scattering and not new land, seed
-    1's pinned places expected to hold, an old world showing a rare one-block step at its saved
-    columns' edges; the changed blocks over a region counted first, before the GPU half. The
-    shader's fixed point is 32-bit, the engine enabling no 64-bit integers, a Q16 product split into
-    two 32-bit multiplies giving C#'s 64-bit result exactly; on the CPU a column takes 15.45 ms, the
-    caves' density grid 5.31 and the 256 ground lookups 0.82, the rest the block loop, the ores, the
-    plants and the structures, so part one's first gain is the caves' grid, the ground's 2D noises
-    going with it and the CPU combining the fields as today. Part one's first half at `2549786` on
-    2026-10-25, every noise in fixed point on the CPU with the changed blocks counted, a scattering
-    of 0.032% and no pinned place moved; the GPU half next, the caves' corner readings in a compute
-    shader read back without a wait, voxel.gpu on or off as a setting and voxel.gpu verify comparing
-    both paths bit for bit in play.sh. The GPU half at `1d31dda` on 2026-10-25, the caves' readings
-    in a compute shader read back without a wait in batches of 8 with the CPU path kept and verified
-    bit for bit, a worker at 10.98 ms a column against 16.47, which ends part one; part two, the
-    meshing on the engine's item 69, next. Part two waits on the engine from 07:48 on 2026-10-25,
-    its ASKS.md entry in the engine's tree the engine's item 121, since a mesh over shader buffers
-    on 5.2.291 holds one stream and the field reads colors from a UNorm8x4 stream alone, so a
-    section meshed in compute would bounce white, and holds whole buffers, so each section would be
-    sized for its fullest case; the reading before it, three ten-second sprint flights east over
-    unloaded land on seed 1 at render distance 12 offscreen at 1280 by 720 on the RTX 4070 Laptop
-    GPU, the frame 22.0, 37.5 and 37.0 ms, update.mesh 1.0, 7.8 and 6.9, update.stream 0.9, 1.9 and
-    2.4, cpu.scene_field 6.8, 8.6 and 9.3 and the GPU's passes about 12, so the main thread binds
-    the frame and the meshing is the largest part the game owns, the two profile values going with
-    the next commit. Part three next where it needs no engine change, item 95 otherwise once the
-    package publishes. Part three is dropped at 07:51, item 92 having removed far land under
-    Decision 41, so nothing of it remains to move to the GPU; the light levels stay a fourth part if
-    their cost shows, the flights' numbers showing the meshing and the field's main-thread cost and
-    not the flood. Part two's number read again at 17:40 on item 95's tree, the same three sprint
-    flights at distance 12 offscreen at 1280 by 720 on a quiet GPU: Debug frames of 21.7, 16.7 and
-    19.0 ms with update.mesh 0.93, 2.59 and 1.09, Release with the entities 16.3, 13.7 and 14.6 with
-    0.35, 1.07 and 0.15, Release on DrawMesh 17.0, 14.6 and 18.0, against the morning's Debug frames
-    of 22.0, 37.5 and 37.0 with update.mesh up to 7.8 on 5.2.291, the difference the package, item
-    95 and the quieter GPU; so the meshing is at most 2.6 ms of a Debug frame and about 1 of a
-    Release one, and the frame stands under 16.7 ms in Release in two flights of three. On 5.2.313
-    part two would upload each frame's sections in one write of blocks, light and borders of about
-    17 KB each before one dispatch, since UpdateShaderBuffer waits for every dispatch before it,
-    needs a count pass read back a frame later before a range of fixed capacity is allocated from a
-    pool and the mesh pass runs, so edits stay on the CPU mesher, and ports the whole mesher to
-    Slang, the seven face classes, the shapes and plant walls, the connected glass, the water depth,
-    the per-corner light with the open-cell gather, the corner shade, the biome tints, the atlas's
-    spots and the field's colors, several commits over days for those 1 to 2.6 ms in flights alone.
-    Chosen, the meshing moves to the workers first, SectionMesher filling its arrays off the main
-    thread and the main thread taking the finished arrays in and uploading them, a commit or two;
-    part two as written is held on these numbers for the owner's word, Decision 12 being the
-    owner's. The meshing on the workers at `bb0b9bb` on 2026-10-25, update.mesh under half a
-    millisecond in the flights and the settle no slower, the readings in the devlog's note; part two
-    as written stays held for the owner's word.
+Closed without a change or done as read, each in full in REVIEW-ARCHIVE.md under Items closed,
+parked or shortened: 156, the ground's atlas and the anisotropic filter, nothing changing by the
+owner's word; 164, the engine's split packages at the restore, read with nothing to change.
+
+29. **Generation and meshing on the GPU, the blocks kept on the CPU (Decision 12).** Part one, the
+    noise fields, landed at `2549786` and `1d31dda` on 2026-10-25, every noise in fixed point and
+    the caves' readings in a compute shader read back without a wait, verified bit for bit against
+    the CPU path. The meshing moved to the workers at `bb0b9bb` the same day, update.mesh under half
+    a millisecond in the flights. Part three went with the far land (Decision 41). Part two, a
+    compute mesher a section, is held on its numbers, 1 to 2.6 ms of a frame in flights alone
+    against several commits over days, for the owner's word, Decision 12 being the owner's. The item
+    as it stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened.
 
 114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
     there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
@@ -199,161 +59,71 @@ full.
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-154. **The grove's global illumination at the game's settings against the engine's budgets.** From
-    the engine's item 140 on 2026-11-03, read in a scratch build of this game's source against the
-    engine's 5d0c44e4 at seed 1, the spawn, 16:00 and distance 12, on the quiet RTX 4070:
-    gpu.global_illumination at 1080p, 1440p and 4K reads Low 4.49, 4.82 and 5.61 ms, Medium 6.79,
-    7.01 and 8.01, High 8.05, 8.25 and 9.33, the distance to the reference 0.10 at every size; the
-    engine's budgets at its own settings are under 2, 3 and 4 ms at 1080p, and the game's source of
-    2026-10-25 read 2.3 at High there, so the rest is the game's choices since, the screen probes
-    turned on at about 3.3 ms of High's 8.05 and the far cascade reaching the land drawn. When the
-    next package is pinned, the game weighs those two against its frame at each quality, the screen
-    probes' quality or their reach, the far cascade's reach, read by the same measure at the spawn
-    and by the 139 view, and records what it keeps; nothing is owed by the engine here. After the
-    next package. The package arrived at 15:29 on 2026-11-04 as 3DEngine 6.0.91 from the engine's
-    fourteenth pack run, the first since 6.0.14, carrying the engine's items 139 to 145 and 166 to
-    201 of the week, among them the far cascade's cost (140, 141), the glow lights past the four
-    brightest (192), the thin-wall hold at a wall's foot (193), the lamp march's clearance (195),
-    the sections' two-byte indices and packed positions (144), a relight no longer uploading the
-    section whole (145), every linear texture sampler at 16 (201) and Vulkan 1.4 asked outright
-    (182). The game takes it, runs its suite, and reads this item, then 155. Done at `6eb6540`, pushed
-    at 17:07 on 2026-11-04, the game pinned to 6.0.91. At seed 1's cherry grove at 1920 by 1080 in
-    Debug, GI at the game's settings reads 3.48 to 3.83 ms at Low, 5.67 to 5.78 at Medium and 6.56
-    to 6.83 at High with the distance to a 256-path reference 0.173, 0.166 and 0.166, against 3.96
-    to 4.12, 6.49 and 7.32 to 7.44 on 6.0.14; the screen probes cost 2.3 to 2.7 ms of Medium and
-    High for 0.006 of distance; the far cascade costs 0.4 to 0.7 ms of GI and 0.6 to 1.1 of the
-    frame and without it the deep cave's far walls take the sky's light, so the game keeps both at
-    reach 192 with High the default, Medium reading the same distance for about a millisecond less,
-    left for the owner to weigh. The frame at item 139's view at 720p holds 60 at 8, 12 and 16
-    columns on both packages, the GPU at 16 columns 12.5 to 12.7 ms where 14.0, the memory at 12
-    columns 1,468 to 1,562 MB where 2,098 to 2,413. The README takes the far cascade row, the cost
-    table and the corner's eighteen bytes with 144's packing. GI over the open land at 720p reads
-    6.1 to 7.6 ms on 6.0.91 where 5.3 to 5.6 on 6.0.14, the engine's item 202. The note and the cave
-    picture under .github/devlog; strict build clean, 364 tests, the play 277 s. The README's eight
-    "colour" are a pack's proper name and its addresses, which keep their maker's spelling.
+165. **The build workflow runs on branch pushes alone.** From 3DEngine's item 236 on 2026-11-09. The
+    workflow runs on any push, so the push of the tag v0.2.0 started a build run of the tag's ref
+    beside the run of the same commit's push to main, two runs of one commit with the play in each;
+    a tag marks a commit whose push already runs, so the push trigger names the branches and leaves
+    the tags out, the pack workflow unchanged. A workflow change alone, in the commit of the next
+    pin of the engine's package.
 
-155. **The scene field's center ahead of the camera.** From the engine's item 196 on 2026-11-04. The
-    game sets no center, so the engine centers its field and probes on the camera and the finest
-    cascade spends half its width behind the player; in the engine's reading of a bay and an aisle,
-    an aisle centered on the eye read 17 to 29% over its reference against within 5% centered ahead,
-    as Sponza sets it with the camera plus half the view. Set the field's center ahead of the camera
-    along its view by half the finest cascade's width through SetSceneFieldCenter, read by the
-    grove's and the cave's GI against the engine's references and by the frame at the twelve-column
-    settings. After the next package, with 154. From the engine's 197 on 2026-11-04: centered on the
-    eye, cascade 1's layers in the engine's bay and aisle read 1.17 of their reference at one bounce
-    against 1.02 centered ahead, the placement's own first-bounce excess, and the engine's 199 (the
-    probes' faces at their surfaces) raises the pier's join by 4 to 10 points around the eye while
-    lowering it ahead; the center ahead is the mend for both. Done at fe3638e (c6ac101 amended
-    before its push to carry the day's devlog), read at 17:14, to push after 6eb6540's run. Each
-    frame before BeginDrawing the game sets the field's center to the camera plus its forward by
-    half the finest cascade's width, eight blocks at the default cell, following the Field Cell
-    setting. The grove's distance 0.171, 0.164 and 0.164 ahead against 0.173, 0.166 and 0.166 around
-    the eye at the three qualities, GI's cost the same within 0.2 ms, the shots differing under the
-    near crown; the open land over the spawn at twelve columns at High 0.776 against 0.780 with the
-    frame and the GPU within their spread; the cave black both ways; a full turn over 240 frames
-    24.1 and 27.9 ms ahead against 24.3 and 23.9, the field's CPU time 1.15 to 1.3 against 1.0 to
-    1.1. So the gain is about 1% in the grove where the engine's aisle went from 17 to 29% over to
-    within 5, a cheaper placement's benefit being the bay-and-aisle kind of space the game has few
-    of. The README's eight "colour" are a pack's proper name and its addresses and stay. The note
-    and the grove picture under .github/devlog; strict build clean, 364 tests, the play 247 s.
+166. **The illumination read in motion.** Decision 64 on 2026-11-09. The owner wrote at 17:25 on
+    2026-11-09 that the game's global illumination has looked noisy the same way for weeks, and
+    every reading here since 2026-10-24 was a settled still against a reference, which a fault in
+    motion passes. One read on 6.1.12 at the game's settings, High, four cascades, a cell of 0.25
+    and the far cascade on, at the grove, the village at dusk with its lamps and torches and a
+    torch-lit cave, each by a scripted walk and turn recorded offscreen (N 7.8), about ten seconds
+    standing, walking, turning by a fraction of a probe tile a frame, and the two seconds after a
+    stop; picture to picture, the share of pixels moved by 12 and by 25 levels in each of the four
+    states against the same poses settled, and the frames where the share jumps with what moved in
+    them, the probes' tiles, a cascade's arrival or the lamps. A sheet by N 4.9 and the frames in
+    the dump by N 4.10, the sheet sent to the owner. Each fault found is placed against the engine's
+    items, 237's cycles, 239's arrival after a cut and 240's bands on thin shapes, or is a new ask
+    in the engine's ASKS.md with its frames, and the read is taken again at the next pin, the first
+    package that carries 237. The village's lamps and torches gain reach with the engine's 241,
+    whose floor follows the Field Cell setting, about 8.7 blocks at 0.125 and 17 at 0.25, said in
+    Options' help beside the setting once the package carries it. The GPU is shared with the
+    engine's suite, so the recording runs while it is quiet. After 165, before the next pin. Read at
+    22:05 on 2026-11-09, the sheet 22-05-item-166-sheet in the dump and sent to the owner. Standing
+    moves no pixel past 12 levels in the grove and the cave; a frame in motion against its own pose
+    settled moves 0.55 to 1.03 percent of the grove's pixels past 12 in the screen probes' tiles,
+    the kind of the engine's 240, and under 0.11 percent in the village and the cave; the picture
+    holds within three frames of a stop; no cycle of 237's and no arrival of 239's shows. One step,
+    the near clouds losing about 15 levels in a frame as the far cascade moves a cell, is the game's
+    ask of 2026-11-09 in the engine's ASKS.md and the engine's item 245. The script walked 0.07
+    blocks and turned 0.25 degrees a frame, slower than a hand, which was the review's wording of
+    the turn. A second and last read by Decision 64 takes what play has and the script left out,
+    under the lock, the grove with a turn of 90 degrees in two seconds and in half a second and a
+    sprint, the day's clock running where the first runs held it, and the cave walked at night with
+    a torch in hand; its shares by speed stand beside the first read's, and after it the owner's own
+    recording is the next step. The second read at 22:37 on 2026-11-09, the sheet
+    22-37-item-166-sheet-second sent to the owner. Turns from a settled place match their settled
+    poses within 0.06 percent past 12 at 0.75 and 3 degrees a frame, and the cave walked at night
+    with a torch in hand within 0.12. A walk's and a sprint's 0.55 to 1.0 percent is the size of the
+    difference between two settlings of one place, 0.35 walked to against teleported to and 0.69
+    between two runs, in the screen probes' tiles, the game's second ask in the engine's ASKS.md and
+    the engine's item 246. With the clock running the sun's light steps every 83 frames as Sky.cs
+    sets it, 36 steps an hour so that a shadow's edge stands still between steps, each step moving
+    0.49 to 0.60 percent of the window in its frame with a tail under 0.03 for up to 40 frames, the
+    game's own choice and left. Item 166 done as read; the engine's 245 and 246 carry what it found,
+    the script run again at the pin that brings them, and the owner's own recording stays asked for.
+    The engine's read of its 246 on its head at 23:11 found no such difference in Sponza or in its
+    Ore example, a settled probe's light being the mean of its sixteen places since its 237, so the
+    pin of the package from the engine's `94097b62` repeats the walked-to against teleported-to read
+    in the grove first, and where it still shows the engine takes a grove-like scene with leaves
+    that let light through into its tree.
 
-156. **The ground's atlas takes the anisotropic filter.** Decision 59 on 2026-11-04. The engine's
-    item 201 filters every linear texture sampler at 16, but the ground does not move, since
-    ChunkRenderer sets its atlas to TextureFilter.Point and terrain.slang reads it with SampleLevel
-    at a level of its own choosing, which takes no anisotropy. The ground takes the 16 once the
-    atlas is sampled linearly with gradients (Sample or SampleGrad) at Trilinear, each tile's mips
-    clamped so neighbors do not bleed across tile edges, read by the ground at a grazing angle
-    against the picture before and by the frame; the owner says whether the blocks keep their pixel
-    look, which Point gives and the 16 would soften. After the next package, with 154 and 155.
-    Closed at 11:40 on 2026-11-04 on the owner's word, "Voxle sandbox is pixel filtering so no
-    changes needed I think", the blocks keeping their pixel look, the atlas at Point, nothing
-    changing.
-
-157. **The version and its tags in the documents.** Decision 60 on 2026-11-08. COMMITS.md gains a
-    section on the version, `build/version.txt`'s major and minor raised by this session or the
-    reviewer in a commit of its own when a step is done and the changes behind it are meaningful,
-    the major at a step the size of a release, and the tags of the letter v and the version that the
-    reviewer sets on that commit and on a release build's commit, no other. When the session next
-    wakes for the engine's package. Done at `8d8d1b2`, pushed at 07:00 on 2026-11-09; COMMITS.md's
-    section on the version, the tags on the commit that raises it and on a release build's commit,
-    7e052e8 the example.
-
-158. **The license is the MPL 2.0.** Decision 61 on 2026-11-08. `LICENSE` holds the Mozilla Public
-    License Version 2.0 in its standard text, as both engines' do, in place of the MIT text whose
-    copyright line named a person; the MPL carries no such line. Every mention of MIT in the tree
-    follows, and nothing in the tree names a person, read with a case-insensitive search for the two
-    parts of the name over every file. One commit, told to the reviewer, who pushes it; the game's
-    package rests as it is. Before 157, when the session wakes. Done at `06fd267`, pushed at 15:30
-    on 2026-11-08, the text mozilla.org's, nothing else in the tree naming MIT or a person.
-
-159. **The middle dot out.** Decision 62 on 2026-11-08. The README's first line, changed in the
-    tree, goes in the next commit, and STYLE.md's Punctuation gains the sentence that the middle dot
-    is not used, a row of links separated by a space, a list by commas and a product said in words;
-    nothing else in the tree carries one. With 157, when the session wakes. With it, by Decision 63,
-    STYLE.md's Register gains the sentence that a comment stands on the code's own terms, and the
-    game's comments that explain by another product, an outside asset's file name, the owner, a
-    reference picture or a session's doing are rewritten in the game's terms, Minecraft's names kept
-    where the game takes a rule or a number from the game it follows, as STYLE.md allows. Done at
-    `8d8d1b2`, pushed at 07:00 on 2026-11-09; STYLE.md's paragraph on the middle dot and its
-    Register sentence in the game's words, Minecraft named where a rule or a number comes from it
-    and a pack's format where the game reads it, with a check; some 45 comments in 27 files
-    rewritten to what a number or a look makes the frame do, the modpack, its shaders, the galleries
-    and the reference copies gone from them.
-
-160. **The game on 6.1.12.** The engine's package of 2026-11-09 from its 8dba0d1c, tagged v6.1.12,
-    carrying the mend of the exit that ended the play at the ambient occlusion toggle (engine item
-    223, Verdict 8 here), the night sky from the Sky module, the flicker's mend, the lamps through
-    their glass and the metals form. Done at `8d8d1b2`, pushed at 07:00 on 2026-11-09; the project
-    references 6.1.12, the strict build clean, 364 tests, the scripted play through every option on
-    this machine in 388 s, the grove and the snowy village within a quarter of a level of 6.0.91's
-    frames in the mean, the sheet in the dump and sent; the README's readings taken on 6.0.91 stand,
-    since the frame draws the same.
-
-161. **The workflows' engine ref and the readings in comments.** From the session's report of
-    2026-11-09. The build and pack workflows check the engine out at d3473746 and say it is the
-    commit the package names, 5.2.215, which has been false since the pins after it; the ref follows
-    the pin from here, 8dba0d1c for 6.1.12, and the comment says that the ref is the package's
-    commit and moves with each pin, so the engine's tools the workflows run match the package. With
-    it, by the widened N 4.11 in the game's NORM.md, the readings in LightSettings' comments, the
-    grove's milliseconds and the distances to the path-traced reference, go to the review's records
-    and the comments keep the reason alone. With the next batch. Done at `f43aa9e`, pushed at 08:36
-    on 2026-11-09; both workflows check the engine out at 8dba0d1c with a comment naming no version
-    or hash, every reading is out of the lighting settings' comments, and STYLE.md's Register cites
-    N 4.11.
-
-162. **The last readings in comments.** From the session's report of 2026-11-09, under N 4.11. Seven
-    comment lines outside the lighting settings still carry readings, in ChunkRenderer.cs at 123,
-    548 and 1119, Visibility.cs at 170 and VoxelGame.cs at 316, 317 and 321, the frame's
-    milliseconds at 8, 12 and 16 columns among them; each keeps its reason and loses the figure, the
-    readings standing in the review and RENDERING.md where they are recorded; VoxelGame.cs's 4 ms at
-    line 16 is a setting and stays. One small commit when the session next wakes, before the
-    engine's next pin.
-
-163. **The engine checkouts take the submodules.** From Verdict 9. The engine has carried the Sky
-    module as the git submodule modules/Sky since its `bd081fa6`, and its project references the
-    module's project, so a checkout of 8dba0d1c without the submodules has no Sky project and the
-    play job's build of e3d fails on the missing namespace. Both engine checkouts, build.yml's in
-    the play job and pack.yml's, take submodules on, as the engine's own workflows do, with their
-    comment saying that the engine carries modules as submodules. After item 162's `9a3ec77`, on its
-    own, with no other change; the commit carries the review's files, and the two are pushed
-    together with one run on the last.
+167. **The engine's color functions and the field's center ahead, at the pin that carries them.**
+    From the engine's item 244 on 2026-11-09 (its Decision 108). The game writes the sRGB curve out
+    in SkyColors.cs and TerrainAtlas.cs and a gamma of 2.2 in SectionMesher.cs and Sky.cs, and
+    places the scene field half the finest cascade ahead of the eye by the engine's 64 cells times
+    its own cell size in LightSettings.cs. With the package that carries the engine's 244 the game
+    calls the engine's functions where it means the sRGB curve, a 2.2 that is the look's own staying
+    with its reason in a comment, and takes the engine's option for the field's center, the play's
+    captures unchanged. A small commit at that pin or the one after.
 
 ## Verdicts
 
-Verdict 9 is open on the play job's engine build. Verdicts 1 to 8 are settled, said under each in
-REVIEW-ARCHIVE.md.
-
-9. **The play job's engine build fails on the missing Sky module.** On the build run of `f43aa9e`,
-    42580457818, on 2026-11-09, the three test jobs passed in under two minutes and the play job
-    failed after 54 seconds in build/play.sh's build of e3d, the engine's compiler reporting eight
-    errors of the type or namespace Sky not found in Api/SkyDay.cs,
-    Graphics/GraphicsDevice.Atmosphere.cs and the Rendering/Lighting sky files, after the warning
-    that the referenced project ../modules/Sky/Sky/Sky.csproj does not exist. The fault is in item
-    161's ref. The engine took the Sky module as the git submodule modules/Sky at its `bd081fa6`,
-    its own workflows check it out with submodules on, and the game's two engine checkouts, in
-    build.yml's play job and in pack.yml, moved from d3473746, which had no submodule, to 8dba0d1c,
-    which has one, without that setting. The mend is item 163, the setting on both checkouts.
-    Settles on the build run of 163's commit with its play job green.
+No verdict is open. Verdicts 1 to 9 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 
@@ -389,108 +159,15 @@ AGENTS.md's rows for it and for the pushes; 40 Far land at 32 columns by default
 distance kept at 12; 41 Far land goes; 42 The screen probes are off by default; 43 The game uses the
 engine's ECS where it fits, beside the loop; 44 The clouds cover the area about the player and do
 not reach the horizon; 45 A session saves the pictures of its work in the repository, N 4.8; 46 The
-README's pictures taken again, an animation at its head and pictures in its parts (Decision 24),
-each in full under Decisions in REVIEW-ARCHIVE.md.
-
-47. **The devlog written as the work goes.** The owner asked on 2026-10-25 at 05:13 that the
-    sessions write the devlog more often than at a day's end, though not at every commit. N 4.8
-    gains the cadence, an item that changes what is seen ending with at least one captioned picture,
-    a pair before and after where it mends and one a phase where it is built in phases, and
-    DEVLOG.md regenerated by the review as each item is archived, the coder's next commit carrying
-    it as it carries the review's files; the three devlogs were regenerated at 05:17 with the day's
-    pictures and items. The same in 3DEngine (Decision 71) and BevyCSharp (Decision 64).
-
-48. **The screen probes are on, off a debugging switch alone.** The owner wrote to the engine's
-    session before 09:19 on 2026-10-25, with the engine's item 103 held on its cost, that the screen
-    probes stay on as the engine recommended and that off is for debugging alone and not for a
-    player. Decision 42's default of off, taken when the engine's item 90 spread black across the
-    screen, is over, item 90 mended since; item 131 turns them on and takes the setting out of the
-    options.
-
-49. **The devlog carries notes beside the pictures.** The owner asked on 2026-10-25 at about 12:01,
-    shown the table of the screen probes' cost at four resolutions from 3DEngine's item 122, that it
-    be written in a devlog or something along those lines. N 4.8 gains the note, a reading worth the
-    devlog's reader with no picture to carry it, a table or a few sentences, saved beside the
-    pictures as a Markdown file named the same way, and DEVLOG.md carries it on its day under the
-    pictures; the generator reads them, and the first note is 3DEngine's
-    2026-10-25-item-122-resolution.md. The same in 3DEngine (Decision 73) and BevyCSharp (Decision
-    65).
-
-50. **The F3 window's parts find their homes.** Asked by the game's session on 2026-10-26 under item
-    54. The readouts become the engine's overlay sections, Player with the feet, the heading,
-    flying, the target block or mob with its face's light, health and food; Generation with the
-    world's kind and seed, the biome, the temperature and humidity at the eye and the GPU caves'
-    state and backlog; Sky with the hour and the day; Light with the sky and block light at the
-    eye's cell; Sections with the columns, the generating, the ones to mesh, the drawn, the draws,
-    the triangles, the entities, the lamps, the clouds' faces and the mesh and stream updates; Mobs
-    with the loaded, the drawn, the draws and the kept. The developer's toggles go to a Debug
-    options screen reached from Options, the engine's three windows, global illumination, the
-    frame's profile and the effects over the frame, and the game's Light Levels and Cull Unseen
-    Sections, since a player sets none of them; Corners shaded goes, the Corner Shade slider at 0
-    being the same; Mobs stand still stays the command voxel.still. Of the World part, the mode is
-    F3 and F4's and voxel.mode's, the button saving at once goes with the game saving every 30 s and
-    on leaving, and the kind, the seed and opening or beginning a world go to item 134, a world
-    screen, voxel.world keeping them meanwhile; open to the owner's word.
-
-51. **The far cascade is on by default and the shadow distance is 128 blocks.** The owner wrote on
-    2026-10-30 that the far cascades should be default on and the shadow distance 128 blocks, over
-    the reviewer's call of 2026-10-26 under item 27 that kept the far cascade off for its 1.6 to 2
-    ms; item 141 does it and reads the frame again.
-
-52. **A voxel engine in Rust is the reference for the game's performance.** The owner pointed on
-    2026-10-30 at github.com/rornic/ochre for the voxel sandbox's performance; the game's session
-    reads it for what it does about meshing, drawing and streaming that the game does not, and
-    proposes items from it with readings, the engine taking what is the engine's through ASKS.md.
-    Read on 2026-10-30, six proposals in the order the readings say binds the frame: the game's
-    sections drawn in groups (item 143), shadow casters culled to each cascade's slice swept toward
-    the sun (the engine's, by ASKS.md), faces merged where the triangles halve (144), streaming by a
-    time budget (145), packed vertices (the engine's, by ASKS.md) and the far columns at double
-    cells (146); the reference has no occlusion culling, where the game's flood culling stands
-    ahead.
-
-53. **No far land in the game.** The owner wrote on 2026-10-30, "also no farlands in voxel sandbox
-    to be clear", holding to Decision 41 of 2026-10-24 that took the far land out; item 146, the
-    columns past 8 drawn at double cells from the Rust engine's octree levels, is withdrawn, and no
-    level of detail past the render distance is proposed again without the owner's word.
-
-54. **Held lights are plain lights without shadows.** The owner wrote on 2026-10-30 that the
-    handheld lights in the voxel sandbox are simple lights and are not to be given shadows, over
-    item 74 of 2026-10-24 where the held light cast them; item 147 takes the shadow off.
-
-55. **A reading's picture explains itself, and a plain capture or pair stays where it shows the
-    thing.** The owner wrote on 2026-10-31 that 3DEngine's sheets for item 136, the canopy and the
-    grove with their labeled panels, difference panels and lettered boxes, were liked very much,
-    that plain captures and side-by-side views are liked too, and that each is used where it fits. N
-    4.9 in the three repositories says what a sheet carries. Shown BevyCSharp's item 82 sheet at
-    09:1x the same day, the owner said the rule is not a list of parts to implement, that the plain
-    captures and pairs made before were already right, and answered four questions, a principle and
-    not a checklist, labels where panels could be confused and a box only where a number is read
-    there, a white ground as before, and difference panels and plots where they tell the reading. N
-    4.9 is rewritten so.
-
-56. **Every picture a session makes goes to the repository's dump folder.** The owner asked on
-    2026-10-31 at 09:3x that all the pictures a session makes be kept apart from the devlog's chosen
-    ones, in a dump folder, for every project, and chose the folder inside each repository and
-    ignored by git, the pictures as captured in PNG named by time, item and a word, and a captions
-    line a picture written as the shot is taken; N 4.10 in the three repositories. At 09:5x the
-    owner added that the sessions had captured and compared pictures without showing them, and asked
-    that every picture a session reads or compares be shown in the session as it is made, none kept
-    behind the scenes; N 4.10 says so.
-
-57. **The version's major and minor move by the reviewer's judgment.** The owner wrote on 2026-10-31
-    at 12:4x that the reviewer moves build/version.txt by its judgment of the project, commits it
-    and pushes it, the owner's hand no longer needed. The judgment is a minor at a step the project
-    has taken, a capability or a changed surface that a package or release carries, and the major on
-    the owner's word. The game moves to 0.2 at `7e052e8`, 0.1 having stood since 2026-10-17 over 235
-    commits.
-
-58. **No one is named in a picture.** The owner wrote in the 3DEngine coder's session on 2026-11-03
-    before 08:05, seeing a reading sheet whose label called a reference picture theirs, that
-    pictures and comparisons must not mention the owner, as the rule for documents has it. So N 4.10
-    says a picture's labels, its file name and its captions line name no person and no session, a
-    picture the owner sent being a screenshot and their reference picture the reference; the engine
-    session relabelled the sheet, renamed the dump's files and reworded its captions back to
-    2026-10-31, and read the 59 comparison sheets' labels clean.
+README's pictures taken again, an animation at its head and pictures in its parts (Decision 24); 47
+The devlog written as the work goes; 48 The screen probes are on, off a debugging switch alone; 49
+The devlog carries notes beside the pictures; 50 The F3 window's parts find their homes; 51 The far
+cascade is on by default and the shadow distance is 128 blocks; 52 A voxel engine in Rust is the
+reference for the game's performance; 53 No far land in the game; 54 Held lights are plain lights
+without shadows; 55 A reading's picture explains itself, and a plain capture or pair stays where it
+shows the thing; 56 Every picture a session makes goes to the repository's dump folder; 57 The
+version's major and minor move by the reviewer's judgment; 58 No one is named in a picture, each in
+full under Decisions in REVIEW-ARCHIVE.md.
 
 59. **Anisotropic filtering at 16 everywhere.** The owner wrote on 2026-11-04 at 11:07, "Anisotropic
    filtering is at x16 everywhere because it is cheap and on steep angles it is visually better." So
@@ -540,4 +217,56 @@ each in full under Decisions in REVIEW-ARCHIVE.md.
     explanation, "as X works it out", and the facts of the sessions' work are not written in a
     comment. Item 159 carries STYLE.md's sentence and the game's own sweep.
 
+64. **A fault the owner sees in motion is read in motion.** The owner wrote at 17:25 on 2026-11-09
+    that the game's global illumination has looked noisy the same way for weeks, and the review's
+    answer read only the shader cache. The readings here since 2026-10-24 were settled stills, which
+    a fault in motion passes, so a fault named while moving is read from a recording, the owner's
+    where there is one and a scripted walk and turn offscreen where not, picture to picture, with
+    the standing, the walking, the turning and the two seconds after a stop each given their share
+    of pixels moved, and the review asks the owner for a recording and the settings file when a
+    fault is named without one. The engine's Decision 107 says the same; told to the owner for
+    approval as its Decision 95's precedent allows. Item 166.
+
 ## Replies
+
+Item 166. Read on the engine's 6.1.12 between 21:34 and 22:03 on 2026-11-09, offscreen at 1280 by
+720 at the game's settings on tuned's power-saving profile, the cave and the checks after it under
+the GPU's lock, every frame recorded through 120 standing, a walk of 180 frames at 0.0717 blocks a
+frame, the stop, a turn of 180 at 0.25 degrees a frame, about a quarter of a probe tile at the
+window's middle, and the stop, the mobs, the clouds and the animated textures held. Standing, no
+pixel of the grove or the cave moves past 12 levels from one frame to the next, and the village
+moves 0.001 to 0.004 percent, its torches' flames and the particles over its roofs. In the walk and
+the turn each frame moves from the one before as the same two poses settled do, within 0.3 percent
+of the window past 12 levels, and differs from the settled picture of its own pose on 0.55 to 1.03
+percent past 12 and 0.12 to 0.32 past 25 in the grove, in the screen probes' 8-pixel tiles, which is
+240's kind, 0.02 to 0.11 and under 0.03 in the village, and 0.01 to 0.07 and under 0.04 in the cave.
+After each stop the picture holds within one to three frames. The motions' starts aside, the share
+jumps at one frame, the grove walk's 123rd, where the near clouds take 15 levels less at once, the
+far cascade's move by a cell changing the light the model pass gives them, as settled shots with the
+far cascade off and with the illumination off show. It stands in the engine's ASKS.md as an entry of
+2026-11-09, 239 being the nearest item. No cycle of 237's kind shows, nor an arrival after a cut,
+since a walk has none, and the cave reads a mean of 0.3 to 3.6 of 255, so its shares say little
+before 241's reach. So the noise seen in play is not in these motions at these speeds on 6.1.12, a
+turn of a few degrees a frame as a hand makes it is not read, and by Decision 64 a recording from
+play with its settings file would show where the noise is. The sheet is 22-05-item-166-sheet.png in
+the dump, sent, with the three recordings and the frames beside it.
+
+Item 166, the second read. Recorded under the GPU's lock between 22:11 and 22:35 on 2026-11-09 as
+the first, the frame's time held at a sixtieth of a second by `time.frame` so the day's clock runs
+the same in every run, each sample shot settled at its own pose and hour. Each frame against the
+settled picture of its pose, past 12 and past 25: the grove's turn of 90 degrees in 2 s, 0.75
+degrees a frame, 0.023 to 0.056 and 0.009 to 0.013 percent, in 0.5 s, 3 degrees a frame, 0.024 to
+0.048 and 0.009 to 0.014, its sprint at 0.094 blocks a frame 0.73 to 0.99 and 0.23 to 0.32, and the
+cave at night walked with a torch in hand 0.016 to 0.119 and 0.007 to 0.091, turned 0.029 to 0.038
+and 0.007 to 0.014. The same place settled twice differs by 0.35 and 0.07 percent walked to and
+teleported to in one run, and by 0.69 and 0.25 teleported to in two runs, in the screen probes'
+8-pixel tiles, a settled view's frames being the same to the bit. So the grove's walk, its sprint
+and the first read's turn after the walk differ from their poses settled by what the path leaves,
+and a turn made where the eye settled matches within 0.06 at every speed, so no lag of the light
+behind the motion shows at any speed read. What moves in play is which held estimate a place shows,
+which stands in the engine's ASKS.md as a second entry of 2026-11-09, 240's kind the nearest, and it
+replaces the first read's placing of the grove's 0.55 to 1.03 percent under 240 alone. With the
+clock running, the sun's light steps every 83 frames by the game's 36 steps an hour, moving 0.49 to
+0.60 percent past 12 in one frame and a tail of 0.01 to 0.03 for up to 40 frames as the illumination
+follows. The sheet is 22-37-item-166-sheet-second.png in the dump, sent, with the two recordings,
+the settled shots and the path's pictures beside it.

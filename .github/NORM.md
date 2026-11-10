@@ -180,6 +180,18 @@ offscreen or headless as they do; a window is opened on the owner's machine for 
 questions, the swapchain and its format, the modes and sizes, a screenshot read against an offscreen
 capture, and closed when read. By review.
 
+**N 7.9 The machine has one GPU, and a session takes its lock for what it runs there.** A program
+run on the GPU is started through `flock` on `/run/user/1000/gpu.lock`, shared (`flock -s`) for a
+suite, a capture, a recording or a drive and exclusive (`flock -x`) for a timing or a traced
+reference, so a timing waits for the others' programs to end and none starts under it. The lock is
+held until the program has ended, so a launcher that returns while its program keeps running, as
+`e3d open` does, is wrapped together with the script that stops the program. A look at `nvidia-smi`
+is no turn, since another session's program can start a second after it, and three readings were
+spoiled so within an hour on 2026-11-09. A program served for a reading is stopped as soon as its
+pictures and numbers are taken, and the files are read with it stopped. A session whose wait grows
+long tells the reviewing session in a line, which gives the order, an engine's illumination read
+first. By review.
+
 ## Conformance
 
 | Rule | Voxel-Sandbox |

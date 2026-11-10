@@ -1,4 +1,5 @@
-# Every push and pull request, and the pack run (pack.yml), which calls this before it publishes.
+# Every push to a branch and every pull request, and the pack run (pack.yml), which calls this before
+# it publishes.
 #
 # The game is built from the engine's package on nuget.org with warnings failing the build (NORM.md,
 # N 6.1), and its tests run on Linux, Windows and macOS, the systems it ships for (N 6.2). On Linux
@@ -8,9 +9,11 @@
 # no package.
 name: build
 
-# Documents and captures are left out, the README apart, whose commands a reader follows.
+# Documents and captures are left out, the README apart, whose commands a reader follows. A push
+# runs for branches alone, since a tag marks a commit whose push to its branch already ran.
 on:
   push:
+    branches: ['**']
     paths: ['**', '!.github/**.md', '!AGENTS.md', '!.github/assets/**']
   pull_request:
     paths: ['**', '!.github/**.md', '!AGENTS.md', '!.github/assets/**']
@@ -78,7 +81,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: EggyStudio/3DEngine
-          ref: 8dba0d1c42e7b891f254a5941f1f69a1105e24d2
+          ref: 94097b6251e21d0eb99d856447c54e33550ef9f8
           path: .engine
           submodules: true
 
