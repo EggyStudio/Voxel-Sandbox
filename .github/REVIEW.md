@@ -1,20 +1,23 @@
 # Review
 
-Reviewed up to `4e956bc`, items 162 and 163, the last readings out of the comments and the engine
-checkouts taking the submodules, pushed at 08:47 on 2026-11-09 with `9a3ec77` and one run on the
-last, green at 10:07 with the play in 80 minutes and the three test jobs in about two, which settled
-Verdict 9; they keep the form and carry the review's files. Nothing is pushed after it. The game
-stands at 0.2, tagged `v0.2.0`, and is pinned to the engine's 6.1.12 since `8d8d1b2`; the engine's
-6.2.12 of 02:34 on 2026-11-10, from its `94097b62`, is the next pin, the first package with the
-flicker mend and the lamps, with item 165 and the reads of item 166 taken again. Item 166 is read
-twice by 22:37 on 2026-11-09, turns clean at every speed, a walk showing the difference between two
-settlings of one place in the screen probes' tiles, the engine's item 246, and the clouds stepping
-as the far cascade moves, its item 245. Every push and run before `4e956bc` since 2026-10-23 stands
-in REVIEW-ARCHIVE.md under Head records.
+Reviewed up to `cfffcb3`, the pin of the engine's 6.2.12 with item 165, the build on a push to a
+branch alone, and the workflows' engine checkout at `94097b62`, pushed at 02:54 on 2026-11-10, its
+run green at 04:05 with the play in 70 minutes and the three test jobs in about two; its strict
+build is clean, 364 tests pass and the scripted run passes under the validation layer in 336
+seconds; it keeps the form and carries the review's files and item 166's two Replies. Before it
+`4e956bc`, items 162 and 163, pushed at 08:47 on 2026-11-09, green at 10:07. The game stands at 0.2,
+tagged `v0.2.0`, and is pinned to the engine's 6.2.12 since `cfffcb3`, the first package with the
+flicker mend and the lamps; item 166's reads on it and on 6.1.12 show no path difference and no lag
+at any speed, the clouds' step standing, and on the grove's shaded ground a seventh of the pixels
+flickering in a turn by the screen probes on both, read again on the package that carries the
+engine's ramp. Item 166 is read twice by 22:37 on 2026-11-09, turns clean at every speed, a walk
+showing the difference between two settlings of one place in the screen probes' tiles, the engine's
+item 246, and the clouds stepping as the far cascade moves, its item 245. Every push and run before
+`4e956bc` since 2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.
 
-Next the pin of the engine's next package with 165, and 167 at the pin that carries the engine's
-244. Item 29's second part and 114's second part wait on the owner's word. A program on the GPU runs
-under the lock (N 7.9).
+Next the pin of the package that carries the engine's ramp, with item 166's carried turn on the mask
+read again on it, and 167 at the pin that carries the engine's 244. Item 29's second part and 114's
+second part wait on the owner's word. A program on the GPU runs under the lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -59,13 +62,6 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
 
-165. **The build workflow runs on branch pushes alone.** From 3DEngine's item 236 on 2026-11-09. The
-    workflow runs on any push, so the push of the tag v0.2.0 started a build run of the tag's ref
-    beside the run of the same commit's push to main, two runs of one commit with the play in each;
-    a tag marks a commit whose push already runs, so the push trigger names the branches and leaves
-    the tags out, the pack workflow unchanged. A workflow change alone, in the commit of the next
-    pin of the engine's package.
-
 166. **The illumination read in motion.** Decision 64 on 2026-11-09. The owner wrote at 17:25 on
     2026-11-09 that the game's global illumination has looked noisy the same way for weeks, and
     every reading here since 2026-10-24 was a settled still against a reference, which a fault in
@@ -80,37 +76,79 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     items, 237's cycles, 239's arrival after a cut and 240's bands on thin shapes, or is a new ask
     in the engine's ASKS.md with its frames, and the read is taken again at the next pin, the first
     package that carries 237. The village's lamps and torches gain reach with the engine's 241,
-    whose floor follows the Field Cell setting, about 8.7 blocks at 0.125 and 17 at 0.25, said in
-    Options' help beside the setting once the package carries it. The GPU is shared with the
-    engine's suite, so the recording runs while it is quiet. After 165, before the next pin. Read at
-    22:05 on 2026-11-09, the sheet 22-05-item-166-sheet in the dump and sent to the owner. Standing
-    moves no pixel past 12 levels in the grove and the cave; a frame in motion against its own pose
-    settled moves 0.55 to 1.03 percent of the grove's pixels past 12 in the screen probes' tiles,
-    the kind of the engine's 240, and under 0.11 percent in the village and the cave; the picture
-    holds within three frames of a stop; no cycle of 237's and no arrival of 239's shows. One step,
-    the near clouds losing about 15 levels in a frame as the far cascade moves a cell, is the game's
-    ask of 2026-11-09 in the engine's ASKS.md and the engine's item 245. The script walked 0.07
-    blocks and turned 0.25 degrees a frame, slower than a hand, which was the review's wording of
-    the turn. A second and last read by Decision 64 takes what play has and the script left out,
-    under the lock, the grove with a turn of 90 degrees in two seconds and in half a second and a
-    sprint, the day's clock running where the first runs held it, and the cave walked at night with
-    a torch in hand; its shares by speed stand beside the first read's, and after it the owner's own
-    recording is the next step. The second read at 22:37 on 2026-11-09, the sheet
-    22-37-item-166-sheet-second sent to the owner. Turns from a settled place match their settled
-    poses within 0.06 percent past 12 at 0.75 and 3 degrees a frame, and the cave walked at night
-    with a torch in hand within 0.12. A walk's and a sprint's 0.55 to 1.0 percent is the size of the
-    difference between two settlings of one place, 0.35 walked to against teleported to and 0.69
-    between two runs, in the screen probes' tiles, the game's second ask in the engine's ASKS.md and
-    the engine's item 246. With the clock running the sun's light steps every 83 frames as Sky.cs
-    sets it, 36 steps an hour so that a shadow's edge stands still between steps, each step moving
-    0.49 to 0.60 percent of the window in its frame with a tail under 0.03 for up to 40 frames, the
-    game's own choice and left. Item 166 done as read; the engine's 245 and 246 carry what it found,
-    the script run again at the pin that brings them, and the owner's own recording stays asked for.
-    The engine's read of its 246 on its head at 23:11 found no such difference in Sponza or in its
-    Ore example, a settled probe's light being the mean of its sixteen places since its 237, so the
-    pin of the package from the engine's `94097b62` repeats the walked-to against teleported-to read
-    in the grove first, and where it still shows the engine takes a grove-like scene with leaves
-    that let light through into its tree.
+    whose floor follows the Field Cell setting, about 8.7 blocks at 0.125 and 17 at 0.25, which the
+    engine's guide says beside the setting and the game's options leave unsaid, having no help line
+    for a setting. The GPU is shared with the engine's suite, so the recording runs while it is
+    quiet. After 165, before the next pin. Read at 22:05 on 2026-11-09, the sheet
+    22-05-item-166-sheet in the dump and sent to the owner. Standing moves no pixel past 12 levels
+    in the grove and the cave; a frame in motion against its own pose settled moves 0.55 to 1.03
+    percent of the grove's pixels past 12 in the screen probes' tiles, the kind of the engine's 240,
+    and under 0.11 percent in the village and the cave; the picture holds within three frames of a
+    stop; no cycle of 237's and no arrival of 239's shows. One step, the near clouds losing about 15
+    levels in a frame as the far cascade moves a cell, is the game's ask of 2026-11-09 in the
+    engine's ASKS.md and the engine's item 245. The script walked 0.07 blocks and turned 0.25
+    degrees a frame, slower than a hand, which was the review's wording of the turn. A second and
+    last read by Decision 64 takes what play has and the script left out, under the lock, the grove
+    with a turn of 90 degrees in two seconds and in half a second and a sprint, the day's clock
+    running where the first runs held it, and the cave walked at night with a torch in hand; its
+    shares by speed stand beside the first read's, and after it the owner's own recording is the
+    next step. The second read at 22:37 on 2026-11-09, the sheet 22-37-item-166-sheet-second sent to
+    the owner. Turns from a settled place match their settled poses within 0.06 percent past 12 at
+    0.75 and 3 degrees a frame, and the cave walked at night with a torch in hand within 0.12. A
+    walk's and a sprint's 0.55 to 1.0 percent is the size of the difference between two settlings of
+    one place, 0.35 walked to against teleported to and 0.69 between two runs, in the screen probes'
+    tiles, the game's second ask in the engine's ASKS.md and the engine's item 246. With the clock
+    running the sun's light steps every 83 frames as Sky.cs sets it, 36 steps an hour so that a
+    shadow's edge stands still between steps, each step moving 0.49 to 0.60 percent of the window in
+    its frame with a tail under 0.03 for up to 40 frames, the game's own choice and left. Item 166
+    done as read; the engine's 245 and 246 carry what it found, the script run again at the pin that
+    brings them, and the owner's own recording stays asked for. The engine's read of its 246 on its
+    head at 23:11 found no such difference in Sponza or in its Ore example, a settled probe's light
+    being the mean of its sixteen places since its 237, so the pin of the package from the engine's
+    `94097b62` repeats the walked-to against teleported-to read in the grove first, and where it
+    still shows the engine takes a grove-like scene with leaves that let light through into its
+    tree. Corrected at 03:11 on 2026-11-10 by the read on the pin. Neither package shows a path
+    difference, one place teleported to twice and in two fresh runs within 0.006 percent on 6.1.12
+    and 6.2.12 alike and the two packages within 0.005 of each other; the 0.35 and 0.69 percent were
+    the script's poses, the walk's end summed in floats against a teleport rounded to a hundredth,
+    half a millimeter and 3.6 mm apart, and walked to the exact end the place reads 0.000. Half a
+    millimeter of the eye moves 0.34 percent of the window past 12, about half of it the sun's
+    shadow edges a texel on as a cascade's middle is floored to whole texels and the rest the screen
+    probes' light. So the engine's 246 is withdrawn, the second read's walk and sprint figures carry
+    the same pose error, and every held pose of the rest is placed by the game's own float
+    operations. The read that remains for the owner's words is the engine's measure of motion, a
+    turn in place with each picture carried into the next by build/flicker.py of the engine's tree,
+    in the grove with the screen probes on and off, the share past 4 and past 12 and its map, beside
+    the walk, the sprint and the turns against their poses held, the clouds and the cave. The
+    carried turn read at 03:29 on 2026-11-10 on 6.2.12, the grove turned 0.75 degrees a frame over
+    120 frames. The carry leaves a floor of 9.8 percent past 4 in the game, the pixel textures' hard
+    texel edges smeared by the resampling, where Sponza's is 0.9; with both pictures of a pair
+    blurred over a tile the floor is 0.95 and the screen probes read 1.96 percent past 4 and 0.089
+    past 12 where 0.954 and 0.011 with them off and 0.979 and 0.010 with the illumination off, so
+    the probes double the turn's flicker past 4 and multiply it by eight past 12, small over the
+    whole window. It lies in blocks of one or two tiles on the shaded ground under the canopies,
+    among the grass tufts and the petals, and along the canopy's shaded edges, the kind of the
+    engine's 240. The share on a mask of the shaded ground under the trees says how much it is where
+    it lives, on both packages, and the read is taken again on the package that carries 240's ramp.
+    On the mask at 03:43 on 2026-11-10, the grass ground with petals under the trees where its
+    blurred luma lies under 80 of 255, some 74,000 pixels and 8 percent of the window, carried with
+    the turn. With both pictures blurred over a tile the ground reads 20.2 percent past 4 and 1.44
+    past 12 with the screen probes on, 6.0 and 0.012 with them off and 8.4 and 0.059 with the
+    illumination off, and 15.1 percent of the ground past 4 and 1.43 past 12 move with the probes
+    and not without them, where 0.65 and 0.001 between the two runs without them; 6.1.12 reads the
+    same to a tenth, so 6.2.12 does not touch it. A seventh of the shaded ground flickering in a
+    turn by the probes alone is the likeliest reading yet of the owner's words. The same mask and
+    turn are read again on the package that carries the engine's ramp of its 240, and its figure
+    there against 6.0 and 0.012 says whether the engine's held form is taken up. The ask for
+    build/flicker.py's three options is in the engine's ASKS.md. The poses held read again at 05:15
+    on 2026-11-10 on both packages, each pose placed by the game's float operations. Every frame in
+    motion matches its pose held within 0.08 percent past 12 and 0.061 past 25, the walk, the
+    sprint, the turns at 0.25, 0.75 and 3 degrees a frame and the cave with the torch, where the
+    floor of a still view with the clock running is 0.04 to 0.05, so no light lags at any speed and
+    the first reads' walk and sprint figures were the pose error. The cave at night is brighter on
+    6.2.12 at every pose, its mean luma 3.26 to 3.76 and 8.51 to 10.00 at the ends, the engine's 241
+    reaching further. The clouds step as before on both, the engine's 245. What remains of the item
+    is the carried turn on the mask, read again on the package that carries the engine's ramp.
 
 167. **The engine's color functions and the field's center ahead, at the pin that carries them.**
     From the engine's item 244 on 2026-11-09 (its Decision 108). The game writes the sRGB curve out
@@ -270,3 +308,39 @@ clock running, the sun's light steps every 83 frames by the game's 36 steps an h
 0.60 percent past 12 in one frame and a tail of 0.01 to 0.03 for up to 40 frames as the illumination
 follows. The sheet is 22-37-item-166-sheet-second.png in the dump, sent, with the two recordings,
 the settled shots and the path's pictures beside it.
+
+Item 166, read again on 6.2.12 at the pin `cfffcb3` and on 6.1.12 from a build kept beside it,
+between 02:54 and 05:10 on 2026-11-10, under the GPU's lock with the frames on disk and each script
+in a scope with a memory bound. It corrects the second read. The walk ends where `voxel.flicker`
+puts it by adding its step in floats each frame, at -739.33984, -972.4695, and the second read
+teleported to that place rounded to a hundredth, half a millimeter off, and placed the first read's
+settled poses in doubles, up to 3.6 millimeters off. Half a millimeter moves 0.34 percent of the
+window past 12, 0.17 of it with the illumination off as the sun's shadow edges move a texel of its
+map, so the 0.35 and 0.69 percent of the second read were the poses and not the path. Teleported to
+the walk's own end, the place walked to and the place teleported to differ on no pixel past 12, two
+settlings of one place on 0.003 to 0.006 percent and two runs on 0.002 to 0.003, on both packages,
+and the engine's 246 is withdrawn.
+
+With each pose held placed as the game's floats place it, by a script that repeats FlickerRun's
+steps and the heading's conversion, every frame in motion matches its pose held past 12 within 0.018
+percent for the grove's walk and slow turn, 0.068 for its turns of 0.75 and 3 degrees a frame and
+0.074 for its sprint with the clock running, whose own floor standing is 0.039 to 0.054, and 0.079
+for the cave walked and turned at night with a torch, the same on both packages. So no frame in
+motion lags its pose at any speed read. The cave is brighter on 6.2.12 by a mean of 0.5 to 1.5 of
+255 as its torches reach further by the engine's 241, and the grove differs between the packages on
+0.05 percent past 12. The clouds still step at the walk's 123rd frame, 11.65 percent past 12 against
+9.4 on either side, the near cloud reading 158, 178, 205 then 144, 161, 184 at the walk's poses 90
+and 122 with the far cascade on and holding without it, the same to the level on both packages, the
+engine's 245.
+
+The turn carried picture to picture by the engine's `build/flicker.py`, at 0.75 degrees a frame in
+the grove with the screen probes on, off and the illumination off, reads 10.9, 9.9 and 9.8 percent
+of the window past 4, a floor the carry leaves on the game's hard-edged textures. Read as the pixels
+a pair moves past 4 with the probes and not without at the same heading, after a blur of radius 3,
+the probes move 1.23 percent of the window and 15 percent of the shaded ground under the trees,
+against 0.25 and 0.65 between the probes off and the illumination off, and 1.4 percent of that
+ground past 12, in blocks of the probes' 8-pixel tiles among the grass and the petals, the same on
+6.1.12 and 6.2.12. That is the likeliest form of the noise seen in play, and the engine's ASKS.md
+carries an entry asking `build/flicker.py` for the two forms and a map that follows the turn. The
+sheets are 03-10-item-166-pose, 03-28-item-166-carried-turn, 03-52-item-166-carried-masked and
+05-20-item-166-poses-held in the dump, each sent.

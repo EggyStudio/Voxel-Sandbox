@@ -192,6 +192,15 @@ pictures and numbers are taken, and the files are read with it stopped. A sessio
 long tells the reviewing session in a line, which gives the order, an engine's illumination read
 first. By review.
 
+**N 7.10 A session leaves the machine its memory.** The machine's memory ran out three times, the
+last on 2026-11-10, when one line of Python read a session's transcript of 4 GB whole and grew to 27
+GB while 18 GB of old frames stood in the RAM-backed /tmp and filled the swap, which is memory too.
+A large file is searched as a stream, by grep or line by line, and never read whole, a session's
+transcript above all. A program or a script that loads frames or a large file runs in a scope with a
+memory bound, as the suites do. Frames, recordings and builds are written to disk, the dump or a
+folder under the home's cache, and not to /tmp, and a done item's scratch is deleted when the item
+closes. By review, the reviewing session reading the memory and each session's scratch at its watch.
+
 ## Conformance
 
 | Rule | Voxel-Sandbox |

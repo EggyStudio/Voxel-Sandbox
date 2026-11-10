@@ -2673,6 +2673,13 @@ before a batch.
     checkouts take submodules on with the comment, checked in a fresh clone of the engine at
     8dba0d1c, where the build without the submodule gave the run's errors and with it none.
 
+165. **The build workflow runs on branch pushes alone.** From 3DEngine's item 236 on 2026-11-09. The
+    workflow runs on any push, so the push of the tag v0.2.0 started a build run of the tag's ref
+    beside the run of the same commit's push to main, two runs of one commit with the play in each;
+    a tag marks a commit whose push already runs, so the push trigger names the branches and leaves
+    the tags out, the pack workflow unchanged. A workflow change alone, in the commit of the next
+    pin of the engine's package. Done at `cfffcb3` on 2026-11-10 with the pin of 6.2.12.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
