@@ -1,23 +1,25 @@
 # Review
 
-Reviewed up to `cfffcb3`, the pin of the engine's 6.2.12 with item 165, the build on a push to a
-branch alone, and the workflows' engine checkout at `94097b62`, pushed at 02:54 on 2026-11-10, its
-run green at 04:05 with the play in 70 minutes and the three test jobs in about two; its strict
-build is clean, 364 tests pass and the scripted run passes under the validation layer in 336
-seconds; it keeps the form and carries the review's files and item 166's two Replies. Before it
-`4e956bc`, items 162 and 163, pushed at 08:47 on 2026-11-09, green at 10:07. The game stands at 0.2,
-tagged `v0.2.0`, and is pinned to the engine's 6.2.12 since `cfffcb3`, the first package with the
-flicker mend and the lamps; item 166's reads on it and on 6.1.12 show no path difference and no lag
-at any speed, the clouds' step standing, and on the grove's shaded ground a seventh of the pixels
-flickering in a turn by the screen probes on both, read again on the package that carries the
-engine's ramp. Item 166 is read twice by 22:37 on 2026-11-09, turns clean at every speed, a walk
-showing the difference between two settlings of one place in the screen probes' tiles, the engine's
-item 246, and the clouds stepping as the far cascade moves, its item 245. Every push and run before
-`4e956bc` since 2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.
+Reviewed up to `d8ef6a7`, the pin of the engine's 6.2.14, the package with the ramp of its 240, the
+workflows' engine checkout at `e86ca5c3`, pushed at 09:29 on 2026-11-10, its run green at 11:00 with
+the play in 91 minutes and the three test jobs in about two; its strict build is clean, 364 tests
+pass and the scripted run passes under the validation layer in 329 seconds; it keeps the form and
+carries the review's files, item 166's correcting Reply and N 7.9 and N 7.10. Before it `cfffcb3`,
+the pin of 6.2.12 with item 165, pushed at 02:54 on 2026-11-10, its run green at 04:05 with the play
+in 70 minutes. Before it `4e956bc`, items 162 and 163, pushed at 08:47 on 2026-11-09, green at
+10:07. The game stands at 0.2, tagged `v0.2.0`, and is pinned to the engine's 6.2.14 since
+`d8ef6a7`; item 166's reads on it and on 6.1.12 show no path difference and no lag at any speed, the
+clouds' step standing, and on the grove's shaded ground a seventh of the pixels flickering in a turn
+by the screen probes on both, read again on the package that carries the engine's ramp. Item 166 is
+read twice by 22:37 on 2026-11-09, turns clean at every speed, a walk showing the difference between
+two settlings of one place in the screen probes' tiles, the engine's item 246, and the clouds
+stepping as the far cascade moves, its item 245. Every push and run before `4e956bc` since
+2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.
 
-Next the pin of the package that carries the engine's ramp, with item 166's carried turn on the mask
-read again on it, and 167 at the pin that carries the engine's 244. Item 29's second part and 114's
-second part wait on the owner's word. A program on the GPU runs under the lock (N 7.9).
+Next item 166's carried turn on the mask on 6.2.14 with the frame's cost against 6.2.12, then the
+pin of the engine's next package for the clouds and the cuts, and 167 at the pin that carries the
+engine's 244. Item 29's second part and 114's second part wait on the owner's word. A program on the
+GPU runs under the lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -148,7 +150,21 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     the first reads' walk and sprint figures were the pose error. The cave at night is brighter on
     6.2.12 at every pose, its mean luma 3.26 to 3.76 and 8.51 to 10.00 at the ends, the engine's 241
     reaching further. The clouds step as before on both, the engine's 245. What remains of the item
-    is the carried turn on the mask, read again on the package that carries the engine's ramp.
+    is the carried turn on the mask, read again on the package that carries the engine's ramp. On
+    6.2.14 at 09:43 on 2026-11-10, the same mask and turn. With the screen probes on the shaded
+    ground reads 12.2 percent past 4 and 0.24 past 12 where 20.2 and 1.44 on 6.2.12, the ground
+    without them 5.97 and 0.012 on both; 7.1 percent past 4 and 0.23 past 12 move with the probes
+    and not without, where 15.1 and 1.43. So the engine's ramp halves the probes' share past 4 and
+    takes five sixths of it past 12, and what remains stays in tiles on the grass under the trees,
+    twice the ground's floor past 4. That is over the floor by enough for the engine's held form,
+    its item 248, read again here on the package that carries it. Its cost read at 10:02, the two
+    packages in turn at the game's defaults at 1280 by 720. At the spawn on the ground the frame
+    takes 13.49 ms where 13.29, the illumination's pass 8.51 where 8.42 and the lit scene's 3.61
+    where 3.51; in the README's view the frame 11.92 where 12.04, the illumination's 6.83 where 7.09
+    and the lit scene's 3.80 where 3.63, two runs of one package differing by up to 0.13 in the
+    illumination's pass. So the ramp costs the game 0.10 to 0.17 ms in the lit scene, a tenth of
+    what it costs Sponza's main pass, and the cheaper form the engine kept as a patch is not needed
+    here.
 
 167. **The engine's color functions and the field's center ahead, at the pin that carries them.**
     From the engine's item 244 on 2026-11-09 (its Decision 108). The game writes the sRGB curve out
