@@ -1,25 +1,35 @@
 # Review
 
-Reviewed up to `d8ef6a7`, the pin of the engine's 6.2.14, the package with the ramp of its 240, the
-workflows' engine checkout at `e86ca5c3`, pushed at 09:29 on 2026-11-10, its run green at 11:00 with
-the play in 91 minutes and the three test jobs in about two; its strict build is clean, 364 tests
-pass and the scripted run passes under the validation layer in 329 seconds; it keeps the form and
-carries the review's files, item 166's correcting Reply and N 7.9 and N 7.10. Before it `cfffcb3`,
-the pin of 6.2.12 with item 165, pushed at 02:54 on 2026-11-10, its run green at 04:05 with the play
-in 70 minutes. Before it `4e956bc`, items 162 and 163, pushed at 08:47 on 2026-11-09, green at
-10:07. The game stands at 0.2, tagged `v0.2.0`, and is pinned to the engine's 6.2.14 since
-`d8ef6a7`; item 166's reads on it and on 6.1.12 show no path difference and no lag at any speed, the
-clouds' step standing, and on the grove's shaded ground a seventh of the pixels flickering in a turn
-by the screen probes on both, read again on the package that carries the engine's ramp. Item 166 is
-read twice by 22:37 on 2026-11-09, turns clean at every speed, a walk showing the difference between
-two settlings of one place in the screen probes' tiles, the engine's item 246, and the clouds
-stepping as the far cascade moves, its item 245. Every push and run before `4e956bc` since
-2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.
+Reviewed up to `cb071a9`, the pin of the engine's 6.2.17, the package with the far cascade's band
+weighed around the eye and every cascade built at once after a cut, the workflows' engine checkout
+at `f68075f1`, pushed at 13:05 on 2026-11-10, its run green at 14:41 on its second attempt, the
+macOS test job's restore having failed on the first, the package not yet at that runner's feed,
+Verdict 10, the play in 91 minutes on the runner; its strict build is clean, 364 tests pass and the
+scripted run passes under the validation layer, 359 seconds here where 329 on 6.2.14 and 336 on
+6.2.12, one run each; it keeps the form and carries the review's file. Before it `d8ef6a7`, the pin
+of 6.2.14 with the ramp, pushed at 09:29 on 2026-11-10, its run green at 11:00 with the play in 91
+minutes on the runner where 70 on 6.2.12, placed at 21:23 on 2026-11-10 as the runner's spread and
+not the ramp. Under lavapipe here in a small form, render distance 4 at 640 by 360 with 10 frames a
+reading and each run alone under the lock, 6.2.12 and 6.2.14 twice in turn, the lit scene's pass
+reads 315 and 343 ms against 347 and 344, the illumination's 446 and 428 against 448 and 430 and the
+frame's work 1006 and 951 against 944 and 880, so the ramp costs lavapipe nothing that shows, the
+sheet 21-23-item-168-lavapipe in the dump. In the play's logs over the same 48 steps against
+6.2.12's run, two runs on 6.1.12 drew 1.24 and 1.16 times as long, 6.2.14's and 6.2.17's 1.33 each
+and 5.2.333's 0.99, lavapipe drawing by the processor's vector units, which the open and the build
+do not use, so an open of equal length does not rule a slower processor out. The play has 59 minutes
+under its limit and nothing follows. Before it `cfffcb3`, the pin of 6.2.12 with item 165, pushed at
+02:54 on 2026-11-10, its run green at 04:05 with the play in 70 minutes. Before it `4e956bc`, items
+162 and 163, pushed at 08:47 on 2026-11-09, green at 10:07. The game stands at 0.2, tagged `v0.2.0`,
+and is pinned to the engine's 6.2.17 since `cb071a9`; item 166's reads on it and on 6.1.12 show no
+path difference and no lag at any speed, the clouds' step standing, and on the grove's shaded ground
+a seventh of the pixels flickering in a turn by the screen probes on both, read again on the package
+that carries the engine's ramp. Item 166 is read twice by 22:37 on 2026-11-09, turns clean at every
+speed, a walk showing the difference between two settlings of one place in the screen probes' tiles,
+the engine's item 246, and the clouds stepping as the far cascade moves, its item 245. Every push
+and run before `4e956bc` since 2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.
 
-Next item 166's carried turn on the mask on 6.2.14 with the frame's cost against 6.2.12, then the
-pin of the engine's next package for the clouds and the cuts, and 167 at the pin that carries the
-engine's 244. Item 29's second part and 114's second part wait on the owner's word. A program on the
-GPU runs under the lock (N 7.9).
+Next 168's decision and 167 at the pin that carries the engine's 251 and 244. Item 29's second part
+and 114's second part wait on the owner's word. A program on the GPU runs under the lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -164,7 +174,41 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     and the lit scene's 3.80 where 3.63, two runs of one package differing by up to 0.13 in the
     illumination's pass. So the ramp costs the game 0.10 to 0.17 ms in the lit scene, a tenth of
     what it costs Sponza's main pass, and the cheaper form the engine kept as a patch is not needed
-    here.
+    here. On 6.2.17 at 13:27 on 2026-11-10 the clouds' step is gone. The walk's 123rd frame moves
+    9.32 percent past 12 as the frames beside it do, where 11.63 on 6.2.14, and the near cloud
+    settled at the two poses reads 159, 179, 205 then 163, 179, 203, brightening a little as it does
+    with the far cascade off, where it dropped 15 levels; the engine's 245 is confirmed here. A cut
+    into the torch-lit cave settles alike on both packages, the mean within 2 levels of the settled
+    picture from the cut's first frame, with 2.3 to 2.9 percent of the pixels past 12 for seven
+    frames on the near wall and its ledge by a shadow's shape and then none, so it is not the
+    coarser cascades' light and does not test the engine's 239, the cave's light standing inside the
+    finest cascade. Two reads remain, a cut in the grove by day from 150 blocks off, where the sky's
+    light through the coarser cascades lights the shaded ground, on both packages, and the cave's
+    cut with the illumination off and without the torch in hand, to place the seven frames. The
+    runner's play draws every step 1.31 times as long on 6.2.14 while its open on the CPU takes the
+    same, so the frame costs lavapipe more, to be measured at the spawn under lavapipe on 6.2.12 and
+    6.2.14. The cuts read at 14:00. In the grove by day, cut from 150 blocks off to the walk's
+    start, the mean lies within 2 levels from the 31st to the 61st frame on 6.2.14 and from the 34th
+    to the 58th on 6.2.17, three cuts each, about 22 percent of the window past 12 until then, the
+    shaded ground and the trees' undersides lit as if open, dropping in one frame; with the
+    illumination off at most 2.5 percent, gone by the 28th frame as the shadows and the meshes come
+    in, and with the game's culling off the 105th. So the lag is the illumination's, grows with what
+    is drawn, and the engine's 239 does not shorten it here, the field holding no trees until its
+    build of the new place lands, which comes after the meshes do. The cave's seven late frames stay
+    with stone in the hand and with the history, the screen probes or the filter off and go with the
+    illumination off, so they are the same build on a smaller place, a level on one wall for an
+    eighth of a second, and no ask is written for them. What remains is whether it shows in play, a
+    death and a respawn at a wooded spawn read once, with the field's budget raised by the game for
+    the second after the respawn as the lever of the game's own, and the ask to the engine written
+    with both figures, the raised budget held while meshes still arrive after a cut. The respawn and
+    the lever read at 16:21. A death and a respawn at the wooded spawn lies under 0.1 percent past
+    12 three frames after the view comes in, the respawn meshing its sections before it moves, so
+    the case in play is sound and only a teleport by command shows the lag. The lever of the game's
+    own cannot be brief, a changed budget making the field again, the grove relit twice and settled
+    at the 132nd frame where the 77th plain, so no game commit; held at four times the base the mean
+    lies within 2 levels from the seventh frame at 0.4 ms more of the field's pass in the frames
+    after a cut. The ask is in the engine's ASKS.md and is its item 251. Whether the game holds four
+    times the base for the whole of play is item 168, after a walk's timing with it.
 
 167. **The engine's color functions and the field's center ahead, at the pin that carries them.**
     From the engine's item 244 on 2026-11-09 (its Decision 108). The game writes the sRGB curve out
@@ -175,9 +219,44 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     with its reason in a comment, and takes the engine's option for the field's center, the play's
     captures unchanged. A small commit at that pin or the one after.
 
+168. **The scene field's triangle budget at four times the default, where a walk's cost allows.**
+    From item 166's lever read on 2026-11-10. Held at 131,072 triangles a frame the field takes a
+    teleport's new place within seven frames where 35 to 77, at 1.41 ms of its pass against 1.01 in
+    the frames after the cut, and where nothing changes a larger budget costs nothing. One timing of
+    a walk and of a sprinted flight over unloaded land with it and without, the frame and the
+    field's pass under flock -x, and the frames a section's light lags its mesh at the streaming
+    edge; where the walk's frame holds within the runs' spread, the game sets it in LightSettings,
+    one line with its reading in the commit's description, and where it costs the flight, it stays
+    at the default and the engine's 251 carries the cut alone. Read on 6.2.17 at 19:42 on 2026-11-10
+    and held for the next package. At the streaming edge after a teleport over the river a section's
+    light lags its mesh by 21 frames at the 75th part and 50 at the 90th at the default, 12 and 21
+    at 131,072, 154 and 135 at most. A sprinted flight costs on the median with it, 14.10 and 13.48
+    ms a frame against 12.42 and 12.41, the field's pass 1.73 and 1.38 against 1.24 and 0.58, so the
+    larger budget is not free in a flight. The engine's 251 changes what a held budget does, the
+    lift after a cut holding while meshes arrive and a changed budget no longer making the field
+    again, so the budget is decided on the package that carries it, with the grove's teleport, the
+    edge's lag and the walk and the flight read again. None of the timings here or in 166 took
+    field.wait as the field's build time, an engine fault having let that wait run out with nothing
+    left to build, mended in the same package.
+
+169. **A build keeps the resources' folders whatever path reaches it, and the game stops at its open
+    where a file of its own is missing.** From the pin of 6.2.32 on 2026-11-11. A build made in a
+    worktree reached through /home, a link to /var/home on this machine, copied the game's resources
+    flat beside the program, terrain.slang, bits.slang, mob.slang and packs.json at the top and no
+    resources/shaders, since the project's Content glob leaves the place to MSBuild, which takes a
+    file reached through a link as lying outside the project; and the game then ran without its own
+    terrain shader and said nothing, LoadShader giving the default as the followed engine's does, so
+    the only sign was a lantern's pool at half its light, read for an hour as a fault of the
+    engine's and written as its item 252, withdrawn. Two mends in one commit. The Content items name
+    their place with their folders, so the layout is the same from every path, with a test or a step
+    of the scripted run that the built folder holds resources/shaders/terrain.slang. And the game
+    checks each shader of its own and packs.json as it opens and stops with the file's path where
+    one is missing or did not compile, the play failing at its first step and not at a picture.
+    After the pin's commit.
+
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 9 are settled, said under each in REVIEW-ARCHIVE.md.
+No verdict is open. Verdicts 1 to 10 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 
@@ -360,3 +439,22 @@ ground past 12, in blocks of the probes' 8-pixel tiles among the grass and the p
 carries an entry asking `build/flicker.py` for the two forms and a map that follows the turn. The
 sheets are 03-10-item-166-pose, 03-28-item-166-carried-turn, 03-52-item-166-carried-masked and
 05-20-item-166-poses-held in the dump, each sent.
+
+Item 167, with the pin of 6.2.32. The bare pin was never read on a sound build. Its failing run at
+the lantern's pool came from a build made in a git worktree reached through `/home`, a link to
+`/var/home`, where MSBuild copied the game's resources flat beside the program, so the game drew
+without its terrain shader, and the engine's 252 is withdrawn. Built through `/var/home`, the pin
+alone, the pin with only the center swapped for `SetSceneFieldAhead(0.5f)` and item 167's tree with
+the center each frame put back read the pool from 249.2 to 90.6 to 90.9 in 3 runs of 3 each, as
+6.2.17 does. The field lies ahead through `SetSceneFieldAhead(0.5f)` in `ApplyField` in place of the
+center set each frame. The game's two copies of the sRGB curve, in SkyColors.cs and TerrainAtlas.cs,
+call the engine's `SrgbToLinear`, `LinearToSrgb` and `ColorFromLinear`, which give the same bytes.
+The three powers of 1/2.2, two in SectionMesher.cs and the stars' in Sky.cs, stay with their reason
+in a comment, since against the sRGB curve the shader decodes by they show light level 0 a fifth
+brighter and a faint star three times, so the curve in their place would darken the caves and the
+night sky. Item 167's captures match 6.2.17's, two runs with the item differing from each other as
+much as from 6.2.17's, dusk 2.5 percent past 24 levels and every other picture under 0.2. With the
+shaders cached the water's mirror failed in four of six runs, terrain.slang's pipelines made in play
+each run though the pipeline file was read, the engine's 253, and from an empty cache the whole run
+passes in 375 s. 3DEngine.GlobalIllumination comes in through the game's 3DEngine reference. The
+sheet 01-27-item-167-room in the dump shows the flat build's room beside the sound one, sent.

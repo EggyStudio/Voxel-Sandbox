@@ -1,4 +1,5 @@
 using System.Numerics;
+using static Engine.E3D;
 
 namespace VoxelSandbox;
 
@@ -71,14 +72,10 @@ public sealed class SkyColors
     public Vector3 AtNight(Vector3 color, float day) => Tinted(color, Vector3.Lerp(NightTint, Vector3.One, day));
 
     /// <summary>An sRGB level from 0 to 1 in linear light.</summary>
-    public static float Decode(float c) => c <= 0.04045f ? c / 12.92f : MathF.Pow((c + 0.055f) / 1.055f, 2.4f);
+    public static float Decode(float c) => SrgbToLinear(c);
 
     /// <summary>Linear light to sRGB levels from 0 to 1.</summary>
-    public static Vector3 Encode(Vector3 linear)
-    {
-        static float One(float c) => c <= 0.0031308f ? 12.92f * c : 1.055f * MathF.Pow(c, 1 / 2.4f) - 0.055f;
-        return new Vector3(One(linear.X), One(linear.Y), One(linear.Z));
-    }
+    public static Vector3 Encode(Vector3 linear) => new(LinearToSrgb(linear.X), LinearToSrgb(linear.Y), LinearToSrgb(linear.Z));
 
     // A color in sRGB levels from 0 to 255 multiplied by a tint in linear light.
     private static Vector3 Tinted(Vector3 color, Vector3 tint)

@@ -498,7 +498,10 @@ public sealed class SectionMesher
             if (!closed2) Gather(side2, ref sky, ref lit, ref open);
             if (!closed3 && !(closed1 && closed2)) Gather(across, ref sky, ref lit, ref open);
 
-            // The light kept is linear and the vertex's color sRGB, so it is encoded as the color is.
+            // The light kept is linear and the vertex's color sRGB, so it is encoded as the color is,
+            // by a power of 1/2.2 rather than the sRGB curve the shader decodes it by. That shows
+            // level 0 a fifth brighter than its light, 0.024 for 0.02, and every other level within
+            // two percent, which keeps the darkest cave floor off black.
             var kept = LightLevels ? MathF.Pow(Lit((float)Math.Max(sky, lit) / open), 1 / 2.2f) : 1;
             var shade = kept * (CornerShade ? 1 - CornerStrength * (1 - Occlusion[occlusion[i]]) : 1);
             var corner = Corners[face][i];
@@ -584,6 +587,8 @@ public sealed class SectionMesher
     private void AddShape(BlockShape shape, int at, Vector3 block)
     {
         int sky = _light[at] >> 4, lit = _light[at] & 15;
+        // Encoded by the power of 1/2.2 a face's corners take in Add, so a piece is as dark as the
+        // ground it stands on.
         var kept = LightLevels ? MathF.Pow(Lit(Math.Max(sky, lit)), 1 / 2.2f) : 1;
         var place = (int)block.Z * Section.Size + (int)block.X;
         var offset = Offset(shape.Offset, _origin.X + (int)block.X, _origin.Z + (int)block.Z);

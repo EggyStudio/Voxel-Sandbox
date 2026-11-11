@@ -84,16 +84,16 @@ public sealed class LightSettings
     // render distance's blocks, its cells six blocks wide at 12 columns, rather than the camera's far
     // plane, whose cells 74 blocks wide hold the ground about the eye as a slab and take the sky's
     // blue from a wall beside a pane of glass.
-    public void ApplyField() => SetSceneField(Cascades, CellSize, Budget, farCascade: FarCascade ? FarReach : 0);
+    public void ApplyField()
+    {
+        SetSceneField(Cascades, CellSize, Budget, farCascade: FarCascade ? FarReach : 0);
+        SetSceneFieldAhead(FieldAhead ? 0.5f : 0);
+    }
 
     // The field lies ahead of the camera along its view by half the finest cascade's width, 64 cells
     // of 0.25, so that cascade holds the eight blocks before the eye rather than half of it lying
     // behind the player, for the same cost to global illumination.
     public bool FieldAhead = true;
-
-    /// <summary>Lays the scene's field around the point the frame's view is about, for the camera given.</summary>
-    public void CenterField(Camera3D camera) =>
-        SetSceneFieldCenter(FieldAhead ? camera.Position + GetCameraForward(camera) * (64 * CellSize / 2) : null);
 
     /// <summary>Brings the frame's light under 1 by the curve of the four numbers, which chooses that curve.</summary>
     public void ApplyCurve() => SetTonemapCurve(CurveExposure, CurveWhite, CurveLower, CurveUpper);

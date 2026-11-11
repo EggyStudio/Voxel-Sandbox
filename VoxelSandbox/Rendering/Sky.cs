@@ -382,7 +382,9 @@ public sealed class Sky : IDisposable
     // The stars, spread evenly over the sky from a fixed hash, so each run has the same ones, as
     // squares of StarDegrees, each as bright as 40 times the square of how far the product of three
     // noises passes 0.7, the product drawn until it passes, so most are faint and a few bright, in
-    // a cool white, the light taken to sRGB levels.
+    // a cool white, the light taken to sRGB levels by a power of 1/2.2 rather than the sRGB curve,
+    // which shows a star at a thousandth of white three times as bright as the curve would, so the
+    // faint thousands still show as points.
     private static (Vector3, Vector3, Vector3, Vector3)[] PlaceStars()
     {
         var half = StarDistance * MathF.Tan(float.DegreesToRadians(StarDegrees)) / 2;

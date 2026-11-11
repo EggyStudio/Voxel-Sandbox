@@ -2827,6 +2827,17 @@ before a batch.
     Settles on the build run of 163's commit with its play job green. Settled on that run on
     2026-11-09, the play job green in 80 minutes 11 seconds through the engine's build and the walk.
 
+10. **The macOS test job of `cb071a9` failed its restore, the pinned package not yet at that
+    runner's feed.** The run 42812809757 of the pin of 6.2.17, pushed at 13:05 on 2026-11-10, has
+    its macOS test job red after 18 seconds, the play green in 91 minutes and the Windows and Ubuntu
+    test jobs green. The restore reads NU1102, 3DEngine.Diagnostics at 6.2.17 not found and 6.2.14
+    the nearest of three versions, at 13:05, where every one of the fourteen ids listed 6.2.17 from
+    this machine at 12:57 and the other two systems restored it in the same minute, so nuget.org's
+    index had not reached that runner eight minutes after it reached here. Nothing in the game is at
+    fault. The failed job is started again at 14:39; the verdict settles when it is green. The
+    review tells a pin's version a quarter of an hour after every id lists, not at once. Written at
+    14:39 on 2026-11-10. Settled at 14:41 on 2026-11-10, the job green on the run's second attempt.
+
 ## Decisions
 
 1. **The old game is replaced in place, its history kept.** The owner chose on 2026-10-17 that the
