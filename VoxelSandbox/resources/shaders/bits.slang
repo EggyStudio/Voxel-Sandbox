@@ -43,8 +43,10 @@ float4 fragmentMain(ModelStreamsOutput input) : SV_Target
     ModelVertexOutput middle = input.base;
     middle.toEye += middle.world - input.vertexColor.xyz;
     middle.world = input.vertexColor.xyz;
+    // Drawn unlit as the engine's lit draws it, without lit's own copy of litLight, as terrain.slang's
+    // litStepped says.
     if (drawnUnlit(middle))
-        return float4(lit(color.rgb, middle), color.a);
+        return float4(unlit(color.rgb + emitted(middle)), color.a);
     LitLight light = litLight(color.rgb, middle);
     float3 shown = light.diffuse + light.specular + emitted(middle);
     float sky = materialOcclusionStrength(input.base) * 15.0;

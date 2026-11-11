@@ -41,8 +41,10 @@ float flatShade(float3 n)
 float4 fragmentMain(ModelStreamsOutput input) : SV_Target
 {
     float4 color = alphaTested(baseColor(input), input.base);
+    // Drawn unlit as the engine's lit draws it, without lit's own copy of litLight, as terrain.slang's
+    // litStepped says.
     if (drawnUnlit(input.base))
-        return float4(lit(color.rgb, input.base), color.a);
+        return float4(unlit(color.rgb + emitted(input.base)), color.a);
     float3 n = normalize(input.base.normal);
 
     // The light a white face takes here, which a face of the mob's color takes times its color,

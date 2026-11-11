@@ -260,8 +260,12 @@ float3 skyFloor(float3 albedo, ModelVertexOutput input, float level)
 // floor at the point's sky level (skyFloor).
 float3 litStepped(float3 albedo, ModelVertexOutput input, float sky)
 {
+    // Drawn unlit as the engine's lit draws a point with no light. Called here, lit would carry a
+    // second copy of litLight into the fragment that can never run, since the compiler cannot tell
+    // that drawnUnlit reads its uniforms the same both times, and the driver's first compile of the
+    // pipeline took twice as long for it.
     if (drawnUnlit(input))
-        return lit(albedo, input);
+        return unlit(albedo + emitted(input));
     float shadow = -1.0;
     float held = 0.0;
     int index = lighting.shadowLight;

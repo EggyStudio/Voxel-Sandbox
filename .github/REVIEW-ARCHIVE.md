@@ -3972,6 +3972,40 @@ done alone, so nothing here counts as done.
     on from nuget.org alone, and nothing changes at the next pin. Done as read; the pin itself is
     the next package's item.
 
+114. **Cliffs are rarer, the land mostly rolling.** The owner wrote at 13:38 on 2026-10-24 that
+    there are too many cliffs. The cliffs' cuts come where the terrain's slope is steep and the
+    generator carves them; their count falls to what the source's land shows, a cliff here and there
+    at a hill's or a mountain's side and none across the plains and the forests, by a higher slope
+    for a cut, a wider spacing, or a noise that gates them by region, the coder reading the land of
+    seed 1 at the owner's spawn and the plains village for the count before and after and saying it
+    in the commit; a test counting the cliffs over a seeded span against a bound, and a capture of
+    the same land before and after. One commit, after item 113 and before item 94. The coder's
+    reading at 15:38 on 2026-10-24 found no cliff feature; what reads as cliffs is two things. The
+    drops of two blocks or more between neighboring columns all lie along the rivers, the channel's
+    cut from the valley floor to three under sea level over about six blocks giving a river on high
+    ground a wall several blocks high, 1,458 such steps on the 512-block square at the spawn and
+    6,026 on the 2,048-block square about the origin against 315 and 1,319 with the channel's cut
+    off; and the brown lines across the plains are single-block steps of the rolling hills, plus or
+    minus 18 at a scale of 160 over five octaves, a step's dirt side showing, none of them two or
+    more away from a river. The call, the river channel's band widened with the drop it cuts so its
+    banks fall at about a block per two blocks, in one commit with the counts before and after; the
+    hills' amplitude on the plains and the forests halved only on the owner's word, since it moves
+    the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
+    per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
+    where 116; the second part on the owner's word. The owner answered the second part on 2026-11-11
+    at about 16:40, pictures first. The same views with the hills as they are and with their
+    amplitude on the plains and the forests halved, at the spawn on seed 1 and at the plains
+    village, from a walk's eye and from above, as pairs on one sheet with the count of steps beside
+    each, sent to the owner; the halved land a build in the work folder and no commit, the owner
+    choosing from the pictures. The sheet went to the owner at 16:26, 16-26-item-114-hills in the
+    dump of 2026-11-11. With the hills halved on the temperate land the spawn's square has 71,370
+    steps of one block where 79,620, 228 of two or more where 460 and none of three or more where 7,
+    the village's 40,561 where 44,038, and the plains' brown lines stand in both pictures, the dirt
+    sides of one-block steps that come of other terms of the height. The owner answered at 16:39, "I
+    dont see any difference. I dont care. Decide what is best". The review's decision, the land
+    stays as it is, the second part closed with no commit, the river's banks of `3869d0c` being what
+    the item changed; the trial's worktree is deleted.
+
 ## Head records
 
 The head paragraph of REVIEW.md as it stood when it was shortened, with the order line where it had
