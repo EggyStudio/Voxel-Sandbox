@@ -4155,3 +4155,73 @@ Items done and verdicts settled before 2026-10-23 stand in REVIEW-ARCHIVE.md bes
 numbers kept, moved there at 19:30 on 2026-10-23 so this file holds the current work alone and is
 read whole before a batch; the archive is read when an item or a verdict named here is wanted in
 full.
+
+Reviewed up to `5ad3f58`, the review's file alone with the Replies of 174 and 176, pushed at 23:00
+on 2026-11-11, no run by the workflow's paths. Before it `6b0043b`, voxel.spawning, asked by the
+owner on 2026-11-11, every mob kept out of the world from the next frame on and brought back where
+it stood, the play switching it off before its first check, pushed at 21:31 on 2026-11-11, its run
+left queued by GitHub's outage and not started, Verdict 12; its strict build is clean and 367 tests
+pass, two plays under the layer pass whole in 317 and 218 s, and of their 17 captures dusk differs
+in 0.00 percent of pixels by more than 2 levels where 2.3 before, the night sky in 0.18, within its
+clouds; it keeps the form and carries the review's files. Before it `1f1e955`, item 172,
+terrain.slang, mob.slang and bits.slang returning unlit on the branch drawn unlit, each fragment
+about 590 KB smaller and the fifth frame's 22 pipelines made in 20.3 s where 43.9 from an empty
+cache with the layer off, pushed at 19:29 on 2026-11-11 once the pin's run had ended, its run green
+at 20:36 with the play in 67 minutes where the pin's took 96; it keeps the form and carries the
+review's files. Before it `068fd5f`, the pin of the engine's 6.2.41 with the workflows' engine
+checkout at `894542da`, pushed at 15:29 on 2026-11-11, its run red at 15:34 in the play job before
+the game was built, the runner not reaching its package mirror for two hours and a quarter, Verdict
+11, green at 19:26 on its tenth attempt, the play in 96 minutes, which settles the verdict; its
+strict build is clean and 366 tests pass. The water's mirror passes six plays of six under the
+layer, three from an empty cache in 393, 417 and 434 s and three from the cache each left in 237,
+242 and 221 s, each play's caches in a folder of its own; from a cold cache the pipelines' file
+grows to 21.8 MB and the pool's three terrain.slang pipelines compile in 14 to 19 s each at once,
+and from a warm one every pipeline made in play says from the cache, the pool's three in 1.17 to
+1.37 s each; frame 5's 22 pipelines take 54 to 68 s cold, one after another, and 4.4 to 4.6 s warm.
+The engine's trial puts about 1.2 s of each such pipeline on the validation layer, 94 ms compiled
+without it, so these are the layer's seconds, which the play turns on, item 171. It keeps the form
+and carries the review's files. Before it `8ded865`, item 170, the local checks run through an e3d
+client of the pinned engine built once in .engine and the play and the pictures stopping by its
+process a game left running, pushed at 05:11 on 2026-11-11, its run green at 06:37 with the play in
+86 minutes on the runner, the mirror passing there; its strict build is clean and 366 tests pass,
+the play here failing the mirror on 6.2.32 by the engine's item 253, the runner's play the gate; it
+keeps the form and carries the review's files. Before it `08bf109`, item 169, the resources kept in
+their folders from any path and the game stopping at its open with the path of a file of its own
+that is missing or does not compile, pushed at 03:33 on 2026-11-11, its run green at 05:08 with the
+play in 95 minutes on the runner; 366 tests pass and the play passes from an empty cache in 463
+seconds; it keeps the form and carries the review's file. Before it `e3dea22`, the pin of the
+engine's 6.2.32 with item 167, the scene field laid ahead of the eye by the engine's option in place
+of a center set each frame, the two copies of the sRGB curve calling the engine's and the three
+powers of 1/2.2 staying with their reason, the workflows' engine checkout at `02c3a743`, pushed at
+02:05 on 2026-11-11, its run green at 03:32 with the play in 88 minutes on the runner; its strict
+build is clean, 364 tests pass and the scripted run passes from an empty cache in 375 seconds with
+the layer's check, the mirror failing from warm caches, the engine's item 253; it keeps the form and
+carries the review's files. A lantern read at half its light on the bare pin was a build made
+through the /home link with the resources copied flat, the engine's item 252 withdrawn and item 169
+written. Before it `cb071a9`, the pin of the engine's 6.2.17, the package with the far cascade's
+band weighed around the eye and every cascade built at once after a cut, the workflows' engine
+checkout at `f68075f1`, pushed at 13:05 on 2026-11-10, its run green at 14:41 on its second attempt,
+the macOS test job's restore having failed on the first, the package not yet at that runner's feed,
+Verdict 10, the play in 91 minutes on the runner; its strict build is clean, 364 tests pass and the
+scripted run passes under the validation layer, 359 seconds here where 329 on 6.2.14 and 336 on
+6.2.12, one run each; it keeps the form and carries the review's file. Before it `d8ef6a7`, the pin
+of 6.2.14 with the ramp, pushed at 09:29 on 2026-11-10, its run green at 11:00 with the play in 91
+minutes on the runner where 70 on 6.2.12, placed at 21:23 on 2026-11-10 as the runner's spread and
+not the ramp. Under lavapipe here in a small form, render distance 4 at 640 by 360 with 10 frames a
+reading and each run alone under the lock, 6.2.12 and 6.2.14 twice in turn, the lit scene's pass
+reads 315 and 343 ms against 347 and 344, the illumination's 446 and 428 against 448 and 430 and the
+frame's work 1006 and 951 against 944 and 880, so the ramp costs lavapipe nothing that shows, the
+sheet 21-23-item-168-lavapipe in the dump. In the play's logs over the same 48 steps against
+6.2.12's run, two runs on 6.1.12 drew 1.24 and 1.16 times as long, 6.2.14's and 6.2.17's 1.33 each
+and 5.2.333's 0.99, lavapipe drawing by the processor's vector units, which the open and the build
+do not use, so an open of equal length does not rule a slower processor out. The play has 59 minutes
+under its limit and nothing follows. Before it `cfffcb3`, the pin of 6.2.12 with item 165, pushed at
+02:54 on 2026-11-10, its run green at 04:05 with the play in 70 minutes. Before it `4e956bc`, items
+162 and 163, pushed at 08:47 on 2026-11-09, green at 10:07. The game stands at 0.2, tagged `v0.2.0`,
+and is pinned to the engine's 6.2.17 since `cb071a9`; item 166's reads on it and on 6.1.12 show no
+path difference and no lag at any speed, the clouds' step standing, and on the grove's shaded ground
+a seventh of the pixels flickering in a turn by the screen probes on both, read again on the package
+that carries the engine's ramp. Item 166 is read twice by 22:37 on 2026-11-09, turns clean at every
+speed, a walk showing the difference between two settlings of one place in the screen probes' tiles,
+the engine's item 246, and the clouds stepping as the far cascade moves, its item 245. Every push
+and run before `4e956bc` since 2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.

@@ -1,3 +1,4 @@
+using System.Numerics;
 using Engine;
 using Xunit;
 using static Engine.E3D;
@@ -25,6 +26,25 @@ public sealed class HeadlessGameTests
         // With no device to compute on, every column reads its caves' noises itself.
         Assert.False(game.CaveFields.Running);
         Assert.Equal(0, game.CaveFields.Read);
+    }
+
+    [Fact]
+    public void A_Teleport_Of_A_Million_Blocks_Leaves_No_Column_Behind()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        var feet = game.Player.Body.Position;
+        int cx = VoxelWorld.ColumnOf((int)MathF.Floor(feet.X)), cz = VoxelWorld.ColumnOf((int)MathF.Floor(feet.Z));
+        Assert.True(game.World.HasColumn(cx, cz));
+
+        // 1,000,000 blocks east is 62,500 columns, whose square passes an int.
+        game.Player.Teleport(feet + new Vector3(1_000_000, 0, 0));
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        do headless.Step(1);
+        while (game.Streamer.Pending > 0 && clock.Elapsed.TotalSeconds < 30);
+
+        Assert.False(game.World.HasColumn(cx, cz), $"the column {cx}, {cz} the player left is still in, of {game.World.ColumnCount}");
+        Assert.All(game.World.Columns, c => Assert.True(Math.Abs(c.X - cx) > 60_000, $"the column {c.X}, {c.Z} is still in"));
     }
 
     [Fact]

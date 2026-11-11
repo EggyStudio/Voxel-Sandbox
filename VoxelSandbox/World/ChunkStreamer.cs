@@ -171,7 +171,9 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         _leaving.Clear();
         foreach (var column in world.Columns)
         {
-            int dx = column.X - cx, dz = column.Z - cz;
+            // Squared in longs, since a column 46,341 or more from the player's, as after a teleport
+            // of some 741,000 blocks, squares past an int and wrapped negative, and was kept.
+            long dx = column.X - cx, dz = column.Z - cz;
             if (dx * dx + dz * dz > reach) _leaving.Add((column.X, column.Z));
         }
         foreach (var (x, z) in _leaving)
