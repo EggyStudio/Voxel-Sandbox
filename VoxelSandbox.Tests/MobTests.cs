@@ -173,6 +173,31 @@ public sealed class MobTests : IDisposable
     }
 
     [Fact]
+    public void Mobs_Kept_Out_For_A_Capture_Come_Back_Where_They_Stood()
+    {
+        var world = Floor();
+        var mobs = new Mobs(new Engine.EcsWorld());
+        var loaded = new ChunkColumn(0, 0);
+        loaded.Spawns.Add(At(MobKinds.Sheep, 4.5f, 11, 4.5f));
+        mobs.Joined(loaded);
+        mobs.All[0].Body.Position = new Vector3(9.5f, 11, 6.5f);
+
+        Assert.Equal(1, mobs.SetSpawning(world, false));
+        Assert.Empty(mobs.All);
+
+        // A column first generated while they are kept out places none, and the night spawns none.
+        var first = new ChunkColumn(1, 0);
+        first.Spawns.Add(At(MobKinds.Cow, 20.5f, 11, 4.5f));
+        mobs.Joined(first);
+        mobs.Spawn(world, new Vector3(8, 11, 8), 0, 60);
+        Assert.Empty(mobs.All);
+
+        Assert.Equal(2, mobs.SetSpawning(world, true));
+        Assert.Equal([new Vector3(9.5f, 11, 6.5f), new Vector3(20.5f, 11, 4.5f)], mobs.All.Select(m => m.Body.Position).Order(Comparer<Vector3>.Create((a, b) => a.X.CompareTo(b.X))));
+        Assert.Equal(0, mobs.Kept);
+    }
+
+    [Fact]
     public void Mobs_Read_Back_From_The_Save_With_The_Columns_That_Hold_None()
     {
         var mobs = new Mobs(new Engine.EcsWorld());

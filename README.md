@@ -173,7 +173,9 @@ for a capture, `voxel.save` saves at once, and `voxel.blocks` lists the blocks b
 `voxel.mobs` counts the mobs and lists the nearest, `voxel.spawn` places one where the crosshair
 rests, `voxel.attack` hits the one it rests on as the left button does, `voxel.still` stops them
 where they stand and holds the clouds and the bits of broken blocks for a capture, `voxel.bits` says
-where the bit nearest a place flies, and `voxel.kill` takes the mobs away. `voxel.fires` counts the
+where the bit nearest a place flies, `voxel.kill` takes the mobs away, and `voxel.spawning off` takes
+them away and keeps every one out from the next frame on, so two runs' captures take no animal
+wandering into one, until `voxel.spawning on` brings them back. `voxel.fires` counts the
 fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival, adventure or
 spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the
 inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and

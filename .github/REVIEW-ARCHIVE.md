@@ -2909,6 +2909,26 @@ before a batch.
     plays each with the session's log copied at the pool. Done at `8ded865` on 2026-11-11, pushed at
     05:11.
 
+172. **A shader of the game's calls the engine's lighting once.** From the engine's item 255 on
+    2026-11-11. The driver's own first compile of the terrain pipeline takes 12 s from an empty
+    cache folder with no layer, a player's first run, and half of terrain.slang's 1.3 MB fragment is
+    a second copy of the engine's lighting that can never run, from its first line calling lit on
+    the branch drawnUnlit takes, where lit itself returns unlit and its litLight is dead to all but
+    the compiler. With that line returning unlit(albedo + emitted(input)) the fragment is 702,448
+    bytes where 1,303,784 and the cold compile 5.9 and 5.2 s where 12.4 and 13.6, by the engine's
+    trial on a copy. The line is changed in terrain.slang, and mob.slang, whose pipeline took 19.1
+    s, bits.slang and cavefields.slang are read for the same call of lit or litLight on a branch
+    that cannot be lit, or twice in one shader. One commit, the play's pictures unchanged, with one
+    cold play with the layer off before and after, the fifth frame's seconds and the pool's, in its
+    Reply. Done at `1f1e955` on 2026-11-11, held at 18:53 until the pin's run ends. terrain.slang,
+    mob.slang and bits.slang return unlit on the branch drawn unlit, each fragment about 590 KB
+    smaller, terrain's 690,816 bytes where 1,280,560; cavefields.slang is a compute shader with no
+    lighting; mob's second litLight is live, the light of a face turned up, and stays. From an empty
+    cache folder with the layer off the fifth frame's 22 pipelines take 20.3 s where 43.9, terrain's
+    depth pipelines 4.9 s where 12.0 and 12.2, mob's 8.0 where 17.1 and the pool's four 5.4 to 5.7 s
+    each where 13.1 to 13.2. Three plays pass whole and 16 of 17 pictures differ in at most 0.16
+    percent, dusk in 2.5 against 2.3 between two plays of one build.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -3066,6 +3086,24 @@ before a batch.
     fault. The failed job is started again at 14:39; the verdict settles when it is green. The
     review tells a pin's version a quarter of an hour after every id lists, not at once. Written at
     14:39 on 2026-11-10. Settled at 14:41 on 2026-11-10, the job green on the run's second attempt.
+
+11. **The run of `068fd5f` is red in its play job before the game is built, the runner not reaching
+    its package mirror.** In run 43038975424 the play job failed after five minutes at the step that
+    installs lavapipe and the validation layer, apt-get ending with exit code 100, a temporary
+    failure resolving azure.archive.ubuntu.com, the Mesa driver's package not fetched; the three
+    test jobs are green. Nothing of the game's ran, so it is the runner's network and no fault of
+    the commit's. The failed job is run again, started at 15:36 on 2026-11-11 as a second attempt,
+    and the verdict settles where its play passes. Written at 15:36 on 2026-11-11. The second
+    attempt failed the same way at 15:41, the mirror's name still not resolving on the runner from
+    15:34 to 15:41 while it answers from this machine and GitHub's status page reports nothing, and
+    the two Linux native jobs of the bridge's pack run failed by it in the same minutes. A third
+    attempt is started a quarter of an hour on. The third attempt failed the same way at 16:03, and
+    by then the fault had taken the Linux jobs of the bridge's two runs twice and both Linux legs of
+    the engine's run of its `4d9227d0`, 30 lines of the same name not resolving, GitHub's status
+    page reporting all systems working. From 16:07 the play job is run again every quarter hour as
+    the probe, and the others' failed jobs are started again when its package step passes. The tenth
+    attempt, started at 17:50 on 2026-11-11, passed its package step at 17:54 and its play at 19:26
+    in 96 minutes, the run green, which settles this.
 
 ## Decisions
 
@@ -3855,6 +3893,25 @@ among the cold plays that reached it, the client's source the same in both and t
 and one cold play through the live tree's failing at the lantern after frame 5 made 22 pipelines in
 47 s. The logs are in `~/.cache/3dengine-tools/work/i167/logs`. The runner's play is the gate, and it
 passed the mirror at 03:32 on e3dea22 through the pinned checkout's client.
+
+Item 172. terrain.slang's litStepped and the fragments of mob.slang and bits.slang called lit on the
+branch drawnUnlit takes, and each returns `unlit(albedo + emitted(input))` there, as the engine's lit
+does, with terrain.slang saying why. cavefields.slang is a compute shader and calls no lighting.
+Each fragment fell by about 590 KB, terrain.slang's from 1,280,560 to 690,816 bytes, mob.slang's
+from 1,590,576 to 1,000,524 and bits.slang's from 1,204,408 to 614,356. mob.slang keeps a second
+litLight, which runs, for the light a face turned up takes a sixteenth of a block out, the floor of
+Minecraft's flat shade, and it is 368 KB of the fragment, 632,184 bytes on a copy without it. It
+stays, since taking it out changes a mob's light. Read with the layer off, each play from an empty
+cache folder of its own under the lock exclusive, on powersave-bazzite. Frame 5 made its 22
+pipelines in 43.9 s before and 20.3 s after, terrain.slang's depth pipelines in 12.0 and 12.2 s
+before and 4.9 and 4.9 s after, and mob.slang's in 17.1 s before and 8.0 s after. At the pool,
+terrain.slang's four pipelines with its fragmentMain compiled in 13.1 to 13.2 s each before and 5.4
+to 5.7 s each after. Both plays passed whole with the mirror at red 171, green 148, blue 167, and a
+play under the layer from its own empty folder passed whole, its frame 5 in 24.2 s where 49.7 to
+62.3 s on the pin's plays. The 17 pictures of the plays before and after differ by more than 2
+levels in at most 0.16 percent of their pixels, but dusk in 2.5 percent, where two plays of the
+same shaders differ in 2.3 percent there, the mobs having wandered. The strict build is clean and
+366 tests pass. The logs are in `~/.cache/3dengine-tools/work/voxel-172/logs`.
 
 ## Items closed, parked or shortened
 

@@ -128,6 +128,9 @@ pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; 
 # sheep's wool, the creeper's front and the pool's water in 12, and one that captures the land waits
 # for the land in reach to be meshed and 10 frames more.
 cmd voxel.distance 4
+# No mob comes into the world, so two runs' captures differ by no animal wandering into one, and a
+# check that sets a mob down places it with voxel.spawn.
+cmd voxel.spawning off
 stood
 
 check "the screen probes"

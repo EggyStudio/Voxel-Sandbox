@@ -16,6 +16,7 @@ Done that day
   stops at its open where a file of its own is missing.
 - Item 170 at `8ded865`. The game's local checks run through a client that no build of the engine's
   tree reaches, and stop what they started by its pid.
+- Item 172 at `1f1e955`. A shader of the game's calls the engine's lighting once.
 
 ## 2026-11-10
 
@@ -1385,8 +1386,8 @@ Seed 1's forest from over its trees and seed 6's snowy village, clear on the lef
 weather's full turn on the right, rain over the forest and snow on the village under a grayed sky.
 
 ![](.github/devlog/2026-10-24-glass-joined.webp)
-Glass under Bare Bones, its streaks gone, where panes of the same glass join into one frame, with a
-corner kept inside the L at the right end.
+The workflows check the engine out with its submodules, since its projects reference the Sky module
+they hold. (`4e956bc`)
 
 ![](.github/assets/world/plant-shadows.webp)
 The plants cast the shadows of their blades and flowers on the 3DEngine 5.2.215 package, the terrain

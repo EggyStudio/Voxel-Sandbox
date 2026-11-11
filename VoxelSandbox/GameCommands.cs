@@ -543,6 +543,14 @@ public static class GameCommands
         return $"{game.Mobs.Clear(found)} mobs taken away";
     }
 
+    [Command("voxel.spawning", "Keeps every mob out of the world from the next frame on, for captures two runs take alike, or lets them come again: voxel.spawning <on>")]
+    internal static string Spawning(bool on)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        var count = game.Mobs.SetSpawning(game.World, on);
+        return on ? $"mobs come into the world, {count} brought back" : $"no mob comes into the world, {count} taken away";
+    }
+
     [Command("voxel.cull", "Leaves the sections the eye cannot see through open cells undrawn, or draws every one: voxel.cull <on>")]
     internal static string Cull(bool on)
     {

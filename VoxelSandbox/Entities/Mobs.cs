@@ -168,6 +168,13 @@ public sealed class Mobs
     /// <summary>Whether the mobs stand still and think nothing, as for a capture.</summary>
     public bool Still { get; set; }
 
+    /// <summary>
+    /// Whether mobs come into the world, or are kept out of it for captures two runs take alike, none
+    /// placed by a column first generated or brought back by one that loads again and none spawned in
+    /// the dark, though <c>voxel.spawn</c> still places one.
+    /// </summary>
+    public bool Spawning { get; private set; } = true;
+
     /// <summary>The hostile mobs alive.</summary>
     public int Hostile => All.Count(m => m.Kind.Hostile && m.Dying < 0);
 
@@ -186,9 +193,12 @@ public sealed class Mobs
         var key = (column.X, column.Z);
         if (_placed.Add(key))
         {
-            foreach (var spawn in column.Spawns) Add(spawn);
+            if (Spawning)
+                foreach (var spawn in column.Spawns) Add(spawn);
+            else if (column.Spawns.Count > 0)
+                Keep(key, [.. column.Spawns]);
         }
-        else if (_kept.Remove(key, out var kept))
+        else if (Spawning && _kept.Remove(key, out var kept))
             foreach (var record in kept) Add(record);
         column.Spawns.Clear();
     }
@@ -205,7 +215,39 @@ public sealed class Mobs
             if (!mob.Kind.Hostile) (kept ??= []).Add(mob.Record);
             return true;
         });
-        if (kept is not null) _kept[(x, z)] = kept;
+        if (kept is not null) Keep((x, z), kept);
+    }
+
+    /// <summary>
+    /// Keeps every mob out of the world, those loaded kept by the columns they stand in and the
+    /// hostile ones gone, or lets them come again, those the loaded columns keep brought back, and
+    /// gives how many went or came.
+    /// </summary>
+    public int SetSpawning(VoxelWorld world, bool on)
+    {
+        if (on == Spawning) return 0;
+        Spawning = on;
+        if (!on)
+            return Despawn(mob =>
+            {
+                if (mob.Dying < 0 && !mob.Kind.Hostile) Keep(ColumnOf(mob), [mob.Record]);
+                return true;
+            });
+        var back = 0;
+        foreach (var key in _kept.Keys.Where(k => world.HasColumn(k.X, k.Z)).ToList())
+        {
+            _kept.Remove(key, out var kept);
+            foreach (var record in kept!) Add(record);
+            back += kept.Count;
+        }
+        return back;
+    }
+
+    // Adds mobs to those a column keeps, where those kept out of the world may already lie.
+    private void Keep((int X, int Z) key, List<MobRecord> mobs)
+    {
+        if (_kept.TryGetValue(key, out var kept)) kept.AddRange(mobs);
+        else _kept[key] = mobs;
     }
 
     // Takes away the mobs a rule picks, and gives how many.
@@ -323,7 +365,7 @@ public sealed class Mobs
     {
         Despawn(m => m.Kind.Hostile && m.Dying < 0 && Despawns(Vector3.Distance(m.Body.Position, player), seconds));
         _spawnWait -= seconds;
-        if (_spawnWait > 0 || Hostile >= HostileCap) return;
+        if (!Spawning || _spawnWait > 0 || Hostile >= HostileCap) return;
         _spawnWait = SpawnEvery;
         var angle = _random.NextDouble() * Math.Tau;
         var distance = 24 + _random.NextDouble() * 40;

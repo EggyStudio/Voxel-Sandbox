@@ -1,68 +1,79 @@
 # Review
 
-Reviewed up to `068fd5f`, the pin of the engine's 6.2.41 with the workflows' engine checkout at
-`894542da`, pushed at 15:29 on 2026-11-11, its run red at 15:34 in the play job before the game was
-built, the runner not reaching its package mirror, Verdict 11, the job run again at 15:36; its
-strict build is clean and 366 tests pass. The water's mirror passes six plays of six under the
-layer, three from an empty cache in 393, 417 and 434 s and three from the cache each left in 237,
-242 and 221 s, each play's caches in a folder of its own; from a cold cache the pipelines' file
-grows to 21.8 MB and the pool's three terrain.slang pipelines compile in 14 to 19 s each at once,
-and from a warm one every pipeline made in play says from the cache, the pool's three in 1.17 to
-1.37 s each; frame 5's 22 pipelines take 54 to 68 s cold, one after another, and 4.4 to 4.6 s warm.
-The engine's trial puts about 1.2 s of each such pipeline on the validation layer, 94 ms compiled
-without it, so these are the layer's seconds, which the play turns on, item 171. It keeps the form
-and carries the review's files. Before it `8ded865`, item 170, the local checks run through an e3d
-client of the pinned engine built once in .engine and the play and the pictures stopping by its
-process a game left running, pushed at 05:11 on 2026-11-11, its run green at 06:37 with the play in
-86 minutes on the runner, the mirror passing there; its strict build is clean and 366 tests pass,
-the play here failing the mirror on 6.2.32 by the engine's item 253, the runner's play the gate; it
-keeps the form and carries the review's files. Before it `08bf109`, item 169, the resources kept in
-their folders from any path and the game stopping at its open with the path of a file of its own
-that is missing or does not compile, pushed at 03:33 on 2026-11-11, its run green at 05:08 with the
-play in 95 minutes on the runner; 366 tests pass and the play passes from an empty cache in 463
-seconds; it keeps the form and carries the review's file. Before it `e3dea22`, the pin of the
-engine's 6.2.32 with item 167, the scene field laid ahead of the eye by the engine's option in place
-of a center set each frame, the two copies of the sRGB curve calling the engine's and the three
-powers of 1/2.2 staying with their reason, the workflows' engine checkout at `02c3a743`, pushed at
-02:05 on 2026-11-11, its run green at 03:32 with the play in 88 minutes on the runner; its strict
-build is clean, 364 tests pass and the scripted run passes from an empty cache in 375 seconds with
-the layer's check, the mirror failing from warm caches, the engine's item 253; it keeps the form and
-carries the review's files. A lantern read at half its light on the bare pin was a build made
-through the /home link with the resources copied flat, the engine's item 252 withdrawn and item 169
-written. Before it `cb071a9`, the pin of the engine's 6.2.17, the package with the far cascade's
-band weighed around the eye and every cascade built at once after a cut, the workflows' engine
-checkout at `f68075f1`, pushed at 13:05 on 2026-11-10, its run green at 14:41 on its second attempt,
-the macOS test job's restore having failed on the first, the package not yet at that runner's feed,
-Verdict 10, the play in 91 minutes on the runner; its strict build is clean, 364 tests pass and the
-scripted run passes under the validation layer, 359 seconds here where 329 on 6.2.14 and 336 on
-6.2.12, one run each; it keeps the form and carries the review's file. Before it `d8ef6a7`, the pin
-of 6.2.14 with the ramp, pushed at 09:29 on 2026-11-10, its run green at 11:00 with the play in 91
-minutes on the runner where 70 on 6.2.12, placed at 21:23 on 2026-11-10 as the runner's spread and
-not the ramp. Under lavapipe here in a small form, render distance 4 at 640 by 360 with 10 frames a
-reading and each run alone under the lock, 6.2.12 and 6.2.14 twice in turn, the lit scene's pass
-reads 315 and 343 ms against 347 and 344, the illumination's 446 and 428 against 448 and 430 and the
-frame's work 1006 and 951 against 944 and 880, so the ramp costs lavapipe nothing that shows, the
-sheet 21-23-item-168-lavapipe in the dump. In the play's logs over the same 48 steps against
-6.2.12's run, two runs on 6.1.12 drew 1.24 and 1.16 times as long, 6.2.14's and 6.2.17's 1.33 each
-and 5.2.333's 0.99, lavapipe drawing by the processor's vector units, which the open and the build
-do not use, so an open of equal length does not rule a slower processor out. The play has 59 minutes
-under its limit and nothing follows. Before it `cfffcb3`, the pin of 6.2.12 with item 165, pushed at
-02:54 on 2026-11-10, its run green at 04:05 with the play in 70 minutes. Before it `4e956bc`, items
-162 and 163, pushed at 08:47 on 2026-11-09, green at 10:07. The game stands at 0.2, tagged `v0.2.0`,
-and is pinned to the engine's 6.2.17 since `cb071a9`; item 166's reads on it and on 6.1.12 show no
-path difference and no lag at any speed, the clouds' step standing, and on the grove's shaded ground
-a seventh of the pixels flickering in a turn by the screen probes on both, read again on the package
-that carries the engine's ramp. Item 166 is read twice by 22:37 on 2026-11-09, turns clean at every
-speed, a walk showing the difference between two settlings of one place in the screen probes' tiles,
-the engine's item 246, and the clouds stepping as the far cascade moves, its item 245. Every push
-and run before `4e956bc` since 2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.
+Reviewed up to `1f1e955`, item 172, terrain.slang, mob.slang and bits.slang returning unlit on the
+branch drawn unlit, each fragment about 590 KB smaller and the fifth frame's 22 pipelines made in
+20.3 s where 43.9 from an empty cache with the layer off, pushed at 19:29 on 2026-11-11 once the
+pin's run had ended, its run green at 20:36 with the play in 67 minutes where the pin's took 96; it
+keeps the form and carries the review's files. Before it `068fd5f`, the pin of the engine's 6.2.41
+with the workflows' engine checkout at `894542da`, pushed at 15:29 on 2026-11-11, its run red at
+15:34 in the play job before the game was built, the runner not reaching its package mirror for two
+hours and a quarter, Verdict 11, green at 19:26 on its tenth attempt, the play in 96 minutes, which
+settles the verdict; its strict build is clean and 366 tests pass. The water's mirror passes six
+plays of six under the layer, three from an empty cache in 393, 417 and 434 s and three from the
+cache each left in 237, 242 and 221 s, each play's caches in a folder of its own; from a cold cache
+the pipelines' file grows to 21.8 MB and the pool's three terrain.slang pipelines compile in 14 to
+19 s each at once, and from a warm one every pipeline made in play says from the cache, the pool's
+three in 1.17 to 1.37 s each; frame 5's 22 pipelines take 54 to 68 s cold, one after another, and
+4.4 to 4.6 s warm. The engine's trial puts about 1.2 s of each such pipeline on the validation
+layer, 94 ms compiled without it, so these are the layer's seconds, which the play turns on, item
+171. It keeps the form and carries the review's files. Before it `8ded865`, item 170, the local
+checks run through an e3d client of the pinned engine built once in .engine and the play and the
+pictures stopping by its process a game left running, pushed at 05:11 on 2026-11-11, its run green
+at 06:37 with the play in 86 minutes on the runner, the mirror passing there; its strict build is
+clean and 366 tests pass, the play here failing the mirror on 6.2.32 by the engine's item 253, the
+runner's play the gate; it keeps the form and carries the review's files. Before it `08bf109`, item
+169, the resources kept in their folders from any path and the game stopping at its open with the
+path of a file of its own that is missing or does not compile, pushed at 03:33 on 2026-11-11, its
+run green at 05:08 with the play in 95 minutes on the runner; 366 tests pass and the play passes
+from an empty cache in 463 seconds; it keeps the form and carries the review's file. Before it
+`e3dea22`, the pin of the engine's 6.2.32 with item 167, the scene field laid ahead of the eye by
+the engine's option in place of a center set each frame, the two copies of the sRGB curve calling
+the engine's and the three powers of 1/2.2 staying with their reason, the workflows' engine checkout
+at `02c3a743`, pushed at 02:05 on 2026-11-11, its run green at 03:32 with the play in 88 minutes on
+the runner; its strict build is clean, 364 tests pass and the scripted run passes from an empty
+cache in 375 seconds with the layer's check, the mirror failing from warm caches, the engine's item
+253; it keeps the form and carries the review's files. A lantern read at half its light on the bare
+pin was a build made through the /home link with the resources copied flat, the engine's item 252
+withdrawn and item 169 written. Before it `cb071a9`, the pin of the engine's 6.2.17, the package
+with the far cascade's band weighed around the eye and every cascade built at once after a cut, the
+workflows' engine checkout at `f68075f1`, pushed at 13:05 on 2026-11-10, its run green at 14:41 on
+its second attempt, the macOS test job's restore having failed on the first, the package not yet at
+that runner's feed, Verdict 10, the play in 91 minutes on the runner; its strict build is clean, 364
+tests pass and the scripted run passes under the validation layer, 359 seconds here where 329 on
+6.2.14 and 336 on 6.2.12, one run each; it keeps the form and carries the review's file. Before it
+`d8ef6a7`, the pin of 6.2.14 with the ramp, pushed at 09:29 on 2026-11-10, its run green at 11:00
+with the play in 91 minutes on the runner where 70 on 6.2.12, placed at 21:23 on 2026-11-10 as the
+runner's spread and not the ramp. Under lavapipe here in a small form, render distance 4 at 640 by
+360 with 10 frames a reading and each run alone under the lock, 6.2.12 and 6.2.14 twice in turn, the
+lit scene's pass reads 315 and 343 ms against 347 and 344, the illumination's 446 and 428 against
+448 and 430 and the frame's work 1006 and 951 against 944 and 880, so the ramp costs lavapipe
+nothing that shows, the sheet 21-23-item-168-lavapipe in the dump. In the play's logs over the same
+48 steps against 6.2.12's run, two runs on 6.1.12 drew 1.24 and 1.16 times as long, 6.2.14's and
+6.2.17's 1.33 each and 5.2.333's 0.99, lavapipe drawing by the processor's vector units, which the
+open and the build do not use, so an open of equal length does not rule a slower processor out. The
+play has 59 minutes under its limit and nothing follows. Before it `cfffcb3`, the pin of 6.2.12 with
+item 165, pushed at 02:54 on 2026-11-10, its run green at 04:05 with the play in 70 minutes. Before
+it `4e956bc`, items 162 and 163, pushed at 08:47 on 2026-11-09, green at 10:07. The game stands at
+0.2, tagged `v0.2.0`, and is pinned to the engine's 6.2.17 since `cb071a9`; item 166's reads on it
+and on 6.1.12 show no path difference and no lag at any speed, the clouds' step standing, and on the
+grove's shaded ground a seventh of the pixels flickering in a turn by the screen probes on both,
+read again on the package that carries the engine's ramp. Item 166 is read twice by 22:37 on
+2026-11-09, turns clean at every speed, a walk showing the difference between two settlings of one
+place in the screen probes' tiles, the engine's item 246, and the clouds stepping as the far cascade
+moves, its item 245. Every push and run before `4e956bc` since 2026-10-23 stands in
+REVIEW-ARCHIVE.md under Head records.
 
-Next 173, the owner's room read for the engine's item 257, as soon as 172 is committed; then 172,
-the engine's lighting called once in each of the game's shaders, then the mirror's check waiting for
-its pipelines at the pin that carries the engine's 254. The owner on 2026-11-11, of taller and more
-varied terrain, "there are more important stuff currently and the terrain generation is nice even if
-not fully fledged out", so nothing of the terrain is an item. Item 29's second part stays parked by
-the owner's word. A program on the GPU runs under the lock (N 7.9).
+Next the commit of voxel.spawning, the mobs taken away for captures, asked by the owner on
+2026-11-11; then 176, the bright blobs in the distance, asked by the owner the same evening, read to
+its term and to a built scene; then 174, the same built scene near the origin and at the owner's
+place read stage by stage for the engine's item 258, then 175, the game far from the origin; 173's
+check on the engine's mend of its item 257, the owner's first view before and after, goes ahead of
+all when the engine's coder has the package; then the mirror's check waiting for its pipelines at
+the pin that carries the engine's 254. 172, the engine's lighting called once in each of the game's
+shaders, is done at `1f1e955`, green at 20:36, and 173's read is done. The owner on 2026-11-11, of
+taller and more varied terrain, "there are more important stuff currently and the terrain generation
+is nice even if not fully fledged out", so nothing of the terrain is an item. Item 29's second part
+stays parked by the owner's word. A program on the GPU runs under the lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -108,19 +119,6 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     engine's item 255. What remains here is the mirror's check waiting for its pipelines at the pin
     that carries the engine's 254.
 
-172. **A shader of the game's calls the engine's lighting once.** From the engine's item 255 on
-    2026-11-11. The driver's own first compile of the terrain pipeline takes 12 s from an empty
-    cache folder with no layer, a player's first run, and half of terrain.slang's 1.3 MB fragment is
-    a second copy of the engine's lighting that can never run, from its first line calling lit on
-    the branch drawnUnlit takes, where lit itself returns unlit and its litLight is dead to all but
-    the compiler. With that line returning unlit(albedo + emitted(input)) the fragment is 702,448
-    bytes where 1,303,784 and the cold compile 5.9 and 5.2 s where 12.4 and 13.6, by the engine's
-    trial on a copy. The line is changed in terrain.slang, and mob.slang, whose pipeline took 19.1
-    s, bits.slang and cavefields.slang are read for the same call of lit or litLight on a branch
-    that cannot be lit, or twice in one shader. One commit, the play's pictures unchanged, with one
-    cold play with the layer off before and after, the fifth frame's seconds and the pool's, in its
-    Reply.
-
 173. **The owner's room, read for the engine.** From the owner on 2026-11-11 at about 18:35 and the
     engine's item 257. The owner's saved world, overworld of seed 1, opens at 4448.4, 24, 599.8
     facing 48 degrees in a dark closed room they built, the illumination at Low, and the first view
@@ -134,28 +132,66 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     stripes; and the engine's gi.show and field.march at a striped place and a smooth one, as its
     coder asks. Written as an ask in the engine's ASKS.md with a sheet by N 4.9. A check for the
     play after the mend, the room's wall read for its squares at each quality. After 172's commit,
-    and ahead of all else.
+    and ahead of all else. The engine's coder reads the stripes at a glance as the glow light's
+    march calling the wall itself an occluder and asks three things first, the glowing blocks'
+    places and sizes against the wall's plane, the wall's plane with the field's cell, and
+    field.march from a striped texel and from a smooth one beside it toward the nearest glowing
+    block; they go to it through the review as they come. The read is done at 19:06, nothing
+    committed. The removals on a second copy say the lantern alone draws the stripes, the wall
+    reading 0 with it made white concrete and as before with the 14 magma blocks made stone. The
+    sheet is 19-00-item-173-room.png in the dump, and the ask is the last entry of the engine's
+    ASKS.md, which the engine's next commit carries. What remains is the check after the mend. When
+    the engine's coder has the mend in a package of its own feed, unpublished, the game's coder
+    captures the owner's first view from its copy on 6.2.41 and on that package, built in its work
+    folder, the wall's rows read at Low, Medium and High on both, before and after on one sheet for
+    the owner. The work folder i173 is kept until then.
+
+174. **The same built scene near the origin and at the owner's place.** From the engine's item 257
+    on 2026-11-11. The owner's noise was float precision 4,450 units from the origin in points and
+    normals the engine takes from the depth, which no scene at the origin shows, and the engine's
+    item 258 reads its other passes for the same. The game gives it the controlled case. In a copy
+    of the data, one small scene built of blocks twice, block for block, once within 64 blocks of
+    the origin and once beside the owner's room near 4448, 24, 600, each on a platform in the air
+    clear of the terrain, a floor, two walls, a roof slab that shades half the floor, a pillar, a
+    sea lantern set in a wall and one standing free, at the same hour. Each is read from the same
+    eye against its scene at Low, Medium and High with each of the engine's stages on and off in
+    turn, ambient occlusion, the screen's probes, the glow lights, the filter, the frame before's
+    light and the shadows, by rows of voxel.line on the shaded floor, the lit floor, a wall and the
+    shadow's edge, the steps over 3 levels and the mean step, on 6.2.41. A sheet by N 4.9, the two
+    places side by side with their difference, and a table of what differs between the places by
+    more than one place differs between two runs. Each stage that differs goes to the engine as an
+    ask under its item 258, and the scene stays as the check of each mend. Under the lock, shared.
+
+175. **The game far from the origin.** After 174, a read and no mend. The game's worlds have no
+    edge, and its own shaders and its own arithmetic work in world numbers too. The same built scene
+    at 16 and at 256 times the owner's distance, 71,000 and 1,140,000 blocks out, and a walk there,
+    to say what goes wrong first and where, the terrain's seams, the stepped light's squares, the
+    water, the mobs, the shadows, picking a block, the physics, each with a picture and the distance
+    at which it is first seen. What is the engine's goes to it as asks, and what is the game's
+    becomes items.
+
+176. **Bright colored blobs in the distance under bloom.** From the owner on 2026-11-11, to the
+    game's coder, "At distance there are these colored bloomed blobs in the background". Read on
+    6.2.41 at `1f1e955`, the sheet 21-30-red-blob.png in the dump. One stands in the origin scene's
+    view, a spruce trunk's foot on snow at -98, 105, 39, 134 blocks off. With bloom at 0 it is one
+    pixel reading 255, 209, 199 beside a trunk of 54, 46, 42, which bloom spreads into a red blob
+    over the tree. The pixel is the same through every part gi.toggle leaves out, with each cascade
+    alone and at Low, Medium and High, and only the illumination off clears it, the snow then 221,
+    215, 205; no block light, fire or mob is near. From 15 blocks a trunk's lower half above the
+    snow reads 172, 90, 0, blue at exactly 0, where its upper half reads 82, 50, 23. So the
+    illumination's light at a trunk's foot beside sunlit snow is far too bright, whether in the
+    engine's light or in terrain.slang's taking of it not yet said. The read goes ahead of 174 since
+    the owner asked it. Which term carries it at that pixel and from 15 blocks, the light's parts as
+    voxel.pixel and the engine's views give them; what clears it, the snow made grass or stone, the
+    trunk made stone, the sun's shadows off, the hour at noon and at dusk, the far cascade off; and
+    the smallest built scene that shows it, a log standing on snow in the sun, added to 174's scene
+    at both places so it is read near the origin and at the owner's place alike. Then an ask to the
+    engine with the numbers and a sheet, or an item of the game's where terrain.slang takes the
+    light wrongly.
 
 ## Verdicts
 
-Verdicts 1 to 10 are settled, said under each in REVIEW-ARCHIVE.md; Verdict 11 is open on the run of
-`068fd5f`.
-
-11. **The run of `068fd5f` is red in its play job before the game is built, the runner not reaching
-    its package mirror.** In run 43038975424 the play job failed after five minutes at the step that
-    installs lavapipe and the validation layer, apt-get ending with exit code 100, a temporary
-    failure resolving azure.archive.ubuntu.com, the Mesa driver's package not fetched; the three
-    test jobs are green. Nothing of the game's ran, so it is the runner's network and no fault of
-    the commit's. The failed job is run again, started at 15:36 on 2026-11-11 as a second attempt,
-    and the verdict settles where its play passes. Written at 15:36 on 2026-11-11. The second
-    attempt failed the same way at 15:41, the mirror's name still not resolving on the runner from
-    15:34 to 15:41 while it answers from this machine and GitHub's status page reports nothing, and
-    the two Linux native jobs of the bridge's pack run failed by it in the same minutes. A third
-    attempt is started a quarter of an hour on. The third attempt failed the same way at 16:03, and
-    by then the fault had taken the Linux jobs of the bridge's two runs twice and both Linux legs of
-    the engine's run of its `4d9227d0`, 30 lines of the same name not resolving, GitHub's status
-    page reporting all systems working. From 16:07 the play job is run again every quarter hour as
-    the probe, and the others' failed jobs are started again when its package step passes.
+No verdict is open. Verdicts 1 to 11 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 
@@ -293,21 +329,24 @@ engine's, 23 MB, and an empty folder empties that too, so a cold play here is th
 compile of each pipeline. A trial whose driver cache is warm may read "compiled" in under 100 ms. The
 logs are in `~/.cache/3dengine-tools/work/voxel-6241/logs/off-cold` and `off-warm`.
 
-Item 172. terrain.slang's litStepped and the fragments of mob.slang and bits.slang called lit on the
-branch drawnUnlit takes, and each returns `unlit(albedo + emitted(input))` there, as the engine's lit
-does, with terrain.slang saying why. cavefields.slang is a compute shader and calls no lighting.
-Each fragment fell by about 590 KB, terrain.slang's from 1,280,560 to 690,816 bytes, mob.slang's
-from 1,590,576 to 1,000,524 and bits.slang's from 1,204,408 to 614,356. mob.slang keeps a second
-litLight, which runs, for the light a face turned up takes a sixteenth of a block out, the floor of
-Minecraft's flat shade, and it is 368 KB of the fragment, 632,184 bytes on a copy without it. It
-stays, since taking it out changes a mob's light. Read with the layer off, each play from an empty
-cache folder of its own under the lock exclusive, on powersave-bazzite. Frame 5 made its 22
-pipelines in 43.9 s before and 20.3 s after, terrain.slang's depth pipelines in 12.0 and 12.2 s
-before and 4.9 and 4.9 s after, and mob.slang's in 17.1 s before and 8.0 s after. At the pool,
-terrain.slang's four pipelines with its fragmentMain compiled in 13.1 to 13.2 s each before and 5.4
-to 5.7 s each after. Both plays passed whole with the mirror at red 171, green 148, blue 167, and a
-play under the layer from its own empty folder passed whole, its frame 5 in 24.2 s where 49.7 to
-62.3 s on the pin's plays. The 17 pictures of the plays before and after differ by more than 2
-levels in at most 0.16 percent of their pixels, but dusk in 2.5 percent, where two plays of the
-same shaders differ in 2.3 percent there, the mobs having wandered. The strict build is clean and
-366 tests pass. The logs are in `~/.cache/3dengine-tools/work/voxel-172/logs`.
+Item 173, read on 6.2.41 with the game of `1f1e955` from two copies of the review's copy of the
+data, under the lock. The stripes lie on the east wall's face, the plane x = 4455, at y 26.9 to 27.9
+and z 596.0 to 598.3, over the red pillar at 4454, 24 to 25, 596. The one glow light in reach is the
+sea lantern at 4452, 24, 595, in the north wall at the floor, its open face on z = 596 in a pocket
+of red concrete open upward. With it made white concrete the wall reads 0, and with the 14 magma
+blocks outside made stone the stripes read as before, so the lantern alone draws them. `field.march`
+from a tenth of a cell off the wall meets the wall at once at striped and smooth texels alike, and
+from a cell and a half off the striped ones pass over the pocket's rim and the smooth one meets it.
+The ask is the engine's ASKS.md entry of 2026-11-11 on a sea lantern's light, the sheet in the dump
+under `item-173-room`, and the readings in `~/.cache/3dengine-tools/work/i173`.
+
+voxel.spawning, asked for on 2026-11-11 after 172's sheet showed two plays' dusk apart by
+their mobs. `voxel.spawning off` takes every mob away before the next frame, the animals kept by the
+columns they stand in. A column first generated places none, one loading again brings none back,
+and the night spawns none, though `voxel.spawn` still places one. `voxel.spawning on` brings back
+those the loaded columns keep. build/play.sh turns it off before its first check. Two plays from
+one cache folder under the layer passed whole in 317 and 218 s, the mirror at red 171, green 148,
+blue 167, and of their 17 captures dusk differs in 0.00 percent of its pixels by more than 2 levels,
+where 2.3 percent before. sky2 differs in 0.18 percent, all within the night's clouds, which drift.
+The strict build is clean and 367 tests pass, MobTests reading a sheep kept out and a column's cow
+placed none, both back where they stood.
