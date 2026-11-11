@@ -1,48 +1,55 @@
 # Review
 
-Reviewed up to `08bf109`, item 169, the resources kept in their folders from any path and the game
-stopping at its open with the path of a file of its own that is missing or does not compile, pushed
-at 03:33 on 2026-11-11 with a run on it; 366 tests pass and the play passes from an empty cache in
-463 seconds; it keeps the form and carries the review's file. Before it `e3dea22`, the pin of the
-engine's 6.2.32 with item 167, the scene field laid ahead of the eye by the engine's option in place
-of a center set each frame, the two copies of the sRGB curve calling the engine's and the three
-powers of 1/2.2 staying with their reason, the workflows' engine checkout at `02c3a743`, pushed at
-02:05 on 2026-11-11, its run green at 03:32 with the play in 88 minutes on the runner; its strict
-build is clean, 364 tests pass and the scripted run passes from an empty cache in 375 seconds with
-the layer's check, the mirror failing from warm caches, the engine's item 253; it keeps the form and
-carries the review's files. A lantern read at half its light on the bare pin was a build made
-through the /home link with the resources copied flat, the engine's item 252 withdrawn and item 169
-written. Before it `cb071a9`, the pin of the engine's 6.2.17, the package with the far cascade's
-band weighed around the eye and every cascade built at once after a cut, the workflows' engine
-checkout at `f68075f1`, pushed at 13:05 on 2026-11-10, its run green at 14:41 on its second attempt,
-the macOS test job's restore having failed on the first, the package not yet at that runner's feed,
-Verdict 10, the play in 91 minutes on the runner; its strict build is clean, 364 tests pass and the
-scripted run passes under the validation layer, 359 seconds here where 329 on 6.2.14 and 336 on
-6.2.12, one run each; it keeps the form and carries the review's file. Before it `d8ef6a7`, the pin
-of 6.2.14 with the ramp, pushed at 09:29 on 2026-11-10, its run green at 11:00 with the play in 91
-minutes on the runner where 70 on 6.2.12, placed at 21:23 on 2026-11-10 as the runner's spread and
-not the ramp. Under lavapipe here in a small form, render distance 4 at 640 by 360 with 10 frames a
-reading and each run alone under the lock, 6.2.12 and 6.2.14 twice in turn, the lit scene's pass
-reads 315 and 343 ms against 347 and 344, the illumination's 446 and 428 against 448 and 430 and the
-frame's work 1006 and 951 against 944 and 880, so the ramp costs lavapipe nothing that shows, the
-sheet 21-23-item-168-lavapipe in the dump. In the play's logs over the same 48 steps against
-6.2.12's run, two runs on 6.1.12 drew 1.24 and 1.16 times as long, 6.2.14's and 6.2.17's 1.33 each
-and 5.2.333's 0.99, lavapipe drawing by the processor's vector units, which the open and the build
-do not use, so an open of equal length does not rule a slower processor out. The play has 59 minutes
-under its limit and nothing follows. Before it `cfffcb3`, the pin of 6.2.12 with item 165, pushed at
-02:54 on 2026-11-10, its run green at 04:05 with the play in 70 minutes. Before it `4e956bc`, items
-162 and 163, pushed at 08:47 on 2026-11-09, green at 10:07. The game stands at 0.2, tagged `v0.2.0`,
-and is pinned to the engine's 6.2.17 since `cb071a9`; item 166's reads on it and on 6.1.12 show no
-path difference and no lag at any speed, the clouds' step standing, and on the grove's shaded ground
-a seventh of the pixels flickering in a turn by the screen probes on both, read again on the package
-that carries the engine's ramp. Item 166 is read twice by 22:37 on 2026-11-09, turns clean at every
-speed, a walk showing the difference between two settlings of one place in the screen probes' tiles,
-the engine's item 246, and the clouds stepping as the far cascade moves, its item 245. Every push
-and run before `4e956bc` since 2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.
+Reviewed up to `8ded865`, item 170, the local checks run through an e3d client of the pinned engine
+built once in .engine and the play and the pictures stopping by its process a game left running,
+pushed at 05:11 on 2026-11-11, its run green at 06:37 with the play in 86 minutes on the runner, the
+mirror passing there; its strict build is clean and 366 tests pass, the play here failing the mirror
+on 6.2.32 by the engine's item 253, the runner's play the gate; it keeps the form and carries the
+review's files. Before it `08bf109`, item 169, the resources kept in their folders from any path and
+the game stopping at its open with the path of a file of its own that is missing or does not
+compile, pushed at 03:33 on 2026-11-11, its run green at 05:08 with the play in 95 minutes on the
+runner; 366 tests pass and the play passes from an empty cache in 463 seconds; it keeps the form and
+carries the review's file. Before it `e3dea22`, the pin of the engine's 6.2.32 with item 167, the
+scene field laid ahead of the eye by the engine's option in place of a center set each frame, the
+two copies of the sRGB curve calling the engine's and the three powers of 1/2.2 staying with their
+reason, the workflows' engine checkout at `02c3a743`, pushed at 02:05 on 2026-11-11, its run green
+at 03:32 with the play in 88 minutes on the runner; its strict build is clean, 364 tests pass and
+the scripted run passes from an empty cache in 375 seconds with the layer's check, the mirror
+failing from warm caches, the engine's item 253; it keeps the form and carries the review's files. A
+lantern read at half its light on the bare pin was a build made through the /home link with the
+resources copied flat, the engine's item 252 withdrawn and item 169 written. Before it `cb071a9`,
+the pin of the engine's 6.2.17, the package with the far cascade's band weighed around the eye and
+every cascade built at once after a cut, the workflows' engine checkout at `f68075f1`, pushed at
+13:05 on 2026-11-10, its run green at 14:41 on its second attempt, the macOS test job's restore
+having failed on the first, the package not yet at that runner's feed, Verdict 10, the play in 91
+minutes on the runner; its strict build is clean, 364 tests pass and the scripted run passes under
+the validation layer, 359 seconds here where 329 on 6.2.14 and 336 on 6.2.12, one run each; it keeps
+the form and carries the review's file. Before it `d8ef6a7`, the pin of 6.2.14 with the ramp, pushed
+at 09:29 on 2026-11-10, its run green at 11:00 with the play in 91 minutes on the runner where 70 on
+6.2.12, placed at 21:23 on 2026-11-10 as the runner's spread and not the ramp. Under lavapipe here
+in a small form, render distance 4 at 640 by 360 with 10 frames a reading and each run alone under
+the lock, 6.2.12 and 6.2.14 twice in turn, the lit scene's pass reads 315 and 343 ms against 347 and
+344, the illumination's 446 and 428 against 448 and 430 and the frame's work 1006 and 951 against
+944 and 880, so the ramp costs lavapipe nothing that shows, the sheet 21-23-item-168-lavapipe in the
+dump. In the play's logs over the same 48 steps against 6.2.12's run, two runs on 6.1.12 drew 1.24
+and 1.16 times as long, 6.2.14's and 6.2.17's 1.33 each and 5.2.333's 0.99, lavapipe drawing by the
+processor's vector units, which the open and the build do not use, so an open of equal length does
+not rule a slower processor out. The play has 59 minutes under its limit and nothing follows. Before
+it `cfffcb3`, the pin of 6.2.12 with item 165, pushed at 02:54 on 2026-11-10, its run green at 04:05
+with the play in 70 minutes. Before it `4e956bc`, items 162 and 163, pushed at 08:47 on 2026-11-09,
+green at 10:07. The game stands at 0.2, tagged `v0.2.0`, and is pinned to the engine's 6.2.17 since
+`cb071a9`; item 166's reads on it and on 6.1.12 show no path difference and no lag at any speed, the
+clouds' step standing, and on the grove's shaded ground a seventh of the pixels flickering in a turn
+by the screen probes on both, read again on the package that carries the engine's ramp. Item 166 is
+read twice by 22:37 on 2026-11-09, turns clean at every speed, a walk showing the difference between
+two settlings of one place in the screen probes' tiles, the engine's item 246, and the clouds
+stepping as the far cascade moves, its item 245. Every push and run before `4e956bc` since
+2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.
 
-Next 170's commit, then the mirror read on the engine's next package, which carries its 253's mends.
-Item 29's second part and 114's second part wait on the owner's word. A program on the GPU runs
-under the lock (N 7.9).
+Next the pin of the engine's next package, which carries its 253's mends, with the water's mirror
+read from a cold cache and a warm one, three plays each, the session's log kept at the pool. Item
+29's second part and 114's second part wait on the owner's word. A program on the GPU runs under the
+lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -86,58 +93,6 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     the land everywhere, asked. The first part at `3869d0c` on 2026-10-24, the banks sloping a block
     per two, the spawn's square at 460 steps of two or more where 1,458 stood and the village at 1
     where 116; the second part on the owner's word.
-
-169. **A build keeps the resources' folders whatever path reaches it, and the game stops at its open
-    where a file of its own is missing.** From the pin of 6.2.32 on 2026-11-11. A build made in a
-    worktree reached through /home, a link to /var/home on this machine, copied the game's resources
-    flat beside the program, terrain.slang, bits.slang, mob.slang and packs.json at the top and no
-    resources/shaders, since the project's Content glob leaves the place to MSBuild, which takes a
-    file reached through a link as lying outside the project; and the game then ran without its own
-    terrain shader and said nothing, LoadShader giving the default as the followed engine's does, so
-    the only sign was a lantern's pool at half its light, read for an hour as a fault of the
-    engine's and written as its item 252, withdrawn. Two mends in one commit. The Content items name
-    their place with their folders, so the layout is the same from every path, with a test or a step
-    of the scripted run that the built folder holds resources/shaders/terrain.slang. And the game
-    checks each shader of its own and packs.json as it opens and stops with the file's path where
-    one is missing or did not compile, the play failing at its first step and not at a picture.
-    After the pin's commit. Done at `08bf109` on 2026-11-11, pushed at 03:33. The Content items
-    carry their folders by Link, so a build through /home holds resources/shaders and
-    resources/packs.json; OwnFiles lists the game's four shaders and packs.json, and the game checks
-    them after the window opens and stops with 1 and the path where one is missing or a shader does
-    not compile; the play quotes the game's first error line where the open fails. Read with
-    bits.slang removed, the game stopping in 1.3 s with the path, and with mob.slang broken,
-    slangc's reason with it; 366 tests pass and the play passes from an empty cache in 463 seconds.
-
-170. **The game's local checks drive through a client no other session's build reaches, and stop
-    what they started by its pid.** From 2026-11-11. The checks drive the game through ./e3d of the
-    engine's live tree, whose client builds again whenever a source of the engine's changed, so the
-    engine's session building its tree failed a play at 02:03 with CS0006, lost a SetTargetFPS in
-    item 168's first pass, and took the stop from the play's exit, which goes through the same
-    client; the game it left ran offscreen on the GPU outside the lock from 02:10 to 03:41, beside
-    another session's exclusive timing and beside 168's own walk and flight, which read 25 to 43 ms
-    a frame for it and are taken again. Two mends in one commit. The checks drive through an e3d
-    client of the pinned engine's commit, built once into a folder of the game's own outside the
-    engine's live tree, as the runner builds it from its checkout; where e3d has no way to run
-    without building, the ask goes into the engine's ASKS.md. And each check script stops by pid any
-    game left from its own build folder as it ends, whatever the client answers. After 168's reads.
-    Written by 04:00 on 2026-11-11 and held uncommitted. build/engine.sh keeps a checkout of the
-    engine at the workflows' commit in .engine with its e3d client, built only when the checkout
-    moves, 66 s and 264 MB the first time, and play.sh and pictures.sh stop their games by process
-    where the client's stop leaves them. Through the pinned client two cold plays in a row fail the
-    water's mirror, terrain.slang's pipeline made at the pool in 1.57 and 1.66 s, where the three
-    cold passes before went through the live tree's client, so two cold plays through the live
-    client are taken first; where they fail too, the engine's 253 is flaky from a cold cache
-    whatever the client and 170 is committed with that in its Reply, and where they pass, the
-    clients' driving at the pool's steps is compared before the commit. The two cold plays through
-    the live client at 04:20 do not settle it, one failing at the lantern's pool after the fifth
-    frame made 22 pipelines in 47 s and one passing whole in 391 s, so among cold plays that reached
-    the mirror it passed 4 of 4 through the live client and 0 of 2 through the pinned, the clients'
-    source the same. No more plays are taken. Whatever leans it is timing against a race on the
-    engine's side, its item 253 either way, the 47 s its one lock running the compiles one after
-    another, mended at its `21122dcd`; a play here is reliable on 6.2.32 from neither a cold nor a
-    warm cache, and the runner's play is the gate. 170 is committed as it stands with these figures
-    in its Reply, and the mirror is read on the next package, cold and warm, three plays each with
-    the session's log copied at the pool.
 
 ## Verdicts
 
@@ -247,28 +202,19 @@ full under Decisions in REVIEW-ARCHIVE.md.
 
 ## Replies
 
-Item 169. The Content items name their place by their folders, `Link="resources\%(RecursiveDir)..."`,
-and a build through `/home` holds resources/shaders and resources/packs.json as one through
-`/var/home` does. OwnFiles in Rendering lists the game's four shaders and packs.json beside the
-program, and two tests read the tests' folder, which takes the game's resources as the program's
-does, for each file in its place and for the list naming every shader shipped. At its open the game
-checks each file is there and each shader compiles, and where one is not it writes the file's path
-to the log as an error and exits with 1. A build with bits.slang taken out stops in 1.3 s with
-"The game cannot open, since <its path> is missing", and one with mob.slang broken with slangc's
-reason and "did not compile". The play quotes that error when the game does not open, so its first
-step fails with the path, in 3 s.
-
-Item 170. `build/engine.sh` checks the engine out at the commit `build.yml` names into `.engine`, as
-the runner does, at depth 1 with its submodules, and builds its command line there whenever the
-checkout moves, 66 s and 264 MB the first time and 0.02 s after. The engine's `./e3d` builds its
-client only where the program is missing, so with `ENGINE_CHECKOUT` naming `.engine` no build of a
-live engine tree reaches a run, and no ask of the engine's is needed. The session's log moves to
-`.engine/build/sessions` with it, out of the way of another program of the same name. `build/play.sh`
-and `build/pictures.sh` stop their games by process ten seconds after a stop through e3d that left
-them running, and kill them five after that. E3D.md and the README say how a local check is run.
-The strict build is clean and 366 tests pass. The play here fails by the engine's 253 on 6.2.32,
-the mirror passing 0 of 2 cold plays through the pinned client and 4 of 4 through the live tree's
-among the cold plays that reached it, the client's source the same in both and the cause unread,
-and one cold play through the live tree's failing at the lantern after frame 5 made 22 pipelines in
-47 s. The logs are in `~/.cache/3dengine-tools/work/i167/logs`. The runner's play is the gate, and it
-passed the mirror at 03:32 on e3dea22 through the pinned checkout's client.
+The pin of 6.2.41, with the engine's item 253. The package, the workflows' engine checkout at
+`894542da` and `build/engine.sh` following it. The strict build is clean and 366 tests pass. The
+water's mirror was read with each play's caches in a folder of its own (N 7.11), three plays from an
+empty folder, each followed by one from the cache it left, under the validation layer and through
+the pinned client. All six passed whole in 393, 417 and 434 s cold and 237, 242 and 221 s warm, the
+water reading red 171, green 148, blue 167 each time. Cold, the pipelines' file grew at each write
+in play, from 8.8 MB after frame 5 to 21.8 MB, where 6.2.32 wrote 0 bytes, and the pool's frame made
+three of terrain.slang's pipelines with its fragmentMain, stages 7e3b6259, compiled in 14.3 to 19.0
+s each and all three within the 15.0, 17.3 and 19.1 s since the log's line before. Warm, the file
+read at 21265 KB, every pipeline made in play said "from the cache" with the hash the cold play
+gave, and terrain.slang's three at the pool read "from the cache" in 1.17 to 1.37 s each. No log
+says "the driver saying not where from". The cold start's fifth frame made 22 pipelines in 49.7,
+61.3 and 62.3 s of the driver's time, 54.4, 66.2 and 67.6 s passing from the probes made to it, so
+one after another, beside 6.2.32's 47. Warm it took 4.4, 4.4 and 4.6 s. The logs are in
+`~/.cache/3dengine-tools/work/voxel-6241/logs`, and the same reading stands under the engine's 253
+in its ASKS.md. The runner's play is the gate.

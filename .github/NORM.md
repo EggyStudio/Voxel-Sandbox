@@ -194,9 +194,12 @@ reading is stopped as soon as its pictures and numbers are taken, and the files 
 stopped. A script stopped under the lock ends its programs too, since a program left running keeps
 the lock it inherited, as a served example held it for 70 minutes after its trial was stopped on
 2026-11-10 with its own session's suite waiting behind it; after stopping one, `lslocks` is read,
-and a run that has not started within a few minutes is looked into and not waited on. A session
-whose wait grows long tells the reviewing session in a line, which gives the order, an engine's
-illumination read first. By review.
+and a run that has not started within a few minutes is looked into and not waited on. The lock gives
+a waiting timing no place before a suite that asks after it, so a session reads `lslocks` before it
+takes the shared lock and waits where an exclusive one stands, held or waiting, and a script of
+several runs takes the lock a run at a time, since a timing waited 35 minutes on 2026-11-11 while a
+second shared holder joined the first. A session whose wait grows long tells the reviewing session
+in a line, which gives the order, an engine's illumination read first. By review.
 
 **N 7.10 A session leaves the machine its memory.** The machine's memory ran out three times, the
 last on 2026-11-10, when one line of Python read a session's transcript of 4 GB whole and grew to 27
@@ -206,6 +209,15 @@ transcript above all. A program or a script that loads frames or a large file ru
 memory bound, as the suites do. Frames, recordings and builds are written to disk, the dump or a
 folder under the home's cache, and not to /tmp, and a done item's scratch is deleted when the item
 closes. By review, the reviewing session reading the memory and each session's scratch at its watch.
+
+**N 7.11 A session's programs keep their caches in a folder of the session's own.** The engine's
+caches of shaders, pipelines and scene packs stand in the account's cache folder, which the owner's
+own programs read and write, and a session's plays on 2026-11-11 read and wrote the game's
+pipelines' file there, 94 MB piled up from every package run on the account, so that a reading of a
+warm cache stood on what other runs had left. A program a session starts runs with XDG_CACHE_HOME
+naming a folder under the session's work folder in the home's cache; a warm cache is made there by a
+first run; and a session leaves the account's own cache alone, neither reading its files into a
+trial nor copying, writing or clearing them, unless the owner says so for that file. By review.
 
 ## Conformance
 

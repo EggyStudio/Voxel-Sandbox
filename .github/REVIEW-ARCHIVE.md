@@ -2856,6 +2856,59 @@ before a batch.
     edge's lag 10 and 16 frames at both. The walk's and the flight's figures stand in the Reply with
     the load beside them. Item 168 done as read.
 
+169. **A build keeps the resources' folders whatever path reaches it, and the game stops at its open
+    where a file of its own is missing.** From the pin of 6.2.32 on 2026-11-11. A build made in a
+    worktree reached through /home, a link to /var/home on this machine, copied the game's resources
+    flat beside the program, terrain.slang, bits.slang, mob.slang and packs.json at the top and no
+    resources/shaders, since the project's Content glob leaves the place to MSBuild, which takes a
+    file reached through a link as lying outside the project; and the game then ran without its own
+    terrain shader and said nothing, LoadShader giving the default as the followed engine's does, so
+    the only sign was a lantern's pool at half its light, read for an hour as a fault of the
+    engine's and written as its item 252, withdrawn. Two mends in one commit. The Content items name
+    their place with their folders, so the layout is the same from every path, with a test or a step
+    of the scripted run that the built folder holds resources/shaders/terrain.slang. And the game
+    checks each shader of its own and packs.json as it opens and stops with the file's path where
+    one is missing or did not compile, the play failing at its first step and not at a picture.
+    After the pin's commit. Done at `08bf109` on 2026-11-11, pushed at 03:33. The Content items
+    carry their folders by Link, so a build through /home holds resources/shaders and
+    resources/packs.json; OwnFiles lists the game's four shaders and packs.json, and the game checks
+    them after the window opens and stops with 1 and the path where one is missing or a shader does
+    not compile; the play quotes the game's first error line where the open fails. Read with
+    bits.slang removed, the game stopping in 1.3 s with the path, and with mob.slang broken,
+    slangc's reason with it; 366 tests pass and the play passes from an empty cache in 463 seconds.
+
+170. **The game's local checks run through a client that no build of the engine's tree reaches, and
+    stop what they started by its pid.** From 2026-11-11. The checks drive the game through ./e3d of
+    the engine's live tree, whose client builds again whenever a source of the engine's changed, so
+    the engine's session building its tree failed a play at 02:03 with CS0006, lost a SetTargetFPS
+    in item 168's first pass, and took the stop from the play's exit, which goes through the same
+    client; the game it left ran offscreen on the GPU outside the lock from 02:10 to 03:41, beside
+    another session's exclusive timing and beside 168's own walk and flight, which read 25 to 43 ms
+    a frame for it and are taken again. Two mends in one commit. The checks drive through an e3d
+    client of the pinned engine's commit, built once into a folder of the game's own outside the
+    engine's live tree, as the runner builds it from its checkout; where e3d has no way to run
+    without building, the ask goes into the engine's ASKS.md. And each check script stops by pid any
+    game left from its own build folder as it ends, whatever the client answers. After 168's reads.
+    Written by 04:00 on 2026-11-11 and held uncommitted. build/engine.sh keeps a checkout of the
+    engine at the workflows' commit in .engine with its e3d client, built only when the checkout
+    moves, 66 s and 264 MB the first time, and play.sh and pictures.sh stop their games by process
+    where the client's stop leaves them. Through the pinned client two cold plays in a row fail the
+    water's mirror, terrain.slang's pipeline made at the pool in 1.57 and 1.66 s, where the three
+    cold passes before went through the live tree's client, so two cold plays through the live
+    client are taken first; where they fail too, the engine's 253 is flaky from a cold cache
+    whatever the client and 170 is committed with that in its Reply, and where they pass, the
+    clients' driving at the pool's steps is compared before the commit. The two cold plays through
+    the live client, reported by 04:06, do not settle it, one failing at the lantern's pool after
+    the fifth frame made 22 pipelines in 47 s and one passing whole in 391 s, so among cold plays
+    that reached the mirror it passed 4 of 4 through the live client and 0 of 2 through the pinned,
+    the clients' source the same. No more plays are taken. Whatever leans it is timing against a
+    race on the engine's side, its item 253 either way, the 47 s its one lock running the compiles
+    one after another, mended at its `21122dcd`; a play here is reliable on 6.2.32 from neither a
+    cold nor a warm cache, and the runner's play is the gate. 170 is committed as it stands with
+    these figures in its Reply, and the mirror is read on the next package, cold and warm, three
+    plays each with the session's log copied at the pool. Done at `8ded865` on 2026-11-11, pushed at
+    05:11.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -3776,6 +3829,32 @@ against 15.13 and 15.71, and the flight's median 11.06 and 12.39 against 14.83 a
 machine's load near 7 from other builds and tests throughout and the client's build of item 170
 beside the middle two runs, so they decide nothing. A taking from 03:30 that read 25 to 43 ms a
 frame ran beside a game a failed play had left running outside the lock and is set aside.
+
+Item 169. The Content items name their place by their folders, `Link="resources\%(RecursiveDir)..."`,
+and a build through `/home` holds resources/shaders and resources/packs.json as one through
+`/var/home` does. OwnFiles in Rendering lists the game's four shaders and packs.json beside the
+program, and two tests read the tests' folder, which takes the game's resources as the program's
+does, for each file in its place and for the list naming every shader shipped. At its open the game
+checks each file is there and each shader compiles, and where one is not it writes the file's path
+to the log as an error and exits with 1. A build with bits.slang taken out stops in 1.3 s with
+"The game cannot open, since <its path> is missing", and one with mob.slang broken with slangc's
+reason and "did not compile". The play quotes that error when the game does not open, so its first
+step fails with the path, in 3 s.
+
+Item 170. `build/engine.sh` checks the engine out at the commit `build.yml` names into `.engine`, as
+the runner does, at depth 1 with its submodules, and builds its command line there whenever the
+checkout moves, 66 s and 264 MB the first time and 0.02 s after. The engine's `./e3d` builds its
+client only where the program is missing, so with `ENGINE_CHECKOUT` naming `.engine` no build of a
+live engine tree reaches a run, and no ask of the engine's is needed. The session's log moves to
+`.engine/build/sessions` with it, out of the way of another program of the same name. `build/play.sh`
+and `build/pictures.sh` stop their games by process ten seconds after a stop through e3d that left
+them running, and kill them five after that. E3D.md and the README say how a local check is run.
+The strict build is clean and 366 tests pass. The play here fails by the engine's 253 on 6.2.32,
+the mirror passing 0 of 2 cold plays through the pinned client and 4 of 4 through the live tree's
+among the cold plays that reached it, the client's source the same in both and the cause unread,
+and one cold play through the live tree's failing at the lantern after frame 5 made 22 pipelines in
+47 s. The logs are in `~/.cache/3dengine-tools/work/i167/logs`. The runner's play is the gate, and it
+passed the mirror at 03:32 on e3dea22 through the pinned checkout's client.
 
 ## Items closed, parked or shortened
 

@@ -14,6 +14,8 @@ Done that day
   carries them.
 - Item 169 at `08bf109`. A build keeps the resources' folders whatever path reaches it, and the game
   stops at its open where a file of its own is missing.
+- Item 170 at `8ded865`. The game's local checks run through a client that no build of the engine's
+  tree reaches, and stop what they started by its pid.
 
 ## 2026-11-10
 

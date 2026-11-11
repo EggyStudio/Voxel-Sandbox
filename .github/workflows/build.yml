@@ -81,7 +81,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: EggyStudio/3DEngine
-          ref: 02c3a7436b533fd8ca8af03f35dd4211f396f8fc
+          ref: 894542da51cefae5cafd0cde0dd26305712abaf3
           path: .engine
           submodules: true
 
