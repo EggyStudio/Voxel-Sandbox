@@ -1,9 +1,17 @@
 # Review
 
-Reviewed up to `cb071a9`, the pin of the engine's 6.2.17, the package with the far cascade's band
-weighed around the eye and every cascade built at once after a cut, the workflows' engine checkout
-at `f68075f1`, pushed at 13:05 on 2026-11-10, its run green at 14:41 on its second attempt, the
-macOS test job's restore having failed on the first, the package not yet at that runner's feed,
+Reviewed up to `e3dea22`, the pin of the engine's 6.2.32 with item 167, the scene field laid ahead
+of the eye by the engine's option in place of a center set each frame, the two copies of the sRGB
+curve calling the engine's and the three powers of 1/2.2 staying with their reason, the workflows'
+engine checkout at `02c3a743`, pushed at 02:05 on 2026-11-11 with a run on it; its strict build is
+clean, 364 tests pass and the scripted run passes from an empty cache in 375 seconds with the
+layer's check, the mirror failing from warm caches, the engine's item 253; it keeps the form and
+carries the review's files. A lantern read at half its light on the bare pin was a build made
+through the /home link with the resources copied flat, the engine's item 252 withdrawn and item 169
+written. Before it `cb071a9`, the pin of the engine's 6.2.17, the package with the far cascade's
+band weighed around the eye and every cascade built at once after a cut, the workflows' engine
+checkout at `f68075f1`, pushed at 13:05 on 2026-11-10, its run green at 14:41 on its second attempt,
+the macOS test job's restore having failed on the first, the package not yet at that runner's feed,
 Verdict 10, the play in 91 minutes on the runner; its strict build is clean, 364 tests pass and the
 scripted run passes under the validation layer, 359 seconds here where 329 on 6.2.14 and 336 on
 6.2.12, one run each; it keeps the form and carries the review's file. Before it `d8ef6a7`, the pin
@@ -28,8 +36,9 @@ speed, a walk showing the difference between two settlings of one place in the s
 the engine's item 246, and the clouds stepping as the far cascade moves, its item 245. Every push
 and run before `4e956bc` since 2026-10-23 stands in REVIEW-ARCHIVE.md under Head records.
 
-Next 168's decision and 167 at the pin that carries the engine's 251 and 244. Item 29's second part
-and 114's second part wait on the owner's word. A program on the GPU runs under the lock (N 7.9).
+Next 168's walk and flight on 6.2.32 and its decision, and 169, the resources' folders and a stop at
+the open for a missing file. Item 29's second part and 114's second part wait on the owner's word. A
+program on the GPU runs under the lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -217,7 +226,13 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     its own cell size in LightSettings.cs. With the package that carries the engine's 244 the game
     calls the engine's functions where it means the sRGB curve, a 2.2 that is the look's own staying
     with its reason in a comment, and takes the engine's option for the field's center, the play's
-    captures unchanged. A small commit at that pin or the one after.
+    captures unchanged. A small commit at that pin or the one after. Done at `e3dea22` on 2026-11-11
+    with the pin of 6.2.32. SkyColors and TerrainAtlas call SrgbToLinear, LinearToSrgb and
+    ColorFromLinear, which give the same bytes, the field lies ahead by SetSceneFieldAhead(0.5f),
+    and the 1/2.2 in SectionMesher twice and in Sky's stars stay, the look's own, level 0 a fifth
+    brighter and the faintest stars about three times brighter by them than by the curve. Two runs
+    with it differ from each other as from 6.2.17, dusk 2.5 percent past 24 levels in both and every
+    other picture under 0.2, so the play's pictures stand as they were.
 
 168. **The scene field's triangle budget at four times the default, where a walk's cost allows.**
     From item 166's lever read on 2026-11-10. Held at 131,072 triangles a frame the field takes a
@@ -458,3 +473,14 @@ shaders cached the water's mirror failed in four of six runs, terrain.slang's pi
 each run though the pipeline file was read, the engine's 253, and from an empty cache the whole run
 passes in 375 s. 3DEngine.GlobalIllumination comes in through the game's 3DEngine reference. The
 sheet 01-27-item-167-room in the dump shows the flat build's room beside the sound one, sent.
+
+Item 169. The Content items name their place by their folders, `Link="resources\%(RecursiveDir)..."`,
+and a build through `/home` holds resources/shaders and resources/packs.json as one through
+`/var/home` does. OwnFiles in Rendering lists the game's four shaders and packs.json beside the
+program, and two tests read the tests' folder, which takes the game's resources as the program's
+does, for each file in its place and for the list naming every shader shipped. At its open the game
+checks each file is there and each shader compiles, and where one is not it writes the file's path
+to the log as an error and exits with 1. A build with bits.slang taken out stops in 1.3 s with
+"The game cannot open, since <its path> is missing", and one with mob.slang broken with slangc's
+reason and "did not compile". The play quotes that error when the game does not open, so its first
+step fails with the path, in 3 s.

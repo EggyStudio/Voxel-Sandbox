@@ -24,6 +24,15 @@ for (int i = 0; i < args.Length; i++)
 
 SetConfigFlags(ConfigFlags.WindowResizable);
 InitWindow(1280, 720, "Voxel Sandbox");
+// The game's own shaders and packs.json are read from beside the program, and the engine draws on
+// with its own shader where one is missing or does not compile, so the game stops here with the
+// file's path rather than drawing the land wrong.
+if (OwnFiles.Fault() is { } fault)
+{
+    TraceLog(LogLevel.Error, fault);
+    CloseWindow();
+    return 1;
+}
 // The window takes the resolution and the mode the options file keeps before its first frame and
 // before the world opens, so it shows as it was left, and 1280 by 720 in a window where the file
 // keeps neither. A transient run reads no options.
@@ -48,3 +57,4 @@ using (var game = new VoxelGame(flat ? "flat" : "overworld", seed, name, transie
 
 CloseAudioDevice();
 CloseWindow();
+return 0;

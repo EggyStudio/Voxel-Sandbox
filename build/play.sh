@@ -103,7 +103,10 @@ if ! ENGINE_VULKAN_VALIDATION=1 ./e3d open "$program" --offscreen --transient --
     (my $sentence = $error->{message} // "") =~ s/\.$//;
     print "$error->{code}, $sentence";' "$opened")
   log=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{log} // ""' "$opened")
-  fail "did not open, e3d said $answer"
+  # The game stops at its open with an error naming a file of its own that is missing or did not
+  # compile, which the log's last lines, its shutdown, leave out.
+  stopped=$([ -n "$log" ] && grep -m 1 '\[ERROR\]' "$log" 2> /dev/null | sed 's/^.*\] //; s/\.$//')
+  fail "did not open, e3d said $answer${stopped:+, and the game said $stopped}"
 fi
 log=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{log} // ""' "$opened")
 pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' "$opened")

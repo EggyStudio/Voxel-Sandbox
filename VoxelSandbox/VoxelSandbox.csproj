@@ -13,9 +13,11 @@
         <PackageReference Include="3DEngine" Version="6.2.32" />
     </ItemGroup>
 
-    <!-- The game's own shaders, found beside the program as resources/shaders. -->
+    <!-- The game's own shaders and packs.json, found beside the program under resources. Each
+         names its place by its folders, since MSBuild takes a file reached through a link, as
+         /home is to /var/home, as lying outside the project and copies it flat beside the program. -->
     <ItemGroup>
-        <Content Include="resources\**\*" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="resources\**\*" Link="resources\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>
