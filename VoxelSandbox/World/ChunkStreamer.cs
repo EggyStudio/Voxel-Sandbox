@@ -45,7 +45,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     /// <summary>Generates the columns around a point on this thread, so the player has ground under them before the first frame.</summary>
     public void LoadNow(Vector3 at, int radius)
     {
-        int cx = VoxelWorld.ColumnOf((int)MathF.Floor(at.X)), cz = VoxelWorld.ColumnOf((int)MathF.Floor(at.Z));
+        var (cx, cz) = LandOrigin.ColumnOf(at);
         for (int z = cz - radius; z <= cz + radius; z++)
             for (int x = cx - radius; x <= cx + radius; x++)
                 if (!world.HasColumn(x, z)) Join(Make(world.Generator, Kept(x, z), save?.Renumber, x, z, Reach.Of(at), radius + Reach.Kept));
@@ -61,7 +61,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             if (result.Column is not null) Join(result.Column);
         }
 
-        int cx = VoxelWorld.ColumnOf((int)MathF.Floor(player.X)), cz = VoxelWorld.ColumnOf((int)MathF.Floor(player.Z));
+        var (cx, cz) = LandOrigin.ColumnOf(player);
         var load = renderDistance + 2;
         var (eye, kept) = (Reach.Of(player), renderDistance + Reach.Kept);
         if (_packedFor != (eye, kept))

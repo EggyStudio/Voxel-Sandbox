@@ -402,6 +402,8 @@ public sealed class VoxelGame : IDisposable
         Save = _transient ? null : new WorldSave(Path.Combine(WorldSave.Root, name ?? $"{kind}-{seed}"));
         WorldName = Save?.Name ?? $"{kind}-{seed}";
         var info = Save?.ReadInfo();
+        // Every float place of the world is kept against an origin near where the player stands.
+        LandOrigin.Near(info?.X ?? 0, info?.Z ?? 0);
         var generator = (info is null ? null : Generators.Create(info.Kind, info.Seed)) ?? Generators.Create(kind, seed) ?? new Overworld(seed);
         Renderer.Clear();
         World = new VoxelWorld(generator);
@@ -448,12 +450,12 @@ public sealed class VoxelGame : IDisposable
             // A new world's player waits over the origin, and stands on its highest block once the
             // columns there have loaded.
             Player.Flying = false;
-            Player.Teleport(new Vector3(0.5f, ChunkColumn.Ceiling, 0.5f));
+            Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, ChunkColumn.Ceiling, 0.5)));
             (_landing, _loadTeleports) = (true, Player.Teleports);
             return;
         }
         _landing = false;
-        Player.Teleport(new Vector3(info.X, info.Y, info.Z));
+        Player.Teleport(LandOrigin.PlaceOf(new LandPlace(info.X, info.Y, info.Z)));
         (Player.Heading, Player.Pitch, Player.Flying, Sky.Hour, Sky.Day) = (info.Heading, info.Pitch * MathF.PI / 180, info.Flying, info.Hour, info.Day);
     }
 
@@ -494,8 +496,7 @@ public sealed class VoxelGame : IDisposable
     /// </remarks>
     public float LoadingShare()
     {
-        var at = Player.Body.Position;
-        int cx = VoxelWorld.ColumnOf((int)MathF.Floor(at.X)), cz = VoxelWorld.ColumnOf((int)MathF.Floor(at.Z));
+        var (cx, cz) = LandOrigin.ColumnOf(Player.Body.Position);
         int made = 0, standing = 0;
         for (int z = cz - 2; z <= cz + 2; z++)
             for (int x = cx - 2; x <= cx + 2; x++)
@@ -519,7 +520,7 @@ public sealed class VoxelGame : IDisposable
         Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
         if (HoldLoading || LoadingShare() < 1) return;
         Loading = false;
-        if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(new Vector3(0.5f, World.Top(0, 0) + 1, 0.5f));
+        if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
         _landing = false;
     }
 
@@ -534,7 +535,7 @@ public sealed class VoxelGame : IDisposable
         Save.WriteMobs(Mobs.Columns());
         Save.WriteFurnaces(Furnaces);
         Save.WriteChests(Chests);
-        var at = Player.Body.Position;
+        var at = LandOrigin.LandOf(Player.Body.Position);
         Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
             Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, [.. Blocks.All.Select(b => b.Key)],
             Mode.ToString().ToLowerInvariant(), Inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
@@ -630,12 +631,12 @@ public sealed class VoxelGame : IDisposable
         foreach (var ((x, y, z), stack) in Furnaces.Update(World, seconds))
         {
             if (AtFurnace == (x, y, z)) CloseInventory();
-            Drops.Spawn(stack.Item, stack.Count, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
+            Drops.Spawn(stack.Item, stack.Count, LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
         foreach (var ((x, y, z), stack) in Chests.Update(World))
         {
             if (AtChest == (x, y, z)) CloseInventory();
-            Drops.Spawn(stack.Item, stack.Count, new Vector3(x + 0.5f, y + 0.5f, z + 0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
+            Drops.Spawn(stack.Item, stack.Count, LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
         Bits.Update(World, seconds);
         // The blocks the world loosened start to fall, and those that landed where they could not
@@ -749,9 +750,10 @@ public sealed class VoxelGame : IDisposable
     public void Respawn()
     {
         Vitals.Set();
-        Streamer.LoadNow(Vector3.Zero, 2);
+        // The spawn is the land's own middle, wherever the origin stands.
+        Streamer.LoadNow(LandOrigin.PlaceOf(0, 0, 0), 2);
         Player.Flying = false;
-        Player.Teleport(new Vector3(0.5f, World.Top(0, 0) + 1, 0.5f));
+        Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
         Capture(true);
     }
 
@@ -1179,7 +1181,8 @@ public sealed class VoxelGame : IDisposable
         // eased over about a quarter of a second, so a cave's far walls fade to black from in the
         // cave and the haze changes smoothly as the eye walks in.
         var eye = Player.Eye;
-        var (skyAtEye, _) = World.GetLight((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
+        var (ex, ey, ez) = LandOrigin.BlockOf(eye);
+        var (skyAtEye, _) = World.GetLight(ex, ey, ez);
         _eyeSky += (skyAtEye - _eyeSky) * MathF.Min(1, GetFrameTime() * 8);
         if (Player.EyeInWater) Renderer.Fog(new Color(24, 52, 120), 2, 16);
         // Over that the atmosphere hazes the land from near on, by a share of 0.23 at most, a

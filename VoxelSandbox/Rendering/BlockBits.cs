@@ -101,12 +101,13 @@ public sealed class BlockBits : IDisposable
     {
         var surface = Blocks.Get(block).Side;
         var colors = climate ?? Plains;
+        var cell = LandOrigin.PlaceOf(x, y, z);
         if (count < BreakCount)
         {
             for (int n = 0; n < count; n++)
             {
                 var within = new Vector3((_random.Next(4) + 0.5f) / 4, (_random.Next(4) + 0.5f) / 4, (_random.Next(4) + 0.5f) / 4);
-                Throw(surface, new Vector3(x, y, z) + within, within - new Vector3(0.5f), power: 1, scale: 1, colors);
+                Throw(surface, cell + within, within - new Vector3(0.5f), power: 1, scale: 1, colors);
             }
             return;
         }
@@ -115,7 +116,7 @@ public sealed class BlockBits : IDisposable
                 for (int k = 0; k < 4; k++)
                 {
                     var within = new Vector3((i + 0.5f) / 4, (j + 0.5f) / 4, (k + 0.5f) / 4);
-                    Throw(surface, new Vector3(x, y, z) + within, within - new Vector3(0.5f), power: 1, scale: 1, colors);
+                    Throw(surface, cell + within, within - new Vector3(0.5f), power: 1, scale: 1, colors);
                 }
     }
 
@@ -136,7 +137,7 @@ public sealed class BlockBits : IDisposable
         {
             // A place on the face a tenth of a block out from it and a tenth in from its edges.
             var across = new Vector3(0.1f + 0.8f * Next(), 0.1f + 0.8f * Next(), 0.1f + 0.8f * Next());
-            var at = new Vector3(hit.X, hit.Y, hit.Z) + across * (Vector3.One - Vector3.Abs(normal)) + (normal * 0.5f + new Vector3(0.5f)) * Vector3.Abs(normal) + normal * 0.1f;
+            var at = LandOrigin.PlaceOf(hit.X, hit.Y, hit.Z) + across * (Vector3.One - Vector3.Abs(normal)) + (normal * 0.5f + new Vector3(0.5f)) * Vector3.Abs(normal) + normal * 0.1f;
             Throw(surface, at, Vector3.Zero, power: 0.2f, scale: 0.6f, colors);
         }
     }
@@ -173,7 +174,8 @@ public sealed class BlockBits : IDisposable
             if (body.OnGround) (body.Velocity.X, body.Velocity.Z) = (body.Velocity.X * ground, body.Velocity.Z * ground);
             body.Move(world, body.Velocity * seconds, keepToEdges: false);
             var middle = body.Position + new Vector3(0, bit.Size / 2, 0);
-            bit.Sky = world.GetLight((int)MathF.Floor(middle.X), (int)MathF.Floor(middle.Y), (int)MathF.Floor(middle.Z)).Sky;
+            var (mx, my, mz) = LandOrigin.BlockOf(middle);
+            bit.Sky = world.GetLight(mx, my, mz).Sky;
         }
         _bits.RemoveAll(b => b.Age >= b.Life);
     }

@@ -88,15 +88,17 @@ public sealed class Clouds : IDisposable
         if (!Shown) return;
         var reach = renderDistance * Section.Size * 2;
         var drift = (float)(_drift % (Cell * 4096.0));
-        // The eye's cell in cloud space, which the clouds have drifted east of.
-        int cx = (int)MathF.Floor((eye.X - drift) / Cell), cz = (int)MathF.Floor(eye.Z / Cell);
+        // The eye's cell in cloud space, which the clouds have drifted east of, laid over the land's own
+        // coordinates, the eye's kept against the origin, so a cloud stands over the same land
+        // wherever the origin is.
+        int cx = (int)Math.Floor((eye.X + (double)LandOrigin.X - drift) / Cell), cz = (int)Math.Floor((eye.Z + (double)LandOrigin.Z) / Cell);
         if ((cx, cz, reach) != _built) Build(cx, cz, reach);
         if (!_mesh.IsValid) return;
 
         SetShaderValue(_shader, _fogColor, new Vector4(sky.R, sky.G, sky.B, 255) / 255);
         SetShaderValue(_shader, _fogStart, reach * 0.6f);
         SetShaderValue(_shader, _fogEnd, reach);
-        DrawMesh(_mesh, _material, Matrix4x4.CreateTranslation(cx * Cell + drift, Height, cz * Cell));
+        DrawMesh(_mesh, _material, Matrix4x4.CreateTranslation((float)((double)cx * Cell + drift - LandOrigin.X), Height, (float)((double)cz * Cell - LandOrigin.Z)));
     }
 
     // The clouds of the cells within reach of a cell, as boxes in cloud space about that cell's

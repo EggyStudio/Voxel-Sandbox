@@ -1,46 +1,48 @@
 # Review
 
-Reviewed up to `88d6303`, a fault 175's read found, ChunkStreamer.Unload squaring a column's
-distance from the player in an int, which wrapped negative past 46,340 columns so a teleport of some
-741,000 blocks left the old columns loaded, squared in longs with a test that teleports a million
-blocks, pushed at 23:27 on 2026-11-11, its run started where the run of the commit before it never
-did; the strict build is clean, 368 tests pass and the play passes whole in 310 s; it keeps the form
-and carries the review's files. Before it `5ad3f58`, the review's file alone with the Replies of 174
-and 176, pushed at 23:00 on 2026-11-11, no run by the workflow's paths. Before it `6b0043b`,
-voxel.spawning, asked by the owner on 2026-11-11, every mob kept out of the world from the next
-frame on and brought back where it stood, the play switching it off before its first check, pushed
-at 21:31 on 2026-11-11, its run left queued by GitHub's outage and not started, Verdict 12; its
-strict build is clean and 367 tests pass, two plays under the layer pass whole in 317 and 218 s, and
-of their 17 captures dusk differs in 0.00 percent of pixels by more than 2 levels where 2.3 before,
-the night sky in 0.18, within its clouds; it keeps the form and carries the review's files. Before
-it `1f1e955`, item 172, terrain.slang, mob.slang and bits.slang returning unlit on the branch drawn
-unlit, each fragment about 590 KB smaller and the fifth frame's 22 pipelines made in 20.3 s where
-43.9 from an empty cache with the layer off, pushed at 19:29 on 2026-11-11 once the pin's run had
-ended, its run green at 20:36 with the play in 67 minutes where the pin's took 96; it keeps the form
-and carries the review's files. Before it `068fd5f`, the pin of the engine's 6.2.41 with the
-workflows' engine checkout at `894542da`, pushed at 15:29 on 2026-11-11, its run red at 15:34 in the
-play job before the game was built, the runner not reaching its package mirror for two hours and a
-quarter, Verdict 11, green at 19:26 on its tenth attempt, the play in 96 minutes, which settles the
-verdict; its strict build is clean and 366 tests pass. The water's mirror passes six plays of six
-under the layer, three from an empty cache in 393, 417 and 434 s and three from the cache each left
-in 237, 242 and 221 s, each play's caches in a folder of its own; from a cold cache the pipelines'
-file grows to 21.8 MB and the pool's three terrain.slang pipelines compile in 14 to 19 s each at
-once, and from a warm one every pipeline made in play says from the cache, the pool's three in 1.17
-to 1.37 s each; frame 5's 22 pipelines take 54 to 68 s cold, one after another, and 4.4 to 4.6 s
-warm. The engine's trial puts about 1.2 s of each such pipeline on the validation layer, 94 ms
-compiled without it, so these are the layer's seconds, which the play turns on, item 171. It keeps
-the form and carries the review's files. The pushes before these stand in REVIEW-ARCHIVE.md's head
-records.
+Reviewed up to `760522a`, the review's file alone with the Replies of 173's check, 175 and 177's
+read, pushed at 23:49 on 2026-11-11, no run by the workflow's paths. Before it `88d6303`, a fault
+175's read found, ChunkStreamer.Unload squaring a column's distance from the player in an int, which
+wrapped negative past 46,340 columns so a teleport of some 741,000 blocks left the old columns
+loaded, squared in longs with a test that teleports a million blocks, pushed at 23:27 on 2026-11-11,
+its run started where the run of the commit before it never did; the strict build is clean, 368
+tests pass and the play passes whole in 310 s; it keeps the form and carries the review's files.
+Before it `5ad3f58`, the review's file alone with the Replies of 174 and 176, pushed at 23:00 on
+2026-11-11, no run by the workflow's paths. Before it `6b0043b`, voxel.spawning, asked by the owner
+on 2026-11-11, every mob kept out of the world from the next frame on and brought back where it
+stood, the play switching it off before its first check, pushed at 21:31 on 2026-11-11, its run left
+queued by GitHub's outage and not started, Verdict 12; its strict build is clean and 367 tests pass,
+two plays under the layer pass whole in 317 and 218 s, and of their 17 captures dusk differs in 0.00
+percent of pixels by more than 2 levels where 2.3 before, the night sky in 0.18, within its clouds;
+it keeps the form and carries the review's files. Before it `1f1e955`, item 172, terrain.slang,
+mob.slang and bits.slang returning unlit on the branch drawn unlit, each fragment about 590 KB
+smaller and the fifth frame's 22 pipelines made in 20.3 s where 43.9 from an empty cache with the
+layer off, pushed at 19:29 on 2026-11-11 once the pin's run had ended, its run green at 20:36 with
+the play in 67 minutes where the pin's took 96; it keeps the form and carries the review's files.
+Before it `068fd5f`, the pin of the engine's 6.2.41 with the workflows' engine checkout at
+`894542da`, pushed at 15:29 on 2026-11-11, its run red at 15:34 in the play job before the game was
+built, the runner not reaching its package mirror for two hours and a quarter, Verdict 11, green at
+19:26 on its tenth attempt, the play in 96 minutes, which settles the verdict; its strict build is
+clean and 366 tests pass. The water's mirror passes six plays of six under the layer, three from an
+empty cache in 393, 417 and 434 s and three from the cache each left in 237, 242 and 221 s, each
+play's caches in a folder of its own; from a cold cache the pipelines' file grows to 21.8 MB and the
+pool's three terrain.slang pipelines compile in 14 to 19 s each at once, and from a warm one every
+pipeline made in play says from the cache, the pool's three in 1.17 to 1.37 s each; frame 5's 22
+pipelines take 54 to 68 s cold, one after another, and 4.4 to 4.6 s warm. The engine's trial puts
+about 1.2 s of each such pipeline on the validation layer, 94 ms compiled without it, so these are
+the layer's seconds, which the play turns on, item 171. It keeps the form and carries the review's
+files. The pushes before these stand in REVIEW-ARCHIVE.md's head records.
 
 Next the checks of the engine's mends as its packages come, the ceiling's line at 2560 by 1440
 first, then the dither and 176's blobs, each on the owner's room and on 174's scene; between them
-177, the body's and the ray's places far from the origin, its read first; 173's check, 174's, 175's
-and 176's reads are done; then the mirror's check waiting for its pipelines at the pin that carries
-the engine's 254. 172, the engine's lighting called once in each of the game's shaders, is done at
-`1f1e955`, green at 20:36, and 173's read is done. The owner on 2026-11-11, of taller and more
-varied terrain, "there are more important stuff currently and the terrain generation is nice even if
-not fully fledged out", so nothing of the terrain is an item. Item 29's second part stays parked by
-the owner's word. A program on the GPU runs under the lock (N 7.9).
+177, one origin for the whole game, a whole column near the player that every float place is kept
+against, so the engine is handed places near zero at any distance, in three steps; 173's check,
+174's, 175's and 176's reads are done; then the mirror's check waiting for its pipelines at the pin
+that carries the engine's 254. 172, the engine's lighting called once in each of the game's shaders,
+is done at `1f1e955`, green at 20:36, and 173's read is done. The owner on 2026-11-11, of taller and
+more varied terrain, "there are more important stuff currently and the terrain generation is nice
+even if not fully fledged out", so nothing of the terrain is an item. Item 29's second part stays
+parked by the owner's word. A program on the GPU runs under the lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -214,7 +216,27 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     one, with tests at 284,688 and 1,139,984 of the walk's speed along each axis, the stop before a
     wall, picking's 14 and a teleport's landing. After the checks of the engine's mends, which go
     ahead of it whenever a package comes; a read of what it touches first, as a Reply, since the
-    body's place runs through the physics, the saves and the network of calls about them.
+    body's place runs through the physics, the saves and the network of calls about them. Decided at
+    23:50 on the coder's read. Of the three ways, doubles, a column and an offset, or one origin for
+    the whole game, the origin is taken. A whole column the floats are kept against, set at load
+    near the player and moved when the player has gone far from it, every place and the camera made
+    again against it, the conversion standing at the floors that turn a place into a block and at
+    the saves. It keeps the floats and their arithmetic where they are, and it hands the engine
+    every place near zero, so what the engine loses far from the origin, its item 258's whole list,
+    the vertices, the shadows and the frame before's lookups, no longer reaches the game at any
+    distance, the owner's 4,450 among them. So it is no filler and goes next after each check. The
+    origin a multiple of 1,024 blocks, so every grid of the engine's falls against the land as
+    before; moved only past 2,048 from it, so a walk does not move it back and forth. Saves and
+    commands keep and print the land's own places, mobs.bin in a new version with the old one read.
+    The shaders' world places that are fractions of a block stand, and one taken whole, as the
+    clouds' drift, has the origin added. In steps, each a commit with the suite and a play. First
+    the origin with the floors, the saves and the commands, fixed at load. Then the move, with a
+    test that a walk across it keeps the picture once the field has settled and nothing jumps, and
+    its cost read, the field and the probes made again, an ask to the engine for a way to be told
+    the world moved by a whole offset where that cost shows. Then the tests at 284,688 and
+    1,139,984, the walk's speed along each axis, the stop before a wall, picking's 14 and a
+    teleport's landing, and 174's scene read at 4,432 on the published package with the origin,
+    which should read as near the origin does.
 
 ## Verdicts
 
@@ -453,3 +475,53 @@ and a teleport to a half block lands on the whole one, while the engine tears th
 into strips and warps the pig. Picking, the fall, the stand and the walk along z hold at every
 other place. The sheet is 23-45-item-175-far.png in the dump, and the reads are in
 `~/.cache/3dengine-tools/work/i175`.
+
+Item 177's read, what the places far from the origin touch, before any code. The body keeps its
+place and its velocity in float Vector3s (Entities/Body.cs), and the player, every mob, the dropped
+items, the falling blocks, the primed TNT, the arrows and the bits of broken blocks each carry one.
+Its collisions, the step up and the support under it reckon from that place against the blocks'
+whole coordinates, and 61 floors in 29 files turn a float place into a block's. VoxelRay casts from
+the float eye. The world file keeps the player's place as JSON numbers, which read and write
+doubles as they are, and the mobs file keeps each mob's place and home as binary floats, which
+doubles or offsets would need a new version of with the old kept readable. Five commands take a
+place in floats, voxel.tp among them, and the answers print two places after the point. The engine
+takes floats at 15 DrawMesh calls, the camera, the held lights, the scene field's center and the
+sections' matrices. So doubles or a column and an offset for the body, the mobs and the ray run
+through every moving thing's place and the mobs file. A third way is one origin for the whole game,
+a whole column the floats are kept against and moved to as the player goes far from it, each place
+and the camera made again against the new one. It keeps the floats and their arithmetic where they
+are, puts the conversion at the floors that look up blocks and at the saves, and hands the engine
+every place near zero, which would mend the land's cracks and torn faces of 175 on the game's side
+too. Which way is the review's to choose before the code.
+
+Item 177's first step, the origin fixed at load. LandOrigin holds a whole place in the land, a
+multiple of 1,024 blocks set as the world opens near the saved place, 0 for a new world and in the
+tests, and every float place of the game is kept against it, the bodies, the mobs and their homes,
+the drops, the falling blocks, the TNT, the arrows, the bits, the particles, the camera, the
+sections' and the lamps' matrices, the rain's walls and the outline and the cracks. Blocks, columns
+and sections keep the land's own whole coordinates, and the floors that turn a place into a block,
+the ray's and the sounds' cells and the columns of the streamer, the mobs and the drops take the
+origin through BlockOf, BlockX, BlockZ and ColumnOf. A mob's record keeps the land's place and home
+in doubles, mobs.bin writes them in its version 2 and reads version 1's floats, and world.json keeps
+the player's place in doubles, which read an old file's numbers as they are. voxel.tp, voxel.drop,
+voxel.bits, voxel.ring, voxel.pixel and voxel.line take the land's places in doubles, and
+voxel.state, voxel.mobs, voxel.respawn, voxel.sounds and the debug overlay print them. The shaders'
+world places stand, each a fraction of a block or a height, terrain.slang's texture places through
+frac, the glass's joins as differences from the block's cell, the rim, the stepped shadow's
+eighths, the haze's height and the mirror's plane, and mob.slang and bits.slang take the places the
+engine hands them. The one place taken whole is the clouds' cell, which Clouds.cs lays over the land
+with the origin added, so a cloud stands over the same land wherever the origin is. Six tests in
+LandOriginTests stand a million blocks out with the origin near, the walk going 4.32 blocks along
+each axis, the stop 0.3 short of a wall to four places, picking five points a 50th from an edge and
+a mob's record whole, and with the origin left at 0 five of them fail, the walk going 7.5 blocks,
+the stop at 0.25 and picking the block east. Two in SaveTests read a far mob back whole and a mobs
+file of version 1. The strict build is clean and 376 tests pass. HEAD's game and this one played
+once each under the layer, both whole, the mirror at red 171, and of the 17 captures none moved, 16
+reading 0.00 percent of pixels over 2 levels apart and sky2 0.17 percent in the night's clouds,
+which drift, 0.18 percent between two plays of one game. The room from the review's copy of the
+data, its origin at 4096, 0, 1024, reads on 6.2.41 no step over 3 levels in any row at Low, Medium
+and High at 1280 by 720 and at 2560 by 1440 but one at Medium at 2560, where 6.2.41 reads up to 29,
+the mean step 0.14 to 0.31 at 1280 where the engine's mend reads 0.18 to 0.32, and 0.14 to 0.47 at
+2560 where the mend reads 0.19 to 0.36, a faint mottle left at High there and no line across the
+ceiling. A teleport keeps the origin of the load until the second step moves it. The sheet is
+01-30-item-177-room.png in the dump of 2026-11-12.

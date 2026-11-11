@@ -897,7 +897,7 @@ public sealed class ChunkRenderer : IDisposable
         entry.Emitters.Clear();
         foreach (var (index, block) in mesher.Emitters)
         {
-            var cell = Matrix4x4.CreateTranslation(key.Origin + new Vector3(index & Section.Mask, index >> 8, (index >> 4) & Section.Mask));
+            var cell = Matrix4x4.CreateTranslation(LandOrigin.PlaceOf(key) + new Vector3(index & Section.Mask, index >> 8, (index >> 4) & Section.Mask));
             foreach (var (local, surface) in Blocks.Get(block).Glows) entry.Emitters.Add((surface, local * cell));
         }
     }
@@ -925,7 +925,7 @@ public sealed class ChunkRenderer : IDisposable
             part.Entity = _ecs.Spawn();
             _ecs.Add(part.Entity, new Mesh(part.Mesh));
             _ecs.Add(part.Entity, look);
-            _ecs.Add(part.Entity, new Transform(key.Origin + part.Center));
+            _ecs.Add(part.Entity, new Transform(LandOrigin.PlaceOf(key) + part.Center));
             _ecs.Add(part.Entity, new Visible(false));
             _ecs.Add(part.Entity, new ShadowOnly(false));
             _ecs.Add(part.Entity, new SectionPart(key, kind));
@@ -933,7 +933,7 @@ public sealed class ChunkRenderer : IDisposable
         else
         {
             if (_ecs.GetReadOnly<Mesh>(part.Entity).Uploaded.Id != part.Mesh.Id) _ecs.Update(part.Entity, new Mesh(part.Mesh));
-            if (_ecs.GetReadOnly<Transform>(part.Entity).Position != key.Origin + part.Center) _ecs.Update(part.Entity, new Transform(key.Origin + part.Center));
+            if (_ecs.GetReadOnly<Transform>(part.Entity).Position != LandOrigin.PlaceOf(key) + part.Center) _ecs.Update(part.Entity, new Transform(LandOrigin.PlaceOf(key) + part.Center));
         }
     }
 
@@ -986,7 +986,8 @@ public sealed class ChunkRenderer : IDisposable
             group.Change = Change.None;
             _changed = true;
             var corner = new SectionKey(at.X << GroupX, at.Y << GroupY, at.Z << GroupZ);
-            var origin = corner.Origin;
+            // The group stands at its corner kept against the origin, its sections' faces about it.
+            var origin = LandOrigin.PlaceOf(corner);
             var held = false;
             for (int k = 0; k < group.Parts.Length; k++)
             {
@@ -1028,7 +1029,7 @@ public sealed class ChunkRenderer : IDisposable
                 (placed, indices) = (0, 0);
                 foreach (var (key, member) in _members)
                 {
-                    var offset = key.Origin - origin;
+                    var offset = LandOrigin.PlaceOf(key) - origin;
                     for (int v = 0; v < member.Positions.Length; v++) positions[placed + v] = member.Positions[v] + offset;
                     for (int t = 0; t < member.Indices.Length; t++) triangles[indices + t] = member.Indices[t] + (uint)placed;
                     placed += member.Positions.Length;
@@ -1109,7 +1110,7 @@ public sealed class ChunkRenderer : IDisposable
         // The game ticks the animated textures step by, a twentieth of a second each, as Minecraft steps them.
         var ticks = HeldTicks ?? GetTime() * 20;
         SetShaderValue(_shader, _ticks, (float)ticks);
-        int cx = (int)MathF.Floor(eye.X) >> Section.Shift, cz = (int)MathF.Floor(eye.Z) >> Section.Shift;
+        int cx = LandOrigin.BlockX(eye.X) >> Section.Shift, cz = LandOrigin.BlockZ(eye.Z) >> Section.Shift;
         var laps = System.Diagnostics.Stopwatch.StartNew();
         // The sections held back as unseen that a new flood reaches or that now cast toward the light,
         // or all of them once culling is off, are meshed from the next update.
@@ -1239,7 +1240,7 @@ public sealed class ChunkRenderer : IDisposable
         var reach = shadowDistance + Section.Size;
         foreach (var key in _visibility.Seen)
         {
-            if (!_sections.ContainsKey(key) || Vector3.DistanceSquared(key.Origin + new Vector3(Section.Size / 2f), eye) > reach * reach) continue;
+            if (!_sections.ContainsKey(key) || Vector3.DistanceSquared(LandOrigin.PlaceOf(key) + new Vector3(Section.Size / 2f), eye) > reach * reach) continue;
             for (int corner = 0; corner < 8; corner++)
                 _corners.Add(((key.X + (corner & 1)) * Section.Size, (key.Y + (corner >> 1 & 1)) * Section.Size, (key.Z + (corner >> 2)) * Section.Size));
         }

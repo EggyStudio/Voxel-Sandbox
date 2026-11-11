@@ -194,14 +194,14 @@ public sealed partial class Mob
     {
         if (flat.LengthSquared() < 1e-6f) return false;
         var ahead = Body.Position + new Vector3(Vector2.Normalize(flat).X, 0, Vector2.Normalize(flat).Y) * (Kind.HalfWidth + 0.4f);
-        int x = (int)MathF.Floor(ahead.X), y = (int)MathF.Floor(Body.Position.Y + 0.1f), z = (int)MathF.Floor(ahead.Z);
+        int x = LandOrigin.BlockX(ahead.X), y = (int)MathF.Floor(Body.Position.Y + 0.1f), z = LandOrigin.BlockZ(ahead.Z);
         return world.BoxesAt(x, y, z).Count > 0 && world.BoxesAt(x, y + 1, z).Count == 0 && world.BoxesAt(x, y + 2, z).Count == 0;
     }
 
     // The cell the mob can stand in at or under a place, up to four blocks down, as under a player in the air.
     private Step? Ground(VoxelWorld world, Vector3 at)
     {
-        int x = (int)MathF.Floor(at.X), y = (int)MathF.Floor(at.Y + 0.2f), z = (int)MathF.Floor(at.Z);
+        int x = LandOrigin.BlockX(at.X), y = (int)MathF.Floor(at.Y + 0.2f), z = LandOrigin.BlockZ(at.Z);
         for (int down = 0; down <= 4; down++)
             if (Pathfinder.Stands(world, Kind, new Step(x, y - down, z))) return new Step(x, y - down, z);
         return null;
@@ -237,7 +237,7 @@ public sealed partial class Mob
     private void Burn(VoxelWorld world, float hour, float seconds)
     {
         var head = Body.Position + new Vector3(0, Kind.Height - 0.1f, 0);
-        int x = (int)MathF.Floor(head.X), y = (int)MathF.Floor(head.Y), z = (int)MathF.Floor(head.Z);
+        var (x, y, z) = LandOrigin.BlockOf(head);
         ref var hostile = ref Hostile;
         if (hour < 6.5f || hour > 17.5f || _swimming || world.GetLight(x, y, z).Sky < Lighting.Max)
         {

@@ -263,8 +263,8 @@ public sealed class Mobs
     /// <summary>The column a mob stands in.</summary>
     public static (int X, int Z) ColumnOf(Mob mob) => ColumnOf(mob.Body.Position);
 
-    /// <summary>The column a place lies in.</summary>
-    public static (int X, int Z) ColumnOf(Vector3 at) => (VoxelWorld.ColumnOf((int)MathF.Floor(at.X)), VoxelWorld.ColumnOf((int)MathF.Floor(at.Z)));
+    /// <summary>The column a place kept against the <see cref="LandOrigin"/> lies in.</summary>
+    public static (int X, int Z) ColumnOf(Vector3 at) => LandOrigin.ColumnOf(at);
 
     /// <summary>Every column that has had its mobs placed, with the mobs it holds, the loaded ones' by where they stand.</summary>
     public IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> Columns()
@@ -369,7 +369,7 @@ public sealed class Mobs
         _spawnWait = SpawnEvery;
         var angle = _random.NextDouble() * Math.Tau;
         var distance = 24 + _random.NextDouble() * 40;
-        int x = (int)MathF.Floor(player.X + (float)(Math.Cos(angle) * distance)), z = (int)MathF.Floor(player.Z + (float)(Math.Sin(angle) * distance));
+        int x = LandOrigin.BlockX(player.X + (float)(Math.Cos(angle) * distance)), z = LandOrigin.BlockZ(player.Z + (float)(Math.Sin(angle) * distance));
         if (!Around(world, VoxelWorld.ColumnOf(x), VoxelWorld.ColumnOf(z))) return;
         var top = world.Top(x, z);
         if (top < ChunkColumn.Bottom) return;
@@ -384,7 +384,7 @@ public sealed class Mobs
             for (int py = y + 1; py >= y - 1; py--)
                 if (Spawnable(world, kind, px, py, pz, hour, _random.Next(8)))
                 {
-                    Add(new MobRecord(kind, 0, new Vector3(px + 0.5f, py, pz + 0.5f), (float)(_random.NextDouble() * Math.Tau), kind.Health, null));
+                    Add(new MobRecord(kind, 0, new LandPlace(px + 0.5, py, pz + 0.5), (float)(_random.NextDouble() * Math.Tau), kind.Health, null));
                     pack--;
                     break;
                 }

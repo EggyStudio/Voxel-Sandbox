@@ -17,7 +17,7 @@ namespace VoxelSandbox;
 /// food with them full, one without a day on the first, and one without a held weather following
 /// its days.
 /// </summary>
-public sealed record WorldInfo(string Kind, int Seed, float X, float Y, float Z, float Heading, float Pitch, bool Flying, float Hour, string[] Blocks,
+public sealed record WorldInfo(string Kind, int Seed, double X, double Y, double Z, float Heading, float Pitch, bool Flying, float Hour, string[] Blocks,
     string Mode = "creative", string[]? Inventory = null, int Selected = 0, int Health = Vitals.Most, int Food = Vitals.Most, float Saturation = 5, int Day = 0, bool? Weather = null);
 
 /// <summary>The types a save writes as JSON, read and written by code System.Text.Json's generator makes.</summary>
@@ -54,6 +54,8 @@ public sealed class WorldSave
 {
     public const int RegionSize = 32;
     private const int Version = 1;
+    // The mobs file's places in doubles from its version 2, in floats in its version 1, which is read.
+    private const int MobsVersion = 2;
     private static readonly byte[] Magic = "E3DR"u8.ToArray();
     private static readonly byte[] MobsMagic = "E3DM"u8.ToArray();
 
@@ -226,7 +228,9 @@ public sealed class WorldSave
     /// </summary>
     /// <remarks>
     /// A mob is saved by its kind's name, which the file lists once, so kinds added or reordered
-    /// since keep what was saved, and a mob of a kind no longer known is left out.
+    /// since keep what was saved, and a mob of a kind no longer known is left out. Its place and its
+    /// home are the land's own, in doubles, where a file of version 1 holds them in floats, which a
+    /// million blocks out keep them only to an eighth of a block.
     /// </remarks>
     public (Dictionary<(int X, int Z), List<MobRecord>> Kept, HashSet<(int X, int Z)> Placed) ReadMobs()
     {
@@ -237,8 +241,10 @@ public sealed class WorldSave
         try
         {
             using var reader = new BinaryReader(new ZLibStream(File.OpenRead(path), CompressionMode.Decompress));
-            if (!reader.ReadBytes(4).AsSpan().SequenceEqual(MobsMagic) || reader.ReadInt32() != Version)
-                throw new InvalidDataException("it is not a mobs file of this version");
+            var version = reader.ReadBytes(4).AsSpan().SequenceEqual(MobsMagic) ? reader.ReadInt32() : 0;
+            if (version is not (1 or MobsVersion))
+                throw new InvalidDataException("it is not a mobs file of a version this game reads");
+            LandPlace Place() => version == 1 ? new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) : new(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
             var kinds = new MobKind?[reader.ReadInt32()];
             for (int i = 0; i < kinds.Length; i++) kinds[i] = MobKinds.Find(reader.ReadString());
             var columns = reader.ReadInt32();
@@ -253,10 +259,10 @@ public sealed class WorldSave
                     var number = reader.ReadByte();
                     var kind = number < kinds.Length ? kinds[number] : null;
                     var variant = reader.ReadByte();
-                    var at = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                    var at = Place();
                     var yaw = reader.ReadSingle();
                     var health = reader.ReadByte();
-                    Vector3? home = reader.ReadBoolean() ? new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) : null;
+                    LandPlace? home = reader.ReadBoolean() ? Place() : null;
                     if (kind is not null) list.Add(new MobRecord(kind, (byte)(variant % kind.Variants.Length), at, yaw, Math.Clamp((int)health, 1, kind.Health), home));
                 }
                 if (list.Count > 0) kept[key] = list;
@@ -280,7 +286,7 @@ public sealed class WorldSave
         using (var writer = new BinaryWriter(new ZLibStream(File.Create(path + ".new"), CompressionLevel.Fastest)))
         {
             writer.Write(MobsMagic);
-            writer.Write(Version);
+            writer.Write(MobsVersion);
             writer.Write(MobKinds.All.Length);
             foreach (var kind in MobKinds.All) writer.Write(kind.Name);
             writer.Write(list.Count);

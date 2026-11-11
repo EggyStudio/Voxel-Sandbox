@@ -33,12 +33,13 @@ public static class GameCommands
     {
         if (Game is not { } game) return "no world is loaded";
         var player = game.Player;
-        var at = player.Body.Position;
+        var at = LandOrigin.LandOf(player.Body.Position);
+        var (bx, _, bz) = LandOrigin.BlockOf(player.Body.Position);
         var renderer = game.Renderer;
         var target = game.TargetMob is { } mob ? $"looking at {mob.Kind.Name} {mob.Id}"
             : game.Target is { } hit ? $"looking at {Blocks.Get(game.World.GetBlock(hit.X, hit.Y, hit.Z)).Key} at {hit.X}, {hit.Y}, {hit.Z}"
             : "looking at nothing within reach";
-        return (game.Loading ? $"loading {game.WorldName}, {game.LoadingShare():0%} done; " : "") + $"feet at {at.X:0.00}, {at.Y:0.00}, {at.Z:0.00} in {game.World.BiomeAt((int)MathF.Floor(at.X), (int)MathF.Floor(at.Z))?.Name ?? "nowhere loaded"}, facing {player.Heading:0} and pitched {player.Pitch * 180 / MathF.PI:0}, "
+        return (game.Loading ? $"loading {game.WorldName}, {game.LoadingShare():0%} done; " : "") + $"feet at {at.X:0.00}, {at.Y:0.00}, {at.Z:0.00} in {game.World.BiomeAt(bx, bz)?.Name ?? "nowhere loaded"}, facing {player.Heading:0} and pitched {player.Pitch * 180 / MathF.PI:0}, "
             + $"{(player.Flying ? "flying" : player.Body.OnGround ? "on the ground" : "in the air")}{EyeInside(game)}, {target}; "
             + $"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count + game.Renderer.Meshing} sections to mesh; "
             + $"{renderer.Sections} sections, {renderer.Draws} draws, {renderer.Triangles} triangles, {renderer.Lamps} lamps, {renderer.Culled} culled, {renderer.Deep.Sections} deep of {renderer.Deep.Triangles} triangles; "
@@ -53,8 +54,8 @@ public static class GameCommands
     // one is caught before it is taken.
     private static string EyeInside(VoxelGame game)
     {
-        var eye = game.Player.Eye;
-        var block = game.World.GetBlock((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
+        var (x, y, z) = LandOrigin.BlockOf(game.Player.Eye);
+        var block = game.World.GetBlock(x, y, z);
         return block == BlockId.Air ? "" : $", the eye inside {Blocks.Get(block).Key}";
     }
 
@@ -84,15 +85,15 @@ public static class GameCommands
     {
         if (Game is not { } game) return "no world is loaded";
         game.Respawn();
-        var at = game.Player.Body.Position;
+        var at = LandOrigin.LandOf(game.Player.Body.Position);
         return $"the player stands at {at.X:0.0}, {at.Y:0.0}, {at.Z:0.0}";
     }
 
     [Command("voxel.tp", "Puts the player's feet at a place: voxel.tp <x> <y> <z>")]
-    internal static string Teleport(float x, float y, float z)
+    internal static string Teleport(double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
-        game.Player.Teleport(new Vector3(x, y, z));
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, y, z)));
         return $"the player stands at {x}, {y}, {z}";
     }
 
@@ -207,8 +208,8 @@ public static class GameCommands
             case "days": weather.Held = null; break;
             default: return $"no weather is called {hold}, which is turned, clear or days";
         }
-        var at = game.Player.Body.Position;
-        var falls = game.World.BiomeAt((int)MathF.Floor(at.X), (int)MathF.Floor(at.Z))?.Precipitation ?? Precipitation.None;
+        var (x, _, z) = LandOrigin.BlockOf(game.Player.Body.Position);
+        var falls = game.World.BiomeAt(x, z)?.Precipitation ?? Precipitation.None;
         var held = weather.Held switch { true => "held turned", false => "held clear", null => "turning by its days" };
         return string.Create(CultureInfo.InvariantCulture, $"the weather is {held}, turned {weather.Share(game.Sky.Day, game.Sky.Hour):0.00} and shown {game.Sky.Overcast:0.00}, and {(falls == Precipitation.None ? "nothing falls" : falls.ToString().ToLowerInvariant() + " falls")} where the player stands, on {game.Precipitation.Columns} columns about the eye");
     }
@@ -251,8 +252,7 @@ public static class GameCommands
                 break;
             case "verify":
             {
-                var at = game.Player.Body.Position;
-                int cx = VoxelWorld.ColumnOf((int)MathF.Floor(at.X)), cz = VoxelWorld.ColumnOf((int)MathF.Floor(at.Z));
+                var (cx, cz) = LandOrigin.ColumnOf(game.Player.Body.Position);
                 across = Math.Clamp(across, 1, 8);
                 var columns = Enumerable.Range(0, across * across).Select(i => (cx - across / 2 + i % across, cz - across / 2 + i / across)).ToList();
                 return fields.Verify(columns) is var (compared, differ)
@@ -330,11 +330,11 @@ public static class GameCommands
     }
 
     [Command("voxel.drop", "Lays one of an item on the ground at a place, as a block broken there drops it: voxel.drop <item> <x> <y> <z>")]
-    internal static string Drop(string item, float x, float y, float z)
+    internal static string Drop(string item, double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
         if (Items.Find(item) is not { } found) return $"no item is called {item}, and voxel.items lists them";
-        game.Drops.Spawn(found, 1, new Vector3(x, y, z), Vector3.Zero);
+        game.Drops.Spawn(found, 1, LandOrigin.PlaceOf(new LandPlace(x, y, z)), Vector3.Zero);
         return $"one {found.Key} lies at {x:0.00}, {y:0.00}, {z:0.00}";
     }
 
@@ -437,7 +437,7 @@ public static class GameCommands
         if (Game is not { } game) return "no world is loaded";
         var sounds = game.Sounds;
         var levels = string.Join(", ", Enum.GetValues<AmbientSound>().Select(a => $"{a.ToString().ToLowerInvariant()} {sounds.Levels[(int)a]:0.00}"));
-        var last = sounds.Heard.Count == 0 ? "none" : string.Join(", ", sounds.Heard.Select(h => $"{h.Sound.ToString().ToLowerInvariant()} {(h.Own ? "of the player" : $"at {h.At.X:0.0}, {h.At.Y:0.0}, {h.At.Z:0.0} through {h.Through:0.00}")}"));
+        var last = sounds.Heard.Count == 0 ? "none" : string.Join(", ", sounds.Heard.Select(h => $"{h.Sound.ToString().ToLowerInvariant()} {(h.Own ? "of the player" : $"at {LandOrigin.LandOf(h.At).X:0.0}, {LandOrigin.LandOf(h.At).Y:0.0}, {LandOrigin.LandOf(h.At).Z:0.0} through {h.Through:0.00}")}"));
         var voices = Engine.E3D.GetApp().World.TryGetResource<Engine.AudioServer>(out var audio) ? audio.LiveSourceCount : 0;
         var (enclosed, size) = sounds.Room;
         return $"{levels}; the room {enclosed:0.00} closed, its walls {size:0.0} blocks off; {sounds.StepsHeard} steps played, in the last frame {last}; {voices} voices";
@@ -467,7 +467,7 @@ public static class GameCommands
         var all = game.Fires.All.Where(f => game.World.GetBlock(f.At.X, f.At.Y, f.At.Z) == BlockId.Fire).ToList();
         if (all.Count == 0) return "no fire burns";
         var eye = game.Player.Eye;
-        var nearest = all.OrderBy(f => Vector3.DistanceSquared(new Vector3(f.At.X + 0.5f, f.At.Y, f.At.Z + 0.5f), eye)).Take(count)
+        var nearest = all.OrderBy(f => Vector3.DistanceSquared(LandOrigin.PlaceOf(f.At.X, f.At.Y, f.At.Z) + new Vector3(0.5f, 0, 0.5f), eye)).Take(count)
             .Select(f => $"{f.At.X}, {f.At.Y}, {f.At.Z} at age {f.Age}");
         return $"{all.Count} {(all.Count == 1 ? "fire burns" : "fires burn")}, the nearest at {string.Join("; ", nearest)}";
     }
@@ -480,8 +480,9 @@ public static class GameCommands
         var kinds = string.Join(", ", MobKinds.All.Select(k => $"{mobs.All.Count(m => m.Kind == k)} {k.Name}"));
         var at = game.Player.Body.Position;
         var nearest = mobs.All.OrderBy(m => Vector3.DistanceSquared(m.Body.Position, at)).Take(Math.Max(0, count))
-            .Select(m => $"{m.Kind.Name} {m.Id} at {m.Body.Position.X:0.0}, {m.Body.Position.Y:0.0}, {m.Body.Position.Z:0.0}, "
-                + $"{Vector3.Distance(m.Body.Position, at):0} blocks away, {m.Doing}, health {m.Health}{(m.Home is { } home ? $", at home at {home.X:0}, {home.Y:0}, {home.Z:0}" : "")}");
+            .Select(m => (Mob: m, Place: LandOrigin.LandOf(m.Body.Position), Home: m.Home is { } home ? LandOrigin.LandOf(home) : (LandPlace?)null))
+            .Select(m => $"{m.Mob.Kind.Name} {m.Mob.Id} at {m.Place.X:0.0}, {m.Place.Y:0.0}, {m.Place.Z:0.0}, "
+                + $"{Vector3.Distance(m.Mob.Body.Position, at):0} blocks away, {m.Mob.Doing}, health {m.Mob.Health}{(m.Home is { } home ? $", at home at {home.X:0}, {home.Y:0}, {home.Z:0}" : "")}");
         return $"{mobs.All.Count} loaded ({kinds}), {mobs.Kept} kept by columns not loaded{(mobs.Still ? ", standing still" : "")}"
             + (count > 0 && mobs.All.Count > 0 ? "; " + string.Join("; ", nearest) : "");
     }
@@ -492,8 +493,9 @@ public static class GameCommands
         if (Game is not { } game) return "no world is loaded";
         if (MobKinds.Find(kind) is not { } found) return $"no mob is called {kind}, which is {string.Join(", ", MobKinds.All.Select(k => k.Name))}";
         var player = game.Player;
-        var at = game.Target is { } hit ? new Vector3(hit.Beside.X + 0.5f, hit.Beside.Y, hit.Beside.Z + 0.5f)
+        var place = game.Target is { } hit ? LandOrigin.PlaceOf(hit.Beside.X, hit.Beside.Y, hit.Beside.Z) + new Vector3(0.5f, 0, 0.5f)
             : player.Body.Position + Vector3.Normalize(new Vector3(player.Look.X, 0, player.Look.Z)) * 3;
+        var at = LandOrigin.LandOf(place);
         var chosen = variant >= 0 ? (byte)(variant % found.Variants.Length) : found.Variant(Random.Shared.Next(1000));
         var mob = game.Mobs.Add(new MobRecord(found, chosen, at, player.Yaw + MathF.PI, found.Health, found.OpensDoors ? at : null));
         return $"{found.Name} {mob.Id} stands at {at.X:0.0}, {at.Y:0.0}, {at.Z:0.0}";
@@ -517,11 +519,11 @@ public static class GameCommands
     }
 
     [Command("voxel.bits", "How many bits of broken blocks fly and the middle of the one nearest a place: voxel.bits <x> <y> <z>")]
-    internal static string BitsAround(float x, float y, float z)
+    internal static string BitsAround(double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
-        var place = new Vector3(x, y, z);
-        var nearest = game.Bits.All.Select(b => b.Body.Position + new Vector3(0, b.Size / 2, 0)).OrderBy(p => Vector3.DistanceSquared(p, place)).FirstOrDefault();
+        var place = LandOrigin.PlaceOf(new LandPlace(x, y, z));
+        var nearest = LandOrigin.LandOf(game.Bits.All.Select(b => b.Body.Position + new Vector3(0, b.Size / 2, 0)).OrderBy(p => Vector3.DistanceSquared(p, place)).FirstOrDefault());
         return game.Bits.All.Count == 0 ? "no bits fly" : $"{game.Bits.All.Count} bits, the nearest at {nearest.X:F2}, {nearest.Y:F2}, {nearest.Z:F2}";
     }
 
@@ -662,11 +664,11 @@ public static class GameCommands
     }
 
     [Command("voxel.ring", "The last frame's luminance around a circle on a level plane, by angle, its mean, its swing and its peaks: voxel.ring <x> <y> <z> <radius> <samples>")]
-    internal static string Ring(float x, float y, float z, float radius, int samples)
+    internal static string Ring(double x, double y, double z, float radius, int samples)
     {
         if (Game is not { } game) return "no world is loaded";
         if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
-        return Measurements.Ring(LoadImageFromScreen(), game.Player.Camera, new System.Numerics.Vector3(x, y, z), radius, Math.Clamp(samples, 8, 720));
+        return Measurements.Ring(LoadImageFromScreen(), game.Player.Camera, LandOrigin.PlaceOf(new LandPlace(x, y, z)), radius, Math.Clamp(samples, 8, 720));
     }
 
     [Command("voxel.spots", "How many pixels of a rectangle of the last frame stand darker, and how many lighter, than all four neighbors three pixels away by more than so many levels: voxel.spots <x> <y> <width> <height> <levels>")]
@@ -679,19 +681,19 @@ public static class GameCommands
     }
 
     [Command("voxel.pixel", "The last frame's color in sRGB levels at the pixel a point in the world lies on: voxel.pixel <x> <y> <z>")]
-    internal static string Pixel(float x, float y, float z)
+    internal static string Pixel(double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
         if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
-        return Measurements.Pixel(LoadImageFromScreen(), game.Player.Camera, new System.Numerics.Vector3(x, y, z));
+        return Measurements.Pixel(LoadImageFromScreen(), game.Player.Camera, LandOrigin.PlaceOf(new LandPlace(x, y, z)));
     }
 
     [Command("voxel.line", "The last frame's luminance at points evenly along a line in the world, and the largest change between neighbors as a share of the whole: voxel.line <x1> <y1> <z1> <x2> <y2> <z2> <samples>")]
-    internal static string Line(float x1, float y1, float z1, float x2, float y2, float z2, int samples)
+    internal static string Line(double x1, double y1, double z1, double x2, double y2, double z2, int samples)
     {
         if (Game is not { } game) return "no world is loaded";
         if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
-        return Measurements.Line(LoadImageFromScreen(), game.Player.Camera, new System.Numerics.Vector3(x1, y1, z1), new System.Numerics.Vector3(x2, y2, z2), Math.Clamp(samples, 2, 720));
+        return Measurements.Line(LoadImageFromScreen(), game.Player.Camera, LandOrigin.PlaceOf(new LandPlace(x1, y1, z1)), LandOrigin.PlaceOf(new LandPlace(x2, y2, z2)), Math.Clamp(samples, 2, 720));
     }
 
     [Command("voxel.color", "The last frame's mean red, green and blue in sRGB levels over a rectangle of the window: voxel.color <x> <y> <width> <height>")]
@@ -722,7 +724,7 @@ public static class GameCommands
         var image = LoadImageFromScreen();
         if ((uint)x >= image.Width) return $"no column {x} is on the window";
         // The highest pixel whose ray meets a block of a column the renderer draws, from the bottom up.
-        int eyeX = (int)MathF.Floor(game.Player.Eye.X) >> Section.Shift, eyeZ = (int)MathF.Floor(game.Player.Eye.Z) >> Section.Shift;
+        var (eyeX, eyeZ) = LandOrigin.ColumnOf(game.Player.Eye);
         var reach = game.RenderDistance * game.RenderDistance + game.RenderDistance;
         bool Land(int y)
         {
@@ -767,8 +769,8 @@ public static class GameCommands
         if (Game is not { } game) return "no world is loaded";
         if (Structures.Find(name) is not { } structure) return $"no structure is called {name}, which is {string.Join(", ", Structures.All.Select(s => s.Name))}";
         if (game.World.Generator is not Overworld land) return "only the overworld holds structures";
-        var at = game.Player.Body.Position;
-        int cx = (int)MathF.Floor(at.X / structure.CellSize), cz = (int)MathF.Floor(at.Z / structure.CellSize);
+        var at = LandOrigin.LandOf(game.Player.Body.Position);
+        int cx = (int)Math.Floor(at.X / structure.CellSize), cz = (int)Math.Floor(at.Z / structure.CellSize);
         // Ring by ring of cells outward, the nearest start in the first ring that holds one.
         for (int ring = 0; ring <= 40; ring++)
         {
@@ -778,7 +780,7 @@ public static class GameCommands
                 for (int x = cx - ring; x <= cx + ring; x++)
                 {
                     if (Math.Max(Math.Abs(x - cx), Math.Abs(z - cz)) != ring || structure.StartIn(x, z, land) is not { } start) continue;
-                    var distance = new System.Numerics.Vector2(start.X - at.X, start.Z - at.Z).Length();
+                    var distance = (float)Math.Sqrt((start.X - at.X) * (start.X - at.X) + (start.Z - at.Z) * (start.Z - at.Z));
                     if (distance < bestDistance) (best, bestDistance) = (start, distance);
                 }
             if (best is { } found) return $"the nearest {structure.Name} is built from {found.X}, {found.Y}, {found.Z}, {bestDistance:0} blocks away";
@@ -793,8 +795,7 @@ public static class GameCommands
         if (Biomes.All.FirstOrDefault(b => b.Name.Equals(name.Replace('_', ' '), StringComparison.OrdinalIgnoreCase)) is not { } biome)
             return $"no biome is called {name}, which is {string.Join(", ", Biomes.All.Select(b => b.Name))}";
         if (game.World.Generator is not Overworld land) return "only the overworld has biomes";
-        var at = game.Player.Body.Position;
-        int px = (int)MathF.Floor(at.X), pz = (int)MathF.Floor(at.Z);
+        var (px, _, pz) = LandOrigin.BlockOf(game.Player.Body.Position);
         for (int ring = 0; ring <= 375; ring++)
             for (int z = -ring; z <= ring; z++)
                 for (int x = -ring; x <= ring; x++)

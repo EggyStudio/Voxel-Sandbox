@@ -55,7 +55,7 @@ public sealed class WaterMirror
         for (float along = 0; along < Reach; along += 0.5f)
         {
             var at = from + way * along;
-            int x = (int)MathF.Floor(at.X), y = (int)MathF.Floor(at.Y), z = (int)MathF.Floor(at.Z);
+            var (x, y, z) = LandOrigin.BlockOf(at);
             var block = world.GetBlock(x, y, z);
             if (Blocks.IsWater(block)) return y + Blocks.WaterHeight(block, Blocks.IsWater(world.GetBlock(x, y + 1, z)));
             if (Blocks.IsOpaque(block)) return null;

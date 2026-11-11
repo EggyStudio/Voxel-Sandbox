@@ -98,7 +98,7 @@ public sealed class PrimedTnt(EcsWorld ecs)
         ecs.Add(id, new LitTnt { Left = fuse });
         ecs.Add(id, new Body(0.49f, 0.98f)
         {
-            Position = new Vector3(x + 0.5f, y, z + 0.5f),
+            Position = LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f, 0, 0.5f),
             Velocity = new Vector3(-(float)Math.Sin(turn) * 0.02f, 0.2f, -(float)Math.Cos(turn) * 0.02f) / Tick,
         });
     }

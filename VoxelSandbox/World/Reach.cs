@@ -17,9 +17,9 @@ public static class Reach
         return dx * dx + dy * dy + dz * dz <= distance * distance + distance;
     }
 
-    /// <summary>The section an eye stands in.</summary>
+    /// <summary>The section an eye kept against the <see cref="LandOrigin"/> stands in.</summary>
     public static SectionKey Of(System.Numerics.Vector3 eye) =>
-        new((int)MathF.Floor(eye.X) >> Section.Shift, (int)MathF.Floor(eye.Y) >> Section.Shift, (int)MathF.Floor(eye.Z) >> Section.Shift);
+        new(LandOrigin.BlockX(eye.X) >> Section.Shift, (int)MathF.Floor(eye.Y) >> Section.Shift, LandOrigin.BlockZ(eye.Z) >> Section.Shift);
 
     /// <summary>How many sections past the render distance a deep section is kept unpacked, so the sections the mesher reads beside those it meshes are whole.</summary>
     public const int Kept = 2;

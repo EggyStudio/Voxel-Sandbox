@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using Xunit;
 
 namespace VoxelSandbox.Tests;
@@ -60,5 +61,46 @@ public sealed class SaveTests : IDisposable
         var back = WorldSave.Decode(0, 0, read.Kept(0, 0)!, read.Renumber);
 
         Assert.Equal(BlockId.Stone, back.Get(0, 0, 0));
+    }
+
+    [Fact]
+    public void A_Mob_A_Million_Blocks_Out_Reads_Back_To_Its_Place_In_The_Land()
+    {
+        var sheep = new MobRecord(MobKinds.Sheep, 3, new LandPlace(1_139_992.37, 64.125, 596.91), 1, 8, null);
+        var villager = new MobRecord(MobKinds.Villager, 2, new LandPlace(-284_700.06, 70, 33.5), -2, 13, new LandPlace(-284_698.5, 70, 35.25));
+        new WorldSave(_folder).WriteMobs([((71_249, 37), [sheep]), ((-17_794, 2), [villager])]);
+
+        var (kept, _) = new WorldSave(_folder).ReadMobs();
+
+        Assert.Equal(sheep, Assert.Single(kept[(71_249, 37)]));
+        Assert.Equal(villager, Assert.Single(kept[(-17_794, 2)]));
+    }
+
+    [Fact]
+    public void A_Mobs_File_Of_The_First_Version_Reads_With_Its_Places_In_Floats()
+    {
+        Directory.CreateDirectory(_folder);
+        using (var writer = new BinaryWriter(new ZLibStream(File.Create(Path.Combine(_folder, "mobs.bin")), CompressionLevel.Fastest)))
+        {
+            writer.Write("E3DM"u8);
+            writer.Write(1);
+            writer.Write(1);
+            writer.Write(MobKinds.Villager.Name);
+            writer.Write(1);
+            writer.Write(-2);
+            writer.Write(2);
+            writer.Write((ushort)1);
+            writer.Write((byte)0);
+            writer.Write((byte)2);
+            foreach (var value in (float[])[-20.5f, 64, 40.25f, 1.5f]) writer.Write(value);
+            writer.Write((byte)13);
+            writer.Write(true);
+            foreach (var value in (float[])[-18.5f, 64, 42.5f]) writer.Write(value);
+        }
+
+        var (kept, placed) = new WorldSave(_folder).ReadMobs();
+
+        Assert.Equal([(-2, 2)], placed);
+        Assert.Equal(new MobRecord(MobKinds.Villager, 2, new LandPlace(-20.5, 64, 40.25), 1.5f, 13, new LandPlace(-18.5, 64, 42.5)), Assert.Single(kept[(-2, 2)]));
     }
 }

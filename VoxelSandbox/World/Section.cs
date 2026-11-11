@@ -132,9 +132,5 @@ public sealed class Section
     }
 }
 
-/// <summary>A section's place in the world, in sections along each axis.</summary>
-public readonly record struct SectionKey(int X, int Y, int Z)
-{
-    /// <summary>The world position of its lowest corner.</summary>
-    public System.Numerics.Vector3 Origin => new(X * Section.Size, Y * Section.Size, Z * Section.Size);
-}
+/// <summary>A section's place in the world, in sections along each axis, whose float place <see cref="LandOrigin.PlaceOf(SectionKey)"/> gives.</summary>
+public readonly record struct SectionKey(int X, int Y, int Z);

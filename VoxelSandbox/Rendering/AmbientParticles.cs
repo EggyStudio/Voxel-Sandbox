@@ -141,14 +141,16 @@ public sealed class AmbientParticles : IDisposable
         for (int i = 0; i < _rings.Count; i++) _rings[i] = _rings[i] with { Age = _rings[i].Age + seconds };
         _rings.RemoveAll(ring => ring.Age >= RingLife);
 
-        // The rain's splashes at columns where it rains, rings where its top is water.
+        // The rain's splashes at columns where it rains, rings where its top is water, the columns
+        // picked in the land's own coordinates and the particles set against the origin.
         int splashed = 0, fallen = 0, thrown = 0;
+        var (ex, ey, ez) = LandOrigin.BlockOf(eye);
         for (int due = Due(ref _splashDue, Splashes * SplashDensity * rain, seconds, _splashes.Most); due > 0; due--)
         {
-            int x = (int)MathF.Floor(eye.X) + _random.Next(-Reach, Reach + 1), z = (int)MathF.Floor(eye.Z) + _random.Next(-Reach, Reach + 1);
+            int x = ex + _random.Next(-Reach, Reach + 1), z = ez + _random.Next(-Reach, Reach + 1);
             if (world.BiomeAt(x, z)?.Precipitation != Precipitation.Rain) continue;
             var top = world.Top(x, z);
-            var at = new Vector3(x + (float)_random.NextDouble(), top + 1, z + (float)_random.NextDouble());
+            var at = LandOrigin.PlaceOf(x, top + 1, z) + new Vector3((float)_random.NextDouble(), 0, (float)_random.NextDouble());
             var block = world.GetBlock(x, top, z);
             if (Blocks.IsWater(block))
             {
@@ -164,17 +166,16 @@ public sealed class AmbientParticles : IDisposable
         // a few deep, where enough air lies under it, up to eight columns tried for each, so a wood
         // gives its four a second and a lone tree a few. None falls while the eye is in a cave, where
         // it would not be seen.
-        int ex = (int)MathF.Floor(eye.X), ey = (int)MathF.Floor(eye.Y), ez = (int)MathF.Floor(eye.Z);
         var inCave = eye.Y < Overworld.SeaLevel && world.GetLight(ex, ey, ez).Sky <= 3;
         for (int due = Due(ref _leafDue, inCave ? 0 : Leaves * LeafDensity, seconds, _leaves.Most); due > 0; due--)
             for (int tries = 0; tries < 8; tries++)
             {
-                int x = (int)MathF.Floor(eye.X) + _random.Next(-LeafReach, LeafReach + 1), z = (int)MathF.Floor(eye.Z) + _random.Next(-LeafReach, LeafReach + 1);
+                int x = ex + _random.Next(-LeafReach, LeafReach + 1), z = ez + _random.Next(-LeafReach, LeafReach + 1);
                 var y = world.Top(x, z);
                 if (!Blocks.IsLeaves(world.GetBlock(x, y, z))) continue;
                 for (var deep = 0; deep < 6 && Blocks.IsLeaves(world.GetBlock(x, y - 1, z)); deep++) y--;
                 if (!Enumerable.Range(1, LeafFall).All(below => world.GetBlock(x, y - below, z) == BlockId.Air)) continue;
-                _leaves.Burst(new Vector3(x + (float)_random.NextDouble(), y - 0.1f, z + (float)_random.NextDouble()), 1, _time);
+                _leaves.Burst(LandOrigin.PlaceOf(x, 0, z) + new Vector3((float)_random.NextDouble(), y - 0.1f, (float)_random.NextDouble()), 1, _time);
                 fallen++;
                 break;
             }
@@ -273,7 +274,7 @@ public sealed class AmbientParticles : IDisposable
     // Where water's top crosses a body, which is in water there and out of it above, or none.
     private static float? Surface(VoxelWorld world, Body body)
     {
-        int x = (int)MathF.Floor(body.Position.X), z = (int)MathF.Floor(body.Position.Z);
+        var (x, _, z) = LandOrigin.BlockOf(body.Position);
         for (var y = (int)MathF.Floor(body.Position.Y); y <= (int)MathF.Floor(body.Position.Y + body.Height); y++)
         {
             var block = world.GetBlock(x, y, z);

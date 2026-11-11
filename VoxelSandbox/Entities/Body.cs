@@ -10,7 +10,9 @@ namespace VoxelSandbox;
 /// <remarks>
 /// The box moves up or down first, then along x, then along z, as Minecraft moves an entity, so
 /// walking into a wall while falling slides down it. A move is cut into steps under half a block,
-/// so a fast fall cannot pass through a floor between two frames.
+/// so a fast fall cannot pass through a floor between two frames. Its place is kept against the
+/// <see cref="LandOrigin"/>, and so are the cells it reckons with, each taken from the world at its
+/// block in the land's own coordinates.
 /// </remarks>
 public sealed class Body(float halfWidth, float height)
 {
@@ -43,8 +45,9 @@ public sealed class Body(float halfWidth, float height)
     /// <summary>Whether the box takes up any of the boxes a block would stand in at a place, which the block is not placed into.</summary>
     public bool Overlaps(int x, int y, int z, IReadOnlyList<Box> boxes)
     {
+        var cell = LandOrigin.PlaceOf(x, y, z);
         foreach (var box in boxes)
-            if (Overlap(new Vector3(x, y, z) + box.Min, new Vector3(x, y, z) + box.Max, Min, Max)) return true;
+            if (Overlap(cell + box.Min, cell + box.Max, Min, Max)) return true;
         return false;
     }
 
@@ -113,7 +116,7 @@ public sealed class Body(float halfWidth, float height)
         for (int y = Floor(min.Y + Skin) - 1; y <= Floor(max.Y - Skin); y++)
             for (int z = Floor(min.Z + Skin); z <= Floor(max.Z - Skin); z++)
                 for (int x = Floor(min.X + Skin); x <= Floor(max.X - Skin); x++)
-                    foreach (var box in world.BoxesAt(x, y, z))
+                    foreach (var box in BoxesAt(world, x, y, z))
                     {
                         Vector3 low = new Vector3(x, y, z) + box.Min, high = new Vector3(x, y, z) + box.Max;
                         if (!Overlap(low, high, min, max)) continue;
@@ -140,7 +143,7 @@ public sealed class Body(float halfWidth, float height)
         for (int y = Floor(min.Y + Skin) - 1; y <= Floor(max.Y - Skin); y++)
             for (int z = Floor(min.Z + Skin); z <= Floor(max.Z - Skin); z++)
                 for (int x = Floor(min.X + Skin); x <= Floor(max.X - Skin); x++)
-                    foreach (var box in world.BoxesAt(x, y, z))
+                    foreach (var box in BoxesAt(world, x, y, z))
                         if (Overlap(new Vector3(x, y, z) + box.Min, new Vector3(x, y, z) + box.Max, min, max)) return false;
         return true;
     }
@@ -151,7 +154,7 @@ public sealed class Body(float halfWidth, float height)
         for (int y = Floor(at.Y - 0.01f) - 1; y <= Floor(at.Y - 0.01f); y++)
             for (int z = Floor(at.Z - HalfWidth + Skin); z <= Floor(at.Z + HalfWidth - Skin); z++)
                 for (int x = Floor(at.X - HalfWidth + Skin); x <= Floor(at.X + HalfWidth - Skin); x++)
-                    foreach (var box in world.BoxesAt(x, y, z))
+                    foreach (var box in BoxesAt(world, x, y, z))
                     {
                         var top = y + box.Max.Y;
                         if (MathF.Abs(at.Y - top) > 0.01f) continue;
@@ -164,6 +167,9 @@ public sealed class Body(float halfWidth, float height)
     private static float Component(Vector3 v, int axis) => axis == 0 ? v.X : axis == 1 ? v.Y : v.Z;
 
     private static int Floor(float value) => (int)MathF.Floor(value);
+
+    // The boxes of the block at a cell kept against the origin.
+    private static IReadOnlyList<Box> BoxesAt(VoxelWorld world, int x, int y, int z) => world.BoxesAt(x + LandOrigin.X, y, z + LandOrigin.Z);
 
     private static void Add(ref Vector3 v, int axis, float amount)
     {

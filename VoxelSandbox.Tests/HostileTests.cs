@@ -10,7 +10,7 @@ public class HostileTests
 
     private const float Step = 1 / 30f;
 
-    private static Mob Spawn(MobKind kind, float x, float z) => new(1, new MobRecord(kind, 0, new Vector3(x, 11, z), 0, kind.Health, null), 1);
+    private static Mob Spawn(MobKind kind, float x, float z) => new(1, new MobRecord(kind, 0, new LandPlace(x, 11, z), 0, kind.Health, null), 1);
 
     // Runs a mob for so many seconds hunting a player standing at a place, and gives what it did.
     private static List<MobEvent> Hunt(Mob mob, VoxelWorld world, Body player, float hour, float seconds)
@@ -143,9 +143,9 @@ public class HostileTests
     {
         var mobs = new Mobs(new Engine.EcsWorld());
         var column = new ChunkColumn(0, 0);
-        column.Spawns.Add(new MobRecord(MobKinds.Cow, 0, new Vector3(4.5f, 11, 4.5f), 0, 10, null));
+        column.Spawns.Add(new MobRecord(MobKinds.Cow, 0, new LandPlace(4.5, 11, 4.5), 0, 10, null));
         mobs.Joined(column);
-        mobs.Add(new MobRecord(MobKinds.Zombie, 0, new Vector3(6.5f, 11, 6.5f), 0, 20, null));
+        mobs.Add(new MobRecord(MobKinds.Zombie, 0, new LandPlace(6.5, 11, 6.5), 0, 20, null));
 
         mobs.Leaving(0, 0);
 

@@ -96,7 +96,8 @@ public sealed class Vitals
 
     private void Fall(VoxelWorld world, Body body, Vector3 moved, bool flying, bool swimming)
     {
-        var feet = world.GetBlock((int)MathF.Floor(body.Position.X), (int)MathF.Floor(body.Position.Y), (int)MathF.Floor(body.Position.Z));
+        var (fx, fy, fz) = LandOrigin.BlockOf(body.Position);
+        var feet = world.GetBlock(fx, fy, fz);
         if (flying || swimming || Blocks.IsFluid(feet))
         {
             Fallen = 0;
@@ -109,7 +110,7 @@ public sealed class Vitals
         }
         if (Fallen > 3)
         {
-            var under = world.GetBlock((int)MathF.Floor(body.Position.X), (int)MathF.Floor(body.Position.Y - 0.01f), (int)MathF.Floor(body.Position.Z));
+            var under = world.GetBlock(fx, (int)MathF.Floor(body.Position.Y - 0.01f), fz);
             var damage = (int)MathF.Ceiling(Fallen - 3) * (under == BlockId.HayBale ? 0.2f : 1);
             if (damage >= 1) Damage((int)damage, "fell from a high place");
         }
@@ -118,7 +119,8 @@ public sealed class Vitals
 
     private void Breathe(VoxelWorld world, Vector3 eye, float seconds)
     {
-        if (!Blocks.IsWater(world.GetBlock((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z))))
+        var (ex, ey, ez) = LandOrigin.BlockOf(eye);
+        if (!Blocks.IsWater(world.GetBlock(ex, ey, ez)))
         {
             // Breath comes back five times as fast as it goes.
             (Air, _drown) = (MathF.Min(Breath, Air + seconds * 5), 0);
@@ -136,8 +138,9 @@ public sealed class Vitals
     // every half second, lava by 4 as the source's does and the others by 1.
     private void Prick(VoxelWorld world, Body body, Vector3 eye, float seconds)
     {
+        var (ex, ey, ez) = LandOrigin.BlockOf(eye);
         var (cause, harm) = Touches(world, body, BlockId.Lava, -0.001f) ? ("tried to swim in lava", 4)
-            : Blocks.IsOpaque(world.GetBlock((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z))) ? ("suffocated in a wall", 1)
+            : Blocks.IsOpaque(world.GetBlock(ex, ey, ez)) ? ("suffocated in a wall", 1)
             : Touches(world, body, BlockId.Cactus, 0.05f) ? ("were pricked to death", 1) : ((string?)null, 0);
         if (cause is null)
         {
@@ -153,10 +156,11 @@ public sealed class Vitals
     // Whether a block lies within the body's box grown by a margin, or shrunk where it is under 0.
     private static bool Touches(VoxelWorld world, Body body, BlockId block, float margin)
     {
-        Vector3 min = body.Min - new Vector3(margin), max = body.Max + new Vector3(margin);
-        for (int y = (int)MathF.Floor(min.Y); y <= (int)MathF.Floor(max.Y); y++)
-            for (int z = (int)MathF.Floor(min.Z); z <= (int)MathF.Floor(max.Z); z++)
-                for (int x = (int)MathF.Floor(min.X); x <= (int)MathF.Floor(max.X); x++)
+        var (lowX, lowY, lowZ) = LandOrigin.BlockOf(body.Min - new Vector3(margin));
+        var (highX, highY, highZ) = LandOrigin.BlockOf(body.Max + new Vector3(margin));
+        for (int y = lowY; y <= highY; y++)
+            for (int z = lowZ; z <= highZ; z++)
+                for (int x = lowX; x <= highX; x++)
                     if (world.GetBlock(x, y, z) == block) return true;
         return false;
     }

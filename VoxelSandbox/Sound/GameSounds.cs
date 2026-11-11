@@ -132,7 +132,7 @@ public sealed class GameSounds
         }
 
         // The places' sounds, each eased toward its level.
-        int ex = (int)MathF.Floor(eye.X), ey = (int)MathF.Floor(eye.Y), ez = (int)MathF.Floor(eye.Z);
+        var (ex, ey, ez) = LandOrigin.BlockOf(eye);
         var water = 0;
         for (int i = 0; i < 16; i++)
             if (Blocks.IsWater(world.GetBlock(ex + _random.Next(-8, 9), ey + _random.Next(-4, 3), ez + _random.Next(-8, 9)))) water++;

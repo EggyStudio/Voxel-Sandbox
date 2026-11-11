@@ -31,7 +31,7 @@ public sealed class SnowCover
         {
             var angle = random.NextDouble() * Math.Tau;
             var distance = Reach * Math.Sqrt(random.NextDouble());
-            int x = (int)MathF.Floor(eye.X + (float)(Math.Cos(angle) * distance)), z = (int)MathF.Floor(eye.Z + (float)(Math.Sin(angle) * distance));
+            int x = LandOrigin.BlockX(eye.X + (float)(Math.Cos(angle) * distance)), z = LandOrigin.BlockZ(eye.Z + (float)(Math.Sin(angle) * distance));
             Try(world, x, z, snowing);
         }
     }

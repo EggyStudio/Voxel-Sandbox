@@ -68,9 +68,10 @@ public partial struct Arrow
                 var damage = (int)MathF.Ceiling(arrow.Velocity.Length() / 20 * 2) + (random.Next(4) == 0 ? 1 : 0);
                 return (damage, arrow.Position - arrow.Velocity * 0.05f);
             }
-            int x = (int)MathF.Floor(arrow.Position.X), y = (int)MathF.Floor(arrow.Position.Y), z = (int)MathF.Floor(arrow.Position.Z);
+            var (x, y, z) = LandOrigin.BlockOf(arrow.Position);
+            var cell = LandOrigin.PlaceOf(x, y, z);
             foreach (var box in world.BoxesAt(x, y, z))
-                if (Inside(new Vector3(x, y, z) + box.Min, new Vector3(x, y, z) + box.Max, arrow.Position))
+                if (Inside(cell + box.Min, cell + box.Max, arrow.Position))
                 {
                     arrow.Stuck = true;
                     return null;

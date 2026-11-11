@@ -17,7 +17,7 @@ public static class Places
     /// </summary>
     public static StepSound StepAt(VoxelWorld world, Vector3 feet)
     {
-        int x = (int)MathF.Floor(feet.X), y = (int)MathF.Floor(feet.Y), z = (int)MathF.Floor(feet.Z);
+        var (x, y, z) = LandOrigin.BlockOf(feet);
         var at = world.GetBlock(x, y, z);
         if (Blocks.IsWater(at)) return StepSound.Water;
         if (at == BlockId.SnowLayer) return StepSound.Snow;
@@ -94,6 +94,7 @@ public static class Places
     public static float Occlusion(VoxelWorld world, Vector3 listener, Vector3 sound) => MathF.Pow(ThroughABlock, Crossed(world, listener, sound));
 
     /// <summary>How many opaque cells a straight line from one place to another crosses, the cells of its two ends left out.</summary>
+    /// <remarks>The line is stepped through cells kept against the <see cref="LandOrigin"/>, each read at its block in the land.</remarks>
     public static int Crossed(VoxelWorld world, Vector3 from, Vector3 to)
     {
         var way = to - from;
@@ -113,7 +114,7 @@ public static class Places
             else if (nextY <= nextZ) (y, nextY) = (y + stepY, nextY + acrossY);
             else (z, nextZ) = (z + stepZ, nextZ + acrossZ);
             if ((x, y, z) == (endX, endY, endZ) || MathF.Min(nextX, MathF.Min(nextY, nextZ)) > length + 2) return crossed;
-            if (Blocks.IsOpaque(world.GetBlock(x, y, z))) crossed++;
+            if (Blocks.IsOpaque(world.GetBlock(x + LandOrigin.X, y, z + LandOrigin.Z))) crossed++;
         }
     }
 

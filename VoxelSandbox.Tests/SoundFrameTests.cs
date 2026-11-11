@@ -19,8 +19,8 @@ public sealed class SoundFrameTests
         game.Player.Yaw = 0;
         game.Player.Pitch = 0;
         var feet = game.Player.Body.Position;
-        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, feet + new Vector3(-5, 0, 0), 0, MobKinds.Pig.Health, null));
-        var far = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, feet + new Vector3(-28, 0, 0), 0, MobKinds.Pig.Health, null));
+        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, LandOrigin.LandOf(feet + new Vector3(-5, 0, 0)), 0, MobKinds.Pig.Health, null));
+        var far = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, LandOrigin.LandOf(feet + new Vector3(-28, 0, 0)), 0, MobKinds.Pig.Health, null));
         pig.Hit(feet, 0);
         far.Hit(feet, 0);
         var audio = GetApp().World.Resource<AudioServer>();

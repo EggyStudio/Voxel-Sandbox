@@ -47,7 +47,7 @@ public partial struct FallingBlock
             body.Move(step.World, body.Velocity * step.Seconds, keepToEdges: false);
             if (body.OnGround)
             {
-                int x = (int)MathF.Floor(body.Position.X), y = (int)MathF.Floor(body.Position.Y + 0.01f), z = (int)MathF.Floor(body.Position.Z);
+                int x = LandOrigin.BlockX(body.Position.X), y = (int)MathF.Floor(body.Position.Y + 0.01f), z = LandOrigin.BlockZ(body.Position.Z);
                 if (!BlockGroups.GivesWay(step.World.GetBlock(x, y, z)) || !step.World.SetBlock(x, y, z, falling.Block)) broken.Add((x, y, z, falling.Block));
                 landed.Add(id);
             }
@@ -95,7 +95,7 @@ public sealed class FallingBlocks(EcsWorld ecs)
     {
         var id = ecs.Spawn();
         ecs.Add(id, new FallingBlock { Block = block });
-        ecs.Add(id, new Body(0.49f, 0.98f) { Position = new Vector3(x + 0.5f, y, z + 0.5f) });
+        ecs.Add(id, new Body(0.49f, 0.98f) { Position = LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f, 0, 0.5f) });
     }
 
     /// <summary>Lets go of every falling block, as a world closes.</summary>

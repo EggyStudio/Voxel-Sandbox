@@ -29,7 +29,8 @@ public static class InWall
     public static BlockId? Block(VoxelWorld world, Vector3 eye, GameMode mode)
     {
         if (mode == GameMode.Spectator) return null;
-        var block = world.GetBlock((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
+        var (x, y, z) = LandOrigin.BlockOf(eye);
+        var block = world.GetBlock(x, y, z);
         return Blocks.IsOpaque(block) && !Blocks.IsLeaves(block) ? block : null;
     }
 

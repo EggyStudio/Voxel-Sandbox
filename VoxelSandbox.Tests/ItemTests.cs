@@ -93,7 +93,7 @@ public sealed class ItemTests : IDisposable
     [Fact]
     public void A_Sheep_Drops_Wool_Of_Its_Coat_And_Mutton()
     {
-        var sheep = new Mob(1, new MobRecord(MobKinds.Sheep, 3, Vector3.Zero, 0, 8, null), 1);
+        var sheep = new Mob(1, new MobRecord(MobKinds.Sheep, 3, new LandPlace(0, 0, 0), 0, 8, null), 1);
 
         var drops = Loot.Of(sheep, new Random(1)).ToList();
 

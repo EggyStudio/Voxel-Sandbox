@@ -13,7 +13,7 @@ public sealed class MobFrameTests
     private static Mob Beside(VoxelGame game, MobKind kind, float x, float up = 0)
     {
         var at = game.Player.Body.Position + new Vector3(x, up, 0);
-        return game.Mobs.Add(new MobRecord(kind, 0, at, 0, kind.Health, null));
+        return game.Mobs.Add(new MobRecord(kind, 0, LandOrigin.LandOf(at), 0, kind.Health, null));
     }
 
     [Fact]

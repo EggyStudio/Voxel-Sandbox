@@ -14,7 +14,7 @@ public static class Hud
     /// </summary>
     public static void DrawOutline(BlockHit hit, BlockShape? shape)
     {
-        var cell = new Vector3(hit.X, hit.Y, hit.Z);
+        var cell = LandOrigin.PlaceOf(hit.X, hit.Y, hit.Z);
         var color = new Color(0, 0, 0, 220);
         if (shape is null)
         {

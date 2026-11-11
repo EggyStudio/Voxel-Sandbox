@@ -41,7 +41,7 @@ public sealed class PrecipitationRenderer : IDisposable
         if (share <= 0) return;
         List<ModelVertex> rain = [], snow = [];
         List<uint> rainIndices = [], snowIndices = [];
-        int ex = (int)MathF.Floor(eye.X), ez = (int)MathF.Floor(eye.Z);
+        var (ex, _, ez) = LandOrigin.BlockOf(eye);
         for (int z = ez - Reach; z <= ez + Reach; z++)
             for (int x = ex - Reach; x <= ex + Reach; x++)
             {
@@ -57,7 +57,8 @@ public sealed class PrecipitationRenderer : IDisposable
                 var start = (PlaceHash.Of(x, z, 7) & 255) / 255f;
                 var fallen = (float)(time * (snowing ? SnowFall : RainFall) / Tall) + start;
                 var drift = snowing ? (float)(time * 0.15) + start : 0;
-                Column(snowing ? snow : rain, snowing ? snowIndices : rainIndices, x, z, bottom, top, fallen, drift);
+                // The walls are drawn where the column stands against the origin.
+                Column(snowing ? snow : rain, snowing ? snowIndices : rainIndices, x - LandOrigin.X, z - LandOrigin.Z, bottom, top, fallen, drift);
             }
         var alpha = (byte)Math.Clamp(255 * share, 0, 255);
         if (rain.Count > 0)

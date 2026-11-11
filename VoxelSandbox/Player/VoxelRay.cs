@@ -13,6 +13,11 @@ public readonly record struct BlockHit(int X, int Y, int Z, int NormalX, int Nor
 }
 
 /// <summary>Steps a ray through the grid of blocks one block at a time, after Amanatides and Woo.</summary>
+/// <remarks>
+/// The ray starts from a place kept against the <see cref="LandOrigin"/> and steps through cells kept
+/// against it too, so its arithmetic stays near zero, and the block it meets is said in the land's
+/// own coordinates.
+/// </remarks>
 public static class VoxelRay
 {
     /// <summary>The first block the crosshair rests on along a ray within <paramref name="reach"/>, passing through air and water, or null.</summary>
@@ -28,10 +33,11 @@ public static class VoxelRay
 
         while (travelled <= reach)
         {
-            var block = world.GetBlock(x, y, z);
+            int landX = x + LandOrigin.X, landZ = z + LandOrigin.Z;
+            var block = world.GetBlock(landX, y, landZ);
             if (Blocks.IsTarget(block))
             {
-                if (world.ShapeAt(x, y, z) is not { } shape) return new BlockHit(x, y, z, nx, ny, nz, travelled);
+                if (world.ShapeAt(landX, y, landZ) is not { } shape) return new BlockHit(landX, y, landZ, nx, ny, nz, travelled);
                 // A block smaller than its cell is met where the ray first crosses one of its pieces'
                 // boxes, so a ray through a stair's open quarter or between a fence's rails goes on
                 // to the block behind.
@@ -39,7 +45,7 @@ public static class VoxelRay
                 BlockHit? nearest = null;
                 foreach (var box in shape.Boxes)
                     if (Enters(origin, direction, cell + box.Min, cell + box.Max, out var at, out var normal) && at <= reach && (nearest is not { } met || at < met.Distance))
-                        nearest = new BlockHit(x, y, z, normal.X, normal.Y, normal.Z, at);
+                        nearest = new BlockHit(landX, y, landZ, normal.X, normal.Y, normal.Z, at);
                 if (nearest is { } hit) return hit;
             }
             if (nextX < nextY && nextX < nextZ)

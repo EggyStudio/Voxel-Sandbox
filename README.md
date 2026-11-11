@@ -1237,6 +1237,16 @@ lavapipe on four cores in Debug 4 ms where it read 10 to 12, the land settling a
 worker, and an edit is meshed on the main thread in its own frame, so a block set or broken shows
 at once.
 
+The game keeps every place in floats against an origin near the player, a multiple of 1,024 blocks
+set as the world opens, and hands the engine those places, so the floats stay within a few thousand
+blocks of zero however far out the world is played. Blocks, columns and sections keep the land's own
+whole coordinates, the floors that turn a place into a block add the origin, and the save and the
+commands keep and print the land's own places, the mobs' in doubles. A float steps by 0.0005 of a
+block at 4,450 blocks, 0.03 at 284,688 and an eighth at 1,139,984, and with the land's own places in
+floats the light mottled on walls from 4,450 out, the land cracked from 284,688, and a million out
+the scene's faces tore, the walk along the far axis jumped and stopped inside walls and the
+crosshair picked the block beside the one under it.
+
 An emissive block (glowstone, a sea lantern, shroomlight, magma) is drawn as a cube of its own, and
 the emissive piece of a torch, a lantern or an end rod as that cube scaled to it, every cube of one
 surface in one instanced draw, because a material's emission is one for its whole draw and a

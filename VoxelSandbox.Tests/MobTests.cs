@@ -32,7 +32,8 @@ public sealed class MobTests : IDisposable
         return world;
     }
 
-    private static MobRecord At(MobKind kind, float x, float y, float z, Vector3? home = null) => new(kind, 0, new Vector3(x, y, z), 0, kind.Health, home);
+    private static MobRecord At(MobKind kind, float x, float y, float z, Vector3? home = null) =>
+        new(kind, 0, new LandPlace(x, y, z), 0, kind.Health, home is { } at ? LandOrigin.LandOf(at) : null);
 
     // Thinks, moves and ages a mob a frame at a time, as the frame's behaviors do.
     private static void Run(Mob mob, VoxelWorld world, float hour, float seconds)
@@ -201,8 +202,8 @@ public sealed class MobTests : IDisposable
     public void Mobs_Read_Back_From_The_Save_With_The_Columns_That_Hold_None()
     {
         var mobs = new Mobs(new Engine.EcsWorld());
-        var villager = new MobRecord(MobKinds.Villager, 2, new Vector3(-20.5f, 64, 40.25f), 1.5f, 13, new Vector3(-18.5f, 64, 42.5f));
-        var sheep = new MobRecord(MobKinds.Sheep, 3, new Vector3(-30.5f, 70, 33.5f), -2, 8, null);
+        var villager = new MobRecord(MobKinds.Villager, 2, new LandPlace(-20.5, 64, 40.25), 1.5f, 13, new LandPlace(-18.5, 64, 42.5));
+        var sheep = new MobRecord(MobKinds.Sheep, 3, new LandPlace(-30.5, 70, 33.5), -2, 8, null);
         var full = new ChunkColumn(-2, 2);
         full.Spawns.AddRange([villager, sheep]);
         mobs.Joined(full);
@@ -231,7 +232,7 @@ public sealed class MobTests : IDisposable
                 Assert.Equal(column.Spawns, land.Generate(cx, cz).Spawns);
                 foreach (var mob in column.Spawns)
                 {
-                    int x = (int)MathF.Floor(mob.Position.X) & Section.Mask, y = (int)mob.Position.Y, z = (int)MathF.Floor(mob.Position.Z) & Section.Mask;
+                    int x = (int)Math.Floor(mob.Position.X) & Section.Mask, y = (int)mob.Position.Y, z = (int)Math.Floor(mob.Position.Z) & Section.Mask;
                     Assert.True(Blocks.Collides(column.Get(x, y - 1, z)), $"a {mob.Kind.Name} stands on {Blocks.Get(column.Get(x, y - 1, z)).Key}");
                     Assert.Equal(BlockId.Air, column.Get(x, y, z));
                     Assert.Equal(BlockId.Air, column.Get(x, y + 1, z));
@@ -261,7 +262,7 @@ public sealed class MobTests : IDisposable
         foreach (var villager in villagers)
         {
             var home = villager.Home!.Value;
-            int x = (int)MathF.Floor(home.X), y = (int)home.Y, z = (int)MathF.Floor(home.Z);
+            int x = (int)Math.Floor(home.X), y = (int)home.Y, z = (int)Math.Floor(home.Z);
             Assert.True(Blocks.Collides(Block(x, y - 1, z)) && Block(x, y, z) == BlockId.Air && Block(x, y + 1, z) == BlockId.Air,
                 $"a villager's home at {x}, {y}, {z} stands on {Blocks.Get(Block(x, y - 1, z)).Key} under {Blocks.Get(Block(x, y, z)).Key}");
         }

@@ -27,7 +27,7 @@ public static class OverlaySections
     public static IEnumerable<string> Player(VoxelGame game)
     {
         var player = game.Player;
-        var at = player.Body.Position;
+        var at = LandOrigin.LandOf(player.Body.Position);
         yield return $"Feet at {at.X:0.0}, {at.Y:0.0}, {at.Z:0.0}, facing {player.Heading:0} degrees{(player.Flying ? ", flying" : "")}, in {game.Mode.ToString().ToLowerInvariant()}";
         yield return game.TargetMob is { } mob ? $"Looking at a {mob.Kind.Name}, {mob.Doing}, its health {mob.Health} of {mob.Kind.Health}"
             : game.Target is { } hit ? $"Looking at {Blocks.Get(game.World.GetBlock(hit.X, hit.Y, hit.Z)).Name} at {hit.X}, {hit.Y}, {hit.Z}"
@@ -41,8 +41,7 @@ public static class OverlaySections
     {
         var generator = game.World.Generator;
         yield return $"{char.ToUpperInvariant(generator.Name[0])}{generator.Name[1..]}, seed {generator.Seed}";
-        var feet = game.Player.Body.Position;
-        int x = (int)MathF.Floor(feet.X), z = (int)MathF.Floor(feet.Z);
+        var (x, _, z) = LandOrigin.BlockOf(game.Player.Body.Position);
         if (generator is Overworld land)
         {
             var (height, temperature, humidity, biome) = land.At(x, z);
@@ -64,7 +63,8 @@ public static class OverlaySections
     public static IEnumerable<string> Light(VoxelGame game)
     {
         var eye = game.Player.Eye;
-        var (sky, block) = game.World.GetLight((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
+        var (ex, ey, ez) = LandOrigin.BlockOf(eye);
+        var (sky, block) = game.World.GetLight(ex, ey, ez);
         yield return $"At the eye sky {sky}, blocks {block}";
         if (game.Target is { } hit)
         {

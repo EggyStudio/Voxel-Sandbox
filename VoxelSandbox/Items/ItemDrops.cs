@@ -50,7 +50,8 @@ public partial struct ItemDrop
         if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0) return;
         foreach (var (id, _, body) in ctx.Ecs.Query<ItemDrop, Body>())
         {
-            if (!step.World.HasColumn(VoxelWorld.ColumnOf((int)MathF.Floor(body.Position.X)), VoxelWorld.ColumnOf((int)MathF.Floor(body.Position.Z)))) continue;
+            var (cx, cz) = LandOrigin.ColumnOf(body.Position);
+            if (!step.World.HasColumn(cx, cz)) continue;
             ctx.Ecs.GetRef<ItemDrop>(id).Age += step.Seconds;
             Move(step.World, body, step.Seconds);
         }
@@ -105,7 +106,8 @@ public partial struct ItemDrop
     private static void Move(VoxelWorld world, Body body, float seconds)
     {
         var middle = body.Position + new Vector3(0, 0.125f, 0);
-        if (Blocks.IsWater(world.GetBlock((int)MathF.Floor(middle.X), (int)MathF.Floor(middle.Y), (int)MathF.Floor(middle.Z))))
+        var (mx, my, mz) = LandOrigin.BlockOf(middle);
+        if (Blocks.IsWater(world.GetBlock(mx, my, mz)))
         {
             // A stack floats up through water, slowed by it.
             body.Velocity.Y = MathF.Min(body.Velocity.Y + 10 * seconds, 1);
@@ -162,7 +164,7 @@ public sealed class ItemDrops(EcsWorld ecs)
     {
         var angle = (float)_random.NextDouble() * MathF.Tau;
         var velocity = new Vector3(MathF.Cos(angle) * 1.2f, 3, MathF.Sin(angle) * 1.2f);
-        Spawn(item, count, new Vector3(x + 0.5f, y + 0.375f, z + 0.5f), velocity);
+        Spawn(item, count, LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f, 0.375f, 0.5f), velocity);
     }
 
     /// <summary>Despawns every stack, as a world closes.</summary>

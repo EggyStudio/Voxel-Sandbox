@@ -81,7 +81,7 @@ public sealed class Cracks : IDisposable
         foreach (var box in shape?.Boxes ?? [Box.Cell])
         {
             var size = box.Max - box.Min + new Vector3(0.006f);
-            DrawMesh(cube, material, Matrix4x4.CreateScale(size) * Matrix4x4.CreateTranslation(new Vector3(hit.X, hit.Y, hit.Z) + box.Min - new Vector3(0.003f)));
+            DrawMesh(cube, material, Matrix4x4.CreateScale(size) * Matrix4x4.CreateTranslation(LandOrigin.PlaceOf(hit.X, hit.Y, hit.Z) + box.Min - new Vector3(0.003f)));
         }
     }
 

@@ -19,11 +19,14 @@ public sealed class Laid(Action<ChunkColumn> lay) : IWorldGenerator
     }
 
     /// <summary>A world of the columns within <paramref name="radius"/> of the origin's, each lit and taken in as the streamer takes them.</summary>
-    public static VoxelWorld World(Action<ChunkColumn> lay, int radius = 2)
+    public static VoxelWorld World(Action<ChunkColumn> lay, int radius = 2) => World(lay, radius, 0, 0);
+
+    /// <summary>A world of the columns within <paramref name="radius"/> of a column, each lit and taken in as the streamer takes them.</summary>
+    public static VoxelWorld World(Action<ChunkColumn> lay, int radius, int middleX, int middleZ)
     {
         var world = new VoxelWorld(new Laid(lay));
-        for (int z = -radius; z <= radius; z++)
-            for (int x = -radius; x <= radius; x++)
+        for (int z = middleZ - radius; z <= middleZ + radius; z++)
+            for (int x = middleX - radius; x <= middleX + radius; x++)
             {
                 var column = world.Generator.Generate(x, z);
                 Lighting.Compute(column);

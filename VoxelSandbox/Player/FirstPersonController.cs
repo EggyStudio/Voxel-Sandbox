@@ -224,7 +224,8 @@ public sealed class FirstPersonController
 
         _eyes += ((Sneaking ? SneakingEyes : StandingEyes) - _eyes) * (1 - MathF.Exp(-20 * seconds));
         var eye = Eye;
-        EyeInWater = world.GetBlock((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z)) is var around && Blocks.IsWater(around);
+        var (ex, ey, ez) = LandOrigin.BlockOf(eye);
+        EyeInWater = world.GetBlock(ex, ey, ez) is var around && Blocks.IsWater(around);
         var widened = Sprinting && wish != Vector3.Zero ? FieldOfView * 1.12f : FieldOfView;
         _fov += (widened - _fov) * (1 - MathF.Exp(-10 * seconds));
 
@@ -283,7 +284,7 @@ public sealed class FirstPersonController
         (_tickSpeed, _tickLeft) = (moving / WaterTick, WaterTick);
     }
 
-    /// <summary>Puts the player's feet at a place, still.</summary>
+    /// <summary>Puts the player's feet at a place kept against the <see cref="LandOrigin"/>, still.</summary>
     public void Teleport(Vector3 feet)
     {
         Body.Position = feet;
@@ -297,7 +298,7 @@ public sealed class FirstPersonController
     // are above it or their cell holds none. Lava is swum through as water is.
     private static float WaterDepth(VoxelWorld world, Vector3 feet)
     {
-        int x = (int)MathF.Floor(feet.X), y = (int)MathF.Floor(feet.Y), z = (int)MathF.Floor(feet.Z);
+        var (x, y, z) = LandOrigin.BlockOf(feet);
         var at = world.GetBlock(x, y, z);
         if (!Blocks.IsFluid(at)) return 0;
         for (var above = world.GetBlock(x, y + 1, z); Blocks.SameFluid(at, above); above = world.GetBlock(x, y + 1, z)) (at, y) = (above, y + 1);

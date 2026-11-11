@@ -63,8 +63,8 @@ public readonly record struct StructureFrame(ColumnClip Clip, int X, int Y, int 
     {
         var (wx, wz) = At(x, z);
         var (hx, hz) = At(homeX, homeZ);
-        Clip.Spawn(new MobRecord(MobKinds.Villager, robe, new Vector3(wx + 0.5f, Y + 1, wz + 0.5f), -Turn * MathF.PI / 2,
-            MobKinds.Villager.Health, new Vector3(hx + 0.5f, Y + 1, hz + 0.5f)));
+        Clip.Spawn(new MobRecord(MobKinds.Villager, robe, new LandPlace(wx + 0.5, Y + 1, wz + 0.5), -Turn * MathF.PI / 2,
+            MobKinds.Villager.Health, new LandPlace(hx + 0.5, Y + 1, hz + 0.5)));
     }
 
     /// <summary>

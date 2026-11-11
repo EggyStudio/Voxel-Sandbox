@@ -6,9 +6,9 @@ namespace VoxelSandbox;
 /// <summary>
 /// A mob as a save keeps it and a generator places it, with its kind, variant, place, turn and
 /// health, and its home, where a villager goes at night, inside its house, and wanders near by day,
-/// or null for a mob that wanders anywhere.
+/// or null for a mob that wanders anywhere, its places in the land's own coordinates.
 /// </summary>
-public readonly record struct MobRecord(MobKind Kind, byte Variant, Vector3 Position, float Yaw, int Health, Vector3? Home);
+public readonly record struct MobRecord(MobKind Kind, byte Variant, LandPlace Position, float Yaw, int Health, LandPlace? Home);
 
 /// <summary>
 /// A mob's life, its health, the red a hit leaves on it and how long it has lain dying, a component
@@ -148,8 +148,8 @@ public sealed partial class Mob
         Id = id;
         Kind = record.Kind;
         Variant = record.Variant;
-        Body = new Body(record.Kind.HalfWidth, record.Kind.Height) { Position = record.Position };
-        Home = record.Home;
+        Body = new Body(record.Kind.HalfWidth, record.Kind.Height) { Position = LandOrigin.PlaceOf(record.Position) };
+        Home = record.Home is { } home ? LandOrigin.PlaceOf(home) : null;
         Ecs = ecs ?? new EcsWorld();
         Entity = Ecs.Spawn();
         Ecs.Add(Entity, this);
@@ -159,7 +159,7 @@ public sealed partial class Mob
         if (Kind.Hostile) Ecs.Add(Entity, new MobHostile { ShotWait = 1, Fuse = -1 });
         _random = new Random(seed);
         _wait = 1 + (float)_random.NextDouble() * 6;
-        _lastPlace = record.Position;
+        _lastPlace = Body.Position;
     }
 
     /// <summary>A number of its own while the world is open, which <c>voxel.mobs</c> lists it by.</summary>
@@ -186,6 +186,7 @@ public sealed partial class Mob
 
     public int Health => Life.Health;
 
+    /// <summary>Where it goes at night and wanders near by day, kept against the <see cref="LandOrigin"/>, or null for a mob that wanders anywhere.</summary>
     public Vector3? Home { get; }
 
     /// <inheritdoc cref="MobLife.Hurt"/>
@@ -208,7 +209,7 @@ public sealed partial class Mob
     /// <summary>The cells it is walking through, the next first, or none.</summary>
     public IEnumerable<Step> Path => _path is null ? [] : _path.Skip(_next);
 
-    public MobRecord Record => new(Kind, Variant, Body.Position, Yaw, Health, Home);
+    public MobRecord Record => new(Kind, Variant, LandOrigin.LandOf(Body.Position), Yaw, Health, Home is { } home ? LandOrigin.LandOf(home) : null);
 
     /// <summary>
     /// Takes a hit from a place, losing some health, reddening, and knocked away from it, then runs
@@ -247,7 +248,8 @@ public sealed partial class Mob
     public void Update(VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events)
     {
         var middle = Body.Position + new Vector3(0, Kind.Height * 0.5f, 0);
-        _swimming = Blocks.IsWater(world.GetBlock((int)MathF.Floor(middle.X), (int)MathF.Floor(middle.Y), (int)MathF.Floor(middle.Z)));
+        var (mx, my, mz) = LandOrigin.BlockOf(middle);
+        _swimming = Blocks.IsWater(world.GetBlock(mx, my, mz));
         var wish = Vector3.Zero;
         var jump = false;
         // A mob lying dying thinks no more, and its life's behavior counts its time.
@@ -308,7 +310,7 @@ public sealed partial class Mob
         {
             var angle = (float)_random.NextDouble() * MathF.Tau;
             var distance = least + (float)_random.NextDouble() * (most - least);
-            int x = (int)MathF.Floor(around.X + MathF.Cos(angle) * distance), z = (int)MathF.Floor(around.Z + MathF.Sin(angle) * distance);
+            int x = LandOrigin.BlockX(around.X + MathF.Cos(angle) * distance), z = LandOrigin.BlockZ(around.Z + MathF.Sin(angle) * distance);
             // The ground there, from a little above down, so the way climbs or drops a few blocks at
             // most, and not water, which a mob crosses where it must and does not wander into.
             for (int y = (int)MathF.Floor(around.Y) + 3; y >= (int)MathF.Floor(around.Y) - 4; y--)
@@ -333,7 +335,8 @@ public sealed partial class Mob
         return true;
     }
 
-    private static Step Cell(Vector3 at) => new((int)MathF.Floor(at.X), (int)MathF.Floor(at.Y + 0.2f), (int)MathF.Floor(at.Z));
+    // The cell of the way a place stands in, in the land's own coordinates.
+    private static Step Cell(Vector3 at) => new(LandOrigin.BlockX(at.X), (int)MathF.Floor(at.Y + 0.2f), LandOrigin.BlockZ(at.Z));
 
     // Walks toward the next cell of the way, opening a shut door in it, jumping where it is higher
     // and the body is stopped, and drops the way where the end is reached or the body is stuck.
@@ -341,7 +344,7 @@ public sealed partial class Mob
     {
         var path = _path!;
         var cell = path[_next];
-        var target = new Vector3(cell.X + 0.5f, cell.Y, cell.Z + 0.5f);
+        var target = LandOrigin.PlaceOf(cell.X, cell.Y, cell.Z) + new Vector3(0.5f, 0, 0.5f);
         var flat = target - Body.Position;
         flat.Y = 0;
         // A cell is reached once the body's middle is near its middle and its feet near its floor.
@@ -395,7 +398,7 @@ public sealed partial class Mob
     private void ShutDoorBehind(VoxelWorld world)
     {
         if (_openedDoor is not { } door) return;
-        var middle = new Vector3(door.X + 0.5f, Body.Position.Y, door.Z + 0.5f);
+        var middle = LandOrigin.PlaceOf(door.X, 0, door.Z) + new Vector3(0.5f, Body.Position.Y, 0.5f);
         if (Vector3.DistanceSquared(middle, Body.Position) < 1.7f * 1.7f && Dying < 0) return;
         if (!Pathfinder.IsShutDoor(world.GetBlock(door.X, door.Y, door.Z)) && Blocks.Get(world.GetBlock(door.X, door.Y, door.Z)).Toggled is not null)
             world.Toggle(door.X, door.Y, door.Z);

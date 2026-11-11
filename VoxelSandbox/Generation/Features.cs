@@ -46,7 +46,7 @@ public readonly struct ColumnClip(ChunkColumn column)
     /// <summary>Places a mob where its feet stand, if they stand inside the column.</summary>
     public void Spawn(MobRecord mob)
     {
-        if (Inside((int)MathF.Floor(mob.Position.X), (int)MathF.Floor(mob.Position.Y), (int)MathF.Floor(mob.Position.Z))) column.Spawns.Add(mob);
+        if (Inside((int)Math.Floor(mob.Position.X), (int)Math.Floor(mob.Position.Y), (int)Math.Floor(mob.Position.Z))) column.Spawns.Add(mob);
     }
 
     /// <summary>

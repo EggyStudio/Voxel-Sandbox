@@ -25,7 +25,7 @@ public static class Explosion
                     var strength = power * (0.7f + (float)random.NextDouble() * 0.6f);
                     for (var p = at; strength > 0; p += way)
                     {
-                        int x = (int)MathF.Floor(p.X), y = (int)MathF.Floor(p.Y), z = (int)MathF.Floor(p.Z);
+                        var (x, y, z) = LandOrigin.BlockOf(p);
                         var block = world.GetBlock(x, y, z);
                         if (block != BlockId.Air) strength -= (Loot.Resistance(block) + 0.3f) * 0.3f;
                         if (strength > 0 && block != BlockId.Air && !Blocks.IsWater(block) && Blocks.Get(block).Breakable) broken.Add((x, y, z));

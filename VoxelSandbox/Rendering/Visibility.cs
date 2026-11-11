@@ -134,7 +134,7 @@ public sealed class Visibility
         var start = Reach.Of(eye);
         if (start.Y is < ChunkColumn.BottomSection or >= ChunkColumn.CeilingSection) return -1;
         return world.TryGetColumn(start.X, start.Z, out var home)
-            ? FacesFrom(home.Numbered(start.Y)!, Section.Index((int)MathF.Floor(eye.X) & Section.Mask, (int)MathF.Floor(eye.Y) & Section.Mask, (int)MathF.Floor(eye.Z) & Section.Mask), atlas)
+            ? FacesFrom(home.Numbered(start.Y)!, Section.Index(LandOrigin.BlockX(eye.X) & Section.Mask, (int)MathF.Floor(eye.Y) & Section.Mask, LandOrigin.BlockZ(eye.Z) & Section.Mask), atlas)
             : 63;
     }
 
@@ -142,7 +142,7 @@ public sealed class Visibility
     // section changes, since they ask a flood of the section's cells.
     private int ExitsKept(VoxelWorld world, System.Numerics.Vector3 eye, TerrainAtlas atlas)
     {
-        var cell = ((int)MathF.Floor(eye.X), (int)MathF.Floor(eye.Y), (int)MathF.Floor(eye.Z));
+        var cell = LandOrigin.BlockOf(eye);
         var start = Reach.Of(eye);
         var home = world.TryGetColumn(start.X, start.Z, out var column) ? column.Numbered(start.Y) : null;
         var key = (cell, home, home?.Version ?? 0, atlas.Serial);
