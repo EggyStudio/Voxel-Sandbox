@@ -1,40 +1,46 @@
 # Review
 
-Reviewed up to `5ad3f58`, the review's file alone with the Replies of 174 and 176, pushed at 23:00
-on 2026-11-11, no run by the workflow's paths. Before it `6b0043b`, voxel.spawning, asked by the
-owner on 2026-11-11, every mob kept out of the world from the next frame on and brought back where
-it stood, the play switching it off before its first check, pushed at 21:31 on 2026-11-11, its run
-left queued by GitHub's outage and not started, Verdict 12; its strict build is clean and 367 tests
-pass, two plays under the layer pass whole in 317 and 218 s, and of their 17 captures dusk differs
-in 0.00 percent of pixels by more than 2 levels where 2.3 before, the night sky in 0.18, within its
-clouds; it keeps the form and carries the review's files. Before it `1f1e955`, item 172,
-terrain.slang, mob.slang and bits.slang returning unlit on the branch drawn unlit, each fragment
-about 590 KB smaller and the fifth frame's 22 pipelines made in 20.3 s where 43.9 from an empty
-cache with the layer off, pushed at 19:29 on 2026-11-11 once the pin's run had ended, its run green
-at 20:36 with the play in 67 minutes where the pin's took 96; it keeps the form and carries the
-review's files. Before it `068fd5f`, the pin of the engine's 6.2.41 with the workflows' engine
-checkout at `894542da`, pushed at 15:29 on 2026-11-11, its run red at 15:34 in the play job before
-the game was built, the runner not reaching its package mirror for two hours and a quarter, Verdict
-11, green at 19:26 on its tenth attempt, the play in 96 minutes, which settles the verdict; its
-strict build is clean and 366 tests pass. The water's mirror passes six plays of six under the
-layer, three from an empty cache in 393, 417 and 434 s and three from the cache each left in 237,
-242 and 221 s, each play's caches in a folder of its own; from a cold cache the pipelines' file
-grows to 21.8 MB and the pool's three terrain.slang pipelines compile in 14 to 19 s each at once,
-and from a warm one every pipeline made in play says from the cache, the pool's three in 1.17 to
-1.37 s each; frame 5's 22 pipelines take 54 to 68 s cold, one after another, and 4.4 to 4.6 s warm.
-The engine's trial puts about 1.2 s of each such pipeline on the validation layer, 94 ms compiled
-without it, so these are the layer's seconds, which the play turns on, item 171. It keeps the form
-and carries the review's files. The pushes before these stand in REVIEW-ARCHIVE.md's head records.
+Reviewed up to `88d6303`, a fault 175's read found, ChunkStreamer.Unload squaring a column's
+distance from the player in an int, which wrapped negative past 46,340 columns so a teleport of some
+741,000 blocks left the old columns loaded, squared in longs with a test that teleports a million
+blocks, pushed at 23:27 on 2026-11-11, its run started where the run of the commit before it never
+did; the strict build is clean, 368 tests pass and the play passes whole in 310 s; it keeps the form
+and carries the review's files. Before it `5ad3f58`, the review's file alone with the Replies of 174
+and 176, pushed at 23:00 on 2026-11-11, no run by the workflow's paths. Before it `6b0043b`,
+voxel.spawning, asked by the owner on 2026-11-11, every mob kept out of the world from the next
+frame on and brought back where it stood, the play switching it off before its first check, pushed
+at 21:31 on 2026-11-11, its run left queued by GitHub's outage and not started, Verdict 12; its
+strict build is clean and 367 tests pass, two plays under the layer pass whole in 317 and 218 s, and
+of their 17 captures dusk differs in 0.00 percent of pixels by more than 2 levels where 2.3 before,
+the night sky in 0.18, within its clouds; it keeps the form and carries the review's files. Before
+it `1f1e955`, item 172, terrain.slang, mob.slang and bits.slang returning unlit on the branch drawn
+unlit, each fragment about 590 KB smaller and the fifth frame's 22 pipelines made in 20.3 s where
+43.9 from an empty cache with the layer off, pushed at 19:29 on 2026-11-11 once the pin's run had
+ended, its run green at 20:36 with the play in 67 minutes where the pin's took 96; it keeps the form
+and carries the review's files. Before it `068fd5f`, the pin of the engine's 6.2.41 with the
+workflows' engine checkout at `894542da`, pushed at 15:29 on 2026-11-11, its run red at 15:34 in the
+play job before the game was built, the runner not reaching its package mirror for two hours and a
+quarter, Verdict 11, green at 19:26 on its tenth attempt, the play in 96 minutes, which settles the
+verdict; its strict build is clean and 366 tests pass. The water's mirror passes six plays of six
+under the layer, three from an empty cache in 393, 417 and 434 s and three from the cache each left
+in 237, 242 and 221 s, each play's caches in a folder of its own; from a cold cache the pipelines'
+file grows to 21.8 MB and the pool's three terrain.slang pipelines compile in 14 to 19 s each at
+once, and from a warm one every pipeline made in play says from the cache, the pool's three in 1.17
+to 1.37 s each; frame 5's 22 pipelines take 54 to 68 s cold, one after another, and 4.4 to 4.6 s
+warm. The engine's trial puts about 1.2 s of each such pipeline on the validation layer, 94 ms
+compiled without it, so these are the layer's seconds, which the play turns on, item 171. It keeps
+the form and carries the review's files. The pushes before these stand in REVIEW-ARCHIVE.md's head
+records.
 
-Next 175, the game far from the origin; 173's check on the engine's mend of its item 257, the
-owner's first view before and after, with 174's scene read again on the same package, goes ahead of
-it when the engine's coder has the package; 174's read and 176's are done; then the mirror's check
-waiting for its pipelines at the pin that carries the engine's 254. 172, the engine's lighting
-called once in each of the game's shaders, is done at `1f1e955`, green at 20:36, and 173's read is
-done. The owner on 2026-11-11, of taller and more varied terrain, "there are more important stuff
-currently and the terrain generation is nice even if not fully fledged out", so nothing of the
-terrain is an item. Item 29's second part stays parked by the owner's word. A program on the GPU
-runs under the lock (N 7.9).
+Next the checks of the engine's mends as its packages come, the ceiling's line at 2560 by 1440
+first, then the dither and 176's blobs, each on the owner's room and on 174's scene; between them
+177, the body's and the ray's places far from the origin, its read first; 173's check, 174's, 175's
+and 176's reads are done; then the mirror's check waiting for its pipelines at the pin that carries
+the engine's 254. 172, the engine's lighting called once in each of the game's shaders, is done at
+`1f1e955`, green at 20:36, and 173's read is done. The owner on 2026-11-11, of taller and more
+varied terrain, "there are more important stuff currently and the terrain generation is nice even if
+not fully fledged out", so nothing of the terrain is an item. Item 29's second part stays parked by
+the owner's word. A program on the GPU runs under the lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -105,7 +111,13 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     the engine's coder has the mend in a package of its own feed, unpublished, the game's coder
     captures the owner's first view from its copy on 6.2.41 and on that package, built in its work
     folder, the wall's rows read at Low, Medium and High on both, before and after on one sheet for
-    the owner. The work folder i173 is kept until then.
+    the owner. The work folder i173 is kept until then. The check's first step is done at 23:32 on
+    the engine's package 6.2.41-local.257. The stripes are gone, no row of the east wall with a step
+    over 3 levels at any quality at 1280 by 720 or at 2560 by 1440 where the published package has
+    up to 29 and up to 16, the figures under the engine's item 257. One thing reads worse, a line
+    across the ceiling at rows 173 to 175 at 2560 by 1440 alone, which went to the engine's coder.
+    The sheet 23-50-item-173-mend.png went to the owner. The second step, 174's scene on the package
+    at both places, follows.
 
 174. **The same built scene near the origin and at the owner's place.** From the engine's item 257
     on 2026-11-11. The owner's noise was float precision 4,450 units from the origin in points and
@@ -126,7 +138,11 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     occlusion at 1 and the sun's shadow differ between the places by more than a place differs
     between two sessions, the figures under the engine's item 258 and in its three asks, the sheet
     23-30-item-174-places.png in the dump. The scene in i174 stays as the check of each mend, read
-    again on the engine's package of its 257 first.
+    again on the engine's package of its 257 first. Read again at 23:46 on the engine's package
+    6.2.41-local.257, four sessions. The screen's probes read alike at the two places, the west
+    wall's mean step 0.34, 0.35 and 0.37 near against 0.36, 0.37 and 0.39 to 0.40 beside the room
+    where the gap was 0.12 to 0.17; ambient occlusion and the sun's shadow read as before, not being
+    in that mend; nothing reads worse past the noise. The sheet is 23-55-item-174-mend.png.
 
 175. **The game far from the origin.** After 174, a read and no mend. The game's worlds have no
     edge, and its own shaders and its own arithmetic work in world numbers too. The same built scene
@@ -134,7 +150,22 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     to say what goes wrong first and where, the terrain's seams, the stepped light's squares, the
     water, the mobs, the shadows, picking a block, the physics, each with a picture and the distance
     at which it is first seen. What is the engine's goes to it as asks, and what is the game's
-    becomes items.
+    becomes items. The read is done at 23:46, on 6.2.41 with the game of `6b0043b`, the scene built
+    block for block at 16, 4,432, 17,808, 70,992, 284,688 and 1,139,984 blocks out, the sheet
+    23-45-item-175-far.png in the dump. From 4,432 the engine's light on a wall a glow light lights
+    is mottled, the west wall's mean step at Low 0.34 at the origin, then 0.48, 0.89, 0.75 and 1.11
+    out to 284,688, speckles in the frame from 17,808, the engine's 257 taking the 4,432 case back
+    to the origin's. From 284,688 the land's faces part in a lattice of cracks with the sky through
+    them, the game handing each section a float matrix and the engine placing every vertex in world
+    floats, 0.03 a step there; and the walk along the far axis is 13 percent slower, the body's
+    position a float Vector3 and a frame's move of 0.07 rounding to 0.0625. At 1,139,984, where a
+    float steps by 0.125, picking gets 5 of 14 right, most misses one block east, the ray cast from
+    the float eye, the walk along x jumps 2 to 4 blocks a read and stops with the body 0.3 inside
+    the wall, a teleport to a half lands on a whole, a pig walks along z alone, and the scene's
+    faces tear into strips with the shadows' edges ragged. The fall, standing and the walk along the
+    near axis hold at every distance. A teleport of over 741,000 blocks left the old columns loaded,
+    an int squared, mended at `88d6303`. What is the engine's is an ask under its item 258, the
+    vertices placed in world floats; what is the game's is item 177.
 
 176. **Bright colored blobs in the distance under bloom.** From the owner on 2026-11-11, to the
     game's coder, "At distance there are these colored bloomed blobs in the background". Read on
@@ -174,10 +205,22 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     in the ask and under the engine's item 259, which mends it. What remains here is the check after
     that mend, the sweep's counts at both places read again.
 
+177. **The body's and the ray's places far from the origin.** From 175's read on 2026-11-11. The
+    player's body, the mobs' and the picking ray keep their places in a float Vector3, so from
+    284,688 blocks a walk along the far axis is 13 percent slower and at 1,139,984 picking misses by
+    a block, the walk jumps and stops inside a wall and a teleport lands half a block off. No player
+    walks there in a session, a teleport does. The places kept in doubles, or as a column and an
+    offset within it, for the body, the mobs and the ray, the float made only where the engine takes
+    one, with tests at 284,688 and 1,139,984 of the walk's speed along each axis, the stop before a
+    wall, picking's 14 and a teleport's landing. After the checks of the engine's mends, which go
+    ahead of it whenever a package comes; a read of what it touches first, as a Reply, since the
+    body's place runs through the physics, the saves and the network of calls about them.
+
 ## Verdicts
 
 Verdicts 1 to 11 are settled, said under each in REVIEW-ARCHIVE.md; Verdict 12 is open, the run of
-`6b0043b` left queued by an outage of GitHub's Actions and not yet started.
+`6b0043b` left queued by an outage of GitHub's Actions and never started, settling on the run of
+`88d6303`.
 
 12. **The run of `6b0043b` never started, left queued by an outage of GitHub's Actions.** Run
     43096571236, made by the push at 21:31 on 2026-11-11, has stood queued with no job since,
@@ -384,3 +427,29 @@ to 1,139,984. It squares in longs. A test in HeadlessGameTests teleports the pla
 and finds no column left behind, where before the fix the column it left was still in, of 138. The
 strict build is clean, 368 tests pass and the play passes whole under the layer in 310 s, the mirror
 at red 171, green 148, blue 167.
+
+Item 173's check on the engine's mend 6.2.41-local.257, the game of `6b0043b` built on each package
+in the work folder from a fresh copy of the review's copy of the data, under the lock. Of eight rows
+across the east wall at y 26.625 to 27.875, 6.2.41 has 0 to 29 steps over 3 levels a row at 1280 by
+720 and 2 to 16 at 2560 by 1440, and the mend 0 in every row at Low, Medium and High at both sizes,
+the mean step 0.18 to 0.36 where 0.29 to 1.31. What reads worse is a line across the ceiling at
+2560 by 1440 alone, rows 173 to 175, 3.4 levels over its neighbors at every quality, which 6.2.41
+does not draw. Outside the striped corner the frame is smoother on the mend everywhere. On the mend,
+174's scene reads the screen's probes alike at the two places, the west wall's mean step 0.34 to
+0.37 near the origin and 0.36 to 0.40 at 4432, where 0.45 to 0.53 on 6.2.41, the ambient occlusion
+7.6 levels darker at 4432 as before and the shadow's steps as before within one. The sheets are
+23-50-item-173-mend.png and 23-55-item-174-mend.png in the dump.
+
+Item 175, read on 6.2.41 with the game of `6b0043b`, the scene of 174 with 176's logs and a pool
+built block for block 16, 4,432, 17,808, 70,992, 284,688 and 1,139,984 blocks out, one session at
+each. From 4,432 the light a glow light lays on a wall mottles, the engine's, the west wall's mean
+step at Low 0.34 at the origin, 0.48, 0.89, 0.75 and 1.11 out to 284,688. From 284,688 the land's
+faces part in a lattice of cracks with the sky through them, the engine placing each vertex in
+world floats from the float matrix the game gives each section, and the walk along the far axis is
+13 percent slower, 1.95 blocks a read where 2.24 along z, the game's float body. At 1,139,984,
+where a float steps by an eighth of a block, the game picks the right block for 5 of 14 points,
+most misses a block east, its walk along x jumps 2 and 4 blocks a read and stops 0.3 into the wall,
+and a teleport to a half block lands on the whole one, while the engine tears the scene's faces
+into strips and warps the pig. Picking, the fall, the stand and the walk along z hold at every
+other place. The sheet is 23-45-item-175-far.png in the dump, and the reads are in
+`~/.cache/3dengine-tools/work/i175`.
