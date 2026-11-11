@@ -82,7 +82,9 @@ and with its `publish` input set makes a GitHub release of the three. A zip need
 major and minor in `build/version.txt` and as the patch the commits since that file changed.
 
 The build workflow builds the game and runs its tests, and plays it through `build/play.sh` on
-Mesa's lavapipe, every check of the walk read through `./e3d` from an offscreen run. The play job
+Mesa's lavapipe, every check of the walk read through `./e3d` from an offscreen run. Run here, the
+play drives through the engine's command line as `build/engine.sh` builds it at the pinned commit,
+with `ENGINE_CHECKOUT` naming its `.engine` (`.github/E3D.md`). The play job
 took 84 minutes on a hosted runner on 2026-10-30, the rain's splashes the longest of its checks,
 and is held to 150 minutes.
 

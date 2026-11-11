@@ -52,8 +52,19 @@ fail() {
   echo "::error title=Voxel Sandbox through e3d::$1.${ending:+ Its log ends with $ending.}" >&3
   exit 1
 }
+# A game the stop through e3d leaves running, as one does where ./e3d itself fails, is stopped by
+# its process ten seconds on, and killed five after that, so a failed run leaves nothing drawing.
+stop_by_process() {
+  local n
+  [ -n "$1" ] || return 0
+  for n in $(seq 1 100); do kill -0 "$1" 2> /dev/null || return 0; sleep 0.1; done
+  kill "$1" 2> /dev/null || true
+  for n in $(seq 1 50); do kill -0 "$1" 2> /dev/null || return 0; sleep 0.1; done
+  kill -9 "$1" 2> /dev/null || true
+}
 trap 'if [ -n "$pid" ]; then ./e3d stop --session "$pid" --quiet; else ./e3d stop --quiet; fi > /dev/null 2>&1 || true
   [ -n "$kept" ] && XDG_DATA_HOME="$data" ./e3d stop --session "$kept" --quiet > /dev/null 2>&1 || true
+  stop_by_process "$pid"; stop_by_process "$kept"
   rm -rf "$data"' EXIT
 # A command e3d refuses fails with its code and sentence, which it writes to standard error.
 cmd() { ./e3d command "$@" --quiet --timeout 600 --session "$pid" 2> "$said" || fail "./e3d command $* ended with $?, $(head -n 1 "$said")"; }

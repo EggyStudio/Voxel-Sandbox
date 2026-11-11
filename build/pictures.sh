@@ -57,7 +57,16 @@ done < <(perl -MJSON::PP -0777 -ne 'print join("\t", @$_{qw(file url sha512)}), 
 ./e3d open "$program" --offscreen --transient "${packs[@]}" --json > "$opened"
 pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' "$opened")
 [ -n "$pid" ] || { echo "e3d did not open the game, it said $(cat "$opened")" >&2; exit 1; }
-trap './e3d stop --session "$pid" --quiet > /dev/null 2>&1 || true' EXIT
+# A game the stop through e3d leaves running, as one does where ./e3d itself fails, is stopped by
+# its process ten seconds on, and killed five after that.
+stop_by_process() {
+  local n
+  for n in $(seq 1 100); do kill -0 "$1" 2> /dev/null || return 0; sleep 0.1; done
+  kill "$1" 2> /dev/null || true
+  for n in $(seq 1 50); do kill -0 "$1" 2> /dev/null || return 0; sleep 0.1; done
+  kill -9 "$1" 2> /dev/null || true
+}
+trap './e3d stop --session "$pid" --quiet > /dev/null 2>&1 || true; stop_by_process "$pid"' EXIT
 cmd() { ./e3d command "$@" --quiet --timeout 600 --session "$pid"; }
 shot() { ./e3d shot "$PWD/captures/$1.png" --timeout 600 --session "$pid" > /dev/null; }
 

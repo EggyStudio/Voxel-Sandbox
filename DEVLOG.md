@@ -6,6 +6,15 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 notes written beside them as Markdown files named the same way. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
+## 2026-11-11
+
+Done that day
+
+- Item 167 at `e3dea22`. The engine's color functions and the field's center ahead, at the pin that
+  carries them.
+- Item 169 at `08bf109`. A build keeps the resources' folders whatever path reaches it, and the game
+  stops at its open where a file of its own is missing.
+
 ## 2026-11-10
 
 Done that day
