@@ -17,6 +17,7 @@ Done that day
 - Item 170 at `8ded865`. The game's local checks run through a client that no build of the engine's
   tree reaches, and stop what they started by its pid.
 - Item 172 at `1f1e955`. A shader of the game's calls the engine's lighting once.
+- Item 175 at `88d6303`. The game far from the origin.
 
 ## 2026-11-10
 

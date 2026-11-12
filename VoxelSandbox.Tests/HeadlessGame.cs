@@ -17,7 +17,9 @@ namespace VoxelSandbox.Tests;
 /// window before the next opens one.
 /// </para>
 /// <para>
-/// The game saves nothing and loads no pack, and draws two columns about the player. The world's
+/// The game saves nothing unless given a folder of its own to save in, loads no pack, and draws two
+/// columns about the player, who stands at the flat world's middle unless given a place of the land
+/// to be put at, as <c>voxel.tp</c> puts the player, the origin moved near it. The world's
 /// columns are made on workers by the clock, not by the frames, which pass in a fraction of that
 /// with nothing held to a rate, so the game is stepped until it stands and every column in reach is
 /// in, yielding a moment between frames while it loads, or until 30 seconds have passed, which a
@@ -29,7 +31,7 @@ public sealed class HeadlessGame : IDisposable
     /// <summary>The seconds each frame steps the game by unless a test gives another.</summary>
     public const float FrameSeconds = 1 / 30f;
 
-    public HeadlessGame(int seed = 1, float frameSeconds = FrameSeconds)
+    public HeadlessGame(int seed = 1, float frameSeconds = FrameSeconds, LandPlace? at = null, string? save = null)
     {
         Environment.SetEnvironmentVariable("E3D_HEADLESS", "1");
         Environment.SetEnvironmentVariable("E3D_FRAME_TIME", frameSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -40,16 +42,15 @@ public sealed class HeadlessGame : IDisposable
         InitAudioDevice();
         try
         {
-            Game = new VoxelGame("flat", seed, null, transient: true, []) { RenderDistance = 2 };
-            var (clock, frames) = (System.Diagnostics.Stopwatch.StartNew(), 0);
-            while ((Game.Loading || Game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30)
+            // A save's folder given whole stands in for its name, which the saves' folder is joined to.
+            Game = new VoxelGame("flat", seed, save, transient: save is null, []) { RenderDistance = 2 };
+            Stand();
+            if (at is { } place)
             {
-                Game.Draw();
-                frames++;
-                if (Game.Loading || Game.Streamer.Pending > 0) Thread.Sleep(2);
+                Game.Recenter(place);
+                Game.Player.Teleport(LandOrigin.PlaceOf(place));
+                Stand();
             }
-            Assert.False(Game.Loading, $"the flat world did not stand within 30 seconds, {frames} frames");
-            Assert.Equal(0, Game.Streamer.Pending);
         }
         catch
         {
@@ -60,6 +61,22 @@ public sealed class HeadlessGame : IDisposable
     }
 
     public VoxelGame Game { get; }
+
+    // Steps the game until the world stands and every column in reach is in, a frame at least, so
+    // the streamer has seen where the player stands before nothing is pending.
+    private void Stand()
+    {
+        var (clock, frames) = (System.Diagnostics.Stopwatch.StartNew(), 0);
+        do
+        {
+            Game.Draw();
+            frames++;
+            if (Game.Loading || Game.Streamer.Pending > 0) Thread.Sleep(2);
+        }
+        while ((Game.Loading || Game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30);
+        Assert.False(Game.Loading, $"the flat world did not stand within 30 seconds, {frames} frames");
+        Assert.Equal(0, Game.Streamer.Pending);
+    }
 
     /// <summary>The ECS world the game's entities are in.</summary>
     public EcsWorld Ecs => GetApp().World.Resource<EcsWorld>();

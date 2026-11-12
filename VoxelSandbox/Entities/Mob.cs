@@ -187,7 +187,14 @@ public sealed partial class Mob
     public int Health => Life.Health;
 
     /// <summary>Where it goes at night and wanders near by day, kept against the <see cref="LandOrigin"/>, or null for a mob that wanders anywhere.</summary>
-    public Vector3? Home { get; }
+    public Vector3? Home { get; private set; }
+
+    /// <summary>Moves its home and the place it last stood by the whole step the <see cref="LandOrigin"/> moves by, its body moving with every body's.</summary>
+    public void Shift(Vector3 by)
+    {
+        if (Home is { } home) Home = home + by;
+        _lastPlace += by;
+    }
 
     /// <inheritdoc cref="MobLife.Hurt"/>
     public float Hurt => Life.Hurt;

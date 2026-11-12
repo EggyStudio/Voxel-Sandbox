@@ -64,6 +64,17 @@ public sealed class SaveTests : IDisposable
     }
 
     [Fact]
+    public void The_Players_Place_A_Million_Blocks_Out_Reads_Back_Whole()
+    {
+        var save = new WorldSave(_folder);
+        save.WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]) with { X = 1_139_992.37, Y = 64.125, Z = -284_700.06 });
+
+        var info = new WorldSave(_folder).ReadInfo();
+
+        Assert.Equal((1_139_992.37, 64.125, -284_700.06), (info?.X, info?.Y, info?.Z));
+    }
+
+    [Fact]
     public void A_Mob_A_Million_Blocks_Out_Reads_Back_To_Its_Place_In_The_Land()
     {
         var sheep = new MobRecord(MobKinds.Sheep, 3, new LandPlace(1_139_992.37, 64.125, 596.91), 1, 8, null);

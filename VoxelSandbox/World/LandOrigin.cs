@@ -31,13 +31,25 @@ public readonly record struct LandPlace(double X, double Y, double Z);
 /// <para>
 /// The origin is a multiple of <see cref="Step"/> blocks, so every grid the engine lays over the
 /// land, its field's cells and its probes, falls against the blocks as it does at the origin. It is
-/// one for the game, since the game opens one world at a time, and 0 until a world is opened.
+/// one for the game, since the game opens one world at a time, and 0 until a world is opened. It is
+/// set near the player as a world opens and moved near the player once the player is more than
+/// <see cref="Reach"/> blocks from it along x or z, so a walk to and fro about one place does not move
+/// it back and forth, and every float place then moves by the same whole step
+/// (<see cref="MoveNear"/>).
 /// </para>
 /// </remarks>
 public static class LandOrigin
 {
     /// <summary>The blocks the origin moves by, which every grid of the engine's divides.</summary>
     public const int Step = 1024;
+
+    /// <summary>
+    /// How far from the origin along x or z the player goes before the origin moves, a step, so the
+    /// player stands within 512 blocks of it after a move and walks at least 512 before the next. At
+    /// 2,000 blocks from the engine's zero the light it lays on a wall mottles as at 4,450, where
+    /// within 1,040 a wall reads as at the origin.
+    /// </summary>
+    public const int Reach = 1024;
 
     /// <summary>The origin's x in blocks.</summary>
     public static int X { get; private set; }
@@ -51,6 +63,19 @@ public static class LandOrigin
     /// <summary>Sets the origin to the multiple of <see cref="Step"/> nearest a place of the land's own.</summary>
     public static void Near(double x, double z) =>
         (X, Z) = ((int)Math.Round(x / Step) * Step, (int)Math.Round(z / Step) * Step);
+
+    /// <summary>
+    /// Moves the origin near a place of the land's own where it lies more than <see cref="Reach"/>
+    /// blocks from it along x or z, and gives the whole step every float place moves by, or null where
+    /// the origin stays.
+    /// </summary>
+    public static Vector3? MoveNear(LandPlace land)
+    {
+        if (Math.Abs(land.X - X) <= Reach && Math.Abs(land.Z - Z) <= Reach) return null;
+        var (x, z) = (X, Z);
+        Near(land.X, land.Z);
+        return new Vector3(x - X, 0, z - Z);
+    }
 
     /// <summary>The block a float place lies in, in the land's own coordinates.</summary>
     public static (int X, int Y, int Z) BlockOf(Vector3 place) => (BlockX(place.X), (int)MathF.Floor(place.Y), BlockZ(place.Z));

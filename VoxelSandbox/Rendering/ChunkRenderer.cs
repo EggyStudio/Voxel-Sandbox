@@ -911,6 +911,46 @@ public sealed class ChunkRenderer : IDisposable
         Shader = _shader,
     };
 
+    /// <summary>
+    /// Places every section's and group's entity and every lamp again as the <see cref="LandOrigin"/>
+    /// moves by a whole step, so the land drawn stands where it stood.
+    /// </summary>
+    /// <remarks>
+    /// Each part's mesh is uploaded again, a group's made again from its sections' arrays in the
+    /// update that follows, since the engine's scene field knows a mesh by its vertices and takes the
+    /// same mesh at another place for a figure that walks, stamped as a box until it has stood for
+    /// 1,024 frames, which darkened the land at Low by a twentieth for ten seconds and more after each
+    /// move, where a mesh that came, as a section streamed in, is built into the field at once.
+    /// </remarks>
+    public void Shift(Vector3 by)
+    {
+        foreach (var (key, entry) in _sections)
+        {
+            foreach (var part in entry.Parts)
+            {
+                if (part.Entity < 0 || !part.HasFaces) continue;
+                part.Forget();
+                part.Mesh = UploadMesh(part.Positions, part.Indices, MeshStream.From(MeshStreamFormat.UInt2, part.Packed.AsSpan()), part.Colors.ToArray());
+                _ecs.Update(part.Entity, new Mesh(part.Mesh));
+                _ecs.Update(part.Entity, new Transform(LandOrigin.PlaceOf(key) + part.Center));
+            }
+            for (int i = 0; i < entry.Emitters.Count; i++)
+            {
+                var (surface, at) = entry.Emitters[i];
+                at.Translation += by;
+                entry.Emitters[i] = (surface, at);
+            }
+        }
+        foreach (var (at, group) in _groups)
+        {
+            foreach (var part in group.Parts)
+                if (part.Entity >= 0) _ecs.Update(part.Entity, new Transform(LandOrigin.PlaceOf(new SectionKey(at.X << GroupX, at.Y << GroupY, at.Z << GroupZ))));
+            group.Change = Change.Faces;
+        }
+        // The lamps are gathered again at the next placement.
+        _changed = true;
+    }
+
     // Spawns a part's entity for its first mesh, gives it a mesh made again, and lets it go once
     // the part has no faces, hidden until the next placement shows it.
     private void Keep(SectionKey key, Part part, int kind, Material look)
@@ -1245,6 +1285,9 @@ public sealed class ChunkRenderer : IDisposable
                 _corners.Add(((key.X + (corner & 1)) * Section.Size, (key.Y + (corner >> 1 & 1)) * Section.Size, (key.Z + (corner >> 2)) * Section.Size));
         }
         var light = Vector3.Normalize(towardLight);
+        // The rays start from the sections' corners in the land's own coordinates, multiples of 16,
+        // which a float holds whole to 268 million blocks, and say which sections they cross, not a
+        // point within one, so they need no origin.
         // A low light's rays run far across before they reach the top, and stop past the land.
         var longest = across / MathF.Max(1e-4f, MathF.Sqrt(light.X * light.X + light.Z * light.Z));
         Func<SectionKey, bool> sees = _visibility.Sees;

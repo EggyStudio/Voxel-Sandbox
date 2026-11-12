@@ -16,8 +16,7 @@ public sealed class HeadlessGameTests
         var game = headless.Game;
         Assert.False(game.Loading);
         Assert.Equal(0, game.Streamer.Pending);
-        var feet = game.Player.Body.Position;
-        int cx = VoxelWorld.ColumnOf((int)MathF.Floor(feet.X)), cz = VoxelWorld.ColumnOf((int)MathF.Floor(feet.Z));
+        var (cx, cz) = LandOrigin.ColumnOf(game.Player.Body.Position);
         for (int dz = -2; dz <= 2; dz++)
             for (int dx = -2; dx <= 2; dx++)
                 Assert.True(game.World.HasColumn(cx + dx, cz + dz), $"the column {cx + dx}, {cz + dz} is not in");
@@ -34,7 +33,7 @@ public sealed class HeadlessGameTests
         using var headless = new HeadlessGame();
         var game = headless.Game;
         var feet = game.Player.Body.Position;
-        int cx = VoxelWorld.ColumnOf((int)MathF.Floor(feet.X)), cz = VoxelWorld.ColumnOf((int)MathF.Floor(feet.Z));
+        var (cx, cz) = LandOrigin.ColumnOf(feet);
         Assert.True(game.World.HasColumn(cx, cz));
 
         // 1,000,000 blocks east is 62,500 columns, whose square passes an int.
@@ -45,6 +44,134 @@ public sealed class HeadlessGameTests
 
         Assert.False(game.World.HasColumn(cx, cz), $"the column {cx}, {cz} the player left is still in, of {game.World.ColumnCount}");
         Assert.All(game.World.Columns, c => Assert.True(Math.Abs(c.X - cx) > 60_000, $"the column {c.X}, {c.Z} is still in"));
+    }
+
+    [Fact]
+    public void Mobs_Kept_Out_Stay_Out_Of_A_World_Opened_After()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        void Open(int seed)
+        {
+            game.SwitchWorld("flat", seed);
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Loading || game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30);
+        }
+
+        game.Mobs.SetSpawning(game.World, false);
+        Open(2);
+        Assert.False(game.Mobs.Spawning);
+        Assert.Empty(game.Mobs.All);
+
+        // The same world with the mobs let in again holds its herds.
+        game.Mobs.SetSpawning(game.World, true);
+        Open(2);
+        Assert.NotEmpty(game.Mobs.All);
+    }
+
+    [Fact]
+    public void Closing_The_Game_Again_Keeps_The_Mobs_The_First_Close_Saved()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: folder);
+            var game = headless.Game;
+            var feet = LandOrigin.LandOf(game.Player.Body.Position);
+            var pig = new LandPlace(feet.X + 3.5, feet.Y, feet.Z + 0.5);
+            game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, pig, 0, MobKinds.Pig.Health, null));
+
+            game.Dispose();
+            // As the app disposes the game again as the window closes, after its ECS let the mobs go.
+            game.Mobs.Clear(null);
+            game.Dispose();
+
+            var (kept, _) = new WorldSave(folder).ReadMobs();
+            Assert.Contains(kept.Values.SelectMany(list => list), mob => mob.Kind == MobKinds.Pig && mob.Position == pig);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Moving_The_Origin_Keeps_Every_Place_In_The_Land()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        try
+        {
+            game.Mobs.Still = true;
+            var feet = LandOrigin.LandOf(game.Player.Body.Position);
+            var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(feet.X + 3.25, feet.Y, feet.Z + 0.5), 0, MobKinds.Pig.Health, null));
+            var stack = game.Drops.Spawn(Items.Find("stone")!, 1, LandOrigin.PlaceOf(new LandPlace(feet.X - 2.5, feet.Y + 2, feet.Z)), Vector3.Zero);
+            var drop = headless.Ecs.GetReadOnly<Body>(stack);
+            headless.Step(2);
+            var (pigAt, dropAt) = (LandOrigin.LandOf(pig.Body.Position), LandOrigin.LandOf(drop.Position));
+
+            // A place 3,000 blocks east moves the origin to 3,072, every place kept.
+            Assert.True(game.Recenter(new LandPlace(feet.X + 3000, feet.Y, feet.Z)));
+            Assert.Equal((3072, 0), (LandOrigin.X, LandOrigin.Z));
+            Assert.Equal(feet, LandOrigin.LandOf(game.Player.Body.Position));
+            Assert.Equal(pigAt, LandOrigin.LandOf(pig.Body.Position));
+            Assert.Equal(dropAt, LandOrigin.LandOf(drop.Position));
+
+            // The player, still where it stood, takes the origin back near it in the next frame.
+            headless.Step(1);
+            Assert.Equal((0, 0, 2), (LandOrigin.X, LandOrigin.Z, game.Recentered));
+            Assert.Equal(feet, LandOrigin.LandOf(game.Player.Body.Position));
+            Assert.Equal(pigAt, LandOrigin.LandOf(pig.Body.Position));
+        }
+        finally
+        {
+            LandOrigin.Near(0, 0);
+        }
+    }
+
+    [Fact]
+    public void A_Walk_Across_Where_The_Origin_Moves_Goes_On_Without_A_Jump()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        try
+        {
+            // Put 1,016 blocks east, as voxel.tp puts the player, and stood once the land there is in.
+            var start = new LandPlace(1016.5, LandOrigin.LandOf(game.Player.Body.Position).Y, 0.5);
+            game.Recenter(start);
+            game.Player.Teleport(LandOrigin.PlaceOf(start));
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while (game.Streamer.Pending > 0 && clock.Elapsed.TotalSeconds < 30);
+            headless.Step(10);
+            Assert.Equal(0, LandOrigin.X);
+
+            // Sixteen blocks east a tenth of a block a frame, across 1,024, where the origin moves.
+            var walked = new List<double>();
+            for (int frame = 0; frame < 160; frame++)
+            {
+                game.Player.Body.Move(game.World, new Vector3(0.1f, 0, 0), keepToEdges: false);
+                headless.Step(1);
+                walked.Add(LandOrigin.LandOf(game.Player.Body.Position).X);
+            }
+
+            Assert.Equal(1024, LandOrigin.X);
+            Assert.Equal(1, game.Recentered);
+            Assert.All(walked.Zip(walked.Skip(1)), pair => Assert.Equal(0.1, pair.Second - pair.First, 3));
+        }
+        finally
+        {
+            LandOrigin.Near(0, 0);
+        }
     }
 
     [Fact]

@@ -84,6 +84,12 @@ public sealed class BlockBits : IDisposable
     /// <summary>The bits alive.</summary>
     public IReadOnlyList<Bit> All => _bits;
 
+    /// <summary>Moves every bit by the whole step the <see cref="LandOrigin"/> moves by.</summary>
+    public void Shift(Vector3 by)
+    {
+        foreach (var bit in _bits) bit.Body.Position += by;
+    }
+
     /// <summary>Draws the bits with the pictures of the packs' terrain from the next frame, as the packs change.</summary>
     public void Use(TerrainAtlas terrain)
     {

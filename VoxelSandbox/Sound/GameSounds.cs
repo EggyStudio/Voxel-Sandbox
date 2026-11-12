@@ -55,6 +55,12 @@ public sealed class GameSounds
     private float _walked, _water, _roomWait;
     private Vector3? _lastFeet;
 
+    /// <summary>Moves the feet's last place by the whole step the <see cref="LandOrigin"/> moves by, so the move is no step.</summary>
+    public void Shift(Vector3 by)
+    {
+        if (_lastFeet is { } feet) _lastFeet = feet + by;
+    }
+
     public GameSounds()
     {
         _steps = [.. Enum.GetValues<StepSound>().Select(kind => Enumerable.Range(0, SoundBank.StepVariants).Select(v => Load(SoundBank.Step(kind, v))).ToArray())];

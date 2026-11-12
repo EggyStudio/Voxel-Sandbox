@@ -32,6 +32,9 @@ public sealed class Vitals
 
     private float _regen, _starve, _drown, _prick;
     private Vector3 _last;
+
+    /// <summary>Moves the place the body was last read at by the whole step the <see cref="LandOrigin"/> moves by, so the move is no fall.</summary>
+    public void Shift(Vector3 by) => _last += by;
     private bool _started, _wasOnGround;
 
     public int Health { get; private set; } = Most;

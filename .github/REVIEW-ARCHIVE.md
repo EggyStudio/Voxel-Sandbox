@@ -2929,6 +2929,29 @@ before a batch.
     each where 13.1 to 13.2. Three plays pass whole and 16 of 17 pictures differ in at most 0.16
     percent, dusk in 2.5 against 2.3 between two plays of one build.
 
+175. **The game far from the origin.** After 174, a read and no mend. The game's worlds have no
+    edge, and its own shaders and its own arithmetic work in world numbers too. The same built scene
+    at 16 and at 256 times the owner's distance, 71,000 and 1,140,000 blocks out, and a walk there,
+    to say what goes wrong first and where, the terrain's seams, the stepped light's squares, the
+    water, the mobs, the shadows, picking a block, the physics, each with a picture and the distance
+    at which it is first seen. What is the engine's goes to it as asks, and what is the game's
+    becomes items. The read is done at 23:46, on 6.2.41 with the game of `6b0043b`, the scene built
+    block for block at 16, 4,432, 17,808, 70,992, 284,688 and 1,139,984 blocks out, the sheet
+    23-45-item-175-far.png in the dump. From 4,432 the engine's light on a wall a glow light lights
+    is mottled, the west wall's mean step at Low 0.34 at the origin, then 0.48, 0.89, 0.75 and 1.11
+    out to 284,688, speckles in the frame from 17,808, the engine's 257 taking the 4,432 case back
+    to the origin's. From 284,688 the land's faces part in a lattice of cracks with the sky through
+    them, the game handing each section a float matrix and the engine placing every vertex in world
+    floats, 0.03 a step there; and the walk along the far axis is 13 percent slower, the body's
+    position a float Vector3 and a frame's move of 0.07 rounding to 0.0625. At 1,139,984, where a
+    float steps by 0.125, picking gets 5 of 14 right, most misses one block east, the ray cast from
+    the float eye, the walk along x jumps 2 to 4 blocks a read and stops with the body 0.3 inside
+    the wall, a teleport to a half lands on a whole, a pig walks along z alone, and the scene's
+    faces tear into strips with the shadows' edges ragged. The fall, standing and the walk along the
+    near axis hold at every distance. A teleport of over 741,000 blocks left the old columns loaded,
+    an int squared, mended at `88d6303`. What is the engine's is an ask under its item 258, the
+    vertices placed in world floats; what is the game's is item 177.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -3104,6 +3127,19 @@ before a batch.
     the probe, and the others' failed jobs are started again when its package step passes. The tenth
     attempt, started at 17:50 on 2026-11-11, passed its package step at 17:54 and its play at 19:26
     in 96 minutes, the run green, which settles this.
+
+12. **The run of `6b0043b` never started, left queued by an outage of GitHub's Actions.** Run
+    43096571236, made by the push at 21:31 on 2026-11-11, has stood queued with no job since,
+    GitHub's status page reporting a major outage of Actions from about 21:35 to 22:11. At 23:01 it
+    could be neither canceled, GitHub answering that a completed run cannot be canceled and that one
+    not yet queued cannot be canceled by force, nor run again, the workflow already running by its
+    word. The commit after it, `5ad3f58`, changes the review's file alone and starts no run by the
+    workflow's paths. Nothing of the commit's failed, its own checks having passed here, the strict
+    build, 367 tests and two plays. A watcher starts the run again when GitHub lets it go, and
+    otherwise the run of the game's next commit that changes code settles this. Written at 23:03 on
+    2026-11-11. The run of `88d6303`, the game's next commit that changes code, was green at 00:33
+    on 2026-11-12 with the play in 66 minutes, which settles this; the run of `6b0043b` still stands
+    queued on GitHub's side and is left.
 
 ## Decisions
 
@@ -3912,6 +3948,20 @@ play under the layer from its own empty folder passed whole, its frame 5 in 24.2
 levels in at most 0.16 percent of their pixels, but dusk in 2.5 percent, where two plays of the
 same shaders differ in 2.3 percent there, the mobs having wandered. The strict build is clean and
 366 tests pass. The logs are in `~/.cache/3dengine-tools/work/voxel-172/logs`.
+
+Item 175, read on 6.2.41 with the game of `6b0043b`, the scene of 174 with 176's logs and a pool
+built block for block 16, 4,432, 17,808, 70,992, 284,688 and 1,139,984 blocks out, one session at
+each. From 4,432 the light a glow light lays on a wall mottles, the engine's, the west wall's mean
+step at Low 0.34 at the origin, 0.48, 0.89, 0.75 and 1.11 out to 284,688. From 284,688 the land's
+faces part in a lattice of cracks with the sky through them, the engine placing each vertex in
+world floats from the float matrix the game gives each section, and the walk along the far axis is
+13 percent slower, 1.95 blocks a read where 2.24 along z, the game's float body. At 1,139,984,
+where a float steps by an eighth of a block, the game picks the right block for 5 of 14 points,
+most misses a block east, its walk along x jumps 2 and 4 blocks a read and stops 0.3 into the wall,
+and a teleport to a half block lands on the whole one, while the engine tears the scene's faces
+into strips and warps the pig. Picking, the fall, the stand and the walk along z hold at every
+other place. The sheet is 23-45-item-175-far.png in the dump, and the reads are in
+`~/.cache/3dengine-tools/work/i175`.
 
 ## Items closed, parked or shortened
 

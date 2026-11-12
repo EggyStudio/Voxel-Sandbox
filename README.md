@@ -174,8 +174,8 @@ for a capture, `voxel.save` saves at once, and `voxel.blocks` lists the blocks b
 rests, `voxel.attack` hits the one it rests on as the left button does, `voxel.still` stops them
 where they stand and holds the clouds and the bits of broken blocks for a capture, `voxel.bits` says
 where the bit nearest a place flies, `voxel.kill` takes the mobs away, and `voxel.spawning off` takes
-them away and keeps every one out from the next frame on, so two runs' captures take no animal
-wandering into one, until `voxel.spawning on` brings them back. `voxel.fires` counts the
+them away and keeps every one out from the next frame on, in a world opened after too, so two runs'
+captures take no animal wandering into one, until `voxel.spawning on` brings them back. `voxel.fires` counts the
 fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival, adventure or
 spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the
 inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and
@@ -1238,8 +1238,13 @@ worker, and an edit is meshed on the main thread in its own frame, so a block se
 at once.
 
 The game keeps every place in floats against an origin near the player, a multiple of 1,024 blocks
-set as the world opens, and hands the engine those places, so the floats stay within a few thousand
-blocks of zero however far out the world is played. Blocks, columns and sections keep the land's own
+set as the world opens and moved by a multiple of 1,024 once the player is 1,024 blocks from it,
+every place moving with it, and hands the engine those places, so the floats stay within about a
+thousand blocks of zero however far out the world is played. A move uploads every section's mesh
+again, since the engine's scene field takes a mesh at a new place for a figure that walks and stood
+it in as a box for 1,024 frames, darkening the land at Low by a twentieth for ten seconds and more.
+The move costs a hitch of 0.2 to 0.4 seconds and one frame drawn 3 to 5 percent brighter, the light
+at High settling over 16 frames, once in each 1,024 blocks walked. Blocks, columns and sections keep the land's own
 whole coordinates, the floors that turn a place into a block add the origin, and the save and the
 commands keep and print the land's own places, the mobs' in doubles. A float steps by 0.0005 of a
 block at 4,450 blocks, 0.03 at 284,688 and an eighth at 1,139,984, and with the land's own places in

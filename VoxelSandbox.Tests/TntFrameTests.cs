@@ -14,7 +14,8 @@ public sealed class TntFrameTests
         var game = headless.Game;
         game.Mobs.Clear(null);
         // Lit on the flat world's ground six blocks from the player, at its feet's height.
-        int x = (int)MathF.Floor(game.Player.Body.Position.X) + 6, feet = (int)MathF.Floor(game.Player.Body.Position.Y), z = (int)MathF.Floor(game.Player.Body.Position.Z);
+        var (x, feet, z) = LandOrigin.BlockOf(game.Player.Body.Position);
+        x += 6;
         game.Tnt.Light(x, feet, z);
         Assert.True(Assert.Single(game.Tnt.All).Lit.Flashing);
         var highest = 0f;

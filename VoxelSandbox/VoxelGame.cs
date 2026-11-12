@@ -408,9 +408,12 @@ public sealed class VoxelGame : IDisposable
         Renderer.Clear();
         World = new VoxelWorld(generator);
         var (kept, placed) = Save?.ReadMobs() ?? ([], []);
-        // The mobs of the world left are taken out of the engine's ECS with it.
+        // The mobs of the world left are taken out of the engine's ECS with it, and those of the
+        // world opened kept out as they were, so voxel.spawning holds for the session.
+        var spawning = Mobs?.Spawning ?? true;
         Mobs?.Clear(null);
         Mobs = new Mobs(GetApp().World.Resource<EcsWorld>(), kept, placed);
+        Mobs.SetSpawning(World, spawning);
         Drops.Clear();
         Falling.Clear();
         Fires.Clear();
@@ -524,6 +527,35 @@ public sealed class VoxelGame : IDisposable
         _landing = false;
     }
 
+    /// <summary>
+    /// Moves the <see cref="LandOrigin"/> near a place of the land once that place lies more than
+    /// <see cref="LandOrigin.Reach"/> blocks from it along x or z, and every float place the game keeps by
+    /// the same whole step, every body, the arrows, the blasts, the mobs' homes, the bits, the rings
+    /// on the water and the land drawn, as the player walks far or is put far.
+    /// </summary>
+    /// <returns>Whether the origin moved.</returns>
+    public bool Recenter(LandPlace near)
+    {
+        if (LandOrigin.MoveNear(near) is not { } by) return false;
+        var ecs = GetApp().World.Resource<EcsWorld>();
+        foreach (var (_, body) in ecs.Query<Body>()) body.Position += by;
+        foreach (var (id, _) in ecs.Query<Arrow>()) ecs.GetRef<Arrow>(id).Position += by;
+        foreach (var (id, _) in ecs.Query<Blast>()) ecs.GetRef<Blast>(id).At += by;
+        foreach (var mob in Mobs.All) mob.Shift(by);
+        Vitals.Shift(by);
+        Sounds.Shift(by);
+        Bits.Shift(by);
+        Particles.Shift(by);
+        Renderer.Shift(by);
+        Recentered++;
+        return true;
+    }
+
+    private bool _disposed;
+
+    /// <summary>How many times the origin has moved since the game began.</summary>
+    public int Recentered { get; private set; }
+
     /// <summary>Keeps every loaded column the player changed and the player's place, and writes them, unless the world is transient.</summary>
     public void SaveWorld()
     {
@@ -557,6 +589,8 @@ public sealed class VoxelGame : IDisposable
             NextWorld = null;
             SwitchWorld(next.Kind, next.Seed, next.Name);
         }
+        // The origin follows the player, before anything is stepped or drawn from the places.
+        Recenter(LandOrigin.LandOf(Player.Body.Position));
         if (Loading)
         {
             Stand();
@@ -750,7 +784,8 @@ public sealed class VoxelGame : IDisposable
     public void Respawn()
     {
         Vitals.Set();
-        // The spawn is the land's own middle, wherever the origin stands.
+        // The spawn is the land's own middle, wherever the origin stood, which moves near it first.
+        Recenter(new LandPlace(0.5, 0, 0.5));
         Streamer.LoadNow(LandOrigin.PlaceOf(0, 0, 0), 2);
         Player.Flying = false;
         Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
@@ -1375,6 +1410,11 @@ public sealed class VoxelGame : IDisposable
 
     public void Dispose()
     {
+        // The app disposes the resources it holds as the window closes, the game among them, after
+        // the program's own Dispose and at times after its ECS has let the mobs go, and a second save
+        // then wrote the loaded columns as holding none, losing the animals about the player.
+        if (_disposed) return;
+        _disposed = true;
         SaveWorld();
         Renderer.Dispose();
         CaveFields.Dispose();

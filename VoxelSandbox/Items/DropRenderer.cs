@@ -54,9 +54,11 @@ public sealed class DropRenderer : IDisposable
         foreach (var (drop, body) in drops)
         {
             if (Vector3.DistanceSquared(body.Position, eye) > Distance * Distance) continue;
-            // Each stack turns and bobs out of step with the others, by its own age.
-            var spin = (float)time * 1.2f + drop.Delay * 7 + body.Position.X * 3;
-            var bob = 0.06f * (1 + MathF.Sin((float)time * 2.5f + body.Position.Z * 5));
+            // Each stack turns and bobs out of step with the others, by its own age and its place in the
+            // land, which a move of the origin leaves as it was.
+            var land = LandOrigin.LandOf(body.Position);
+            var spin = (float)time * 1.2f + drop.Delay * 7 + (float)(land.X % 1024) * 3;
+            var bob = 0.06f * (1 + MathF.Sin((float)time * 2.5f + (float)(land.Z % 1024) * 5));
             _draws[drop.Item.Id].Add(Matrix4x4.CreateRotationY(spin) * Matrix4x4.CreateTranslation(body.Position + new Vector3(0, 0.125f + bob, 0)));
         }
         var draws = 0;

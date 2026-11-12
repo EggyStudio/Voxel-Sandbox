@@ -58,6 +58,16 @@ public sealed class AmbientParticles : IDisposable
     private readonly Pool _splashes, _leaves, _wakes;
     private readonly Stream _dust, _spores, _embers;
     private readonly List<(Vector3 At, float Age)> _rings = [];
+
+    /// <summary>
+    /// Moves the rings on the water by the whole step the <see cref="LandOrigin"/> moves by. The
+    /// particles the engine keeps in the world's places stay where they were, a thousand blocks and
+    /// more from the eye then, out of sight until they die, a few seconds at most.
+    /// </summary>
+    public void Shift(Vector3 by)
+    {
+        for (int i = 0; i < _rings.Count; i++) _rings[i] = _rings[i] with { At = _rings[i].At + by };
+    }
     private readonly Random _random = new();
     private ModelMesh _ringMesh;
     private float _splashDue, _leafDue, _wakeDue;

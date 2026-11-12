@@ -14,8 +14,9 @@ public sealed class FireFrameTests
     private static (int Most, int Burned) Burn(HeadlessGame headless, int seed, BlockId block)
     {
         var game = headless.Game;
-        var ground = (int)MathF.Floor(game.Player.Body.Position.Y) - 1;
-        int x0 = (int)MathF.Floor(game.Player.Body.Position.X) + 8, z0 = (int)MathF.Floor(game.Player.Body.Position.Z) - 8;
+        var (px, py, pz) = LandOrigin.BlockOf(game.Player.Body.Position);
+        var ground = py - 1;
+        int x0 = px + 8, z0 = pz - 8;
         for (int z = z0 - 4; z < z0 + 20; z++)
             for (int x = x0 - 4; x < x0 + 20; x++)
             {

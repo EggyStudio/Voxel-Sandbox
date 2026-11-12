@@ -44,7 +44,7 @@ public static class GameCommands
             + $"{game.World.ColumnCount} columns, {game.Streamer.Pending} generating, {game.World.Loaded.Count + game.Renderer.Meshing} sections to mesh; "
             + $"{renderer.Sections} sections, {renderer.Draws} draws, {renderer.Triangles} triangles, {renderer.Lamps} lamps, {renderer.Culled} culled, {renderer.Deep.Sections} deep of {renderer.Deep.Triangles} triangles; "
             + $"{game.Mobs.All.Count} mobs loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws; "
-            + $"hour {game.Sky.Hour:0.00} of day {game.Sky.Day}, light {game.Light.Quality}, render distance {game.RenderDistance}, world {game.World.Generator.Name} of seed {game.World.Generator.Seed}, "
+            + $"hour {game.Sky.Hour:0.00} of day {game.Sky.Day}, light {game.Light.Quality}, render distance {game.RenderDistance}, world {game.World.Generator.Name} of seed {game.World.Generator.Seed}, origin at {LandOrigin.X}, {LandOrigin.Z} moved {game.Recentered} times, "
             + $"{(game.Save is { } save ? $"saved in {save.Name}" : "transient")}, {game.Mode.ToString().ToLowerInvariant()}, "
             + $"holding {(game.Hotbar.Current is { } held ? $"{held.Count} {held.Item.Key}" : "nothing")}, {game.Drops.Count} stacks on the ground; "
             + Vitals(game.Vitals);
@@ -93,6 +93,8 @@ public static class GameCommands
     internal static string Teleport(double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
+        // The origin moves near the place first, so the feet stand there exactly.
+        game.Recenter(new LandPlace(x, y, z));
         game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, y, z)));
         return $"the player stands at {x}, {y}, {z}";
     }
@@ -545,7 +547,7 @@ public static class GameCommands
         return $"{game.Mobs.Clear(found)} mobs taken away";
     }
 
-    [Command("voxel.spawning", "Keeps every mob out of the world from the next frame on, for captures two runs take alike, or lets them come again: voxel.spawning <on>")]
+    [Command("voxel.spawning", "Keeps every mob out of the world from the next frame on, and out of a world opened after, for captures two runs take alike, or lets them come again: voxel.spawning <on>")]
     internal static string Spawning(bool on)
     {
         if (Game is not { } game) return "no world is loaded";
