@@ -1647,8 +1647,8 @@ Done that day
   (Decision 27).
 - Item 57 at `815e4ca`. The plants stand offset in their block as the source places them (Decision
   27).
-- Item 58 at `b56fa0b`. The light and the grade after the modpack's shader settings as chosen, read
-  as numbers (Decision 28).
+- Item 58 at `b56fa0b`. The light and the grade after the modpack's shader settings it is played
+  with, read as numbers (Decision 28).
 - Item 59 at `fa7fba0`. Each biome's grass and foliage color from the source's fixed values, not a
   blend of the game's own climate (Decision 28).
 - Item 60 at `9a13c54`. The lamps' light falls off smoothly, the eight-a-block grid taking the sun's

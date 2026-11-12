@@ -1,6 +1,10 @@
 # Review
 
-Reviewed up to `8fda020`, two comments on their own terms, pushed at 04:05 on 2026-11-12, green at
+Reviewed up to `cf687e3`, item 179, the comments swept by N 4.11 as widened, 37 sources, shaders,
+tests and scripts with STYLE.md's search, no line but a comment changed, each account of what the
+code was or which fault led to it and each likening rewritten to say what stands, pushed at 12:37 on
+2026-11-12; the strict build is clean and 394 tests pass; it keeps the form and carries the review's
+files. Before it `8fda020`, two comments on their own terms, pushed at 04:05 on 2026-11-12, green at
 05:11 with the play in 66 minutes, with `35a0829`, item 178, the mobs saved with a place that is no
 number, 279 in two worlds of one player's, the first by a fall mended at `e433e5c` and the rest by
 the crowding's push, a box with no place overlapping every box of its height and pushing each along
@@ -43,7 +47,7 @@ doubles, mobs.bin in a second version with the first read, 46 files, pushed at 0
 green at 02:08 with the play in 90 minutes, after two reads, the review's and a second reader's of
 every floor, distance and conversion, which found no place where one kind of place is taken for the
 other; the strict build is clean, 376 tests pass, the play passes whole and none of its 17 pictures
-moves; on the published 6.2.41 the owner's room then reads no row with a step over 3 levels at Low,
+moves; on the published 6.2.41 the built room then reads no row with a step over 3 levels at Low,
 Medium or High at 1280 by 720 and one at Medium at 2560 by 1440; it keeps the form and carries the
 review's files. Before it `760522a`, the review's file alone with the Replies of 173's check, 175
 and 177's read, pushed at 23:49 on 2026-11-11, no run by the workflow's paths. Before it `88d6303`,
@@ -54,10 +58,10 @@ columns loaded, squared in longs with a test that teleports a million blocks, pu
 the play in 66 minutes, which settles Verdict 12; the strict build is clean, 368 tests pass and the
 play passes whole in 310 s; it keeps the form and carries the review's files. Before it `5ad3f58`,
 the review's file alone with the Replies of 174 and 176, pushed at 23:00 on 2026-11-11, no run by
-the workflow's paths. Before it `6b0043b`, voxel.spawning, asked by the owner on 2026-11-11, every
-mob kept out of the world from the next frame on and brought back where it stood, the play switching
-it off before its first check, pushed at 21:31 on 2026-11-11, its run left queued by GitHub's outage
-and not started, Verdict 12; its strict build is clean and 367 tests pass, two plays under the layer
+the workflow's paths. Before it `6b0043b`, voxel.spawning, asked on 2026-11-11, every mob kept out
+of the world from the next frame on and brought back where it stood, the play switching it off
+before its first check, pushed at 21:31 on 2026-11-11, its run left queued by GitHub's outage and
+not started, Verdict 12; its strict build is clean and 367 tests pass, two plays under the layer
 pass whole in 317 and 218 s, and of their 17 captures dusk differs in 0.00 percent of pixels by more
 than 2 levels where 2.3 before, the night sky in 0.18, within its clouds; it keeps the form and
 carries the review's files. Before it `1f1e955`, item 172, terrain.slang, mob.slang and bits.slang
@@ -79,14 +83,14 @@ pipeline on the validation layer, 94 ms compiled without it, so these are the la
 the play turns on, item 171. It keeps the form and carries the review's files. The pushes before
 these stand in REVIEW-ARCHIVE.md's head records.
 
-Next 179, the comments swept by N 4.11 as widened, a commit of comments alone; the checks of the
-engine's mends as its packages come, the dither and then 176's blobs, each on the room and on the
-built scene; 177's origin is in but for its reach, which widens to 4,096 at the pin of the engine's
-next published package, with the mirror's check waiting for its pipelines at that pin. The owner on
-2026-11-11, of taller and more varied terrain, "there are more important stuff currently and the
-terrain generation is nice even if not fully fledged out", so nothing of the terrain is an item.
-Item 29's second part stays parked by the owner's word. A program on the GPU runs under the lock (N
-7.9).
+Next the pin of the engine's 6.2.56, listed at 12:40 on 2026-11-12 and told at 12:55, with the reach
+at 4,096 and the mirror's check; the checks of the engine's mends as its packages come, the dither
+and then 176's blobs, each on the room and on the built scene; 177's origin is in but for its reach,
+which widens to 4,096 at the pin of the engine's next published package, with the mirror's check
+waiting for its pipelines at that pin. Decided on 2026-11-11, of taller and more varied terrain,
+other things matter more at present and the terrain generation is good as it is though not fully
+worked out, so nothing of the terrain is an item. Item 29's second part stays parked by the decision
+of 2026-11-11. A program on the GPU runs under the lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -98,7 +102,8 @@ Replies (N 7.7), and the archive when an item, a verdict or a decision named her
 
 Closed without a change or done as read, each in full in REVIEW-ARCHIVE.md under Items closed,
 parked or shortened: 156, the ground's atlas and the anisotropic filter, nothing changing by the
-owner's word; 164, the engine's split packages at the restore, read with nothing to change.
+decision of 2026-11-04; 164, the engine's split packages at the restore, read with nothing to
+change.
 
 29. **Generation and meshing on the GPU, the blocks kept on the CPU (Decision 12).** Part one, the
     noise fields, landed at `2549786` and `1d31dda` on 2026-10-25, every noise in fixed point and
@@ -106,9 +111,9 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     the CPU path. The meshing moved to the workers at `bb0b9bb` the same day, update.mesh under half
     a millisecond in the flights. Part three went with the far land (Decision 41). Part two, a
     compute mesher a section, is held on its numbers, 1 to 2.6 ms of a frame in flights alone
-    against several commits over days, for the owner's word, Decision 12 being the owner's. The item
-    as it stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. The owner answered
-    on 2026-11-11 at about 16:40 that part two stays parked.
+    against several commits over days, for a decision, Decision 12 being the owner's. The item as it
+    stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
+    about 16:40, part two stays parked.
 
 171. **A reading of time is taken with the validation layer off, and a pixel read after a first
     sight waits for its pipelines.** From the pin of 6.2.41 on 2026-11-11. The play runs with the
@@ -132,48 +137,47 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     engine's item 255. What remains here is the mirror's check waiting for its pipelines at the pin
     that carries the engine's 254.
 
-176. **Bright colored blobs in the distance under bloom.** From the owner on 2026-11-11, to the
-    game's coder, "At distance there are these colored bloomed blobs in the background". Read on
-    6.2.41 at `1f1e955`, the sheet 21-30-red-blob.png in the dump. One stands in the origin scene's
-    view, a spruce trunk's foot on snow at -98, 105, 39, 134 blocks off. With bloom at 0 it is one
-    pixel reading 255, 209, 199 beside a trunk of 54, 46, 42, which bloom spreads into a red blob
-    over the tree. The pixel is the same through every part gi.toggle leaves out, with each cascade
-    alone and at Low, Medium and High, and only the illumination off clears it, the snow then 221,
-    215, 205; no block light, fire or mob is near. From 15 blocks a trunk's lower half above the
-    snow reads 172, 90, 0, blue at exactly 0, where its upper half reads 82, 50, 23. So the
-    illumination's light at a trunk's foot beside sunlit snow is far too bright, whether in the
-    engine's light or in terrain.slang's taking of it not yet said. The read goes ahead of 174 since
-    the owner asked it. Which term carries it at that pixel and from 15 blocks, the light's parts as
-    voxel.pixel and the engine's views give them; what clears it, the snow made grass or stone, the
-    trunk made stone, the sun's shadows off, the hour at noon and at dusk, the far cascade off; and
-    the smallest built scene that shows it, a log standing on snow in the sun, added to 174's scene
-    at both places so it is read near the origin and at the owner's place alike. Then an ask to the
-    engine with the numbers and a sheet, or an item of the game's where terrain.slang takes the
-    light wrongly. Recorded at 21:53, the coder's read so far, on 6.2.41 from a copy of 174's data,
-    bloom at 0. The sheet's fourth panel is not the fault. The orange block is the dirt under the
-    trunk, its sides showing where the snowy ground steps down, taking the same light as the log
-    over it, both 229, 209, 183 with every surface drawn white, and its orange with blue at 0 is
-    dirt's own color under the frame's grading at a saturation of 1.4, 138, 60, 0 with the
-    illumination off; so nothing is kept by the block. The blob is one pixel on a silhouette's edge,
-    272, 352 from 174's origin eye, the trunk in the pixel to its left at 55, 46, 42 and snow two
-    blocks behind it, 138 blocks off. It reads 255, 209, 199 in five reads 7 frames apart and clears
-    with the eye moved a quarter block or turned 0.05 degrees. Every part gi.toggle leaves out, the
-    specular too, each cascade alone, the three qualities, the sun's shadows off, the sky's floor at
-    0, the light levels off, noon, and the block under the pixel made stone, snow or grass leave it
-    as it is, and only the illumination off clears it, 221, 215, 205. Its color is the log's albedo
-    under about ten times its light. So an edge pixel takes the trunk's color with light from a term
-    no toggle reaches, and the game cannot split it further, gi.show drawing the probes' data and no
-    pixel's resolved light. To come, the eye stepped sideways from 133 blocks at both built places
-    counting edge pixels and blobs, then the ask. The read is done at 22:45. The blob comes of
-    shading at 4 samples a pixel, gone at 1 sample, dimmed with the temporal antialiasing on, one
-    pixel still at twice the size; the sweep's counts and the sheet 22-40-item-176-samples.png are
-    in the ask and under the engine's item 259, which mends it. What remains here is the check after
-    that mend, the sweep's counts at both places read again. The engine's mend read at 10:05 on
-    2026-11-12 on its local package 6.2.41-local.259, the vertex color and uv2 read at the centroid
-    where a pixel's middle outside its triangle had given a half float's most. By the origin the
-    steps where bloom adds over 20 levels fall from 7 to none and bloom's most from 142 levels to
-    13, beside the room from 1 to none, nothing reading worse. The pinned check comes at the publish
-    that carries it.
+176. **Bright colored blobs in the distance under bloom.** Reported to the game's coder on
+    2026-11-11, colored blobs of bloom in the background at a distance. Read on 6.2.41 at `1f1e955`,
+    the sheet 21-30-red-blob.png in the dump. One stands in the origin scene's view, a spruce
+    trunk's foot on snow at -98, 105, 39, 134 blocks off. With bloom at 0 it is one pixel reading
+    255, 209, 199 beside a trunk of 54, 46, 42, which bloom spreads into a red blob over the tree.
+    The pixel is the same through every part gi.toggle leaves out, with each cascade alone and at
+    Low, Medium and High, and only the illumination off clears it, the snow then 221, 215, 205; no
+    block light, fire or mob is near. From 15 blocks a trunk's lower half above the snow reads 172,
+    90, 0, blue at exactly 0, where its upper half reads 82, 50, 23. So the illumination's light at
+    a trunk's foot beside sunlit snow is far too bright, whether in the engine's light or in
+    terrain.slang's taking of it not yet said. The read goes ahead of 174 since it was asked for.
+    Which term carries it at that pixel and from 15 blocks, the light's parts as voxel.pixel and the
+    engine's views give them; what clears it, the snow made grass or stone, the trunk made stone,
+    the sun's shadows off, the hour at noon and at dusk, the far cascade off; and the smallest built
+    scene that shows it, a log standing on snow in the sun, added to 174's scene at both places so
+    it is read near the origin and beside the built room alike. Then an ask to the engine with the
+    numbers and a sheet, or an item of the game's where terrain.slang takes the light wrongly.
+    Recorded at 21:53, the coder's read so far, on 6.2.41 from a copy of 174's data, bloom at 0. The
+    sheet's fourth panel is not the fault. The orange block is the dirt under the trunk, its sides
+    showing where the snowy ground steps down, taking the same light as the log over it, both 229,
+    209, 183 with every surface drawn white, and its orange with blue at 0 is dirt's own color under
+    the frame's grading at a saturation of 1.4, 138, 60, 0 with the illumination off; so nothing is
+    kept by the block. The blob is one pixel on a silhouette's edge, 272, 352 from 174's origin eye,
+    the trunk in the pixel to its left at 55, 46, 42 and snow two blocks behind it, 138 blocks off.
+    It reads 255, 209, 199 in five reads 7 frames apart and clears with the eye moved a quarter
+    block or turned 0.05 degrees. Every part gi.toggle leaves out, the specular too, each cascade
+    alone, the three qualities, the sun's shadows off, the sky's floor at 0, the light levels off,
+    noon, and the block under the pixel made stone, snow or grass leave it as it is, and only the
+    illumination off clears it, 221, 215, 205. Its color is the log's albedo under about ten times
+    its light. So an edge pixel takes the trunk's color with light from a term no toggle reaches,
+    and the game cannot split it further, gi.show drawing the probes' data and no pixel's resolved
+    light. To come, the eye stepped sideways from 133 blocks at both built places counting edge
+    pixels and blobs, then the ask. The read is done at 22:45. The blob comes of shading at 4
+    samples a pixel, gone at 1 sample, dimmed with the temporal antialiasing on, one pixel still at
+    twice the size; the sweep's counts and the sheet 22-40-item-176-samples.png are in the ask and
+    under the engine's item 259, which mends it. What remains here is the check after that mend, the
+    sweep's counts at both places read again. The engine's mend read at 10:05 on 2026-11-12 on its
+    local package 6.2.41-local.259, the vertex color and uv2 read at the centroid where a pixel's
+    middle outside its triangle had given a half float's most. By the origin the steps where bloom
+    adds over 20 levels fall from 7 to none and bloom's most from 142 levels to 13, beside the room
+    from 1 to none, nothing reading worse. The pinned check comes at the publish that carries it.
 
 177. **The body's and the ray's places far from the origin.** From 175's read on 2026-11-11. The
     player's body, the mobs' and the picking ray keep their places in a float Vector3, so from
@@ -192,8 +196,8 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     the saves. It keeps the floats and their arithmetic where they are, and it hands the engine
     every place near zero, so what the engine loses far from the origin, its item 258's whole list,
     the vertices, the shadows and the frame before's lookups, no longer reaches the game at any
-    distance, the owner's 4,450 among them. So it is no filler and goes next after each check. The
-    origin a multiple of 1,024 blocks, so every grid of the engine's falls against the land as
+    distance, the saved world's 4,450 among them. So it is no filler and goes next after each check.
+    The origin a multiple of 1,024 blocks, so every grid of the engine's falls against the land as
     before; moved only past 2,048 from it, so a walk does not move it back and forth. Saves and
     commands keep and print the land's own places, mobs.bin in a new version with the old one read.
     The shaders' world places that are fractions of a block stand, and one taken whole, as the
@@ -228,7 +232,7 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     step reads 0.34, 0.35 and 0.37 at 16 and 0.36, 0.36 and 0.37 at 4,112 at Low, Medium and High,
     alike at every distance, where the published 6.2.41 reads 0.62, 0.64 and 0.73 at 4,112. What
     stays is the sun's shadow, 25, 24 and 24 steps over 3 on the shaded floor at 4,112 against 26,
-    25 and 26 at 16, and ambient occlusion unread, at 0 in the owner's options. So on the published
+    25 and 26 at 16, and ambient occlusion unread, at 0 in the saved options. So on the published
     package of that mend a reach of 4,096 with the step at 1,024 reads as the origin does, a move a
     quarter as often; the reach widens then, with ambient occlusion at 1 read at the reach's edge
     first.
@@ -255,81 +259,82 @@ and the icons are the game's week; 7 Nothing in the sky faces the camera; the su
 stars are fixed on the sky and turn with the hour; 8 The mobs' sizes and models may be the other
 game's, since they are numbers; 9 The tonemapping is the engine's somewhat boring curve; 10 The
 review's files are committed by the batch that comes next, and by the reviewer at most once a day;
-11 The owner's list of 2026-10-20 at 23:30, in the reviewer's order; 12 Compute shaders for
-generation, the owner's word of 2026-10-21; 13 The owner's packs set the look, read from the
-player's copy and never shipped; 14 The owner's modpack is the reference of the game's feel, read
-for shapes, numbers and ideas, and nothing of it ships; 15 The six candidates of Decision 14 are
-taken; 16 The screen probes stay off in the game, and the cascades' faults go to the engine; 17 The
-windows after Recolourful Containers and the HUD after Bare Bones, read from the player's packs, and
-the game's own art moved toward them; 18 The three packs are not shipped and are fetched at first
-start instead; 19 A screenshot on F2; 20 Simple Grass Flowers as a fourth default pack, through
-block state variants; 21 The look the game aims at is the owner's modpack's gallery; 22 Packs give
-pictures alone, and every rule is the game's own; 23 The look without a pack takes Bare Bones'
-colors; 24 The README's pictures, an animation at its head and pictures in its parts; 25 Three words
-during item 46's scouting, the sky's bodies cut, the rifts in villages and the sun's look; 26 The
-engine's F1 and F3 come to the game; 27 More vegetation, and the plants cast shadows; 28 The blades
-like the modpack's, and the light and the grade from the shader settings the owner set; 29 The sun's
-shadows step on a grid of eight a block; 30 The mobs take Bare Bones' entity pictures; 31 The
-zombie's own face is the source's archetype, the villager's eyes lower; 32 The Bare Bones x Fresh
-Animations pack is the fourth default pack, above Bare Bones; 33 The creeper keeps the vanilla look,
-the game's own art, under every pack; 34 The owner's observations of 2026-10-23 and their order; 35
-Trees fell as one and gravity blocks fall; 36 Glass and water reflect nothing for the present; 37
-Branches are named for their work, never claude/ or a random string, and work stays on main where
-one session writes; 38 The empty hand shows no arm; 39 A devlog under `.github/devlog`, and
-AGENTS.md's rows for it and for the pushes; 40 Far land at 32 columns by default, the render
-distance kept at 12; 41 Far land goes; 42 The screen probes are off by default; 43 The game uses the
-engine's ECS where it fits, beside the loop; 44 The clouds cover the area about the player and do
-not reach the horizon; 45 A session saves the pictures of its work in the repository, N 4.8; 46 The
-README's pictures taken again, an animation at its head and pictures in its parts (Decision 24); 47
-The devlog written as the work goes; 48 The screen probes are on, off a debugging switch alone; 49
-The devlog carries notes beside the pictures; 50 The F3 window's parts find their homes; 51 The far
-cascade is on by default and the shadow distance is 128 blocks; 52 A voxel engine in Rust is the
-reference for the game's performance; 53 No far land in the game; 54 Held lights are plain lights
-without shadows; 55 A reading's picture explains itself, and a plain capture or pair stays where it
-shows the thing; 56 Every picture a session makes goes to the repository's dump folder; 57 The
-version's major and minor move by the reviewer's judgment; 58 No one is named in a picture, each in
-full under Decisions in REVIEW-ARCHIVE.md.
+11 The list of 2026-10-20 at 23:30, in the reviewer's order; 12 Compute shaders for generation, the
+direction of 2026-10-21; 13 The chosen packs set the look, read from the player's copy and never
+shipped; 14 A modpack is the reference of the game's feel, read for shapes, numbers and ideas, and
+nothing of it ships; 15 The six candidates of Decision 14 are taken; 16 The screen probes stay off
+in the game, and the cascades' faults go to the engine; 17 The windows after Recolourful Containers
+and the HUD after Bare Bones, read from the player's packs, and the game's own art moved toward
+them; 18 The three packs are not shipped and are fetched at first start instead; 19 A screenshot on
+F2; 20 Simple Grass Flowers as a fourth default pack, through block state variants; 21 The look the
+game aims at is the modpack's gallery; 22 Packs give pictures alone, and every rule is the game's
+own; 23 The look without a pack takes Bare Bones' colors; 24 The README's pictures, an animation at
+its head and pictures in its parts; 25 Three words during item 46's scouting, the sky's bodies cut,
+the rifts in villages and the sun's look; 26 The engine's F1 and F3 come to the game; 27 More
+vegetation, and the plants cast shadows; 28 The blades like the modpack's, and the light and the
+grade from the shader settings it is played with; 29 The sun's shadows step on a grid of eight a
+block; 30 The mobs take Bare Bones' entity pictures; 31 The zombie's own face is the source's
+archetype, the villager's eyes lower; 32 The Bare Bones x Fresh Animations pack is the fourth
+default pack, above Bare Bones; 33 The creeper keeps the vanilla look, the game's own art, under
+every pack; 34 The observations of 2026-10-23 and their order; 35 Trees fell as one and gravity
+blocks fall; 36 Glass and water reflect nothing for the present; 37 Branches are named for their
+work, never claude/ or a random string, and work stays on main where one session writes; 38 The
+empty hand shows no arm; 39 A devlog under `.github/devlog`, and AGENTS.md's rows for it and for the
+pushes; 40 Far land at 32 columns by default, the render distance kept at 12; 41 Far land goes; 42
+The screen probes are off by default; 43 The game uses the engine's ECS where it fits, beside the
+loop; 44 The clouds cover the area about the player and do not reach the horizon; 45 A session saves
+the pictures of its work in the repository, N 4.8; 46 The README's pictures taken again, an
+animation at its head and pictures in its parts (Decision 24); 47 The devlog written as the work
+goes; 48 The screen probes are on, off a debugging switch alone; 49 The devlog carries notes beside
+the pictures; 50 The F3 window's parts find their homes; 51 The far cascade is on by default and the
+shadow distance is 128 blocks; 52 A voxel engine in Rust is the reference for the game's
+performance; 53 No far land in the game; 54 Held lights are plain lights without shadows; 55 A
+reading's picture explains itself, and a plain capture or pair stays where it shows the thing; 56
+Every picture a session makes goes to the repository's dump folder; 57 The version's major and minor
+move by the reviewer's judgment; 58 No one is named in a picture, each in full under Decisions in
+REVIEW-ARCHIVE.md.
 
-59. **Anisotropic filtering at 16 everywhere.** The owner wrote on 2026-11-04 at 11:07, "Anisotropic
-   filtering is at x16 everywhere because it is cheap and on steep angles it is visually better." So
-   every sampler that reads a texture, color, normal, surface or atlas, filters anisotropically at
-   16, or at the device's most where it offers less, at every quality and with no knob; the shadow,
-   probe and table samplers that are not textures keep their own filters. The game's textures read
-   through the engine's samplers, so it comes with the engine's item 201 and the next package; the
-   game sets nothing. At 11:40 the owner added that the game is pixel filtering and needs no change,
-   so its atlas stays at Point and item 156 is closed.
+59. **Anisotropic filtering at 16 everywhere.** Decided on 2026-11-04 at 11:07, anisotropic
+   filtering is at 16 everywhere, since it is cheap and looks better at steep angles. So every
+   sampler that reads a texture, color, normal, surface or atlas, filters anisotropically at 16, or
+   at the device's most where it offers less, at every quality and with no knob; the shadow, probe
+   and table samplers that are not textures keep their own filters. The game's textures read through
+   the engine's samplers, so it comes with the engine's item 201 and the next package; the game sets
+   nothing. Added at 11:40, the game is pixel filtering and needs no change, so its atlas stays at
+   Point and item 156 is closed.
 
-60. **Version tags.** The owner wrote at about 14:00 on 2026-11-08, having tagged every commit of
-    the Unity Essentials repositories as `v2.0.30` and the like, that the three projects take tags
-    too, and answered the review's questions at 14:1x. The form is `v6.0.91`, the letter v before
+60. **Version tags.** Decided at about 14:00 on 2026-11-08, after every commit of the Unity
+    Essentials repositories was tagged as `v2.0.30` and the like, the three projects take tags too,
+    with the review's questions answered at 14:1x. The form is `v6.0.91`, the letter v before
     `build/version.sh`'s number. Tags go on each major or minor change and on the commits packages
-    were built from, since "doing every commit clutters it and is unnecessary as we want to focus
-    the version tags to releases time apart with meaningful changes and not commits apart". The
-    major and the minor are the sessions' to raise, "each session working on the project can decide
-    when the time is right to rise that number in minor or major as each commit counts as patch",
-    with "full liberty" when "a step is done and meaningful changes were done". N 6.3 holds the rule
-    and the reviewer sets the tags as it pushes. `v0.2.0` marks `7e052e8`, which set 0.2 (Decision
-    57), set at 14:12; a release build of `build/publish.sh` is tagged when the owner names one.
-    Decision 57 stands with the game's session able to raise the version as well as the reviewer.
+    were built from, since a tag on every commit clutters the list and is unnecessary, the tags
+    marking releases some time apart with meaningful changes and not commits apart. The major and
+    the minor are the sessions' to raise, each session working on the project deciding when the time
+    is right to raise the minor or the major, every commit counting as a patch, with full liberty
+    once a step is done and meaningful changes were made. N 6.3 holds the rule and the reviewer sets
+    the tags as it pushes. `v0.2.0` marks `7e052e8`, which set 0.2 (Decision 57), set at 14:12; a
+    release build of `build/publish.sh` is tagged when the owner names one. Decision 57 stands with
+    the game's session able to raise the version as well as the reviewer.
 
-61. **No personal name in any repository.** On 2026-11-08 at about 15:25 the owner showed the
-    account's code search finding the personal name in six files of four repositories, this game's
-    `LICENSE` among them, after asking the same morning that the name stand nowhere, and at about 15:27 asked that the game's license be the Mozilla Public License Version 2.0, as the engines'
-    are; the MPL names no holder. The history's authors are not rewritten here, since the review's
-    files, the devlog and the package's release notes cite the commits by their hashes, and the
-    commits' noreply address is the account's already.
+61. **No personal name in any repository.** On 2026-11-08 at about 15:25 the account's code search
+    was shown finding the personal name in six files of four repositories, this game's `LICENSE`
+    among them, after the ask of the same morning that the name stand nowhere, and at about 15:27
+    the ask followed that the game's license be the Mozilla Public License Version 2.0, as the
+    engines' are; the MPL names no holder. The history's authors are not rewritten here, since the
+    review's files, the devlog and the package's release notes cite the commits by their hashes, and
+    the commits' noreply address is the account's already.
 
-62. **No middle dot.** The owner wrote at 17:57 and 18:00 on 2026-11-08 that the middle dot is not
-    used, the README's top links separated by a space alone and the dot nowhere else; the reviewer
-    changed the README's first line in the tree on their word, for the next commit to carry (item
-    159). The rule goes into STYLE.md's Punctuation as the shared text has it everywhere.
+62. **No middle dot.** Decided at 17:57 and 18:00 on 2026-11-08, the middle dot is not used, the
+    README's top links separated by a space alone and the dot nowhere else; the reviewer changed the
+    README's first line in the tree on that decision, for the next commit to carry (item 159). The
+    rule goes into STYLE.md's Punctuation as the shared text has it everywhere.
 
-63. **Comments on the code's own terms.** The owner read a comment of scenes_sponza at about 19:00
-    on 2026-11-08, "The frame graded as that scene's HDRP profile grades it, by the look of its AgX
-    - Powerful.exr, a lookup build/unity-lut.py writes from that strip, a gamma of w 0.225, and a
+63. **Comments on the code's own terms.** A comment of scenes_sponza was read at about 19:00 on
+    2026-11-08, "The frame graded as that scene's HDRP profile grades it, by the look of its AgX -
+    Powerful.exr, a lookup build/unity-lut.py writes from that strip, a gamma of w 0.225, and a
     bloom of intensity 0.25, threshold 0.333 and scatter 0.7, worked out as HDRP works them out",
-    and wrote that it "sounds just bad", reads as an em dash, and "is taking too much liberty of
-    outside knowledge and in-process session knowledge", in scenes_sponza explicitly and probably
+    and found to read badly, to read as an em dash does, and to lean too far on outside knowledge
+    and on the sessions' knowledge of work in progress, in scenes_sponza explicitly and probably
     everywhere else. The rule from it, in STYLE.md's Register and as N 4.11, is that a comment
     stands on the code's own terms. It says what the code does and why in the engine's words; a
     number taken from elsewhere stands with the reason it is right here, what it makes the frame or
@@ -338,16 +343,15 @@ full under Decisions in REVIEW-ARCHIVE.md.
     explanation, "as X works it out", and the facts of the sessions' work are not written in a
     comment. Item 159 carries STYLE.md's sentence and the game's own sweep.
 
-64. **A fault the owner sees in motion is read in motion.** The owner wrote at 17:25 on 2026-11-09
-    that the game's global illumination has looked noisy the same way for weeks, and the review's
-    answer read only the shader cache. The readings here since 2026-10-24 were settled stills, which
-    a fault in motion passes, so a fault named while moving is read from a recording, the owner's
-    where there is one and a scripted walk and turn offscreen where not, picture to picture, with
-    the standing, the walking, the turning and the two seconds after a stop each given their share
-    of pixels moved, and the review asks the owner for a recording and the settings file when a
-    fault is named without one. The engine's Decision 107 says the same; told to the owner for
-    approval as its Decision 95's precedent allows. Item 166. Approved by the owner on 2026-11-11,
-    asked by the review with N 7.9, N 7.10 and N 7.11.
+64. **A fault seen in motion is read in motion.** Reported at 17:25 on 2026-11-09, the game's global
+    illumination has looked noisy the same way for weeks, and the review's answer read only the
+    shader cache. The readings here since 2026-10-24 were settled stills, which a fault in motion
+    passes, so a fault named while moving is read from a recording, one handed in where there is one
+    and a scripted walk and turn offscreen where not, picture to picture, with the standing, the
+    walking, the turning and the two seconds after a stop each given their share of pixels moved,
+    and the review asks for a recording and the settings file when a fault is named without one. The
+    engine's Decision 107 says the same; put up for approval as its Decision 95's precedent allows.
+    Item 166. Approved on 2026-11-11, asked by the review with N 7.9, N 7.10 and N 7.11.
 
 ## Replies
 
@@ -582,3 +586,38 @@ box, a cave's dark, a mob's legs, as the sections do, as a furnace is, as the bl
 is the source's rules, a kind named as the instance of a property, and words about the running
 game, a mob held still, a light no longer wanted, a block already set. STYLE.md's checks hold the
 search, whose 234 hits are such uses. The strict build is clean and 394 tests pass.
+
+The pin of 6.2.56, the engine's 8561816b, its one package 3DEngine named alone and the workflows'
+engine checkout at that commit, which build/engine.sh follows. Restored into a package folder of its
+own, 3dengine 6.2.56 comes alone with none of the area packages beside it, its nuspec naming
+8561816b. What reads worse comes from ambient occlusion at 1 alone, which the options hold at 0. At
+the reach's edge, 174's scene read from a zero origin through a build whose origin does not move,
+the dither off, the north wall steps 0.57 to 0.59 a sample at 4,112 where 0.48 to 0.49 at 16 and
+the west wall 0.41 where 0.35 to 0.38, within 0.03 at 2,000, so a player with it on sees a little
+more mottle at the far edge before the origin moves. And it lights the same scene by its place,
+the west wall 117 to 118 at 4,432 against 99 to 101 by the origin and the north wall 7 levels
+lighter, where 6.2.41 read the far place about 7 darker, with the rows' steps alike at both. At 0
+every row reads alike from 16 to 4,112, the west wall 0.34 to 0.37 at 16 and 0.36 to 0.37 at 4,112
+where 6.2.41 read 0.62 to 0.73 there, the floor 1.05 to 1.15 and the north wall 0.46 to 0.49 at
+every distance. So LandOrigin.Reach is four steps, 4,096, the player walking at least 3,584 blocks
+between moves, and the tests that moved the origin are written on its value, the walk crossing the
+reach and back with the exhaustion of 32 blocks, the move 2,000 past it, and the places of
+OriginMoveTests a step and 1,000 blocks short of it. The mirror's reads wait on pipelines.wait.
+Three plays from an empty cache and three from the cache each left, under the layer and through the
+pinned client, passed whole in 288 to 294 s cold and 203 to 214 s warm, the water at red 171, green
+149, blue 168 each time against 171, 148 and 167, each wait answering after 0 frames, the water's
+pipelines made in the 30 frames before it. Against 6.2.41's last play every one of the 17 pictures
+moves by the dither's grain, 21 to 62 percent of its pixels by 1 or 2 levels and none by more, and
+7 move by more than 2 in over 0.01 percent of their pixels. The river by 1.90, the beach by 1.66,
+the dark forest by 0.85 and the badlands by 0.08 are the four the old reach moved the origin for,
+which against the play before any move read 0.00 to 0.07, the beach 0.18. The others are sky2 by
+0.15 in the night's clouds and the meadow by 0.06 and its pack's by 0.02 in specks. The six plays
+of the pin read alike but for sky2's clouds, at most 0.19 percent. The built room on the pin, the
+dither off, reads no step over 3 levels in any of the east wall's eight rows at Low, Medium or High
+at 1280 by 720 or 2560 by 1440, the mean step 0.14 to 0.30, and at 2560 by 1440 no row of the
+ceiling from 150 to 200 stands more than 0.04 levels from its neighbors, where 257 drew a line at
+173 to 175 3.4 over them. 174's scene reads alike at its two places with every stage on, the west
+wall's mean step 0.34 to 0.37 at both and the shaded floor's steps over 3 26 to 27 at both, the
+screen's probes and the shadows alike. The strict build is clean and 394 tests pass. The asks the
+game wrote in the engine's ASKS.md name no one, the change left in the engine's tree for its
+next commit.

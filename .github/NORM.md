@@ -55,14 +55,14 @@ review.
 **N 4.3 Every link in the README and the documents leads somewhere, and a link into this repository
 is checked with no request made.** By review.
 
-**N 4.7 A document or a comment a player or a contributor reads names no one who decided, no owner
+**N 4.7 A document or a comment a player or a contributor reads names no one who decided, no person
 and no session.** Documents speak for the game. The sessions' own documents, REVIEW.md among them,
 say what was decided in plain general words and seldom who, a role named only where a sentence must
 say who holds a decision, quoting no one's own words and carrying nothing personal, since they are
 published with the source. By review.
 
 **N 4.8 A picture a session makes while it works, a reading, a pair before and after a mend or a
-capture sent to the owner, is saved in the repository in the commit of the work it belongs to.** The
+capture sent for a look, is saved in the repository in the commit of the work it belongs to.** The
 pictures are the devlog's substance, and one left in a session's scratch space is gone with the
 session, as a day's radiance cascade captures were. Each is a WebP under `.github/devlog/`, named by
 the date and the item, as `2026-10-24-item-51-emitters.webp`, and its caption in DEVLOG.md, which is
@@ -85,9 +85,9 @@ grove sheets of item 136 did. A title and a label a panel go where several panel
 a box is drawn at a place only where a number read there is given in the caption or the note, never
 a box with no reading; a difference panel against a reference, or a plot, as the light hall's floor
 against the turn in BevyCSharp's item 82, goes where it says more than the frames do; and every
-panel keeps the same view and exposure. The ground stays white, with labels in dark text. The owner,
-shown the kinds on 2026-10-31, keeps the plain form as it was and asks that a sheet's parts come
-from its reading and not from a list. By review.
+panel keeps the same view and exposure. The ground stays white, with labels in dark text. By the
+decision of 2026-10-31 the plain form stays as it was, and a sheet's parts come from its reading and
+not from a list. By review.
 
 **N 4.10 Every picture a session makes is kept in the repository's dump folder, apart from the
 devlog's chosen few.** N 4.8 keeps the pictures chosen for the devlog; the rest, every shot,
@@ -96,18 +96,18 @@ session. Each goes as it is made, as captured, into `.github/dump/<date>/` under
 named by the time, the item and a word, as `09-41-item-83-meadow-before.png`, with a line in that
 day's `captions.md`, the file's name then a bar then one sentence, written as the shot is taken. A
 picture's labels, its file name and its captions line name no person and no session, as the
-documents do not (N 4.7), a picture the owner sent is a screenshot, their reference picture the
-reference or the HDRP reference, and a sheet beside it the reference sheet; the dump's names and
-captions of 2026-10-31 to 11-03 were reworded so on the owner's word of 2026-11-03. The folder is in
-`.gitignore` and never committed; the owner reads it and prunes it by day. A recording's frames and
-any set of pictures past a few hundred megabytes go there as well, under a folder of their own, and
-never into a session's scratch space, which is RAM-backed and held 8.8 GB of one recording's frames
-on 2026-10-31 until the machine ran short and another session broke; a finished experiment's frames
-are deleted at once. A session takes its shots there directly rather than copying them after, so
-nothing is lost when a session ends or the machine restarts. Every picture a session reads or
-compares is also shown to the owner in the session as it is made, with its sentence, since the owner
-follows the work by its pictures and a capture compared behind the scenes and never shown is work
-the owner cannot see. By review, the reviewer reading a day's folder against the items worked.
+documents do not (N 4.7), a picture sent in is a screenshot, a reference picture the reference or
+the HDRP reference, and a sheet beside it the reference sheet; the dump's names and captions of
+2026-10-31 to 11-03 were reworded so by the decision of 2026-11-03. The folder is in `.gitignore`
+and never committed; it is read and pruned by day, by hand. A recording's frames and any set of
+pictures past a few hundred megabytes go there as well, under a folder of their own, and never into
+a session's scratch space, which is RAM-backed and held 8.8 GB of one recording's frames on
+2026-10-31 until the machine ran short and another session broke; a finished experiment's frames are
+deleted at once. A session takes its shots there directly rather than copying them after, so nothing
+is lost when a session ends or the machine restarts. Every picture a session reads or compares is
+also shown in the session as it is made, with its sentence, since the work is followed by its
+pictures and a capture compared behind the scenes and never shown is work that cannot be seen. By
+review, the reviewer reading a day's folder against the items worked.
 
 **N 4.11 A comment stands on the code's own terms.** It says what the code does and why in the
 game's words, and a number taken from elsewhere stands with the reason it is right here, what it
@@ -142,8 +142,8 @@ runs six hours on a hang. By review.
 ## 7 Working
 
 **N 7.1 Commits are made on `main`, and the reviewing session pushes them once the previous build
-run of the repository has ended.** The owner gave the pushes to the reviewing session on 2026-10-19,
-so a coder never pushes and no run is cancelled midway by a push. By review.
+run of the repository has ended.** The pushes are the reviewing session's by the decision of
+2026-10-19, so a coder never pushes and no run is cancelled midway by a push. By review.
 
 **N 7.2 A commit is one finished batch, and its message has the form COMMITS.md gives.** By review.
 
@@ -157,16 +157,15 @@ asks for.** By review.
 second session writes to the repository.** A session with `main` to itself commits on `main`. A
 second writer, a cloud session among them, works on a branch such as `modeling`; the local session
 cherry-picks its commits onto `main` with the repository's author and without a trailer, and the
-reviewing session deletes the branch once its commits are on `main`. The owner asked for it on
-2026-10-23. By review.
+reviewing session deletes the branch once its commits are on `main`. Decided on 2026-10-23. By
+review.
 
 **N 7.6 Every commit's author and committer are the owner's identity, on every branch.** A session
-sets `user.name` and `user.email` to the owner's before its first commit, a cloud session among
+sets `user.name` and `user.email` to that identity before its first commit, a cloud session among
 them, and a commit with any other identity is pushed nowhere; one that was is rewritten before it
-goes anywhere, and a branch that carried one is deleted with its workflow runs. The owner asked for
-it on 2026-10-23, having seen the cloud sessions' branches name another author as their sole
-contributor. By review, the reviewing session reading the author of every commit it pushes or has
-cherry-picked.
+goes anywhere, and a branch that carried one is deleted with its workflow runs. Decided on
+2026-10-23, after the cloud sessions' branches named another author as their sole contributor. By
+review, the reviewing session reading the author of every commit it pushes or has cherry-picked.
 
 **N 7.7 A session spends tokens on what changes the work.** The weekly usage ran out in three days
 twice, in October 2026, with four sessions working around the clock. A report to the reviewing
@@ -181,8 +180,8 @@ the commit, and its watch wakes once an hour, the runs' ends reported by waits. 
 reviewer reading each report's and each record's length.
 
 **N 7.8 A session runs a program offscreen or headless, and opens a window only to read what a
-window alone shows.** The owner's word of 2026-10-30. A test, a reading, a capture and a drive run
-offscreen or headless as they do; a window is opened on the owner's machine for the window's own
+window alone shows.** Decided on 2026-10-30. A test, a reading, a capture and a drive run offscreen
+or headless as they do; a window is opened on the development machine for the window's own
 questions, the swapchain and its format, the modes and sizes, a screenshot read against an offscreen
 capture, and closed when read. By review.
 
@@ -219,8 +218,8 @@ folder under the home's cache, and not to /tmp, and a done item's scratch is del
 closes. By review, the reviewing session reading the memory and each session's scratch at its watch.
 
 **N 7.11 A session's programs keep their caches in a folder of the session's own.** The engine's
-caches of shaders, pipelines and scene packs stand in the account's cache folder, which the owner's
-own programs read and write, and a session's plays on 2026-11-11 read and wrote the game's
+caches of shaders, pipelines and scene packs stand in the account's cache folder, which the
+account's own programs read and write, and a session's plays on 2026-11-11 read and wrote the game's
 pipelines' file there, 94 MB piled up from every package run on the account, so that a reading of a
 warm cache stood on what other runs had left. A program a session starts runs with XDG_CACHE_HOME
 naming a folder under the session's work folder in the home's cache; a warm cache is made there by a
@@ -258,4 +257,4 @@ trial nor copying, writing or clearing them, unless the owner says so for that f
 
 The reviewing session adds a rule alone when the rule comes with its check and no existing code
 breaks it. A rule that existing code breaks, or that touches what is the owner's (dependencies, the
-engine's version, AGENTS.md, what is published), waits for the owner's word.
+engine's version, AGENTS.md, what is published), waits on a decision.

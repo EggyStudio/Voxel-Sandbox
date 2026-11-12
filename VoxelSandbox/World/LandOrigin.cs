@@ -48,12 +48,12 @@ public static class LandOrigin
     public const int Step = 1024;
 
     /// <summary>
-    /// How far from the origin along x or z the player goes before the origin moves, a step, so the
-    /// player stands within 512 blocks of it after a move and walks at least 512 before the next. At
-    /// 2,000 blocks from the engine's zero the light it lays on a wall mottles as at 4,450, where
-    /// within 1,040 a wall reads as at the origin.
+    /// How far from the origin along x or z the player goes before the origin moves, four steps, so
+    /// the player stands within 512 blocks of it after a move and walks at least 3,584 before the
+    /// next. Within 4,112 blocks of the engine's zero the light it lays on a wall reads as at the zero,
+    /// with ambient occlusion at 1 a little more mottled at the far end.
     /// </summary>
-    public const int Reach = 1024;
+    public const int Reach = 4 * Step;
 
     /// <summary>
     /// How far out along x or z the origin goes and a place may be put, in blocks, so a block's

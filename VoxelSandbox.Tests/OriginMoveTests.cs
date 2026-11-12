@@ -28,12 +28,20 @@ public sealed class OriginMoveTests : IDisposable
 
     private static string Run(FormattableString line) => ConsoleCommands.Run(FormattableString.Invariant(line)) ?? "";
 
-    // A game put 1,000 blocks east, within reach of the origin at 0, so a move to 1,024 leaves the
-    // player within reach of it and the next frame keeps it. A float place between 512 and 2,048
-    // less 1,024 holds whole, so every place about the player moves exactly.
+    // The places about the player, a step and 1,000 blocks east of it lying 24 blocks short of the
+    // reach.
+    private const int X0 = LandOrigin.Reach - LandOrigin.Step;
+
+    // The origin a place of the land's own moves it to.
+    private static int OriginNear(double x) => (int)Math.Round(x / LandOrigin.Step) * LandOrigin.Step;
+
+    // A game put 24 blocks short of the reach east, within reach of the origin at 0, so a move to the
+    // reach leaves the player within reach of it and the next frame keeps it. A float place between
+    // half the move and twice it less the move holds whole, so every place about the player moves
+    // exactly.
     private static HeadlessGame PutNearTheLine()
     {
-        var headless = new HeadlessGame(at: new LandPlace(1000.5, Feet, 0.5));
+        var headless = new HeadlessGame(at: new LandPlace(X0 + 1000.5, Feet, 0.5));
         Serve(headless.Game);
         headless.Game.Mobs.Still = true;
         Assert.Equal(0, LandOrigin.X);
@@ -48,30 +56,30 @@ public sealed class OriginMoveTests : IDisposable
 
         // A lamp, a pool raining rings, a villager kept to a home, an arrow, a blast, a block's bits
         // and a dropped stack about the player.
-        Assert.StartsWith("glowstone is at", Run($"voxel.set 1002 4 2 glowstone"));
-        Run($"voxel.fill 994 3 -6 998 3 6 water");
+        Assert.StartsWith("glowstone is at", Run($"voxel.set {X0 + 1002} 4 2 glowstone"));
+        Run($"voxel.fill {X0 + 994} 3 -6 {X0 + 998} 3 6 water");
         Run($"voxel.weather turned");
         for (int frame = 0; frame < 600 && game.Particles.WaterRings.Count == 0; frame++) headless.Step(1);
         Assert.NotEmpty(game.Particles.WaterRings);
-        var villager = game.Mobs.Add(new MobRecord(MobKinds.Villager, 0, new LandPlace(1003.25, Feet, 0.75), 0, MobKinds.Villager.Health, new LandPlace(1010.5, Feet, -3.5)));
-        game.Arrows.Shoot(LandOrigin.PlaceOf(new LandPlace(1001.5, Feet + 3, 0.5)), new Vector3(0, 0, 10));
-        game.Blasts.Add(LandOrigin.PlaceOf(new LandPlace(1004.5, Feet, 4.5)), 2);
-        game.Bits.Break(BlockId.Stone, 1001, 3, 3);
-        game.Drops.Spawn(Items.Find("stone")!, 1, LandOrigin.PlaceOf(new LandPlace(998.5, Feet + 2, 0.5)), Vector3.Zero);
+        var villager = game.Mobs.Add(new MobRecord(MobKinds.Villager, 0, new LandPlace(X0 + 1003.25, Feet, 0.75), 0, MobKinds.Villager.Health, new LandPlace(X0 + 1010.5, Feet, -3.5)));
+        game.Arrows.Shoot(LandOrigin.PlaceOf(new LandPlace(X0 + 1001.5, Feet + 3, 0.5)), new Vector3(0, 0, 10));
+        game.Blasts.Add(LandOrigin.PlaceOf(new LandPlace(X0 + 1004.5, Feet, 4.5)), 2);
+        game.Bits.Break(BlockId.Stone, X0 + 1001, 3, 3);
+        game.Drops.Spawn(Items.Find("stone")!, 1, LandOrigin.PlaceOf(new LandPlace(X0 + 998.5, Feet + 2, 0.5)), Vector3.Zero);
         headless.Step(1);
         var (things, lamps, sections) = (Things(game, ecs), Lamps(game), Sections(ecs));
-        Assert.Contains(lamps, lamp => (Math.Floor(lamp.At.X), Math.Floor(lamp.At.Y), Math.Floor(lamp.At.Z)) == (1002, 4, 2));
+        Assert.Contains(lamps, lamp => (Math.Floor(lamp.At.X), Math.Floor(lamp.At.Y), Math.Floor(lamp.At.Z)) == (X0 + 1002, 4, 2));
 
-        Assert.True(game.Recenter(new LandPlace(1100.5, Feet, 0.5)));
-        Assert.Equal((1024, 0, 1), (LandOrigin.X, LandOrigin.Z, game.Recentered));
+        Assert.True(game.Recenter(new LandPlace(X0 + 1100.5, Feet, 0.5)));
+        Assert.Equal((LandOrigin.Reach, 0, 1), (LandOrigin.X, LandOrigin.Z, game.Recentered));
         Assert.Equal(things, Things(game, ecs));
-        Assert.Equal((new LandPlace(1003.25, Feet, 0.75), new LandPlace(1010.5, Feet, -3.5)), (LandOrigin.LandOf(villager.Body.Position), LandOrigin.LandOf(villager.Home!.Value)));
+        Assert.Equal((new LandPlace(X0 + 1003.25, Feet, 0.75), new LandPlace(X0 + 1010.5, Feet, -3.5)), (LandOrigin.LandOf(villager.Body.Position), LandOrigin.LandOf(villager.Home!.Value)));
 
         // The lamps are placed again in the next frame, the land's groups made again, and each
         // stands where it stood, its cube and every section's mesh uploaded again, so the scene
         // field takes them as come, not as moved.
         headless.Step(1);
-        Assert.Equal(1024, LandOrigin.X);
+        Assert.Equal(LandOrigin.Reach, LandOrigin.X);
         Assert.Equal(lamps.Select(lamp => lamp.At), Lamps(game).Select(lamp => lamp.At));
         Assert.Empty(lamps.Select(lamp => lamp.Cube).Intersect(Lamps(game).Select(lamp => lamp.Cube)));
         var after = Sections(ecs);
@@ -119,14 +127,14 @@ public sealed class OriginMoveTests : IDisposable
 
         // A TNT's blast sent in a frame, as its fuse runs out, is set off in the next, after the
         // origin moved in between.
-        var at = new LandPlace(1003.5, 3.0625, 0.5);
-        Assert.Equal(BlockId.Grass, game.World.GetBlock(1003, 3, 0));
+        var at = new LandPlace(X0 + 1003.5, 3.0625, 0.5);
+        Assert.Equal(BlockId.Grass, game.World.GetBlock(X0 + 1003, 3, 0));
         GetApp().World.SendEvent(new TntBlast(at));
-        Assert.True(game.Recenter(new LandPlace(1100.5, Feet, 0.5)));
+        Assert.True(game.Recenter(new LandPlace(X0 + 1100.5, Feet, 0.5)));
         headless.Step(1);
 
         Assert.Equal(at, LandOrigin.LandOf(Assert.Single(game.Blasts.All).At));
-        Assert.Equal(BlockId.Air, game.World.GetBlock(1003, 3, 0));
+        Assert.Equal(BlockId.Air, game.World.GetBlock(X0 + 1003, 3, 0));
     }
 
     [Fact]
@@ -137,9 +145,9 @@ public sealed class OriginMoveTests : IDisposable
 
         // A pig and a stack at places whose parts a float holds near the origin and not a million
         // blocks out, where it steps by an eighth, the stack out of the player's reach.
-        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(1003.3, Feet, 0.7), 0, MobKinds.Pig.Health, null));
+        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(X0 + 1003.3, Feet, 0.7), 0, MobKinds.Pig.Health, null));
         var at = LandOrigin.LandOf(pig.Body.Position);
-        game.Drops.Spawn(Items.Find("stone")!, 3, LandOrigin.PlaceOf(new LandPlace(994.3, Feet, 0.7)), Vector3.Zero);
+        game.Drops.Spawn(Items.Find("stone")!, 3, LandOrigin.PlaceOf(new LandPlace(X0 + 994.3, Feet, 0.7)), Vector3.Zero);
         headless.Step(1);
         var lying = Stacks(game);
         Assert.Single(lying);
@@ -150,7 +158,7 @@ public sealed class OriginMoveTests : IDisposable
         Assert.Equal((0, 1), (game.Drops.Count, game.Drops.Kept));
 
         // Put back, the pig and the stack come back where they lay once their columns are in again.
-        Assert.StartsWith("the player stands at", Run($"voxel.tp 1000.5 {Feet} 0.5"));
+        Assert.StartsWith("the player stands at", Run($"voxel.tp {X0 + 1000.5} {Feet} 0.5"));
         Stand(headless);
         Assert.Contains(game.Mobs.All, mob => mob.Kind == MobKinds.Pig && LandOrigin.LandOf(mob.Body.Position) == at);
         Assert.Equal(0, game.Drops.Kept);
@@ -160,10 +168,10 @@ public sealed class OriginMoveTests : IDisposable
     [Fact]
     public void The_Things_A_Player_Spills_Far_From_The_Spawn_Lie_There_After_The_Respawn()
     {
-        // A player 3,000 blocks east, the origin at 3,072, dies with what it holds and three stacks
-        // more, comes back at the spawn, the origin at 0 and the columns where it fell unloaded, and
-        // is put back.
-        using var headless = new HeadlessGame(at: new LandPlace(3000.5, Feet, 0.5));
+        // A player past the reach east, the origin moved near it, dies with what it holds and three
+        // stacks more, comes back at the spawn, the origin at 0 and the columns where it fell
+        // unloaded, and is put back.
+        using var headless = new HeadlessGame(at: new LandPlace(X0 + 3000.5, Feet, 0.5));
         var game = headless.Game;
         Serve(game);
         game.Mode = GameMode.Survival;
@@ -182,13 +190,13 @@ public sealed class OriginMoveTests : IDisposable
 
         // Six blocks east of where it fell, out of reach of them, the stacks lie where they lay, as
         // old as they were and older by the frames since.
-        Assert.StartsWith("the player stands at", Run($"voxel.tp 3006.5 {Feet} 0.5"));
-        Assert.Equal(3072, LandOrigin.X);
+        Assert.StartsWith("the player stands at", Run($"voxel.tp {X0 + 3006.5} {Feet} 0.5"));
+        Assert.Equal(OriginNear(X0 + 3006.5), LandOrigin.X);
         Stand(headless);
         AssertLying(lying, Stacks(game));
 
         // Walked onto them, the player takes every one back.
-        Assert.StartsWith("the player stands at", Run($"voxel.tp 3000.5 {Feet} 0.5"));
+        Assert.StartsWith("the player stands at", Run($"voxel.tp {X0 + 3000.5} {Feet} 0.5"));
         headless.Step(30);
         Assert.Equal(held, Holding(game));
     }

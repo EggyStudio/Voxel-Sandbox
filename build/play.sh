@@ -539,21 +539,23 @@ check "the pool's reflection"
 # A pool beside a wall of red concrete at noon mirrors the wall through the engine's planar
 # reflection, the plane at the water's top, read on the water where the wall's mirror image lies,
 # its red at least 8 levels over its green, and with Water Reflections off it reflects nothing of the
-# wall, its red at least 8 under its green, where the glossy water reflecting the wall through the
-# scene's distance field read red 134 to green 132. Its bed is white concrete, so the red of the dirt
-# a block of water shows does not read as the wall's.
+# wall, its red at least 8 under its green. Its bed is white concrete, so the red of the dirt a block
+# of water shows does not read as the wall's. Each read waits for the pipelines its first sight
+# asks for, which an empty cache makes for many seconds, so the frame read draws the water whole.
 cmd voxel.fill 60 2 30 66 2 36 white_concrete
 cmd voxel.fill 60 3 30 66 3 36 water
 cmd voxel.fill 60 4 29 66 8 29 red_concrete
 cmd voxel.tp 63.5 4 40
 cmd voxel.look 0 -8
 cmd frames.wait 30
+echo "the pool's pipelines, $(ask pipelines.wait 300)"
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 water() { printf '%s\n' "$1" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p'; }
 mirror=$(ask voxel.pixel 63.5 3.876 33.5)
 cmd voxel.options render Water_Reflections 0
 cmd frames.wait 30
+echo "the plain water's pipelines, $(ask pipelines.wait 300)"
 plain=$(ask voxel.pixel 63.5 3.876 33.5)
 cmd voxel.options render Water_Reflections 1
 echo "the water where the wall mirrors, $mirror, and with Water Reflections off, $plain"

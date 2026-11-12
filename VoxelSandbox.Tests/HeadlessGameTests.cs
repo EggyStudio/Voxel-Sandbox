@@ -146,9 +146,10 @@ public sealed class HeadlessGameTests
             headless.Step(2);
             var (pigAt, dropAt) = (LandOrigin.LandOf(pig.Body.Position), LandOrigin.LandOf(drop.Position));
 
-            // A place 3,000 blocks east moves the origin to 3,072, every place kept.
-            Assert.True(game.Recenter(new LandPlace(feet.X + 3000, feet.Y, feet.Z)));
-            Assert.Equal((3072, 0), (LandOrigin.X, LandOrigin.Z));
+            // A place 2,000 blocks past the reach east moves the origin to the step nearest it, every
+            // place kept.
+            Assert.True(game.Recenter(new LandPlace(feet.X + LandOrigin.Reach + 2000, feet.Y, feet.Z)));
+            Assert.Equal(((int)Math.Round((feet.X + LandOrigin.Reach + 2000) / LandOrigin.Step) * LandOrigin.Step, 0), (LandOrigin.X, LandOrigin.Z));
             Assert.Equal(feet, LandOrigin.LandOf(game.Player.Body.Position));
             Assert.Equal(pigAt, LandOrigin.LandOf(pig.Body.Position));
             Assert.Equal(dropAt, LandOrigin.LandOf(drop.Position));
@@ -172,8 +173,9 @@ public sealed class HeadlessGameTests
         var game = headless.Game;
         try
         {
-            // Put 1,016 blocks east, as voxel.tp puts the player, and stood once the land there is in.
-            var start = new LandPlace(1016.5, LandOrigin.LandOf(game.Player.Body.Position).Y, 0.5);
+            // Put 7.5 blocks short of the reach east, as voxel.tp puts the player, and stood once the
+            // land there is in.
+            var start = new LandPlace(LandOrigin.Reach - 7.5, LandOrigin.LandOf(game.Player.Body.Position).Y, 0.5);
             game.Leave(start);
             game.Recenter(start);
             game.Player.Teleport(LandOrigin.PlaceOf(start));
@@ -189,7 +191,7 @@ public sealed class HeadlessGameTests
             Assert.Equal(0, LandOrigin.X);
             var (exhaustion, saturation) = (game.Vitals.Exhaustion, game.Vitals.Saturation);
 
-            // Sixteen blocks east a tenth of a block a frame, across 1,024, where the origin moves,
+            // Sixteen blocks east a tenth of a block a frame, across the reach, where the origin moves,
             // and back west over it, where the origin stays, the player within its reach.
             var walked = new List<double>();
             void Walk(float step)
@@ -202,11 +204,11 @@ public sealed class HeadlessGameTests
                 }
             }
             Walk(0.1f);
-            Assert.Equal((1024, 1), (LandOrigin.X, game.Recentered));
+            Assert.Equal((LandOrigin.Reach, 1), (LandOrigin.X, game.Recentered));
             Assert.All(walked.Zip(walked.Skip(1)), pair => Assert.Equal(0.1, pair.Second - pair.First, 3));
             walked.Clear();
             Walk(-0.1f);
-            Assert.Equal((1024, 1), (LandOrigin.X, game.Recentered));
+            Assert.Equal((LandOrigin.Reach, 1), (LandOrigin.X, game.Recentered));
             Assert.All(walked.Zip(walked.Skip(1)), pair => Assert.Equal(-0.1, pair.Second - pair.First, 3));
 
             // The walk of 32 blocks tires the player by a hundredth a block, the move none, where
