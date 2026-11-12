@@ -211,7 +211,19 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
 
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 12 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdicts 1 to 12 are settled, said under each in REVIEW-ARCHIVE.md; Verdict 13 is open, the run of
+`3bfa75d` red on macOS in a test of the far game's save.
+
+13. **The run of `3bfa75d` is red on macOS in a test of the far game's save, the villager not where
+    the test set it.** In run 43132544029 the macOS test job fails 2 of 386, both cases of
+    FarGameTests.A_Game_Far_Out_Keeps_The_Players_Place_A_Broken_Block_And_A_Villager_Across_A_Save
+    at its line 104, from `85160b6`. At -284,680.5, -33.5 the villager stands at x -284,684.049, and
+    at 1,139,992.5, 596.5 it stands at z 595.801, half a block and 0.7 from where a whole or a half
+    would put it; Windows and Linux pass the same tests and the play is still going. That reads as
+    the villager having walked before the test read it, the count of frames before the read resting
+    on the runner's speed, and not as a place lost by the origin; the coder reads which. The mend,
+    the villager held where it is set or its place compared across the save against what was saved,
+    goes up at once with `0aaf8e2`. Written at 03:09 on 2026-11-12.
 
 ## Decisions
 
@@ -520,3 +532,12 @@ passes whole in 209 s with the mirror at red 171. Of its 17 captures 1 moved by 
 against 3bfa75d's, sky2 by 0.07 percent in the night's clouds. The first form's play moved the
 meadow by 0.02 percent in a few specks of its sky, which this one reads alike. The room's sheet is
 02-10-item-177-lamps.png in the dump.
+
+Verdict 13, read and mended. It is the frames, not the origin. The game opened again ran its mobs
+from the first frame, so the villager walked for as many frames as the streamer took to stand the
+world, and the test read its place against where it was set with half a block to spare. Run here
+with the mobs left to move and 120 frames stepped before the read, the case at 1,139,992.5, 596.5
+fails as macOS did, the villager at 1,139,990.31, 597.31 where it was saved at 1,139,989.5, 596.5,
+its home and the saved record equal to the bit. HeadlessGame takes a switch holding the mobs still
+from the first frame, and the reopened game uses it, steps 120 frames, and compares the villager's
+place and home with the saved record exactly, which both cases pass.

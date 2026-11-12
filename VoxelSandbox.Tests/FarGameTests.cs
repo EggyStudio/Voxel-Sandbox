@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Numerics;
 using System.Text.RegularExpressions;
 using Engine;
 using Xunit;
@@ -90,18 +89,21 @@ public sealed partial class FarGameTests : IDisposable
         var record = Assert.Single(kept.Values.SelectMany(list => list), m => m.Kind == MobKinds.Villager);
         Assert.Equal((villager, home), (record.Position, record.Home));
 
-        // Opened again, the player stands where it stood, the origin near it, and the block stays broken.
+        // Opened again, the player stands where it stood, the origin near it, the block stays broken
+        // and the villager stands where it was saved, held still from the first frame, since it
+        // walked half a block in the frames a slower or faster machine takes to stand the world.
         LandOrigin.Near(0, 0);
-        using (var again = new HeadlessGame(save: _folder))
+        using (var again = new HeadlessGame(save: _folder, still: true))
         {
             var game = again.Game;
             Serve(game);
             Assert.Equal(stood, LandOrigin.LandOf(game.Player.Body.Position));
             Assert.True(Math.Abs(x - LandOrigin.X) <= LandOrigin.Reach);
             Assert.Equal(BlockId.Air, game.World.GetBlock((int)Math.Floor(x + 1.62), (int)Math.Floor(y) - 1, (int)Math.Floor(z)));
+            // However many frames pass.
+            again.Step(120);
             var mob = Assert.Single(game.Mobs.All, m => m.Kind == MobKinds.Villager);
-            Assert.Equal(home, LandOrigin.LandOf(mob.Home!.Value));
-            Assert.True(Vector3.Distance(LandOrigin.PlaceOf(villager), mob.Body.Position) < 0.5f, $"the villager stands at {LandOrigin.LandOf(mob.Body.Position)}");
+            Assert.Equal((record.Position, record.Home), (LandOrigin.LandOf(mob.Body.Position), LandOrigin.LandOf(mob.Home!.Value)));
         }
     }
 

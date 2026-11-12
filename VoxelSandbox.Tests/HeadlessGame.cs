@@ -20,7 +20,8 @@ namespace VoxelSandbox.Tests;
 /// The game saves nothing unless given a folder of its own to save in, loads no pack, and draws two
 /// columns about the player, who stands at the flat world's middle unless given a place of the land
 /// to be put at, as <c>voxel.tp</c> puts the player, what is left unloaded and the origin moved near
-/// it. The world's columns are made on workers by the clock, not by the frames, which pass in a
+/// it, and its mobs think and move unless held still from the first frame, so a test that reads a
+/// mob's place does not rest on how many frames the world takes to stand. The world's columns are made on workers by the clock, not by the frames, which pass in a
 /// fraction of that with nothing held to a rate, so the game is stepped until it stands and every
 /// column in reach is in, yielding a moment between frames while it loads, or until 30 seconds have
 /// passed, which a slow machine's flat world takes a second or two of.
@@ -31,7 +32,7 @@ public sealed class HeadlessGame : IDisposable
     /// <summary>The seconds each frame steps the game by unless a test gives another.</summary>
     public const float FrameSeconds = 1 / 30f;
 
-    public HeadlessGame(int seed = 1, float frameSeconds = FrameSeconds, LandPlace? at = null, string? save = null)
+    public HeadlessGame(int seed = 1, float frameSeconds = FrameSeconds, LandPlace? at = null, string? save = null, bool still = false)
     {
         Environment.SetEnvironmentVariable("E3D_HEADLESS", "1");
         Environment.SetEnvironmentVariable("E3D_FRAME_TIME", frameSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -44,6 +45,7 @@ public sealed class HeadlessGame : IDisposable
         {
             // A save's folder given whole stands in for its name, which the saves' folder is joined to.
             Game = new VoxelGame("flat", seed, save, transient: save is null, []) { RenderDistance = 2 };
+            Game.Mobs.Still = still;
             Stand();
             if (at is { } place)
             {
