@@ -6,17 +6,20 @@ namespace VoxelSandbox;
 /// <summary>The player as a hostile mob hunts it, by its box and its eye.</summary>
 public readonly record struct MobTarget(Body Body, Vector3 Eye);
 
-/// <summary>Something a mob does to the player, which the game carries out.</summary>
+/// <summary>
+/// Something a mob does to the player, which the game carries out, its places in the land's own
+/// coordinates, since the game carries it out in its next frame, after the origin may have moved.
+/// </summary>
 public abstract record MobEvent(Mob Mob);
 
 /// <summary>A strike of so much damage from where the mob stands.</summary>
-public sealed record MobStrike(Mob Mob, int Damage, Vector3 From) : MobEvent(Mob);
+public sealed record MobStrike(Mob Mob, int Damage, LandPlace From) : MobEvent(Mob);
 
 /// <summary>An arrow loosed from a place with a velocity.</summary>
-public sealed record MobShot(Mob Mob, Vector3 From, Vector3 Velocity) : MobEvent(Mob);
+public sealed record MobShot(Mob Mob, LandPlace From, Vector3 Velocity) : MobEvent(Mob);
 
 /// <summary>An explosion of a power at a place, as a creeper's of three.</summary>
-public sealed record MobBlast(Mob Mob, Vector3 At, float Power) : MobEvent(Mob);
+public sealed record MobBlast(Mob Mob, LandPlace At, float Power) : MobEvent(Mob);
 
 /// <summary>
 /// A hostile mob's hunt, whether it hunts the player and has been angered, its waits between its
@@ -126,7 +129,7 @@ public sealed partial class Mob
             {
                 hostile.Fuse = distance > FuseLeave ? -1 : hostile.Fuse + seconds;
                 if (hostile.Fuse < FuseTime) return (Vector3.Zero, false);
-                events.Add(new MobBlast(this, Body.Position + new Vector3(0, Kind.Height / 2, 0), 3));
+                events.Add(new MobBlast(this, LandOrigin.LandOf(Body.Position + new Vector3(0, Kind.Height / 2, 0)), 3));
                 Exploded = true;
                 ref var life = ref Life;
                 (life.Health, life.Dying) = (0, MobLife.DeathTime);
@@ -144,7 +147,7 @@ public sealed partial class Mob
             if (hostile.ShotWait <= 0)
             {
                 hostile.ShotWait = ShotEvery;
-                events.Add(new MobShot(this, eye + Vector3.Normalize(prey.Eye - eye) * 0.6f, Aim(eye, prey)));
+                events.Add(new MobShot(this, LandOrigin.LandOf(eye + Vector3.Normalize(prey.Eye - eye) * 0.6f), Aim(eye, prey)));
             }
             // It keeps between five and ten blocks off, backing away from a player who closes in.
             if (distance < 5 && flat.LengthSquared() > 1e-4f)
@@ -166,7 +169,7 @@ public sealed partial class Mob
             if (hostile.StrikeWait <= 0)
             {
                 hostile.StrikeWait = StrikeEvery;
-                events.Add(new MobStrike(this, Kind.AttackDamage, Body.Position));
+                events.Add(new MobStrike(this, Kind.AttackDamage, LandOrigin.LandOf(Body.Position)));
             }
             return (Ahead(flat) * Kind.ChaseSpeed * 0.3f, false);
         }

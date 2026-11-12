@@ -93,7 +93,10 @@ public static class GameCommands
     internal static string Teleport(double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
-        // The origin moves near the place first, so the feet stand there exactly.
+        if (Math.Abs(x) > LandOrigin.Edge || Math.Abs(z) > LandOrigin.Edge) return $"the land reaches {LandOrigin.Edge} blocks out along x and z";
+        // What is left behind is unloaded and the origin moves near the place first, so the feet
+        // stand there exactly.
+        game.Leave(new LandPlace(x, y, z));
         game.Recenter(new LandPlace(x, y, z));
         game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, y, z)));
         return $"the player stands at {x}, {y}, {z}";

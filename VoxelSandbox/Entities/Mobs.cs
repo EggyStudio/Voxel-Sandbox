@@ -3,8 +3,8 @@ using Engine;
 
 namespace VoxelSandbox;
 
-/// <summary>A mob that died and was taken away, an event the game drops its loot for.</summary>
-public readonly record struct MobDied(Mob Mob);
+/// <summary>A mob that died and was taken away and where it lay in the land, an event the game drops its loot for in its next frame.</summary>
+public readonly record struct MobDied(Mob Mob, LandPlace At);
 
 /// <summary>
 /// The behaviors of the mobs, each an entity of the engine's ECS with its <see cref="Mob"/>, the
@@ -82,7 +82,7 @@ public partial struct MobMind
         foreach (var (id, mob) in gone)
         {
             ctx.Ecs.Despawn(id);
-            ctx.World.SendEvent(new MobDied(mob));
+            ctx.World.SendEvent(new MobDied(mob, LandOrigin.LandOf(mob.Body.Position)));
         }
     }
 

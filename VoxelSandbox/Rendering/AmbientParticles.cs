@@ -58,16 +58,6 @@ public sealed class AmbientParticles : IDisposable
     private readonly Pool _splashes, _leaves, _wakes;
     private readonly Stream _dust, _spores, _embers;
     private readonly List<(Vector3 At, float Age)> _rings = [];
-
-    /// <summary>
-    /// Moves the rings on the water by the whole step the <see cref="LandOrigin"/> moves by. The
-    /// particles the engine keeps in the world's places stay where they were, a thousand blocks and
-    /// more from the eye then, out of sight until they die, a few seconds at most.
-    /// </summary>
-    public void Shift(Vector3 by)
-    {
-        for (int i = 0; i < _rings.Count; i++) _rings[i] = _rings[i] with { At = _rings[i].At + by };
-    }
     private readonly Random _random = new();
     private ModelMesh _ringMesh;
     private float _splashDue, _leafDue, _wakeDue;
@@ -85,6 +75,9 @@ public sealed class AmbientParticles : IDisposable
 
     /// <summary>The most particles the emitters hold together and the rings, each emitter's cap summed over the most of it there may be.</summary>
     public int Budget => _splashes.Cap + _leaves.Cap + _wakes.Cap + _dust.Cap + _spores.Cap + _embers.Cap + MostRings;
+
+    /// <summary>The rings spreading on the water, where each stands and how old it is.</summary>
+    public IReadOnlyList<(Vector3 At, float Age)> WaterRings => _rings;
 
     /// <summary>The emitters held this frame.</summary>
     public int Emitters => _splashes.Count + _leaves.Count + _wakes.Count + _dust.Count + _spores.Count + _embers.Count;
@@ -134,6 +127,16 @@ public sealed class AmbientParticles : IDisposable
             SpeedVariation = 0.7f, Drag = 0.3f, Gravity = new Vector3(0, 0.05f, 0), StartSize = 0.08f, EndSize = 0.03f,
             StartColor = new Color(255, 150, 50, 255), EndColor = new Color(255, 60, 10, 0), Intensity = 4, Lit = false, Blend = ParticleBlend.Additive, Texture = _mote,
         });
+    }
+
+    /// <summary>
+    /// Moves the rings on the water by the whole step the <see cref="LandOrigin"/> moves by. The
+    /// particles the engine keeps in the world's places stay where they were, a thousand blocks and
+    /// more from the eye then, out of sight until they die, a few seconds at most.
+    /// </summary>
+    public void Shift(Vector3 by)
+    {
+        for (int i = 0; i < _rings.Count; i++) _rings[i] = _rings[i] with { At = _rings[i].At + by };
     }
 
     /// <summary>

@@ -19,11 +19,11 @@ namespace VoxelSandbox.Tests;
 /// <para>
 /// The game saves nothing unless given a folder of its own to save in, loads no pack, and draws two
 /// columns about the player, who stands at the flat world's middle unless given a place of the land
-/// to be put at, as <c>voxel.tp</c> puts the player, the origin moved near it. The world's
-/// columns are made on workers by the clock, not by the frames, which pass in a fraction of that
-/// with nothing held to a rate, so the game is stepped until it stands and every column in reach is
-/// in, yielding a moment between frames while it loads, or until 30 seconds have passed, which a
-/// slow machine's flat world takes a second or two of.
+/// to be put at, as <c>voxel.tp</c> puts the player, what is left unloaded and the origin moved near
+/// it. The world's columns are made on workers by the clock, not by the frames, which pass in a
+/// fraction of that with nothing held to a rate, so the game is stepped until it stands and every
+/// column in reach is in, yielding a moment between frames while it loads, or until 30 seconds have
+/// passed, which a slow machine's flat world takes a second or two of.
 /// </para>
 /// </remarks>
 public sealed class HeadlessGame : IDisposable
@@ -47,6 +47,7 @@ public sealed class HeadlessGame : IDisposable
             Stand();
             if (at is { } place)
             {
+                Game.Leave(place);
                 Game.Recenter(place);
                 Game.Player.Teleport(LandOrigin.PlaceOf(place));
                 Stand();

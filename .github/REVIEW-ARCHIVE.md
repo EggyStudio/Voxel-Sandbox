@@ -2952,6 +2952,64 @@ before a batch.
     an int squared, mended at `88d6303`. What is the engine's is an ask under its item 258, the
     vertices placed in world floats; what is the game's is item 177.
 
+173. **A built room's striped wall, read for the engine.** From the owner on 2026-11-11 at about
+    18:35 and the engine's item 257. The owner's saved world, overworld of seed 1, opens at 4448.4,
+    24, 599.8 facing 48 degrees in a dark closed room they built, the illumination at Low, and the
+    first view shows the noise they have named for weeks, stripes of small squares in a glow light's
+    light on the back wall; the review saw the same from the game's built program on a copy of the
+    owner's data folder, ~/.cache/claude-reviewer/owner-view/data, with its captures beside it under
+    shots. The game's coder reads the room from that copy and never from the owner's own folder, by
+    XDG_DATA_HOME naming the copy. The blocks that glow within reach of the wall, their kinds and
+    places, the wall's and the ceiling's planes, the eye's place; the view captured as it opens and
+    with each glowing block taken away in turn in a second copy, to say which light draws the
+    stripes; and the engine's gi.show and field.march at a striped place and a smooth one, as its
+    coder asks. Written as an ask in the engine's ASKS.md with a sheet by N 4.9. A check for the
+    play after the mend, the room's wall read for its squares at each quality. After 172's commit,
+    and ahead of all else. The engine's coder reads the stripes at a glance as the glow light's
+    march calling the wall itself an occluder and asks three things first, the glowing blocks'
+    places and sizes against the wall's plane, the wall's plane with the field's cell, and
+    field.march from a striped texel and from a smooth one beside it toward the nearest glowing
+    block; they go to it through the review as they come. The read is done at 19:06, nothing
+    committed. The removals on a second copy say the lantern alone draws the stripes, the wall
+    reading 0 with it made white concrete and as before with the 14 magma blocks made stone. The
+    sheet is 19-00-item-173-room.png in the dump, and the ask is the last entry of the engine's
+    ASKS.md, which the engine's next commit carries. What remains is the check after the mend. When
+    the engine's coder has the mend in a package of its own feed, unpublished, the game's coder
+    captures the owner's first view from its copy on 6.2.41 and on that package, built in its work
+    folder, the wall's rows read at Low, Medium and High on both, before and after on one sheet for
+    the owner. The work folder i173 is kept until then. The check's first step is done at 23:32 on
+    the engine's package 6.2.41-local.257. The stripes are gone, no row of the east wall with a step
+    over 3 levels at any quality at 1280 by 720 or at 2560 by 1440 where the published package has
+    up to 29 and up to 16, the figures under the engine's item 257. One thing reads worse, a line
+    across the ceiling at rows 173 to 175 at 2560 by 1440 alone, which went to the engine's coder.
+    The sheet 23-50-item-173-mend.png went to the owner. The second step, 174's scene on the package
+    at both places, follows.
+
+174. **The same built scene near the origin and 4,432 blocks out.** From the engine's item 257 on
+    2026-11-11. The owner's noise was float precision 4,450 units from the origin in points and
+    normals the engine takes from the depth, which no scene at the origin shows, and the engine's
+    item 258 reads its other passes for the same. The game gives it the controlled case. In a copy
+    of the data, one small scene built of blocks twice, block for block, once within 64 blocks of
+    the origin and once beside the owner's room near 4448, 24, 600, each on a platform in the air
+    clear of the terrain, a floor, two walls, a roof slab that shades half the floor, a pillar, a
+    sea lantern set in a wall and one standing free, at the same hour. Each is read from the same
+    eye against its scene at Low, Medium and High with each of the engine's stages on and off in
+    turn, ambient occlusion, the screen's probes, the glow lights, the filter, the frame before's
+    light and the shadows, by rows of voxel.line on the shaded floor, the lit floor, a wall and the
+    shadow's edge, the steps over 3 levels and the mean step, on 6.2.41. A sheet by N 4.9, the two
+    places side by side with their difference, and a table of what differs between the places by
+    more than one place differs between two runs. Each stage that differs goes to the engine as an
+    ask under its item 258, and the scene stays as the check of each mend. Under the lock, shared.
+    The read is done at 22:59, four sessions, two at each place. The screen's probes, ambient
+    occlusion at 1 and the sun's shadow differ between the places by more than a place differs
+    between two sessions, the figures under the engine's item 258 and in its three asks, the sheet
+    23-30-item-174-places.png in the dump. The scene in i174 stays as the check of each mend, read
+    again on the engine's package of its 257 first. Read again at 23:46 on the engine's package
+    6.2.41-local.257, four sessions. The screen's probes read alike at the two places, the west
+    wall's mean step 0.34, 0.35 and 0.37 near against 0.36, 0.37 and 0.39 to 0.40 beside the room
+    where the gap was 0.12 to 0.17; ambient occlusion and the sun's shadow read as before, not being
+    in that mend; nothing reads worse past the noise. The sheet is 23-55-item-174-mend.png.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -3962,6 +4020,61 @@ and a teleport to a half block lands on the whole one, while the engine tears th
 into strips and warps the pig. Picking, the fall, the stand and the walk along z hold at every
 other place. The sheet is 23-45-item-175-far.png in the dump, and the reads are in
 `~/.cache/3dengine-tools/work/i175`.
+
+Item 173, read on 6.2.41 with the game of `1f1e955` from two copies of the review's copy of the
+data, under the lock. The stripes lie on the east wall's face, the plane x = 4455, at y 26.9 to 27.9
+and z 596.0 to 598.3, over the red pillar at 4454, 24 to 25, 596. The one glow light in reach is the
+sea lantern at 4452, 24, 595, in the north wall at the floor, its open face on z = 596 in a pocket
+of red concrete open upward. With it made white concrete the wall reads 0, and with the 14 magma
+blocks outside made stone the stripes read as before, so the lantern alone draws them. `field.march`
+from a tenth of a cell off the wall meets the wall at once at striped and smooth texels alike, and
+from a cell and a half off the striped ones pass over the pocket's rim and the smooth one meets it.
+The ask is the engine's ASKS.md entry of 2026-11-11 on a sea lantern's light, the sheet in the dump
+under `item-173-room`, and the readings in `~/.cache/3dengine-tools/work/i173`.
+
+voxel.spawning, asked for on 2026-11-11 after 172's sheet showed two plays' dusk apart by
+their mobs. `voxel.spawning off` takes every mob away before the next frame, the animals kept by the
+columns they stand in. A column first generated places none, one loading again brings none back,
+and the night spawns none, though `voxel.spawn` still places one. `voxel.spawning on` brings back
+those the loaded columns keep. build/play.sh turns it off before its first check. Two plays from
+one cache folder under the layer passed whole in 317 and 218 s, the mirror at red 171, green 148,
+blue 167, and of their 17 captures dusk differs in 0.00 percent of its pixels by more than 2 levels,
+where 2.3 percent before. sky2 differs in 0.18 percent, all within the night's clouds, which drift.
+The strict build is clean and 367 tests pass, MobTests reading a sheep kept out and a column's cow
+placed none, both back where they stood.
+
+Item 174, read on 6.2.41 at `1f1e955` in i174's copy of the data under the lock, two sessions at
+each place, the scene's corner at 16, 120, 16 and 4432, 120, 592, 836 blocks the same in the save.
+The two sessions at one place read alike to a hundredth of a level in most rows, so nearly every row
+differs between the places by more than that. Those that differ by a real size are three stages.
+The screen's probes: the west wall beside the lantern set in it reads a mean step of 0.34 to 0.37
+near the origin and 0.45 to 0.53 at 4432, mottled in squares at Medium and High, and 0.34 to 0.36
+against 0.36 to 0.37 with them off. Ambient occlusion at 1: the north wall 7 to 7.5 levels darker at
+4432 and every row's mean step 0.08 to 0.3 higher. The sun's shadow: the floor under the roof's edge
+has 23 steps over 3 levels at 4432 where 26 to 27 near the origin, both 8 with the shadows off. The
+filter and the frame before's light left out keep the difference as it was. Three asks under the
+engine's 258 stand in its ASKS.md, the sheet is 23-30-item-174-places.png in the dump, and the
+rows, captures and table are in `~/.cache/3dengine-tools/work/i174`, kept as the check of each mend.
+
+From item 175's read, the game's ChunkStreamer squared a column's distance from the player's in an
+int, so after a teleport of more than 46,340 columns, some 741,000 blocks, the square wrapped
+negative and the columns left behind stayed loaded, 1,330 held where 665 after voxel.tp from 284,688
+to 1,139,984. It squares in longs. A test in HeadlessGameTests teleports the player 1,000,000 blocks
+and finds no column left behind, where before the fix the column it left was still in, of 138. The
+strict build is clean, 368 tests pass and the play passes whole under the layer in 310 s, the mirror
+at red 171, green 148, blue 167.
+
+Item 173's check on the engine's mend 6.2.41-local.257, the game of `6b0043b` built on each package
+in the work folder from a fresh copy of the review's copy of the data, under the lock. Of eight rows
+across the east wall at y 26.625 to 27.875, 6.2.41 has 0 to 29 steps over 3 levels a row at 1280 by
+720 and 2 to 16 at 2560 by 1440, and the mend 0 in every row at Low, Medium and High at both sizes,
+the mean step 0.18 to 0.36 where 0.29 to 1.31. What reads worse is a line across the ceiling at
+2560 by 1440 alone, rows 173 to 175, 3.4 levels over its neighbors at every quality, which 6.2.41
+does not draw. Outside the striped corner the frame is smoother on the mend everywhere. On the mend,
+174's scene reads the screen's probes alike at the two places, the west wall's mean step 0.34 to
+0.37 near the origin and 0.36 to 0.40 at 4432, where 0.45 to 0.53 on 6.2.41, the ambient occlusion
+7.6 levels darker at 4432 as before and the shadow's steps as before within one. The sheets are
+23-50-item-173-mend.png and 23-55-item-174-mend.png in the dump.
 
 ## Items closed, parked or shortened
 

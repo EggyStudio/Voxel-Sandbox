@@ -13,11 +13,11 @@ namespace VoxelSandbox;
 /// blocks and light, and unloaded three further, so walking back and forth over a boundary does
 /// not load and unload the same columns each time. A column the player changed is read from the
 /// save rather than generated, and kept by the save as it unloads. The mobs standing in a column
-/// come and go with it. A column's deep sections out of the eye's reach are packed by the worker
+/// and the stacks lying in it come and go with it. A column's deep sections out of the eye's reach are packed by the worker
 /// that makes it, and the loaded columns' again, a few a frame, each time the eye enters another
 /// section, as <see cref="Reach"/> has it.
 /// </remarks>
-public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, Chests chests, WorldSave? save, CaveFields? fields = null)
+public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null)
 {
     private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column)> _done = new();
     private readonly HashSet<(int X, int Z)> _pending = [];
@@ -123,6 +123,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     {
         world.Add(column);
         mobs.Joined(column);
+        drops.Joined(column.X, column.Z);
         chests.Joined(column);
     }
 
@@ -165,6 +166,18 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         _wanted.Sort((a, b) => ((a.X - cx) * (a.X - cx) + (a.Z - cz) * (a.Z - cz)).CompareTo((b.X - cx) * (b.X - cx) + (b.Z - cz) * (b.Z - cz)));
     }
 
+    /// <summary>
+    /// Unloads the columns out of reach of a place of the land's own the player is put at, before the
+    /// origin moves near it, so the columns the player changed are kept and the mobs' and the stacks'
+    /// places taken while they are near the origin. The next update plans the columns about the player
+    /// again, so a jump back to the column the last plan was made for loads its columns again.
+    /// </summary>
+    public void Leave(LandPlace to, int renderDistance)
+    {
+        Unload(VoxelWorld.ColumnOf((int)Math.Floor(to.X)), VoxelWorld.ColumnOf((int)Math.Floor(to.Z)), renderDistance + 3);
+        _planned = null;
+    }
+
     private void Unload(int cx, int cz, int keep)
     {
         var reach = keep * keep + keep;
@@ -180,6 +193,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         {
             if (save is not null && world.TryGetColumn(x, z, out var column) && column.Changed) save.Keep(column);
             mobs.Leaving(x, z);
+            drops.Leaving(x, z);
             world.Remove(x, z);
             renderer.ForgetColumn(x, z);
         }

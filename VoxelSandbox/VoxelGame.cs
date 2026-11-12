@@ -38,6 +38,10 @@ public sealed class VoxelGame : IDisposable
     private bool _spilled;
     private bool _captured, _swallowClick;
     private GameMode _mode;
+    private bool _disposed;
+    // The death screen's button was pressed in the last frame's drawing, so the player respawns as
+    // the next frame begins, before anything is stepped or drawn from the places it moves.
+    private bool _respawning;
 
     /// <summary>
     /// Opens the world saved under <paramref name="name"/>, or under its kind and seed when no name is
@@ -443,7 +447,7 @@ public sealed class VoxelGame : IDisposable
         else Vitals.Set(info.Health, info.Food, info.Saturation);
         // The old streamer's workers finish into its own queue, which nothing reads again.
         CaveFields.Use((World.Generator as Overworld)?.Caves);
-        Streamer = new ChunkStreamer(World, Renderer, Mobs, Chests, Save, CaveFields);
+        Streamer = new ChunkStreamer(World, Renderer, Mobs, Drops, Chests, Save, CaveFields);
         Clouds.Follow(generator.Seed);
         _sinceSave = 0;
         Loading = true;
@@ -530,13 +534,20 @@ public sealed class VoxelGame : IDisposable
     /// <summary>
     /// Moves the <see cref="LandOrigin"/> near a place of the land once that place lies more than
     /// <see cref="LandOrigin.Reach"/> blocks from it along x or z, and every float place the game keeps by
-    /// the same whole step, every body, the arrows, the blasts, the mobs' homes, the bits, the rings
-    /// on the water and the land drawn, as the player walks far or is put far.
+    /// the same whole step, every body, the arrows, the blasts and their flashes and clouds, the mobs'
+    /// homes, the steps heard, the bits, the rings on the water and the land drawn, as the player
+    /// walks far or is put far.
     /// </summary>
+    /// <remarks>
+    /// The land drawn moves first, since its meshes are uploaded again and an upload may throw, and
+    /// the origin last, so a throw leaves the origin and the places kept against it as they were.
+    /// </remarks>
     /// <returns>Whether the origin moved.</returns>
     public bool Recenter(LandPlace near)
     {
-        if (LandOrigin.MoveNear(near) is not { } by) return false;
+        if (LandOrigin.Toward(near) is not { } origin) return false;
+        var by = LandOrigin.StepTo(origin);
+        Renderer.Shift(by);
         var ecs = GetApp().World.Resource<EcsWorld>();
         foreach (var (_, body) in ecs.Query<Body>()) body.Position += by;
         foreach (var (id, _) in ecs.Query<Arrow>()) ecs.GetRef<Arrow>(id).Position += by;
@@ -544,14 +555,50 @@ public sealed class VoxelGame : IDisposable
         foreach (var mob in Mobs.All) mob.Shift(by);
         Vitals.Shift(by);
         Sounds.Shift(by);
+        Blasts.Shift(by);
         Bits.Shift(by);
         Particles.Shift(by);
-        Renderer.Shift(by);
+        LandOrigin.MoveTo(origin);
         Recentered++;
         return true;
     }
 
-    private bool _disposed;
+    /// <summary>
+    /// Unloads what a jump to a place of the land leaves out of reach, before the origin moves near
+    /// it, the columns kept by the save and their mobs and stacks by their places in the land, and
+    /// the arrows, falling blocks, lit TNT and flashes among them let go.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// What is left would otherwise move with the origin by the jump's whole step, to a float place as
+    /// far out as the jump, where a float holds an eighth of a block at a million, and a mob or a
+    /// stack kept from there would come back a part of a block off.
+    /// </para>
+    /// <para>
+    /// Those let go are no player's. The arrows are the skeletons', which no one picks up, and go
+    /// within a minute. A block falling in land not loaded falls through it and goes within a minute,
+    /// as one does whose column unloads under it. A lit TNT's block is gone from the land as it is lit,
+    /// and its blast in land not loaded breaks nothing. A flash shows for half a second.
+    /// </para>
+    /// </remarks>
+    public void Leave(LandPlace to)
+    {
+        Streamer.Leave(to, RenderDistance);
+        var ecs = GetApp().World.Resource<EcsWorld>();
+        var gone = new List<int>();
+        bool Left(Vector3 at)
+        {
+            var (x, z) = LandOrigin.ColumnOf(at);
+            return !World.HasColumn(x, z);
+        }
+        foreach (var (id, body) in ecs.Query<Body>())
+            if ((ecs.Has<FallingBlock>(id) || ecs.Has<LitTnt>(id)) && Left(body.Position)) gone.Add(id);
+        foreach (var (id, arrow) in ecs.Query<Arrow>())
+            if (Left(arrow.Position)) gone.Add(id);
+        foreach (var (id, blast) in ecs.Query<Blast>())
+            if (Left(blast.At)) gone.Add(id);
+        foreach (var id in gone) ecs.Despawn(id);
+    }
 
     /// <summary>How many times the origin has moved since the game began.</summary>
     public int Recentered { get; private set; }
@@ -588,6 +635,11 @@ public sealed class VoxelGame : IDisposable
         {
             NextWorld = null;
             SwitchWorld(next.Kind, next.Seed, next.Name);
+        }
+        if (_respawning)
+        {
+            _respawning = false;
+            Respawn();
         }
         // The origin follows the player, before anything is stepped or drawn from the places.
         Recenter(LandOrigin.LandOf(Player.Body.Position));
@@ -701,7 +753,7 @@ public sealed class VoxelGame : IDisposable
         foreach (var caught in GetApp().World.DrainEvents<TntCaught>()) Tnt.Light(caught.X, caught.Y, caught.Z);
         Blasts.Update(seconds);
         // The TNT whose fuses ran out as the engine's frame burned them goes off.
-        foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(blast.At, PrimedTnt.Power, "was blown up by TNT");
+        foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(LandOrigin.PlaceOf(blast.At), PrimedTnt.Power, "was blown up by TNT");
         Lights.Update(Player.Eye - new Vector3(0, HeldLights.UnderEye, 0), Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye, Renderer.LightOf);
 
         _overcast += (Weather.Share(Sky.Day, Sky.Hour) - _overcast) * (1 - MathF.Exp(-0.5f * seconds));
@@ -784,8 +836,11 @@ public sealed class VoxelGame : IDisposable
     public void Respawn()
     {
         Vitals.Set();
-        // The spawn is the land's own middle, wherever the origin stood, which moves near it first.
-        Recenter(new LandPlace(0.5, 0, 0.5));
+        // The spawn is the land's own middle, wherever the origin stood, which moves near it first,
+        // what is left behind unloaded before it.
+        var spawn = new LandPlace(0.5, 0, 0.5);
+        Leave(spawn);
+        Recenter(spawn);
         Streamer.LoadNow(LandOrigin.PlaceOf(0, 0, 0), 2);
         Player.Flying = false;
         Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
@@ -800,17 +855,17 @@ public sealed class VoxelGame : IDisposable
             switch (e)
             {
                 case MobStrike strike:
-                    Harm(strike.Damage, strike.From, $"were slain by a {strike.Mob.Kind.Name}");
+                    Harm(strike.Damage, LandOrigin.PlaceOf(strike.From), $"were slain by a {strike.Mob.Kind.Name}");
                     break;
                 case MobShot shot:
-                    Arrows.Shoot(shot.From, shot.Velocity);
+                    Arrows.Shoot(LandOrigin.PlaceOf(shot.From), shot.Velocity);
                     break;
                 case MobBlast blast:
-                    Explode(blast.At, blast.Power, $"were blown up by a {blast.Mob.Kind.Name}");
+                    Explode(LandOrigin.PlaceOf(blast.At), blast.Power, $"were blown up by a {blast.Mob.Kind.Name}");
                     break;
             }
         // The arrows that struck the player as the engine's frame flew them.
-        foreach (var strike in GetApp().World.DrainEvents<ArrowStrike>()) Harm(strike.Damage, strike.From, "were shot by a skeleton");
+        foreach (var strike in GetApp().World.DrainEvents<ArrowStrike>()) Harm(strike.Damage, LandOrigin.PlaceOf(strike.From), "were shot by a skeleton");
     }
 
     // Harms the player in survival and knocks it away from a place, as a mob's hit does.
@@ -865,7 +920,7 @@ public sealed class VoxelGame : IDisposable
     {
         foreach (var died in GetApp().World.DrainEvents<MobDied>())
             foreach (var (item, count) in Loot.Of(died.Mob, _random))
-                Drops.Spawn(item, count, died.Mob.Body.Position + new Vector3(0, 0.25f, 0), new Vector3(0, 3, 0));
+                Drops.Spawn(item, count, LandOrigin.PlaceOf(died.At) + new Vector3(0, 0.25f, 0), new Vector3(0, 3, 0));
         if (Mode.Lives())
             foreach (var (x, y, z, block) in World.Fallen)
                 foreach (var (item, count) in Loot.Of(block, _random))
@@ -1403,7 +1458,7 @@ public sealed class VoxelGame : IDisposable
         if (ImGui.Begin("You died", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove))
         {
             ImGui.TextUnformatted($"You {Vitals.Cause ?? "died"}.");
-            if (ImGui.Button("Respawn", new Vector2(200, 0))) Respawn();
+            if (ImGui.Button("Respawn", new Vector2(200, 0))) _respawning = true;
         }
         ImGui.End();
     }

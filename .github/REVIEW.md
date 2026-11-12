@@ -1,16 +1,31 @@
 # Review
 
-Reviewed up to `9d25749`, 177's first step, one origin for the whole game, a multiple of 1,024
-blocks set near the saved place at open that every float place is kept against, blocks, columns and
-sections keeping the land's own whole coordinates, the saves and the commands the land's places in
-doubles, mobs.bin in a second version with the first read, 46 files, pushed at 00:38 on 2026-11-12
-after two reads, the review's and a second reader's of every floor, distance and conversion, which
-found no place where one kind of place is taken for the other; the strict build is clean, 376 tests
-pass, the play passes whole and none of its 17 pictures moves; on the published 6.2.41 the owner's
-room then reads no row with a step over 3 levels at Low, Medium or High at 1280 by 720 and one at
-Medium at 2560 by 1440; it keeps the form and carries the review's files. Before it `760522a`, the
-review's file alone with the Replies of 173's check, 175 and 177's read, pushed at 23:49 on
-2026-11-11, no run by the workflow's paths. Before it `88d6303`, a fault 175's read found,
+Reviewed up to `3bfa75d`, voxel.restock, a command that places again the animals and villagers each
+loaded column's generation placed, in each loaded column holding no mob, each where it still has
+room to stand, 112 animals in 54 of 665 columns on a copy of the save the fault below emptied,
+pushed at 02:09 on 2026-11-12 with `85160b6`, 177's second step, one run on the last. The second
+step makes the origin follow the player, moved once the player is past 1,024 blocks from it, every
+float place shifted by the whole step at a frame's start and first in a teleport and a respawn and
+every mesh uploaded again, a hitch of 0.2 to 0.4 s and one brighter frame once in 1,024 blocks, with
+whole-game tests far out and at a negative place; and it mends a fault older than the origin, the
+game's Dispose running twice as the window closes, the second save at times written after the engine
+had let the loaded mobs go, so the animals about the player were saved as gone, which a Dispose run
+once ends, with its test. A second reader found nothing serious in it and a list for a commit to
+follow, events queued across a move, what a far jump leaves behind, the lamps taken as movers and
+the tests' reach. The strict build is clean, 386 tests pass, the play passes whole; 6 of 17 pictures
+move in the second step, one by its animals kept out and five by where the origin moves, 0.07 to
+1.68 percent; they keep the form and carry the review's files. Before them `9d25749`, 177's first
+step, one origin for the whole game, a multiple of 1,024 blocks set near the saved place at open
+that every float place is kept against, blocks, columns and sections keeping the land's own whole
+coordinates, the saves and the commands the land's places in doubles, mobs.bin in a second version
+with the first read, 46 files, pushed at 00:38 on 2026-11-12, green at 02:08 with the play in 90
+minutes, after two reads, the review's and a second reader's of every floor, distance and
+conversion, which found no place where one kind of place is taken for the other; the strict build is
+clean, 376 tests pass, the play passes whole and none of its 17 pictures moves; on the published
+6.2.41 the owner's room then reads no row with a step over 3 levels at Low, Medium or High at 1280
+by 720 and one at Medium at 2560 by 1440; it keeps the form and carries the review's files. Before
+it `760522a`, the review's file alone with the Replies of 173's check, 175 and 177's read, pushed at
+23:49 on 2026-11-11, no run by the workflow's paths. Before it `88d6303`, a fault 175's read found,
 ChunkStreamer.Unload squaring a column's distance from the player in an int, which wrapped negative
 past 46,340 columns so a teleport of some 741,000 blocks left the old columns loaded, squared in
 longs with a test that teleports a million blocks, pushed at 23:27 on 2026-11-11, its run started
@@ -98,64 +113,6 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     engine's item 255. What remains here is the mirror's check waiting for its pipelines at the pin
     that carries the engine's 254.
 
-173. **A built room's striped wall, read for the engine.** From the owner on 2026-11-11 at about
-    18:35 and the engine's item 257. The owner's saved world, overworld of seed 1, opens at 4448.4,
-    24, 599.8 facing 48 degrees in a dark closed room they built, the illumination at Low, and the
-    first view shows the noise they have named for weeks, stripes of small squares in a glow light's
-    light on the back wall; the review saw the same from the game's built program on a copy of the
-    owner's data folder, ~/.cache/claude-reviewer/owner-view/data, with its captures beside it under
-    shots. The game's coder reads the room from that copy and never from the owner's own folder, by
-    XDG_DATA_HOME naming the copy. The blocks that glow within reach of the wall, their kinds and
-    places, the wall's and the ceiling's planes, the eye's place; the view captured as it opens and
-    with each glowing block taken away in turn in a second copy, to say which light draws the
-    stripes; and the engine's gi.show and field.march at a striped place and a smooth one, as its
-    coder asks. Written as an ask in the engine's ASKS.md with a sheet by N 4.9. A check for the
-    play after the mend, the room's wall read for its squares at each quality. After 172's commit,
-    and ahead of all else. The engine's coder reads the stripes at a glance as the glow light's
-    march calling the wall itself an occluder and asks three things first, the glowing blocks'
-    places and sizes against the wall's plane, the wall's plane with the field's cell, and
-    field.march from a striped texel and from a smooth one beside it toward the nearest glowing
-    block; they go to it through the review as they come. The read is done at 19:06, nothing
-    committed. The removals on a second copy say the lantern alone draws the stripes, the wall
-    reading 0 with it made white concrete and as before with the 14 magma blocks made stone. The
-    sheet is 19-00-item-173-room.png in the dump, and the ask is the last entry of the engine's
-    ASKS.md, which the engine's next commit carries. What remains is the check after the mend. When
-    the engine's coder has the mend in a package of its own feed, unpublished, the game's coder
-    captures the owner's first view from its copy on 6.2.41 and on that package, built in its work
-    folder, the wall's rows read at Low, Medium and High on both, before and after on one sheet for
-    the owner. The work folder i173 is kept until then. The check's first step is done at 23:32 on
-    the engine's package 6.2.41-local.257. The stripes are gone, no row of the east wall with a step
-    over 3 levels at any quality at 1280 by 720 or at 2560 by 1440 where the published package has
-    up to 29 and up to 16, the figures under the engine's item 257. One thing reads worse, a line
-    across the ceiling at rows 173 to 175 at 2560 by 1440 alone, which went to the engine's coder.
-    The sheet 23-50-item-173-mend.png went to the owner. The second step, 174's scene on the package
-    at both places, follows.
-
-174. **The same built scene near the origin and 4,432 blocks out.** From the engine's item 257 on
-    2026-11-11. The owner's noise was float precision 4,450 units from the origin in points and
-    normals the engine takes from the depth, which no scene at the origin shows, and the engine's
-    item 258 reads its other passes for the same. The game gives it the controlled case. In a copy
-    of the data, one small scene built of blocks twice, block for block, once within 64 blocks of
-    the origin and once beside the owner's room near 4448, 24, 600, each on a platform in the air
-    clear of the terrain, a floor, two walls, a roof slab that shades half the floor, a pillar, a
-    sea lantern set in a wall and one standing free, at the same hour. Each is read from the same
-    eye against its scene at Low, Medium and High with each of the engine's stages on and off in
-    turn, ambient occlusion, the screen's probes, the glow lights, the filter, the frame before's
-    light and the shadows, by rows of voxel.line on the shaded floor, the lit floor, a wall and the
-    shadow's edge, the steps over 3 levels and the mean step, on 6.2.41. A sheet by N 4.9, the two
-    places side by side with their difference, and a table of what differs between the places by
-    more than one place differs between two runs. Each stage that differs goes to the engine as an
-    ask under its item 258, and the scene stays as the check of each mend. Under the lock, shared.
-    The read is done at 22:59, four sessions, two at each place. The screen's probes, ambient
-    occlusion at 1 and the sun's shadow differ between the places by more than a place differs
-    between two sessions, the figures under the engine's item 258 and in its three asks, the sheet
-    23-30-item-174-places.png in the dump. The scene in i174 stays as the check of each mend, read
-    again on the engine's package of its 257 first. Read again at 23:46 on the engine's package
-    6.2.41-local.257, four sessions. The screen's probes read alike at the two places, the west
-    wall's mean step 0.34, 0.35 and 0.37 near against 0.36, 0.37 and 0.39 to 0.40 beside the room
-    where the gap was 0.12 to 0.17; ambient occlusion and the sun's shadow read as before, not being
-    in that mend; nothing reads worse past the noise. The sheet is 23-55-item-174-mend.png.
-
 176. **Bright colored blobs in the distance under bloom.** From the owner on 2026-11-11, to the
     game's coder, "At distance there are these colored bloomed blobs in the background". Read on
     6.2.41 at `1f1e955`, the sheet 21-30-red-blob.png in the dump. One stands in the origin scene's
@@ -241,7 +198,16 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     the wall 0.41 against 0.37. Accepted as it stands, with the ask to the engine for a way to be
     told the world moved by a whole offset, which takes the hitch and the bright frame away. The
     reach is read again on the engine's next published package, whose screen passes no longer lose
-    what the ladder measured, and widens if 4,096 then reads as the origin does.
+    what the ladder measured, and widens if 4,096 then reads as the origin does. The ladder again on
+    the engine's package 6.2.41-local.257.1, recorded at 01:37, the scene at 16, 1,040, 2,000 and
+    4,112 from a zero origin through games without the origin. On the package the west wall's mean
+    step reads 0.34, 0.35 and 0.37 at 16 and 0.36, 0.36 and 0.37 at 4,112 at Low, Medium and High,
+    alike at every distance, where the published 6.2.41 reads 0.62, 0.64 and 0.73 at 4,112. What
+    stays is the sun's shadow, 25, 24 and 24 steps over 3 on the shaded floor at 4,112 against 26,
+    25 and 26 at 16, and ambient occlusion unread, at 0 in the owner's options. So on the published
+    package of that mend a reach of 4,096 with the step at 1,024 reads as the origin does, a move a
+    quarter as often; the reach widens then, with ambient occlusion at 1 read at the reach's edge
+    first.
 
 ## Verdicts
 
@@ -383,28 +349,6 @@ engine's, 23 MB, and an empty folder empties that too, so a cold play here is th
 compile of each pipeline. A trial whose driver cache is warm may read "compiled" in under 100 ms. The
 logs are in `~/.cache/3dengine-tools/work/voxel-6241/logs/off-cold` and `off-warm`.
 
-Item 173, read on 6.2.41 with the game of `1f1e955` from two copies of the review's copy of the
-data, under the lock. The stripes lie on the east wall's face, the plane x = 4455, at y 26.9 to 27.9
-and z 596.0 to 598.3, over the red pillar at 4454, 24 to 25, 596. The one glow light in reach is the
-sea lantern at 4452, 24, 595, in the north wall at the floor, its open face on z = 596 in a pocket
-of red concrete open upward. With it made white concrete the wall reads 0, and with the 14 magma
-blocks outside made stone the stripes read as before, so the lantern alone draws them. `field.march`
-from a tenth of a cell off the wall meets the wall at once at striped and smooth texels alike, and
-from a cell and a half off the striped ones pass over the pocket's rim and the smooth one meets it.
-The ask is the engine's ASKS.md entry of 2026-11-11 on a sea lantern's light, the sheet in the dump
-under `item-173-room`, and the readings in `~/.cache/3dengine-tools/work/i173`.
-
-voxel.spawning, asked for on 2026-11-11 after 172's sheet showed two plays' dusk apart by
-their mobs. `voxel.spawning off` takes every mob away before the next frame, the animals kept by the
-columns they stand in. A column first generated places none, one loading again brings none back,
-and the night spawns none, though `voxel.spawn` still places one. `voxel.spawning on` brings back
-those the loaded columns keep. build/play.sh turns it off before its first check. Two plays from
-one cache folder under the layer passed whole in 317 and 218 s, the mirror at red 171, green 148,
-blue 167, and of their 17 captures dusk differs in 0.00 percent of its pixels by more than 2 levels,
-where 2.3 percent before. sky2 differs in 0.18 percent, all within the night's clouds, which drift.
-The strict build is clean and 367 tests pass, MobTests reading a sheep kept out and a column's cow
-placed none, both back where they stood.
-
 Item 176, read on 6.2.41 at `1f1e955` from copies of i174's data, under the lock. The blob over
 the spruce 134 blocks off is one pixel at the trunk's lower right corner against snow two blocks
 behind it, 255, 209, 199 beside the trunk's 55, 46, 42, the trunk's color under about ten times its
@@ -420,39 +364,6 @@ grading. Two asks stand in the engine's ASKS.md, this pixel and a pixel's light 
 The sheets are 21-30-red-blob.png and 22-40-item-176-samples.png in the dump. The game's options
 offer FXAA and not the engine's temporal antialiasing, which takes the blobs away at 4 samples, so
 a player can do no more today than set Bloom to 0 in Post Processing, which leaves each one pixel.
-
-Item 174, read on 6.2.41 at `1f1e955` in i174's copy of the data under the lock, two sessions at
-each place, the scene's corner at 16, 120, 16 and 4432, 120, 592, 836 blocks the same in the save.
-The two sessions at one place read alike to a hundredth of a level in most rows, so nearly every row
-differs between the places by more than that. Those that differ by a real size are three stages.
-The screen's probes: the west wall beside the lantern set in it reads a mean step of 0.34 to 0.37
-near the origin and 0.45 to 0.53 at 4432, mottled in squares at Medium and High, and 0.34 to 0.36
-against 0.36 to 0.37 with them off. Ambient occlusion at 1: the north wall 7 to 7.5 levels darker at
-4432 and every row's mean step 0.08 to 0.3 higher. The sun's shadow: the floor under the roof's edge
-has 23 steps over 3 levels at 4432 where 26 to 27 near the origin, both 8 with the shadows off. The
-filter and the frame before's light left out keep the difference as it was. Three asks under the
-engine's 258 stand in its ASKS.md, the sheet is 23-30-item-174-places.png in the dump, and the
-rows, captures and table are in `~/.cache/3dengine-tools/work/i174`, kept as the check of each mend.
-
-From item 175's read, the game's ChunkStreamer squared a column's distance from the player's in an
-int, so after a teleport of more than 46,340 columns, some 741,000 blocks, the square wrapped
-negative and the columns left behind stayed loaded, 1,330 held where 665 after voxel.tp from 284,688
-to 1,139,984. It squares in longs. A test in HeadlessGameTests teleports the player 1,000,000 blocks
-and finds no column left behind, where before the fix the column it left was still in, of 138. The
-strict build is clean, 368 tests pass and the play passes whole under the layer in 310 s, the mirror
-at red 171, green 148, blue 167.
-
-Item 173's check on the engine's mend 6.2.41-local.257, the game of `6b0043b` built on each package
-in the work folder from a fresh copy of the review's copy of the data, under the lock. Of eight rows
-across the east wall at y 26.625 to 27.875, 6.2.41 has 0 to 29 steps over 3 levels a row at 1280 by
-720 and 2 to 16 at 2560 by 1440, and the mend 0 in every row at Low, Medium and High at both sizes,
-the mean step 0.18 to 0.36 where 0.29 to 1.31. What reads worse is a line across the ceiling at
-2560 by 1440 alone, rows 173 to 175, 3.4 levels over its neighbors at every quality, which 6.2.41
-does not draw. Outside the striped corner the frame is smoother on the mend everywhere. On the mend,
-174's scene reads the screen's probes alike at the two places, the west wall's mean step 0.34 to
-0.37 near the origin and 0.36 to 0.40 at 4432, where 0.45 to 0.53 on 6.2.41, the ambient occlusion
-7.6 levels darker at 4432 as before and the shadow's steps as before within one. The sheets are
-23-50-item-173-mend.png and 23-55-item-174-mend.png in the dump.
 
 Item 177's read, what the places far from the origin touch, before any code. The body keeps its
 place and its velocity in float Vector3s (Entities/Body.cs), and the player, every mob, the dropped
@@ -564,3 +475,48 @@ data, overworld-1 opened at the room with 0 mobs loaded and 1,992 kept beyond, i
 out, the land there having no village. The strict build is clean and 386 tests pass, and the play
 passes whole, the mirror at red 171, its captures as 85160b6's but sky2 by 0.06 percent in the
 night's clouds.
+
+The second reader's list on 85160b6. The events a frame carries out in the next, a TNT's blast, a
+mob's blast, shot and strike, an arrow's strike and a mob's death, carry the land's place, made as
+sent and turned back as carried out, so a move between them leaves none 1,024 off. voxel.tp and a
+respawn unload what the jump leaves out of reach before the origin moves, the changed columns kept
+by the save and their mobs by their records in doubles. The stacks on the ground lying in a column
+that unloads, by a jump or a walk, are kept by that column with their item, count, wear, age, delay
+and velocity and their place in the land's doubles, and set down where they lay as it loads again,
+not saved, as before. So the things a player spills in a death far from the spawn lie there after
+the respawn, which the first form of this commit let go at the press of Respawn. Leave lets go of
+four kinds in the columns gone, none a player's. The arrows are the skeletons', the game has no bow
+and no one picks one up, and each goes within a minute. A falling block in land not loaded falls
+through it and goes within a minute, as one does today whose column unloads under it. A lit TNT's
+block left the land as it was lit, and its blast in land not loaded breaks nothing. A flash shows
+half a second. The game has no boat, minecart, item frame or tamed animal, the animals and villagers
+that follow are mobs with records, and fires, chests and furnaces are kept by their blocks and not
+touched. voxel.tp refuses a place past 2^30 along x or z, and the origin goes no further than that
+edge, where past 2^31 it overflowed and moved by nothing each frame. A move uploads the lamps' cubes
+again. In a flat world's room at midnight with 400 glowstones in view, HEAD's game read 103 meshes
+still and 256 stamped from the move for 256 to 512 frames at Low and 512 to 768 at High, so 144
+lamps were in neither. Its frame read within 0.3 levels of before over the whole, the far middle and
+the near floor from the second frame to the 1,152nd, and the move's own frame 1.5 and 2.0 darker
+over the whole. The lamps light that room as glow lights, the whole reading red 87.6 with every part
+and 39.1 with `gi.toggle glow off`, the same as with the illumination off, so the field's boxes
+carried no lamp's light to lose. With the cubes uploaded the field reads 503 still and 0 stamped
+from the frame after the move, the frames as HEAD's. OriginMoveTests moves the origin under a lamp,
+a pool raining rings, a villager kept to a home, an arrow, a blast, a block's bits, a stack and the
+flat world's animals, and finds each where it stood in the land, the lamps and every section's part
+among them with their meshes uploaded again, which takes the place of FarGameTests' check of the
+mesh ids alone. A TNT's blast sent before a move goes off where it was sent from. A teleport of
+1,139,000 blocks keeps a pig where it stood to the last bit and a stack where it lay, and a teleport
+back brings both back there. A player 3,000 blocks out dies holding 11 stacks, which lie where it
+fell, respawns at the spawn with the origin back at 0, and put back finds every stack where it lay
+within a hundredth of a block and no younger, and walked onto them holds all 11 again. A place past
+the edge is refused and moves the origin once to the edge. The walk across the line goes back west
+over it with no second move, and the 32 blocks tire the player by 0.32 with the saturation
+unchanged. The far jump's test found the streamer keeping its last plan across the jump, so a jump
+back to that column loaded nothing, and leaving clears it. The blast's flash and cloud and the mobs'
+steps playing move with the origin, the Respawn button respawns as the next frame begins, Recenter
+uploads the land's meshes before any place moves and moves the origin last, and the Shift methods
+and `_disposed` stand with their kind. The strict build is clean, 390 tests pass, and the play
+passes whole in 209 s with the mirror at red 171. Of its 17 captures 1 moved by over 0.01 percent
+against 3bfa75d's, sky2 by 0.07 percent in the night's clouds. The first form's play moved the
+meadow by 0.02 percent in a few specks of its sky, which this one reads alike. The room's sheet is
+02-10-item-177-lamps.png in the dump.

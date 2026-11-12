@@ -34,8 +34,8 @@ public readonly record struct LandPlace(double X, double Y, double Z);
 /// one for the game, since the game opens one world at a time, and 0 until a world is opened. It is
 /// set near the player as a world opens and moved near the player once the player is more than
 /// <see cref="Reach"/> blocks from it along x or z, so a walk to and fro about one place does not move
-/// it back and forth, and every float place then moves by the same whole step
-/// (<see cref="MoveNear"/>).
+/// it back and forth, and every float place moves by the same whole step before it
+/// (<see cref="Toward"/>, <see cref="StepTo"/>, <see cref="MoveTo"/>).
 /// </para>
 /// </remarks>
 public static class LandOrigin
@@ -51,6 +51,12 @@ public static class LandOrigin
     /// </summary>
     public const int Reach = 1024;
 
+    /// <summary>
+    /// How far out along x or z the origin goes and a place may be put, in blocks, so a block's
+    /// coordinate, its column's and the step between two origins hold in an int.
+    /// </summary>
+    public const int Edge = 1 << 30;
+
     /// <summary>The origin's x in blocks.</summary>
     public static int X { get; private set; }
 
@@ -60,22 +66,32 @@ public static class LandOrigin
     /// <summary>The origin as a float offset, exact, since a multiple of 1,024 holds whole in a float.</summary>
     public static Vector3 Offset => new(X, 0, Z);
 
-    /// <summary>Sets the origin to the multiple of <see cref="Step"/> nearest a place of the land's own.</summary>
-    public static void Near(double x, double z) =>
-        (X, Z) = ((int)Math.Round(x / Step) * Step, (int)Math.Round(z / Step) * Step);
+    /// <summary>Sets the origin to the multiple of <see cref="Step"/> nearest a place of the land's own, within the <see cref="Edge"/>.</summary>
+    public static void Near(double x, double z) => (X, Z) = Nearest(x, z);
 
     /// <summary>
-    /// Moves the origin near a place of the land's own where it lies more than <see cref="Reach"/>
-    /// blocks from it along x or z, and gives the whole step every float place moves by, or null where
-    /// the origin stays.
+    /// The origin near a place of the land's own where that place lies more than <see cref="Reach"/>
+    /// blocks from the origin along x or z, or null where the origin stays.
     /// </summary>
-    public static Vector3? MoveNear(LandPlace land)
+    /// <remarks>
+    /// Past the <see cref="Edge"/> the nearest origin is the one at the edge, and a place out there
+    /// moves it no further, where it overflowed an int and gave a step of nothing each frame.
+    /// </remarks>
+    public static (int X, int Z)? Toward(LandPlace land)
     {
         if (Math.Abs(land.X - X) <= Reach && Math.Abs(land.Z - Z) <= Reach) return null;
-        var (x, z) = (X, Z);
-        Near(land.X, land.Z);
-        return new Vector3(x - X, 0, z - Z);
+        var next = Nearest(land.X, land.Z);
+        return next == (X, Z) ? null : next;
     }
+
+    /// <summary>The whole step every float place moves by as the origin moves to another, exact in a float, since it is a multiple of 1,024 within 2^31.</summary>
+    public static Vector3 StepTo((int X, int Z) origin) => new((float)((long)X - origin.X), 0, (float)((long)Z - origin.Z));
+
+    /// <summary>Moves the origin, once every float place has moved by the step to it (<see cref="StepTo"/>).</summary>
+    public static void MoveTo((int X, int Z) origin) => (X, Z) = origin;
+
+    private static (int X, int Z) Nearest(double x, double z) =>
+        ((int)Math.Round(Math.Clamp(x, -Edge, Edge) / Step) * Step, (int)Math.Round(Math.Clamp(z, -Edge, Edge) / Step) * Step);
 
     /// <summary>The block a float place lies in, in the land's own coordinates.</summary>
     public static (int X, int Y, int Z) BlockOf(Vector3 place) => (BlockX(place.X), (int)MathF.Floor(place.Y), BlockZ(place.Z));

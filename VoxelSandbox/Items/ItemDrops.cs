@@ -18,8 +18,11 @@ namespace VoxelSandbox;
 /// <para>
 /// A stack can be picked up half a second after it is dropped, two seconds after the player throws
 /// it, so a stack thrown is not taken back at once, and two stacks of one item within half a block
-/// of each other join. A stack in a column not loaded waits there, its five minutes held, until the
-/// column loads again, and no stack is saved with the world.
+/// of each other join. A stack whose column unloads is kept out of the ECS by that column, its place
+/// in the land's own doubles, and set down where it lay as the column loads again, its five minutes
+/// held, so the things a player spilled in a death far from the spawn lie there after the respawn,
+/// as a stack left a teleport's length away does. One dropped into a column not loaded waits there
+/// likewise. No stack is saved with the world.
 /// </para>
 /// </remarks>
 [Behavior]
@@ -129,7 +132,8 @@ public partial struct ItemDrop
 /// <summary>
 /// The stacks of items lying in the loaded columns, dropped by a block broken in survival, by a mob
 /// as it dies and by the player, picked up when the player comes near, and gone after five minutes,
-/// each an entity of an ECS world with an <see cref="ItemDrop"/> and a <see cref="Body"/>.
+/// each an entity of an ECS world with an <see cref="ItemDrop"/> and a <see cref="Body"/>, and those
+/// the unloaded columns keep.
 /// </summary>
 public sealed class ItemDrops(EcsWorld ecs)
 {
@@ -137,6 +141,9 @@ public sealed class ItemDrops(EcsWorld ecs)
     public const float Delay = 0.5f, ThrownDelay = 2;
 
     private readonly Random _random = new();
+    // The stacks of the columns that unloaded, by column, each with its place in the land's own
+    // doubles, so one left a jump's length away comes back where it lay.
+    private readonly Dictionary<(int X, int Z), List<(ItemDrop Drop, LandPlace At, Vector3 Velocity)>> _kept = [];
 
     /// <summary>Every stack, its item, count and age, and its body.</summary>
     public IEnumerable<(ItemDrop Drop, Body Body)> All
@@ -147,8 +154,11 @@ public sealed class ItemDrops(EcsWorld ecs)
         }
     }
 
-    /// <summary>How many stacks lie in the world.</summary>
+    /// <summary>How many stacks lie in the loaded columns.</summary>
     public int Count => ecs.Count<ItemDrop>();
+
+    /// <summary>How many stacks the unloaded columns keep.</summary>
+    public int Kept => _kept.Values.Sum(stacks => stacks.Count);
 
     /// <summary>Drops a stack at a place with a velocity, which can be picked up after a delay.</summary>
     public Entity Spawn(Item item, int count, Vector3 at, Vector3 velocity, float delay = Delay, int wear = 0)
@@ -167,11 +177,41 @@ public sealed class ItemDrops(EcsWorld ecs)
         Spawn(item, count, LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f, 0.375f, 0.5f), velocity);
     }
 
-    /// <summary>Despawns every stack, as a world closes.</summary>
+    /// <summary>Keeps the stacks lying in a column as it unloads, each by its place in the land, out of the ECS until the column loads again.</summary>
+    public void Leaving(int x, int z)
+    {
+        var gone = new List<int>();
+        foreach (var (id, drop, body) in ecs.Query<ItemDrop, Body>())
+        {
+            if (LandOrigin.ColumnOf(body.Position) != (x, z)) continue;
+            if (drop.Count > 0)
+            {
+                if (!_kept.TryGetValue((x, z), out var kept)) _kept[(x, z)] = kept = [];
+                kept.Add((drop, LandOrigin.LandOf(body.Position), body.Velocity));
+            }
+            gone.Add(id);
+        }
+        foreach (var id in gone) ecs.Despawn(id);
+    }
+
+    /// <summary>Sets down the stacks a column kept as it loads, each where it lay, as old and as it moved.</summary>
+    public void Joined(int x, int z)
+    {
+        if (!_kept.Remove((x, z), out var kept)) return;
+        foreach (var (drop, at, velocity) in kept)
+        {
+            var id = ecs.Spawn();
+            ecs.Add(id, drop);
+            ecs.Add(id, new Body(0.125f, 0.25f) { Position = LandOrigin.PlaceOf(at), Velocity = velocity });
+        }
+    }
+
+    /// <summary>Despawns every stack and lets go of those the unloaded columns keep, as a world closes.</summary>
     public void Clear()
     {
         var all = new List<int>();
         foreach (var (id, _) in ecs.Query<ItemDrop>()) all.Add(id);
         foreach (var id in all) ecs.Despawn(id);
+        _kept.Clear();
     }
 }

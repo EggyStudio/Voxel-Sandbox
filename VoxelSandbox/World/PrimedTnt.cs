@@ -3,8 +3,8 @@ using Engine;
 
 namespace VoxelSandbox;
 
-/// <summary>Where a TNT went off, its blast's middle a sixteenth over its feet, an event the game sets off.</summary>
-public readonly record struct TntBlast(Vector3 At);
+/// <summary>Where a TNT went off in the land, its blast's middle a sixteenth over its feet, an event the game sets off in its next frame.</summary>
+public readonly record struct TntBlast(LandPlace At);
 
 /// <summary>A TNT lit and burning down its fuse, an entity of the engine's ECS beside its <see cref="Body"/>.</summary>
 /// <remarks>
@@ -53,7 +53,7 @@ public partial struct LitTnt
         foreach (var (id, at) in gone)
         {
             ecs.Despawn(id);
-            ctx.World.SendEvent(new TntBlast(at));
+            ctx.World.SendEvent(new TntBlast(LandOrigin.LandOf(at)));
         }
     }
 }

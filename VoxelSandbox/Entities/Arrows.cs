@@ -3,8 +3,8 @@ using Engine;
 
 namespace VoxelSandbox;
 
-/// <summary>An arrow's strike on the player, its damage and where it came from, an event the game deals.</summary>
-public readonly record struct ArrowStrike(int Damage, Vector3 From);
+/// <summary>An arrow's strike on the player, its damage and where it came from in the land, an event the game deals in its next frame.</summary>
+public readonly record struct ArrowStrike(int Damage, LandPlace From);
 
 /// <summary>An arrow in flight or stuck in a block, an entity of the engine's ECS.</summary>
 /// <remarks>
@@ -43,7 +43,7 @@ public partial struct Arrow
             if (arrow.Age > Life) gone.Add(id);
             else if (!arrow.Stuck && Move(ref arrow, step.World, step.Player, step.Seconds, step.Random) is { } hit)
             {
-                hits.Add(new ArrowStrike(hit.Damage, hit.From));
+                hits.Add(new ArrowStrike(hit.Damage, LandOrigin.LandOf(hit.From)));
                 gone.Add(id);
             }
         }

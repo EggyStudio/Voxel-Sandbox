@@ -166,7 +166,7 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
-    public void A_Walk_Across_Where_The_Origin_Moves_Goes_On_Without_A_Jump()
+    public void A_Walk_Across_Where_The_Origin_Moves_And_Back_Goes_On_Without_A_Jump_Or_A_Meal()
     {
         using var headless = new HeadlessGame();
         var game = headless.Game;
@@ -174,8 +174,10 @@ public sealed class HeadlessGameTests
         {
             // Put 1,016 blocks east, as voxel.tp puts the player, and stood once the land there is in.
             var start = new LandPlace(1016.5, LandOrigin.LandOf(game.Player.Body.Position).Y, 0.5);
+            game.Leave(start);
             game.Recenter(start);
             game.Player.Teleport(LandOrigin.PlaceOf(start));
+            game.Mode = GameMode.Survival;
             var clock = System.Diagnostics.Stopwatch.StartNew();
             do
             {
@@ -185,19 +187,32 @@ public sealed class HeadlessGameTests
             while (game.Streamer.Pending > 0 && clock.Elapsed.TotalSeconds < 30);
             headless.Step(10);
             Assert.Equal(0, LandOrigin.X);
+            var (exhaustion, saturation) = (game.Vitals.Exhaustion, game.Vitals.Saturation);
 
-            // Sixteen blocks east a tenth of a block a frame, across 1,024, where the origin moves.
+            // Sixteen blocks east a tenth of a block a frame, across 1,024, where the origin moves,
+            // and back west over it, where the origin stays, the player within its reach.
             var walked = new List<double>();
-            for (int frame = 0; frame < 160; frame++)
+            void Walk(float step)
             {
-                game.Player.Body.Move(game.World, new Vector3(0.1f, 0, 0), keepToEdges: false);
-                headless.Step(1);
-                walked.Add(LandOrigin.LandOf(game.Player.Body.Position).X);
+                for (int frame = 0; frame < 160; frame++)
+                {
+                    game.Player.Body.Move(game.World, new Vector3(step, 0, 0), keepToEdges: false);
+                    headless.Step(1);
+                    walked.Add(LandOrigin.LandOf(game.Player.Body.Position).X);
+                }
             }
-
-            Assert.Equal(1024, LandOrigin.X);
-            Assert.Equal(1, game.Recentered);
+            Walk(0.1f);
+            Assert.Equal((1024, 1), (LandOrigin.X, game.Recentered));
             Assert.All(walked.Zip(walked.Skip(1)), pair => Assert.Equal(0.1, pair.Second - pair.First, 3));
+            walked.Clear();
+            Walk(-0.1f);
+            Assert.Equal((1024, 1), (LandOrigin.X, game.Recentered));
+            Assert.All(walked.Zip(walked.Skip(1)), pair => Assert.Equal(-0.1, pair.Second - pair.First, 3));
+
+            // The walk of 32 blocks tires the player by a hundredth a block, the move none, where
+            // taken for a walk of 1,024 blocks it took two of the saturation's points.
+            Assert.Equal(saturation, game.Vitals.Saturation);
+            Assert.Equal(0.32, game.Vitals.Exhaustion - exhaustion, 2);
         }
         finally
         {

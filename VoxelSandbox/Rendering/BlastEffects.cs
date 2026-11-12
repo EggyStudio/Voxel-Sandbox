@@ -64,8 +64,8 @@ public sealed class BlastEffects(EcsWorld ecs) : IDisposable
     private ResourcePacks? _packs;
     private Texture2D? _sheet;
     private bool _sheetRead;
-    private readonly List<(ParticleEmitterHandle Emitter, float Age, int Emitted)> _clouds = [];
-    private readonly List<(LightHandle Light, float Left)> _flashes = [];
+    private readonly List<(ParticleEmitterHandle Emitter, float Age, int Emitted, Vector3 At)> _clouds = [];
+    private readonly List<(LightHandle Light, float Left, Vector3 At)> _flashes = [];
 
     /// <summary>Draws the clouds from now on with the pictures of these packs.</summary>
     public void Use(ResourcePacks packs)
@@ -99,9 +99,28 @@ public sealed class BlastEffects(EcsWorld ecs) : IDisposable
         var emitter = free >= 0 ? _clouds[free].Emitter : CreateParticleEmitter(at, Cloud());
         SetParticleEmitterPosition(emitter, at);
         EmitParticles(emitter, PuffsATick);
-        if (free >= 0) _clouds[free] = (emitter, 0, PuffsATick);
-        else _clouds.Add((emitter, 0, PuffsATick));
-        _flashes.Add((CreatePointLight(at + Vector3.UnitY, new Color(255, 236, 200), FlashStrength * power, 2 * power, castsShadows: true), FlashSeconds));
+        if (free >= 0) _clouds[free] = (emitter, 0, PuffsATick, at);
+        else _clouds.Add((emitter, 0, PuffsATick, at));
+        _flashes.Add((CreatePointLight(at + Vector3.UnitY, new Color(255, 236, 200), FlashStrength * power, 2 * power, castsShadows: true), FlashSeconds, at + Vector3.UnitY));
+    }
+
+    /// <summary>
+    /// Moves the clouds' emitters and the flashes' lights by the whole step the <see cref="LandOrigin"/>
+    /// moves by, so the puffs still to come and the light stand at the blast. The puffs the engine
+    /// keeps stay where they were, out of sight until they die within a second.
+    /// </summary>
+    public void Shift(Vector3 by)
+    {
+        for (int i = 0; i < _clouds.Count; i++)
+        {
+            _clouds[i] = _clouds[i] with { At = _clouds[i].At + by };
+            SetParticleEmitterPosition(_clouds[i].Emitter, _clouds[i].At);
+        }
+        for (int i = 0; i < _flashes.Count; i++)
+        {
+            _flashes[i] = _flashes[i] with { At = _flashes[i].At + by };
+            SetLightPosition(_flashes[i].Light, _flashes[i].At);
+        }
     }
 
     /// <summary>Goes on by so many seconds, each cloud emitting the puffs of the ticks it reached and the flashes whose time is over taken out.</summary>
@@ -109,19 +128,19 @@ public sealed class BlastEffects(EcsWorld ecs) : IDisposable
     {
         for (int i = 0; i < _clouds.Count; i++)
         {
-            var (emitter, age, emitted) = _clouds[i];
+            var (emitter, age, emitted, at) = _clouds[i];
             if (age >= Kept) continue;
             age += seconds;
             var due = Math.Min(Ticks, (int)(age * 20) + 1) * PuffsATick;
             if (due > emitted) EmitParticles(emitter, due - emitted);
-            _clouds[i] = (emitter, age, due);
+            _clouds[i] = (emitter, age, due, at);
         }
         for (int i = _flashes.Count - 1; i >= 0; i--)
         {
-            var (light, left) = _flashes[i];
+            var (light, left, at) = _flashes[i];
             if ((left -= seconds) > 0)
             {
-                _flashes[i] = (light, left);
+                _flashes[i] = (light, left, at);
                 continue;
             }
             UnloadLight(light);
@@ -167,7 +186,7 @@ public sealed class BlastEffects(EcsWorld ecs) : IDisposable
     // Lets the clouds' emitters and their pictures go, so the next blast reads the packs again.
     private void Forget()
     {
-        foreach (var (emitter, _, _) in _clouds) UnloadParticleEmitter(emitter);
+        foreach (var (emitter, _, _, _) in _clouds) UnloadParticleEmitter(emitter);
         _clouds.Clear();
         if (_sheet is { } sheet) UnloadTexture(sheet);
         (_sheet, _sheetRead) = (null, false);
@@ -176,7 +195,7 @@ public sealed class BlastEffects(EcsWorld ecs) : IDisposable
     public void Dispose()
     {
         Forget();
-        foreach (var (light, _) in _flashes) UnloadLight(light);
+        foreach (var (light, _, _) in _flashes) UnloadLight(light);
         _flashes.Clear();
     }
 }

@@ -32,9 +32,6 @@ public sealed class Vitals
 
     private float _regen, _starve, _drown, _prick;
     private Vector3 _last;
-
-    /// <summary>Moves the place the body was last read at by the whole step the <see cref="LandOrigin"/> moves by, so the move is no fall.</summary>
-    public void Shift(Vector3 by) => _last += by;
     private bool _started, _wasOnGround;
 
     public int Health { get; private set; } = Most;
@@ -72,6 +69,9 @@ public sealed class Vitals
 
     /// <summary>Starts the vitals' reckoning of motion again from where the body stands, as after a teleport, so it is neither a fall nor a walk.</summary>
     public void Arrived() => (_started, Fallen) = (false, 0);
+
+    /// <summary>Moves the place the body was last read at by the whole step the <see cref="LandOrigin"/> moves by, so the move is no fall.</summary>
+    public void Shift(Vector3 by) => _last += by;
 
     /// <summary>
     /// Advances the vitals by a frame of so many seconds for a body that has moved, with the damage

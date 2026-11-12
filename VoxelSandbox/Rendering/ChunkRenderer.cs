@@ -217,9 +217,10 @@ public sealed class ChunkRenderer : IDisposable
     // Each meshing asked is numbered from one count, so faces a worker made before a section was let
     // go never pass for those asked of it after.
     private int _asks, _asking;
-    private readonly ModelMesh _cube = GenMeshCube(1, 1, 1);
-    // Each emissive surface's cube, the one above for a surface showing its whole texture on each face.
-    private readonly ModelMesh[] _lampCubes;
+    private ModelMesh _cube;
+    // Each emissive surface's cube, the one above for a surface showing its whole texture on each
+    // face, both made again as the origin moves (Shift).
+    private ModelMesh[] _lampCubes = [];
     private readonly List<Matrix4x4>[] _emitterDraws = [.. Surfaces.All.Select(_ => new List<Matrix4x4>())];
     private readonly List<SectionKey> _queue = [];
     // The loaded sections out of the eye's reach, meshed once it comes near, and the eye's section
@@ -266,8 +267,7 @@ public sealed class ChunkRenderer : IDisposable
         SetLooks();
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
         (_animations, _ticks) = (GetShaderLocation(_shader, "animations"), GetShaderLocation(_shader, "ticks"));
-        _lampCubes = [.. Surfaces.All.Select(s => LampParts[s.Id] is { } shown ? LampCube(shown, new Vector2(16))
-            : LampFaces[s.Id] is not null ? LampCube(new Parts(new Vector4(16, 0, 32, 16), new Vector4(0, 0, 16, 16), new Vector4(32, 0, 48, 16)), new Vector2(48, 16)) : _cube)];
+        MakeLampCubes();
         Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
         // Glass, ice and water are rough, so they reflect neither the land the scene's distance field
@@ -578,6 +578,16 @@ public sealed class ChunkRenderer : IDisposable
 
     public int Lamps { get; private set; }
 
+    /// <summary>The lamps the last placement draws, each by its surface's cube and where the cube stands.</summary>
+    public IEnumerable<(ModelMesh Cube, Matrix4x4 At)> LampsPlaced
+    {
+        get
+        {
+            for (int surface = 0; surface < _emitterDraws.Length; surface++)
+                foreach (var at in _emitterDraws[surface]) yield return (_lampCubes[surface], at);
+        }
+    }
+
     /// <summary>Sections holding faces or lamps.</summary>
     public int Sections => _sections.Count;
 
@@ -663,6 +673,22 @@ public sealed class ChunkRenderer : IDisposable
             for (int i = 0; i < pixels.Length; i += 4) (pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]) = (color.R, color.G, color.B, 255);
             return pixels;
         }
+    }
+
+    // Uploads each emissive surface's cube, those uploaded before let go.
+    private void MakeLampCubes()
+    {
+        UnloadLampCubes();
+        _cube = GenMeshCube(1, 1, 1);
+        _lampCubes = [.. Surfaces.All.Select(s => LampParts[s.Id] is { } shown ? LampCube(shown, new Vector2(16))
+            : LampFaces[s.Id] is not null ? LampCube(new Parts(new Vector4(16, 0, 32, 16), new Vector4(0, 0, 16, 16), new Vector4(32, 0, 48, 16)), new Vector2(48, 16)) : _cube)];
+    }
+
+    private void UnloadLampCubes()
+    {
+        foreach (var cube in _lampCubes)
+            if (cube.Id != _cube.Id) UnloadMesh(cube);
+        if (_cube.IsValid) UnloadMesh(_cube);
     }
 
     // A cube a unit across about its middle, each face showing its part of a texture of a size in pixels.
@@ -917,23 +943,28 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     /// <remarks>
     /// Each part's mesh is uploaded again, a group's made again from its sections' arrays in the
-    /// update that follows, since the engine's scene field knows a mesh by its vertices and takes the
-    /// same mesh at another place for a figure that walks, stamped as a box until it has stood for
-    /// 1,024 frames, which darkened the land at Low by a twentieth for ten seconds and more after each
-    /// move, where a mesh that came, as a section streamed in, is built into the field at once.
+    /// update that follows, and the lamps' cubes uploaded again, since the engine's scene field knows
+    /// a mesh by its vertices and takes the same mesh at another place for a figure that walks,
+    /// stamped as a box until it has stood for 1,024 frames, which darkened the land at Low by a
+    /// twentieth for ten seconds and more after each move, where a mesh that came, as a section
+    /// streamed in, is built into the field at once. The meshes are uploaded before any entity
+    /// moves, and each place is the one under the origin before the move, which moves after this.
     /// </remarks>
     public void Shift(Vector3 by)
     {
-        foreach (var (key, entry) in _sections)
-        {
+        foreach (var (_, entry) in _sections)
             foreach (var part in entry.Parts)
             {
                 if (part.Entity < 0 || !part.HasFaces) continue;
                 part.Forget();
                 part.Mesh = UploadMesh(part.Positions, part.Indices, MeshStream.From(MeshStreamFormat.UInt2, part.Packed.AsSpan()), part.Colors.ToArray());
                 _ecs.Update(part.Entity, new Mesh(part.Mesh));
-                _ecs.Update(part.Entity, new Transform(LandOrigin.PlaceOf(key) + part.Center));
             }
+        MakeLampCubes();
+        foreach (var (key, entry) in _sections)
+        {
+            foreach (var part in entry.Parts)
+                if (part.Entity >= 0 && part.HasFaces) _ecs.Update(part.Entity, new Transform(LandOrigin.PlaceOf(key) + part.Center + by));
             for (int i = 0; i < entry.Emitters.Count; i++)
             {
                 var (surface, at) = entry.Emitters[i];
@@ -944,7 +975,7 @@ public sealed class ChunkRenderer : IDisposable
         foreach (var (at, group) in _groups)
         {
             foreach (var part in group.Parts)
-                if (part.Entity >= 0) _ecs.Update(part.Entity, new Transform(LandOrigin.PlaceOf(new SectionKey(at.X << GroupX, at.Y << GroupY, at.Z << GroupZ))));
+                if (part.Entity >= 0) _ecs.Update(part.Entity, new Transform(LandOrigin.PlaceOf(new SectionKey(at.X << GroupX, at.Y << GroupY, at.Z << GroupZ)) + by));
             group.Change = Change.Faces;
         }
         // The lamps are gathered again at the next placement.
@@ -1322,9 +1353,7 @@ public sealed class ChunkRenderer : IDisposable
     public void Dispose()
     {
         Clear();
-        UnloadMesh(_cube);
-        foreach (var cube in _lampCubes)
-            if (cube.Id != _cube.Id) UnloadMesh(cube);
+        UnloadLampCubes();
         UnloadMesh(_dome);
         UnloadShader(_shader);
         if (_atlasTexture.IsValid) UnloadTexture(_atlasTexture);

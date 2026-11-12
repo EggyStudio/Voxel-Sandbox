@@ -48,18 +48,12 @@ public sealed class GameSounds
     private readonly Sound[][] _steps;
     private readonly Sound[] _loops;
     private readonly AudioSource[] _playing;
-    private readonly List<(AudioSource Voice, double Ends)> _stepsPlaying = [];
+    private readonly List<(AudioSource Voice, double Ends, Vector3? At)> _stepsPlaying = [];
     private double _time;
     private readonly float[] _levels = new float[Enum.GetValues<AmbientSound>().Length];
     private readonly Random _random = new();
     private float _walked, _water, _roomWait;
     private Vector3? _lastFeet;
-
-    /// <summary>Moves the feet's last place by the whole step the <see cref="LandOrigin"/> moves by, so the move is no step.</summary>
-    public void Shift(Vector3 by)
-    {
-        if (_lastFeet is { } feet) _lastFeet = feet + by;
-    }
 
     public GameSounds()
     {
@@ -86,6 +80,21 @@ public sealed class GameSounds
 
     /// <summary>The steps played since the world opened.</summary>
     public int StepsHeard { get; private set; }
+
+    /// <summary>
+    /// Moves the feet's last place and the mobs' steps playing by the whole step the
+    /// <see cref="LandOrigin"/> moves by, so the move is no step and a step is heard where it was.
+    /// </summary>
+    public void Shift(Vector3 by)
+    {
+        if (_lastFeet is { } feet) _lastFeet = feet + by;
+        for (int i = 0; i < _stepsPlaying.Count; i++)
+            if (_stepsPlaying[i].At is { } at)
+            {
+                _stepsPlaying[i] = _stepsPlaying[i] with { At = at + by };
+                _stepsPlaying[i].Voice.SetPosition(at + by);
+            }
+    }
 
     /// <summary>
     /// Goes on by so many seconds, the listener set at the eye turned by the view's yaw and pitch, the
@@ -174,14 +183,14 @@ public sealed class GameSounds
             PlaybackRate = 0.9f + 0.2f * (float)_random.NextDouble(),
             FarDistance = at is null ? 0 : Hearing,
         });
-        if (step.IsValid) _stepsPlaying.Add((step, _time + 0.5));
+        if (step.IsValid) _stepsPlaying.Add((step, _time + 0.5, at));
         return true;
     }
 
     /// <summary>Stops the places' sounds, as a world closes.</summary>
     public void Stop()
     {
-        foreach (var (step, _) in _stepsPlaying) step.Stop();
+        foreach (var (step, _, _) in _stepsPlaying) step.Stop();
         _stepsPlaying.Clear();
         for (int i = 0; i < _playing.Length; i++)
         {

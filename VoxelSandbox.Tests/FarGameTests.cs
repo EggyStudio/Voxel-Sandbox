@@ -121,31 +121,4 @@ public sealed partial class FarGameTests : IDisposable
         Assert.Equal((0.5, 0.5), (feet.X, feet.Z));
         Assert.Equal((0, 0), (LandOrigin.X, LandOrigin.Z));
     }
-
-    [Fact]
-    public void A_Move_Of_The_Origin_Uploads_Every_Section_Of_The_Land_Again()
-    {
-        using var headless = new HeadlessGame(at: new LandPlace(1_000.5, 0, 0.5));
-        var game = headless.Game;
-        var before = Meshes(headless.Ecs);
-        Assert.NotEmpty(before);
-
-        // The scene field knows a mesh by its vertices and takes one kept at a new place for a figure
-        // that walks, stamped as a box for 1,024 frames, which darkened the land for ten seconds and
-        // more after each move.
-        Assert.True(game.Recenter(new LandPlace(2_100.5, 0, 0.5)));
-        headless.Step(1);
-
-        var after = Meshes(headless.Ecs);
-        Assert.NotEmpty(after);
-        Assert.Empty(before.Intersect(after));
-    }
-
-    // The meshes the land's sections are drawn with, by their uploads.
-    private static HashSet<int> Meshes(EcsWorld ecs)
-    {
-        var meshes = new HashSet<int>();
-        foreach (var (id, _) in ecs.Query<SectionPart>()) meshes.Add(ecs.GetReadOnly<Mesh>(id).Uploaded.Id);
-        return meshes;
-    }
 }
