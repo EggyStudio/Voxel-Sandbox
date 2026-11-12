@@ -64,8 +64,8 @@ public sealed class Body(float halfWidth, float height)
     public void Move(VoxelWorld world, Vector3 delta, bool keepToEdges, bool climbing = false)
     {
         // A move that is no number, from a velocity some fault made so, is not taken and the velocity
-        // is let go, since a place that is no number stays so for good, is drawn nowhere, and was
-        // saved so for 279 mobs of two worlds, filed under the column x 0 that no number turns into.
+        // is let go, since a place that is no number stays so for good, is drawn nowhere, and is
+        // saved so, filed under the column that no number turns into.
         if (!float.IsFinite(delta.X) || !float.IsFinite(delta.Y) || !float.IsFinite(delta.Z))
         {
             Velocity = Vector3.Zero;

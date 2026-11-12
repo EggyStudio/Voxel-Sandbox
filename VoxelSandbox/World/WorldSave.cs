@@ -234,11 +234,11 @@ public sealed class WorldSave
     /// million blocks out keep them only to an eighth of a block.
     /// </para>
     /// <para>
-    /// A mob saved with a place that is no number, as a fault of the mobs' moving made 279 in two
-    /// worlds before it was mended, is set down at its home where it has one that is a number, as a
-    /// villager has, in its home's column, and otherwise left out, and the log says how many of each.
-    /// Its place cannot be had again, since its x was lost and it was kept by the column x 0 that no
-    /// number turns into, not by its own.
+    /// A mob saved with a place that is no number, as a fault of the mobs' moving made some before it
+    /// was mended, is set down at its home where it has one that is a number, as a villager has, in its
+    /// home's column, and otherwise left out, and the log says how many of each. Its place cannot be
+    /// had again, since it was lost and the mob was kept by the column x 0 that no number turns into,
+    /// not by its own.
     /// </para>
     /// </remarks>
     public (Dictionary<(int X, int Z), List<MobRecord>> Kept, HashSet<(int X, int Z)> Placed) ReadMobs()

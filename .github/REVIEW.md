@@ -605,3 +605,15 @@ passes whole in 208 s with the mirror at red 171. Of its 17 captures 1 moved by 
 against `0aaf8e2`'s, the meadow by 0.03 percent. The meadow takes one of two forms from play to
 play, four of the last six plays alike and the other two within 0.01 of each other and 0.02 to 0.03
 from the four, which the change of this commit, to mobs the play keeps out, does not reach.
+
+The first view read like for like. Item 173's room read of the origin, run again unchanged on the
+game of `35a0829` from a fresh copy of the review's copy of the data, whose world.json and options
+are the backup's, reads as the origin's did, every picture's mean the same and 0.01 percent of the
+first one's pixels and none of the six others' apart by more than 2 levels. The 3 levels were the
+two pictures' framing. The origin read's first picture holds the HUD at 1280 by 720, where its line
+of help and its hotbar take four times the share of the frame they take at 2560 by 1440, and the
+path read's first view at 2560 by 1440 holds the HUD and the held block, which hides the floor's
+lower right. Against the room read's Low at 2560 by 1440 with the HUD hidden, the pixels apart by
+more than 8 levels are the held block, the hotbar and the line of help alone, the room's own
+reading as it does. The sheet is 04-10-first-view-like-for-like.png in the dump. The comments of
+Body.Move and of the mobs' reader give their reason without this session's count, as N 4.11 asks.
