@@ -555,6 +555,15 @@ public static class GameCommands
         return on ? $"mobs come into the world, {count} brought back" : $"no mob comes into the world, {count} taken away";
     }
 
+    [Command("voxel.restock", "Places again the animals and villagers the land first placed in each loaded column holding no mob, each where it still has room to stand, as after a save that lost them, and says how many came back: voxel.restock")]
+    internal static string Restock()
+    {
+        if (Game is not { } game) return "no world is loaded";
+        var (columns, filled, animals, villagers) = game.Mobs.Restock(game.World);
+        return $"{animals.Placed} animals and {villagers.Placed} villagers placed again in {filled} of the {columns} loaded columns holding no mob, "
+            + $"{animals.LeftOut} animals and {villagers.LeftOut} villagers left out where the land as it stands gives them no room";
+    }
+
     [Command("voxel.cull", "Leaves the sections the eye cannot see through open cells undrawn, or draws every one: voxel.cull <on>")]
     internal static string Cull(bool on)
     {

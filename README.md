@@ -175,7 +175,10 @@ rests, `voxel.attack` hits the one it rests on as the left button does, `voxel.s
 where they stand and holds the clouds and the bits of broken blocks for a capture, `voxel.bits` says
 where the bit nearest a place flies, `voxel.kill` takes the mobs away, and `voxel.spawning off` takes
 them away and keeps every one out from the next frame on, in a world opened after too, so two runs'
-captures take no animal wandering into one, until `voxel.spawning on` brings them back. `voxel.fires` counts the
+captures take no animal wandering into one, until `voxel.spawning on` brings them back.
+`voxel.restock` places again the animals and villagers the land first placed in each loaded column
+holding no mob, each where it still has room to stand, as for a save that lost them, a closing game
+having written the loaded columns' mobs as none before 2026-11-12. `voxel.fires` counts the
 fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival, adventure or
 spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the
 inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and

@@ -47,6 +47,37 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void Restocking_Places_Again_What_The_Land_Placed_Where_A_Save_Lost_It()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        game.Mobs.Still = true;
+        var generated = game.World.Columns.ToDictionary(c => (c.X, c.Z), c => game.World.Generator.Generate(c.X, c.Z).Spawns.ToList());
+        var spawns = generated.Values.SelectMany(list => list).ToList();
+        Assert.NotEmpty(spawns);
+
+        // Emptied as a save that lost the loaded columns' mobs left them, but one column holding a pig.
+        game.Mobs.Clear(null);
+        var pig = new LandPlace(spawns[0].Position.X, spawns[0].Position.Y, spawns[0].Position.Z);
+        var held = generated.First(pair => pair.Value.Contains(spawns[0])).Key;
+        game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, pig, 0, MobKinds.Pig.Health, null));
+        // And one place of another column filled with stone where its spawn's feet stand.
+        var blocked = spawns.First(m => LandOrigin.ColumnOf(LandOrigin.PlaceOf(m.Position)) != held);
+        game.World.SetBlock((int)Math.Floor(blocked.Position.X), (int)Math.Floor(blocked.Position.Y), (int)Math.Floor(blocked.Position.Z), BlockId.Stone);
+
+        var (columns, filled, animals, villagers) = game.Mobs.Restock(game.World);
+
+        var expected = spawns.Where(m => LandOrigin.ColumnOf(LandOrigin.PlaceOf(m.Position)) != held && m != blocked).ToList();
+        Assert.Equal(game.World.ColumnCount - 1, columns);
+        Assert.Equal((expected.Count, 1), (animals.Placed + villagers.Placed, animals.LeftOut + villagers.LeftOut));
+        Assert.Equal(expected.Select(m => m.Position).Append(pig).OrderBy(p => (p.X, p.Y, p.Z)), game.Mobs.All.Select(m => LandOrigin.LandOf(m.Body.Position)).OrderBy(p => (p.X, p.Y, p.Z)));
+        Assert.Equal(generated.Count(pair => pair.Key != held && pair.Value.Any(m => m != blocked)), filled);
+
+        // A second restock finds every column holding a mob or one with none to give.
+        Assert.Equal(0, game.Mobs.Restock(game.World).Animals.Placed);
+    }
+
+    [Fact]
     public void Mobs_Kept_Out_Stay_Out_Of_A_World_Opened_After()
     {
         using var headless = new HeadlessGame();

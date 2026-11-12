@@ -243,6 +243,48 @@ public sealed class Mobs
         return back;
     }
 
+    /// <summary>
+    /// Places again the animals and villagers each loaded column's generation placed, in each loaded
+    /// column that holds no mob and keeps none, as after a save that lost them, each where it still has
+    /// room to stand in the world as it stands, and gives how many such columns there were, how many it
+    /// placed mobs in, and how many animals and how many villagers it placed and left out.
+    /// </summary>
+    /// <remarks>
+    /// A column's generation is made again to read its spawns, the same for a seed every time, on as
+    /// many workers as the processor has, as the streamer makes columns. What the generation placed is
+    /// placed as the land was generated, so a mob whose feet's cell or the one over it the player has
+    /// filled, or whose ground the player dug away, is left out rather than placed in a wall, a
+    /// villager whose village the player changed the likeliest.
+    /// </remarks>
+    public (int Columns, int Filled, (int Placed, int LeftOut) Animals, (int Placed, int LeftOut) Villagers) Restock(VoxelWorld world)
+    {
+        var held = new HashSet<(int X, int Z)>(All.Where(m => m.Dying < 0).Select(ColumnOf));
+        var empty = world.Columns.Select(c => (c.X, c.Z)).Where(key => !held.Contains(key) && !_kept.ContainsKey(key)).ToList();
+        var spawns = new List<MobRecord>[empty.Count];
+        Parallel.For(0, empty.Count, i => spawns[i] = world.Generator.Generate(empty[i].X, empty[i].Z).Spawns.ToList());
+        var filled = 0;
+        (int Placed, int LeftOut) animals = (0, 0), villagers = (0, 0);
+        for (int i = 0; i < empty.Count; i++)
+        {
+            var any = false;
+            foreach (var record in spawns[i])
+            {
+                ref var count = ref record.Kind == MobKinds.Villager ? ref villagers : ref animals;
+                var at = new Step((int)Math.Floor(record.Position.X), (int)Math.Floor(record.Position.Y), (int)Math.Floor(record.Position.Z));
+                if (!Pathfinder.Stands(world, record.Kind, at))
+                {
+                    count.LeftOut++;
+                    continue;
+                }
+                Add(record);
+                count.Placed++;
+                any = true;
+            }
+            if (any) filled++;
+        }
+        return (empty.Count, filled, animals, villagers);
+    }
+
     // Adds mobs to those a column keeps, where those kept out of the world may already lie.
     private void Keep((int X, int Z) key, List<MobRecord> mobs)
     {

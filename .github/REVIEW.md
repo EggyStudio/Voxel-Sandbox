@@ -551,3 +551,16 @@ badlands 0.07, the dark forest 0.76, the beach 1.66 and the river 1.68, where th
 stands the dark forest at 1,016, -1,120 and the origin moves to 1,024, -1,024 for it and the three
 after it, in the far hazy foliage. The reach is to be read again on the engine's next published
 package.
+
+voxel.restock, asked for on 2026-11-12 to give back the animals the closing save lost. For each
+loaded column that holds no mob and keeps none, its generation is made again on as many workers as
+the processor has, and each animal or villager it placed is placed again where the pathfinder says
+it can stand in the world as it stands, the rest left out and counted, villagers apart. A test in
+HeadlessGameTests empties the loaded columns as the fault did, leaves a pig in one and stone at one
+spawn's feet, and finds every other spawn back at its place, the pig's column left alone, the
+stone's spawn left out, and a second restock placing none. On a copy of the review's copy of the
+data, overworld-1 opened at the room with 0 mobs loaded and 1,992 kept beyond, it placed 112 animals,
+25 pigs, 23 cows, 31 sheep and 33 chickens, in 54 of the 665 loaded columns in 1.1 s, leaving none
+out, the land there having no village. The strict build is clean and 386 tests pass, and the play
+passes whole, the mirror at red 171, its captures as 85160b6's but sky2 by 0.06 percent in the
+night's clouds.
