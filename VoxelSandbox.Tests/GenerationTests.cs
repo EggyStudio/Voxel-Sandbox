@@ -88,8 +88,8 @@ public class GenerationTests
     {
         // The steps of two blocks or more and of three or more between neighboring columns, over 512
         // blocks square about seed 1's spawn, a forest with a river through a hill, and about its
-        // plains village by a river, where a river's valley floor fell to the water as a wall, 1458
-        // and 40 at the spawn and 116 and none at the village.
+        // plains village by a river, held to a few at each, so a river's valley floor comes down to
+        // the water in steps and not as a wall.
         var land = new Overworld(1);
         foreach (var (x0, z0, two, three) in new[] { (0, 0, 500, 10), (550, -356, 10, 0) })
         {
@@ -115,9 +115,7 @@ public class GenerationTests
     {
         // A square of 512 chunks about the origin reaches into 17 by 17 of the source's squares of 32
         // chunks at most, each holding one pyramid at most, at a chunk among its first 24 each way,
-        // and only where the desert holds it. Seed 1's square holds six, where a pyramid in nearly
-        // half the cells of 64 blocks over desert put 128, seven of them within 1024 blocks of the
-        // desert about 704, -704, which holds none now.
+        // and only where the desert holds it. Seed 1's square holds six.
         var land = new Overworld(1);
         var pyramid = Structures.Find("pyramid")!;
         Assert.Empty(pyramid.StartsIn(704 - 1024, -704 - 1024, 704 + 1023, -704 + 1023, land));
@@ -275,8 +273,7 @@ public class GenerationTests
         // Its trees stand only where the caves and the ravine left their ground whole, so every log
         // is joined through the logs around it to one standing on the ground, branches among them,
         // and every leaf has a log within seven steps, the widest crown's reach, in the columns whose
-        // neighbors are all generated. As many trees stand as the land places, 363 when this was
-        // written against 365 placed over the cuts too.
+        // neighbors are all generated. As many trees stand as the land places.
         BlockId Get(int x, int y, int z) =>
             columns.TryGetValue((x >> Section.Shift, z >> Section.Shift), out var c) && ChunkColumn.Holds(y) ? c.Get(x & Section.Mask, y, z & Section.Mask) : BlockId.Air;
         bool Inner(int x, int z) => Math.Abs((x >> Section.Shift) - cx) <= 4 && Math.Abs((z >> Section.Shift) - cz) <= 4;

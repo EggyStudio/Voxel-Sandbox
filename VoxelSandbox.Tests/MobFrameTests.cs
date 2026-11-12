@@ -89,8 +89,8 @@ public sealed class MobFrameTests
     {
         using var headless = new HeadlessGame();
         var game = headless.Game;
-        // As one read from a save the mended fault left, its x no number and its height theirs, which
-        // handed 13 of 25 mobs about it an x that is no number in 10 frames.
+        // A sheep whose x is no number at the cows' height, which a comparison of boxes finds
+        // overlapping every one.
         var feet = LandOrigin.LandOf(game.Player.Body.Position);
         game.Mobs.Add(new MobRecord(MobKinds.Sheep, 0, new LandPlace(double.NaN, feet.Y, feet.Z + 3), 0, 8, null));
         for (int i = 0; i < 5; i++) game.Mobs.Add(new MobRecord(MobKinds.Cow, 0, new LandPlace(feet.X + 2 * i - 4, feet.Y, feet.Z + 6), 0, 10, null));

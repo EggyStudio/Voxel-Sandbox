@@ -44,8 +44,8 @@ public sealed class Clouds : IDisposable
     public Clouds()
     {
         _shader = LoadShader("resources/shaders/terrain.slang");
-        // The clouds keep their positions as the sections do, their drift being in the layer's
-        // matrix, so a view that cannot see the layer's box leaves it out.
+        // The shader keeps the clouds' positions as the mesh holds them, their drift being in the
+        // layer's matrix, so a view that cannot see the layer's box leaves it out.
         SetShaderKeepsPositions(_shader, true);
         (_fogColor, _fogStart, _fogEnd) = (GetShaderLocation(_shader, "fogColor"), GetShaderLocation(_shader, "fogStart"), GetShaderLocation(_shader, "fogEnd"));
         _material = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 1, CastsShadows = false, Shader = _shader };

@@ -9,8 +9,8 @@ namespace VoxelSandbox;
 /// light falling straight down through a canopy loses a level on the way in and one more past its
 /// first layer, a canopy five deep taking two and one deep taking one, and keeps what is left down
 /// to the floor under it, so a rain forest's floor under its layered crowns is shaded rather than
-/// darkened as a cave is, where a level for each leaf on the way down and one for each block under
-/// the canopy would leave it nearly black.
+/// dark, where a level for each leaf on the way down and one for each block under the canopy would
+/// leave it nearly black.
 /// </summary>
 /// <remarks>
 /// Each block's levels darken the faces beside it where neither the sky nor a lamp reaches, so a

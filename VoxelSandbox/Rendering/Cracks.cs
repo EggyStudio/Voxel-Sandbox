@@ -10,7 +10,8 @@ namespace VoxelSandbox;
 /// </summary>
 /// <remarks>
 /// Each stage is laid on a cube a hair larger than each box of the block, blended over it and lit
-/// as the block is, so a pack's black cracks show black and a slab's cracks cover the slab alone.
+/// by the block's light, so a pack's black cracks show black and a slab's cracks cover the slab
+/// alone.
 /// The game's own cracks are branches walking out from about the block's middle across its sixteen
 /// pixels, each stage showing a step more of every branch, so they grow as the block breaks.
 /// </remarks>

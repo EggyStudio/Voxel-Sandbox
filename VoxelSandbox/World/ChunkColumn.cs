@@ -13,7 +13,7 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// Every section is made with the column, air or not, since the light in the air above the ground
-/// and in a cave is kept as the blocks are.
+/// and in a cave is kept in each section beside its blocks.
 /// </para>
 /// </remarks>
 public sealed class ChunkColumn

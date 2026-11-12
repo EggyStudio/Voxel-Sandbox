@@ -3010,6 +3010,24 @@ before a batch.
     where the gap was 0.12 to 0.17; ambient occlusion and the sun's shadow read as before, not being
     in that mend; nothing reads worse past the noise. The sheet is 23-55-item-174-mend.png.
 
+178. **Mobs saved with a place that is no number.** From the read of a copy of the review's backup
+    of a player's saves on 2026-11-12. In one world 166 of 1,992 saved mobs hold a place whose x is
+    no number, one of them its z too, all in columns whose x is 0, from 0, -43 to 0, -18; in another
+    113 more in columns 0, -18 to 0, 0, 54 of them villagers; two other worlds hold none. Both
+    versions of mobs.bin carry them as they are. None loads until a player comes near the spawn.
+    First the read, on a copy at the spawn. What such a mob does when its column loads, its column
+    reckoned as the least int so Leaving never takes it, its matrix reaching the renderer and the
+    engine's field; whether the game of the tree still makes one, and where, a place becoming no
+    number in the mobs' moving, their paths or their homes about the column x 0; and what a frame
+    near the spawn reads with them loaded against the same frame with them taken out. Then the mend
+    on both sides, the cause, and the reader, which sets a record whose place is no number down
+    again where its column's generation set it or leaves it out and says how many, with a test of
+    each. Ahead of the reach, which waits for the engine's package. Done at `35a0829`, green at
+    05:11 on 2026-11-12 with the play in 66 minutes. The first such mobs came of a fall mended at
+    `e433e5c` and the rest of the crowding's push, a box with no place overlapping every box of its
+    height; a move that is no number is not taken, such a box overlaps none, and the save's reader
+    sets a mob with no place down at its home where it has one and leaves it out otherwise.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -3198,6 +3216,25 @@ before a batch.
     2026-11-11. The run of `88d6303`, the game's next commit that changes code, was green at 00:33
     on 2026-11-12 with the play in 66 minutes, which settles this; the run of `6b0043b` still stands
     queued on GitHub's side and is left.
+
+13. **The run of `3bfa75d` is red on macOS in a test of the far game's save, the villager not where
+    the test set it.** In run 43132544029 the macOS test job fails 2 of 386, both cases of
+    FarGameTests.A_Game_Far_Out_Keeps_The_Players_Place_A_Broken_Block_And_A_Villager_Across_A_Save
+    at its line 104, from `85160b6`. At -284,680.5, -33.5 the villager stands at x -284,684.049, and
+    at 1,139,992.5, 596.5 it stands at z 595.801, half a block and 0.7 from where a whole or a half
+    would put it; Windows and Linux pass the same tests and the play is still going. That reads as
+    the villager having walked before the test read it, the count of frames before the read resting
+    on the runner's speed, and not as a place lost by the origin; the coder reads which. The mend,
+    the villager held where it is set or its place compared across the save against what was saved,
+    goes up at once with `0aaf8e2`. Written at 03:09 on 2026-11-12. Read by the coder and mended at
+    `636e0bb`, pushed at 03:15 with `0aaf8e2`. The headless game opened again ran the mobs from its
+    first frame, the villager walking for as many frames as the world took to stand, and the test
+    compared it with where it was set within half a block; with the mobs free and 120 frames stepped
+    the case fails here as on macOS, the saved record and the home exact throughout. The game opened
+    again holds its mobs still from the first frame and the test asserts the record's place and home
+    against the villager's, exactly, after 120 frames. Settles on its run. The run of `636e0bb` was
+    green at 04:03 on 2026-11-12, its macOS test job among it and the play in 48 minutes, which
+    settles this.
 
 ## Decisions
 
@@ -4075,6 +4112,80 @@ does not draw. Outside the striped corner the frame is smoother on the mend ever
 0.37 near the origin and 0.36 to 0.40 at 4432, where 0.45 to 0.53 on 6.2.41, the ambient occlusion
 7.6 levels darker at 4432 as before and the shadow's steps as before within one. The sheets are
 23-50-item-173-mend.png and 23-55-item-174-mend.png in the dump.
+
+Verdict 13, read and mended. It is the frames, not the origin. The game opened again ran its mobs
+from the first frame, so the villager walked for as many frames as the streamer took to stand the
+world, and the test read its place against where it was set with half a block to spare. Run here
+with the mobs left to move and 120 frames stepped before the read, the case at 1,139,992.5, 596.5
+fails as macOS did, the villager at 1,139,990.31, 597.31 where it was saved at 1,139,989.5, 596.5,
+its home and the saved record equal to the bit. HeadlessGame takes a switch holding the mobs still
+from the first frame, and the reopened game uses it, steps 120 frames, and compares the villager's
+place and home with the saved record exactly, which both cases pass.
+
+Item 178, read on fresh copies of the review's backup with the game of `0aaf8e2`, under the lock. At
+8.5, 90, -400.5 in overworld-1, the mobs held still, 173 mobs load and 148 hold an x that is no
+number, kept by the columns 0, -29 to 0, -22. They are drawn, 148 in 42 draws, and show nowhere, the
+field reads 536 still and 0 stamped, and the frame with them reads as with them taken out to a level
+at Low, as it does at High with 40 more added. They do not stay loaded for good. With the origin at
+0, no number turns into the column x 0 they are kept by, and a jump of 3,000 blocks unloaded every
+one. Where they come from is a push. Crowd pushes each pair of overlapping mobs apart, and a box
+whose place is no number overlaps every box of its height, each comparison with it being false, so
+each takes a push along x alone by an overlap that is no number. With 25 mobs and 40 such loaded and
+let move, 10 frames gave 13 of the 25 an x that is no number and kept their z. That is overworld-1's
+165 with x alone. The sheep with both, and overworld-5's 52 with both, 13 villagers among them
+fallen to -95,054, are the first ones, from the fault `e433e5c` mended on 2026-10-25, a mob straight
+under its next cell, as a villager climbing out of a village's well. Since .NET 9 a float that is no
+number turns into the int 0, so the save filed each by the column x 0 with its z kept. The tree
+makes none that the reading finds. Every normalization feeding a velocity is guarded, and HEAD's
+game made none in 12,000 frames from 17.5 to 0.5 at the nearest village of a freshly generated
+overworld-5, 10 villagers and 102 animals, nor in 8,000 among 96 animals where the save's village
+stood. The mend is on both sides. Body.Move takes no step that is no number and lets the velocity
+go, and Crowd pushes nothing where either place is no number, so one such mob hands it to none. The
+reader sets a mob whose place is no number down at its home where it has one that is a number, in
+its home's column, and leaves the rest out, the log saying how many of each. Set down where its
+column's generation set it would be kinder, but the generation does not give an animal's place here,
+its x being lost and the column it was kept by being x 0 and not its own. A villager's home does
+give a place, so a villager stands there, and Mobs.Joined brings back a column's kept mobs when it
+is placed for the first time too, since a home's column may be one never loaded. voxel.restock fills
+the loaded columns left holding none. On the backup's copies, overworld-1 leaves out 166 and keeps
+1,826, and overworld-5 sets 54 villagers down at their homes and leaves out 59 animals. The tests
+are a move that is no number left untaken, a mob whose place is no number among cows handing none of
+them its x in 10 frames, the reader's three cases beside a pig, and a column placed first bringing
+back its kept villager beside its own sheep. The strict build is clean, 394 tests pass, and the play
+passes whole in 208 s with the mirror at red 171. Of its 17 captures 1 moved by over 0.01 percent
+against `0aaf8e2`'s, the meadow by 0.03 percent. The meadow takes one of two forms from play to
+play, four of the last six plays alike and the other two within 0.01 of each other and 0.02 to 0.03
+from the four, which the change of this commit, to mobs the play keeps out, does not reach.
+
+The first view read like for like. Item 173's room read of the origin, run again unchanged on the
+game of `35a0829` from a fresh copy of the review's copy of the data, whose world.json and options
+are the backup's, reads as the origin's did, every picture's mean the same and 0.01 percent of the
+first one's pixels and none of the six others' apart by more than 2 levels. The 3 levels were the
+two pictures' framing. The origin read's first picture holds the HUD at 1280 by 720, where its line
+of help and its hotbar take four times the share of the frame they take at 2560 by 1440, and the
+path read's first view at 2560 by 1440 holds the HUD and the held block, which hides the floor's
+lower right. Against the room read's Low at 2560 by 1440 with the HUD hidden, the pixels apart by
+more than 8 levels are the held block, the hotbar and the line of help alone, the room's own
+reading as it does. The sheet is 04-10-first-view-like-for-like.png in the dump. The comments of
+Body.Move and of the mobs' reader give their reason without this session's count, as N 4.11 asks.
+
+The saves read whole, on fresh copies of the review's backup of four worlds, by a program on disk
+that calls the game's own readers of `35a0829`, ReadInfo, ReadRegion, Kept and Decode for every
+column, ReadChests, ReadFurnaces and ReadMobs, and the generator for the blocks under chests in
+columns no region keeps. Every world.json's fields lie in range, its 253 block keys all known and
+every inventory slot read. Every region file opens, 2, 15, 1 and 3 of them for overworld--1, 1, 2
+and 5, holding 6, 187, 2 and 49 columns, every column decoded, none ending inside a section, and
+59 in overworld-1 and 8 in overworld-5 of the eight sections kept while the world stood from 0 to
+128, which the game lays over generated deep stone as it loads them. Of 19.6 million blocks none
+holds a number the keys do not hold or a key this build does not know. Every chest entry, 32, 50,
+35 and 22, stands at a chest, all with their loot not yet rolled and none holding items, and the one
+furnace, in overworld-1, at a furnace. The mobs read 386, 1,826, 145 and 111, none above or below
+the world and none kept by a column it does not stand in, once overworld-1's 166 and overworld-5's
+59 mobs whose place was no number are left out and overworld-5's 54 villagers set down at their
+homes. Those homes lie where the generator of the time built a village, and the generator of the
+tree builds none there, its nearest at -432, 16, so the villagers stand in the open there. No file
+is left half written. overworld-1 keeps a folder `far` of 14 files and 786 KB, the cache of the far
+land that `3d7b1ed` added and `2263618` took out on 2026-10-24, which nothing reads, safe to delete.
 
 ## Items closed, parked or shortened
 

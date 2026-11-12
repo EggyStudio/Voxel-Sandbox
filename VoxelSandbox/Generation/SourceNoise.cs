@@ -22,7 +22,7 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// Its values are worked out in fixed point with integers alone, so a shader on the GPU, which
-/// rounds floats as it will, reckons each one to the bit as the CPU does. A level reads a point as
+/// rounds floats as it will, and the CPU reckon each one to the same bit. A level reads a point as
 /// its offset plus the point's integer coordinates times its frequency, each a 32-bit integer of
 /// 24 fractional bits, so the 8 whole bits wrap at the improved noise's period of 256 as the sum
 /// overflows, and the noise, its fades, its lerps and the weights of its levels are 16 fractional
@@ -79,7 +79,7 @@ public sealed class SourceNoise
 
     /// <summary>
     /// The noise read at points taken times a scale, each level's frequency along each axis and its
-    /// offset as integers of 24 fractional bits, which a shader reads as the CPU does.
+    /// offset as integers of 24 fractional bits, which a shader is given to reckon the same values.
     /// </summary>
     public sealed class Sampler
     {
@@ -141,7 +141,7 @@ public sealed class SourceNoise
 
 /// <summary>
 /// Ken Perlin's improved noise in fixed point, the source's twelve edges of a cube and four of them
-/// again for its gradients, read from integers alone so a shader reckons it to the bit as the CPU does.
+/// again for its gradients, read from integers alone so a shader and the CPU reckon it to the same bit.
 /// </summary>
 public static class FixedNoise
 {

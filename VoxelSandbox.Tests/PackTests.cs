@@ -254,7 +254,7 @@ public sealed class PackTests : IDisposable
         {
             Icons.Use(TerrainAtlas.Build(packs), packs);
             Assert.Equal(stick.Data, Icons.Pixels(Items.Stick));
-            // The stone's top in the middle of its icon is the texture's gray, unshaded as the top is.
+            // The stone's top in the middle of its icon is the texture's gray, an icon's top being unshaded.
             var stone = Icons.Pixels(Items.Of(BlockId.Stone));
             var top = (3 * Icons.Size + 8) * 4;
             Assert.Equal(new byte[] { 100, 100, 100, 255 }, stone[top..(top + 4)]);

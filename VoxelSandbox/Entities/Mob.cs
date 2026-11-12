@@ -76,8 +76,8 @@ public partial struct MobLife
 /// component of the mob's entity that its movement writes and the renderer reads by a query.
 /// </summary>
 /// <remarks>
-/// The yaw is a turn about the vertical as the player's is, 0 facing north and growing to the left,
-/// so a model built facing north is turned by it alone.
+/// The yaw is a turn about the vertical, 0 facing north and growing to the left, so a model built
+/// facing north is turned by it alone.
 /// </remarks>
 public struct MobPose
 {

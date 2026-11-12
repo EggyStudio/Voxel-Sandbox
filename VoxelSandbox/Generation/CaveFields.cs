@@ -19,8 +19,8 @@ namespace VoxelSandbox;
 /// Up to <see cref="Flights"/> batches are in flight at once, each writing a buffer of its own, and
 /// each batch's columns are a uniform of its dispatch, which the engine copies as it dispatches, so
 /// sending a batch never waits for the GPU, where writing a buffer would wait for every dispatch
-/// before it. A batch of eight columns is about 1.2 MB of readings, and one of sixteen stalled the
-/// world's opening for over thirty seconds on the GPU it was tried on.
+/// before it. A batch of eight columns is about 1.2 MB of readings, and a larger one holds the
+/// world's opening waiting on its answer from a device that reads slowly.
 /// </para>
 /// <para>
 /// Where the device has no compute, as a run without a window has none, or the shader does not

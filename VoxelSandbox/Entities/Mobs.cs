@@ -87,8 +87,9 @@ public partial struct MobMind
     }
 
     // The way from a box to another along x and z, as long as they overlap, or null where they do not.
-    // A box whose place is no number overlaps none, where every comparison with it being false had it
-    // overlap every box of its height and push each along x by an overlap that is no number.
+    // A box whose place is no number overlaps none, since every comparison with it is false, which
+    // would have it overlap every box of its height and push each along x by an overlap that is no
+    // number.
     private static Vector3? Apart(Body a, Body b)
     {
         if (!a.Placed || !b.Placed) return null;
@@ -250,9 +251,9 @@ public sealed class Mobs
 
     /// <summary>
     /// Places again the animals and villagers each loaded column's generation placed, in each loaded
-    /// column that holds no mob and keeps none, as after a save that lost them, each where it still has
-    /// room to stand in the world as it stands, and gives how many such columns there were, how many it
-    /// placed mobs in, and how many animals and how many villagers it placed and left out.
+    /// column that holds no mob and keeps none, each where it still has room to stand in the world as
+    /// it stands, and gives how many such columns there were, how many it placed mobs in, and how
+    /// many animals and how many villagers it placed and left out.
     /// </summary>
     /// <remarks>
     /// A column's generation is made again to read its spawns, the same for a seed every time, on as

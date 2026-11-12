@@ -48,7 +48,7 @@ public readonly record struct Parts(Vector4 Sides, Vector4 Top, Vector4 Bottom)
 /// A box of a block smaller than its cell, between two corners in the cell's own space from 0 to 1,
 /// of one surface, its top face moved by <see cref="Lean"/>, as a torch on a wall leans out from it,
 /// or where it is a <see cref="Plane"/> a flat wall standing from its first corner across to its
-/// second, as a plant's are. Its faces show the <see cref="Parts"/> of its texture where it has them,
+/// second. Its faces show the <see cref="Parts"/> of its texture where it has them,
 /// and otherwise the part its place in the cell covers. A box shows the <see cref="Faces"/> its bits
 /// name, a bit for each in the order +x, -x, +y, -y, +z and -z, all six unless it is given fewer, as
 /// an element of the source's models lists the faces it has.
@@ -140,7 +140,7 @@ public sealed class BlockShape
     public StairForm? Form { get; }
 
     /// <summary>
-    /// Whether its faces are cut out where a pack's texture is clear, as a plant's are, drawn apart
+    /// Whether its faces are cut out where a pack's texture is clear, drawn apart
     /// from the solid faces so those keep the depth test that runs before their pixels are lit.
     /// </summary>
     public bool Cutout { get; }
@@ -150,7 +150,8 @@ public sealed class BlockShape
 
     /// <summary>
     /// Whether its item, on the ground, in the hand and as an icon, is the whole cube of its block's
-    /// pictures, as a cactus's is, its model filling its cell but for its sides standing a pixel in.
+    /// pictures, a cactus's among them, its model filling its cell but for its sides standing a pixel
+    /// in.
     /// </summary>
     public bool Whole { get; }
 
@@ -448,9 +449,9 @@ public sealed class BlockShape
         new(new Vector3(x0, y0, z0) / 16, new Vector3(x1, y1, z1) / 16, surface, Plane: true);
 
     /// <summary>
-    /// Cave vines, two flat walls crossed from corner to corner of the cell as a plant's are, which
-    /// hang from the block over them and fall when it is broken, and with glow berries their light, a
-    /// box inside them that the scene's distance field alone sees, as a fire's is.
+    /// Cave vines, two flat walls crossed from corner to corner of the cell, which hang from the block
+    /// over them and fall when it is broken, and with glow berries their light, a box inside them that
+    /// the scene's distance field alone sees.
     /// </summary>
     public static BlockShape Vines(int surface, int light = -1)
     {
@@ -493,7 +494,7 @@ public sealed class BlockShape
             falls: false, solid: true, collision: [box], outline: [box]);
     }
 
-    /// <summary>A cobweb, two walls crossed as a plant's are, which holds to nothing and stays where it is put, as the source's does.</summary>
+    /// <summary>A cobweb, two walls crossed from corner to corner of the cell, which holds to nothing and stays where it is put, as the source's does.</summary>
     public static BlockShape Cobweb(int surface) => new(Facing.Up, [Wall(0, 0, 0, 16, 16, 16, surface), Wall(0, 0, 16, 16, 16, 0, surface)], falls: false, cutout: true);
 
     /// <summary>A straight rail lying on the block under it, a pixel deep, along the way it faces, which falls when that block is broken.</summary>

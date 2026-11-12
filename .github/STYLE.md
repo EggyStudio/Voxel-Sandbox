@@ -286,6 +286,11 @@ grep -rniE "\b(is|are|was|were) what\b|which is what|that is what|this is what|\
 
 # Prose about earlier revisions.
 grep -rniE "contrary to what|this (file|document|entry) (said|used to)|the (old|previous) (entry|version)|at the time .* was written" --include=*.md .
+
+# Comments that tell what the code was, what a mend changed or which fault led to it, or that liken
+# a thing to another's state (N 4.11). Each word has a sense about the running game, a mob held
+# still, a light no longer wanted, so the hits are read rather than counted.
+git grep -n -i -E "as it was|as before|no longer|\bstill\b|used to|\bonce\b|already|\bmended\b|\bfault\b|when this was|\bas the [a-z]+ (is|are|was|does|do)\b" -- '*.cs' '*.slang' '*.sh' '*.py' | grep -E "//|#|/\*"
 ```
 
 Arithmetic such as `counts[i - 1]` is the expected false positive in the second command.

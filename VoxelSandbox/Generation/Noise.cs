@@ -3,12 +3,12 @@ namespace VoxelSandbox;
 /// <summary>Ken Perlin's improved gradient noise on a plane, from a seed, read at integer places over a scale.</summary>
 /// <remarks>
 /// <para>
-/// Its values are worked out in fixed point with integers alone, as <see cref="SourceNoise"/>'s
-/// are, so a shader on the GPU reckons each one to the bit as the CPU does. A place's coordinate is
-/// the place times its step, a block's share of the noise's cycle over the scale, an integer of 24
-/// fractional bits whose 8 whole bits wrap at the noise's period of 256 as it overflows, and each
-/// octave doubles the step. The noise, its fades, its lerps and its octaves' weights are 16
-/// fractional bits, each product taken down to the floor.
+/// Its values are worked out in fixed point with integers alone, so a shader on the GPU and the CPU
+/// reckon each one to the same bit. A place's coordinate is the place times its step, a block's
+/// share of the noise's cycle over the scale, an integer of 24 fractional bits whose 8 whole bits
+/// wrap at the noise's period of 256 as it overflows, and each octave doubles the step. The noise,
+/// its fades, its lerps and its octaves' weights are 16 fractional bits, each product taken down to
+/// the floor.
 /// </para>
 /// <para>
 /// Read only once made, so the workers that generate columns share one.
@@ -29,7 +29,7 @@ public sealed class Noise
         for (int i = 0; i < 512; i++) _permutation[i] = order[i & 255];
     }
 
-    /// <summary>The noise's permutation, twice over, which a shader reads as the CPU does.</summary>
+    /// <summary>The noise's permutation, twice over, which a shader is given to reckon the same values.</summary>
     public ReadOnlySpan<byte> Permutation => _permutation;
 
     /// <summary>The step of a block along an axis over a scale in blocks, in 24 fractional bits.</summary>

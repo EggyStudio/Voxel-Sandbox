@@ -37,7 +37,7 @@ public readonly record struct ChestPlaced(int X, int Y, int Z, string Loot, uint
 
 /// <summary>
 /// The chests of a world by the place of their block, each given up what it holds once its block
-/// is gone, broken or blown up, as a furnace is.
+/// is gone, broken or blown up.
 /// </summary>
 /// <remarks>
 /// A generated column's chests join as the column does, their loot not yet rolled, and a save keeps

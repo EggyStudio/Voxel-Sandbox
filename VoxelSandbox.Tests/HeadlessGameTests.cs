@@ -56,7 +56,7 @@ public sealed class HeadlessGameTests
         var spawns = generated.Values.SelectMany(list => list).ToList();
         Assert.NotEmpty(spawns);
 
-        // Emptied as a save that lost the loaded columns' mobs left them, but one column holding a pig.
+        // Every loaded column emptied of mobs but one holding a pig.
         game.Mobs.Clear(null);
         var pig = new LandPlace(spawns[0].Position.X, spawns[0].Position.Y, spawns[0].Position.Z);
         var held = generated.First(pair => pair.Value.Contains(spawns[0])).Key;
@@ -255,8 +255,8 @@ public sealed class HeadlessGameTests
             var file = new OptionsFile(folder);
             Directory.CreateDirectory(folder);
             var screens = game.Menus.Screens(game).All();
-            // A file of no version holds every setting as it stood, Soft Shadows at the 0 it held
-            // before its default was 1.5, so that line is read as the old default.
+            // A file of no version holds every setting, Soft Shadows at the 0 such a file holds as its
+            // default, so that line is read as a default and the default of 1.5 stands.
             File.WriteAllText(file.File, "render.Soft_Shadows:0\nrender.Far_Cascade:Off\nrender.Shadow_Distance:64\nrender.Render_Distance:6\n");
             Assert.Equal(1, file.Read(screens));
             Assert.Equal((1.5f, true, 128f, 6), (game.Light.ShadowSoftness, game.Light.FarCascade, game.Light.ShadowDistance, game.RenderDistance));

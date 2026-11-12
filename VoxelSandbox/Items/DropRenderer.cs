@@ -55,7 +55,7 @@ public sealed class DropRenderer : IDisposable
         {
             if (Vector3.DistanceSquared(body.Position, eye) > Distance * Distance) continue;
             // Each stack turns and bobs out of step with the others, by its own age and its place in the
-            // land, which a move of the origin leaves as it was.
+            // land, which a move of the origin does not change.
             var land = LandOrigin.LandOf(body.Position);
             var spin = (float)time * 1.2f + drop.Delay * 7 + (float)(land.X % 1024) * 3;
             var bob = 0.06f * (1 + MathF.Sin((float)time * 2.5f + (float)(land.Z % 1024) * 5));
@@ -117,12 +117,11 @@ public sealed class DropRenderer : IDisposable
     /// </summary>
     /// <remarks>
     /// Every corner is taken from one grid of the pixels' corners, so faces that meet share their
-    /// corners bit for bit and the rasterizer leaves no crack between them as the view moves, where a
-    /// front and a back of the whole picture cut out where it is clear met the sides a little off
-    /// their edges and the sky showed through along the outline. Each face shows its pixel's middle on
-    /// the picture, so its color is the pixel's own at any size. A run of pixels is not joined into
-    /// one face, since its long edge would meet the shorter edges of the sides along it at corners it
-    /// does not hold, which crack as edges of different corners do.
+    /// corners bit for bit and the rasterizer leaves no crack between them as the view moves. Each
+    /// face shows its pixel's middle on the picture, so its color is the pixel's own at any size. A
+    /// run of pixels is not joined into one face, since its long edge would meet the shorter edges
+    /// of the sides along it at corners it does not hold, and edges that meet at different corners
+    /// crack.
     /// </remarks>
     public static void Extrude(BoxMesh mesh, byte[] icon, int n, float half)
     {

@@ -59,7 +59,7 @@ public sealed class Inventory
     /// <summary>A slot as a save keeps it, an item's key, a count and a tool's wear, or an empty string for an empty slot.</summary>
     public static string Encode(ItemStack? slot) => slot is not { } stack ? "" : stack.Wear > 0 ? $"{stack.Item.Key} {stack.Count} {stack.Wear}" : $"{stack.Item.Key} {stack.Count}";
 
-    /// <summary>A slot from what <see cref="Encode"/> gave, empty where its item is no longer known.</summary>
+    /// <summary>A slot from what <see cref="Encode"/> gave, empty where this build does not know its item.</summary>
     public static ItemStack? Decode(string slot)
     {
         var parts = slot.Split(' ');
@@ -68,7 +68,7 @@ public sealed class Inventory
         return new ItemStack(item, Math.Min(count, item.MostInStack), wear);
     }
 
-    /// <summary>Fills the slots from what <see cref="Save"/> gave, a slot whose item is no longer known left empty.</summary>
+    /// <summary>Fills the slots from what <see cref="Save"/> gave, a slot whose item this build does not know left empty.</summary>
     public void Load(string[] slots)
     {
         Clear();

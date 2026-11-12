@@ -274,7 +274,7 @@ cmd voxel.clouds on
 check "a cloud's underside"
 # A cloud's underside at noon takes the sky's light, read from 20 blocks under it, nearer than the
 # haze begins, where the clouds placed at a drift of none hold one over the eye. Its red stands at
-# least 100 in sRGB levels, where it read 146, the sky beside it 45 and an underside drawn black 9.
+# least 100 in sRGB levels, well over the black of an underside the sky's light does not reach.
 cmd voxel.fly on
 cmd voxel.tp 0.5 100 0.5
 cmd voxel.time 12
@@ -474,7 +474,7 @@ awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the zombie's face steps 
 check "the high sapling"
 # A sapling on a pillar above the eye's height is lit as one on the ground below it, read at the
 # middle of each one's crown, where its crossed walls are covered. Its green is at least four fifths
-# of the lower's, where a plant's wall seen from below was lit as one facing down, at half of it.
+# of the lower's, a plant's wall lit as an upright wall seen from below or above.
 cmd voxel.kill all
 cmd voxel.fill 8 4 0 10 6 1 stone
 cmd voxel.set 9 7 0 oak_sapling
@@ -672,7 +672,7 @@ read -r br bg bb <<< "$(printf '%s\n' "$body" | sed -nE 's/^red ([0-9]+), green 
 # red front. The eye stands level with the glass, straight before the first pane, so the line
 # through its middle meets the wall and no other face of it. The frame's gray is read by its red
 # against its green, the wall's red lying far from its green, since the sun's warm light, which the
-# sky's light whitened by day no longer cools, leaves a gray's blue below its red.
+# sky's light whitened by day does not cool, leaves a gray's blue below its red.
 cmd voxel.fill 19 5 0 22 8 0 red_concrete
 cmd voxel.set 20 6 2 glass
 cmd voxel.set 21 6 2 glass
@@ -702,8 +702,8 @@ read -r tr tg tb <<< "$(channels "$top")"
 [ "$br" -gt $((2 * bg)) ] && [ "$ar" -gt $((2 * ag)) ] || fail "the two panes' frames are not left out where they meet, $before and $after"
 [ "$sr" -gt $((2 * sb)) ] || fail "the lit furnace's front does not wear the picture's red, $side"
 [ "$tb" -gt $((2 * tr)) ] || fail "the lit furnace's top does not wear the furnace's top's blue, $top"
-# A furnace dropped on the ground wears the pack's pictures as the block does, its top read from
-# straight above in the picture's blue, where a stack on the ground was a cube of the block's colors.
+# A furnace dropped on the ground wears the pack's pictures of the block, its top read from straight
+# above in the picture's blue.
 cmd voxel.drop furnace 23.5 4.2 4.5
 cmd voxel.tp 23.5 8 4.5
 cmd voxel.look 0 -90
@@ -740,8 +740,8 @@ check "the fire's top"
 # A fire's walls show no line along their tops. The pack's fire is 32 frames of flames reaching the
 # second row under pixels clear and white, as a pack's are, and seen from above at a slant at night
 # three lines down across the top edge of its north wall, read nine times a few frames apart, are
-# each no brighter than the ground beyond the wall where they start, where a texel at the wall's
-# top read into the copy of the frame above it in its cell and drew its bottom rows as a line.
+# each no brighter than the ground beyond the wall where they start, since a texel at the wall's
+# top reading into the copy of the frame above it in its cell would draw its bottom rows as a line.
 cmd voxel.kill all
 cmd voxel.time 20
 cmd voxel.set 40 3 -50 stone
@@ -790,8 +790,8 @@ awk -v p="$pr $pg $pb" -v s="$sr $sg $sb" 'BEGIN { split(p, a); split(s, b); for
 check "the block's bits"
 # The bits a broken block throws at the end of a tunnel two high and one wide in a hill at noon, left
 # to fall a moment and held, each read where it lies, the one against the tunnel's wall within 6
-# levels of the rest, since each is lit at its middle, where one clipped into the wall took the
-# sky's light from inside it, 29, 49 and 51 against 16, 25 and 13.
+# levels of the rest, since each is lit at its middle, so one clipped into the wall takes no light
+# from inside it.
 cmd voxel.time 12
 cmd voxel.kill all
 cmd voxel.fill 60 4 -70 70 12 -60 stone
@@ -827,8 +827,7 @@ printf '%s\n' $levels | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { 
 check "the plant's place"
 # A block placed aimed at a plant takes the plant's own cell, and one placed against a block's side
 # above the plant standing before it, where the aim passes over the plant, takes the plant's cell
-# too, as the source's grasses give way, where the first went into the cell before the plant and the
-# second was refused.
+# too, as the source's grasses give way.
 cmd voxel.time 12
 cmd voxel.set 30 4 -30 short_grass
 cmd voxel.set 34 4 -30 stone
@@ -877,11 +876,9 @@ printf '%s\n' $samples | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END {
 check "the held pickaxe"
 # A wooden pickaxe held against the sky at noon, the player standing still and looking up to the
 # south over none of the script's builds, lets no sky through between its faces, every pixel's faces
-# taking their corners from one grid so faces that meet share them, where a front and a back of the
-# whole picture cut out where it is clear met the pixels' sides a little off their edges and the sky
-# showed through between them. Its corner of the window holds at most 60 pixels nearer the sky than
-# both neighbors, its own slivers of a lit face a pixel wide reading 22 of them, where the cracks
-# made 224, on the GPU and on lavapipe alike.
+# taking their corners from one grid so faces that meet share them. Its corner of the window holds
+# at most 60 pixels nearer the sky than both neighbors, its own slivers of a lit face a pixel wide
+# reading about 22 of them, on the GPU and on lavapipe alike.
 cmd voxel.time 12
 cmd voxel.kill all
 cmd voxel.hud on
@@ -1066,8 +1063,7 @@ awk -v s="$splashes" -v e="$emitters" 'BEGIN { exit !(s > 5 && e > 0 && e <= 11)
 awk -v a="$alive" -v b="$budget" 'BEGIN { exit !(b > 0 && a <= b) }' || fail "the particles keep $alive alive over their budget of ${budget:-none}"
 cmd voxel.options particles Rain_Splashes 0
 # The count falls by about a twentieth a frame, the game's step held to 0.05 s, so under one drop
-# in about 80 frames, and it is read every 20 frames up to 300, where 300 waited on lavapipe took
-# nine minutes.
+# in about 80 frames, and it is read every 20 frames up to 300, so the wait ends once it has fallen.
 for i in $(seq 1 15); do
   cmd frames.wait 20
   splashes=$(profiled particles.splashes)
@@ -1101,10 +1097,10 @@ done
 [ "$step" -le 4 ] || fail "the land's edge steps to the sky, $edge"
 
 check "the draws"
-# Over the same land the frame records no more than 400 draws of sections, 277 when this was
-# written, where drawing every section meshed at four columns, or with no flood leaving the land
-# under the ground out, would record well over that, and the engine draws the sections' solid faces
-# as entities, which its profile counts.
+# Over the same land the frame records no more than 400 draws of sections, where drawing every
+# section meshed at four columns, or with no flood leaving the land under the ground out, would
+# record well over that, and the engine draws the sections' solid faces as entities, which its
+# profile counts.
 state=$(ask voxel.state)
 draws=$(printf '%s\n' "$state" | sed -nE 's/.* ([0-9]+) draws, .*/\1/p')
 entities=$(ask profile | sed -nE 's/^entities\.drawn ([0-9.]+).*/\1/p')

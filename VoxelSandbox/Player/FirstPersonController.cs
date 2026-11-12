@@ -153,7 +153,7 @@ public sealed class FirstPersonController
     /// <summary>Where the camera stands, at the eye, behind the player or in front of it, as F5 steps it.</summary>
     public View View { get; set; }
 
-    /// <summary>How far the player's legs swing and where in their swing they are, as a mob's are, for the model a view from without shows.</summary>
+    /// <summary>How far the player's legs swing and where in their swing they are, for the model a view from without shows.</summary>
     public float Stride { get; private set; }
 
     public float StridePhase { get; private set; }
@@ -229,8 +229,8 @@ public sealed class FirstPersonController
         var widened = Sprinting && wish != Vector3.Zero ? FieldOfView * 1.12f : FieldOfView;
         _fov += (widened - _fov) * (1 - MathF.Exp(-10 * seconds));
 
-        // The legs swing by how far the body went across, as a mob's do, and a view from without
-        // stands as far from the eye as the blocks let it.
+        // The legs swing by how far the body went across, and a view from without stands as far
+        // from the eye as the blocks let it.
         var across = new Vector2(Body.Position.X - before.X, Body.Position.Z - before.Z);
         var (stride, phase) = (Stride, StridePhase);
         Gait.Step(ref stride, ref phase, across.Length(), seconds);

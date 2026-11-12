@@ -69,8 +69,8 @@ public static class Surfaces
     }
 
     // Each full block's color is the average of the default packs' texture of it, decoded and
-    // weighed by alpha, read as numbers by voxel.palette, so the game drawn with no pack looks as
-    // it does with the pack it fetches, a see-through block's alpha its texture's cover, and a
+    // weighed by alpha, read as numbers by voxel.palette, so the game drawn with no pack keeps the
+    // colors of the pack it fetches, a see-through block's alpha its texture's cover, and a
     // surface the pack tints by a color of its own, as water and birch and spruce leaves, under
     // that color. The plants keep their own, since a flower's average mixes its stem and its
     // petals, and so do the ores, since without a texture an ore shows by its color alone and an
@@ -120,8 +120,8 @@ public static class Surfaces
     public static readonly int Hay = Add("hay", new Color(176, 150, 42));
     public static readonly int HayTop = Add("hay top", new Color(183, 161, 45));
     public static readonly int Wheat = Add("wheat", new Color(196, 178, 82));
-    // A soul torch's stick and a soul lantern's iron look as the others do, apart so a pack's soul
-    // torch and soul lantern textures lie on them.
+    // A soul torch's stick and a soul lantern's iron are surfaces of their own in a torch's and a
+    // lantern's colors, so a pack's soul torch and soul lantern textures lie on them.
     public static readonly int TorchStick = Add("torch stick", new Color(162, 132, 88));
     public static readonly int SoulTorchStick = Add("soul torch stick", new Color(162, 132, 88));
     public static readonly int LanternIron = Add("lantern iron", new Color(52, 54, 62), 0.5f);
@@ -296,8 +296,8 @@ public static class Surfaces
     public static readonly int Lava = Add("lava", new Color(207, 92, 20), emissive: new Color(255, 120, 30), glow: 4);
     // The lush caves' moss, on their floors and roofs and as a carpet, their cave vines, and those
     // with glow berries, whose light is a box inside them that the scene's distance field alone
-    // sees, as a fire's is, as strong as a fire's for its smaller box and pale, so the leaves around
-    // keep their green as the source's lush caves show them under its uncolored light.
+    // sees, as strong as a fire's for its smaller box and pale, so the leaves around keep their
+    // green as the source's lush caves show them under its uncolored light.
     public static readonly int Moss = Add("moss", new Color(89, 109, 45));
     public static readonly int CaveVines = Add("cave vines", new Color(92, 120, 46));
     public static readonly int CaveVinesLit = Add("cave vines with glow berries", new Color(150, 130, 60));

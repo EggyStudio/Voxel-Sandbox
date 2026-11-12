@@ -56,7 +56,10 @@ review.
 is checked with no request made.** By review.
 
 **N 4.7 A document or a comment a player or a contributor reads names no one who decided, no owner
-and no session.** Documents speak for the game. By review.
+and no session.** Documents speak for the game. The sessions' own documents, REVIEW.md among them,
+say what was decided in plain general words and seldom who, a role named only where a sentence must
+say who holds a decision, quoting no one's own words and carrying nothing personal, since they are
+published with the source. By review.
 
 **N 4.8 A picture a session makes while it works, a reading, a pair before and after a mend or a
 capture sent to the owner, is saved in the repository in the commit of the work it belongs to.** The
@@ -111,13 +114,16 @@ game's words, and a number taken from elsewhere stands with the reason it is rig
 makes the frame or the program do, the source named once in the documents' references and not in the
 comment. The file names of outside assets, another product's profile or process as the explanation,
 "as X works it out", and the facts of the sessions' work are not written in a comment, since a
-reader of the source has none of them; a comment carries no reading of before and after, no cost in
+reader of the source has none of them. A comment says what the code is as it stands. It does not
+tell what the code was before, what a mend changed or which fault led to it, and it does not explain
+one thing by likening it to another, "as the walls are", "as before", "no longer"; it gives the
+reason in the code's own terms. A comment carries no reading of before and after, no cost in
 milliseconds or bytes and no account of the trials that led to the code, which are the review's
 records and go stale at the first tuning, and a number stands in a comment only where the code's
 choice depends on it, with its reason. Minecraft is named where the game takes a rule or a number
 from the game it follows, and a pack's format where the game reads it (STYLE.md). A comparison test
-names the reference it compares against, since the comparison is the test. The owner asked for it on
-2026-11-08 and 2026-11-09. By review, and by STYLE.md's search, read rather than counted.
+names the reference it compares against, since the comparison is the test. By review, and by
+STYLE.md's search, read rather than counted.
 
 ## 6 Build and package
 

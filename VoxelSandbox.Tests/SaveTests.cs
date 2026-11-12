@@ -118,8 +118,8 @@ public sealed class SaveTests : IDisposable
     [Fact]
     public void A_Mob_Saved_With_A_Place_That_Is_No_Number_Stands_At_Its_Home_Or_Is_Left_Out()
     {
-        // As the mended fault left them, kept by the column x 0 that no number turns into, a
-        // villager and a cow with their x lost and a sheep with its z lost too, beside a pig.
+        // Kept by the column x 0 that no number turns into, a villager and a cow whose x is no number
+        // and a sheep whose z is no number too, beside a pig.
         var villager = new MobRecord(MobKinds.Villager, 1, new LandPlace(double.NaN, 58, -150.5), 0.5f, 20, new LandPlace(-155.5, 58, 85.5));
         var cow = new MobRecord(MobKinds.Cow, 0, new LandPlace(double.NaN, 60, -480.25), 1, 10, null);
         var sheep = new MobRecord(MobKinds.Sheep, 0, new LandPlace(double.NaN, 57, double.NaN), 0, 8, null);

@@ -20,7 +20,7 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// A bit's square is one of four quarters of the side's picture, the pack's as the terrain draws it,
-/// tinted by the climate's colors where the block stood as its faces are tinted there, so a grass
+/// tinted by the climate's colors where the block stood, the colors its faces take there, so a grass
 /// block broken in the savanna throws the savanna's grass, or the side's own color in that climate
 /// where no pack gives one, each turned toward the eye. They cast no shadow and global illumination
 /// holds none of them. Each tint of a quarter is a texture of its own, and the climate's colors change

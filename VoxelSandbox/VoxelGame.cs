@@ -576,9 +576,9 @@ public sealed class VoxelGame : IDisposable
     /// </para>
     /// <para>
     /// Those let go are no player's. The arrows are the skeletons', which no one picks up, and go
-    /// within a minute. A block falling in land not loaded falls through it and goes within a minute,
-    /// as one does whose column unloads under it. A lit TNT's block is gone from the land as it is lit,
-    /// and its blast in land not loaded breaks nothing. A flash shows for half a second.
+    /// within a minute. A block falling in land not loaded falls through it and goes within a minute.
+    /// A lit TNT's block is gone from the land as it is lit, and its blast in land not loaded breaks
+    /// nothing. A flash shows for half a second.
     /// </para>
     /// </remarks>
     public void Leave(LandPlace to)
@@ -1465,9 +1465,10 @@ public sealed class VoxelGame : IDisposable
 
     public void Dispose()
     {
-        // The app disposes the resources it holds as the window closes, the game among them, after
-        // the program's own Dispose and at times after its ECS has let the mobs go, and a second save
-        // then wrote the loaded columns as holding none, losing the animals about the player.
+        // The program disposes the game and the app, which holds it as a resource, disposes it again
+        // as the window closes, at times after the app's ECS has let the mobs go, so the game saves
+        // and lets go only the first time, since a save then would keep the loaded columns as
+        // holding no mob.
         if (_disposed) return;
         _disposed = true;
         SaveWorld();

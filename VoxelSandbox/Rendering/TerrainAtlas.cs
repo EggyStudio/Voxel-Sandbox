@@ -20,9 +20,8 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// Tile 0 is white, which a surface no pack gives a texture keeps, drawn in the game's own color, so
-/// with no pack the terrain is drawn as it was before packs were read. A plant no pack gives one
-/// takes the game's own mask of <see cref="PlantArt"/>, white where the plant is, tinted by its own
-/// color as the white tile is.
+/// with no pack the terrain is drawn in the game's own colors. A plant no pack gives one takes the
+/// game's own mask of <see cref="PlantArt"/>, white where the plant is, tinted by its own color.
 /// </para>
 /// <para>
 /// A surface the table gives the game's own looks (<see cref="GroundArt"/>), as the grass's top,

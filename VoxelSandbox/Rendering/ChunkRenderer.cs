@@ -945,9 +945,8 @@ public sealed class ChunkRenderer : IDisposable
     /// Each part's mesh is uploaded again, a group's made again from its sections' arrays in the
     /// update that follows, and the lamps' cubes uploaded again, since the engine's scene field knows
     /// a mesh by its vertices and takes the same mesh at another place for a figure that walks,
-    /// stamped as a box until it has stood for 1,024 frames, which darkened the land at Low by a
-    /// twentieth for ten seconds and more after each move, where a mesh that came, as a section
-    /// streamed in, is built into the field at once. The meshes are uploaded before any entity
+    /// stamped as a box and lit as one until it has stood for 1,024 frames, where a mesh that came,
+    /// as a section streamed in, is built into the field at once. The meshes are uploaded before any entity
     /// moves, and each place is the one under the origin before the move, which moves after this.
     /// </remarks>
     public void Shift(Vector3 by)

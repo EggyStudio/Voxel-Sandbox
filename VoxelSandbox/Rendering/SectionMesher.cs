@@ -498,8 +498,8 @@ public sealed class SectionMesher
             if (!closed2) Gather(side2, ref sky, ref lit, ref open);
             if (!closed3 && !(closed1 && closed2)) Gather(across, ref sky, ref lit, ref open);
 
-            // The light kept is linear and the vertex's color sRGB, so it is encoded as the color is,
-            // by a power of 1/2.2 rather than the sRGB curve the shader decodes it by. That shows
+            // The light kept is linear and the vertex's color sRGB, so it is encoded in the color's
+            // way, by a power of 1/2.2 rather than the sRGB curve the shader decodes it by. That shows
             // level 0 a fifth brighter than its light, 0.024 for 0.02, and every other level within
             // two percent, which keeps the darkest cave floor off black.
             var kept = LightLevels ? MathF.Pow(Lit((float)Math.Max(sky, lit) / open), 1 / 2.2f) : 1;

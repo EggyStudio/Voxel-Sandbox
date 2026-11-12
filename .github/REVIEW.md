@@ -1,82 +1,92 @@
 # Review
 
-Reviewed up to `636e0bb`, Verdict 13's mend, the far game's save test holding its mobs still, pushed
-at 03:14 on 2026-11-12 with `0aaf8e2`, the second reader's list for 177's second step, the events
-carrying the land's place, a jump leaving its columns unloaded before the origin moves with the mobs
-and the dropped stacks kept by their columns and set down as they load, so a death far from spawn
-leaves the inventory lying where the player fell, the edge at 2^30, the lamps' cubes uploaded again
-at a move and the tests of each thing where it stood; a first form of it, never pushed, let the
-stacks go and was held by the review; the strict build is clean, 390 tests pass, the play passes
-whole and one picture of 17 moves, the night's clouds; they keep the form and carry the review's
-files. The game's own path on a copy of a player's saves reads right end to end, the first view,
-voxel.restock's 112 animals, a flight out and back, a quit and an open again, mobs.bin in its second
-version with every record of the first carried through. Before them `3bfa75d`, voxel.restock, a
-command that places again the animals and villagers each loaded column's generation placed, in each
-loaded column holding no mob, each where it still has room to stand, 112 animals in 54 of 665
-columns on a copy of the save the fault below emptied, pushed at 02:09 on 2026-11-12 with `85160b6`,
-177's second step, one run on the last, red on macOS in a test of the second step's, Verdict 13, its
-play ended by the mend's push. The second step makes the origin follow the player, moved once the
-player is past 1,024 blocks from it, every float place shifted by the whole step at a frame's start
-and first in a teleport and a respawn and every mesh uploaded again, a hitch of 0.2 to 0.4 s and one
-brighter frame once in 1,024 blocks, with whole-game tests far out and at a negative place; and it
-mends a fault older than the origin, the game's Dispose running twice as the window closes, the
-second save at times written after the engine had let the loaded mobs go, so the animals about the
-player were saved as gone, which a Dispose run once ends, with its test. A second reader found
-nothing serious in it and a list for a commit to follow, events queued across a move, what a far
-jump leaves behind, the lamps taken as movers and the tests' reach. The strict build is clean, 386
-tests pass, the play passes whole; 6 of 17 pictures move in the second step, one by its animals kept
-out and five by where the origin moves, 0.07 to 1.68 percent; they keep the form and carry the
-review's files. Before them `9d25749`, 177's first step, one origin for the whole game, a multiple
-of 1,024 blocks set near the saved place at open that every float place is kept against, blocks,
-columns and sections keeping the land's own whole coordinates, the saves and the commands the land's
-places in doubles, mobs.bin in a second version with the first read, 46 files, pushed at 00:38 on
-2026-11-12, green at 02:08 with the play in 90 minutes, after two reads, the review's and a second
-reader's of every floor, distance and conversion, which found no place where one kind of place is
-taken for the other; the strict build is clean, 376 tests pass, the play passes whole and none of
-its 17 pictures moves; on the published 6.2.41 the owner's room then reads no row with a step over 3
-levels at Low, Medium or High at 1280 by 720 and one at Medium at 2560 by 1440; it keeps the form
-and carries the review's files. Before it `760522a`, the review's file alone with the Replies of
-173's check, 175 and 177's read, pushed at 23:49 on 2026-11-11, no run by the workflow's paths.
-Before it `88d6303`, a fault 175's read found, ChunkStreamer.Unload squaring a column's distance
-from the player in an int, which wrapped negative past 46,340 columns so a teleport of some 741,000
-blocks left the old columns loaded, squared in longs with a test that teleports a million blocks,
-pushed at 23:27 on 2026-11-11, its run started where the run of the commit before it never did and
-green at 00:33 with the play in 66 minutes, which settles Verdict 12; the strict build is clean, 368
-tests pass and the play passes whole in 310 s; it keeps the form and carries the review's files.
-Before it `5ad3f58`, the review's file alone with the Replies of 174 and 176, pushed at 23:00 on
-2026-11-11, no run by the workflow's paths. Before it `6b0043b`, voxel.spawning, asked by the owner
-on 2026-11-11, every mob kept out of the world from the next frame on and brought back where it
-stood, the play switching it off before its first check, pushed at 21:31 on 2026-11-11, its run left
-queued by GitHub's outage and not started, Verdict 12; its strict build is clean and 367 tests pass,
-two plays under the layer pass whole in 317 and 218 s, and of their 17 captures dusk differs in 0.00
-percent of pixels by more than 2 levels where 2.3 before, the night sky in 0.18, within its clouds;
-it keeps the form and carries the review's files. Before it `1f1e955`, item 172, terrain.slang,
-mob.slang and bits.slang returning unlit on the branch drawn unlit, each fragment about 590 KB
-smaller and the fifth frame's 22 pipelines made in 20.3 s where 43.9 from an empty cache with the
-layer off, pushed at 19:29 on 2026-11-11 once the pin's run had ended, its run green at 20:36 with
-the play in 67 minutes where the pin's took 96; it keeps the form and carries the review's files.
-Before it `068fd5f`, the pin of the engine's 6.2.41 with the workflows' engine checkout at
-`894542da`, pushed at 15:29 on 2026-11-11, its run red at 15:34 in the play job before the game was
-built, the runner not reaching its package mirror for two hours and a quarter, Verdict 11, green at
-19:26 on its tenth attempt, the play in 96 minutes, which settles the verdict; its strict build is
-clean and 366 tests pass. The water's mirror passes six plays of six under the layer, three from an
-empty cache in 393, 417 and 434 s and three from the cache each left in 237, 242 and 221 s, each
-play's caches in a folder of its own; from a cold cache the pipelines' file grows to 21.8 MB and the
-pool's three terrain.slang pipelines compile in 14 to 19 s each at once, and from a warm one every
-pipeline made in play says from the cache, the pool's three in 1.17 to 1.37 s each; frame 5's 22
-pipelines take 54 to 68 s cold, one after another, and 4.4 to 4.6 s warm. The engine's trial puts
-about 1.2 s of each such pipeline on the validation layer, 94 ms compiled without it, so these are
-the layer's seconds, which the play turns on, item 171. It keeps the form and carries the review's
-files. The pushes before these stand in REVIEW-ARCHIVE.md's head records.
+Reviewed up to `8fda020`, two comments on their own terms, pushed at 04:05 on 2026-11-12, green at
+05:11 with the play in 66 minutes, with `35a0829`, item 178, the mobs saved with a place that is no
+number, 279 in two worlds of one player's, the first by a fall mended at `e433e5c` and the rest by
+the crowding's push, a box with no place overlapping every box of its height and pushing each along
+x by an overlap that is none, 13 of 25 taken in ten frames when made to happen; a move that is no
+number is not taken, such a box overlaps none, and the save's reader sets a mob with no place down
+at its home where it has one and leaves it out otherwise, saying how many; the strict build is
+clean, 394 tests pass, the play passes whole. The saves of that player's four worlds read clean
+besides, every region, column, chest and furnace through the game's own readers. They keep the form
+and carry the review's files. Before them `636e0bb`, Verdict 13's mend, the far game's save test
+holding its mobs still, pushed at 03:14 on 2026-11-12, green at 04:03 with the play in 48 minutes,
+with `0aaf8e2`, the second reader's list for 177's second step, the events carrying the land's
+place, a jump leaving its columns unloaded before the origin moves with the mobs and the dropped
+stacks kept by their columns and set down as they load, so a death far from spawn leaves the
+inventory lying where the player fell, the edge at 2^30, the lamps' cubes uploaded again at a move
+and the tests of each thing where it stood; a first form of it, never pushed, let the stacks go and
+was held by the review; the strict build is clean, 390 tests pass, the play passes whole and one
+picture of 17 moves, the night's clouds; they keep the form and carry the review's files. The game's
+own path on a copy of a player's saves reads right end to end, the first view, voxel.restock's 112
+animals, a flight out and back, a quit and an open again, mobs.bin in its second version with every
+record of the first carried through. Before them `3bfa75d`, voxel.restock, a command that places
+again the animals and villagers each loaded column's generation placed, in each loaded column
+holding no mob, each where it still has room to stand, 112 animals in 54 of 665 columns on a copy of
+the save the fault below emptied, pushed at 02:09 on 2026-11-12 with `85160b6`, 177's second step,
+one run on the last, red on macOS in a test of the second step's, Verdict 13, its play ended by the
+mend's push. The second step makes the origin follow the player, moved once the player is past 1,024
+blocks from it, every float place shifted by the whole step at a frame's start and first in a
+teleport and a respawn and every mesh uploaded again, a hitch of 0.2 to 0.4 s and one brighter frame
+once in 1,024 blocks, with whole-game tests far out and at a negative place; and it mends a fault
+older than the origin, the game's Dispose running twice as the window closes, the second save at
+times written after the engine had let the loaded mobs go, so the animals about the player were
+saved as gone, which a Dispose run once ends, with its test. A second reader found nothing serious
+in it and a list for a commit to follow, events queued across a move, what a far jump leaves behind,
+the lamps taken as movers and the tests' reach. The strict build is clean, 386 tests pass, the play
+passes whole; 6 of 17 pictures move in the second step, one by its animals kept out and five by
+where the origin moves, 0.07 to 1.68 percent; they keep the form and carry the review's files.
+Before them `9d25749`, 177's first step, one origin for the whole game, a multiple of 1,024 blocks
+set near the saved place at open that every float place is kept against, blocks, columns and
+sections keeping the land's own whole coordinates, the saves and the commands the land's places in
+doubles, mobs.bin in a second version with the first read, 46 files, pushed at 00:38 on 2026-11-12,
+green at 02:08 with the play in 90 minutes, after two reads, the review's and a second reader's of
+every floor, distance and conversion, which found no place where one kind of place is taken for the
+other; the strict build is clean, 376 tests pass, the play passes whole and none of its 17 pictures
+moves; on the published 6.2.41 the owner's room then reads no row with a step over 3 levels at Low,
+Medium or High at 1280 by 720 and one at Medium at 2560 by 1440; it keeps the form and carries the
+review's files. Before it `760522a`, the review's file alone with the Replies of 173's check, 175
+and 177's read, pushed at 23:49 on 2026-11-11, no run by the workflow's paths. Before it `88d6303`,
+a fault 175's read found, ChunkStreamer.Unload squaring a column's distance from the player in an
+int, which wrapped negative past 46,340 columns so a teleport of some 741,000 blocks left the old
+columns loaded, squared in longs with a test that teleports a million blocks, pushed at 23:27 on
+2026-11-11, its run started where the run of the commit before it never did and green at 00:33 with
+the play in 66 minutes, which settles Verdict 12; the strict build is clean, 368 tests pass and the
+play passes whole in 310 s; it keeps the form and carries the review's files. Before it `5ad3f58`,
+the review's file alone with the Replies of 174 and 176, pushed at 23:00 on 2026-11-11, no run by
+the workflow's paths. Before it `6b0043b`, voxel.spawning, asked by the owner on 2026-11-11, every
+mob kept out of the world from the next frame on and brought back where it stood, the play switching
+it off before its first check, pushed at 21:31 on 2026-11-11, its run left queued by GitHub's outage
+and not started, Verdict 12; its strict build is clean and 367 tests pass, two plays under the layer
+pass whole in 317 and 218 s, and of their 17 captures dusk differs in 0.00 percent of pixels by more
+than 2 levels where 2.3 before, the night sky in 0.18, within its clouds; it keeps the form and
+carries the review's files. Before it `1f1e955`, item 172, terrain.slang, mob.slang and bits.slang
+returning unlit on the branch drawn unlit, each fragment about 590 KB smaller and the fifth frame's
+22 pipelines made in 20.3 s where 43.9 from an empty cache with the layer off, pushed at 19:29 on
+2026-11-11 once the pin's run had ended, its run green at 20:36 with the play in 67 minutes where
+the pin's took 96; it keeps the form and carries the review's files. Before it `068fd5f`, the pin of
+the engine's 6.2.41 with the workflows' engine checkout at `894542da`, pushed at 15:29 on
+2026-11-11, its run red at 15:34 in the play job before the game was built, the runner not reaching
+its package mirror for two hours and a quarter, Verdict 11, green at 19:26 on its tenth attempt, the
+play in 96 minutes, which settles the verdict; its strict build is clean and 366 tests pass. The
+water's mirror passes six plays of six under the layer, three from an empty cache in 393, 417 and
+434 s and three from the cache each left in 237, 242 and 221 s, each play's caches in a folder of
+its own; from a cold cache the pipelines' file grows to 21.8 MB and the pool's three terrain.slang
+pipelines compile in 14 to 19 s each at once, and from a warm one every pipeline made in play says
+from the cache, the pool's three in 1.17 to 1.37 s each; frame 5's 22 pipelines take 54 to 68 s
+cold, one after another, and 4.4 to 4.6 s warm. The engine's trial puts about 1.2 s of each such
+pipeline on the validation layer, 94 ms compiled without it, so these are the layer's seconds, which
+the play turns on, item 171. It keeps the form and carries the review's files. The pushes before
+these stand in REVIEW-ARCHIVE.md's head records.
 
-Next 178, the mobs saved with a place that is no number, read at the spawn on a copy and mended on
-both sides; the checks of the engine's mends go ahead of it as its packages come, the dither and
-then 176's blobs, each on the room and on the built scene; 177's origin is in but for its reach,
-which widens to 4,096 at the pin of the engine's next published package, with the mirror's check
-waiting for its pipelines at that pin. The owner on 2026-11-11, of taller and more varied terrain,
-"there are more important stuff currently and the terrain generation is nice even if not fully
-fledged out", so nothing of the terrain is an item. Item 29's second part stays parked by the
-owner's word. A program on the GPU runs under the lock (N 7.9).
+Next 179, the comments swept by N 4.11 as widened, a commit of comments alone; the checks of the
+engine's mends as its packages come, the dither and then 176's blobs, each on the room and on the
+built scene; 177's origin is in but for its reach, which widens to 4,096 at the pin of the engine's
+next published package, with the mirror's check waiting for its pipelines at that pin. The owner on
+2026-11-11, of taller and more varied terrain, "there are more important stuff currently and the
+terrain generation is nice even if not fully fledged out", so nothing of the terrain is an item.
+Item 29's second part stays parked by the owner's word. A program on the GPU runs under the lock (N
+7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -158,7 +168,12 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     shading at 4 samples a pixel, gone at 1 sample, dimmed with the temporal antialiasing on, one
     pixel still at twice the size; the sweep's counts and the sheet 22-40-item-176-samples.png are
     in the ask and under the engine's item 259, which mends it. What remains here is the check after
-    that mend, the sweep's counts at both places read again.
+    that mend, the sweep's counts at both places read again. The engine's mend read at 10:05 on
+    2026-11-12 on its local package 6.2.41-local.259, the vertex color and uv2 read at the centroid
+    where a pixel's middle outside its triangle had given a half float's most. By the origin the
+    steps where bloom adds over 20 levels fall from 7 to none and bloom's most from 142 levels to
+    13, beside the room from 1 to none, nothing reading worse. The pinned check comes at the publish
+    that carries it.
 
 177. **The body's and the ray's places far from the origin.** From 175's read on 2026-11-11. The
     player's body, the mobs' and the picking ray keep their places in a float Vector3, so from
@@ -218,41 +233,18 @@ owner's word; 164, the engine's split packages at the restore, read with nothing
     quarter as often; the reach widens then, with ambient occlusion at 1 read at the reach's edge
     first.
 
-178. **Mobs saved with a place that is no number.** From the read of a copy of the review's backup
-    of a player's saves on 2026-11-12. In one world 166 of 1,992 saved mobs hold a place whose x is
-    no number, one of them its z too, all in columns whose x is 0, from 0, -43 to 0, -18; in another
-    113 more in columns 0, -18 to 0, 0, 54 of them villagers; two other worlds hold none. Both
-    versions of mobs.bin carry them as they are. None loads until a player comes near the spawn.
-    First the read, on a copy at the spawn. What such a mob does when its column loads, its column
-    reckoned as the least int so Leaving never takes it, its matrix reaching the renderer and the
-    engine's field; whether the game of the tree still makes one, and where, a place becoming no
-    number in the mobs' moving, their paths or their homes about the column x 0; and what a frame
-    near the spawn reads with them loaded against the same frame with them taken out. Then the mend
-    on both sides, the cause, and the reader, which sets a record whose place is no number down
-    again where its column's generation set it or leaves it out and says how many, with a test of
-    each. Ahead of the reach, which waits for the engine's package.
+179. **Comments that say what the code is as it stands.** N 4.11 as widened on 2026-11-12. A comment
+    says what the code is and why in its own terms. It does not liken one thing to another's state,
+    tell what the code was before, what a mend changed or which fault led to it, nor name a program
+    built on this one as its example. A sweep of every comment in the sources, the shaders, the
+    tests and the scripts for those three things, the words that give them away among them, as it
+    was, as before, no longer, still, used to, once, already. Each rewritten to say what stands, the
+    story going to nothing or to the Reply. A commit of comments alone, with the norm's search added
+    to STYLE.md's so it is found again.
 
 ## Verdicts
 
-Verdicts 1 to 12 are settled, said under each in REVIEW-ARCHIVE.md; Verdict 13 is open, the run of
-`3bfa75d` red on macOS in a test of the far game's save.
-
-13. **The run of `3bfa75d` is red on macOS in a test of the far game's save, the villager not where
-    the test set it.** In run 43132544029 the macOS test job fails 2 of 386, both cases of
-    FarGameTests.A_Game_Far_Out_Keeps_The_Players_Place_A_Broken_Block_And_A_Villager_Across_A_Save
-    at its line 104, from `85160b6`. At -284,680.5, -33.5 the villager stands at x -284,684.049, and
-    at 1,139,992.5, 596.5 it stands at z 595.801, half a block and 0.7 from where a whole or a half
-    would put it; Windows and Linux pass the same tests and the play is still going. That reads as
-    the villager having walked before the test read it, the count of frames before the read resting
-    on the runner's speed, and not as a place lost by the origin; the coder reads which. The mend,
-    the villager held where it is set or its place compared across the save against what was saved,
-    goes up at once with `0aaf8e2`. Written at 03:09 on 2026-11-12. Read by the coder and mended at
-    `636e0bb`, pushed at 03:15 with `0aaf8e2`. The headless game opened again ran the mobs from its
-    first frame, the villager walking for as many frames as the world took to stand, and the test
-    compared it with where it was set within half a block; with the mobs free and 120 frames stepped
-    the case fails here as on macOS, the saved record and the home exact throughout. The game opened
-    again holds its mobs still from the first frame and the test asserts the record's place and home
-    against the villager's, exactly, after 120 frames. Settles on its run.
+No verdict is open. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 
@@ -562,58 +554,31 @@ against 3bfa75d's, sky2 by 0.07 percent in the night's clouds. The first form's 
 meadow by 0.02 percent in a few specks of its sky, which this one reads alike. The room's sheet is
 02-10-item-177-lamps.png in the dump.
 
-Verdict 13, read and mended. It is the frames, not the origin. The game opened again ran its mobs
-from the first frame, so the villager walked for as many frames as the streamer took to stand the
-world, and the test read its place against where it was set with half a block to spare. Run here
-with the mobs left to move and 120 frames stepped before the read, the case at 1,139,992.5, 596.5
-fails as macOS did, the villager at 1,139,990.31, 597.31 where it was saved at 1,139,989.5, 596.5,
-its home and the saved record equal to the bit. HeadlessGame takes a switch holding the mobs still
-from the first frame, and the reopened game uses it, steps 120 frames, and compares the villager's
-place and home with the saved record exactly, which both cases pass.
+Item 176 read again on the engine's package 6.2.41-local.259, unpublished, against 6.2.41, the game
+of `8fda020` built on each from a fresh copy of i174's data, the dither the package brings turned
+off by SetDither, under the lock. The sweep of 20 eye steps a twentieth of a block apart from 133
+blocks reads on 6.2.41 27 lone bright pixels and 7 steps where bloom adds over 20 levels by the
+origin, as before, and 6 and 1 beside the room, the origin there at 4096, 1024, where 8 and 2
+without it. On 259 bloom adds over 20 levels at no step at either place, at most 13 levels by the
+origin and 7 beside the room, where 142 and 24 on 6.2.41. The 19 lone bright pixels left by the
+origin and none beside the room are the same pixels at the same levels on both packages, orange
+and near white, which bloom does not spread. Nothing reads worse. Without bloom 0.07 to 0.13
+percent of a frame's pixels differ by more than 2 levels and 0.002 to 0.005 percent by more than 8,
+the largest lone pixels in the sky on 6.2.41 that 259 does not draw and the edges of foliage on
+snow moved a few levels. From item 174's eye by the origin neither package drew a blob at the
+moment read, so the sheet shows the sweep's worst two steps, 10-30-item-176-blob-mended.png, with
+the changed pixels in 10-35-item-176-edges.png. The pinned check comes with the publish.
 
-Item 178, read on fresh copies of the review's backup with the game of `0aaf8e2`, under the lock. At
-8.5, 90, -400.5 in overworld-1, the mobs held still, 173 mobs load and 148 hold an x that is no
-number, kept by the columns 0, -29 to 0, -22. They are drawn, 148 in 42 draws, and show nowhere, the
-field reads 536 still and 0 stamped, and the frame with them reads as with them taken out to a level
-at Low, as it does at High with 40 more added. They do not stay loaded for good. With the origin at
-0, no number turns into the column x 0 they are kept by, and a jump of 3,000 blocks unloaded every
-one. Where they come from is a push. Crowd pushes each pair of overlapping mobs apart, and a box
-whose place is no number overlaps every box of its height, each comparison with it being false, so
-each takes a push along x alone by an overlap that is no number. With 25 mobs and 40 such loaded and
-let move, 10 frames gave 13 of the 25 an x that is no number and kept their z. That is overworld-1's
-165 with x alone. The sheep with both, and overworld-5's 52 with both, 13 villagers among them
-fallen to -95,054, are the first ones, from the fault `e433e5c` mended on 2026-10-25, a mob straight
-under its next cell, as a villager climbing out of a village's well. Since .NET 9 a float that is no
-number turns into the int 0, so the save filed each by the column x 0 with its z kept. The tree
-makes none that the reading finds. Every normalization feeding a velocity is guarded, and HEAD's
-game made none in 12,000 frames from 17.5 to 0.5 at the nearest village of a freshly generated
-overworld-5, 10 villagers and 102 animals, nor in 8,000 among 96 animals where the save's village
-stood. The mend is on both sides. Body.Move takes no step that is no number and lets the velocity
-go, and Crowd pushes nothing where either place is no number, so one such mob hands it to none. The
-reader sets a mob whose place is no number down at its home where it has one that is a number, in
-its home's column, and leaves the rest out, the log saying how many of each. Set down where its
-column's generation set it would be kinder, but the generation does not give an animal's place here,
-its x being lost and the column it was kept by being x 0 and not its own. A villager's home does
-give a place, so a villager stands there, and Mobs.Joined brings back a column's kept mobs when it
-is placed for the first time too, since a home's column may be one never loaded. voxel.restock fills
-the loaded columns left holding none. On the backup's copies, overworld-1 leaves out 166 and keeps
-1,826, and overworld-5 sets 54 villagers down at their homes and leaves out 59 animals. The tests
-are a move that is no number left untaken, a mob whose place is no number among cows handing none of
-them its x in 10 frames, the reader's three cases beside a pig, and a column placed first bringing
-back its kept villager beside its own sheep. The strict build is clean, 394 tests pass, and the play
-passes whole in 208 s with the mirror at red 171. Of its 17 captures 1 moved by over 0.01 percent
-against `0aaf8e2`'s, the meadow by 0.03 percent. The meadow takes one of two forms from play to
-play, four of the last six plays alike and the other two within 0.01 of each other and 0.02 to 0.03
-from the four, which the change of this commit, to mobs the play keeps out, does not reach.
-
-The first view read like for like. Item 173's room read of the origin, run again unchanged on the
-game of `35a0829` from a fresh copy of the review's copy of the data, whose world.json and options
-are the backup's, reads as the origin's did, every picture's mean the same and 0.01 percent of the
-first one's pixels and none of the six others' apart by more than 2 levels. The 3 levels were the
-two pictures' framing. The origin read's first picture holds the HUD at 1280 by 720, where its line
-of help and its hotbar take four times the share of the frame they take at 2560 by 1440, and the
-path read's first view at 2560 by 1440 holds the HUD and the held block, which hides the floor's
-lower right. Against the room read's Low at 2560 by 1440 with the HUD hidden, the pixels apart by
-more than 8 levels are the held block, the hotbar and the line of help alone, the room's own
-reading as it does. The sheet is 04-10-first-view-like-for-like.png in the dump. The comments of
-Body.Move and of the mobs' reader give their reason without this session's count, as N 4.11 asks.
+Item 179. The comments of the game's sources, shaders, tests and scripts were swept for N 4.11, by
+the words that give it away and by the verbs that tell a story, each hit read, 37 files changed and
+comments alone. This night's accounts say what the code does and why, in Body.Move, the game's
+Dispose, the mobs' reader, the renderer's Shift, the streamer's square, and the tests of the far
+game, the crowd and the save. The older ones likewise, the gait's stride, the drop renderer's
+corners, the cave fields' batch, the noises' fixed point said as the GPU and the CPU reckoning the
+same bits, the options file's defaults by the versions of the file that hold them, the generation
+tests' counts of what the land held before, and the notes of the play that told the fault each
+check found. Likenings that explain a thing by another's state are gone, a plant's walls, a fire's
+box, a cave's dark, a mob's legs, as the sections do, as a furnace is, as the block is. What stands
+is the source's rules, a kind named as the instance of a property, and words about the running
+game, a mob held still, a light no longer wanted, a block already set. STYLE.md's checks hold the
+search, whose 234 hits are such uses. The strict build is clean and 394 tests pass.

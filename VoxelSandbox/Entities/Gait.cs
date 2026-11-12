@@ -37,9 +37,9 @@ public static class Gait
 
     /// <summary>Moves a stride and its phase on by a frame in which the mob moved so far over the ground.</summary>
     /// <remarks>
-    /// A frame that took no time, as the game's first does before the engine has timed one, leaves
-    /// the stride as it was, where its speed would be 0 over 0 and the stride, and with it every
-    /// leg's swing, not a number from then on, so the legs were drawn nowhere.
+    /// A frame that takes no time, as the game's first does before the engine has timed one, leaves
+    /// the stride unchanged, since its speed there is 0 over 0, which would make the stride and every
+    /// leg's swing no number from then on and draw the legs nowhere.
     /// </remarks>
     public static void Step(ref float stride, ref float phase, float along, float seconds)
     {

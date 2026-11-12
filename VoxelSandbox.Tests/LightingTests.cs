@@ -79,7 +79,7 @@ public class LightingTests
         Assert.Equal(14, thin.GetLight(8, 4, 8).Sky);
 
         // A hole cut down through the five opens the floor under it to the full sky, and the leaves
-        // set back shade it as before.
+        // set back shade it again.
         for (int y = 20; y <= 24; y++) deep.SetBlock(8, y, 8, BlockId.Air);
         Assert.Equal(15, deep.GetLight(8, 4, 8).Sky);
         for (int y = 20; y <= 24; y++) deep.SetBlock(8, y, 8, BlockId.OakLeaves);

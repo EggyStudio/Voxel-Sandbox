@@ -197,7 +197,7 @@ float2 across(float3 world, uint face)
 
 // A tile's color at a place across its face, decoded to linear, at a mip level no smaller than the
 // one where its cell is a pixel, below which the cell's neighbors would be read into it. A shader
-// whose layout was never set, as the clouds' is, reads its one white cell.
+// whose layout is not set, the clouds', reads its one white cell.
 float4 tileColor(uint tile, float2 place, float level)
 {
     tile = stepped(tile);
@@ -253,8 +253,8 @@ float3 skyFloor(float3 albedo, ModelVertexOutput input, float level)
 
 // A color lit at a point as the engine's lit lights it, all its light taken at the point itself but
 // the sun's shadow, taken at the middle of the point's step (pixelMiddle), so the sun's shadows step
-// along the grid and a lamp's light and the light from all around fall smoothly, where taking all of
-// it at the step's middle laid a lantern's pool on the floor in squares. The shadow is read once, at
+// along the grid and a lamp's light and the light from all around fall smoothly, where read at the
+// step's middle a lantern's pool on the floor would fall in squares. The shadow is read once, at
 // the step, and handed to litLight with how much of the step the counted cascades hold, which it
 // cuts the sun's light by in place of its own read at the point. The light is no less than the sky's
 // floor at the point's sky level (skyFloor).
@@ -277,7 +277,7 @@ float3 litStepped(float3 albedo, ModelVertexOutput input, float sky)
     LitLight light = litLight(albedo, input, shadow, held);
     // Unshaded, a face takes the sun's light that reaches the air half a block out from it whatever
     // way it faces, where a face turned from the sun lies in its own block's shadow, so every open
-    // face is as bright as one facing the sun and a shadow falls on each as before.
+    // face is as bright as one facing the sun, and the sun's shadows fall on it.
     if (looks.y > 0.0 && shadow >= 0.0)
     {
         Light sun = lighting.lights[index];

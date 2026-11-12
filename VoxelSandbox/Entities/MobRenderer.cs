@@ -164,7 +164,7 @@ public sealed class MobRenderer : IDisposable
     /// <summary>
     /// Whether a picture fits the layout a kind's cuboids are laid on, at a whole scale, as a pack
     /// drawn at twice the pixels is, and as tall as the layout or half as tall, as the pig's and the
-    /// cow's were before Minecraft 1.21.5 doubled them on the same offsets.
+    /// cow's are in packs made before Minecraft 1.21.5, which doubled them on the same offsets.
     /// </summary>
     public static bool Fits(Image picture, Vector2 size)
     {

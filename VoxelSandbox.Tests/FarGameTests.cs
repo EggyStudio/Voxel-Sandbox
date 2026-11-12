@@ -90,8 +90,8 @@ public sealed partial class FarGameTests : IDisposable
         Assert.Equal((villager, home), (record.Position, record.Home));
 
         // Opened again, the player stands where it stood, the origin near it, the block stays broken
-        // and the villager stands where it was saved, held still from the first frame, since it
-        // walked half a block in the frames a slower or faster machine takes to stand the world.
+        // and the villager stands where it was saved, held still from the first frame so its place
+        // does not rest on how many frames the world takes to stand.
         LandOrigin.Near(0, 0);
         using (var again = new HeadlessGame(save: _folder, still: true))
         {

@@ -119,8 +119,8 @@ public sealed class WorldSave
 
     /// <summary>
     /// The number each saved block takes in this build, by its number when saved, from the keys the
-    /// save's info lists, so blocks added or reordered since keep what was built. A key no longer
-    /// known becomes air. Null where the numbers are the same.
+    /// save's info lists, so blocks added or reordered since keep what was built. A key this build
+    /// does not know becomes air. Null where the numbers are the same.
     /// </summary>
     public ushort[]? Renumber => _renumber;
 
@@ -229,16 +229,15 @@ public sealed class WorldSave
     /// <remarks>
     /// <para>
     /// A mob is saved by its kind's name, which the file lists once, so kinds added or reordered
-    /// since keep what was saved, and a mob of a kind no longer known is left out. Its place and its
+    /// since keep what was saved, and a mob of a kind this build does not know is left out. Its place and its
     /// home are the land's own, in doubles, where a file of version 1 holds them in floats, which a
     /// million blocks out keep them only to an eighth of a block.
     /// </para>
     /// <para>
-    /// A mob saved with a place that is no number, as a fault of the mobs' moving made some before it
-    /// was mended, is set down at its home where it has one that is a number, as a villager has, in its
-    /// home's column, and otherwise left out, and the log says how many of each. Its place cannot be
-    /// had again, since it was lost and the mob was kept by the column x 0 that no number turns into,
-    /// not by its own.
+    /// A mob saved with a place that is no number is set down at its home where it has one that is a
+    /// number, a villager's, in its home's column, and otherwise left out, and the log says how many
+    /// of each. Its place cannot be had again, since it is no number and the mob is kept by the
+    /// column x 0 that no number turns into, not by its own.
     /// </para>
     /// </remarks>
     public (Dictionary<(int X, int Z), List<MobRecord>> Kept, HashSet<(int X, int Z)> Placed) ReadMobs()

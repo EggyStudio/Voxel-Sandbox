@@ -2,7 +2,7 @@ using Xunit;
 
 namespace VoxelSandbox.Tests;
 
-/// <summary>The noises in fixed point, which a shader reckons to the bit as the CPU does, held to the float formulas they stand for.</summary>
+/// <summary>The noises in fixed point, which a shader and the CPU reckon to the same bit, held to the float formulas they stand for.</summary>
 public sealed class FixedNoiseTests
 {
     [Fact]
@@ -55,8 +55,8 @@ public sealed class FixedNoiseTests
         Assert.True(worst < 2e-3, $"the fixed point strays {worst} from the doubles");
     }
 
-    // The source noise's sum in doubles over the sampler's own permutations, offsets and steps, as
-    // its levels were read before they were fixed.
+    // The source noise's sum in doubles over the sampler's own permutations, offsets and steps, the
+    // float formula its fixed point stands for.
     private static double Reference(SourceNoise.Sampler sampler, int x, int y, int z)
     {
         var sum = 0.0;
