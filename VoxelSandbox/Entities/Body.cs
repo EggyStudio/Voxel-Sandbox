@@ -42,6 +42,9 @@ public sealed class Body(float halfWidth, float height)
 
     public Vector3 Max => Position + new Vector3(HalfWidth, Height, HalfWidth);
 
+    /// <summary>Whether the box's place is a number along every axis.</summary>
+    public bool Placed => float.IsFinite(Position.X) && float.IsFinite(Position.Y) && float.IsFinite(Position.Z);
+
     /// <summary>Whether the box takes up any of the boxes a block would stand in at a place, which the block is not placed into.</summary>
     public bool Overlaps(int x, int y, int z, IReadOnlyList<Box> boxes)
     {
@@ -60,6 +63,14 @@ public sealed class Body(float halfWidth, float height)
     /// </summary>
     public void Move(VoxelWorld world, Vector3 delta, bool keepToEdges, bool climbing = false)
     {
+        // A move that is no number, from a velocity some fault made so, is not taken and the velocity
+        // is let go, since a place that is no number stays so for good, is drawn nowhere, and was
+        // saved so for 279 mobs of two worlds, filed under the column x 0 that no number turns into.
+        if (!float.IsFinite(delta.X) || !float.IsFinite(delta.Y) || !float.IsFinite(delta.Z))
+        {
+            Velocity = Vector3.Zero;
+            return;
+        }
         var largest = MathF.Max(MathF.Abs(delta.X), MathF.Max(MathF.Abs(delta.Y), MathF.Abs(delta.Z)));
         var steps = Math.Max(1, (int)MathF.Ceiling(largest / 0.45f));
         var step = delta / steps;

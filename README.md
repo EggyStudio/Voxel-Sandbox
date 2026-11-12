@@ -645,7 +645,11 @@ no block is placed into one.
 A mob thinks and moves only while the columns around its own are loaded, so it never walks onto the
 air a column not loaded reads as. The mobs standing in a column go with it when it unloads and come
 back where they stood when it loads, and the save keeps them in `mobs.bin` with the columns that
-have had theirs placed, so a herd or a village's villagers are placed once.
+have had theirs placed, so a herd or a village's villagers are placed once. A mob saved with a place
+that is no number, as a fault of the mobs' moving left some in saves before it was mended, is set
+down at its home where it has one, as a villager does, and otherwise left out, the log saying how
+many of each. A move or a push that is no number is not taken, so one such mob no longer hands it
+to every mob of its height about it.
 
 Each piece of a mob, its head, body, legs and a chicken's wings, is a few boxes, one mesh of colored
 vertices drawn instanced for every mob of its kind, its legs swinging about their hips as it walks.

@@ -227,15 +227,25 @@ public sealed class WorldSave
     /// with the columns that have, or none of either for a folder never saved into.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A mob is saved by its kind's name, which the file lists once, so kinds added or reordered
     /// since keep what was saved, and a mob of a kind no longer known is left out. Its place and its
     /// home are the land's own, in doubles, where a file of version 1 holds them in floats, which a
     /// million blocks out keep them only to an eighth of a block.
+    /// </para>
+    /// <para>
+    /// A mob saved with a place that is no number, as a fault of the mobs' moving made 279 in two
+    /// worlds before it was mended, is set down at its home where it has one that is a number, as a
+    /// villager has, in its home's column, and otherwise left out, and the log says how many of each.
+    /// Its place cannot be had again, since its x was lost and it was kept by the column x 0 that no
+    /// number turns into, not by its own.
+    /// </para>
     /// </remarks>
     public (Dictionary<(int X, int Z), List<MobRecord>> Kept, HashSet<(int X, int Z)> Placed) ReadMobs()
     {
         var kept = new Dictionary<(int X, int Z), List<MobRecord>>();
         var placed = new HashSet<(int X, int Z)>();
+        var (homed, lost) = (new List<MobRecord>(), 0);
         var path = Path.Combine(Folder, "mobs.bin");
         if (!File.Exists(path)) return (kept, placed);
         try
@@ -263,10 +273,22 @@ public sealed class WorldSave
                     var yaw = reader.ReadSingle();
                     var health = reader.ReadByte();
                     LandPlace? home = reader.ReadBoolean() ? Place() : null;
-                    if (kind is not null) list.Add(new MobRecord(kind, (byte)(variant % kind.Variants.Length), at, yaw, Math.Clamp((int)health, 1, kind.Health), home));
+                    if (kind is null) continue;
+                    var record = new MobRecord(kind, (byte)(variant % kind.Variants.Length), at, yaw, Math.Clamp((int)health, 1, kind.Health), home);
+                    if (at.Finite) list.Add(record);
+                    else if (home is { Finite: true } stand) homed.Add(record with { Position = stand });
+                    else lost++;
                 }
                 if (list.Count > 0) kept[key] = list;
             }
+            foreach (var record in homed)
+            {
+                var column = (VoxelWorld.ColumnOf((int)Math.Floor(record.Position.X)), VoxelWorld.ColumnOf((int)Math.Floor(record.Position.Z)));
+                if (kept.TryGetValue(column, out var list)) list.Add(record);
+                else kept[column] = [record];
+            }
+            if (homed.Count + lost > 0)
+                TraceLog(LogLevel.Warning, $"{path} kept {homed.Count + lost} mobs whose place was no number, {homed.Count} set down at their homes and {lost} left out.");
         }
         catch (Exception ex) when (ex is IOException or InvalidDataException or EndOfStreamException)
         {

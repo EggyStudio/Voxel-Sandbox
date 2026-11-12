@@ -133,4 +133,16 @@ public class BodyTests
 
         Assert.True(body.Position.X < 6 + body.HalfWidth);
     }
+
+    [Fact]
+    public void A_Move_That_Is_No_Number_Is_Not_Taken_And_Its_Velocity_Let_Go()
+    {
+        var world = Floor();
+        var body = new Body { Position = new Vector3(4.5f, 11, 4.5f), Velocity = new Vector3(float.NaN, 0, 2) };
+
+        body.Move(world, body.Velocity * 0.05f, keepToEdges: false);
+
+        Assert.Equal((new Vector3(4.5f, 11, 4.5f), Vector3.Zero), (body.Position, body.Velocity));
+        Assert.True(body.Placed);
+    }
 }

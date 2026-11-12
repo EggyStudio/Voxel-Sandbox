@@ -7,7 +7,11 @@ namespace VoxelSandbox;
 /// Doubles, since a float holds a block's parts only near the origin, a sixteenth of a block at some
 /// 300,000 blocks out and an eighth at a million.
 /// </remarks>
-public readonly record struct LandPlace(double X, double Y, double Z);
+public readonly record struct LandPlace(double X, double Y, double Z)
+{
+    /// <summary>Whether the place is a number along every axis.</summary>
+    public bool Finite => double.IsFinite(X) && double.IsFinite(Y) && double.IsFinite(Z);
+}
 
 /// <summary>
 /// The whole place in the land that every float place of the game is kept against, so the floats it

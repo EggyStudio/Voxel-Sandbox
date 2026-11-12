@@ -114,4 +114,23 @@ public sealed class SaveTests : IDisposable
         Assert.Equal([(-2, 2)], placed);
         Assert.Equal(new MobRecord(MobKinds.Villager, 2, new LandPlace(-20.5, 64, 40.25), 1.5f, 13, new LandPlace(-18.5, 64, 42.5)), Assert.Single(kept[(-2, 2)]));
     }
+
+    [Fact]
+    public void A_Mob_Saved_With_A_Place_That_Is_No_Number_Stands_At_Its_Home_Or_Is_Left_Out()
+    {
+        // As the mended fault left them, kept by the column x 0 that no number turns into, a
+        // villager and a cow with their x lost and a sheep with its z lost too, beside a pig.
+        var villager = new MobRecord(MobKinds.Villager, 1, new LandPlace(double.NaN, 58, -150.5), 0.5f, 20, new LandPlace(-155.5, 58, 85.5));
+        var cow = new MobRecord(MobKinds.Cow, 0, new LandPlace(double.NaN, 60, -480.25), 1, 10, null);
+        var sheep = new MobRecord(MobKinds.Sheep, 0, new LandPlace(double.NaN, 57, double.NaN), 0, 8, null);
+        var pig = new MobRecord(MobKinds.Pig, 0, new LandPlace(4.5, 60, -479.5), 2, 10, null);
+        new WorldSave(_folder).WriteMobs([((0, -10), [villager]), ((0, -31), [cow, pig, sheep])]);
+
+        var (kept, placed) = new WorldSave(_folder).ReadMobs();
+
+        Assert.Equal(pig, Assert.Single(kept[(0, -31)]));
+        Assert.Equal(villager with { Position = new LandPlace(-155.5, 58, 85.5) }, Assert.Single(kept[(-10, 5)]));
+        Assert.Equal([(-10, 5), (0, -31)], kept.Keys.Order());
+        Assert.Equal([(0, -31), (0, -10)], placed.Order());
+    }
 }

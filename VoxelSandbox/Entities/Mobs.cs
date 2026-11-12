@@ -87,8 +87,11 @@ public partial struct MobMind
     }
 
     // The way from a box to another along x and z, as long as they overlap, or null where they do not.
+    // A box whose place is no number overlaps none, where every comparison with it being false had it
+    // overlap every box of its height and push each along x by an overlap that is no number.
     private static Vector3? Apart(Body a, Body b)
     {
+        if (!a.Placed || !b.Placed) return null;
         Vector3 aMin = a.Min, aMax = a.Max, bMin = b.Min, bMax = b.Max;
         if (aMin.X >= bMax.X || aMax.X <= bMin.X || aMin.Z >= bMax.Z || aMax.Z <= bMin.Z || aMin.Y >= bMax.Y || aMax.Y <= bMin.Y) return null;
         var way = b.Position - a.Position;
@@ -187,7 +190,7 @@ public sealed class Mobs
         return new Mob(_nextId++, record, _random.Next(), _ecs);
     }
 
-    /// <summary>Brings back a column's kept mobs as it loads, or places those its generator gave it the first time.</summary>
+    /// <summary>Brings back a column's kept mobs as it loads, and places those its generator gave it the first time.</summary>
     public void Joined(ChunkColumn column)
     {
         var key = (column.X, column.Z);
@@ -198,7 +201,9 @@ public sealed class Mobs
             else if (column.Spawns.Count > 0)
                 Keep(key, [.. column.Spawns]);
         }
-        else if (Spawning && _kept.Remove(key, out var kept))
+        // A column placed for the first time may keep mobs too, as a villager set down at its home
+        // there by the save's reader.
+        if (Spawning && _kept.Remove(key, out var kept))
             foreach (var record in kept) Add(record);
         column.Spawns.Clear();
     }

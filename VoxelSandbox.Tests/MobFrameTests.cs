@@ -83,4 +83,20 @@ public sealed class MobFrameTests
         headless.Step(150);
         Assert.InRange(game.Vitals.Health, Vitals.Most - 12, Vitals.Most - 3);
     }
+
+    [Fact]
+    public void A_Mob_Whose_Place_Is_No_Number_Hands_None_To_The_Mobs_About_It()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        // As one read from a save the mended fault left, its x no number and its height theirs, which
+        // handed 13 of 25 mobs about it an x that is no number in 10 frames.
+        var feet = LandOrigin.LandOf(game.Player.Body.Position);
+        game.Mobs.Add(new MobRecord(MobKinds.Sheep, 0, new LandPlace(double.NaN, feet.Y, feet.Z + 3), 0, 8, null));
+        for (int i = 0; i < 5; i++) game.Mobs.Add(new MobRecord(MobKinds.Cow, 0, new LandPlace(feet.X + 2 * i - 4, feet.Y, feet.Z + 6), 0, 10, null));
+
+        headless.Step(10);
+
+        Assert.Equal(1, game.Mobs.All.Count(m => !m.Body.Placed));
+    }
 }

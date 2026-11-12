@@ -267,4 +267,19 @@ public sealed class MobTests : IDisposable
                 $"a villager's home at {x}, {y}, {z} stands on {Blocks.Get(Block(x, y - 1, z)).Key} under {Blocks.Get(Block(x, y, z)).Key}");
         }
     }
+
+    [Fact]
+    public void A_Column_Placed_For_The_First_Time_Brings_Back_The_Mobs_It_Keeps_Beside_Its_Own()
+    {
+        // A villager set down at its home by the save's reader, in a column not loaded since.
+        var villager = new MobRecord(MobKinds.Villager, 1, new LandPlace(-155.5, 58, 85.5), 0, 20, new LandPlace(-155.5, 58, 85.5));
+        var mobs = new Mobs(new Engine.EcsWorld(), new() { [(-10, 5)] = [villager] }, []);
+        var column = new ChunkColumn(-10, 5);
+        column.Spawns.Add(At(MobKinds.Sheep, -150.5f, 60, 84.5f));
+
+        mobs.Joined(column);
+
+        Assert.Equal([MobKinds.Sheep, MobKinds.Villager], mobs.All.Select(m => m.Kind).OrderBy(k => k.Name));
+        Assert.Equal(0, mobs.Kept);
+    }
 }
