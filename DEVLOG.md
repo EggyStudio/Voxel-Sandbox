@@ -10,6 +10,7 @@ notes written beside them as Markdown files named the same way. A line under Don
 
 Done that day
 
+- Item 177 at `4d96da7`. The body's and the ray's places far from the origin.
 - Item 178 at `35a0829`. Mobs saved with a place that is no number.
 
 ## 2026-11-11

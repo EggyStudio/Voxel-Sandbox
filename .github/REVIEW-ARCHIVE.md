@@ -3008,6 +3008,77 @@ before a batch.
     height; a move that is no number is not taken, such a box overlaps none, and the save's reader
     sets a mob with no place down at its home where it has one and leaves it out otherwise.
 
+179. **Comments that say what the code is as it stands.** N 4.11 as widened on 2026-11-12. A comment
+    says what the code is and why in its own terms. It does not liken one thing to another's state,
+    tell what the code was before, what a mend changed or which fault led to it, nor name a program
+    built on this one as its example. A sweep of every comment in the sources, the shaders, the
+    tests and the scripts for those three things, the words that give them away among them, as it
+    was, as before, no longer, still, used to, once, already. Each rewritten to say what stands, the
+    story going to nothing or to the Reply. A commit of comments alone, with the norm's search added
+    to STYLE.md's so it is found again.
+
+177. **The body's and the ray's places far from the origin.** From 175's read on 2026-11-11. The
+    player's body, the mobs' and the picking ray keep their places in a float Vector3, so from
+    284,688 blocks a walk along the far axis is 13 percent slower and at 1,139,984 picking misses by
+    a block, the walk jumps and stops inside a wall and a teleport lands half a block off. No player
+    walks there in a session, a teleport does. The places kept in doubles, or as a column and an
+    offset within it, for the body, the mobs and the ray, the float made only where the engine takes
+    one, with tests at 284,688 and 1,139,984 of the walk's speed along each axis, the stop before a
+    wall, picking's 14 and a teleport's landing. After the checks of the engine's mends, which go
+    ahead of it whenever a package comes; a read of what it touches first, as a Reply, since the
+    body's place runs through the physics, the saves and the network of calls about them. Decided at
+    23:50 on the coder's read. Of the three ways, doubles, a column and an offset, or one origin for
+    the whole game, the origin is taken. A whole column the floats are kept against, set at load
+    near the player and moved when the player has gone far from it, every place and the camera made
+    again against it, the conversion standing at the floors that turn a place into a block and at
+    the saves. It keeps the floats and their arithmetic where they are, and it hands the engine
+    every place near zero, so what the engine loses far from the origin, its item 258's whole list,
+    the vertices, the shadows and the frame before's lookups, no longer reaches the game at any
+    distance, the saved world's 4,450 among them. So it is no filler and goes next after each check.
+    The origin a multiple of 1,024 blocks, so every grid of the engine's falls against the land as
+    before; moved only past 2,048 from it, so a walk does not move it back and forth. Saves and
+    commands keep and print the land's own places, mobs.bin in a new version with the old one read.
+    The shaders' world places that are fractions of a block stand, and one taken whole, as the
+    clouds' drift, has the origin added. In steps, each a commit with the suite and a play. First
+    the origin with the floors, the saves and the commands, fixed at load. Then the move, with a
+    test that a walk across it keeps the picture once the field has settled and nothing jumps, and
+    its cost read, the field and the probes made again, an ask to the engine for a way to be told
+    the world moved by a whole offset where that cost shows. Then the tests at 284,688 and
+    1,139,984, the walk's speed along each axis, the stop before a wall, picking's 14 and a
+    teleport's landing, and 174's scene read at 4,432 on the published package with the origin,
+    which should read as near the origin does. Step 2's read, recorded at 00:49 on 2026-11-12, the
+    reach 1,024 by the coder's ladder, the same scene at 16, 272, 528, 1,040 and 2,000 blocks from a
+    zero origin reading the west wall's mean step at High 0.37, 0.38, 0.41, 0.40 and 0.51, within
+    0.04 of the origin's through 1,040 and the mottle of 4,432 at 2,000, so the review's 2,048 was
+    too wide, set without a figure. A move shifts every float place by the whole step, at a frame's
+    start and first in a teleport and a respawn. Moving the sections' transforms made the engine's
+    field take every section for a mover, stamped as a box for 1,024 frames, the land 8 levels
+    darker for ten seconds and more; every mesh uploaded again at the move, the field takes them as
+    meshes that came and builds them at once. The cost is the frame of the move and the next, 342
+    and 579 ms at Low and about 600 each at High where a frame reads 163 to 183 through e3d, a hitch
+    of 0.2 to 0.4 s once in 1,024 blocks. A player standing still sees one frame 3 to 5 percent
+    brighter, High settling over 16 frames; in a flight the crossing frame changes 1.58 levels at
+    Low against 0.82 and 1.77 at High against 0.30, the 50 frames after 0.93 and 1.22. The same view
+    after a trip to 500 and back reads 0.00 percent of pixels over 2 levels, and after a trip to
+    1,100 and back, the origin then at 1,024 and the view 990 from the engine's zero, 2.21 percent,
+    the wall 0.41 against 0.37. Accepted as it stands, with the ask to the engine for a way to be
+    told the world moved by a whole offset, which takes the hitch and the bright frame away. The
+    reach is read again on the engine's next published package, whose screen passes no longer lose
+    what the ladder measured, and widens if 4,096 then reads as the origin does. The ladder again on
+    the engine's package 6.2.41-local.257.1, recorded at 01:37, the scene at 16, 1,040, 2,000 and
+    4,112 from a zero origin through games without the origin. On the package the west wall's mean
+    step reads 0.34, 0.35 and 0.37 at 16 and 0.36, 0.36 and 0.37 at 4,112 at Low, Medium and High,
+    alike at every distance, where the published 6.2.41 reads 0.62, 0.64 and 0.73 at 4,112. What
+    stays is the sun's shadow, 25, 24 and 24 steps over 3 on the shaded floor at 4,112 against 26,
+    25 and 26 at 16, and ambient occlusion unread, at 0 in the saved options. So on the published
+    package of that mend a reach of 4,096 with the step at 1,024 reads as the origin does, a move a
+    quarter as often; the reach widens then, with ambient occlusion at 1 read at the reach's edge
+    first. Done with the pin at `4d96da7`, green at 14:57 on 2026-11-12. The origin follows the
+    player, its reach 4,096 blocks on the engine's 6.2.56, every row of the built scene reading
+    alike to 4,112 blocks from the engine's zero with ambient occlusion at 0; the hitch of a move
+    comes once in at least 3,584 blocks walked, and the engine is asked for a way to be told the
+    world moved.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -4152,6 +4223,211 @@ homes. Those homes lie where the generator of the time built a village, and the 
 tree builds none there, its nearest at -432, 16, so the villagers stand in the open there. No file
 is left half written. overworld-1 keeps a folder `far` of 14 files and 786 KB, the cache of the far
 land that `3d7b1ed` added and `2263618` took out on 2026-10-24, which nothing reads, safe to delete.
+
+Item 179. The comments of the game's sources, shaders, tests and scripts were swept for N 4.11, by
+the words that give it away and by the verbs that tell a story, each hit read, 37 files changed and
+comments alone. This night's accounts say what the code does and why, in Body.Move, the game's
+Dispose, the mobs' reader, the renderer's Shift, the streamer's square, and the tests of the far
+game, the crowd and the save. The older ones likewise, the gait's stride, the drop renderer's
+corners, the cave fields' batch, the noises' fixed point said as the GPU and the CPU reckoning the
+same bits, the options file's defaults by the versions of the file that hold them, the generation
+tests' counts of what the land held before, and the notes of the play that told the fault each
+check found. Likenings that explain a thing by another's state are gone, a plant's walls, a fire's
+box, a cave's dark, a mob's legs, as the sections do, as a furnace is, as the block is. What stands
+is the source's rules, a kind named as the instance of a property, and words about the running
+game, a mob held still, a light no longer wanted, a block already set. STYLE.md's checks hold the
+search, whose 234 hits are such uses. The strict build is clean and 394 tests pass.
+
+The pin of 6.2.56, the engine's 8561816b, its one package 3DEngine named alone and the workflows'
+engine checkout at that commit, which build/engine.sh follows. Restored into a package folder of its
+own, 3dengine 6.2.56 comes alone with none of the area packages beside it, its nuspec naming
+8561816b. What reads worse comes from ambient occlusion at 1 alone, which the options hold at 0. At
+the reach's edge, 174's scene read from a zero origin through a build whose origin does not move,
+the dither off, the north wall steps 0.57 to 0.59 a sample at 4,112 where 0.48 to 0.49 at 16 and
+the west wall 0.41 where 0.35 to 0.38, within 0.03 at 2,000, so a player with it on sees a little
+more mottle at the far edge before the origin moves. And it lights the same scene by its place,
+the west wall 117 to 118 at 4,432 against 99 to 101 by the origin and the north wall 7 levels
+lighter, where 6.2.41 read the far place about 7 darker, with the rows' steps alike at both. At 0
+every row reads alike from 16 to 4,112, the west wall 0.34 to 0.37 at 16 and 0.36 to 0.37 at 4,112
+where 6.2.41 read 0.62 to 0.73 there, the floor 1.05 to 1.15 and the north wall 0.46 to 0.49 at
+every distance. So LandOrigin.Reach is four steps, 4,096, the player walking at least 3,584 blocks
+between moves, and the tests that moved the origin are written on its value, the walk crossing the
+reach and back with the exhaustion of 32 blocks, the move 2,000 past it, and the places of
+OriginMoveTests a step and 1,000 blocks short of it. The mirror's reads wait on pipelines.wait.
+Three plays from an empty cache and three from the cache each left, under the layer and through the
+pinned client, passed whole in 288 to 294 s cold and 203 to 214 s warm, the water at red 171, green
+149, blue 168 each time against 171, 148 and 167, each wait answering after 0 frames, the water's
+pipelines made in the 30 frames before it. Against 6.2.41's last play every one of the 17 pictures
+moves by the dither's grain, 21 to 62 percent of its pixels by 1 or 2 levels and none by more, and
+7 move by more than 2 in over 0.01 percent of their pixels. The river by 1.90, the beach by 1.66,
+the dark forest by 0.85 and the badlands by 0.08 are the four the old reach moved the origin for,
+which against the play before any move read 0.00 to 0.07, the beach 0.18. The others are sky2 by
+0.15 in the night's clouds and the meadow by 0.06 and its pack's by 0.02 in specks. The six plays
+of the pin read alike but for sky2's clouds, at most 0.19 percent. The built room on the pin, the
+dither off, reads no step over 3 levels in any of the east wall's eight rows at Low, Medium or High
+at 1280 by 720 or 2560 by 1440, the mean step 0.14 to 0.30, and at 2560 by 1440 no row of the
+ceiling from 150 to 200 stands more than 0.04 levels from its neighbors, where 257 drew a line at
+173 to 175 3.4 over them. 174's scene reads alike at its two places with every stage on, the west
+wall's mean step 0.34 to 0.37 at both and the shaded floor's steps over 3 26 to 27 at both, the
+screen's probes and the shadows alike. The strict build is clean and 394 tests pass. The asks the
+game wrote in the engine's ASKS.md name no one, the change left in the engine's tree for its
+next commit.
+
+Item 177's read, what the places far from the origin touch, before any code. The body keeps its
+place and its velocity in float Vector3s (Entities/Body.cs), and the player, every mob, the dropped
+items, the falling blocks, the primed TNT, the arrows and the bits of broken blocks each carry one.
+Its collisions, the step up and the support under it reckon from that place against the blocks'
+whole coordinates, and 61 floors in 29 files turn a float place into a block's. VoxelRay casts from
+the float eye. The world file keeps the player's place as JSON numbers, which read and write
+doubles as they are, and the mobs file keeps each mob's place and home as binary floats, which
+doubles or offsets would need a new version of with the old kept readable. Five commands take a
+place in floats, voxel.tp among them, and the answers print two places after the point. The engine
+takes floats at 15 DrawMesh calls, the camera, the held lights, the scene field's center and the
+sections' matrices. So doubles or a column and an offset for the body, the mobs and the ray run
+through every moving thing's place and the mobs file. A third way is one origin for the whole game,
+a whole column the floats are kept against and moved to as the player goes far from it, each place
+and the camera made again against the new one. It keeps the floats and their arithmetic where they
+are, puts the conversion at the floors that look up blocks and at the saves, and hands the engine
+every place near zero, which would mend the land's cracks and torn faces of 175 on the game's side
+too. Which way is the review's to choose before the code.
+
+Item 177's first step, the origin fixed at load. LandOrigin holds a whole place in the land, a
+multiple of 1,024 blocks set as the world opens near the saved place, 0 for a new world and in the
+tests, and every float place of the game is kept against it, the bodies, the mobs and their homes,
+the drops, the falling blocks, the TNT, the arrows, the bits, the particles, the camera, the
+sections' and the lamps' matrices, the rain's walls and the outline and the cracks. Blocks, columns
+and sections keep the land's own whole coordinates, and the floors that turn a place into a block,
+the ray's and the sounds' cells and the columns of the streamer, the mobs and the drops take the
+origin through BlockOf, BlockX, BlockZ and ColumnOf. A mob's record keeps the land's place and home
+in doubles, mobs.bin writes them in its version 2 and reads version 1's floats, and world.json keeps
+the player's place in doubles, which read an old file's numbers as they are. voxel.tp, voxel.drop,
+voxel.bits, voxel.ring, voxel.pixel and voxel.line take the land's places in doubles, and
+voxel.state, voxel.mobs, voxel.respawn, voxel.sounds and the debug overlay print them. The shaders'
+world places stand, each a fraction of a block or a height, terrain.slang's texture places through
+frac, the glass's joins as differences from the block's cell, the rim, the stepped shadow's
+eighths, the haze's height and the mirror's plane, and mob.slang and bits.slang take the places the
+engine hands them. The one place taken whole is the clouds' cell, which Clouds.cs lays over the land
+with the origin added, so a cloud stands over the same land wherever the origin is. Six tests in
+LandOriginTests stand a million blocks out with the origin near, the walk going 4.32 blocks along
+each axis, the stop 0.3 short of a wall to four places, picking five points a 50th from an edge and
+a mob's record whole, and with the origin left at 0 five of them fail, the walk going 7.5 blocks,
+the stop at 0.25 and picking the block east. Two in SaveTests read a far mob back whole and a mobs
+file of version 1. The strict build is clean and 376 tests pass. HEAD's game and this one played
+once each under the layer, both whole, the mirror at red 171, and of the 17 captures none moved, 16
+reading 0.00 percent of pixels over 2 levels apart and sky2 0.17 percent in the night's clouds,
+which drift, 0.18 percent between two plays of one game. The room from the review's copy of the
+data, its origin at 4096, 0, 1024, reads on 6.2.41 no step over 3 levels in any row at Low, Medium
+and High at 1280 by 720 and at 2560 by 1440 but one at Medium at 2560, where 6.2.41 reads up to 29,
+the mean step 0.14 to 0.31 at 1280 where the engine's mend reads 0.18 to 0.32, and 0.14 to 0.47 at
+2560 where the mend reads 0.19 to 0.36, a faint mottle left at High there and no line across the
+ceiling. A teleport keeps the origin of the load until the second step moves it. The sheet is
+01-30-item-177-room.png in the dump of 2026-11-12.
+
+Item 177's second step, the origin's move, with a fault of the saves mended first. The game was
+disposed twice as it closed, by the program's own `using` and again by the app's shutdown as a
+resource it holds, and when the engine let the ECS's mobs go before the second, that save wrote the
+loaded columns as holding none, so the animals about the player were lost on quitting. A log of a
+failing run read 16 mobs in 22 columns at voxel.save and at the close, and 0 mobs in 15 columns at
+the shutdown's dispose. The game is disposed once, and HeadlessGameTests closes it, clears the mobs
+as the shutdown does and closes it again, and finds the pig the first close saved, which fails
+without the mend. The review's copy of the saves holds the mark in overworld-1, none of 665 placed
+columns within 14 of the player holding a mob where 1,402 of 15,497 beyond hold 1,992, and none in
+the other three worlds. No cheap way tells a world closing from mobs that died, since the dead are
+taken from the ECS by MobMind's behavior, so the flag stands alone.
+
+The origin moves by a multiple of 1,024 to the one nearest the player once the player is 1,024 from
+it along x or z, every float place moving by the same whole step, the bodies, the arrows, the
+blasts, the mobs' homes, the bits, the rings on the water and the land drawn, at a frame's start and
+first in voxel.tp and voxel.respawn, so a teleport lands exactly. The reach was 2,048 until the read
+showed the engine's mottle back 2,000 blocks from its zero, the scene built at 16, 272, 528, 1,040
+and 2,000 reading a west wall's mean step of 0.37, 0.38, 0.41, 0.40 and 0.51 at High. A move
+uploads every section's mesh again, since the engine's scene field knows a mesh by its vertices and
+took one at a new place for a figure that walks, stamped as a box for 1,024 frames, the land at Low
+reading 145.8 where 153.9 for 1,120 frames. With the uploads it reads 153.9 throughout, the frame of
+the move and the next taking 342 and 579 ms at Low and 603 and 601 at High where a frame reads 163
+to 183 through e3d, and the player still before the scene sees one frame brighter, 158.6 at Low and
+159.5 at High against 153.9 and 152.2, back in 2 frames at Low and in 16 at High. A flight across a
+move changes by 1.58 and 1.77 levels at its frame where 0.82 and 0.30 crossing none, and by a mean of
+0.93 and 1.22 over the 50 after where 0.82 and 0.30. The same view after a move and back reads 2.21
+percent of pixels over 2 levels apart, 0.21 percent over 8 in the scene, standing 990 blocks from the
+engine's zero, where a trip that moves nothing reads 0.00. The ask is the engine's ASKS.md entry of
+2026-11-12 on a world moved by a whole offset, and the README says the move and its hitch.
+
+The second reader's list. HeadlessGame takes a place of the land to stand at and a folder to save
+in, and FarGameTests plays the game at 1,139,992.5, 596.5 and at -284,680.5, -33.5 through the
+commands, voxel.tp and voxel.state's place, the block ahead broken, a villager set down, saved and
+opened again with the player, the block and the villager's home where they were, a death far out
+coming back at the spawn exactly, and a move uploading every section's mesh again. SaveTests reads
+a world.json with a far place back whole, FireFrameTests and TntFrameTests take the player's block
+through the origin, the shadow's march says why it reckons in the land's coordinates, and a stack's
+turn and bob take their phase from its place in the land. voxel.spawning holds for the session, a
+world opened taking the switch, tested both ways, since the play's overworld had its animals back.
+The strict build is clean and 385 tests pass. HeadlessGame's own steps after a teleport stood the
+world before the streamer saw the new place, and it steps once before it looks. HEAD's game and this
+one played once each under the layer, both whole, the mirror at red 171, and 6 of the 17 captures
+moved by over 0.01 percent of their pixels, savanna 0.21 percent, its animals kept out, and the
+badlands 0.07, the dark forest 0.76, the beach 1.66 and the river 1.68, where the play's search
+stands the dark forest at 1,016, -1,120 and the origin moves to 1,024, -1,024 for it and the three
+after it, in the far hazy foliage. The reach is to be read again on the engine's next published
+package.
+
+voxel.restock, asked for on 2026-11-12 to give back the animals the closing save lost. For each
+loaded column that holds no mob and keeps none, its generation is made again on as many workers as
+the processor has, and each animal or villager it placed is placed again where the pathfinder says
+it can stand in the world as it stands, the rest left out and counted, villagers apart. A test in
+HeadlessGameTests empties the loaded columns as the fault did, leaves a pig in one and stone at one
+spawn's feet, and finds every other spawn back at its place, the pig's column left alone, the
+stone's spawn left out, and a second restock placing none. On a copy of the review's copy of the
+data, overworld-1 opened at the room with 0 mobs loaded and 1,992 kept beyond, it placed 112 animals,
+25 pigs, 23 cows, 31 sheep and 33 chickens, in 54 of the 665 loaded columns in 1.1 s, leaving none
+out, the land there having no village. The strict build is clean and 386 tests pass, and the play
+passes whole, the mirror at red 171, its captures as 85160b6's but sky2 by 0.06 percent in the
+night's clouds.
+
+The second reader's list on 85160b6. The events a frame carries out in the next, a TNT's blast, a
+mob's blast, shot and strike, an arrow's strike and a mob's death, carry the land's place, made as
+sent and turned back as carried out, so a move between them leaves none 1,024 off. voxel.tp and a
+respawn unload what the jump leaves out of reach before the origin moves, the changed columns kept
+by the save and their mobs by their records in doubles. The stacks on the ground lying in a column
+that unloads, by a jump or a walk, are kept by that column with their item, count, wear, age, delay
+and velocity and their place in the land's doubles, and set down where they lay as it loads again,
+not saved, as before. So the things a player spills in a death far from the spawn lie there after
+the respawn, which the first form of this commit let go at the press of Respawn. Leave lets go of
+four kinds in the columns gone, none a player's. The arrows are the skeletons', the game has no bow
+and no one picks one up, and each goes within a minute. A falling block in land not loaded falls
+through it and goes within a minute, as one does today whose column unloads under it. A lit TNT's
+block left the land as it was lit, and its blast in land not loaded breaks nothing. A flash shows
+half a second. The game has no boat, minecart, item frame or tamed animal, the animals and villagers
+that follow are mobs with records, and fires, chests and furnaces are kept by their blocks and not
+touched. voxel.tp refuses a place past 2^30 along x or z, and the origin goes no further than that
+edge, where past 2^31 it overflowed and moved by nothing each frame. A move uploads the lamps' cubes
+again. In a flat world's room at midnight with 400 glowstones in view, HEAD's game read 103 meshes
+still and 256 stamped from the move for 256 to 512 frames at Low and 512 to 768 at High, so 144
+lamps were in neither. Its frame read within 0.3 levels of before over the whole, the far middle and
+the near floor from the second frame to the 1,152nd, and the move's own frame 1.5 and 2.0 darker
+over the whole. The lamps light that room as glow lights, the whole reading red 87.6 with every part
+and 39.1 with `gi.toggle glow off`, the same as with the illumination off, so the field's boxes
+carried no lamp's light to lose. With the cubes uploaded the field reads 503 still and 0 stamped
+from the frame after the move, the frames as HEAD's. OriginMoveTests moves the origin under a lamp,
+a pool raining rings, a villager kept to a home, an arrow, a blast, a block's bits, a stack and the
+flat world's animals, and finds each where it stood in the land, the lamps and every section's part
+among them with their meshes uploaded again, which takes the place of FarGameTests' check of the
+mesh ids alone. A TNT's blast sent before a move goes off where it was sent from. A teleport of
+1,139,000 blocks keeps a pig where it stood to the last bit and a stack where it lay, and a teleport
+back brings both back there. A player 3,000 blocks out dies holding 11 stacks, which lie where it
+fell, respawns at the spawn with the origin back at 0, and put back finds every stack where it lay
+within a hundredth of a block and no younger, and walked onto them holds all 11 again. A place past
+the edge is refused and moves the origin once to the edge. The walk across the line goes back west
+over it with no second move, and the 32 blocks tire the player by 0.32 with the saturation
+unchanged. The far jump's test found the streamer keeping its last plan across the jump, so a jump
+back to that column loaded nothing, and leaving clears it. The blast's flash and cloud and the mobs'
+steps playing move with the origin, the Respawn button respawns as the next frame begins, Recenter
+uploads the land's meshes before any place moves and moves the origin last, and the Shift methods
+and `_disposed` stand with their kind. The strict build is clean, 390 tests pass, and the play
+passes whole in 209 s with the mirror at red 171. Of its 17 captures 1 moved by over 0.01 percent
+against 3bfa75d's, sky2 by 0.07 percent in the night's clouds. The first form's play moved the
+meadow by 0.02 percent in a few specks of its sky, which this one reads alike. The room's sheet is
+02-10-item-177-lamps.png in the dump.
 
 ## Items closed, parked or shortened
 
