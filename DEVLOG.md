@@ -10,6 +10,9 @@ notes written beside them as Markdown files named the same way. A line under Don
 
 Done that day
 
+- Item 171 at `4d96da7`. A reading of time is taken with the validation layer off, and a pixel read
+  after a first sight waits for its pipelines.
+- Item 176 at `f201940`. Bright colored blobs in the distance under bloom.
 - Item 177 at `4d96da7`. The body's and the ray's places far from the origin.
 - Item 178 at `35a0829`. Mobs saved with a place that is no number.
 

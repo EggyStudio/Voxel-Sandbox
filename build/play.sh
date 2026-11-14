@@ -35,13 +35,15 @@ said=captures/said.txt
 log=""
 # Every command and the stop go to this game by the process the open names, so a program an earlier
 # run left serving, or another session's game of the same name, neither makes them ambiguous nor
-# takes the stop meant for this one. Before the open has answered, the stop goes by the game's name.
+# takes the stop meant for this one. Before the open has answered, the stop goes by the game's name,
+# among the sessions of this run's own folder alone, so it reaches no game but this run's.
 export E3D_NAME=VoxelSandbox
 pid=""
 kept=""
 # The kept run's data folder, under which the game keeps its saves, its packs' list and its
-# screenshots and e3d its sessions, so it leaves the machine's own alone.
+# screenshots, so it leaves the machine's own alone, and the folder of this run's sessions.
 data=$(mktemp -d)
+export E3D_SESSIONS="$data/sessions"
 # The script's own output, which an error is written to, so one said inside $(ask ...) reaches the
 # page and not the variable.
 exec 3>&1
@@ -63,7 +65,7 @@ stop_by_process() {
   kill -9 "$1" 2> /dev/null || true
 }
 trap 'if [ -n "$pid" ]; then ./e3d stop --session "$pid" --quiet; else ./e3d stop --quiet; fi > /dev/null 2>&1 || true
-  [ -n "$kept" ] && XDG_DATA_HOME="$data" ./e3d stop --session "$kept" --quiet > /dev/null 2>&1 || true
+  [ -n "$kept" ] && ./e3d stop --session "$kept" --quiet > /dev/null 2>&1 || true
   stop_by_process "$pid"; stop_by_process "$kept"
   rm -rf "$data"' EXIT
 # A command e3d refuses fails with its code and sentence, which it writes to standard error.
@@ -106,8 +108,9 @@ feet() { printf '%s\n' "$1" | sed -nE 's/^feet at (-?[0-9.]+), (-?[0-9.]+), (-?[
 # The answer goes to a file and is read from there, as the engine's scripts of its games read
 # theirs, since on Windows the game is started holding every handle e3d holds, and $(...) would wait
 # on that pipe until the game ends. The log it names is read with perl, which every system the
-# script may run on has.
-if ! ENGINE_VULKAN_VALIDATION=1 ./e3d open "$program" --offscreen --transient --flat --json > "$opened"; then
+# script may run on has. The open waits as long as a command does, since a game still starting
+# when the open gives up is no session the stop can name.
+if ! ENGINE_VULKAN_VALIDATION=1 ./e3d open "$program" --offscreen --transient --flat --timeout 600 --json > "$opened"; then
   answer=$(perl -MJSON::PP -0777 -ne '
     my $answer = eval { decode_json($_) } or do { s/\s+/ /g; print length ? "an answer that is not JSON, $_" : "nothing"; exit };
     my $error = $answer->{errors}[0] || {};

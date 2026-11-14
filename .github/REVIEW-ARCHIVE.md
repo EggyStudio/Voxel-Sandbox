@@ -3079,6 +3079,76 @@ before a batch.
     comes once in at least 3,584 blocks walked, and the engine is asked for a way to be told the
     world moved.
 
+171. **A reading of time is taken with the validation layer off, and a pixel read after a first
+    sight waits for its pipelines.** From the pin of 6.2.41 on 2026-11-11. The play runs with the
+    validation layer on, by ENGINE_VULKAN_VALIDATION, the engine's package being a Release build
+    that leaves it off otherwise, and the engine's trial on terrain.slang puts about 1.2 s of every
+    such pipeline on the layer's own work, 1,274 ms compiled and 1,229 ms from the cache with it
+    against 94 ms and under 100 ms without, so the seconds the game read at its fifth frame and at
+    the pool, and the mirror's failures on 6.2.32, were the layer's and none a player has. The play
+    stays under the layer, which is its check of correctness. A reading of time or of a stall is
+    taken with the layer off, by ENGINE_VULKAN_VALIDATION=0, and says so; one cold play and one warm
+    with it off give the fifth frame's pipelines and seconds and the pool's three beside
+    2026-11-11's with it on. The mirror's check, a pixel read 32 frames after a first sight, waits
+    for the pipelines once the engine has a command that returns when none is being made. After the
+    pin's run. Read at 15:48 on 2026-11-11 with the layer off, both plays passing the mirror. Warm,
+    no frame after the first makes a pipeline over 100 ms and the first frame takes 314 ms, where
+    4.4 to 4.6 s at the fifth frame and 1.17 to 1.37 s at the pool with it on, so the layer is the
+    warm seconds. Cold, the fifth frame makes its 22 pipelines in 49.0 s, one after another, where
+    49.7 to 62.3 s with it on, and the pool's four terrain.slang pipelines compile in 15.5 to 15.7 s
+    each, so the layer is not the cold ones; an empty cache folder empties the driver's own cache
+    under it, and these read as the driver's first compiles, a player's first run. That is the
+    engine's item 255. What remains here is the mirror's check waiting for its pipelines at the pin
+    that carries the engine's 254. Done at `4d96da7`, the pin of the engine's 6.2.56 that carries
+    its 254, pushed at 13:48 on 2026-11-12 and green at 14:57, the play asking pipelines.wait before
+    the mirror's read and before the plain water's, six plays passing whole.
+
+176. **Bright colored blobs in the distance under bloom.** Reported to the game's coder on
+    2026-11-11, colored blobs of bloom in the background at a distance. Read on 6.2.41 at `1f1e955`,
+    the sheet 21-30-red-blob.png in the dump. One stands in the origin scene's view, a spruce
+    trunk's foot on snow at -98, 105, 39, 134 blocks off. With bloom at 0 it is one pixel reading
+    255, 209, 199 beside a trunk of 54, 46, 42, which bloom spreads into a red blob over the tree.
+    The pixel is the same through every part gi.toggle leaves out, with each cascade alone and at
+    Low, Medium and High, and only the illumination off clears it, the snow then 221, 215, 205; no
+    block light, fire or mob is near. From 15 blocks a trunk's lower half above the snow reads 172,
+    90, 0, blue at exactly 0, where its upper half reads 82, 50, 23. So the illumination's light at
+    a trunk's foot beside sunlit snow is far too bright, whether in the engine's light or in
+    terrain.slang's taking of it not yet said. The read goes ahead of 174 since it was asked for.
+    Which term carries it at that pixel and from 15 blocks, the light's parts as voxel.pixel and the
+    engine's views give them; what clears it, the snow made grass or stone, the trunk made stone,
+    the sun's shadows off, the hour at noon and at dusk, the far cascade off; and the smallest built
+    scene that shows it, a log standing on snow in the sun, added to 174's scene at both places so
+    it is read near the origin and beside the built room alike. Then an ask to the engine with the
+    numbers and a sheet, or an item of the game's where terrain.slang takes the light wrongly.
+    Recorded at 21:53, the coder's read so far, on 6.2.41 from a copy of 174's data, bloom at 0. The
+    sheet's fourth panel is not the fault. The orange block is the dirt under the trunk, its sides
+    showing where the snowy ground steps down, taking the same light as the log over it, both 229,
+    209, 183 with every surface drawn white, and its orange with blue at 0 is dirt's own color under
+    the frame's grading at a saturation of 1.4, 138, 60, 0 with the illumination off; so nothing is
+    kept by the block. The blob is one pixel on a silhouette's edge, 272, 352 from 174's origin eye,
+    the trunk in the pixel to its left at 55, 46, 42 and snow two blocks behind it, 138 blocks off.
+    It reads 255, 209, 199 in five reads 7 frames apart and clears with the eye moved a quarter
+    block or turned 0.05 degrees. Every part gi.toggle leaves out, the specular too, each cascade
+    alone, the three qualities, the sun's shadows off, the sky's floor at 0, the light levels off,
+    noon, and the block under the pixel made stone, snow or grass leave it as it is, and only the
+    illumination off clears it, 221, 215, 205. Its color is the log's albedo under about ten times
+    its light. So an edge pixel takes the trunk's color with light from a term no toggle reaches,
+    and the game cannot split it further, gi.show drawing the probes' data and no pixel's resolved
+    light. To come, the eye stepped sideways from 133 blocks at both built places counting edge
+    pixels and blobs, then the ask. The read is done at 22:45. The blob comes of shading at 4
+    samples a pixel, gone at 1 sample, dimmed with the temporal antialiasing on, one pixel still at
+    twice the size; the sweep's counts and the sheet 22-40-item-176-samples.png are in the ask and
+    under the engine's item 259, which mends it. What remains here is the check after that mend, the
+    sweep's counts at both places read again. The engine's mend read at 10:05 on 2026-11-12 on its
+    local package 6.2.41-local.259, the vertex color and uv2 read at the centroid where a pixel's
+    middle outside its triangle had given a half float's most. By the origin the steps where bloom
+    adds over 20 levels fall from 7 to none and bloom's most from 142 levels to 13, beside the room
+    from 1 to none, nothing reading worse. The pinned check comes at the publish that carries it.
+    Done with the pin of the engine's 6.2.60 at `f201940`, pushed at 19:54 on 2026-11-12. The sweep
+    reads no step with a blob at either built place, bloom's most 13 levels by the origin and 7
+    beside the room where 142 and 24, the lone bright pixels left ordinary ones bloom does not
+    spread.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -4428,6 +4498,89 @@ passes whole in 209 s with the mirror at red 171. Of its 17 captures 1 moved by 
 against 3bfa75d's, sky2 by 0.07 percent in the night's clouds. The first form's play moved the
 meadow by 0.02 percent in a few specks of its sky, which this one reads alike. The room's sheet is
 02-10-item-177-lamps.png in the dump.
+
+The pin of 6.2.41, with the engine's item 253. The package, the workflows' engine checkout at
+`894542da` and `build/engine.sh` following it. The strict build is clean and 366 tests pass. The
+water's mirror was read with each play's caches in a folder of its own (N 7.11), three plays from an
+empty folder, each followed by one from the cache it left, under the validation layer and through
+the pinned client. All six passed whole in 393, 417 and 434 s cold and 237, 242 and 221 s warm, the
+water reading red 171, green 148, blue 167 each time. Cold, the pipelines' file grew at each write
+in play, from 8.8 MB after frame 5 to 21.8 MB, where 6.2.32 wrote 0 bytes, and the pool's frame made
+three of terrain.slang's pipelines with its fragmentMain, stages 7e3b6259, compiled in 14.3 to 19.0
+s each and all three within the 15.0, 17.3 and 19.1 s since the log's line before. Warm, the file
+read at 21265 KB, every pipeline made in play said "from the cache" with the hash the cold play
+gave, and terrain.slang's three at the pool read "from the cache" in 1.17 to 1.37 s each. No log
+says "the driver saying not where from". The cold start's fifth frame made 22 pipelines in 49.7,
+61.3 and 62.3 s of the driver's time, 54.4, 66.2 and 67.6 s passing from the probes made to it, so
+one after another, beside 6.2.32's 47. Warm it took 4.4, 4.4 and 4.6 s. The logs are in
+`~/.cache/3dengine-tools/work/voxel-6241/logs`, and the same reading stands under the engine's 253
+in its ASKS.md. The runner's play is the gate.
+
+Item 171, read on 6.2.41 with the layer off by ENGINE_VULKAN_VALIDATION=0, the log saying
+`Validation layers: DISABLED`, one play from an empty cache folder and one from the cache it left,
+each under the lock for its own run. Both passed whole with the mirror at red 171. Warm, the layer is
+the time. No frame after the first made pipelines for 100 ms, the engine's least for its line, where
+with it on frame 5 took 4.4 to 4.6 s and terrain.slang's three at the pool 1.17 to 1.37 s each.
+Cold, it is not. Frame 5 made its 22 pipelines in 49.0 s of the driver's time, 48.9 s passing from
+the probes made to it, beside 49.7 to 62.3 s and 54.4 to 67.6 s with the layer, terrain.slang's
+depth pipeline taking 14.9 and 12.1 s and mob.slang's 19.1 s. The pool's frame made four of
+terrain.slang's pipelines with its fragmentMain compiled in 15.5 to 15.7 s each, beside three in
+14.3 to 19.0 s with it. Each cold folder ends with the driver's own cache in `nvidia` beside the
+engine's, 23 MB, and an empty folder empties that too, so a cold play here is the driver's first
+compile of each pipeline. A trial whose driver cache is warm may read "compiled" in under 100 ms. The
+logs are in `~/.cache/3dengine-tools/work/voxel-6241/logs/off-cold` and `off-warm`.
+
+Item 176, read on 6.2.41 at `1f1e955` from copies of i174's data, under the lock. The blob over
+the spruce 134 blocks off is one pixel at the trunk's lower right corner against snow two blocks
+behind it, 255, 209, 199 beside the trunk's 55, 46, 42, the trunk's color under about ten times its
+light. It holds over frames, through every part gi.toggle names, each cascade alone, every quality,
+the sun's shadows off and the game's own terms changed, and goes with the illumination off or the eye
+moved a quarter block. With one sample a pixel it is gone, and at the engine's default 4 it stays
+one pixel at twice the size and dims to 247, 221, 211 under temporal antialiasing, so it is how a
+pixel a surface covers in part is shaded. From 133 blocks off, 20 eye steps a twentieth of a block
+apart held 27 such pixels and 7 blobs over 20 levels near the origin and 8 and 2 beside the room,
+the same in a second session, all in the land behind, and none at four built logs on snow at either
+place. The orange trunk foot of the first sheet is the dirt under it, its own color under the
+grading. Two asks stand in the engine's ASKS.md, this pixel and a pixel's light read by its terms.
+The sheets are 21-30-red-blob.png and 22-40-item-176-samples.png in the dump. The game's options
+offer FXAA and not the engine's temporal antialiasing, which takes the blobs away at 4 samples, so
+a player can do no more today than set Bloom to 0 in Post Processing, which leaves each one pixel.
+
+Item 176 read again on the engine's package 6.2.41-local.259, unpublished, against 6.2.41, the game
+of `8fda020` built on each from a fresh copy of i174's data, the dither the package brings turned
+off by SetDither, under the lock. The sweep of 20 eye steps a twentieth of a block apart from 133
+blocks reads on 6.2.41 27 lone bright pixels and 7 steps where bloom adds over 20 levels by the
+origin, as before, and 6 and 1 beside the room, the origin there at 4096, 1024, where 8 and 2
+without it. On 259 bloom adds over 20 levels at no step at either place, at most 13 levels by the
+origin and 7 beside the room, where 142 and 24 on 6.2.41. The 19 lone bright pixels left by the
+origin and none beside the room are the same pixels at the same levels on both packages, orange
+and near white, which bloom does not spread. Nothing reads worse. Without bloom 0.07 to 0.13
+percent of a frame's pixels differ by more than 2 levels and 0.002 to 0.005 percent by more than 8,
+the largest lone pixels in the sky on 6.2.41 that 259 does not draw and the edges of foliage on
+snow moved a few levels. From item 174's eye by the origin neither package drew a blob at the
+moment read, so the sheet shows the sweep's worst two steps, 10-30-item-176-blob-mended.png, with
+the changed pixels in 10-35-item-176-edges.png. The pinned check comes with the publish.
+
+The pin of 6.2.60, the engine's baa21ff4, 3DEngine named alone and the workflows' engine checkout at
+that commit. Restored into a package folder of its own, 3dengine 6.2.60 comes alone, its nuspec
+naming baa21ff4. Nothing reads worse. Item 176's pinned check, the sweep of 20 eye steps a
+twentieth of a block apart from 133 blocks at both built places, the game of main built on each
+package, the dither off for the count and each world opened with its origin near the place read:
+on 6.2.56 bloom adds over 20 levels at 7 steps by the origin and 1 beside the room, at most 142 and
+24 levels, with 27 and 6 lone bright pixels, and on 6.2.60 at no step at either place, at most 13
+and 7 levels, with 21 and none. Of the 21, 19 are pixels 6.2.56 draws as bright at the same place
+and 2 are new, and bloom spreads none of them. Three plays from an empty cache and three from the
+cache each left, under the layer and through the pinned client, passed whole in 296 to 298 s cold
+and 208 to 215 s warm, the water at red 171, green 149, blue 168 each time, as on 6.2.56. Against
+6.2.56's play, 13 of the 17 pictures move by more than 2 levels in over 0.01 percent of their
+pixels, the meadow under its pack the most at 0.74 percent and 4,914 pixels over 10 levels, the
+meadow 0.47, the river 0.34, the shadow 0.30 and the swamp 0.24, and noon, the room, the sky and
+the badlands read alike. Read enlarged where each moved most, the edges of blocks lose the dark
+fringe 6.2.56 drew under the pillar of the shadow's picture and about the jungle's leaves, and the
+meadow's and the river's move by a few pixels at their edges with the same detail, so none reads
+worse to the eye. The strict build is clean and 394 tests pass. The sheets are
+20-10-item-176-pinned.png, the sweep's two worst steps before and after, and
+20-15-pin-6260-edges.png in the dump.
 
 ## Items closed, parked or shortened
 

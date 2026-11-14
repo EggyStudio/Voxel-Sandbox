@@ -43,8 +43,9 @@ public sealed class HeadlessGame : IDisposable
         InitAudioDevice();
         try
         {
-            // A save's folder given whole stands in for its name, which the saves' folder is joined to.
-            Game = new VoxelGame("flat", seed, save, transient: save is null, []) { RenderDistance = 2 };
+            // A save's folder given whole stands in for its name, which the saves' folder is joined to,
+            // and a game that saves leaves the player's settings alone.
+            Game = new VoxelGame("flat", seed, save, transient: save is null, [], settings: false) { RenderDistance = 2 };
             Game.Mobs.Still = still;
             Stand();
             if (at is { } place)

@@ -122,8 +122,12 @@ milliseconds or bytes and no account of the trials that led to the code, which a
 records and go stale at the first tuning, and a number stands in a comment only where the code's
 choice depends on it, with its reason. Minecraft is named where the game takes a rule or a number
 from the game it follows, and a pack's format where the game reads it (STYLE.md). A comparison test
-names the reference it compares against, since the comparison is the test. By review, and by
-STYLE.md's search, read rather than counted.
+names the reference it compares against, since the comparison is the test. A document outside the
+review's own files, a guide, RENDERING.md or a script's words, names no item, verdict or decision of
+the review by number either; a reading keeps its date and its figures, a decision is told by what
+was decided, and the norm's own numbers are named freely. A commit's sentence names none either, nor
+an audit or which commit of several it is, since the release notes are made of the messages. By
+review, and by STYLE.md's search, read rather than counted.
 
 ## 6 Build and package
 
@@ -205,7 +209,9 @@ started within a few minutes is looked into and not waited on. The lock gives a 
 place before a suite that asks after it, so a session reads `lslocks` before it takes the shared
 lock and waits where an exclusive one stands, held or waiting, and a script of several runs takes
 the lock a run at a time, since a timing waited 35 minutes on 2026-11-11 while a second shared
-holder joined the first. A session whose wait grows long tells the reviewing session in a line,
+holder joined the first. A build takes the shared lock as a suite does, though it draws nothing,
+since a timing reads the frame's CPU stages too and a build running beside one doubled every stage
+of a flight on 2026-11-14. A session whose wait grows long tells the reviewing session in a line,
 which gives the order, an engine's illumination read first. By review.
 
 **N 7.10 A session leaves the machine its memory.** The machine's memory ran out three times, the
@@ -224,7 +230,10 @@ pipelines' file there, 94 MB piled up from every package run on the account, so 
 warm cache stood on what other runs had left. A program a session starts runs with XDG_CACHE_HOME
 naming a folder under the session's work folder in the home's cache; a warm cache is made there by a
 first run; and a session leaves the account's own cache alone, neither reading its files into a
-trial nor copying, writing or clearing them, unless the owner says so for that file. By review.
+trial nor copying, writing or clearing them, unless the owner says so for that file. A session's
+work folder under the shared work directory carries its repository's name before the item's number,
+as voxel-i264, so two sessions on one item do not share one, and a session neither writes into nor
+clears a folder it did not make. By review.
 
 ## Conformance
 

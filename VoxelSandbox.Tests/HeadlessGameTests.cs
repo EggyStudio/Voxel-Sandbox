@@ -132,6 +132,23 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Game_That_Saves_Leaves_The_Players_Settings_Alone()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: folder);
+            // Neither the player's packs nor the default ones, which a missing pack list fetches.
+            Assert.Empty(headless.Game.PackEntries);
+            Assert.Equal(FetchState.Idle, headless.Game.Defaults.State);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void Moving_The_Origin_Keeps_Every_Place_In_The_Land()
     {
         using var headless = new HeadlessGame();

@@ -1,9 +1,17 @@
 # Review
 
-Reviewed up to `4d96da7`, the pin of the engine's 6.2.56, 3DEngine alone with the workflows' engine
-checkout at `8561816b`, and item 177's reach at four steps, 4,096 blocks, every row of the built
-scene reading alike from 16 to 4,112 blocks from the engine's zero with ambient occlusion at 0,
-pushed at 13:48 on 2026-11-12, green at 14:57 with the play in 69 minutes on the engine's 6.2.56;
+Reviewed up to `f201940`, the pin of the engine's 6.2.60, 3DEngine alone with the workflows' engine
+checkout at `baa21ff4`, with item 176's pinned check, the sweep of twenty steps from 133 blocks
+reading no step where bloom adds over 20 levels at either built place where 7 and 1 on 6.2.56 and
+bloom's most 13 and 7 levels where 142 and 24, pushed at 19:54 on 2026-11-12, green at 21:23 with
+the play in 88 minutes, inside the runners' spread of 48 to 92 minutes over the last ten green runs;
+six plays under the layer pass whole, cold in 296 to 298 s and warm in 208 to 215, 13 of 17 pictures
+move, the most 0.74 percent of pixels, block edges losing a dark jagged fringe and none reading
+worse; the strict build is clean and 394 tests pass; it keeps the form and carries the review's
+files. Before it `4d96da7`, the pin of the engine's 6.2.56, 3DEngine alone with the workflows'
+engine checkout at `8561816b`, and item 177's reach at four steps, 4,096 blocks, every row of the
+built scene reading alike from 16 to 4,112 blocks from the engine's zero with ambient occlusion at
+0, pushed at 13:48 on 2026-11-12, green at 14:57 with the play in 69 minutes on the engine's 6.2.56;
 the mirror waits on pipelines.wait, six plays under the layer pass whole, cold in 288 to 294 s and
 warm in 203 to 214, the built room reads no step over 3 levels at any quality at 1280 by 720 and
 2560 by 1440 and no line on its ceiling, all 17 pictures move by the dither's grain of one or two
@@ -92,12 +100,32 @@ compiled without it, so these are the layer's seconds, which the play turns on, 
 the form and carries the review's files. The pushes before these stand in REVIEW-ARCHIVE.md's head
 records.
 
-Next the pin of the engine's 6.2.60, listed at 19:03 on 2026-11-12 and told at 19:18, with 176's
-pinned check, the sweep's counts at both built places against 6.2.56; 177, the origin, is done with
-the pin at `4d96da7`, its reach at 4,096. Decided on 2026-11-11, of taller and more varied terrain,
-other things matter more at present and the terrain generation is good as it is though not fully
-worked out, so nothing of the terrain is an item. Item 29's second part stays parked by the decision
-of 2026-11-11. A program on the GPU runs under the lock (N 7.9).
+Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
+own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
+of which term of the illumination carries the built room's extra light, 2.2 times the traced
+reference's unlit and 1.29 with one glowstone, is done, the lamps' buried faces the engine's item
+273. Read on the engine's local packages on 2026-11-14 and standing in the Replies, the frame's cost
+level with 6.2.60 on 264.9 but for a quarter millisecond of the scene's CPU, the field against the
+device's rays, and the origin's step written against MoveWorld on 264.10, its frame 35 to 44 ms at
+Low where 228 to 242, a diff of 45 lines that lands with the pin beside the bits' place form. Three
+findings of an independent read of the engine were read on that package at 01:02 on 2026-11-14 with
+the game's origin off far out, the field's way ahead carrying none of the indirect light's
+difference in a still view, the mirror sliding by 2.5 pixels and a model's soft shadow grain
+standing in stripes, recorded under the engine's item 264. The pin's rehearsal on that package at
+00:33 on 2026-11-14 read nothing past the sun's shadow edges with the game's origin on, the play 295
+s cold and 204 s warm, the built room within 11 levels at one pixel at every quality and size. Then,
+at the pin of the package that carries the engine's item 264, bits.slang keeping the bit's middle as
+a place and setting the lit point's place to it, decided on 2026-11-14 over the translation plus the
+push's origin, tried at 22:53 on 2026-11-12 in a work copy on 6.2.60-local.264.3 with every check of
+the play passing, the tunnel's bits 28, 28, 28, 27, 27, and a villager drawn dark there read as
+another variant of its clothes, the mobs alike with one variant. The read of that package at 22:39
+on 2026-11-12 found the four breaks of 264.2 gone, the play 309 s cold and 205 s warm, and stands in
+full under the engine's item 264; the far scenes with the game's origin off are read again after the
+engine's parts for the shadows and the field. 177, the origin, is done with the pin at `4d96da7`,
+its reach at 4,096. Decided on 2026-11-11, of taller and more varied terrain, other things matter
+more at present and the terrain generation is good as it is though not fully worked out, so nothing
+of the terrain is an item. Item 29's second part stays parked by the decision of 2026-11-11. A
+program on the GPU runs under the lock (N 7.9).
 
 REVIEW-ARCHIVE.md beside this file holds, their numbers kept, the items done, the items closed or
 parked, the verdicts settled, Decisions 1 to 58, the Replies before those here and the head records,
@@ -122,69 +150,21 @@ change.
     stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
     about 16:40, part two stays parked.
 
-171. **A reading of time is taken with the validation layer off, and a pixel read after a first
-    sight waits for its pipelines.** From the pin of 6.2.41 on 2026-11-11. The play runs with the
-    validation layer on, by ENGINE_VULKAN_VALIDATION, the engine's package being a Release build
-    that leaves it off otherwise, and the engine's trial on terrain.slang puts about 1.2 s of every
-    such pipeline on the layer's own work, 1,274 ms compiled and 1,229 ms from the cache with it
-    against 94 ms and under 100 ms without, so the seconds the game read at its fifth frame and at
-    the pool, and the mirror's failures on 6.2.32, were the layer's and none a player has. The play
-    stays under the layer, which is its check of correctness. A reading of time or of a stall is
-    taken with the layer off, by ENGINE_VULKAN_VALIDATION=0, and says so; one cold play and one warm
-    with it off give the fifth frame's pipelines and seconds and the pool's three beside
-    2026-11-11's with it on. The mirror's check, a pixel read 32 frames after a first sight, waits
-    for the pipelines once the engine has a command that returns when none is being made. After the
-    pin's run. Read at 15:48 on 2026-11-11 with the layer off, both plays passing the mirror. Warm,
-    no frame after the first makes a pipeline over 100 ms and the first frame takes 314 ms, where
-    4.4 to 4.6 s at the fifth frame and 1.17 to 1.37 s at the pool with it on, so the layer is the
-    warm seconds. Cold, the fifth frame makes its 22 pipelines in 49.0 s, one after another, where
-    49.7 to 62.3 s with it on, and the pool's four terrain.slang pipelines compile in 15.5 to 15.7 s
-    each, so the layer is not the cold ones; an empty cache folder empties the driver's own cache
-    under it, and these read as the driver's first compiles, a player's first run. That is the
-    engine's item 255. What remains here is the mirror's check waiting for its pipelines at the pin
-    that carries the engine's 254.
-
-176. **Bright colored blobs in the distance under bloom.** Reported to the game's coder on
-    2026-11-11, colored blobs of bloom in the background at a distance. Read on 6.2.41 at `1f1e955`,
-    the sheet 21-30-red-blob.png in the dump. One stands in the origin scene's view, a spruce
-    trunk's foot on snow at -98, 105, 39, 134 blocks off. With bloom at 0 it is one pixel reading
-    255, 209, 199 beside a trunk of 54, 46, 42, which bloom spreads into a red blob over the tree.
-    The pixel is the same through every part gi.toggle leaves out, with each cascade alone and at
-    Low, Medium and High, and only the illumination off clears it, the snow then 221, 215, 205; no
-    block light, fire or mob is near. From 15 blocks a trunk's lower half above the snow reads 172,
-    90, 0, blue at exactly 0, where its upper half reads 82, 50, 23. So the illumination's light at
-    a trunk's foot beside sunlit snow is far too bright, whether in the engine's light or in
-    terrain.slang's taking of it not yet said. The read goes ahead of 174 since it was asked for.
-    Which term carries it at that pixel and from 15 blocks, the light's parts as voxel.pixel and the
-    engine's views give them; what clears it, the snow made grass or stone, the trunk made stone,
-    the sun's shadows off, the hour at noon and at dusk, the far cascade off; and the smallest built
-    scene that shows it, a log standing on snow in the sun, added to 174's scene at both places so
-    it is read near the origin and beside the built room alike. Then an ask to the engine with the
-    numbers and a sheet, or an item of the game's where terrain.slang takes the light wrongly.
-    Recorded at 21:53, the coder's read so far, on 6.2.41 from a copy of 174's data, bloom at 0. The
-    sheet's fourth panel is not the fault. The orange block is the dirt under the trunk, its sides
-    showing where the snowy ground steps down, taking the same light as the log over it, both 229,
-    209, 183 with every surface drawn white, and its orange with blue at 0 is dirt's own color under
-    the frame's grading at a saturation of 1.4, 138, 60, 0 with the illumination off; so nothing is
-    kept by the block. The blob is one pixel on a silhouette's edge, 272, 352 from 174's origin eye,
-    the trunk in the pixel to its left at 55, 46, 42 and snow two blocks behind it, 138 blocks off.
-    It reads 255, 209, 199 in five reads 7 frames apart and clears with the eye moved a quarter
-    block or turned 0.05 degrees. Every part gi.toggle leaves out, the specular too, each cascade
-    alone, the three qualities, the sun's shadows off, the sky's floor at 0, the light levels off,
-    noon, and the block under the pixel made stone, snow or grass leave it as it is, and only the
-    illumination off clears it, 221, 215, 205. Its color is the log's albedo under about ten times
-    its light. So an edge pixel takes the trunk's color with light from a term no toggle reaches,
-    and the game cannot split it further, gi.show drawing the probes' data and no pixel's resolved
-    light. To come, the eye stepped sideways from 133 blocks at both built places counting edge
-    pixels and blobs, then the ask. The read is done at 22:45. The blob comes of shading at 4
-    samples a pixel, gone at 1 sample, dimmed with the temporal antialiasing on, one pixel still at
-    twice the size; the sweep's counts and the sheet 22-40-item-176-samples.png are in the ask and
-    under the engine's item 259, which mends it. What remains here is the check after that mend, the
-    sweep's counts at both places read again. The engine's mend read at 10:05 on 2026-11-12 on its
-    local package 6.2.41-local.259, the vertex color and uv2 read at the centroid where a pixel's
-    middle outside its triangle had given a half float's most. By the origin the steps where bloom
-    adds over 20 levels fall from 7 to none and bloom's most from 142 levels to 13, beside the room
-    from 1 to none, nothing reading worse. The pinned check comes at the publish that carries it.
+180. **The deep audit's findings.** From the review's read-only audit of 2026-11-14 at `f201940`,
+    ~/.cache/claude-reviewer/audits-2026-11-14/Voxel-Sandbox-deep-audit.md, five areas each read by
+    a finder and every finding put to three verifiers, one reading the code, one its reach and one
+    the records. 23 held, 13 of medium severity and 10 of low, findings 3 and 4 the same fault, each
+    with its file and line, its scenario and a direction for the mend. First finding 6, which the
+    review checked against the code. A test game given a save folder is not transient, so it reads
+    the machine's own pack list and options under the player's data folder and, where the pack list
+    is missing as on a runner, fetches the default packs into that folder; three tests build one,
+    and until the mend the suite runs here with XDG_DATA_HOME naming a folder of its own, since no
+    session touches the player's data. Then finding 8, play.sh's trap stopping whichever game
+    session serves on the machine when the play fails before naming its own. Then a Reply saying of
+    each other finding whether it holds at the head, and the mends a few to a commit, the saves'
+    first, 1, 2, 14 and 15, then the input's, 3 to 5 and 18, then the costs, 10 to 13, 20 and 21,
+    each read before and after, then the rest, each with a test that fails first; a finding that
+    does not hold says why. Ahead of the pin, which is taken when the engine's package comes.
 
 ## Verdicts
 
@@ -295,85 +275,247 @@ REVIEW-ARCHIVE.md.
 
 ## Replies
 
-The pin of 6.2.41, with the engine's item 253. The package, the workflows' engine checkout at
-`894542da` and `build/engine.sh` following it. The strict build is clean and 366 tests pass. The
-water's mirror was read with each play's caches in a folder of its own (N 7.11), three plays from an
-empty folder, each followed by one from the cache it left, under the validation layer and through
-the pinned client. All six passed whole in 393, 417 and 434 s cold and 237, 242 and 221 s warm, the
-water reading red 171, green 148, blue 167 each time. Cold, the pipelines' file grew at each write
-in play, from 8.8 MB after frame 5 to 21.8 MB, where 6.2.32 wrote 0 bytes, and the pool's frame made
-three of terrain.slang's pipelines with its fragmentMain, stages 7e3b6259, compiled in 14.3 to 19.0
-s each and all three within the 15.0, 17.3 and 19.1 s since the log's line before. Warm, the file
-read at 21265 KB, every pipeline made in play said "from the cache" with the hash the cold play
-gave, and terrain.slang's three at the pool read "from the cache" in 1.17 to 1.37 s each. No log
-says "the driver saying not where from". The cold start's fifth frame made 22 pipelines in 49.7,
-61.3 and 62.3 s of the driver's time, 54.4, 66.2 and 67.6 s passing from the probes made to it, so
-one after another, beside 6.2.32's 47. Warm it took 4.4, 4.4 and 4.6 s. The logs are in
-`~/.cache/3dengine-tools/work/voxel-6241/logs`, and the same reading stands under the engine's 253
-in its ASKS.md. The runner's play is the gate.
+What else of the game the engine's origin of 264 changes the meaning of, read at `f201940` against
+the engine's 6.2.60-local.264.6 (`3768c988`), with no change made. The engine keeps a world-number
+twin of each lighting function that takes a point (`lights.slang:750-769`), which takes the origin
+off again (`placeOf`), and the `world` of a pixel is its place plus the origin, so every use below
+reads as before. With the game's origin on, the world numbers stay under about 5,000 blocks, where a
+float's step is a 2,048th of a block, and none of them shows.
 
-Item 171, read on 6.2.41 with the layer off by ENGINE_VULKAN_VALIDATION=0, the log saying
-`Validation layers: DISABLED`, one play from an empty cache folder and one from the cache it left,
-each under the lock for its own run. Both passed whole with the mirror at red 171. Warm, the layer is
-the time. No frame after the first made pipelines for 100 ms, the engine's least for its line, where
-with it on frame 5 took 4.4 to 4.6 s and terrain.slang's three at the pool 1.17 to 1.37 s each.
-Cold, it is not. Frame 5 made its 22 pipelines in 49.0 s of the driver's time, 48.9 s passing from
-the probes made to it, beside 49.7 to 62.3 s and 54.4 to 67.6 s with the layer, terrain.slang's
-depth pipeline taking 14.9 and 12.1 s and mob.slang's 19.1 s. The pool's frame made four of
-terrain.slang's pipelines with its fragmentMain compiled in 15.5 to 15.7 s each, beside three in
-14.3 to 19.0 s with it. Each cold folder ends with the driver's own cache in `nvidia` beside the
-engine's, 23 MB, and an empty folder empties that too, so a cold play here is the driver's first
-compile of each pipeline. A trial whose driver cache is warm may read "compiled" in under 100 ms. The
-logs are in `~/.cache/3dengine-tools/work/voxel-6241/logs/off-cold` and `off-warm`.
+- `bits.slang:17` reads the instance's translation, a place since 264, and the settled edit adds
+  `modelPush.origin` to it. A second form keeps the place there and sets `middle.place` in place of
+  `middle.world` at `bits.slang:44-45`, with no round trip.
+- `terrain.slang:275` and `:287` snap the sun's shadow's point to eighths in world numbers
+  (`pixelMiddle(input.world, ...)`) and hand it to `lightReaching`, which takes the origin off
+  again. `lightReachingPlaced(pixelMiddle(input.place, ...))` snaps to the same eighths, the
+  engine's origin being whole blocks, and is the trial that mended the stripes with the game's
+  origin off.
+- `terrain.slang:176`, `:298`, `:350` and `:356` take the block, the rim and the texture's place
+  from world numbers by `floor` and `frac`. The place gives the same values, the origin being whole
+  blocks, where `block` and the texture's place change together.
+- `terrain.slang:410` calls `mirrored(..., world, ...)`, and `mirroredPlaced(..., place, ...)` takes
+  no round trip.
+- `terrain.slang:420` reads the haze by the world's height, `world.y`, which stays a world number.
+- `mob.slang:27-28` call `arriving` and `lightReaching` with `input.world`, and their `Placed` twins
+  take `input.place`. `mob.slang:65` sets `up.world` from `input.base.world`, which setting
+  `up.place` from `input.base.place` does without the round trip.
+- No game shader reads a matrix of the engine's. `terrain.slang:168` reads the instance's color and
+  not its rows, and `cavefields.slang` works in the land's whole columns outside the engine's
+  drawing.
+- On the CPU, `WaterMirror.cs:43` and `GameCommands.cs:745` and `:773` cast the engine's rays from
+  the screen and `Measurements.cs:197`, `:243` and `:263` take its points to the screen, whose
+  working 264 changed and the rehearsal read alike with the game's origin on. `HeldLights.cs:66-71`
+  and `BlastEffects.cs:104` and `:122` hand the engine world points it places itself.
 
-Item 176, read on 6.2.41 at `1f1e955` from copies of i174's data, under the lock. The blob over
-the spruce 134 blocks off is one pixel at the trunk's lower right corner against snow two blocks
-behind it, 255, 209, 199 beside the trunk's 55, 46, 42, the trunk's color under about ten times its
-light. It holds over frames, through every part gi.toggle names, each cascade alone, every quality,
-the sun's shadows off and the game's own terms changed, and goes with the illumination off or the eye
-moved a quarter block. With one sample a pixel it is gone, and at the engine's default 4 it stays
-one pixel at twice the size and dims to 247, 221, 211 under temporal antialiasing, so it is how a
-pixel a surface covers in part is shaded. From 133 blocks off, 20 eye steps a twentieth of a block
-apart held 27 such pixels and 7 blobs over 20 levels near the origin and 8 and 2 beside the room,
-the same in a second session, all in the land behind, and none at four built logs on snow at either
-place. The orange trunk foot of the first sheet is the dirt under it, its own color under the
-grading. Two asks stand in the engine's ASKS.md, this pixel and a pixel's light read by its terms.
-The sheets are 21-30-red-blob.png and 22-40-item-176-samples.png in the dump. The game's options
-offer FXAA and not the engine's temporal antialiasing, which takes the blobs away at 4 samples, so
-a player can do no more today than set Bloom to 0 in Post Processing, which leaves each one pixel.
+Nothing beyond the bits' edit changes meaning as the game ships. The `Placed` twins are the forms
+that stay exact where a place's numbers are small and a world's are not.
 
-Item 176 read again on the engine's package 6.2.41-local.259, unpublished, against 6.2.41, the game
-of `8fda020` built on each from a fresh copy of i174's data, the dither the package brings turned
-off by SetDither, under the lock. The sweep of 20 eye steps a twentieth of a block apart from 133
-blocks reads on 6.2.41 27 lone bright pixels and 7 steps where bloom adds over 20 levels by the
-origin, as before, and 6 and 1 beside the room, the origin there at 4096, 1024, where 8 and 2
-without it. On 259 bloom adds over 20 levels at no step at either place, at most 13 levels by the
-origin and 7 beside the room, where 142 and 24 on 6.2.41. The 19 lone bright pixels left by the
-origin and none beside the room are the same pixels at the same levels on both packages, orange
-and near white, which bloom does not spread. Nothing reads worse. Without bloom 0.07 to 0.13
-percent of a frame's pixels differ by more than 2 levels and 0.002 to 0.005 percent by more than 8,
-the largest lone pixels in the sky on 6.2.41 that 259 does not draw and the edges of foliage on
-snow moved a few levels. From item 174's eye by the origin neither package drew a blob at the
-moment read, so the sheet shows the sweep's worst two steps, 10-30-item-176-blob-mended.png, with
-the changed pixels in 10-35-item-176-edges.png. The pinned check comes with the publish.
+The game's side of the engine's part 7, read on 6.2.60 with the game at `f201940` as it ships, from
+copies of the review's copy of the data, at 1280 by 720 with the frame unlimited, under the
+exclusive lock on tuned's powersave-bazzite, three runs.
 
-The pin of 6.2.60, the engine's baa21ff4, 3DEngine named alone and the workflows' engine checkout at
-that commit. Restored into a package folder of its own, 3dengine 6.2.60 comes alone, its nuspec
-naming baa21ff4. Nothing reads worse. Item 176's pinned check, the sweep of 20 eye steps a
-twentieth of a block apart from 133 blocks at both built places, the game of main built on each
-package, the dither off for the count and each world opened with its origin near the place read:
-on 6.2.56 bloom adds over 20 levels at 7 steps by the origin and 1 beside the room, at most 142 and
-24 levels, with 27 and 6 lone bright pixels, and on 6.2.60 at no step at either place, at most 13
-and 7 levels, with 21 and none. Of the 21, 19 are pixels 6.2.56 draws as bright at the same place
-and 2 are new, and bloom spreads none of them. Three plays from an empty cache and three from the
-cache each left, under the layer and through the pinned client, passed whole in 296 to 298 s cold
-and 208 to 215 s warm, the water at red 171, green 149, blue 168 each time, as on 6.2.56. Against
-6.2.56's play, 13 of the 17 pictures move by more than 2 levels in over 0.01 percent of their
-pixels, the meadow under its pack the most at 0.74 percent and 4,914 pixels over 10 levels, the
-meadow 0.47, the river 0.34, the shadow 0.30 and the swamp 0.24, and noon, the room, the sky and
-the badlands read alike. Read enlarged where each moved most, the edges of blocks lose the dark
-fringe 6.2.56 drew under the pillar of the shadow's picture and about the jungle's leaves, and the
-meadow's and the river's move by a few pixels at their edges with the same detail, so none reads
-worse to the eye. The strict build is clean and 394 tests pass. The sheets are
-20-10-item-176-pinned.png, the sweep's two worst steps before and after, and
-20-15-pin-6260-edges.png in the dump.
+What `Recenter` does in its frame (`VoxelGame.cs:546-564`), called from `Begin` (`:645`) before
+anything is stepped or drawn. The step is to the multiple of 1,024 nearest the player once it is
+4,096 out along x or z (`LandOrigin.cs:84-98`), so a walk or a flight moves the origin 4,096 at once
+and a teleport by any multiple of 1,024, and y never moves. In order:
+
+1. `Renderer.Shift` (`ChunkRenderer.cs:952-984`) uploads every section part's mesh again, uploads
+   the lamps' cubes again (`MakeLampCubes`, `:679`), gives every part and group a new `Transform`,
+   moves the emitters' matrices, marks every group's faces changed and has the lamps gathered again.
+2. Every ECS `Body`, the player's and the camera with it, every arrow and every blast moves by the
+   step.
+3. The mobs' homes and last places (`Mob.cs:193`), the fall's last height (`Vitals.cs:74`), the
+   steps' voices (`GameSounds.cs:88`), the blasts' clouds and flashes, set again in the engine by
+   `SetParticleEmitterPosition` and `SetLightPosition` (`BlastEffects.cs:112-124`), the bits' bodies
+   (`BlockBits.cs:88`) and the rings on the water (`AmbientParticles.cs:137`) move by it.
+4. `LandOrigin.MoveTo` last. The held torch's light is set from the hand the next frame, and the sky
+   takes no place.
+
+So the engine is handed again every section's mesh as a new one, every part's matrix moved by the
+step, the lamps' cubes as new meshes and the camera moved by the step, all in one frame.
+
+What the engine does with it on 6.2.60:
+
+- **The step's frame** costs 228 to 242 ms at Low and 250 ms at High (the game's clamp, 409 ms of
+  work in the frame), where the slowest frame of a flight crossing no step is 38.5 to 52.7 ms and
+  42.5 to 50.9 ms. Of it, the game's re-upload in its update takes 117 to 133 ms, the engine's
+  `prepare.GpuMeshesPrepare` 81 to 89 ms, a collection 25.5 to 28.7 ms, the field 10.2 to 10.8 ms
+  and, at High, `cpu.global_illumination` 164 ms, the ray scene built again for every mesh.
+- **A flight of 600 frames** east across a step against one across none reads a median of 8.97 to
+  9.19 ms against 8.07 to 8.09 at Low and 12.03 to 12.10 against 9.03 to 9.06 at High, and a 99th
+  part of 33.8 to 52.7 against 32.4 to 33.4 at Low and 61.7 to 62.8 against 33.8 to 37.6 at High.
+- **The field** after a hop of three blocks in one frame across a step holds the change after 14 to
+  26 frames, 0.2 to 1.6 million triangles splatted as every mesh is built in again, where a hop
+  across none changes it not at all. After a flight across a step it holds after 235 to 267 frames
+  at Low and 45 to 46 at High, the flight's own builds among them, against 8 to 188 and 14 to 15
+  across none.
+- **The light** changes once, 8 to 11 frames after the step, as the field's build ends. Recorded
+  frame by frame with the clouds off, 0.75% of the pixels pass 8 levels at High in that frame and
+  0.5% at Low, along the land's edges, the most 58 to 60 levels, and the land's mean falls 0.28
+  levels, where a hop across none shows no change. No light drops visibly, so no picture pair is
+  made. The glow lights, 89 to 98 carried and the 64 nearest lit, show no change of their own. The
+  frames are `03-01-part7-step-light-high.png` and `-low.png` in the dump.
+
+What the game would call, and when. In `Recenter`, after `StepTo` (`VoxelGame.cs:549`) and before
+anything moves, in the update of the frame whose draws the engine then extracts, the call with the
+step as it is, `(-4096, 0, 0)` for a flight east across x 8,192, a multiple of 1,024 along x and z
+and 0 along y. Every such step is a whole count of every cell of the game's field as the game sets
+it (`LightSettings.cs:22-33`), cells of 0.25, 0.5, 1 and 2 and a far cascade's of 4, of their snap
+of eight cells, 2 to 32 blocks, of the probes' spacing and of the engine's origin's 16-block step,
+1,024 being 32 times 32. The game keeps moving its own places and its entities' `Transform`s by the
+step as it does, and stops uploading every section's mesh and the lamps' cubes again and marking
+every group's faces changed (`ChunkRenderer.cs:954-962`, `:978`). The call meets its contract where
+the engine takes every mesh drawn the next frame at its matrix plus the step as the same still mesh,
+moves its field's cascades, its probes, its frame before's view, its shadows' fits and its render
+origin by the step and keeps their contents, so the step's frame costs what a frame crossing none
+does and the field and the light change by nothing.
+
+The frame's passes on 6.2.60 in the game as it ships, from the cost read's samples with no new run.
+The game is at `f201940` from copies of the review's copy of the data, at 1280 by 720 with the frame
+unlimited, the validation layer off and the dither on, under the exclusive lock on tuned's
+powersave-bazzite. Each figure is the mean of three runs of three samples of about a second, in ms.
+The built room is read standing at its saved eye, and the flight east at 110 over loaded land with
+W held. Each part is sorted by its largest figure.
+
+| Stage | Room, Low | Room, High | Flight, Low | Flight, High |
+|---|---|---|---|---|
+| `gpu.global_illumination` | 3.179 | 6.189 | 1.823 | 5.374 |
+| `gpu.hdr_scene` | 1.900 | 1.664 | 5.050 | 4.800 |
+| `gpu.scene_field` | 0.003 | 0.003 | 1.174 | 1.256 |
+| `gpu.shadows` | 0.586 | 0.589 | 0.407 | 0.411 |
+| `gpu.window_depth` | 0.095 | 0.096 | 0.102 | 0.106 |
+| `gpu.ambient_occlusion` | 0.058 | 0.058 | 0.035 | 0.035 |
+| `gpu.main_pass` | 0.053 | 0.053 | 0.054 | 0.054 |
+| `gpu.bloom` | 0.045 | 0.046 | 0.045 | 0.045 |
+| `gpu.particles` | 0.015 | 0.013 | 0.012 | 0.012 |
+| the GPU's stages together | 5.935 | 8.712 | 8.701 | 12.091 |
+| `cpu.global_illumination` | 0.289 | 0.749 | 0.555 | 1.642 |
+| `cpu.scene_field` | 0.176 | 0.189 | 0.558 | 0.810 |
+| `cpu.shadows` | 0.572 | 0.607 | 0.607 | 0.637 |
+| `cpu.window_depth` | 0.408 | 0.438 | 0.477 | 0.494 |
+| `cpu.hdr_scene` | 0.419 | 0.439 | 0.453 | 0.455 |
+| `cpu.model_batches` | 0.289 | 0.313 | 0.425 | 0.430 |
+| `cpu.bloom` | 0.054 | 0.052 | 0.051 | 0.052 |
+| `cpu.ambient_occlusion` | 0.030 | 0.031 | 0.031 | 0.032 |
+| `cpu.particles` | 0.031 | 0.030 | 0.021 | 0.021 |
+| `cpu.main_pass` | 0.013 | 0.014 | 0.014 | 0.018 |
+| `cpu.immediate` | 0.016 | 0.018 | 0.006 | 0.006 |
+| `cpu.imgui` | 0.007 | 0.008 | 0.008 | 0.008 |
+| the CPU's stages together | 2.319 | 2.903 | 3.224 | 4.621 |
+| `render.fence`, the wait for the GPU | 2.394 | 4.517 | 3.421 | 4.779 |
+| `frame` | 5.960 | 8.758 | 8.805 | 12.844 |
+
+The GPU's stages together come within 0.76 ms of the frame in all four, so every one is held by the
+GPU, and global illumination is its largest stage in the room and at High, the model pass in
+`hdr_scene` at Low in flight. The field's GPU stage costs nothing while the room stands and 1.2 ms
+while the flight brings new land into it. The flight at High varies by 2.5 ms between runs where the
+others vary by 0.6 ms at most.
+
+Item 180, the deep audit, read at `f201940`. Finding 6 holds. `HeadlessGame.cs:47` builds the game
+with `transient: save is null`, and in a game that is not transient `VoxelGame.cs:80` reads the pack
+list, `:83` fetches the default packs where the list is missing and `:88` reads the options, each
+under the folder above `WorldSave.Root` (`WorldSave.cs:79-80`), so the three tests that pass a save
+folder read the machine's own. I ran the suite without XDG_DATA_HOME since 2026-11-12, whole or with
+FarGameTests or Closing_The_Game_Again in its filter, between 01:00 and 03:46, at 12:35, at 13:04
+and at 19:19 on 2026-11-12 in the game's checkout, and at 13:16, 14:32 and 15:14 on 2026-11-14 in
+the work copies of 264.10, of the faces trial and of the pin. Those runs read the player's
+resourcepacks.txt and options.txt and loaded whatever packs the list names. None of them wrote
+either file. Each found the list there and so fetched nothing, and the one writer of the list,
+`ChoosePacks` (`VoxelGame.cs:140`), is reached from a finished fetch (`:133`), from `StopDefaults`
+(`:122`), from `voxel.packs` (`GameCommands.cs:294`) and from the packs screen (`Menus.cs:349`),
+none of which a test calls. resourcepacks.txt's time, read by `stat` with the file left unopened, is
+18:21:59 on 2026-11-12, and options.txt's is 17:10 on 2026-11-10. My session made no call between
+13:42 and 19:03 that day, and the runs it had started in the background had ended by 13:39, so
+nothing of mine wrote it.
+
+The mend comes with this Reply. `VoxelGame` takes `settings`, true by default, and a run without it
+leaves the player's settings alone as a transient one does, the pack list and the options neither
+read nor written and the default packs not fetched. `HeadlessGame` passes it false. The test
+`A_Game_That_Saves_Leaves_The_Players_Settings_Alone` builds a game that saves and asserts it has no
+pack on and no fetch begun. On a copy of the head with the test alone added, and XDG_DATA_HOME
+naming a folder of mine whose list names one pack, it fails with the collection `["a-pack.zip"]`,
+and with the mend it passes. The suite runs here with XDG_DATA_HOME naming a folder of my own all
+the same.
+
+Finding 8 holds. `play.sh:65` sets the trap before the build check at `:104` and the open at `:110`,
+`pid` is filled only at `:123`, and with it empty the trap stops by the name `E3D_NAME` gives, which
+the engine's `Sessions.Pick` (`3DEngine.Cli/Sessions.cs:17-20`) matches against the name of every
+serving session of the user's. The open passed no `--timeout`, so it gave up after 60 s
+(`Launch.cs:87`), and an open that gives up names no process (`Launch.cs:107-119`). I read it with a
+decoy, a game serving in a sessions folder of mine that `E3D_SESSIONS` named to play.sh, run in an
+unbuilt copy of the head. The head's script failed at the build check and its trap stopped the
+decoy. The mended one failed at the same place and left the decoy serving. The mend exports
+`E3D_SESSIONS` as a folder inside the run's own data folder, so the open's game, the kept run's and
+every stop are in it, and a stop by name before the open has answered reaches no game but the run's
+own. The open waits 600 s, as each command does. The kept run's stop in the trap goes without
+XDG_DATA_HOME, its session being in that folder too. `pictures.sh:69` sets its trap only once the
+open's pid is checked at `:58`, so it stops no other game.
+
+The other findings, each read at its file and line at the head, all hold.
+
+- Finding 1. ReadRegion keeps a region's bytes as read (`WorldSave.cs:107`), the renumbering is set
+  from world.json's keys alone (`:137`) and applied only as a column is decoded (`:444`), Keep
+  encodes in this build's numbers (`:144`), Flush writes a changed region's other columns back as
+  read (`:154-167`), and SaveWorld writes this build's keys every time (`VoxelGame.cs:618-619`).
+- Finding 2. ReadRegion marks the region read before reading it (`WorldSave.cs:95`) and its catch
+  logs and keeps what it parsed (`:110-114`), Flush moves a region made from `_kept` alone over the
+  file (`:157-170`), and ReadMobs, ReadFurnaces, ReadChests and ReadInfo fall back to none
+  (`:292-297`, `:359-362`, `:392-395`, `:211-215`), each file written again whole at the next save.
+- Findings 3 and 4 are one fault. The loop ends on `WindowShouldClose` (`Program.cs:54`), Dispose
+  saves at once (`VoxelGame.cs:1472-1474`), and `CloseInventory` (`:999-1003`), the one caller of
+  `InventoryWindow.Close`, is on neither that path nor SwitchWorld's (`:397-401`), whose Open clears
+  the inventory (`:442`).
+- Finding 5. The button sets `Open = Menu.None` on the press (`Menus.cs:124`), TakeCursor captures
+  on entering None (`GameFrame.cs:68-71`), which the engine's transitions run after PreUpdate
+  (`App.Execution.cs:111-115` at 6.2.60), only the click that captures sets `_swallowClick`
+  (`VoxelGame.cs:669-674`), and Interact runs on `_captured && !_swallowClick` (`:702`) while the
+  button is down.
+- Finding 7. `Part.Take` returns `Change.None` where the positions, the indices and the packed bytes
+  match (`ChunkRenderer.cs:77-81`), before it copies the colors (`:82`), and the packed form holds
+  no albedo (`SectionMesher.cs:141-142`). I have not reloaded a pack to see it.
+- Finding 9. `VoxelWorld.Add` marks the sections of all nine columns (`VoxelWorld.cs:71-74`),
+  `InReach` is false for a column not loaded (`ChunkRenderer.cs:823-824`), so Update parks the key
+  (`:802`, `:808-809`), and only the reach pass lets one out (`:773-775`). A parked key whose column
+  loads after is meshed and stays parked, so the next reach pass meshes it again.
+- Finding 10. A failed `WalkTo` leaves `_path` null (`Mob.Hostile.cs:187`), and `:184` searches
+  again whenever `_path` is null, whatever `Repath` holds, up to 2,000 cells (`Pathfinder.cs:29`,
+  `:42`).
+- Finding 11. `Explosion.Exposure`, 27 rays (`Explosion.cs:39-46`), is an argument of `Damage` for
+  every mob (`VoxelGame.cs:911`) and for the player (`:905`), so it runs before `Damage`'s test of
+  the distance (`Explosion.cs:56`).
+- Finding 12. `Gather` takes `GetRef` of both stacks before comparing the item or the distance
+  (`ItemDrops.cs:94-99`), for every pair, under no guard on the step, so it runs while the game is
+  paused.
+- Finding 13. `Add` and `Remove` both count `Openings` (`VoxelWorld.cs:70`, `:84`), which is part of
+  the flood's key (`Visibility.cs:183-184`), and the flood reaches only columns within rd² + rd
+  (`:196`, `:215`), inside the load ring of rd + 2 (`ChunkStreamer.cs:65`).
+- Finding 14. `Columns()` yields a column's loaded mobs or its kept ones and not both
+  (`Mobs.cs:330-331`), and `voxel.spawn` adds a mob while spawning is off (`GameCommands.cs:505`).
+- Finding 15. Every save file is written beside itself as `.new` and moved over with no flush to
+  disk (`WorldSave.cs:157-170`, `:221-222`, `:307-338`, `:370-371`, `:403-404`), and the class's
+  remarks say a crash leaves the region as it was (`:43-45`), which holds for the process's crash
+  and not for the machine's.
+- Finding 16. With no target `Hunts` clears `Hunting` and leaves `Fuse` (`Mob.Hostile.cs:93-97`),
+  and a lit fuse burns on within 7 blocks once the hunt resumes (`:128-132`).
+- Finding 17. `voxel.tp` tests `x` and `z` against the edge by `Math.Abs` (`GameCommands.cs:96`),
+  which NaN passes, and `y` not at all, and the engine's console parses a double with
+  `NumberStyles.Float` (`ConsoleBuiltins.cs:311` at 6.2.60), which takes NaN and Infinity.
+- Finding 18. Death frees the cursor once (`VoxelGame.cs:832`), the click that captures checks no
+  death (`:669`), and TakeCursor captures on leaving a menu (`GameFrame.cs:71`).
+- Finding 19. The dome's ring at 1.5 degrees has an alpha of 191 (`HazeDome.cs:30`, `:66`), under
+  the 240 that keeps the sky level in the packed form (`SectionMesher.cs:140`), so its corners carry
+  sky 0 (`terrain.slang:162`), and where the alpha stays at 0.95 or over the haze is scaled by the
+  sky level (`terrain.slang:429`). I have not looked at it in a picture.
+- Finding 20. `Respawn` unloads every column and makes the 25 about the spawn on the main thread
+  (`VoxelGame.cs:836-846`, `ChunkStreamer.cs:46-51`). I have not timed it.
+- Finding 21. `Crowd` takes every mob's body and tests every pair (`Mobs.cs:57-69`).
+- Finding 22. An answer with no `by place` leaves `top` empty (`play.sh:759`), awk then prints `0.0`
+  (`:760`), so the guard on an empty string (`:766`) cannot fail and the test of 15 levels passes
+  (`:767`).
+- Finding 23. The far pig stands 28 blocks west (`SoundFrameTests.cs:23`), and both assertions
+  (`:48-49`) hold for its steps as for the near one's, hearing being cut only at
+  `GameSounds.cs:137`.
+
+The mends follow in the order given, the saves (1, 2, 14, 15), the input (3 to 5, 18), the costs (10
+to 13, 20, 21) and the rest (7, 9, 16, 17, 19, 22, 23), a few to a commit, each with a test that
+fails first.

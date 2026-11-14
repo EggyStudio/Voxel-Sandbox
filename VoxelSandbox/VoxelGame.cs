@@ -22,6 +22,9 @@ public sealed class VoxelGame : IDisposable
     private const float SaveSeconds = 30;
 
     private readonly bool _transient;
+    // Whether the run reads and writes the player's settings, the packs' setting and the options,
+    // and fetches the default packs where none is set yet.
+    private readonly bool _settings;
     // The frame's seconds, whether the keys are the game's and whether the player lives, as Begin
     // took them for Play.
     private float _seconds;
@@ -51,10 +54,14 @@ public sealed class VoxelGame : IDisposable
     /// over the rest, where they are given, and otherwise with those the setting names, which a
     /// transient run leaves alone, so it is drawn the same on every machine. Where the setting names
     /// none yet, as at the first start, the default packs are fetched and turned on once they are in.
+    /// A run without <paramref name="settings"/>, as a test's that saves a world in a folder of its
+    /// own, leaves the player's settings alone, the packs' setting and the options neither read nor
+    /// written and the default packs not fetched.
     /// </summary>
-    public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null, VideoSettings? video = null)
+    public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null, VideoSettings? video = null, bool settings = true)
     {
         _transient = transient;
+        _settings = settings && !transient;
         Video = video ?? new VideoSettings();
         // The game, its step and the inventory are the engine's resources, and the player an entity
         // of its controller, its body, its vitals and its hand, which the behaviors reach.
@@ -77,20 +84,20 @@ public sealed class VoxelGame : IDisposable
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer(ecs);
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
-        PackEntries = given.Count > 0 || transient ? given : PackList.Default.Read();
+        PackEntries = given.Count > 0 || !_settings ? given : PackList.Default.Read();
         Sky = new Sky(10);
         ReloadPacks();
-        if (given.Count == 0 && !transient && !File.Exists(PackList.Default.File)) FetchDefaults();
+        if (given.Count == 0 && _settings && !File.Exists(PackList.Default.File)) FetchDefaults();
         Light.ApplyAll();
         Open(kind, seed, name);
         // The settings kept from the run before, read once the world is open, so the corner shade
-        // has sections to shade again; a transient run neither reads nor writes them.
-        _options = transient ? null : OptionsFile.Default;
+        // has sections to shade again. A run that keeps no settings neither reads nor writes them.
+        _options = _settings ? OptionsFile.Default : null;
         _options?.Read(Menus.Screens(this).All());
         Capture(true);
     }
 
-    /// <summary>Writes the settings of the options' screens to the options file where any has changed, unless the run is transient.</summary>
+    /// <summary>Writes the settings of the options' screens to the options file where any has changed, unless the run keeps no settings.</summary>
     public void KeepOptions() => _options?.Write(Menus.Screens(this).All());
 
     public VoxelWorld World { get; private set; } = null!;
@@ -133,11 +140,11 @@ public sealed class VoxelGame : IDisposable
         ChoosePacks([.. names, .. PackEntries.Where(e => !names.Contains(e))]);
     }
 
-    /// <summary>Draws the game with these packs from now on and saves them as the setting, but in a transient run.</summary>
+    /// <summary>Draws the game with these packs from now on and saves them as the setting, but in a run that keeps no settings.</summary>
     public void ChoosePacks(IReadOnlyList<string> entries)
     {
         PackEntries = entries;
-        if (!_transient) PackList.Default.Write(entries);
+        if (_settings) PackList.Default.Write(entries);
         ReloadPacks();
     }
 
