@@ -1158,6 +1158,48 @@ done
 echo "the options screens' $walked settings each set and set back"
 [ "$walked" -ge 48 ] || fail "the options screens hold $walked settings, where 48 were written"
 
+check "the menu's button and the death screen"
+# Back to Game shuts the menu on its button's press, and the press, held some frames as a click is
+# held, takes nothing in the world behind the menu, so the stone the player looks at in creative mode
+# stands, set in the air over the overworld's land. A dead player's cursor stays free over the death
+# screen, through a click beside its window and through the menu opened and shut, so the screen's
+# button is in reach.
+aimed() { ask voxel.state | grep -oE 'looking at [a-z_]+ at -?[0-9]+, -?[0-9]+, -?[0-9]+' || true; }
+hidden() { ./e3d eval 'IsCursorHidden()' --timeout 600 --session "$pid" 2> "$said" || fail "./e3d eval IsCursorHidden ended with $?, $(head -n 1 "$said")"; }
+cmd voxel.mode creative
+cmd voxel.tp 41.5 200 -40.5
+cmd voxel.fly on
+meshed
+cmd voxel.fill 40 200 -43 42 203 -39 air
+cmd voxel.set 41 201 -42 stone
+cmd voxel.look 0 -10
+cmd frames.wait 10
+before=$(aimed)
+[ "$before" = "looking at stone at 41, 201, -42" ] || fail "the player does not look at the stone set before it, $(ask voxel.state | head -n 1)"
+cmd input.key Escape 1
+cmd frames.wait 2
+cmd input.move 640 258
+cmd input.drag Left 0 0 12
+cmd frames.wait 5
+after=$(aimed)
+echo "Back to Game pressed over the stone, the player $before before and ${after:-looking at none} after"
+[ "$after" = "$before" ] || fail "the press on Back to Game broke the stone behind the menu, the player ${after:-looking at none} after"
+cmd voxel.mode survival
+./e3d eval 'VoxelSandbox.GameCommands.Game!.Vitals.Damage(1000, "fell")' --quiet --timeout 600 --session "$pid" > /dev/null 2> "$said" || fail "./e3d eval Vitals.Damage ended with $?, $(head -n 1 "$said")"
+cmd frames.wait 5
+cmd input.click 100 100
+cmd frames.wait 3
+clicked=$(hidden)
+cmd input.key Escape 1
+cmd frames.wait 2
+cmd input.key Escape 1
+cmd frames.wait 3
+shut=$(hidden)
+echo "a dead player's cursor hidden $clicked after a click beside the death screen's window and $shut after the menu opened and shut"
+[ "$clicked" = False ] && [ "$shut" = False ] || fail "a dead player's cursor is taken over the death screen, hidden $clicked after a click beside its window and $shut after the menu"
+./e3d eval 'VoxelSandbox.GameCommands.Game!.Respawn()' --quiet --timeout 600 --session "$pid" > /dev/null 2> "$said" || fail "./e3d eval Respawn ended with $?, $(head -n 1 "$said")"
+cmd voxel.mode creative
+
 check "the seed's field"
 # Escape opens the game's menu, World and New World open the screen of a new world at the window's
 # 1280 by 720, the interface at three times its pixels, and its seed's field holds the keyboard as it

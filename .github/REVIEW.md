@@ -570,3 +570,29 @@ the save tests move a `.new` file over its name 11 times, regions, world.json, m
 furnaces.json and chests.json among them, with no fsync of any, and mended each of the 11 moves
 follows the fsync of its own file. The folder is not synced, so a crash of the machine may lose a
 move, which leaves the old file whole.
+
+The input of item 180, findings 3 to 5 and 18, mended.
+
+Findings 3 and 4. `SaveWorld` saves the inventory with the stacks the window E opens holds, in its
+grids and on the mouse (`InventoryWindow.Holding`), put into it as shutting the window puts them, so
+a save while the window is open, the autosave or the one as the game closes, keeps them, and the
+window holds them on while it stays open. A stack the inventory has no room for is left out of the
+save, as shutting the window throws it and a thrown stack is not saved. `SwitchWorld` shuts the
+window first, so its stacks go back into the inventory of the world left, none comes into the next,
+and no chest or furnace of the last is drawn there. The tests
+`The_Stacks_Of_The_Inventory_Window_Are_Saved_While_It_Is_Open_And_As_The_Game_Closes` and
+`A_World_Switched_To_Takes_No_Stack_Of_The_Inventory_Window_From_The_One_Left` fail on the head,
+with no stack of three sticks in the saved inventory.
+
+Findings 5 and 18. `Capture` takes the cursor only while no screen is open and the player lives,
+which holds for the click beside the death screen's window, the menu shut over it and the death
+screen's Respawn pressed with the menu open, and a capture made while the left button is down leaves
+the press to the button that made it, so the world takes no click until it is let go
+(`_swallowClick`). The check "the menu's button and the death screen" in play.sh holds the press on
+Back to Game for 12 frames over a stone the player looks at in creative mode, and reads a dead
+player's cursor by `IsCursorHidden` after a click beside the death screen's window and after the
+menu opened and shut. Run against the head's build, the play fails at the check, the stone broken
+and the player looking at none after the press. Its half for the death screen, which the play
+reaches only past that, read with the same commands in a session of the head's build, found the
+cursor hidden after the click and after the menu, and in one of the mended build free after both,
+the stone standing.

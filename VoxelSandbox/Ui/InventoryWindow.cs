@@ -52,6 +52,10 @@ public sealed class InventoryWindow
     /// <summary>The stack taken up and following the mouse, or null.</summary>
     public ItemStack? Held { get; private set; }
 
+    /// <summary>The stacks the window holds out of the inventory, in its grids and on the mouse, which <see cref="Close"/> puts back.</summary>
+    public IEnumerable<ItemStack> Holding =>
+        Small.Slots.Concat(Table.Slots).Append(Held).OfType<ItemStack>();
+
     /// <summary>The stacks Q and Control with Q dropped from the slot under the mouse, which the game throws and clears.</summary>
     public List<ItemStack> Dropped { get; } = [];
 

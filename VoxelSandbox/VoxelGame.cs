@@ -404,6 +404,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>Saves the world loaded and opens the one saved under a name, or under its kind and seed, or begins it.</summary>
     public void SwitchWorld(string kind, int seed, string? name = null)
     {
+        // The window E opens is shut first, its stacks put back into the inventory of the world left,
+        // so none comes into the next and no chest or furnace of the last is drawn there.
+        CloseInventory();
         SaveWorld();
         Open(kind, seed, name);
     }
@@ -621,10 +624,15 @@ public sealed class VoxelGame : IDisposable
         Save.WriteMobs(Mobs.Columns());
         Save.WriteFurnaces(Furnaces);
         Save.WriteChests(Chests);
+        // The stacks the window E opens holds are saved in the inventory as shutting it puts them,
+        // so a save while it is open keeps them.
+        var inventory = new Inventory();
+        inventory.Load(Inventory.Save());
+        foreach (var stack in InventoryWindow.Holding) inventory.Add(stack.Item, stack.Count, stack.Wear);
         var at = LandOrigin.LandOf(Player.Body.Position);
         Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
             Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
-            Mode.ToString().ToLowerInvariant(), Inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
+            Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
         _sinceSave = 0;
     }
 
@@ -996,6 +1004,12 @@ public sealed class VoxelGame : IDisposable
 
     internal void Capture(bool captured)
     {
+        // The cursor is taken only while no screen is open and the player lives, so the death
+        // screen's button and a menu's stay in reach of it.
+        captured &= !InventoryOpen && Menus.Open == Menu.None && !(Mode.Lives() && Vitals.Dead);
+        // A press that takes the cursor back, as the click on a menu's button that shuts it, is the
+        // button's, so the world takes no click until it is let go.
+        if (captured && !_captured && IsMouseButtonDown(MouseButton.Left)) _swallowClick = true;
         _captured = captured;
         if (captured) DisableCursor();
         else EnableCursor();

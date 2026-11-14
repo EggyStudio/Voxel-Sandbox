@@ -191,6 +191,52 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void The_Stacks_Of_The_Inventory_Window_Are_Saved_While_It_Is_Open_And_As_The_Game_Closes()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: folder);
+            var game = headless.Game;
+            game.InventoryWindow.Small.Slots[0] = new ItemStack(Items.Stick, 3);
+
+            game.SaveWorld();
+            Assert.Contains("stick 3", new WorldSave(folder).ReadInfo()!.Inventory!);
+            Assert.Equal(new ItemStack(Items.Stick, 3), game.InventoryWindow.Small.Slots[0]);
+
+            game.Dispose();
+            Assert.Contains("stick 3", new WorldSave(folder).ReadInfo()!.Inventory!);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_World_Switched_To_Takes_No_Stack_Of_The_Inventory_Window_From_The_One_Left()
+    {
+        var (folder, other) = (Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")), Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")));
+        try
+        {
+            using var headless = new HeadlessGame(save: folder);
+            var game = headless.Game;
+            game.InventoryWindow.Small.Slots[0] = new ItemStack(Items.Stick, 3);
+
+            game.SwitchWorld("flat", 2, other);
+
+            Assert.Contains("stick 3", new WorldSave(folder).ReadInfo()!.Inventory!);
+            Assert.All(game.InventoryWindow.Small.Slots, slot => Assert.Null(slot));
+            Assert.DoesNotContain(game.Inventory.Slots, slot => slot?.Item == Items.Stick);
+        }
+        finally
+        {
+            foreach (var path in new[] { folder, other })
+                if (Directory.Exists(path)) Directory.Delete(path, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Game_That_Saves_Leaves_The_Players_Settings_Alone()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
