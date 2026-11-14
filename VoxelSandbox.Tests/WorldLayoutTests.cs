@@ -56,7 +56,7 @@ public sealed class WorldLayoutTests
         Assert.True(WorldSave.Shallow(kept));
 
         var generated = new Overworld(1).Generate(5, 7);
-        var column = WorldSave.Decode(5, 7, kept, null, generated);
+        var column = WorldSave.Decode(5, 7, kept, generated);
         Assert.True(column.Changed);
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
@@ -76,7 +76,7 @@ public sealed class WorldLayoutTests
             save.Keep(column);
             var whole = save.Kept(5, 7)!;
             Assert.False(WorldSave.Shallow(whole));
-            var back = WorldSave.Decode(5, 7, whole, null);
+            var back = WorldSave.Decode(5, 7, whole);
             Assert.Equal(BlockId.OakPlanks, back.Get(3, 5, 3));
             Assert.Equal(column.Get(3, -30, 3), back.Get(3, -30, 3));
         }

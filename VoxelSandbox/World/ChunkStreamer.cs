@@ -48,7 +48,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         var (cx, cz) = LandOrigin.ColumnOf(at);
         for (int z = cz - radius; z <= cz + radius; z++)
             for (int x = cx - radius; x <= cx + radius; x++)
-                if (!world.HasColumn(x, z)) Join(Make(world.Generator, Kept(x, z), save?.Renumber, x, z, Reach.Of(at), radius + Reach.Kept));
+                if (!world.HasColumn(x, z)) Join(Make(world.Generator, Kept(x, z), x, z, Reach.Of(at), radius + Reach.Kept));
     }
 
     /// <summary>Takes in the columns the workers finished, asks for those now in reach, and unloads those out of it.</summary>
@@ -89,7 +89,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         {
             if (_running >= _workers && !asking) break;
             if (world.HasColumn(x, z) || _pending.Contains((x, z))) continue;
-            var (generator, saved, renumber) = (world.Generator, Kept(x, z), save?.Renumber);
+            var (generator, saved) = (world.Generator, Kept(x, z));
             var gpu = asking && saved is null;
             ArraySegment<int>? readings = null;
             if (_running >= _workers || gpu && !fields!.TryTake(x, z, out readings))
@@ -105,7 +105,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
                 ChunkColumn? column = null;
                 try
                 {
-                    column = Make(generator, saved, renumber, x, z, eye, kept, readings);
+                    column = Make(generator, saved, x, z, eye, kept, readings);
                 }
                 catch (Exception ex)
                 {
@@ -137,13 +137,13 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     // A column from its kept blocks or its generator, with its own light worked out, which leaves the
     // main thread only the light across its edges, its open air sharing its arrays and its deep
     // sections out of the eye's reach packed.
-    private static ChunkColumn Make(IWorldGenerator generator, byte[]? kept, ushort[]? renumber, int x, int z, SectionKey eye, int distance, ArraySegment<int>? readings = null)
+    private static ChunkColumn Make(IWorldGenerator generator, byte[]? kept, int x, int z, SectionKey eye, int distance, ArraySegment<int>? readings = null)
     {
         ChunkColumn column;
         if (kept is null) column = readings is not null && generator is Overworld land ? land.Generate(x, z, readings) : generator.Generate(x, z);
         else
         {
-            column = WorldSave.Decode(x, z, kept, renumber, WorldSave.Shallow(kept) ? generator.Generate(x, z) : null);
+            column = WorldSave.Decode(x, z, kept, WorldSave.Shallow(kept) ? generator.Generate(x, z) : null);
             generator.Paint(column);
         }
         Lighting.Compute(column);

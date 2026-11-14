@@ -10,7 +10,7 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// Where the player stood and looked, the heading and pitch in degrees, the hour, the world's kind
-/// and seed, the key of each block by the number its columns were saved with, the mode played in,
+/// and seed, the key of each block by its number in the regions of version 1, the mode played in,
 /// each slot of the inventory as an item's key and a count, the hotbar's chosen slot, the player's
 /// health, food and saturation, the count of days, and whether the weather is held turned or clear,
 /// as a save keeps them. A save that names no mode opens in creative mode, one without health and
@@ -41,8 +41,22 @@ internal sealed partial class SaveJson : JsonSerializerContext;
 /// A column the player never changed is not kept, since its seed makes it again the same. A changed
 /// column is kept whole, its blocks compressed, and its light worked out again when it loads, as a
 /// generated one's is. A region file holds every kept column of its 32 by 32 and is written whole,
-/// to a file beside it that then takes its name, so a crash in the middle of a save leaves the
-/// region as it was.
+/// as every file of the save is, to a file beside it whose bytes are on the disk before it takes
+/// the file's name, so a crash of the game or of the machine in the middle of a save leaves the old
+/// file or the new one, each whole.
+/// </para>
+/// <para>
+/// A region of version 1 is numbered by the keys the world's info lists. Where those number the
+/// blocks as this build does, a region is written in version 1, which needs no list of its own.
+/// Where they number them otherwise, the info keeps them as they were read and a region is written
+/// in version 2, the key of each block by its number before its columns. A region numbered
+/// otherwise than this build has its columns given this build's numbers as it is read, so every
+/// column kept and written is in this build's numbers alone.
+/// </para>
+/// <para>
+/// A file of the save that cannot be read is moved aside, under its name and <c>.unread</c>, so
+/// the next save writes a new one and the bytes stay, and one that cannot be moved is written by no
+/// save of the run.
 /// </para>
 /// <para>
 /// The main thread reads a region the first time a column in it is asked for and stores columns as
@@ -53,7 +67,7 @@ internal sealed partial class SaveJson : JsonSerializerContext;
 public sealed class WorldSave
 {
     public const int RegionSize = 32;
-    private const int Version = 1;
+    private const int Version = 2;
     // The mobs file's places in doubles from its version 2, in floats in its version 1, which is read.
     private const int MobsVersion = 2;
     private static readonly byte[] Magic = "E3DR"u8.ToArray();
@@ -62,6 +76,11 @@ public sealed class WorldSave
     private readonly ConcurrentDictionary<(int X, int Z), byte[]> _kept = new();
     private readonly HashSet<(int X, int Z)> _readRegions = [];
     private readonly HashSet<(int X, int Z)> _changedRegions = [];
+    // The files that could not be read nor moved aside, which no save of the run writes.
+    private readonly HashSet<string> _held = [];
+    // The keys the world's info lists, and the numbers they give the regions of version 1 in this
+    // build, null where they are the same or the info lists none.
+    private string[]? _keys;
     private ushort[]? _renumber;
 
     public WorldSave(string folder)
@@ -98,33 +117,43 @@ public sealed class WorldSave
         try
         {
             using var reader = new BinaryReader(File.OpenRead(path));
-            if (!reader.ReadBytes(4).AsSpan().SequenceEqual(Magic) || reader.ReadInt32() != Version)
-                throw new InvalidDataException("it is not a region of this version");
+            var version = reader.ReadBytes(4).AsSpan().SequenceEqual(Magic) ? reader.ReadInt32() : 0;
+            if (version is not (1 or Version))
+                throw new InvalidDataException("it is not a region of a version this game reads");
+            var renumber = version == 1 ? _renumber : Renumbering(ReadKeys(reader));
             var count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
             {
                 int lx = reader.ReadInt16(), lz = reader.ReadInt16(), length = reader.ReadInt32();
-                _kept[(region.X * RegionSize + lx, region.Z * RegionSize + lz)] = reader.ReadBytes(length);
+                if (length < 0) throw new InvalidDataException("a column of it has no length");
+                var bytes = reader.ReadBytes(length);
+                if (bytes.Length < length) throw new EndOfStreamException("a column of it ends early");
+                _kept[(region.X * RegionSize + lx, region.Z * RegionSize + lz)] = renumber is null ? bytes : Renumbered(bytes, renumber);
             }
         }
         catch (Exception ex) when (ex is IOException or InvalidDataException or EndOfStreamException)
         {
-            // The region's columns are made again by the generator rather than the world not loading.
-            TraceLog(LogLevel.Warning, $"The region {path} could not be read, so its columns are generated again. {ex.Message}");
+            // The region's columns are made again by the generator rather than the world not loading,
+            // and those read before the fault are written again at the next save.
+            TraceLog(LogLevel.Warning, $"The region {path} could not be read, so its columns are generated again and {SetAside(path)}. {ex.Message}");
+            _changedRegions.Add(region);
         }
     }
 
-    /// <summary>A kept column's compressed blocks, or null for one the generator makes. Safe to call from a worker.</summary>
+    /// <summary>A kept column's compressed blocks in this build's numbers, or null for one the generator makes. Safe to call from a worker.</summary>
     public byte[]? Kept(int x, int z) => _kept.GetValueOrDefault((x, z));
 
     /// <summary>
-    /// The number each saved block takes in this build, by its number when saved, from the keys the
-    /// save's info lists, so blocks added or reordered since keep what was built. A key this build
-    /// does not know becomes air. Null where the numbers are the same.
+    /// The key of each block by its number in the regions of version 1, which list none of their
+    /// own, for a save to write into the world's info: those the info listed as it was read, where
+    /// they number the blocks otherwise than this build, and this build's otherwise.
     /// </summary>
-    public ushort[]? Renumber => _renumber;
+    public string[] BlockKeys => _renumber is null ? [.. Blocks.All.Select(b => b.Key)] : _keys!;
 
-    private void ReadBlockKeys(string[] keys)
+    // The number each saved block takes in this build, by its number when saved, from the keys
+    // listed with it, so blocks added or reordered since keep what was built. A key this build does
+    // not know becomes air. Null where the numbers are the same.
+    private static ushort[]? Renumbering(string[] keys)
     {
         var renumber = new ushort[keys.Length];
         var same = keys.Length <= Blocks.All.Count;
@@ -134,7 +163,68 @@ public sealed class WorldSave
             renumber[i] = (ushort)(known?.Id ?? BlockId.Air);
             same &= renumber[i] == i;
         }
-        _renumber = same ? null : renumber;
+        return same ? null : renumber;
+    }
+
+    // The key of each block by its number, as a region lists them.
+    private static string[] ReadKeys(BinaryReader reader)
+    {
+        var count = reader.ReadInt32();
+        if (count is < 0 or > ushort.MaxValue + 1) throw new InvalidDataException("its list of blocks has no length");
+        var keys = new string[count];
+        for (int i = 0; i < count; i++) keys[i] = reader.ReadString();
+        return keys;
+    }
+
+    // A kept column's compressed blocks given this build's numbers from those of another.
+    private static byte[] Renumbered(byte[] bytes, ushort[] renumber)
+    {
+        using var output = new MemoryStream();
+        using (var input = new ZLibStream(new MemoryStream(bytes), CompressionMode.Decompress))
+        using (var zip = new ZLibStream(output, CompressionLevel.Fastest))
+        {
+            var raw = new byte[Section.Volume * sizeof(ushort)];
+            while (input.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length)
+            {
+                var blocks = System.Runtime.InteropServices.MemoryMarshal.Cast<byte, ushort>(raw.AsSpan());
+                for (int i = 0; i < blocks.Length; i++) blocks[i] = blocks[i] < renumber.Length ? renumber[blocks[i]] : (ushort)0;
+                zip.Write(raw);
+            }
+        }
+        return output.ToArray();
+    }
+
+    // Moves a file that could not be read aside, under its name and .unread, or .unread and a number
+    // where an earlier one lies, or holds it where it cannot be moved, as while another program has
+    // it open, and gives what became of it for the log.
+    private string SetAside(string path)
+    {
+        var aside = path + ".unread";
+        for (int n = 2; File.Exists(aside); n++) aside = $"{path}.unread{n}";
+        try
+        {
+            File.Move(path, aside);
+            return $"the file is kept as {Path.GetFileName(aside)}";
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            _held.Add(path);
+            return "the file, which could not be moved aside, is written by no save of this run";
+        }
+    }
+
+    // Writes a file whole beside its name and moves it over the old one once its bytes are on the
+    // disk, but for a file held since it could not be read.
+    private void Replace(string path, Action<Stream> write)
+    {
+        if (_held.Contains(path)) return;
+        var written = path + ".new";
+        using (var file = new FileStream(written, FileMode.Create, FileAccess.Write, FileShare.None))
+        {
+            write(file);
+            file.Flush(flushToDisk: true);
+        }
+        File.Move(written, path, overwrite: true);
     }
 
     /// <summary>Keeps a changed column, to be written with its region at the next <see cref="Flush"/>.</summary>
@@ -146,18 +236,22 @@ public sealed class WorldSave
         column.Changed = false;
     }
 
-    /// <summary>Writes every region a column was kept in since the last flush.</summary>
+    /// <summary>Writes every region a column was kept in since the last flush, with the key of each block by its number where the world's info numbers them otherwise.</summary>
     public void Flush()
     {
         foreach (var region in _changedRegions)
         {
             var columns = _kept.Where(c => RegionOf(c.Key.X, c.Key.Z) == region).ToList();
-            var path = RegionPath(region);
-            var written = path + ".new";
-            using (var writer = new BinaryWriter(File.Create(written)))
+            Replace(RegionPath(region), file =>
             {
+                using var writer = new BinaryWriter(file, System.Text.Encoding.UTF8, leaveOpen: true);
                 writer.Write(Magic);
-                writer.Write(Version);
+                writer.Write(_renumber is null ? 1 : Version);
+                if (_renumber is not null)
+                {
+                    writer.Write(Blocks.All.Count);
+                    foreach (var block in Blocks.All) writer.Write(block.Key);
+                }
                 writer.Write(columns.Count);
                 foreach (var ((x, z), bytes) in columns)
                 {
@@ -166,8 +260,7 @@ public sealed class WorldSave
                     writer.Write(bytes.Length);
                     writer.Write(bytes);
                 }
-            }
-            File.Move(written, path, overwrite: true);
+            });
         }
         _changedRegions.Clear();
     }
@@ -205,22 +298,18 @@ public sealed class WorldSave
         try
         {
             var info = JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.WorldInfo);
-            if (info?.Blocks is { } keys) ReadBlockKeys(keys);
+            if (info?.Blocks is { } keys) (_keys, _renumber) = (keys, Renumbering(keys));
             return info;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world begins as a new one of its name. {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world begins as a new one of its name and {SetAside(path)}. {ex.Message}");
             return null;
         }
     }
 
-    public void WriteInfo(WorldInfo info)
-    {
-        var path = Path.Combine(Folder, "world.json");
-        File.WriteAllText(path + ".new", JsonSerializer.Serialize(info, SaveJson.Default.WorldInfo));
-        File.Move(path + ".new", path, overwrite: true);
-    }
+    public void WriteInfo(WorldInfo info) =>
+        Replace(Path.Combine(Folder, "world.json"), file => JsonSerializer.Serialize(file, info, SaveJson.Default.WorldInfo));
 
     /// <summary>
     /// The mobs kept by each column that has had its mobs placed, read from the folder's mobs file,
@@ -292,7 +381,7 @@ public sealed class WorldSave
         catch (Exception ex) when (ex is IOException or InvalidDataException or EndOfStreamException)
         {
             // The columns' mobs are placed again by their generator rather than the world not loading.
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the columns' mobs are placed again. {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the columns' mobs are placed again and {SetAside(path)}. {ex.Message}");
             kept.Clear();
             placed.Clear();
         }
@@ -302,10 +391,10 @@ public sealed class WorldSave
     /// <summary>Writes the mobs of every column that has had its mobs placed, those with none among them, to a file beside the old one that then takes its name.</summary>
     public void WriteMobs(IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> columns)
     {
-        var path = Path.Combine(Folder, "mobs.bin");
         var list = columns.ToList();
-        using (var writer = new BinaryWriter(new ZLibStream(File.Create(path + ".new"), CompressionLevel.Fastest)))
+        Replace(Path.Combine(Folder, "mobs.bin"), file =>
         {
+            using var writer = new BinaryWriter(new ZLibStream(file, CompressionLevel.Fastest, leaveOpen: true));
             writer.Write(MobsMagic);
             writer.Write(MobsVersion);
             writer.Write(MobKinds.All.Length);
@@ -334,8 +423,7 @@ public sealed class WorldSave
                     }
                 }
             }
-        }
-        File.Move(path + ".new", path, overwrite: true);
+        });
     }
 
     /// <summary>A furnace as a save keeps it, with its place, its three slots as <see cref="Inventory.Encode"/> gives them, and its fire and smelting.</summary>
@@ -358,17 +446,15 @@ public sealed class WorldSave
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's furnaces begin empty. {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's furnaces begin empty and {SetAside(path)}. {ex.Message}");
         }
         return furnaces;
     }
 
     public void WriteFurnaces(Furnaces furnaces)
     {
-        var path = Path.Combine(Folder, "furnaces.json");
-        var records = furnaces.All.Select(f => new FurnaceRecord(f.Key.X, f.Key.Y, f.Key.Z, [.. f.Value.Slots.Select(Inventory.Encode)], f.Value.Burning, f.Value.BurnTotal, f.Value.Cooked));
-        File.WriteAllText(path + ".new", JsonSerializer.Serialize(records.ToArray(), SaveJson.Default.FurnaceRecordArray));
-        File.Move(path + ".new", path, overwrite: true);
+        var records = furnaces.All.Select(f => new FurnaceRecord(f.Key.X, f.Key.Y, f.Key.Z, [.. f.Value.Slots.Select(Inventory.Encode)], f.Value.Burning, f.Value.BurnTotal, f.Value.Cooked)).ToArray();
+        Replace(Path.Combine(Folder, "furnaces.json"), file => JsonSerializer.Serialize(file, records, SaveJson.Default.FurnaceRecordArray));
     }
 
     /// <summary>A chest as a save keeps it, with its place, its slots as <see cref="Inventory.Encode"/> gives them, and the loot it holds not yet rolled.</summary>
@@ -391,17 +477,15 @@ public sealed class WorldSave
         }
         catch (Exception ex) when (ex is IOException or JsonException)
         {
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's chests begin empty. {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's chests begin empty and {SetAside(path)}. {ex.Message}");
         }
         return chests;
     }
 
     public void WriteChests(Chests chests)
     {
-        var path = Path.Combine(Folder, "chests.json");
-        var records = chests.All.Select(c => new ChestRecord(c.Key.X, c.Key.Y, c.Key.Z, [.. c.Value.Slots.Select(Inventory.Encode)], c.Value.Loot, c.Value.Seed));
-        File.WriteAllText(path + ".new", JsonSerializer.Serialize(records.ToArray(), SaveJson.Default.ChestRecordArray));
-        File.Move(path + ".new", path, overwrite: true);
+        var records = chests.All.Select(c => new ChestRecord(c.Key.X, c.Key.Y, c.Key.Z, [.. c.Value.Slots.Select(Inventory.Encode)], c.Value.Loot, c.Value.Seed)).ToArray();
+        Replace(Path.Combine(Folder, "chests.json"), file => JsonSerializer.Serialize(file, records, SaveJson.Default.ChestRecordArray));
     }
 
     // A column's blocks, every section's in turn, compressed. Its light is left out, since it is
@@ -415,17 +499,14 @@ public sealed class WorldSave
         return output.ToArray();
     }
 
-    /// <summary>
-    /// Makes a kept column again from its compressed blocks, their numbers changed by
-    /// <paramref name="renumber"/> where given. Safe to call from a worker.
-    /// </summary>
+    /// <summary>Makes a kept column again from its compressed blocks, in this build's numbers. Safe to call from a worker.</summary>
     /// <remarks>
     /// A column kept while the world stood from 0 to 128, eight sections, is laid at its heights over
     /// the deep stone of <paramref name="generated"/>, the column as the generator makes it, its floor
     /// of bedrock at 0 taken out for the generated blocks, and is kept again whole when it next
     /// unloads. Where no generated column is given, such a column's deep stone is air.
     /// </remarks>
-    public static ChunkColumn Decode(int x, int z, byte[] bytes, ushort[]? renumber, ChunkColumn? generated = null)
+    public static ChunkColumn Decode(int x, int z, byte[] bytes, ChunkColumn? generated = null)
     {
         var column = new ChunkColumn(x, z);
         using var zip = new ZLibStream(new MemoryStream(bytes), CompressionMode.Decompress);
@@ -441,7 +522,6 @@ public sealed class WorldSave
             for (int i = 0; i < Section.Volume; i++)
             {
                 var block = blocks[i];
-                if (renumber is not null) block = block < renumber.Length ? renumber[block] : (ushort)0;
                 if (block != 0) section.Set(i & Section.Mask, i >> 8, (i >> 4) & Section.Mask, (BlockId)block);
             }
         }

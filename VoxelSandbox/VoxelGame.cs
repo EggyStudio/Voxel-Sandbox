@@ -623,7 +623,7 @@ public sealed class VoxelGame : IDisposable
         Save.WriteChests(Chests);
         var at = LandOrigin.LandOf(Player.Body.Position);
         Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
-            Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, [.. Blocks.All.Select(b => b.Key)],
+            Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
             Mode.ToString().ToLowerInvariant(), Inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
         _sinceSave = 0;
     }

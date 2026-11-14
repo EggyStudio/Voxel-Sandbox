@@ -132,6 +132,65 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_World_Whose_Blocks_Were_Numbered_Otherwise_Keeps_Them_Through_A_Save()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A world saved by a build that numbered stone as this one numbers grass, and grass as
+            // stone, with a stone 70 high in the column east of the player's, in the player's region,
+            // and in the column west of it, in the region beside.
+            using (new HeadlessGame(save: folder)) { }
+            var keys = Blocks.All.Select(b => b.Key).ToArray();
+            (keys[(int)BlockId.Grass], keys[(int)BlockId.Stone]) = (keys[(int)BlockId.Stone], keys[(int)BlockId.Grass]);
+            var info = new WorldSave(folder).ReadInfo()!;
+            new WorldSave(folder).WriteInfo(info with { Blocks = keys });
+            var (east, west) = (new ChunkColumn(1, 0), new ChunkColumn(-1, 0));
+            east.Set(0, 70, 0, BlockId.Grass);
+            west.Set(0, 70, 0, BlockId.Grass);
+            SaveTests.WriteVersion1Region(folder, 0, 0, east);
+            SaveTests.WriteVersion1Region(folder, -1, 0, west);
+
+            // Played and saved by this build, a block set in the player's column so that its region
+            // is written again.
+            using (var played = new HeadlessGame(save: folder))
+            {
+                Assert.Equal(BlockId.Stone, played.Game.World.GetBlock(16, 70, 0));
+                played.Game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
+            }
+
+            using var again = new HeadlessGame(save: folder);
+            Assert.Equal(BlockId.Glowstone, again.Game.World.GetBlock(2, 70, 2));
+            Assert.Equal(BlockId.Stone, again.Game.World.GetBlock(16, 70, 0));
+            Assert.Equal(BlockId.Stone, again.Game.World.GetBlock(-16, 70, 0));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Column_Saves_The_Mobs_It_Keeps_Out_Of_The_World_With_One_Placed_Among_Them()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        var feet = LandOrigin.LandOf(game.Player.Body.Position);
+        var column = (VoxelWorld.ColumnOf((int)Math.Floor(feet.X)), VoxelWorld.ColumnOf((int)Math.Floor(feet.Z)));
+        var kept = new LandPlace(Math.Floor(feet.X) + 0.25, feet.Y, Math.Floor(feet.Z) + 0.25);
+        var placed = new LandPlace(Math.Floor(feet.X) + 0.75, feet.Y, Math.Floor(feet.Z) + 0.75);
+        game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, kept, 0, MobKinds.Pig.Health, null));
+        // Spawning turned off keeps the pig out of the world in its column, and one is placed there
+        // as voxel.spawn places it.
+        game.Mobs.SetSpawning(game.World, false);
+        game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, placed, 0, MobKinds.Pig.Health, null));
+
+        var saved = Assert.Single(game.Mobs.Columns(), c => c.Column == column).Mobs;
+        Assert.Contains(saved, mob => mob.Position == kept);
+        Assert.Contains(saved, mob => mob.Position == placed);
+    }
+
+    [Fact]
     public void A_Game_That_Saves_Leaves_The_Players_Settings_Alone()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

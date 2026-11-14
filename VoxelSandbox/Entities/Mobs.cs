@@ -314,7 +314,7 @@ public sealed class Mobs
     /// <summary>The column a place kept against the <see cref="LandOrigin"/> lies in.</summary>
     public static (int X, int Z) ColumnOf(Vector3 at) => LandOrigin.ColumnOf(at);
 
-    /// <summary>Every column that has had its mobs placed, with the mobs it holds, the loaded ones' by where they stand.</summary>
+    /// <summary>Every column that has had its mobs placed, with the mobs it holds, the loaded ones' by where they stand, and those it keeps out of the world.</summary>
     public IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> Columns()
     {
         var loaded = new Dictionary<(int, int), List<MobRecord>>();
@@ -325,11 +325,14 @@ public sealed class Mobs
                 if (!loaded.TryGetValue(key, out var list)) loaded[key] = list = [];
                 list.Add(mob.Record);
             }
+        // A loaded column keeps mobs too while spawning is off, as one placed by voxel.spawn stands
+        // among those kept out.
         foreach (var key in _placed)
         {
-            if (loaded.TryGetValue(key, out var here)) yield return (key, here);
-            else if (_kept.TryGetValue(key, out var kept)) yield return (key, kept);
-            else yield return (key, []);
+            var mobs = new List<MobRecord>();
+            if (loaded.TryGetValue(key, out var here)) mobs.AddRange(here);
+            if (_kept.TryGetValue(key, out var kept)) mobs.AddRange(kept);
+            yield return (key, mobs);
         }
     }
 

@@ -15,6 +15,30 @@ public sealed class SaveTests : IDisposable
 
     private static WorldInfo Info(string[] blocks) => new("overworld", 1, 0, 0, 0, 0, 0, false, 10, blocks);
 
+    /// <summary>
+    /// Writes a region of version 1, the columns' blocks by the numbers they hold and no list of
+    /// keys, so it is read by the keys the world's info lists.
+    /// </summary>
+    internal static void WriteVersion1Region(string folder, int regionX, int regionZ, params ChunkColumn[] columns)
+    {
+        using var writer = new BinaryWriter(File.Create(Path.Combine(folder, "regions", $"r.{regionX}.{regionZ}.bin")));
+        writer.Write("E3DR"u8);
+        writer.Write(1);
+        writer.Write(columns.Length);
+        foreach (var column in columns)
+        {
+            var output = new MemoryStream();
+            using (var zip = new ZLibStream(output, CompressionLevel.Fastest))
+                foreach (var section in column.Sections)
+                    zip.Write(System.Runtime.InteropServices.MemoryMarshal.AsBytes(section.Blocks.AsSpan()));
+            var bytes = output.ToArray();
+            writer.Write((short)(column.X - regionX * WorldSave.RegionSize));
+            writer.Write((short)(column.Z - regionZ * WorldSave.RegionSize));
+            writer.Write(bytes.Length);
+            writer.Write(bytes);
+        }
+    }
+
     [Fact]
     public void A_Kept_Column_Reads_Back_With_Its_Blocks_In_Another_Save_Of_The_Folder()
     {
@@ -32,7 +56,7 @@ public sealed class SaveTests : IDisposable
         read.ReadRegion(-3, 40);
         var bytes = read.Kept(-3, 40);
         Assert.NotNull(bytes);
-        var back = WorldSave.Decode(-3, 40, bytes, read.Renumber);
+        var back = WorldSave.Decode(-3, 40, bytes);
 
         Assert.Equal(BlockId.Glowstone, back.Get(1, 2, 3));
         Assert.Equal(BlockId.Water, back.Get(15, 127, 0));
@@ -49,18 +73,68 @@ public sealed class SaveTests : IDisposable
         (keys[1], keys[3]) = (keys[3], keys[1]);
         var column = new ChunkColumn(0, 0);
         column.Set(0, 0, 0, (BlockId)1);
-        column.Changed = true;
-        var save = new WorldSave(_folder);
-        save.Keep(column);
-        save.Flush();
-        save.WriteInfo(Info(keys));
+        new WorldSave(_folder).WriteInfo(Info(keys));
+        WriteVersion1Region(_folder, 0, 0, column);
 
         var read = new WorldSave(_folder);
         read.ReadInfo();
         read.ReadRegion(0, 0);
-        var back = WorldSave.Decode(0, 0, read.Kept(0, 0)!, read.Renumber);
+        var back = WorldSave.Decode(0, 0, read.Kept(0, 0)!);
 
         Assert.Equal(BlockId.Stone, back.Get(0, 0, 0));
+    }
+
+    [Fact]
+    public void A_Region_That_Cannot_Be_Read_Is_Kept_Beside_The_One_Written_Again()
+    {
+        var save = new WorldSave(_folder);
+        var path = Path.Combine(_folder, "regions", "r.0.0.bin");
+        byte[] unreadable = [.. "E3DR"u8, 2, 0, 0, 0, 7];
+        File.WriteAllBytes(path, unreadable);
+        var column = new ChunkColumn(0, 0);
+        column.Set(1, 2, 3, BlockId.Glowstone);
+        column.Changed = true;
+        save.Keep(column);
+        save.Flush();
+
+        Assert.Equal(unreadable, File.ReadAllBytes(path + ".unread"));
+        var read = new WorldSave(_folder);
+        read.ReadRegion(0, 0);
+        Assert.Equal(BlockId.Glowstone, WorldSave.Decode(0, 0, read.Kept(0, 0)!).Get(1, 2, 3));
+    }
+
+    [Theory]
+    [InlineData("world.json")]
+    [InlineData("mobs.bin")]
+    [InlineData("furnaces.json")]
+    [InlineData("chests.json")]
+    public void A_File_Of_The_Save_That_Cannot_Be_Read_Is_Kept_Beside_The_One_Written_Again(string name)
+    {
+        var save = new WorldSave(_folder);
+        var path = Path.Combine(_folder, name);
+        File.WriteAllText(path, "no file of a save");
+        switch (name)
+        {
+            case "world.json":
+                Assert.Null(save.ReadInfo());
+                save.WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]));
+                break;
+            case "mobs.bin":
+                Assert.Empty(save.ReadMobs().Kept);
+                save.WriteMobs([]);
+                break;
+            case "furnaces.json":
+                Assert.Empty(save.ReadFurnaces().All);
+                save.WriteFurnaces(new Furnaces());
+                break;
+            default:
+                Assert.Empty(save.ReadChests().All);
+                save.WriteChests(new Chests());
+                break;
+        }
+
+        Assert.Equal("no file of a save", File.ReadAllText(path + ".unread"));
+        Assert.True(File.Exists(path));
     }
 
     [Fact]
