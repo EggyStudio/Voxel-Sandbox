@@ -49,6 +49,12 @@ public sealed class ChunkColumn
     /// <summary>Whether a block of it changed since it was generated or last kept by the save.</summary>
     public bool Changed { get; set; }
 
+    /// <summary>
+    /// A count of the blocks set in it that may hide what is behind them or show it, by which
+    /// <see cref="Visibility"/> knows to flood again where the column lies within its reach.
+    /// </summary>
+    public int Openings { get; set; }
+
     /// <summary>Its sections from the bottom.</summary>
     public readonly Section[] Sections = new Section[SectionCount];
 

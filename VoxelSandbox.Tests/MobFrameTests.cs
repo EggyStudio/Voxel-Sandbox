@@ -99,4 +99,23 @@ public sealed class MobFrameTests
 
         Assert.Equal(1, game.Mobs.All.Count(m => !m.Body.Placed));
     }
+
+    [Fact]
+    public void Two_Mobs_Overlapping_Either_Side_Of_The_Edge_Of_A_Crowding_Cell_Are_Pushed_Apart()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mobs.Clear(null);
+        // Two pigs a fifth of a block apart along x either side of a multiple of two, ten blocks off.
+        var feet = LandOrigin.LandOf(game.Player.Body.Position);
+        var x = Math.Floor(feet.X / 2) * 2 + 10;
+        var west = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(x - 0.1, feet.Y, feet.Z), 0, MobKinds.Pig.Health, null));
+        var east = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(x + 0.1, feet.Y, feet.Z), 0, MobKinds.Pig.Health, null));
+        (west.Body.Velocity, east.Body.Velocity) = (Vector3.Zero, Vector3.Zero);
+        (game.Step.Seconds, game.Step.MobsStill) = (HeadlessGame.FrameSeconds, false);
+
+        MobMind.Crowd(new BehaviorContext(E3D.GetApp().World));
+
+        Assert.True(west.Body.Velocity.X < 0 && east.Body.Velocity.X > 0, $"the pigs move by {west.Body.Velocity} and {east.Body.Velocity}");
+    }
 }

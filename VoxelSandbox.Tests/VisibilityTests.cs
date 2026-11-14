@@ -84,4 +84,25 @@ public class VisibilityTests
         Assert.DoesNotContain(new SectionKey(0, 2, 0), marked);
         Assert.Contains(new SectionKey(0, 3, 0), marked);
     }
+
+    [Fact]
+    public void A_Column_Coming_Or_Changing_Past_The_Floods_Reach_Starts_No_Flood()
+    {
+        // Stone from the bottom to 60 and the sky above it, flooded at a render distance of 2.
+        var world = Laid.World(c => Laid.Fill(c, 0, 60, BlockId.Stone));
+        var visibility = new Visibility();
+        var eye = new Vector3(8.5f, 70, 8.5f);
+        Assert.True(visibility.Flood(world, eye, 2));
+
+        // A column five out joins and a block of it is set, past the reach of 2 squared and 2.
+        var far = world.Generator.Generate(5, 0);
+        Lighting.Compute(far);
+        world.Add(far);
+        world.SetBlock(5 * 16 + 3, 61, 3, BlockId.Stone);
+        Assert.False(visibility.Flood(world, eye, 2));
+
+        // A block set within the reach floods again.
+        world.SetBlock(2 * 16 + 3, 61, 3, BlockId.Stone);
+        Assert.True(visibility.Flood(world, eye, 2));
+    }
 }

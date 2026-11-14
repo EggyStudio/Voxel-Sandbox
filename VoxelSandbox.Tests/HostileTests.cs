@@ -152,4 +152,24 @@ public class HostileTests
         Assert.Equal(1, mobs.Kept);
         Assert.DoesNotContain(mobs.Columns().SelectMany(c => c.Mobs), m => m.Kind.Hostile);
     }
+
+    [Fact]
+    public void A_Zombie_With_No_Way_To_The_Player_Looks_For_One_Each_Half_Second()
+    {
+        // The player on a pillar of stone three high over the floor, which no zombie climbs.
+        var world = Floor();
+        for (int y = 11; y < 14; y++) world.SetBlock(12, y, 4, BlockId.Stone);
+        var zombie = Spawn(MobKinds.Zombie, 4.5f, 4.5f);
+        var player = new Body { Position = new Vector3(12.5f, 14, 4.5f) };
+
+        var waits = new List<float>();
+        for (int frame = 0; frame < 15; frame++)
+        {
+            Hunt(zombie, world, player, hour: 0, seconds: Step);
+            waits.Add(zombie.Ecs.GetRef<MobHostile>(zombie.Entity).Repath);
+        }
+
+        // A search sets the wait to half a second, which runs down over the frames after it.
+        Assert.True(waits.Zip(waits.Skip(1)).Count(w => w.Second < w.First) >= 12, $"the waits ran {string.Join(", ", waits)}");
+    }
 }

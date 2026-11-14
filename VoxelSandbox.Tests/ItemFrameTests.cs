@@ -46,4 +46,21 @@ public sealed class ItemFrameTests
         Assert.Equal(2, game.Drops.Count);
         Assert.Equal(5, game.Drops.All.Single(d => d.Drop.Item == Items.Leather).Drop.Count);
     }
+
+    [Fact]
+    public void Two_Stacks_Of_One_Item_Lying_Either_Side_Of_The_Edge_Of_A_Joining_Cell_Join()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        game.Mobs.Clear(null);
+        // Ten blocks from the player, at 0.45 and 0.55 of a block, in two cells of half a block.
+        var at = game.Player.Body.Position + new Vector3(10, 0, 0);
+        at.X = MathF.Floor(at.X) + 0.45f;
+        game.Drops.Spawn(Items.Leather, 2, at, Vector3.Zero);
+        game.Drops.Spawn(Items.Leather, 3, at + new Vector3(0.1f, 0, 0), Vector3.Zero);
+
+        headless.Step(3);
+
+        Assert.Equal(5, Assert.Single(game.Drops.All).Drop.Count);
+    }
 }

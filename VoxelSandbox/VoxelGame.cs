@@ -468,10 +468,10 @@ public sealed class VoxelGame : IDisposable
             // columns there have loaded.
             Player.Flying = false;
             Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, ChunkColumn.Ceiling, 0.5)));
-            (_landing, _loadTeleports) = (true, Player.Teleports);
+            (_landing, _loadTeleports, _respawned) = (true, Player.Teleports, false);
             return;
         }
-        _landing = false;
+        (_landing, _respawned) = (false, false);
         Player.Teleport(LandOrigin.PlaceOf(new LandPlace(info.X, info.Y, info.Z)));
         (Player.Heading, Player.Pitch, Player.Flying, Sky.Hour, Sky.Day) = (info.Heading, info.Pitch * MathF.PI / 180, info.Flying, info.Hour, info.Day);
     }
@@ -499,8 +499,9 @@ public sealed class VoxelGame : IDisposable
     public bool HoldLoading { get; set; }
 
     // Whether a new world's player is still to be set on the highest block at the origin, and the
-    // count of teleports then, which a command that moves the player during the loading passes.
-    private bool _landing;
+    // count of teleports then, which a command that moves the player during the loading passes, and
+    // whether the player waiting there came back from a death in a world with its own to keep.
+    private bool _landing, _respawned;
     private int _loadTeleports;
 
     /// <summary>
@@ -538,7 +539,7 @@ public sealed class VoxelGame : IDisposable
         if (HoldLoading || LoadingShare() < 1) return;
         Loading = false;
         if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
-        _landing = false;
+        (_landing, _respawned) = (false, false);
     }
 
     /// <summary>
@@ -616,8 +617,16 @@ public sealed class VoxelGame : IDisposable
     /// <summary>Keeps every loaded column the player changed and the player's place, and writes them, unless the world is transient.</summary>
     public void SaveWorld()
     {
-        // A new world left before its player stood in it has nothing to keep.
-        if (Save is null || Loading && _landing) return;
+        // A new world left before its player stood in it has nothing to keep, and a player waiting
+        // over the spawn after a death is set on it first, its column made here, so the save keeps
+        // where the player stands.
+        if (Save is null || Loading && _landing && !_respawned) return;
+        if (Loading && _landing && Player.Teleports == _loadTeleports)
+        {
+            Streamer.LoadNow(LandOrigin.PlaceOf(0, 0, 0), 0);
+            Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
+            (_landing, _respawned) = (false, false);
+        }
         foreach (var column in World.Columns)
             if (column.Changed) Save.Keep(column);
         Save.Flush();
@@ -856,9 +865,12 @@ public sealed class VoxelGame : IDisposable
         var spawn = new LandPlace(0.5, 0, 0.5);
         Leave(spawn);
         Recenter(spawn);
-        Streamer.LoadNow(LandOrigin.PlaceOf(0, 0, 0), 2);
+        // The player waits over the spawn while the workers make its columns, as a new world's
+        // does, and stands on its highest block once they have loaded.
         Player.Flying = false;
-        Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
+        Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, ChunkColumn.Ceiling, 0.5)));
+        (_landing, _loadTeleports, _respawned) = (true, Player.Teleports, true);
+        Loading = true;
         Capture(true);
     }
 
@@ -915,14 +927,16 @@ public sealed class VoxelGame : IDisposable
             if (!World.SetBlock(x, y, z, BlockId.Air) || !survival || _random.NextDouble() >= 1 / power) continue;
             foreach (var (item, count) in Loot.Of(block, _random, pickaxe)) Drops.Pop(item, count, x, y, z);
         }
+        // The rays to a body are cast only within the blast's reach, past which it harms nothing.
         var middle = Player.Body.Position + new Vector3(0, Player.Body.Height / 2, 0);
         var distance = Vector3.Distance(middle, at);
-        var exposure = Explosion.Exposure(World, at, Player.Body.Min, Player.Body.Max);
+        var exposure = survival && distance < Explosion.Reach(power) ? Explosion.Exposure(World, at, Player.Body.Min, Player.Body.Max) : 0;
         if (survival && Explosion.Damage(distance, power, exposure) is > 0 and var damage && Vitals.Damage(damage, cause))
             Player.Body.Velocity += Vector3.Normalize(middle - at + new Vector3(0, 0.5f, 0)) * Explosion.Impact(distance, power, exposure) * 12;
         foreach (var mob in Mobs.All)
         {
             var near = Vector3.Distance(mob.Body.Position + new Vector3(0, mob.Kind.Height / 2, 0), at);
+            if (near >= Explosion.Reach(power)) continue;
             var harm = Explosion.Damage(near, power, Explosion.Exposure(World, at, mob.Body.Min, mob.Body.Max));
             if (harm > 0) mob.Hit(at, harm);
         }

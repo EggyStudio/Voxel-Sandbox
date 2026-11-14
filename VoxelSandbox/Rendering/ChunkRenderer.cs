@@ -1202,6 +1202,8 @@ public sealed class ChunkRenderer : IDisposable
         }
         var flood = laps.Elapsed.TotalMilliseconds;
         SetProfileValue("draw.sections.flood", flood);
+        // The share of the frames of the last second a flood finished in.
+        SetProfileValue("draw.sections.floods", flooded ? 1 : 0, 1);
         laps.Restart();
         if (flooded || cast || _changed || _placedFor != (cx, cz, renderDistance, Cull)) Place(world, cx, cz, renderDistance);
         int draws = _placedDraws, triangles = _placedTriangles, lamps = 0;

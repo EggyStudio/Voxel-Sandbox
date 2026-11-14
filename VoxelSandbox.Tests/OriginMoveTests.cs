@@ -250,4 +250,46 @@ public sealed class OriginMoveTests : IDisposable
         Assert.False(game.Recenter(new LandPlace(3e9, Feet, 0.5)));
         Assert.Equal(1, game.Recentered);
     }
+
+    [Fact]
+    public void A_Respawn_Far_From_The_Spawn_Has_Its_Land_Made_By_The_Workers()
+    {
+        using var headless = new HeadlessGame(at: new LandPlace(X0 + 3000.5, Feet, 0.5));
+        var game = headless.Game;
+
+        game.Respawn();
+
+        // No column of the spawn is made in the call, and the player stands on the spawn's
+        // highest block once the land about it is in.
+        Assert.True(game.Loading);
+        Assert.False(game.World.HasColumn(0, 0));
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while (game.Loading && clock.Elapsed.TotalSeconds < 30)
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        Assert.False(game.Loading);
+        Assert.Equal(new LandPlace(0.5, game.World.Top(0, 0) + 1, 0.5), LandOrigin.LandOf(game.Player.Body.Position));
+    }
+
+    [Fact]
+    public void A_Game_Closed_While_The_Respawned_Player_Waits_Saves_It_On_The_Spawn()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(at: new LandPlace(X0 + 3000.5, Feet, 0.5), save: folder);
+            var game = headless.Game;
+            game.Respawn();
+            game.Dispose();
+
+            var info = new WorldSave(folder).ReadInfo()!;
+            Assert.Equal((0.5, game.World.Top(0, 0) + 1.0, 0.5), (info.X, info.Y, info.Z));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
 }

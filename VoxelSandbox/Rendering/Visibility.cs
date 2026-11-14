@@ -117,8 +117,8 @@ public sealed class Visibility
     }
 
     // What the last flood was worked out for, the eye's section and the faces it leaves by, the
-    // world's openings, the render distance and the atlas.
-    private (SectionKey Start, int Exits, int Openings, int Distance, int Atlas)? _floodedFor;
+    // columns within its reach and their openings, the render distance and the atlas.
+    private (SectionKey Start, int Exits, (int Count, ulong Mix) Columns, int Distance, int Atlas)? _floodedFor;
 
     // The faces the eye's section is left by from the eye's cell, and the cell, the section's
     // version and the atlas they were worked out for, the section of a column not loaded having none.
@@ -153,23 +153,24 @@ public sealed class Visibility
 
     // A flood under way, what it was started for, its start, the faces it leaves its start by and
     // the reach it is held to.
-    private (SectionKey Start, int Exits, int Openings, int Distance, int Atlas)? _floodingFor;
+    private (SectionKey Start, int Exits, (int Count, ulong Mix) Columns, int Distance, int Atlas)? _floodingFor;
     private int _reach;
 
     /// <summary>
     /// Floods from the section holding the eye through the sections of the loaded columns within a
     /// render distance of it, as <see cref="Seen"/> then holds, unless nothing it depends on
     /// changed since the last flood, the eye's section, the faces it leaves that section by, the
-    /// world's <see cref="VoxelWorld.Openings"/>, the render distance and the atlas, which keeps
-    /// the last flood's sections.
+    /// columns loaded within its reach and their <see cref="ChunkColumn.Openings"/>, the render
+    /// distance and the atlas, which keeps the last flood's sections. A column that comes or goes
+    /// beyond the reach, as at the edge of the land streamed, starts no flood.
     /// </summary>
     /// <remarks>
     /// Where the eye has stepped into a section beside the last flood's, the flood takes at most
     /// <paramref name="budgetMs"/> a frame and goes on in the frames after, <see cref="Seen"/>
     /// keeping the last whole flood's sections meanwhile, so the frame the eye crosses in is not
     /// held by a flood over every section within the render distance, longest where it works out
-    /// the sections' joins. A flood under way runs to its end before another begins, so the world's
-    /// openings changing every frame as columns arrive still sees each flood finished. A jump of
+    /// the sections' joins. A flood under way runs to its end before another begins, so the columns
+    /// in reach changing every frame as they arrive still see each flood finished. A jump of
     /// more than a section floods at once, as a teleport's first frame does.
     /// </remarks>
     /// <returns>Whether a flood finished in this call.</returns>
@@ -180,7 +181,7 @@ public sealed class Visibility
         {
             var start = Reach.Of(eye);
             var exits = ExitsKept(world, eye, atlas);
-            var wanted = (start, exits, world.Openings, renderDistance, atlas.Serial);
+            var wanted = (start, exits, Within(world, start, renderDistance), renderDistance, atlas.Serial);
             if (_floodedFor == wanted) return false;
             // A step into a section beside the last flood's start spreads, and any other change floods at once.
             if (_floodedFor is not { } last || Math.Abs(last.Start.X - start.X) > 1 || Math.Abs(last.Start.Y - start.Y) > 1 || Math.Abs(last.Start.Z - start.Z) > 1)
@@ -220,6 +221,24 @@ public sealed class Visibility
         }
         Finish(culled: true);
         return true;
+    }
+
+    // The columns loaded within a flood's reach of a section, by their count and a sum of a mix of
+    // each one's place and openings, which a column coming or going within the reach or a block of
+    // one changing its openings changes.
+    private static (int Count, ulong Mix) Within(VoxelWorld world, SectionKey start, int renderDistance)
+    {
+        var reach = renderDistance * renderDistance + renderDistance;
+        var (count, mix) = (0, 0UL);
+        for (int dz = -renderDistance; dz <= renderDistance; dz++)
+            for (int dx = -renderDistance; dx <= renderDistance; dx++)
+            {
+                if (dx * dx + dz * dz > reach || !world.TryGetColumn(start.X + dx, start.Z + dz, out var column)) continue;
+                var v = (ulong)(uint)column.X * 0x9E3779B97F4A7C15UL ^ (ulong)(uint)column.Z * 0xC2B2AE3D27D4EB4FUL ^ (ulong)(uint)column.Openings * 0x165667B19E3779F9UL;
+                v = (v ^ v >> 31) * 0xBF58476D1CE4E5B9UL;
+                (count, mix) = (count + 1, mix + (v ^ v >> 29));
+            }
+        return (count, mix);
     }
 
     // Makes the flood under way the last whole one.

@@ -53,10 +53,13 @@ public static class Explosion
     /// </summary>
     public static int Damage(float distance, float power, float exposure)
     {
-        if (distance >= power * 2) return 0;
+        if (distance >= Reach(power)) return 0;
         var impact = (1 - distance / (power * 2)) * exposure;
         return (int)((impact * impact + impact) / 2 * 7 * power * 2 + 1);
     }
+
+    /// <summary>How far an explosion of a power harms and pushes, twice the power.</summary>
+    public static float Reach(float power) => power * 2;
 
     /// <summary>How hard an explosion pushes at a distance, the impact of <see cref="Damage"/>.</summary>
     public static float Impact(float distance, float power, float exposure) => distance >= power * 2 ? 0 : (1 - distance / (power * 2)) * exposure;

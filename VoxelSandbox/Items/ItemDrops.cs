@@ -81,30 +81,60 @@ public partial struct ItemDrop
 
     /// <summary>
     /// Joins stacks of one item lying within half a block of each other, each taking as much of the
-    /// others as it holds, and despawns the empty stacks and those five minutes old.
+    /// others as it holds, and despawns the empty stacks and those five minutes old, while the game
+    /// takes time.
     /// </summary>
     [OnPostUpdate]
     public static void Gather(BehaviorContext ctx)
     {
+        if (ctx.World.TryGetResource<GameStep>(out var step) && step.Seconds <= 0) return;
         var ecs = ctx.Ecs;
-        var stacks = new List<(int Id, Vector3 At)>();
-        foreach (var (id, _, body) in ecs.Query<ItemDrop, Body>()) stacks.Add((id, body.Position));
-        for (int i = 0; i < stacks.Count; i++)
+        // Each stack is weighed against those of its item in the cells of the joining's reach about
+        // its own alone, the only ones near enough to join it, and takes from them in the order the
+        // stacks were gathered, so of stacks that join the one gathered first holds what they join.
+        Lying.Clear();
+        Firsts.Clear();
+        foreach (var (id, drop, body) in ecs.Query<ItemDrop, Body>())
         {
-            ref var a = ref ecs.GetRef<ItemDrop>(stacks[i].Id);
+            var cell = CellOf(body.Position, drop.ItemId);
+            Lying.Add((id, body.Position, Firsts.GetValueOrDefault(cell, -1)));
+            Firsts[cell] = Lying.Count - 1;
+        }
+        for (int i = 0; i < Lying.Count; i++)
+        {
+            ref var a = ref ecs.GetRef<ItemDrop>(Lying[i].Id);
             if (a.Count == 0 || a.Count >= a.Item.MostInStack) continue;
-            for (int j = i + 1; j < stacks.Count; j++)
+            Near.Clear();
+            var (x, y, z, item) = CellOf(Lying[i].At, a.ItemId);
+            for (int dz = -1; dz <= 1; dz++)
+                for (int dy = -1; dy <= 1; dy++)
+                    for (int dx = -1; dx <= 1; dx++)
+                        for (int j = Firsts.GetValueOrDefault((x + dx, y + dy, z + dz, item), -1); j >= 0; j = Lying[j].Next)
+                            if (j > i && Vector3.DistanceSquared(Lying[i].At, Lying[j].At) <= Join * Join) Near.Add(j);
+            Near.Sort();
+            foreach (var j in Near)
             {
-                ref var b = ref ecs.GetRef<ItemDrop>(stacks[j].Id);
-                if (b.Count == 0 || b.ItemId != a.ItemId || Vector3.DistanceSquared(stacks[i].At, stacks[j].At) > Join * Join) continue;
+                ref var b = ref ecs.GetRef<ItemDrop>(Lying[j].Id);
+                if (b.Count == 0) continue;
                 var moved = Math.Min(b.Count, a.Item.MostInStack - a.Count);
                 (a.Count, b.Count) = (a.Count + moved, b.Count - moved);
                 if (a.Count >= a.Item.MostInStack) break;
             }
         }
-        foreach (var (id, _) in stacks)
+        foreach (var (id, _, _) in Lying)
             if (ecs.GetRef<ItemDrop>(id) is { Count: 0 } or { Age: > Lifetime }) ecs.Despawn(id);
     }
+
+    // The stacks of the frame, each with the one gathered before it of its item in its cell, the
+    // last of each cell, and the stacks near one, kept from frame to frame so gathering allocates
+    // nothing.
+    private static readonly List<(int Id, Vector3 At, int Next)> Lying = [];
+    private static readonly Dictionary<(int X, int Y, int Z, int Item), int> Firsts = [];
+    private static readonly List<int> Near = [];
+
+    // The cell of the joining's reach a place lies in, with the item of the stack there.
+    private static (int X, int Y, int Z, int Item) CellOf(Vector3 at, int item) =>
+        ((int)MathF.Floor(at.X / Join), (int)MathF.Floor(at.Y / Join), (int)MathF.Floor(at.Z / Join), item);
 
     private static void Move(VoxelWorld world, Body body, float seconds)
     {

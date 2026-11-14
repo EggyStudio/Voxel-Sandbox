@@ -175,16 +175,19 @@ public sealed partial class Mob
         }
 
         // Near and on its level it runs straight at the player, and otherwise along a way found to
-        // where the player stands, found again every half second.
+        // where the player stands, found again every half second, or two seconds after a search
+        // that found none, which runs straight at the player meanwhile, since a player out of reach
+        // costs a search of every cell the search may take.
         if (flat.Length() < 3 && MathF.Abs(to.Y) < 0.6f)
         {
             _path = null;
             return (Ahead(flat) * Kind.ChaseSpeed, Body.OnGround && Blocked(world, flat));
         }
-        if (hostile.Repath <= 0 || _path is null)
+        if (hostile.Repath <= 0)
         {
-            hostile.Repath = 0.5f;
-            if (Ground(world, prey.Body.Position) is not { } goal || !WalkTo(world, goal)) _path = null;
+            var found = Ground(world, prey.Body.Position) is { } goal && WalkTo(world, goal);
+            hostile.Repath = found ? 0.5f : 2;
+            if (!found) _path = null;
         }
         if (_path is null) return (Ahead(flat) * Kind.ChaseSpeed, Body.OnGround && Blocked(world, flat));
         return Follow(world, seconds, Kind.ChaseSpeed);

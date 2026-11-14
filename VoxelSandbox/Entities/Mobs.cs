@@ -54,22 +54,40 @@ public partial struct MobMind
     public static void Crowd(BehaviorContext ctx)
     {
         if (!ctx.World.TryGetResource<GameStep>(out var step) || step.Seconds <= 0 || step.MobsStill) return;
-        var bodies = new List<Body>();
-        foreach (var (_, _, body) in ctx.Ecs.Query<Mob, Body>()) bodies.Add(body);
-        var strength = MathF.Min(1, 8 * step.Seconds);
-        for (int i = 0; i < bodies.Count; i++)
+        // Each body is weighed against those standing in the cells about its own alone, cells wider
+        // than any two mobs' half widths together, so only bodies near enough to overlap are.
+        Bodies.Clear();
+        Cells.Clear();
+        foreach (var (_, _, body) in ctx.Ecs.Query<Mob, Body>())
         {
-            var a = bodies[i];
-            for (int j = i + 1; j < bodies.Count; j++)
-            {
-                var b = bodies[j];
-                if (Apart(a, b) is not { } push) continue;
-                a.Velocity -= push * strength * 4;
-                b.Velocity += push * strength * 4;
-            }
+            var cell = CellOf(body.Position);
+            Bodies.Add((body, Cells.GetValueOrDefault(cell, -1)));
+            Cells[cell] = Bodies.Count - 1;
+        }
+        var strength = MathF.Min(1, 8 * step.Seconds);
+        for (int i = 0; i < Bodies.Count; i++)
+        {
+            var a = Bodies[i].Body;
+            var (x, z) = CellOf(a.Position);
+            for (int dz = -1; dz <= 1; dz++)
+                for (int dx = -1; dx <= 1; dx++)
+                    for (int j = Cells.GetValueOrDefault((x + dx, z + dz), -1); j >= 0; j = Bodies[j].Next)
+                    {
+                        if (j <= i || Apart(a, Bodies[j].Body) is not { } push) continue;
+                        a.Velocity -= push * strength * 4;
+                        Bodies[j].Body.Velocity += push * strength * 4;
+                    }
             if (Apart(step.Player, a) is { } away) a.Velocity += away * strength * 6;
         }
     }
+
+    // The mobs' bodies of the frame, each with the one before it in its cell, and the last of each
+    // cell, kept from frame to frame so crowding allocates nothing.
+    private static readonly List<(Body Body, int Next)> Bodies = [];
+    private static readonly Dictionary<(int X, int Z), int> Cells = [];
+
+    // The cell of two blocks along x and z a place lies in, wider than the widest mob, a spider.
+    private static (int X, int Z) CellOf(Vector3 at) => ((int)MathF.Floor(at.X / 2), (int)MathF.Floor(at.Z / 2));
 
     /// <summary>Takes away the mobs that have fallen over for long enough, each sent as a <see cref="MobDied"/>.</summary>
     [OnPostUpdate]
