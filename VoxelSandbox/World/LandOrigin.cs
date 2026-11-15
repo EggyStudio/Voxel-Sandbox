@@ -11,6 +11,9 @@ public readonly record struct LandPlace(double X, double Y, double Z)
 {
     /// <summary>Whether the place is a number along every axis.</summary>
     public bool Finite => double.IsFinite(X) && double.IsFinite(Y) && double.IsFinite(Z);
+
+    /// <summary>Whether the place is a number along every axis within the land's edge, where a teleport may put the player.</summary>
+    public bool InLand => Finite && Math.Abs(X) <= LandOrigin.Edge && Math.Abs(Y) <= LandOrigin.Edge && Math.Abs(Z) <= LandOrigin.Edge;
 }
 
 /// <summary>

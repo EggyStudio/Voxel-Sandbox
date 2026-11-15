@@ -138,6 +138,9 @@ public sealed class Sky : IDisposable
     /// </summary>
     public float Overcast { get; set; }
 
+    /// <summary>The hour the sky begins at, and a save's whose hour is no number.</summary>
+    public const float FirstHour = 10;
+
     /// <summary>The hour of the day, from 0 to 24, the sun rising at 6 in the east and setting at 18 in the west.</summary>
     public float Hour { get; set; }
 

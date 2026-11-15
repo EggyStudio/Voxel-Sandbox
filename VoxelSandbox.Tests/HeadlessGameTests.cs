@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Text.Json.Nodes;
 using Engine;
 using Xunit;
 using static Engine.E3D;
@@ -124,6 +125,46 @@ public sealed class HeadlessGameTests
 
             var (kept, _) = new WorldSave(folder).ReadMobs();
             Assert.Contains(kept.Values.SelectMany(list => list), mob => mob.Kind == MobKinds.Pig && mob.Position == pig);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Theory]
+    [InlineData("Kind", "null")]
+    [InlineData("X", "1e300")]
+    [InlineData("Heading", "1e300")]
+    [InlineData("Hour", "1e300")]
+    [InlineData("Food", "-1")]
+    public void A_World_Whose_Info_Holds_A_Value_The_Game_Cannot_Hold_Opens_With_The_Rest_And_Saves(string field, string value)
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A world saved with its third slot chosen, its info given the value by hand.
+            using (var first = new HeadlessGame(save: folder)) first.Game.Hotbar.Selected = 2;
+            var path = Path.Combine(folder, "world.json");
+            var info = JsonNode.Parse(File.ReadAllText(path))!.AsObject();
+            info[field] = JsonNode.Parse(value);
+            File.WriteAllText(path, info.ToJsonString());
+
+            using (var opened = new HeadlessGame(save: folder))
+            {
+                opened.Step(5);
+                var (game, at) = (opened.Game, LandOrigin.LandOf(opened.Game.Player.Body.Position));
+                Assert.Equal("flat", game.World.Generator.Name);
+                Assert.Equal(2, game.Hotbar.Selected);
+                Assert.True(Math.Abs(at.X) < 16 && Math.Abs(at.Z) < 16 && at.Y is > 0 and < 100, at.ToString());
+                Assert.True(float.IsFinite(game.Player.Heading) && float.IsFinite(game.Sky.Hour));
+                Assert.InRange(game.Vitals.Food, 0, Vitals.Most);
+            }
+
+            var saved = new WorldSave(folder).ReadInfo()!;
+            Assert.Equal("flat", saved.Kind);
+            Assert.True(Math.Abs(saved.X) < 16 && Math.Abs(saved.Z) < 16, $"{saved.X}, {saved.Z}");
+            Assert.Equal(2, saved.Selected);
         }
         finally
         {

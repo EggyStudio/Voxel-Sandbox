@@ -18,14 +18,24 @@ namespace VoxelSandbox;
 /// its days.
 /// </summary>
 public sealed record WorldInfo(string Kind, int Seed, double X, double Y, double Z, float Heading, float Pitch, bool Flying, float Hour, string[] Blocks,
-    string Mode = "creative", string[]? Inventory = null, int Selected = 0, int Health = Vitals.Most, int Food = Vitals.Most, float Saturation = 5, int Day = 0, bool? Weather = null);
+    string Mode = "creative", string[]? Inventory = null, int Selected = 0, int Health = Vitals.Most, int Food = Vitals.Most, float Saturation = 5, int Day = 0, bool? Weather = null)
+{
+    /// <summary>
+    /// Whether the player lands over the spawn as in a new world, since the save held no place the
+    /// land holds, which a save never writes.
+    /// </summary>
+    [JsonIgnore]
+    public bool Landing { get; init; }
+}
 
 /// <summary>The types a save writes as JSON, read and written by code System.Text.Json's generator makes.</summary>
 /// <remarks>
 /// A native build turns serializing by reflection off, and there a save serialized by reflection
-/// throws, which ends the program the first time it saves or opens a world.
+/// throws, which ends the program the first time it saves or opens a world. A float that is no
+/// number or infinite is written by its name, which the writer otherwise refuses, so no value of the
+/// game's ends a save, and the reader bounds it.
 /// </remarks>
-[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSourceGenerationOptions(WriteIndented = true, NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals)]
 [JsonSerializable(typeof(WorldInfo))]
 [JsonSerializable(typeof(WorldSave.FurnaceRecord[]))]
 [JsonSerializable(typeof(WorldSave.ChestRecord[]))]
@@ -280,7 +290,7 @@ public sealed class WorldSave
             try
             {
                 if (JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.WorldInfo) is { } info)
-                    found.Add((Path.GetFileName(folder), info.Kind, info.Seed, File.GetLastWriteTimeUtc(path)));
+                    found.Add((Path.GetFileName(folder), Bounded(info).Kind, info.Seed, File.GetLastWriteTimeUtc(path)));
             }
             catch (Exception ex) when (ex is IOException or JsonException)
             {
@@ -297,8 +307,12 @@ public sealed class WorldSave
         if (!File.Exists(path)) return null;
         try
         {
-            var info = JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.WorldInfo);
-            if (info?.Blocks is { } keys) (_keys, _renumber) = (keys, Renumbering(keys));
+            var read = JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.WorldInfo);
+            if (read is null) return null;
+            var info = Bounded(read);
+            if (info != read)
+                TraceLog(LogLevel.Warning, $"{path} holds a kind, a place, a heading, a pitch or an hour the game cannot hold, so those open as a new world's and the rest as saved.");
+            if (info.Blocks is { } keys) (_keys, _renumber) = (keys, Renumbering(keys));
             return info;
         }
         catch (Exception ex) when (ex is IOException or JsonException)
@@ -306,6 +320,21 @@ public sealed class WorldSave
             TraceLog(LogLevel.Warning, $"{path} could not be read, so the world begins as a new one of its name and {SetAside(path)}. {ex.Message}");
             return null;
         }
+    }
+
+    // A world's info with each value the game cannot hold taken as a new world's, so a file changed by
+    // hand opens with the rest of what it keeps. A kind named by none is one this build makes none
+    // of, which opens as the kind asked for. A place that is no number or lies past the land's edge
+    // lands the player over the spawn. A heading, a pitch or an hour that is no number is a new
+    // world's.
+    private static WorldInfo Bounded(WorldInfo info)
+    {
+        if (info.Kind is null) info = info with { Kind = "" };
+        if (!new LandPlace(info.X, info.Y, info.Z).InLand) info = info with { X = 0, Y = 0, Z = 0, Landing = true };
+        if (!float.IsFinite(info.Heading)) info = info with { Heading = 0 };
+        if (!float.IsFinite(info.Pitch)) info = info with { Pitch = 0 };
+        if (!float.IsFinite(info.Hour)) info = info with { Hour = Sky.FirstHour };
+        return info;
     }
 
     public void WriteInfo(WorldInfo info) =>

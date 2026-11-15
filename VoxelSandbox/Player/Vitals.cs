@@ -62,7 +62,8 @@ public sealed class Vitals
     /// <summary>Sets the values a save kept, a new life's where none is given.</summary>
     public void Set(int health = Most, int food = Most, float saturation = 5)
     {
-        (Health, Food, Saturation) = (Math.Clamp(health, 0, Most), Math.Clamp(food, 0, Most), Math.Clamp(saturation, 0, food));
+        (Health, Food) = (Math.Clamp(health, 0, Most), Math.Clamp(food, 0, Most));
+        Saturation = Math.Clamp(saturation, 0, Food);
         (Exhaustion, Air, Fallen, Hurt, Cause, _started) = (0, Breath, 0, 0, null, false);
         (_regen, _starve, _drown, _prick) = (0, 0, 0, 0);
     }

@@ -8,6 +8,31 @@ public class BodyTests
     // A floor of stone with its top at 11.
     private static VoxelWorld Floor() => Laid.World(c => Laid.Fill(c, 0, 10, BlockId.Stone));
 
+    // Moves a body on a worker, whether it ends within ten seconds, so a move that never ends fails
+    // the test rather than holding the run.
+    private static bool MovesInTime(Body body, VoxelWorld world, Vector3 delta) =>
+        Task.Run(() => body.Move(world, delta, keepToEdges: false)).Wait(TimeSpan.FromSeconds(10));
+
+    [Theory]
+    [InlineData(3e9f)]
+    [InlineData(float.PositiveInfinity)]
+    public void A_Body_Past_The_Lands_Edge_Moves_In_Time(float x)
+    {
+        var body = new Body { Position = new Vector3(x, 15, 4.5f) };
+
+        Assert.True(MovesInTime(body, Floor(), new Vector3(0, -1, 0)));
+    }
+
+    [Fact]
+    public void A_Move_Longer_Than_Any_A_Frame_Takes_Is_Not_Taken_And_Its_Velocity_Let_Go()
+    {
+        var body = new Body { Position = new Vector3(4.5f, 15, 4.5f), Velocity = new Vector3(1e30f, 0, 0) };
+
+        Assert.True(MovesInTime(body, Floor(), new Vector3(1e30f, 0, 0)));
+        Assert.Equal(new Vector3(4.5f, 15, 4.5f), body.Position);
+        Assert.Equal(Vector3.Zero, body.Velocity);
+    }
+
     [Fact]
     public void A_Falling_Body_Lands_On_The_Floor_And_Stands_On_It()
     {

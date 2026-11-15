@@ -1346,6 +1346,8 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     public static void March(Vector3 from, Vector3 way, float longest, Func<SectionKey, bool> seen, HashSet<SectionKey> casters)
     {
+        // A way that is no number, as a sky's hour that is none gives the sun, meets no section.
+        if (float.IsNaN(way.X) || float.IsNaN(way.Y) || float.IsNaN(way.Z)) return;
         const float size = Section.Size;
         int x = (int)MathF.Floor(from.X / size), y = (int)MathF.Floor(from.Y / size), z = (int)MathF.Floor(from.Z / size);
         int stepX = MathF.Sign(way.X), stepZ = MathF.Sign(way.Z);

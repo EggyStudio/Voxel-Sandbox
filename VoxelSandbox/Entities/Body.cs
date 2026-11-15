@@ -19,6 +19,9 @@ public sealed class Body(float halfWidth, float height)
     private const float Skin = 1e-4f;
     // How high the box climbs onto what it walks into, as onto a slab or a stair.
     private const float StepHeight = 0.6f;
+    // Far past the most a frame steps a body by, some 20 blocks, a fall's limit of 78 a second over
+    // the longest frame's quarter of a second.
+    private const float LongestMove = 1024;
 
     /// <summary>The player's box.</summary>
     public Body() : this(0.3f, 1.8f)
@@ -65,8 +68,9 @@ public sealed class Body(float halfWidth, float height)
     {
         // A move that is no number is not taken and the velocity is let go, since a place that is no
         // number stays so, is drawn nowhere and is saved so, under the column that no number turns
-        // into.
-        if (!float.IsFinite(delta.X) || !float.IsFinite(delta.Y) || !float.IsFinite(delta.Z))
+        // into. Nor is one longer than any a frame steps a body by, so the steps it is cut into stay
+        // few.
+        if (!float.IsFinite(delta.X) || !float.IsFinite(delta.Y) || !float.IsFinite(delta.Z) || delta.Length() > LongestMove)
         {
             Velocity = Vector3.Zero;
             return;
@@ -177,7 +181,9 @@ public sealed class Body(float halfWidth, float height)
 
     private static float Component(Vector3 v, int axis) => axis == 0 ? v.X : axis == 1 ? v.Y : v.Z;
 
-    private static int Floor(float value) => (int)MathF.Floor(value);
+    // A side past the land's edge is floored as at the edge, and one that is no number as 0, so no
+    // loop over a box's cells runs to the largest int, which every int is at most.
+    private static int Floor(float value) => (int)MathF.Floor(Math.Clamp(value, -LandOrigin.Edge, LandOrigin.Edge));
 
     // The boxes of the block at a cell kept against the origin.
     private static IReadOnlyList<Box> BoxesAt(VoxelWorld world, int x, int y, int z) => world.BoxesAt(x + LandOrigin.X, y, z + LandOrigin.Z);

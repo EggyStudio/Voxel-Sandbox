@@ -137,6 +137,19 @@ public sealed class SaveTests : IDisposable
         Assert.True(File.Exists(path));
     }
 
+    [Fact]
+    public void An_Info_With_A_Heading_And_A_Place_That_Are_No_Number_Is_Written_And_Read_Back_As_A_New_Worlds()
+    {
+        var save = new WorldSave(_folder);
+
+        save.WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]) with { X = double.NaN, Heading = float.PositiveInfinity, Hour = float.NaN });
+        var read = new WorldSave(_folder).ReadInfo()!;
+
+        Assert.Equal((0, 0, 0), (read.X, read.Y, read.Z));
+        Assert.Equal(0, read.Heading);
+        Assert.Equal(Sky.FirstHour, read.Hour);
+    }
+
     [Theory]
     [InlineData(-1)]
     [InlineData(int.MaxValue)]

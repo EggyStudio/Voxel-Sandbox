@@ -85,7 +85,7 @@ public sealed class VoxelGame : IDisposable
         Renderer = new ChunkRenderer(ecs);
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
         PackEntries = given.Count > 0 || !_settings ? given : PackList.Default.Read();
-        Sky = new Sky(10);
+        Sky = new Sky(Sky.FirstHour);
         ReloadPacks();
         if (given.Count == 0 && _settings && !File.Exists(PackList.Default.File)) FetchDefaults();
         Light.ApplyAll();
@@ -462,10 +462,11 @@ public sealed class VoxelGame : IDisposable
         _sinceSave = 0;
         Loading = true;
 
-        if (info is null)
+        if (info is not null) (Sky.Hour, Sky.Day) = (info.Hour, info.Day);
+        if (info is null || info.Landing)
         {
-            // A new world's player waits over the origin, and stands on its highest block once the
-            // columns there have loaded.
+            // A new world's player, and one whose save held no place in the land, waits over the
+            // origin, and stands on its highest block once the columns there have loaded.
             Player.Flying = false;
             Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, ChunkColumn.Ceiling, 0.5)));
             (_landing, _loadTeleports, _respawned) = (true, Player.Teleports, false);
@@ -473,7 +474,7 @@ public sealed class VoxelGame : IDisposable
         }
         (_landing, _respawned) = (false, false);
         Player.Teleport(LandOrigin.PlaceOf(new LandPlace(info.X, info.Y, info.Z)));
-        (Player.Heading, Player.Pitch, Player.Flying, Sky.Hour, Sky.Day) = (info.Heading, info.Pitch * MathF.PI / 180, info.Flying, info.Hour, info.Day);
+        (Player.Heading, Player.Pitch, Player.Flying) = (info.Heading, info.Pitch * MathF.PI / 180, info.Flying);
     }
 
     /// <summary>The name of the world loaded, its save's folder or, for a transient one, its kind and seed.</summary>
@@ -621,6 +622,8 @@ public sealed class VoxelGame : IDisposable
         // over the spawn after a death is set on it first, its column made here, so the save keeps
         // where the player stands.
         if (Save is null || Loading && _landing && !_respawned) return;
+        // The next timed save waits its time even where this one throws, rather than one a frame.
+        _sinceSave = 0;
         if (Loading && _landing && Player.Teleports == _loadTeleports)
         {
             Streamer.LoadNow(LandOrigin.PlaceOf(0, 0, 0), 0);
@@ -642,7 +645,6 @@ public sealed class VoxelGame : IDisposable
         Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
             Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
             Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
-        _sinceSave = 0;
     }
 
     /// <summary>

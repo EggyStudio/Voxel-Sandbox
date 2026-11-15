@@ -86,6 +86,14 @@ public class VisibilityTests
     }
 
     [Fact]
+    public void A_Ray_Along_A_Way_That_Is_No_Number_Marks_No_Section()
+    {
+        var marked = new HashSet<SectionKey>();
+        ChunkRenderer.March(new Vector3(8, 16, 8), new Vector3(float.NaN), 40, _ => false, marked);
+        Assert.Empty(marked);
+    }
+
+    [Fact]
     public void A_Column_Coming_Or_Changing_Past_The_Floods_Reach_Starts_No_Flood()
     {
         // Stone from the bottom to 60 and the sky above it, flooded at a render distance of 2.
