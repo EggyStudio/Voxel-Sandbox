@@ -137,6 +137,52 @@ public sealed class SaveTests : IDisposable
         Assert.True(File.Exists(path));
     }
 
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(int.MaxValue)]
+    public void A_Mobs_File_Listing_More_Kinds_Than_A_Byte_Tells_Apart_Is_Kept_Beside_And_Its_Mobs_Placed_Again(int listed)
+    {
+        new WorldSave(_folder);
+        var path = Path.Combine(_folder, "mobs.bin");
+        using (var writer = new BinaryWriter(new ZLibStream(File.Create(path), CompressionLevel.Fastest)))
+        {
+            writer.Write("E3DM"u8);
+            writer.Write(2);
+            writer.Write(listed);
+        }
+
+        var (kept, placed) = new WorldSave(_folder).ReadMobs();
+
+        Assert.Empty(kept);
+        Assert.Empty(placed);
+        Assert.True(File.Exists(path + ".unread"));
+    }
+
+    [Fact]
+    public void A_Furnace_Or_A_Chest_Listed_With_No_Slots_Stands_Empty()
+    {
+        new WorldSave(_folder);
+        File.WriteAllText(Path.Combine(_folder, "furnaces.json"), """[{"X":1,"Y":2,"Z":3,"Slots":null,"Burning":0,"BurnTotal":0,"Cooked":0}]""");
+        File.WriteAllText(Path.Combine(_folder, "chests.json"), """[{"X":4,"Y":5,"Z":6,"Slots":null,"Loot":null,"Seed":0}]""");
+
+        var save = new WorldSave(_folder);
+
+        Assert.All(save.ReadFurnaces().All[(1, 2, 3)].Slots, slot => Assert.Null(slot));
+        Assert.All(save.ReadChests().All[(4, 5, 6)].Slots, slot => Assert.Null(slot));
+    }
+
+    [Fact]
+    public void A_Slot_That_Is_None_Reads_Empty_Beside_The_Stacks_Of_The_Rest()
+    {
+        new WorldSave(_folder);
+        File.WriteAllText(Path.Combine(_folder, "chests.json"), """[{"X":7,"Y":8,"Z":9,"Slots":[null,"stick 2"],"Loot":null,"Seed":0}]""");
+
+        var chest = new WorldSave(_folder).ReadChests().All[(7, 8, 9)];
+
+        Assert.Null(chest.Slots[0]);
+        Assert.Equal(new ItemStack(Items.Stick, 2), chest.Slots[1]);
+    }
+
     [Fact]
     public void The_Players_Place_A_Million_Blocks_Out_Reads_Back_Whole()
     {

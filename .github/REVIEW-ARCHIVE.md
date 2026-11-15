@@ -3149,6 +3149,22 @@ before a batch.
     beside the room where 142 and 24, the lone bright pixels left ordinary ones bloom does not
     spread.
 
+180. **The deep audit's findings.** From the review's read-only audit of 2026-11-14 at `f201940`,
+    ~/.cache/claude-reviewer/audits-2026-11-14/Voxel-Sandbox-deep-audit.md, five areas each read by
+    a finder and every finding put to three verifiers, one reading the code, one its reach and one
+    the records. 23 held, 13 of medium severity and 10 of low, findings 3 and 4 the same fault, each
+    with its file and line, its scenario and a direction for the mend. First finding 6, which the
+    review checked against the code. A test game given a save folder is not transient, so it reads
+    the machine's own pack list and options under the player's data folder and, where the pack list
+    is missing as on a runner, fetches the default packs into that folder; three tests build one,
+    and until the mend the suite runs here with XDG_DATA_HOME naming a folder of its own, since no
+    session touches the player's data. Then finding 8, play.sh's trap stopping whichever game
+    session serves on the machine when the play fails before naming its own. Then a Reply saying of
+    each other finding whether it holds at the head, and the mends a few to a commit, the saves'
+    first, 1, 2, 14 and 15, then the input's, 3 to 5 and 18, then the costs, 10 to 13, 20 and 21,
+    each read before and after, then the rest, each with a test that fails first; a finding that
+    does not hold says why. Ahead of the pin, which is taken when the engine's package comes.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -4581,6 +4597,298 @@ meadow's and the river's move by a few pixels at their edges with the same detai
 worse to the eye. The strict build is clean and 394 tests pass. The sheets are
 20-10-item-176-pinned.png, the sweep's two worst steps before and after, and
 20-15-pin-6260-edges.png in the dump.
+
+Item 180, the deep audit, read at `f201940`. Finding 6 holds. `HeadlessGame.cs:47` builds the game
+with `transient: save is null`, and in a game that is not transient `VoxelGame.cs:80` reads the pack
+list, `:83` fetches the default packs where the list is missing and `:88` reads the options, each
+under the folder above `WorldSave.Root` (`WorldSave.cs:79-80`), so the three tests that pass a save
+folder read the machine's own. I ran the suite without XDG_DATA_HOME since 2026-11-12, whole or with
+FarGameTests or Closing_The_Game_Again in its filter, between 01:00 and 03:46, at 12:35, at 13:04
+and at 19:19 on 2026-11-12 in the game's checkout, and at 13:16, 14:32 and 15:14 on 2026-11-14 in
+the work copies of 264.10, of the faces trial and of the pin. Those runs read the player's
+resourcepacks.txt and options.txt and loaded whatever packs the list names. None of them wrote
+either file. Each found the list there and so fetched nothing, and the one writer of the list,
+`ChoosePacks` (`VoxelGame.cs:140`), is reached from a finished fetch (`:133`), from `StopDefaults`
+(`:122`), from `voxel.packs` (`GameCommands.cs:294`) and from the packs screen (`Menus.cs:349`),
+none of which a test calls. resourcepacks.txt's time, read by `stat` with the file left unopened, is
+18:21:59 on 2026-11-12, and options.txt's is 17:10 on 2026-11-10. My session made no call between
+13:42 and 19:03 that day, and the runs it had started in the background had ended by 13:39, so
+nothing of mine wrote it.
+
+The mend comes with this Reply. `VoxelGame` takes `settings`, true by default, and a run without it
+leaves the player's settings alone as a transient one does, the pack list and the options neither
+read nor written and the default packs not fetched. `HeadlessGame` passes it false. The test
+`A_Game_That_Saves_Leaves_The_Players_Settings_Alone` builds a game that saves and asserts it has no
+pack on and no fetch begun. On a copy of the head with the test alone added, and XDG_DATA_HOME
+naming a folder of mine whose list names one pack, it fails with the collection `["a-pack.zip"]`,
+and with the mend it passes. The suite runs here with XDG_DATA_HOME naming a folder of my own all
+the same.
+
+Finding 8 holds. `play.sh:65` sets the trap before the build check at `:104` and the open at `:110`,
+`pid` is filled only at `:123`, and with it empty the trap stops by the name `E3D_NAME` gives, which
+the engine's `Sessions.Pick` (`3DEngine.Cli/Sessions.cs:17-20`) matches against the name of every
+serving session of the user's. The open passed no `--timeout`, so it gave up after 60 s
+(`Launch.cs:87`), and an open that gives up names no process (`Launch.cs:107-119`). I read it with a
+decoy, a game serving in a sessions folder of mine that `E3D_SESSIONS` named to play.sh, run in an
+unbuilt copy of the head. The head's script failed at the build check and its trap stopped the
+decoy. The mended one failed at the same place and left the decoy serving. The mend exports
+`E3D_SESSIONS` as a folder inside the run's own data folder, so the open's game, the kept run's and
+every stop are in it, and a stop by name before the open has answered reaches no game but the run's
+own. The open waits 600 s, as each command does. The kept run's stop in the trap goes without
+XDG_DATA_HOME, its session being in that folder too. `pictures.sh:69` sets its trap only once the
+open's pid is checked at `:58`, so it stops no other game.
+
+The other findings, each read at its file and line at the head, all hold.
+
+- Finding 1. ReadRegion keeps a region's bytes as read (`WorldSave.cs:107`), the renumbering is set
+  from world.json's keys alone (`:137`) and applied only as a column is decoded (`:444`), Keep
+  encodes in this build's numbers (`:144`), Flush writes a changed region's other columns back as
+  read (`:154-167`), and SaveWorld writes this build's keys every time (`VoxelGame.cs:618-619`).
+- Finding 2. ReadRegion marks the region read before reading it (`WorldSave.cs:95`) and its catch
+  logs and keeps what it parsed (`:110-114`), Flush moves a region made from `_kept` alone over the
+  file (`:157-170`), and ReadMobs, ReadFurnaces, ReadChests and ReadInfo fall back to none
+  (`:292-297`, `:359-362`, `:392-395`, `:211-215`), each file written again whole at the next save.
+- Findings 3 and 4 are one fault. The loop ends on `WindowShouldClose` (`Program.cs:54`), Dispose
+  saves at once (`VoxelGame.cs:1472-1474`), and `CloseInventory` (`:999-1003`), the one caller of
+  `InventoryWindow.Close`, is on neither that path nor SwitchWorld's (`:397-401`), whose Open clears
+  the inventory (`:442`).
+- Finding 5. The button sets `Open = Menu.None` on the press (`Menus.cs:124`), TakeCursor captures
+  on entering None (`GameFrame.cs:68-71`), which the engine's transitions run after PreUpdate
+  (`App.Execution.cs:111-115` at 6.2.60), only the click that captures sets `_swallowClick`
+  (`VoxelGame.cs:669-674`), and Interact runs on `_captured && !_swallowClick` (`:702`) while the
+  button is down.
+- Finding 7. `Part.Take` returns `Change.None` where the positions, the indices and the packed bytes
+  match (`ChunkRenderer.cs:77-81`), before it copies the colors (`:82`), and the packed form holds
+  no albedo (`SectionMesher.cs:141-142`). I have not reloaded a pack to see it.
+- Finding 9. `VoxelWorld.Add` marks the sections of all nine columns (`VoxelWorld.cs:71-74`),
+  `InReach` is false for a column not loaded (`ChunkRenderer.cs:823-824`), so Update parks the key
+  (`:802`, `:808-809`), and only the reach pass lets one out (`:773-775`). A parked key whose column
+  loads after is meshed and stays parked, so the next reach pass meshes it again.
+- Finding 10. A failed `WalkTo` leaves `_path` null (`Mob.Hostile.cs:187`), and `:184` searches
+  again whenever `_path` is null, whatever `Repath` holds, up to 2,000 cells (`Pathfinder.cs:29`,
+  `:42`).
+- Finding 11. `Explosion.Exposure`, 27 rays (`Explosion.cs:39-46`), is an argument of `Damage` for
+  every mob (`VoxelGame.cs:911`) and for the player (`:905`), so it runs before `Damage`'s test of
+  the distance (`Explosion.cs:56`).
+- Finding 12. `Gather` takes `GetRef` of both stacks before comparing the item or the distance
+  (`ItemDrops.cs:94-99`), for every pair, under no guard on the step, so it runs while the game is
+  paused.
+- Finding 13. `Add` and `Remove` both count `Openings` (`VoxelWorld.cs:70`, `:84`), which is part of
+  the flood's key (`Visibility.cs:183-184`), and the flood reaches only columns within rd² + rd
+  (`:196`, `:215`), inside the load ring of rd + 2 (`ChunkStreamer.cs:65`).
+- Finding 14. `Columns()` yields a column's loaded mobs or its kept ones and not both
+  (`Mobs.cs:330-331`), and `voxel.spawn` adds a mob while spawning is off (`GameCommands.cs:505`).
+- Finding 15. Every save file is written beside itself as `.new` and moved over with no flush to
+  disk (`WorldSave.cs:157-170`, `:221-222`, `:307-338`, `:370-371`, `:403-404`), and the class's
+  remarks say a crash leaves the region as it was (`:43-45`), which holds for the process's crash
+  and not for the machine's.
+- Finding 16. With no target `Hunts` clears `Hunting` and leaves `Fuse` (`Mob.Hostile.cs:93-97`),
+  and a lit fuse burns on within 7 blocks once the hunt resumes (`:128-132`).
+- Finding 17. `voxel.tp` tests `x` and `z` against the edge by `Math.Abs` (`GameCommands.cs:96`),
+  which NaN passes, and `y` not at all, and the engine's console parses a double with
+  `NumberStyles.Float` (`ConsoleBuiltins.cs:311` at 6.2.60), which takes NaN and Infinity.
+- Finding 18. Death frees the cursor once (`VoxelGame.cs:832`), the click that captures checks no
+  death (`:669`), and TakeCursor captures on leaving a menu (`GameFrame.cs:71`).
+- Finding 19. The dome's ring at 1.5 degrees has an alpha of 191 (`HazeDome.cs:30`, `:66`), under
+  the 240 that keeps the sky level in the packed form (`SectionMesher.cs:140`), so its corners carry
+  sky 0 (`terrain.slang:162`), and where the alpha stays at 0.95 or over the haze is scaled by the
+  sky level (`terrain.slang:429`). I have not looked at it in a picture.
+- Finding 20. `Respawn` unloads every column and makes the 25 about the spawn on the main thread
+  (`VoxelGame.cs:836-846`, `ChunkStreamer.cs:46-51`). I have not timed it.
+- Finding 21. `Crowd` takes every mob's body and tests every pair (`Mobs.cs:57-69`).
+- Finding 22. An answer with no `by place` leaves `top` empty (`play.sh:759`), awk then prints `0.0`
+  (`:760`), so the guard on an empty string (`:766`) cannot fail and the test of 15 levels passes
+  (`:767`).
+- Finding 23. The far pig stands 28 blocks west (`SoundFrameTests.cs:23`), and both assertions
+  (`:48-49`) hold for its steps as for the near one's, hearing being cut only at
+  `GameSounds.cs:137`.
+
+The mends follow in the order given, the saves (1, 2, 14, 15), the input (3 to 5, 18), the costs (10
+to 13, 20, 21) and the rest (7, 9, 16, 17, 19, 22, 23), a few to a commit, each with a test that
+fails first.
+
+The saves of item 180, findings 1, 2, 14 and 15, mended. Each test was run first on a copy of
+`0c08b19` with the tests alone added, their calls to `WorldSave.Decode` given the head's renumbering
+argument, and failed there.
+
+Finding 1. A region holds the key of each block by its number before its columns in version 2,
+written where the world's info numbers the blocks otherwise than this build, the info then keeping
+the keys it was read with (`WorldSave.BlockKeys`, which `SaveWorld` writes), and in version 1
+otherwise, which a build before this one reads. A region numbered otherwise has its columns given
+this build's numbers as it is read, so what is kept and written is in this build's numbers alone,
+and `Decode` and the streamer take no renumbering. The test
+`A_World_Whose_Blocks_Were_Numbered_Otherwise_Keeps_Them_Through_A_Save` writes a world as a build
+that numbered stone and grass the other way round would, with a stone in a region of version 1
+holding the player's column and one in the region beside, plays it with a block set in the player's
+column, and opens it again. On the head the last open reads grass where the stone was, and mended it
+reads both stones and the block set. A build before this one reads a region of version 2 as one it
+cannot read, so a world numbered otherwise is not to be opened in one once this build has saved it.
+On a copy of the review's copy of the data, whose info numbers the blocks as this build does, the
+mended game opened overworld-1 at its saved eye alike with the head within 3 levels, a glowstone set
+at a height of -63 under the player wrote r.8.1.bin again in version 1, and the next open found it
+there and drew the eye alike within 3 levels.
+
+Finding 2. A file of the save that cannot be read is moved aside under its name and `.unread`, a
+number added where one lies there, before anything can write it, and one that cannot be moved is
+written by no save of the run (`SetAside`, `Replace`). A region keeps the columns read before the
+fault and is written again at the next save, and a column whose bytes end early is a fault, where
+the head kept it short. The tests
+`A_Region_That_Cannot_Be_Read_Is_Kept_Beside_The_One_Written_Again` and
+`A_File_Of_The_Save_That_Cannot_Be_Read_Is_Kept_Beside_The_One_Written_Again`, the second for
+world.json, mobs.bin, furnaces.json and chests.json, fail on the head, which leaves no `.unread`
+file and writes over the one it could not read.
+
+Finding 14. `Mobs.Columns()` yields a column's loaded mobs together with those it keeps out of the
+world. The test `A_Column_Saves_The_Mobs_It_Keeps_Out_Of_The_World_With_One_Placed_Among_Them` fails
+on the head, whose list for the column holds only the pig placed after spawning was turned off.
+
+Finding 15. Every file of the save goes through `Replace`, which writes it beside its name, flushes
+it to the disk (`FileStream.Flush(flushToDisk: true)`) and then moves it over. No test of the suite
+can see a flush to the disk, so this one is read by a shim loaded into the save tests' process with
+LD_PRELOAD, which logs each fsync and rename of a path under a test's folder in order. On the head
+the save tests move a `.new` file over its name 11 times, regions, world.json, mobs.bin,
+furnaces.json and chests.json among them, with no fsync of any, and mended each of the 11 moves
+follows the fsync of its own file. The folder is not synced, so a crash of the machine may lose a
+move, which leaves the old file whole.
+
+The input of item 180, findings 3 to 5 and 18, mended.
+
+Findings 3 and 4. `SaveWorld` saves the inventory with the stacks the window E opens holds, in its
+grids and on the mouse (`InventoryWindow.Holding`), put into it as shutting the window puts them, so
+a save while the window is open, the autosave or the one as the game closes, keeps them, and the
+window holds them on while it stays open. A stack the inventory has no room for is left out of the
+save, as shutting the window throws it and a thrown stack is not saved. `SwitchWorld` shuts the
+window first, so its stacks go back into the inventory of the world left, none comes into the next,
+and no chest or furnace of the last is drawn there. The tests
+`The_Stacks_Of_The_Inventory_Window_Are_Saved_While_It_Is_Open_And_As_The_Game_Closes` and
+`A_World_Switched_To_Takes_No_Stack_Of_The_Inventory_Window_From_The_One_Left` fail on the head,
+with no stack of three sticks in the saved inventory.
+
+Findings 5 and 18. `Capture` takes the cursor only while no screen is open and the player lives,
+which holds for the click beside the death screen's window, the menu shut over it and the death
+screen's Respawn pressed with the menu open, and a capture made while the left button is down leaves
+the press to the button that made it, so the world takes no click until it is let go
+(`_swallowClick`). The check "the menu's button and the death screen" in play.sh holds the press on
+Back to Game for 12 frames over a stone the player looks at in creative mode, and reads a dead
+player's cursor by `IsCursorHidden` after a click beside the death screen's window and after the
+menu opened and shut. Run against the head's build, the play fails at the check, the stone broken
+and the player looking at none after the press. Its half for the death screen, which the play
+reaches only past that, read with the same commands in a session of the head's build, found the
+cursor hidden after the click and after the menu, and in one of the mended build free after both,
+the stone standing.
+
+The costs of item 180, findings 10 to 13, 20 and 21, mended. Each was read three times on the head
+and three on the mended build, run in turn, under the GPU's lock taken exclusive on tuned's
+powersave-bazzite, in one session each of the flat world, transient, at 1280 by 720 with the frame
+unlimited, the validation layer off and the render distance of 12, each function timed by eval over
+calls in the live game. The tests of 10, 13 and 20 were run first on a copy of `fcd5574` with the
+tests alone added, and failed there.
+
+Finding 10. A hostile mob searches for a way to the player only once its wait runs out, half a
+second after a search that found one and two seconds after one that found none, and runs straight at
+the player meanwhile. The test `A_Zombie_With_No_Way_To_The_Player_Looks_For_One_Each_Half_Second`
+reads the wait over 15 frames of a zombie below a player on a pillar three high, which on the head
+stands at 0.5 in every frame. With 8 zombies about such a player at night, the hunt over 120 calls
+each stepping a sixtieth of a second reads 108.1, 105.5 and 105.9 ms a call on the head and 1.30,
+1.15 and 1.17 mended, a search of its 2,000 cells costing about 13 ms.
+
+Finding 11. The rays from a blast to a body are cast only within its reach, twice its power
+(`Explosion.Reach`), for the mobs and for the player in survival. An explosion of power 3 in the air
+30 blocks over the player with 180 pigs loaded reads 63.9, 65.2 and 64.0 ms on the head and 2.63,
+2.59 and 2.56 mended. The damage within the reach is unchanged, which the blast tests of
+HostileTests hold.
+
+Finding 12. The stacks are gathered by cells of the joining's reach, half a block, each with its
+item, and a stack is weighed against those of its item in the 27 cells about its own, in the order
+the stacks were gathered, so the joins are those of weighing every pair. The gathering is skipped
+while the game takes no time, as under the menu. With 1,024 sticks lying a block apart it reads
+27.2, 26.9 and 27.7 ms on the head and 3.0, 3.0 and 3.7 mended. The test
+`Two_Stacks_Of_One_Item_Lying_Either_Side_Of_The_Edge_Of_A_Joining_Cell_Join` holds a join across a
+cell's edge, and passes on the head too.
+
+Finding 13. The flood's key holds the columns loaded within its reach by their count and a sum of a
+mix of each one's place and its `ChunkColumn.Openings`, a count of its blocks set that may open or
+shut a way, which takes the place of the world's own count, so a column coming or going beyond the
+reach, or a block set in one, starts no flood. The test
+`A_Column_Coming_Or_Changing_Past_The_Floods_Reach_Starts_No_Flood` fails on the head, where the
+column joining five out floods again. The profile gains `draw.sections.floods`, the share of the
+last second's frames a flood finished in, put on the head's copy too for the read. Over a flight
+east of 600 frames in the overworld at 140 high, read each second, it reads 0.008 to 0.044 in the
+seconds of new land on the head and 0.009 to 0.010 mended, a whole flood taking 4.4 to 7.8 ms on
+both, and the flight's median 6.98, 6.25 and 6.35 ms on the head against 6.05, 6.16 and 6.06, its
+99th part 37.3, 33.5 and 33.9 against 28.1, 29.8 and 32.4. A flood so finishes 2 to 4 times a second
+over new land on the head, by the frames of those seconds, and about once mended, where the finding
+gives one a frame.
+
+Finding 20. A respawn sets the player over the spawn and has the workers make its land, as a new
+world's opening does, the player standing on the spawn's highest block once its columns are in. A
+save while the player waits, as on closing the game, makes the spawn's column and sets the player on
+it first, so it keeps where the player stands. The test
+`A_Respawn_Far_From_The_Spawn_Has_Its_Land_Made_By_The_Workers` fails on the head, which has the
+spawn's column made in the call, and
+`A_Game_Closed_While_The_Respawned_Player_Waits_Saves_It_On_The_Spawn` holds the save. From 3,000
+blocks east the call reads 206.6, 197.4 and 200.7 ms on the head and 3.8, 4.2 and 3.9 mended, the
+slowest frame across it 250 ms on the head, the engine's cap on a frame's time, and 68.4, 62.3 and
+55.2 mended, among the frames the land loads in.
+
+Finding 21. The mobs' bodies are crowded by cells of two blocks along x and z, wider than any two
+mobs' half widths together, and a body is weighed against those of the 9 cells about its own. With
+180 pigs loaded it reads 2.18, 2.44 and 2.27 ms on the head and 0.35, 0.37 and 0.37 mended. The test
+`Two_Mobs_Overlapping_Either_Side_Of_The_Edge_Of_A_Crowding_Cell_Are_Pushed_Apart` holds a push
+across a cell's edge, and passes on the head too.
+
+Of the rest of item 180, findings 16, 17, 22 and 23, mended, each test run first on a copy of
+`042862b` with the tests alone added.
+
+Finding 16. A hostile mob with no player to hunt lets its creeper's fuse go out with its hunt
+(`MobHostile.Fuse` set to -1 where `Hunts` has no target). The test
+`A_Creepers_Fuse_Goes_Out_As_Its_Hunt_Ends_With_No_Player_To_Hunt` lights a creeper's fuse beside a
+player and thinks it once with no target, and fails on the head, whose fuse burns on.
+
+Finding 17. `voxel.tp` and `voxel.drop` refuse a place one of whose numbers is none, NaN or Infinity
+as the console parses them, and a height past the land's edge, which a float would hold as no
+number. The test `A_Place_That_Is_No_Number_Neither_Moves_The_Player_Nor_Lays_A_Stack` sends NaN,
+Infinity and 1e39 in each place and fails on the head, which answers that the player stands at NaN.
+
+Finding 22. The check of a fire's top in play.sh fails a read of `voxel.line` that holds no 40
+samples by place, naming the read, and the guard on the joined string, which could not fail, is
+gone. Fed the answer "a point of the line is off the picture", the head's form passes with its
+readings " 0.0" and the mended one fails with 0 samples.
+
+Finding 23. The test of the mobs' steps asserts every step heard lies within `GameSounds.Hearing` of
+the player's eye. With the cut-off at `GameSounds.cs:137` taken out of a copy of the head, the
+head's test passes and the mended one fails on a step of the far pig at -27.98, 4, -0.33.
+
+Findings 7 and 9 of item 180, mended. Each test was run first on a copy of `a28ab91` with the tests
+and two read-only accessors of `ChunkRenderer` added, `SolidColors` and `Parked`, which change
+nothing the game does.
+
+Finding 7. A part takes a meshing's faces as unchanged only where their colors match too, so a pack
+read again whose tiles keep their numbers gives the scene's light field its new colors
+(`Part.Take`). The test `A_Pack_Of_The_Same_Tiles_In_Other_Colors_Gives_The_Light_Field_Its_Colors`
+draws the flat world's ground with a pack painted red, paints the pack green and reads it again as
+F3 with T does, and fails on the head, whose ground under the player keeps the red's colors, 34, 5,
+5. Taken from no pack to the red one the test passes on the head too, since the packed bytes change
+there.
+
+Finding 9. A section of a column not loaded is dropped rather than parked, since the column's
+arrival marks it again (`ChunkRenderer.Update`). The test
+`No_Section_Of_A_Column_That_Never_Loaded_Is_Kept_Parked` fails on the head, where 960 of the 2,040
+sections parked once the test game stands are of columns never loaded.
+
+Finding 19 of item 180, mended, the last of the audit's. The haze dome is drawn with a material of
+an alpha of 252, as water's of 253, and the terrain shader gives every corner of a draw so marked
+the open sky's level, the fading rings' among them, which the packed form keeps none of under an
+alpha of 240 (`HazeMark` in terrain.slang, `ChunkRenderer`'s `_haze`). No test of the suite runs a
+shader, so it is read in pictures. In the flat world at noon under a roof of stone nine blocks
+square three over the feet, the eye at sky level 10, looking level east, the head draws a line along
+the horizon, its rows 357 to 359 at 218.8, 212.9 and 204.3 of luma across the middle where the rows
+about them read 197.9 to 198.2, and the mended build reads 198.0 to 198.1 there, as both read in the
+open, where the frame of either is the other's within 1 level. The pair is
+`04-03-haze-dome-line-under-a-roof.png` in the dump. The material's alpha takes 1.2% from the dome's
+cover, so as much of the sky behind it shows through at the horizon. The play's captures read as
+before, within 5 levels of the 6.2.60 pin's but sky2's, which moves as much between that pin's own
+runs.
 
 ## Items closed, parked or shortened
 

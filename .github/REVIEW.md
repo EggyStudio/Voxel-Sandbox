@@ -1,128 +1,134 @@
 # Review
 
-Reviewed up to `a28ab91`, item 180's fifth commit, a creeper's fuse going out with its hunt, the
-place commands refusing a place that is no number, the play failing a fire's top read with no
-samples and the steps' test holding every step within hearing, each test failing first, 412 tests
-and the play in 175 s, pushed at 03:28 on 2026-11-15, its build run 43667922780 started; it keeps
-the form and carries the review's files. Before it `042862b`, item 180's fourth commit, the audit's
-cost findings, pushed at 00:16 on 2026-11-15 once the run before it had ended, its build run
-43652362892 green; it keeps the form. Before it `fcd5574`, item 180's third commit, a save keeping
-the stacks the inventory window holds and a world switched to taking none of them, the cursor taken
-only while no screen is open and the player lives and a press that takes it left to the button that
-made it, two tests failing first and a check of the play failing on the head's build; with
-`3eb89db`, its second, a region listing its blocks' keys where the world's info numbers them
-otherwise, a save's file that cannot be read moved aside, a column saving the mobs it keeps out with
-those loaded and every file of a save on the disk before it takes its name, each test failing first,
-the region read on a copy of the review's data and the flush shown by a shim logging the calls; both
-pushed at 22:40 on 2026-11-14 once the run before them had ended, their build run 43644092400 green
-at 00:15 on 2026-11-15, the play in 95 minutes; the strict build is clean, 404 tests pass with a
-data folder of the coder's own and the play passes in 184 s; they keep the form and carry the
-review's files. Before them `0c08b19`, item 180's first commit, a test game that saves leaving the
-player's pack list and options alone and fetching no packs, with a test that fails first, and
-play.sh keeping its sessions in its run's own folder and waiting on its open as on its commands,
-read against a decoy game left serving; the Reply says of every finding whether it holds, and of the
-coder's runs since 2026-11-12 that read the player's settings, none writing them; pushed at 21:10 on
-2026-11-14 once the run before it had ended, its build run 43636051539 green at 22:39 with the play
-in 89 minutes; the strict build is clean, 395 tests pass with a data folder of the coder's own and
-the play passes in 250 s; it keeps the form and carries the review's files. Before it `f201940`, the
-pin of the engine's 6.2.60, 3DEngine alone with the workflows' engine checkout at `baa21ff4`, with
-item 176's pinned check, the sweep of twenty steps from 133 blocks reading no step where bloom adds
-over 20 levels at either built place where 7 and 1 on 6.2.56 and bloom's most 13 and 7 levels where
-142 and 24, pushed at 19:54 on 2026-11-12, green at 21:23 with the play in 88 minutes, inside the
-runners' spread of 48 to 92 minutes over the last ten green runs; six plays under the layer pass
-whole, cold in 296 to 298 s and warm in 208 to 215, 13 of 17 pictures move, the most 0.74 percent of
-pixels, block edges losing a dark jagged fringe and none reading worse; the strict build is clean
-and 394 tests pass; it keeps the form and carries the review's files. Before it `4d96da7`, the pin
-of the engine's 6.2.56, 3DEngine alone with the workflows' engine checkout at `8561816b`, and item
-177's reach at four steps, 4,096 blocks, every row of the built scene reading alike from 16 to 4,112
-blocks from the engine's zero with ambient occlusion at 0, pushed at 13:48 on 2026-11-12, green at
-14:57 with the play in 69 minutes on the engine's 6.2.56; the mirror waits on pipelines.wait, six
-plays under the layer pass whole, cold in 288 to 294 s and warm in 203 to 214, the built room reads
-no step over 3 levels at any quality at 1280 by 720 and 2560 by 1440 and no line on its ceiling, all
-17 pictures move by the dither's grain of one or two levels and by no more; the strict build is
-clean and 394 tests pass; it keeps the form and carries the review's files. Before it `cf687e3`,
-item 179, the comments swept by N 4.11 as widened, 37 sources, shaders, tests and scripts with
-STYLE.md's search, no line but a comment changed, each account of what the code was or which fault
-led to it and each likening rewritten to say what stands, pushed at 12:37 on 2026-11-12, green at
-13:44 with the play in 67 minutes; the strict build is clean and 394 tests pass; it keeps the form
-and carries the review's files. Before it `8fda020`, two comments on their own terms, pushed at
-04:05 on 2026-11-12, green at 05:11 with the play in 66 minutes, with `35a0829`, item 178, the mobs
-saved with a place that is no number, 279 in two worlds of one player's, the first by a fall mended
-at `e433e5c` and the rest by the crowding's push, a box with no place overlapping every box of its
-height and pushing each along x by an overlap that is none, 13 of 25 taken in ten frames when made
-to happen; a move that is no number is not taken, such a box overlaps none, and the save's reader
-sets a mob with no place down at its home where it has one and leaves it out otherwise, saying how
-many; the strict build is clean, 394 tests pass, the play passes whole. The saves of that player's
-four worlds read clean besides, every region, column, chest and furnace through the game's own
-readers. They keep the form and carry the review's files. Before them `636e0bb`, Verdict 13's mend,
-the far game's save test holding its mobs still, pushed at 03:14 on 2026-11-12, green at 04:03 with
-the play in 48 minutes, with `0aaf8e2`, the second reader's list for 177's second step, the events
-carrying the land's place, a jump leaving its columns unloaded before the origin moves with the mobs
-and the dropped stacks kept by their columns and set down as they load, so a death far from spawn
-leaves the inventory lying where the player fell, the edge at 2^30, the lamps' cubes uploaded again
-at a move and the tests of each thing where it stood; a first form of it, never pushed, let the
-stacks go and was held by the review; the strict build is clean, 390 tests pass, the play passes
-whole and one picture of 17 moves, the night's clouds; they keep the form and carry the review's
-files. The game's own path on a copy of a player's saves reads right end to end, the first view,
-voxel.restock's 112 animals, a flight out and back, a quit and an open again, mobs.bin in its second
-version with every record of the first carried through. Before them `3bfa75d`, voxel.restock, a
-command that places again the animals and villagers each loaded column's generation placed, in each
-loaded column holding no mob, each where it still has room to stand, 112 animals in 54 of 665
-columns on a copy of the save the fault below emptied, pushed at 02:09 on 2026-11-12 with `85160b6`,
-177's second step, one run on the last, red on macOS in a test of the second step's, Verdict 13, its
-play ended by the mend's push. The second step makes the origin follow the player, moved once the
-player is past 1,024 blocks from it, every float place shifted by the whole step at a frame's start
-and first in a teleport and a respawn and every mesh uploaded again, a hitch of 0.2 to 0.4 s and one
-brighter frame once in 1,024 blocks, with whole-game tests far out and at a negative place; and it
-mends a fault older than the origin, the game's Dispose running twice as the window closes, the
-second save at times written after the engine had let the loaded mobs go, so the animals about the
-player were saved as gone, which a Dispose run once ends, with its test. A second reader found
-nothing serious in it and a list for a commit to follow, events queued across a move, what a far
-jump leaves behind, the lamps taken as movers and the tests' reach. The strict build is clean, 386
-tests pass, the play passes whole; 6 of 17 pictures move in the second step, one by its animals kept
-out and five by where the origin moves, 0.07 to 1.68 percent; they keep the form and carry the
-review's files. Before them `9d25749`, 177's first step, one origin for the whole game, a multiple
-of 1,024 blocks set near the saved place at open that every float place is kept against, blocks,
-columns and sections keeping the land's own whole coordinates, the saves and the commands the land's
-places in doubles, mobs.bin in a second version with the first read, 46 files, pushed at 00:38 on
-2026-11-12, green at 02:08 with the play in 90 minutes, after two reads, the review's and a second
-reader's of every floor, distance and conversion, which found no place where one kind of place is
-taken for the other; the strict build is clean, 376 tests pass, the play passes whole and none of
-its 17 pictures moves; on the published 6.2.41 the built room then reads no row with a step over 3
-levels at Low, Medium or High at 1280 by 720 and one at Medium at 2560 by 1440; it keeps the form
-and carries the review's files. Before it `760522a`, the review's file alone with the Replies of
-173's check, 175 and 177's read, pushed at 23:49 on 2026-11-11, no run by the workflow's paths.
-Before it `88d6303`, a fault 175's read found, ChunkStreamer.Unload squaring a column's distance
-from the player in an int, which wrapped negative past 46,340 columns so a teleport of some 741,000
-blocks left the old columns loaded, squared in longs with a test that teleports a million blocks,
-pushed at 23:27 on 2026-11-11, its run started where the run of the commit before it never did and
-green at 00:33 with the play in 66 minutes, which settles Verdict 12; the strict build is clean, 368
-tests pass and the play passes whole in 310 s; it keeps the form and carries the review's files.
-Before it `5ad3f58`, the review's file alone with the Replies of 174 and 176, pushed at 23:00 on
-2026-11-11, no run by the workflow's paths. Before it `6b0043b`, voxel.spawning, asked on
-2026-11-11, every mob kept out of the world from the next frame on and brought back where it stood,
-the play switching it off before its first check, pushed at 21:31 on 2026-11-11, its run left queued
-by GitHub's outage and not started, Verdict 12; its strict build is clean and 367 tests pass, two
-plays under the layer pass whole in 317 and 218 s, and of their 17 captures dusk differs in 0.00
-percent of pixels by more than 2 levels where 2.3 before, the night sky in 0.18, within its clouds;
-it keeps the form and carries the review's files. Before it `1f1e955`, item 172, terrain.slang,
-mob.slang and bits.slang returning unlit on the branch drawn unlit, each fragment about 590 KB
-smaller and the fifth frame's 22 pipelines made in 20.3 s where 43.9 from an empty cache with the
-layer off, pushed at 19:29 on 2026-11-11 once the pin's run had ended, its run green at 20:36 with
-the play in 67 minutes where the pin's took 96; it keeps the form and carries the review's files.
-Before it `068fd5f`, the pin of the engine's 6.2.41 with the workflows' engine checkout at
-`894542da`, pushed at 15:29 on 2026-11-11, its run red at 15:34 in the play job before the game was
-built, the runner not reaching its package mirror for two hours and a quarter, Verdict 11, green at
-19:26 on its tenth attempt, the play in 96 minutes, which settles the verdict; its strict build is
-clean and 366 tests pass. The water's mirror passes six plays of six under the layer, three from an
-empty cache in 393, 417 and 434 s and three from the cache each left in 237, 242 and 221 s, each
-play's caches in a folder of its own; from a cold cache the pipelines' file grows to 21.8 MB and the
-pool's three terrain.slang pipelines compile in 14 to 19 s each at once, and from a warm one every
-pipeline made in play says from the cache, the pool's three in 1.17 to 1.37 s each; frame 5's 22
-pipelines take 54 to 68 s cold, one after another, and 4.4 to 4.6 s warm. The engine's trial puts
-about 1.2 s of each such pipeline on the validation layer, 94 ms compiled without it, so these are
-the layer's seconds, which the play turns on, item 171. It keeps the form and carries the review's
-files. The pushes before these stand in REVIEW-ARCHIVE.md's head records.
+Reviewed up to `0be5c8e`, item 180's last commit, the haze dome's material marking its corners as
+under the open sky, read by a picture pair under a roof, with `201701a`, a section's part taking new
+colors where its faces keep their packed bytes and a section of a column not loaded dropped rather
+than parked, each test failing first, 414 tests and the play passing, both pushed at 05:03 on
+2026-11-15 once the run before them had ended, their build run 43675059297 green at 05:51; they keep
+the form and carry the review's files, and all 23 findings are mended. Before them `a28ab91`, item
+180's fifth commit, a creeper's fuse going out with its hunt, the place commands refusing a place
+that is no number, the play failing a fire's top read with no samples and the steps' test holding
+every step within hearing, each test failing first, 412 tests and the play in 175 s, pushed at 03:28
+on 2026-11-15, its build run 43667922780 green at 05:01; it keeps the form and carries the review's
+files. Before it `042862b`, item 180's fourth commit, the audit's cost findings, pushed at 00:16 on
+2026-11-15 once the run before it had ended, its build run 43652362892 green; it keeps the form.
+Before it `fcd5574`, item 180's third commit, a save keeping the stacks the inventory window holds
+and a world switched to taking none of them, the cursor taken only while no screen is open and the
+player lives and a press that takes it left to the button that made it, two tests failing first and
+a check of the play failing on the head's build; with `3eb89db`, its second, a region listing its
+blocks' keys where the world's info numbers them otherwise, a save's file that cannot be read moved
+aside, a column saving the mobs it keeps out with those loaded and every file of a save on the disk
+before it takes its name, each test failing first, the region read on a copy of the review's data
+and the flush shown by a shim logging the calls; both pushed at 22:40 on 2026-11-14 once the run
+before them had ended, their build run 43644092400 green at 00:15 on 2026-11-15, the play in 95
+minutes; the strict build is clean, 404 tests pass with a data folder of the coder's own and the
+play passes in 184 s; they keep the form and carry the review's files. Before them `0c08b19`, item
+180's first commit, a test game that saves leaving the player's pack list and options alone and
+fetching no packs, with a test that fails first, and play.sh keeping its sessions in its run's own
+folder and waiting on its open as on its commands, read against a decoy game left serving; the Reply
+says of every finding whether it holds, and of the coder's runs since 2026-11-12 that read the
+player's settings, none writing them; pushed at 21:10 on 2026-11-14 once the run before it had
+ended, its build run 43636051539 green at 22:39 with the play in 89 minutes; the strict build is
+clean, 395 tests pass with a data folder of the coder's own and the play passes in 250 s; it keeps
+the form and carries the review's files. Before it `f201940`, the pin of the engine's 6.2.60,
+3DEngine alone with the workflows' engine checkout at `baa21ff4`, with item 176's pinned check, the
+sweep of twenty steps from 133 blocks reading no step where bloom adds over 20 levels at either
+built place where 7 and 1 on 6.2.56 and bloom's most 13 and 7 levels where 142 and 24, pushed at
+19:54 on 2026-11-12, green at 21:23 with the play in 88 minutes, inside the runners' spread of 48 to
+92 minutes over the last ten green runs; six plays under the layer pass whole, cold in 296 to 298 s
+and warm in 208 to 215, 13 of 17 pictures move, the most 0.74 percent of pixels, block edges losing
+a dark jagged fringe and none reading worse; the strict build is clean and 394 tests pass; it keeps
+the form and carries the review's files. Before it `4d96da7`, the pin of the engine's 6.2.56,
+3DEngine alone with the workflows' engine checkout at `8561816b`, and item 177's reach at four
+steps, 4,096 blocks, every row of the built scene reading alike from 16 to 4,112 blocks from the
+engine's zero with ambient occlusion at 0, pushed at 13:48 on 2026-11-12, green at 14:57 with the
+play in 69 minutes on the engine's 6.2.56; the mirror waits on pipelines.wait, six plays under the
+layer pass whole, cold in 288 to 294 s and warm in 203 to 214, the built room reads no step over 3
+levels at any quality at 1280 by 720 and 2560 by 1440 and no line on its ceiling, all 17 pictures
+move by the dither's grain of one or two levels and by no more; the strict build is clean and 394
+tests pass; it keeps the form and carries the review's files. Before it `cf687e3`, item 179, the
+comments swept by N 4.11 as widened, 37 sources, shaders, tests and scripts with STYLE.md's search,
+no line but a comment changed, each account of what the code was or which fault led to it and each
+likening rewritten to say what stands, pushed at 12:37 on 2026-11-12, green at 13:44 with the play
+in 67 minutes; the strict build is clean and 394 tests pass; it keeps the form and carries the
+review's files. Before it `8fda020`, two comments on their own terms, pushed at 04:05 on 2026-11-12,
+green at 05:11 with the play in 66 minutes, with `35a0829`, item 178, the mobs saved with a place
+that is no number, 279 in two worlds of one player's, the first by a fall mended at `e433e5c` and
+the rest by the crowding's push, a box with no place overlapping every box of its height and pushing
+each along x by an overlap that is none, 13 of 25 taken in ten frames when made to happen; a move
+that is no number is not taken, such a box overlaps none, and the save's reader sets a mob with no
+place down at its home where it has one and leaves it out otherwise, saying how many; the strict
+build is clean, 394 tests pass, the play passes whole. The saves of that player's four worlds read
+clean besides, every region, column, chest and furnace through the game's own readers. They keep the
+form and carry the review's files. Before them `636e0bb`, Verdict 13's mend, the far game's save
+test holding its mobs still, pushed at 03:14 on 2026-11-12, green at 04:03 with the play in 48
+minutes, with `0aaf8e2`, the second reader's list for 177's second step, the events carrying the
+land's place, a jump leaving its columns unloaded before the origin moves with the mobs and the
+dropped stacks kept by their columns and set down as they load, so a death far from spawn leaves the
+inventory lying where the player fell, the edge at 2^30, the lamps' cubes uploaded again at a move
+and the tests of each thing where it stood; a first form of it, never pushed, let the stacks go and
+was held by the review; the strict build is clean, 390 tests pass, the play passes whole and one
+picture of 17 moves, the night's clouds; they keep the form and carry the review's files. The game's
+own path on a copy of a player's saves reads right end to end, the first view, voxel.restock's 112
+animals, a flight out and back, a quit and an open again, mobs.bin in its second version with every
+record of the first carried through. Before them `3bfa75d`, voxel.restock, a command that places
+again the animals and villagers each loaded column's generation placed, in each loaded column
+holding no mob, each where it still has room to stand, 112 animals in 54 of 665 columns on a copy of
+the save the fault below emptied, pushed at 02:09 on 2026-11-12 with `85160b6`, 177's second step,
+one run on the last, red on macOS in a test of the second step's, Verdict 13, its play ended by the
+mend's push. The second step makes the origin follow the player, moved once the player is past 1,024
+blocks from it, every float place shifted by the whole step at a frame's start and first in a
+teleport and a respawn and every mesh uploaded again, a hitch of 0.2 to 0.4 s and one brighter frame
+once in 1,024 blocks, with whole-game tests far out and at a negative place; and it mends a fault
+older than the origin, the game's Dispose running twice as the window closes, the second save at
+times written after the engine had let the loaded mobs go, so the animals about the player were
+saved as gone, which a Dispose run once ends, with its test. A second reader found nothing serious
+in it and a list for a commit to follow, events queued across a move, what a far jump leaves behind,
+the lamps taken as movers and the tests' reach. The strict build is clean, 386 tests pass, the play
+passes whole; 6 of 17 pictures move in the second step, one by its animals kept out and five by
+where the origin moves, 0.07 to 1.68 percent; they keep the form and carry the review's files.
+Before them `9d25749`, 177's first step, one origin for the whole game, a multiple of 1,024 blocks
+set near the saved place at open that every float place is kept against, blocks, columns and
+sections keeping the land's own whole coordinates, the saves and the commands the land's places in
+doubles, mobs.bin in a second version with the first read, 46 files, pushed at 00:38 on 2026-11-12,
+green at 02:08 with the play in 90 minutes, after two reads, the review's and a second reader's of
+every floor, distance and conversion, which found no place where one kind of place is taken for the
+other; the strict build is clean, 376 tests pass, the play passes whole and none of its 17 pictures
+moves; on the published 6.2.41 the built room then reads no row with a step over 3 levels at Low,
+Medium or High at 1280 by 720 and one at Medium at 2560 by 1440; it keeps the form and carries the
+review's files. Before it `760522a`, the review's file alone with the Replies of 173's check, 175
+and 177's read, pushed at 23:49 on 2026-11-11, no run by the workflow's paths. Before it `88d6303`,
+a fault 175's read found, ChunkStreamer.Unload squaring a column's distance from the player in an
+int, which wrapped negative past 46,340 columns so a teleport of some 741,000 blocks left the old
+columns loaded, squared in longs with a test that teleports a million blocks, pushed at 23:27 on
+2026-11-11, its run started where the run of the commit before it never did and green at 00:33 with
+the play in 66 minutes, which settles Verdict 12; the strict build is clean, 368 tests pass and the
+play passes whole in 310 s; it keeps the form and carries the review's files. Before it `5ad3f58`,
+the review's file alone with the Replies of 174 and 176, pushed at 23:00 on 2026-11-11, no run by
+the workflow's paths. Before it `6b0043b`, voxel.spawning, asked on 2026-11-11, every mob kept out
+of the world from the next frame on and brought back where it stood, the play switching it off
+before its first check, pushed at 21:31 on 2026-11-11, its run left queued by GitHub's outage and
+not started, Verdict 12; its strict build is clean and 367 tests pass, two plays under the layer
+pass whole in 317 and 218 s, and of their 17 captures dusk differs in 0.00 percent of pixels by more
+than 2 levels where 2.3 before, the night sky in 0.18, within its clouds; it keeps the form and
+carries the review's files. Before it `1f1e955`, item 172, terrain.slang, mob.slang and bits.slang
+returning unlit on the branch drawn unlit, each fragment about 590 KB smaller and the fifth frame's
+22 pipelines made in 20.3 s where 43.9 from an empty cache with the layer off, pushed at 19:29 on
+2026-11-11 once the pin's run had ended, its run green at 20:36 with the play in 67 minutes where
+the pin's took 96; it keeps the form and carries the review's files. Before it `068fd5f`, the pin of
+the engine's 6.2.41 with the workflows' engine checkout at `894542da`, pushed at 15:29 on
+2026-11-11, its run red at 15:34 in the play job before the game was built, the runner not reaching
+its package mirror for two hours and a quarter, Verdict 11, green at 19:26 on its tenth attempt, the
+play in 96 minutes, which settles the verdict; its strict build is clean and 366 tests pass. The
+water's mirror passes six plays of six under the layer, three from an empty cache in 393, 417 and
+434 s and three from the cache each left in 237, 242 and 221 s, each play's caches in a folder of
+its own; from a cold cache the pipelines' file grows to 21.8 MB and the pool's three terrain.slang
+pipelines compile in 14 to 19 s each at once, and from a warm one every pipeline made in play says
+from the cache, the pool's three in 1.17 to 1.37 s each; frame 5's 22 pipelines take 54 to 68 s
+cold, one after another, and 4.4 to 4.6 s warm. The engine's trial puts about 1.2 s of each such
+pipeline on the validation layer, 94 ms compiled without it, so these are the layer's seconds, which
+the play turns on, item 171. It keeps the form and carries the review's files. The pushes before
+these stand in REVIEW-ARCHIVE.md's head records.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -174,21 +180,16 @@ change.
     stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
     about 16:40, part two stays parked.
 
-180. **The deep audit's findings.** From the review's read-only audit of 2026-11-14 at `f201940`,
-    ~/.cache/claude-reviewer/audits-2026-11-14/Voxel-Sandbox-deep-audit.md, five areas each read by
-    a finder and every finding put to three verifiers, one reading the code, one its reach and one
-    the records. 23 held, 13 of medium severity and 10 of low, findings 3 and 4 the same fault, each
-    with its file and line, its scenario and a direction for the mend. First finding 6, which the
-    review checked against the code. A test game given a save folder is not transient, so it reads
-    the machine's own pack list and options under the player's data folder and, where the pack list
-    is missing as on a runner, fetches the default packs into that folder; three tests build one,
-    and until the mend the suite runs here with XDG_DATA_HOME naming a folder of its own, since no
-    session touches the player's data. Then finding 8, play.sh's trap stopping whichever game
-    session serves on the machine when the play fails before naming its own. Then a Reply saying of
-    each other finding whether it holds at the head, and the mends a few to a commit, the saves'
-    first, 1, 2, 14 and 15, then the input's, 3 to 5 and 18, then the costs, 10 to 13, 20 and 21,
-    each read before and after, then the rest, each with a test that fails first; a finding that
-    does not hold says why. Ahead of the pin, which is taken when the engine's package comes.
+181. **The second read's findings.** The coder's own read of 2026-11-15 of what the audit's finders
+    left, the save's formats under a fuzz of every cut and altered field, the shaders, and the
+    scripts with the workflow, 34 Reads in the Replies, each with its file and line and a scenario.
+    The mends in this order, a few to a commit, each with a test that fails first where one can be
+    written. First the worlds that cannot be opened or that hang while an altered file stands, Reads
+    2 to 10, a reader refusing or bounding the value and the file moved aside as a region that
+    cannot be read is, so a player keeps the rest of the save. Then Read 1, an entry's length
+    bounded before it is allocated. Then the play's false passes and fails, Reads 17 to 22 and 34.
+    Then the shaders' Reads 12 and 13 with a picture pair each. The low ones last, each mended or
+    left with its reason in a Reply.
 
 ## Verdicts
 
@@ -435,294 +436,239 @@ GPU, and global illumination is its largest stage in the room and at High, the m
 while the flight brings new land into it. The flight at High varies by 2.5 ms between runs where the
 others vary by 0.6 ms at most.
 
-Item 180, the deep audit, read at `f201940`. Finding 6 holds. `HeadlessGame.cs:47` builds the game
-with `transient: save is null`, and in a game that is not transient `VoxelGame.cs:80` reads the pack
-list, `:83` fetches the default packs where the list is missing and `:88` reads the options, each
-under the folder above `WorldSave.Root` (`WorldSave.cs:79-80`), so the three tests that pass a save
-folder read the machine's own. I ran the suite without XDG_DATA_HOME since 2026-11-12, whole or with
-FarGameTests or Closing_The_Game_Again in its filter, between 01:00 and 03:46, at 12:35, at 13:04
-and at 19:19 on 2026-11-12 in the game's checkout, and at 13:16, 14:32 and 15:14 on 2026-11-14 in
-the work copies of 264.10, of the faces trial and of the pin. Those runs read the player's
-resourcepacks.txt and options.txt and loaded whatever packs the list names. None of them wrote
-either file. Each found the list there and so fetched nothing, and the one writer of the list,
-`ChoosePacks` (`VoxelGame.cs:140`), is reached from a finished fetch (`:133`), from `StopDefaults`
-(`:122`), from `voxel.packs` (`GameCommands.cs:294`) and from the packs screen (`Menus.cs:349`),
-none of which a test calls. resourcepacks.txt's time, read by `stat` with the file left unopened, is
-18:21:59 on 2026-11-12, and options.txt's is 17:10 on 2026-11-10. My session made no call between
-13:42 and 19:03 that day, and the runs it had started in the background had ended by 13:39, so
-nothing of mine wrote it.
+Item 181, the second read, the shaders, the scripts under `build` with the workflows, and the save's
+formats, which the audit's five readers left, written before any mend. The formats were read by a
+scratch test kept out of the repository, on a copy of `0be5c8e`, cutting each file the save writes
+at every length and setting each byte of a region's head and entries' heads, of a sample of its
+columns' bytes and of the mobs file's to 0, 255, 127 and 128 in turn, and each field of
+`world.json`, `furnaces.json` and `chests.json` to null, -1, 0, 1e300, -1e300, 2147483647, an empty
+string, a word, an empty list, an object and true, each read back by the game's own readers, noting
+what escaped a reader, what took past 64 MB and what came back as a block or a record the game
+cannot hold. A second scratch test opened a whole test game on a saved world with each field of its
+`world.json` altered and with the player's column cut. The tests ran on threads 16 to 31 outside the
+GPU's lock, their build under it after the quiet check.
 
-The mend comes with this Reply. `VoxelGame` takes `settings`, true by default, and a run without it
-leaves the player's settings alone as a transient one does, the pack list and the options neither
-read nor written and the default packs not fetched. `HeadlessGame` passes it false. The test
-`A_Game_That_Saves_Leaves_The_Players_Settings_Alone` builds a game that saves and asserts it has no
-pack on and no fetch begun. On a copy of the head with the test alone added, and XDG_DATA_HOME
-naming a folder of mine whose list names one pack, it fails with the collection `["a-pack.zip"]`,
-and with the mend it passes. The suite runs here with XDG_DATA_HOME naming a folder of my own all
-the same.
+Read 1. `WorldSave.cs:129`. `ReadBytes(length)` makes an array of the length a column's entry names
+before reading any of it. A region with one byte of an entry's length or place altered took 212 to
+2,032 MB in 14 of its altered bytes, on the main thread, where the streamer reads a region
+(`ChunkStreamer.cs:131`), and a length past .NET's largest array throws `OutOfMemoryException`,
+which the filter at :134 lets through, out of the frame. A test can fail first, a region whose entry
+names 2,000,000,000 bytes read within a bound on what the thread takes, and one naming
+`int.MaxValue` read with no exception escaping.
 
-Finding 8 holds. `play.sh:65` sets the trap before the build check at `:104` and the open at `:110`,
-`pid` is filled only at `:123`, and with it empty the trap stops by the name `E3D_NAME` gives, which
-the engine's `Sessions.Pick` (`3DEngine.Cli/Sessions.cs:17-20`) matches against the name of every
-serving session of the user's. The open passed no `--timeout`, so it gave up after 60 s
-(`Launch.cs:87`), and an open that gives up names no process (`Launch.cs:107-119`). I read it with a
-decoy, a game serving in a sessions folder of mine that `E3D_SESSIONS` named to play.sh, run in an
-unbuilt copy of the head. The head's script failed at the build check and its trap stopped the
-decoy. The mended one failed at the same place and left the decoy serving. The mend exports
-`E3D_SESSIONS` as a folder inside the run's own data folder, so the open's game, the kept run's and
-every stop are in it, and a stop by name before the open has answered reaches no game but the run's
-own. The open waits 600 s, as each command does. The kept run's stop in the trap goes without
-XDG_DATA_HOME, its session being in that folder too. `pictures.sh:69` sets its trap only once the
-open's pid is checked at `:58`, so it stops no other game.
+Read 2. `WorldSave.cs:346`. The mobs file's count of kinds makes its array before any kind is read.
+A count below 0 throws `OverflowException`, which the filter at :381 lets through and nothing in
+`VoxelGame.Open` (`VoxelGame.cs:424`) catches, so the world cannot be opened while the file stands,
+and a count past two billion took 16,256 MB, which this machine gave under overcommit. Since a
+record names its kind by a byte (:356), more than 256 kinds cannot be told apart. A test can fail
+first, a mobs file whose count is -1.
 
-The other findings, each read at its file and line at the head, all hold.
+Read 3. `WorldSave.cs:443` and :474. A furnace or a chest whose `Slots` is null throws
+`NullReferenceException` at `r.Slots.Length`, which the filters at :447 and :478 let through and
+`VoxelGame.Open` (:444-445) does not catch, so the world cannot be opened while the file stands. A
+test can fail first, a `furnaces.json` with `"Slots": null`.
 
-- Finding 1. ReadRegion keeps a region's bytes as read (`WorldSave.cs:107`), the renumbering is set
-  from world.json's keys alone (`:137`) and applied only as a column is decoded (`:444`), Keep
-  encodes in this build's numbers (`:144`), Flush writes a changed region's other columns back as
-  read (`:154-167`), and SaveWorld writes this build's keys every time (`VoxelGame.cs:618-619`).
-- Finding 2. ReadRegion marks the region read before reading it (`WorldSave.cs:95`) and its catch
-  logs and keeps what it parsed (`:110-114`), Flush moves a region made from `_kept` alone over the
-  file (`:157-170`), and ReadMobs, ReadFurnaces, ReadChests and ReadInfo fall back to none
-  (`:292-297`, `:359-362`, `:392-395`, `:211-215`), each file written again whole at the next save.
-- Findings 3 and 4 are one fault. The loop ends on `WindowShouldClose` (`Program.cs:54`), Dispose
-  saves at once (`VoxelGame.cs:1472-1474`), and `CloseInventory` (`:999-1003`), the one caller of
-  `InventoryWindow.Close`, is on neither that path nor SwitchWorld's (`:397-401`), whose Open clears
-  the inventory (`:442`).
-- Finding 5. The button sets `Open = Menu.None` on the press (`Menus.cs:124`), TakeCursor captures
-  on entering None (`GameFrame.cs:68-71`), which the engine's transitions run after PreUpdate
-  (`App.Execution.cs:111-115` at 6.2.60), only the click that captures sets `_swallowClick`
-  (`VoxelGame.cs:669-674`), and Interact runs on `_captured && !_swallowClick` (`:702`) while the
-  button is down.
-- Finding 7. `Part.Take` returns `Change.None` where the positions, the indices and the packed bytes
-  match (`ChunkRenderer.cs:77-81`), before it copies the colors (`:82`), and the packed form holds
-  no albedo (`SectionMesher.cs:141-142`). I have not reloaded a pack to see it.
-- Finding 9. `VoxelWorld.Add` marks the sections of all nine columns (`VoxelWorld.cs:71-74`),
-  `InReach` is false for a column not loaded (`ChunkRenderer.cs:823-824`), so Update parks the key
-  (`:802`, `:808-809`), and only the reach pass lets one out (`:773-775`). A parked key whose column
-  loads after is meshed and stays parked, so the next reach pass meshes it again.
-- Finding 10. A failed `WalkTo` leaves `_path` null (`Mob.Hostile.cs:187`), and `:184` searches
-  again whenever `_path` is null, whatever `Repath` holds, up to 2,000 cells (`Pathfinder.cs:29`,
-  `:42`).
-- Finding 11. `Explosion.Exposure`, 27 rays (`Explosion.cs:39-46`), is an argument of `Damage` for
-  every mob (`VoxelGame.cs:911`) and for the player (`:905`), so it runs before `Damage`'s test of
-  the distance (`Explosion.cs:56`).
-- Finding 12. `Gather` takes `GetRef` of both stacks before comparing the item or the distance
-  (`ItemDrops.cs:94-99`), for every pair, under no guard on the step, so it runs while the game is
-  paused.
-- Finding 13. `Add` and `Remove` both count `Openings` (`VoxelWorld.cs:70`, `:84`), which is part of
-  the flood's key (`Visibility.cs:183-184`), and the flood reaches only columns within rd² + rd
-  (`:196`, `:215`), inside the load ring of rd + 2 (`ChunkStreamer.cs:65`).
-- Finding 14. `Columns()` yields a column's loaded mobs or its kept ones and not both
-  (`Mobs.cs:330-331`), and `voxel.spawn` adds a mob while spawning is off (`GameCommands.cs:505`).
-- Finding 15. Every save file is written beside itself as `.new` and moved over with no flush to
-  disk (`WorldSave.cs:157-170`, `:221-222`, `:307-338`, `:370-371`, `:403-404`), and the class's
-  remarks say a crash leaves the region as it was (`:43-45`), which holds for the process's crash
-  and not for the machine's.
-- Finding 16. With no target `Hunts` clears `Hunting` and leaves `Fuse` (`Mob.Hostile.cs:93-97`),
-  and a lit fuse burns on within 7 blocks once the hunt resumes (`:128-132`).
-- Finding 17. `voxel.tp` tests `x` and `z` against the edge by `Math.Abs` (`GameCommands.cs:96`),
-  which NaN passes, and `y` not at all, and the engine's console parses a double with
-  `NumberStyles.Float` (`ConsoleBuiltins.cs:311` at 6.2.60), which takes NaN and Infinity.
-- Finding 18. Death frees the cursor once (`VoxelGame.cs:832`), the click that captures checks no
-  death (`:669`), and TakeCursor captures on leaving a menu (`GameFrame.cs:71`).
-- Finding 19. The dome's ring at 1.5 degrees has an alpha of 191 (`HazeDome.cs:30`, `:66`), under
-  the 240 that keeps the sky level in the packed form (`SectionMesher.cs:140`), so its corners carry
-  sky 0 (`terrain.slang:162`), and where the alpha stays at 0.95 or over the haze is scaled by the
-  sky level (`terrain.slang:429`). I have not looked at it in a picture.
-- Finding 20. `Respawn` unloads every column and makes the 25 about the spawn on the main thread
-  (`VoxelGame.cs:836-846`, `ChunkStreamer.cs:46-51`). I have not timed it.
-- Finding 21. `Crowd` takes every mob's body and tests every pair (`Mobs.cs:57-69`).
-- Finding 22. An answer with no `by place` leaves `top` empty (`play.sh:759`), awk then prints `0.0`
-  (`:760`), so the guard on an empty string (`:766`) cannot fail and the test of 15 levels passes
-  (`:767`).
-- Finding 23. The far pig stands 28 blocks west (`SoundFrameTests.cs:23`), and both assertions
-  (`:48-49`) hold for its steps as for the near one's, hearing being cut only at
-  `GameSounds.cs:137`.
+Read 4. `Inventory.cs:65`. `Decode` splits its slot with no test for null, so a null among
+`world.json`'s `Inventory` or a furnace's or a chest's `Slots` throws out of the reader or out of
+`Inventory.Load` (`VoxelGame.cs:453`), as the test game's open showed for `world.json`, and the
+world cannot be opened while the file stands. A test can fail first, a `world.json` whose
+`Inventory` holds a null.
 
-The mends follow in the order given, the saves (1, 2, 14, 15), the input (3 to 5, 18), the costs (10
-to 13, 20, 21) and the rest (7, 9, 16, 17, 19, 22, 23), a few to a commit, each with a test that
-fails first.
+Read 5. `IWorldGenerator.cs:32`. `Create` lowers its kind with no test for null, so a `world.json`
+whose `Kind` is null throws `NullReferenceException` out of `VoxelGame.Open` (`VoxelGame.cs:421`),
+as the test game's open showed, and the world cannot be opened while the file stands. A test can
+fail first, a `world.json` with `"Kind": null`.
 
-The saves of item 180, findings 1, 2, 14 and 15, mended. Each test was run first on a copy of
-`0c08b19` with the tests alone added, their calls to `WorldSave.Decode` given the head's renumbering
-argument, and failed there.
+Read 6. `VoxelGame.cs:420` and :475. The player's place in `world.json` is taken as it reads, past
+the land's edge of 2^30 or past a float, where `voxel.tp` refuses both. Opened with an `X` of 1e300,
+the player stands at a float's infinity and the first move hangs the frame for good, since
+`Body.cs:127-129` loop from `Floor` of the box's sides, which a cast of infinity holds at
+`int.MaxValue`, while `x <= int.MaxValue`, which every `int` is. The test game's open had not
+returned after 890 s. A `Y` or a `Z` of 1e300 reaches the same lines. A test can fail first, a
+`world.json` with an `X` of 1e300 opened within a bound of time.
 
-Finding 1. A region holds the key of each block by its number before its columns in version 2,
-written where the world's info numbers the blocks otherwise than this build, the info then keeping
-the keys it was read with (`WorldSave.BlockKeys`, which `SaveWorld` writes), and in version 1
-otherwise, which a build before this one reads. A region numbered otherwise has its columns given
-this build's numbers as it is read, so what is kept and written is in this build's numbers alone,
-and `Decode` and the streamer take no renumbering. The test
-`A_World_Whose_Blocks_Were_Numbered_Otherwise_Keeps_Them_Through_A_Save` writes a world as a build
-that numbered stone and grass the other way round would, with a stone in a region of version 1
-holding the player's column and one in the region beside, plays it with a block set in the player's
-column, and opens it again. On the head the last open reads grass where the stone was, and mended it
-reads both stones and the block set. A build before this one reads a region of version 2 as one it
-cannot read, so a world numbered otherwise is not to be opened in one once this build has saved it.
-On a copy of the review's copy of the data, whose info numbers the blocks as this build does, the
-mended game opened overworld-1 at its saved eye alike with the head within 3 levels, a glowstone set
-at a height of -63 under the player wrote r.8.1.bin again in version 1, and the next open found it
-there and drew the eye alike within 3 levels.
+Read 7. `Vitals.cs:65`. `Math.Clamp(saturation, 0, food)` throws `ArgumentException` for a food
+below 0, so a `world.json` whose `Food` is -1 throws out of `VoxelGame.Open` (`VoxelGame.cs:457`),
+as the test game's open showed, and the world cannot be opened while the file stands. A test can
+fail first, a `world.json` with a `Food` of -1.
 
-Finding 2. A file of the save that cannot be read is moved aside under its name and `.unread`, a
-number added where one lies there, before anything can write it, and one that cannot be moved is
-written by no save of the run (`SetAside`, `Replace`). A region keeps the columns read before the
-fault and is written again at the next save, and a column whose bytes end early is a fault, where
-the head kept it short. The tests
-`A_Region_That_Cannot_Be_Read_Is_Kept_Beside_The_One_Written_Again` and
-`A_File_Of_The_Save_That_Cannot_Be_Read_Is_Kept_Beside_The_One_Written_Again`, the second for
-world.json, mobs.bin, furnaces.json and chests.json, fail on the head, which leaves no `.unread`
-file and writes over the one it could not read.
+Read 8. `VoxelGame.cs:641-643`, with `WorldSave.cs:312`. The save writes the player's heading, pitch
+and the sky's hour as floats, which the JSON writer refuses where one is infinite or NaN, so a
+`world.json` whose `Heading` is 1e300, read as a float's infinity, opens and then throws
+`ArgumentException` at its next save, as the test game's showed. `WriteInfo` comes last, after the
+regions, the mobs, the furnaces and the chests, so `world.json` keeps its last form, and
+`_sinceSave` is not set back, so the timed save at :684 runs and throws in every frame past 30 s,
+and a switch of world (:410) and the quit (:1509) throw before they leave. The same world stood with
+5 columns still asked for 10 s on, which I did not follow. A test can fail first, a `world.json`
+with a `Heading` of 1e300, opened and saved.
 
-Finding 14. `Mobs.Columns()` yields a column's loaded mobs together with those it keeps out of the
-world. The test `A_Column_Saves_The_Mobs_It_Keeps_Out_Of_The_World_With_One_Placed_Among_Them` fails
-on the head, whose list for the column holds only the pig placed after spawning was turned off.
+Read 9. `ChunkRenderer.cs:1350`. `MathF.Sign` throws `ArithmeticException` for NaN, and a sky's hour
+of a float's infinity, a `world.json` whose `Hour` is 1e300, gives the sun's way NaN, so the march
+of the shadows' casters throws out of the first frame drawn, as the test game's open showed. A test
+can fail first, `March` given a way of NaN, or that `world.json` opened.
 
-Finding 15. Every file of the save goes through `Replace`, which writes it beside its name, flushes
-it to the disk (`FileStream.Flush(flushToDisk: true)`) and then moves it over. No test of the suite
-can see a flush to the disk, so this one is read by a shim loaded into the save tests' process with
-LD_PRELOAD, which logs each fsync and rename of a path under a test's folder in order. On the head
-the save tests move a `.new` file over its name 11 times, regions, world.json, mobs.bin,
-furnaces.json and chests.json among them, with no fsync of any, and mended each of the 11 moves
-follows the fsync of its own file. The folder is not synced, so a crash of the machine may lose a
-move, which leaves the old file whole.
+Read 10. `ChunkStreamer.cs:146`. A kept column whose compressed bytes do not inflate throws on the
+worker, which the catch at :110 logs and gives back, and the column is asked for again as the player
+moves, from the same bytes, so it fails each time and the world keeps a hole there, and the next
+save of its region writes the bytes again. Where the save makes the spawn's column on the main
+thread after a death (`ChunkStreamer.cs:51`, from `VoxelGame.cs:626`), the throw leaves `SaveWorld`
+and the world is not saved. In the region of version 1, 184 of the 186 faults found were such
+columns. A world with such a column within two of the player's never leaves its loading screen,
+which ends once the 25 columns about the player are in (`VoxelGame.cs:522`). Opened by the test game
+with the first column of its region, one beside the player's, given a zlib head of 0, the world did
+not stand within 10 s, 3,298 frames. A test can fail first, that open, which never stands on the
+head.
 
-The input of item 180, findings 3 to 5 and 18, mended.
+Read 11. `WorldSave.cs:442`. A furnace's `Burning`, `BurnTotal` and `Cooked` are taken as they read,
+below 0 or infinite where 1e300 is cast to a float, so a furnace of an infinite burn burns for good,
+and the window's flame and arrow take an infinite fraction to an `int` (`InventoryWindow.cs:140` and
+:142). Low, since only a file changed by hand holds such a number. A test can fail first, a
+`furnaces.json` with a `Burning` of 1e300.
 
-Findings 3 and 4. `SaveWorld` saves the inventory with the stacks the window E opens holds, in its
-grids and on the mouse (`InventoryWindow.Holding`), put into it as shutting the window puts them, so
-a save while the window is open, the autosave or the one as the game closes, keeps them, and the
-window holds them on while it stays open. A stack the inventory has no room for is left out of the
-save, as shutting the window throws it and a thrown stack is not saved. `SwitchWorld` shuts the
-window first, so its stacks go back into the inventory of the world left, none comes into the next,
-and no chest or furnace of the last is drawn there. The tests
-`The_Stacks_Of_The_Inventory_Window_Are_Saved_While_It_Is_Open_And_As_The_Game_Closes` and
-`A_World_Switched_To_Takes_No_Stack_Of_The_Inventory_Window_From_The_One_Left` fail on the head,
-with no stack of three sticks in the saved inventory.
+Every file cut at every length reads clean, each reader giving up within its filter and setting the
+file aside, and so do a region's version and count, the keys of a region of version 2, which
+`ReadKeys` bounds (:172), and every record the mobs file gives, its place, its health and its
+variant held at :365-366. No region gave a block past this build's. A `world.json` with no `Blocks`
+reads as a world from before the keys were kept, its regions in this build's numbers, as meant.
 
-Findings 5 and 18. `Capture` takes the cursor only while no screen is open and the player lives,
-which holds for the click beside the death screen's window, the menu shut over it and the death
-screen's Respawn pressed with the menu open, and a capture made while the left button is down leaves
-the press to the button that made it, so the world takes no click until it is let go
-(`_swallowClick`). The check "the menu's button and the death screen" in play.sh holds the press on
-Back to Game for 12 frames over a stone the player looks at in creative mode, and reads a dead
-player's cursor by `IsCursorHidden` after a click beside the death screen's window and after the
-menu opened and shut. Run against the head's build, the play fails at the check, the stone broken
-and the player looking at none after the press. Its half for the death screen, which the play
-reaches only past that, read with the same commands in a session of the head's build, found the
-cursor hidden after the click and after the menu, and in one of the mended build free after both,
-the stone standing.
+The shaders under `resources/shaders`, read against the engine's 6.2.60 model pass.
 
-The costs of item 180, findings 10 to 13, 20 and 21, mended. Each was read three times on the head
-and three on the mended build, run in turn, under the GPU's lock taken exclusive on tuned's
-powersave-bazzite, in one session each of the flat world, transient, at 1280 by 720 with the frame
-unlimited, the validation layer off and the render distance of 12, each function timed by eval over
-calls in the live game. The tests of 10, 13 and 20 were run first on a copy of `fcd5574` with the
-tests alone added, and failed there.
+Read 12. `terrain.slang:390-392`. A face in flames or lava returns `color.rgb * flames.y`, the
+tile's color made linear at :215 and never encoded, where every other path returns `toDisplay`. The
+model pass takes a returned color as encoded and the window's output is not linear, so a burning
+block's dark texels are crushed, its bright ones pass white, and the frame's exposure is not applied
+to them (`ChunkRenderer.cs:341-342` sets the pair, `FlamesShown` and `LavaShown` at :721 and :724).
+No test of the suite runs a shader, so a picture pair alone shows it, a fire and a lava pool at noon
+and at night.
 
-Finding 10. A hostile mob searches for a way to the player only once its wait runs out, half a
-second after a search that found one and two seconds after one that found none, and runs straight at
-the player meanwhile. The test `A_Zombie_With_No_Way_To_The_Player_Looks_For_One_Each_Half_Second`
-reads the wait over 15 frames of a zombie below a player on a pillar three high, which on the head
-stands at 0.5 in every frame. With 8 zombies about such a player at night, the hunt over 120 calls
-each stepping a sixtieth of a second reads 108.1, 105.5 and 105.9 ms a call on the head and 1.30,
-1.15 and 1.17 mended, a search of its 2,000 cells costing about 13 ms.
+Read 13. `terrain.slang:412`. Water mirrors as much of the sky as its corner's sky level says,
+`uv2.y / 15`, and the light otherwise. With a pack, `TerrainAtlas.Paint` (:388 and :403) gives water
+an alpha of 255, so the corner carries a sky level and it reads 0 underground, and a pool there by a
+torch falls to the light and mirrors the sky by it. A picture pair alone shows it, a pool in a
+closed cave with a torch beside it, with a pack and without.
 
-Finding 11. The rays from a blast to a body are cast only within its reach, twice its power
-(`Explosion.Reach`), for the mobs and for the player in survival. An explosion of power 3 in the air
-30 blocks over the player with 180 pigs loaded reads 63.9, 65.2 and 64.0 ms on the head and 2.63,
-2.59 and 2.56 mended. The damage within the reach is unchanged, which the blast tests of
-HostileTests hold.
+Read 14. `terrain.slang:395`. The rim is laid on water's side faces, whose `waterDepth` is -1, and
+on a shaped piece with no parts, whose `surface.w` is 0, as a fence's post (`BlockShape.cs:375`) and
+a carpet (:464), where the comment above it says it is for whole blocks' faces alone. It shows only
+with Rim Light above 0, its default 0. A picture alone shows it.
 
-Finding 12. The stacks are gathered by cells of the joining's reach, half a block, each with its
-item, and a stack is weighed against those of its item in the 27 cells about its own, in the order
-the stacks were gathered, so the joins are those of weighing every pair. The gathering is skipped
-while the game takes no time, as under the menu. With 1,024 sticks lying a block apart it reads
-27.2, 26.9 and 27.7 ms on the head and 3.0, 3.0 and 3.7 mended. The test
-`Two_Stacks_Of_One_Item_Lying_Either_Side_Of_The_Edge_Of_A_Joining_Cell_Join` holds a join across a
-cell's edge, and passes on the head too.
+Read 15. `terrain.slang:287-295`, and `mob.slang:54` alike. The Unshaded mode takes away
+`shadow * NdotL` of the sun as the engine adds it, where the engine adds the light arrived times the
+diffuse color times one less the fresnel and the sun's contact (`modelpass.slang:757-774` of
+6.2.60), so a face toward the sun reads about 4% darker than one turned from it, where the mode
+holds them alike. A picture alone shows it.
 
-Finding 13. The flood's key holds the columns loaded within its reach by their count and a sum of a
-mix of each one's place and its `ChunkColumn.Openings`, a count of its blocks set that may open or
-shut a way, which takes the place of the world's own count, so a column coming or going beyond the
-reach, or a block set in one, starts no flood. The test
-`A_Column_Coming_Or_Changing_Past_The_Floods_Reach_Starts_No_Flood` fails on the head, where the
-column joining five out floods again. The profile gains `draw.sections.floods`, the share of the
-last second's frames a flood finished in, put on the head's copy too for the read. Over a flight
-east of 600 frames in the overworld at 140 high, read each second, it reads 0.008 to 0.044 in the
-seconds of new land on the head and 0.009 to 0.010 mended, a whole flood taking 4.4 to 7.8 ms on
-both, and the flight's median 6.98, 6.25 and 6.35 ms on the head against 6.05, 6.16 and 6.06, its
-99th part 37.3, 33.5 and 33.9 against 28.1, 29.8 and 32.4. A flood so finishes 2 to 4 times a second
-over new land on the head, by the frames of those seconds, and about once mended, where the finding
-gives one a frame.
+Read 16. `terrain.slang:89` and :99, with `ChunkRenderer.cs:1194-1195`. The ticks are given the
+shader as a float of `GetTime() * 20`, which past about 4.9 days of the game running steps by a
+whole tick, so the textures' frames stutter and part from the lamps' light, which
+`TerrainAtlas.Step` (:328) steps in doubles. A test can fail first on a mirror of the shader's step
+in C#, the frame of an animation at a time past 4.9 days against `TerrainAtlas.Step`'s.
 
-Finding 20. A respawn sets the player over the spawn and has the workers make its land, as a new
-world's opening does, the player standing on the spawn's highest block once its columns are in. A
-save while the player waits, as on closing the game, makes the spawn's column and sets the player on
-it first, so it keeps where the player stands. The test
-`A_Respawn_Far_From_The_Spawn_Has_Its_Land_Made_By_The_Workers` fails on the head, which has the
-spawn's column made in the call, and
-`A_Game_Closed_While_The_Respawned_Player_Waits_Saves_It_On_The_Spawn` holds the save. From 3,000
-blocks east the call reads 206.6, 197.4 and 200.7 ms on the head and 3.8, 4.2 and 3.9 mended, the
-slowest frame across it 250 ms on the head, the engine's cap on a frame's time, and 68.4, 62.3 and
-55.2 mended, among the frames the land loads in.
+The rest of the shaders reads clean, the packed vertex's bits and their tables, every index against
+its table's bounds, the uniforms against the C# that sets them, the places far out, each division
+and square root against 0 and NaN, the haze dome's mark, `bits.slang`, `mob.slang` but for Read 15,
+and `cavefields.slang`, which agrees with the game's C# reading of the fields bit for bit on a
+sample of 4,096 places.
 
-Finding 21. The mobs' bodies are crowded by cells of two blocks along x and z, wider than any two
-mobs' half widths together, and a body is weighed against those of the 9 cells about its own. With
-180 pigs loaded it reads 2.18, 2.44 and 2.27 ms on the head and 0.35, 0.37 and 0.37 mended. The test
-`Two_Mobs_Overlapping_Either_Side_Of_The_Edge_Of_A_Crowding_Cell_Are_Pushed_Apart` holds a push
-across a cell's edge, and passes on the head too.
+The scripts under `build` and the workflow.
 
-Of the rest of item 180, findings 16, 17, 22 and 23, mended, each test run first on a copy of
-`042862b` with the tests alone added.
+Read 17. `play.sh:1235-1237`, and `fail` at :53. The layer's checks and the log's last lines read
+the log the game writes under the checkout's `build/sessions`, not the run's own folder, so another
+VoxelSandbox opened from the checkout meanwhile writes it, and the play fails the layer's line or
+passes a run whose own log held an error. A run of the play beside a second open of the game fails
+first, on the head.
 
-Finding 16. A hostile mob with no player to hunt lets its creeper's fuse go out with its hunt
-(`MobHostile.Fuse` set to -1 where `Hunts` has no target). The test
-`A_Creepers_Fuse_Goes_Out_As_Its_Hunt_Ends_With_No_Player_To_Hunt` lights a creeper's fuse beside a
-player and thinks it once with no target, and fails on the head, whose fuse burns on.
+Read 18. `play.sh:1248`. The kept run's open takes `./e3d`'s 60 s, not the 600 s of every other
+open, and on a timeout `kept` is empty, `fail` exits, the trap stops no game and the run's data
+folder is deleted under the game still running. A test can fail first only by an open made slow, a
+shim of `./e3d` answering late.
 
-Finding 17. `voxel.tp` and `voxel.drop` refuse a place one of whose numbers is none, NaN or Infinity
-as the console parses them, and a height past the land's edge, which a float would hold as no
-number. The test `A_Place_That_Is_No_Number_Neither_Moves_The_Player_Nor_Lays_A_Stack` sends NaN,
-Infinity and 1e39 in each place and fails on the head, which answers that the player stands at NaN.
+Read 19. `play.sh:122`, :142, :874 and :1230. Under `set -e` and `pipefail`, an assignment of a
+pipeline whose grep finds nothing ends the script with no `::error` line, so the run reads red with
+no reason given, at :122 inside the very branch that would say why the game did not open. A run with
+a fed answer that holds no match fails first, as finding 22's check was read.
 
-Finding 22. The check of a fire's top in play.sh fails a read of `voxel.line` that holds no 40
-samples by place, naming the read, and the guard on the joined string, which could not fail, is
-gone. Fed the answer "a point of the line is off the picture", the head's form passes with its
-readings " 0.0" and the mended one fails with 0 samples.
+Read 20. `play.sh:983`. `awk '{ exit !($1 > 100) }'` on no input exits 0, so a `voxel.color` answer
+the sed does not match passes the sky's check. Fed an error answer, the head passes.
 
-Finding 23. The test of the mobs' steps asserts every step heard lies within `GameSounds.Hearing` of
-the player's eye. With the cut-off at `GameSounds.cs:137` taken out of a copy of the head, the
-head's test passes and the mended one fails on a step of the far pig at -27.98, 4, -0.33.
+Read 21. `play.sh:554` and :561. The answers of `pipelines.wait` are printed and never checked, so a
+wait that runs out reads the water's pixel from pipelines not yet made. Fed a wait's timeout, the
+head goes on.
 
-Findings 7 and 9 of item 180, mended. Each test was run first on a copy of `a28ab91` with the tests
-and two read-only accessors of `ChunkRenderer` added, `SolidColors` and `Parked`, which change
-nothing the game does.
+Read 22. `play.sh` sets no `LC_ALL`, where `pictures.sh:34` sets it, and the game sets no culture,
+so its answers write numbers as the runner's locale does, `voxel.bits` among them with `F2`
+(`GameCommands.cs:541`). On a desktop of a German locale the bits' answer reads `65,02`, which the
+sed at `play.sh:819` does not match, and the play fails there. A run under a German locale fails
+first, on the head.
 
-Finding 7. A part takes a meshing's faces as unchanged only where their colors match too, so a pack
-read again whose tiles keep their numbers gives the scene's light field its new colors
-(`Part.Take`). The test `A_Pack_Of_The_Same_Tiles_In_Other_Colors_Gives_The_Light_Field_Its_Colors`
-draws the flat world's ground with a pack painted red, paints the pack green and reads it again as
-F3 with T does, and fails on the head, whose ground under the player keeps the red's colors, 34, 5,
-5. Taken from no pack to the red one the test passes on the head too, since the packed bytes change
-there.
+Read 23. `play.sh:817-831`. The check that a bit by the tunnel's wall takes no light through it
+passes on one reading, since a single level's spread is 0. Fed four answers that throw no new bit,
+the head passes.
 
-Finding 9. A section of a column not loaded is dropped rather than parked, since the column's
-arrival marks it again (`ChunkRenderer.Update`). The test
-`No_Section_Of_A_Column_That_Never_Loaded_Is_Kept_Parked` fails on the head, where 960 of the 2,040
-sections parked once the test game stands are of columns never loaded.
+Read 24. `play.sh:88-94`. `stood` takes any answer without `loading ` as a world that stands, an
+error or "no world is loaded" among them. Fed such an answer, the head passes.
 
-Finding 19 of item 180, mended, the last of the audit's. The haze dome is drawn with a material of
-an alpha of 252, as water's of 253, and the terrain shader gives every corner of a draw so marked
-the open sky's level, the fading rings' among them, which the packed form keeps none of under an
-alpha of 240 (`HazeMark` in terrain.slang, `ChunkRenderer`'s `_haze`). No test of the suite runs a
-shader, so it is read in pictures. In the flat world at noon under a roof of stone nine blocks
-square three over the feet, the eye at sky level 10, looking level east, the head draws a line along
-the horizon, its rows 357 to 359 at 218.8, 212.9 and 204.3 of luma across the middle where the rows
-about them read 197.9 to 198.2, and the mended build reads 198.0 to 198.1 there, as both read in the
-open, where the frame of either is the other's within 1 level. The pair is
-`04-03-haze-dome-line-under-a-roof.png` in the dump. The material's alpha takes 1.2% from the dome's
-cover, so as much of the sky behind it shows through at the horizon. The play's captures read as
-before, within 5 levels of the 6.2.60 pin's but sky2's, which moves as much between that pin's own
-runs.
+Read 25. `play.sh:1234`. `pid` is left set after the game is stopped, so the trap stops that number
+again at the run's end, which another process may hold by then. Low, and no test fails first short
+of a shim.
+
+Read 26. `pictures.sh:57`. The open takes `./e3d`'s 60 s and comes before the trap that stops the
+game, so a slow open leaves a game serving. A shim answering late shows it.
+
+Read 27. `pictures.sh:85-91`. `go` returns as a success after its 600 polls run out, so the next
+capture is of a world that never stood. Fed answers that never stand, the head goes on.
+
+Read 28. `pictures.sh:300-304`. F3 is held by an `input.key` in the background and F4 is sent ten
+frames on, with no read of `input.state` between, so F4 can reach the game before F3 is held. A
+picture of the chord's result shows it on a slow frame.
+
+Read 29. `pictures.sh:47-55`. A `packs.json` that does not parse fails inside the process
+substitution, unseen, and the loop reads no packs and takes the pictures without them. Fed a cut
+`packs.json`, the head goes on.
+
+Read 30. `publish.sh:39`. The publish clears `bin` and keeps `obj`, so a second publish in a
+checkout may build nothing and skip the warnings' check. I read it as so and did not run it.
+
+Read 31. `fetch-slang.sh:61`. The archive is unpacked with no check of its sum against one written
+in the script. A test can fail first on a fed archive of other bytes.
+
+Read 32. `fetch-slang.sh:73`. The stamp is written before :75 checks that `slangc` runs, so a
+compiler that does not run is kept as fetched. A fed archive whose binary exits 1 fails first.
+
+Read 33. `engine.sh:28`. The engine's build writes to `/dev/null`, so a failed build reads only as
+its exit, and :18-21 update the submodules only when HEAD moves, so a checkout whose submodule was
+moved by hand builds against it. Low.
+
+Read 34. `pack.yml:131` and :156. `echo "version=$(build/version.sh)"` takes `echo`'s status, so a
+`version.sh` that fails gives an empty version and a release tagged `v`. A step run with a
+`version.sh` that exits 1 passes on the head, where it is to fail.
+
+`shaders.sh`, `version.sh` and `./e3d` read clean, and so do the workflows, with the engine's
+checkout at `baa21ff4`, which is `v6.2.60` as the project pins it, no secret given a step that does
+not need it, every cache keyed by what it holds, and every job bounded by a timeout.
+
+Reads 2, 3 and 4 of item 181, mended. Each test was run first on a copy of `0be5c8e` with the tests
+added.
+
+Read 2. The mobs file's list of kinds is refused where it holds fewer than none or more than the 256
+a record's byte tells apart, and the file is moved aside and the columns' mobs placed again, as for
+a file that cannot be read (`WorldSave.ReadMobs`). The test
+`A_Mobs_File_Listing_More_Kinds_Than_A_Byte_Tells_Apart_Is_Kept_Beside_And_Its_Mobs_Placed_Again`
+writes a list of -1 kinds and one of `int.MaxValue` and fails on the head, by `OverflowException`
+and `OutOfMemoryException`.
+
+Read 3. A furnace or a chest listed with no slots stands empty at its place, and the rest of the
+file is read (`ReadFurnaces`, `ReadChests`). The test
+`A_Furnace_Or_A_Chest_Listed_With_No_Slots_Stands_Empty` fails on the head by
+`NullReferenceException`.
+
+Read 4. A slot that is none reads as an empty slot, in the inventory, a furnace and a chest alike
+(`Inventory.Decode`). The test `A_Slot_That_Is_None_Reads_Empty_Beside_The_Stacks_Of_The_Rest` reads
+a chest whose first slot is none and whose second holds two sticks, and fails on the head by
+`NullReferenceException`.
+
+The slots are bounded and their file kept, not moved aside, since an empty slot is the nearest value
+the game holds for either, and a file moved aside would empty every furnace or every chest of the
+world for one of them. A list of kinds has no nearest value, so its file is moved aside. The strict
+build is clean, 418 tests pass outside the GPU's lock, and the play passes in 180 s, its captures
+within 8 levels of the last play's but sky2's, which moves as much between plays.

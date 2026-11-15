@@ -343,7 +343,11 @@ public sealed class WorldSave
             if (version is not (1 or MobsVersion))
                 throw new InvalidDataException("it is not a mobs file of a version this game reads");
             LandPlace Place() => version == 1 ? new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) : new(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-            var kinds = new MobKind?[reader.ReadInt32()];
+            var listed = reader.ReadInt32();
+            // A record names its kind by a byte, so no file the game writes lists more kinds than a
+            // byte tells apart.
+            if (listed is < 0 or > 256) throw new InvalidDataException("its list of kinds has no length");
+            var kinds = new MobKind?[listed];
             for (int i = 0; i < kinds.Length; i++) kinds[i] = MobKinds.Find(reader.ReadString());
             var columns = reader.ReadInt32();
             for (int c = 0; c < columns; c++)
@@ -440,7 +444,9 @@ public sealed class WorldSave
             foreach (var r in JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.FurnaceRecordArray) ?? [])
             {
                 var furnace = new Furnace { Burning = r.Burning, BurnTotal = r.BurnTotal, Cooked = r.Cooked };
-                for (int i = 0; i < Math.Min(3, r.Slots.Length); i++) furnace.Slots[i] = Inventory.Decode(r.Slots[i]);
+                // A furnace listed with no slots, as a file changed by hand may list one, stands empty.
+                var slots = r.Slots ?? [];
+                for (int i = 0; i < Math.Min(3, slots.Length); i++) furnace.Slots[i] = Inventory.Decode(slots[i]);
                 furnaces.Add((r.X, r.Y, r.Z), furnace);
             }
         }
@@ -471,7 +477,8 @@ public sealed class WorldSave
             foreach (var r in JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.ChestRecordArray) ?? [])
             {
                 var chest = new Chest { Loot = r.Loot, Seed = r.Seed };
-                for (int i = 0; i < Math.Min(Chest.Size, r.Slots.Length); i++) chest.Slots[i] = Inventory.Decode(r.Slots[i]);
+                var slots = r.Slots ?? [];
+                for (int i = 0; i < Math.Min(Chest.Size, slots.Length); i++) chest.Slots[i] = Inventory.Decode(slots[i]);
                 chests.Add((r.X, r.Y, r.Z), chest);
             }
         }
