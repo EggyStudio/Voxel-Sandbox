@@ -492,4 +492,57 @@ public sealed class HeadlessGameTests
         Assert.Equal(6 + 4 + 4 + 6, MeasureTextEx(font, "A BA", 8, 0).X);
         Assert.Equal(2 * (6 + 4), MeasureTextEx(font, "A ", 16, 0).X);
     }
+
+    [Fact]
+    public void No_Section_Of_A_Column_That_Never_Loaded_Is_Kept_Parked()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        headless.Step(10);
+
+        // The columns of the ring past the streamed ones are marked as their neighbors arrive, and never load.
+        Assert.NotEmpty(game.Renderer.Parked);
+        Assert.All(game.Renderer.Parked, key => Assert.True(game.World.HasColumn(key.X, key.Z), $"{key} is parked with its column not loaded"));
+    }
+
+    [Fact]
+    public void A_Pack_Of_The_Same_Tiles_In_Other_Colors_Gives_The_Light_Field_Its_Colors()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame();
+            var game = headless.Game;
+            var feet = LandOrigin.LandOf(game.Player.Body.Position);
+            var key = new SectionKey(VoxelWorld.ColumnOf((int)Math.Floor(feet.X)), (int)Math.Floor(feet.Y - 1) >> Section.Shift, VoxelWorld.ColumnOf((int)Math.Floor(feet.Z)));
+            // A pack whose ground is of one color, its textures named as the game's own.
+            void Paint(byte r, byte g, byte b)
+            {
+                var plain = new Image([.. Enumerable.Range(0, 16 * 16).SelectMany(_ => new[] { r, g, b, (byte)255 })], 16, 16);
+                foreach (var texture in new[] { "grass_block_top", "grass_block_side", "dirt", "stone", "bedrock" })
+                {
+                    var path = Path.Combine(folder, "assets", "minecraft", "textures", "block", texture + ".png");
+                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                    File.WriteAllBytes(path, ExportImageToMemory(plain, ".png"));
+                }
+            }
+            Paint(200, 30, 30);
+            game.ChoosePacks([folder]);
+            headless.Step(30);
+            var red = game.Renderer.SolidColors(key).ToArray();
+            Assert.NotEmpty(red);
+
+            // The pack's textures painted green and read again, as F3 with T does, every tile
+            // keeping its number.
+            Paint(30, 200, 30);
+            game.ReloadPacks();
+            headless.Step(30);
+
+            Assert.NotEqual(red, game.Renderer.SolidColors(key).ToArray());
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
 }

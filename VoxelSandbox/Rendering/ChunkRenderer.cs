@@ -77,8 +77,9 @@ public sealed class ChunkRenderer : IDisposable
             if (positions.SequenceEqual(Positions) && indices.SequenceEqual(Indices))
             {
                 // A relight writes the packed bytes, eight a vertex, and the colors global
-                // illumination reads, the positions kept.
-                if (packed.SequenceEqual(Packed)) return Change.None;
+                // illumination reads, the positions kept, the colors alone changing where a pack's
+                // textures change and their tiles keep their numbers.
+                if (packed.SequenceEqual(Packed) && CollectionsMarshal.AsSpan(faces.Colors).SequenceEqual(Colors)) return Change.None;
                 (Packed, Colors) = (packed.ToArray(), faces.Colors.ToArray());
                 if (upload)
                 {
@@ -591,6 +592,12 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>Sections holding faces or lamps.</summary>
     public int Sections => _sections.Count;
 
+    /// <summary>The colors of a section's solid faces as the scene's light field reads them, or none for a section with no faces.</summary>
+    public IReadOnlyList<Color> SolidColors(SectionKey key) => _sections.TryGetValue(key, out var entry) ? entry.Solid.Colors : [];
+
+    /// <summary>The sections out of the eye's reach, each of a column loaded, meshed once the eye comes near.</summary>
+    public IReadOnlyCollection<SectionKey> Parked => _parked;
+
     /// <summary>Whether faces are darkened by light levels, which takes effect as sections are shaded again.</summary>
     public bool LightLevels
     {
@@ -804,9 +811,13 @@ public sealed class ChunkRenderer : IDisposable
             var empty = !far && !unseen && (!world.TryGetColumn(key.X, key.Z, out var column) || column.Numbered(key.Y) is not { Filled: > 0 });
             if (!far && !unseen && !empty && _lent.Count == 0) continue;
             // A section whose neighbor column has not arrived is dropped rather than kept, since the
-            // neighbor's arrival marks it again.
+            // neighbor's arrival marks it again, and one of a column not loaded is dropped rather
+            // than parked, since the column's arrival marks it.
             if (!world.Reshaded.Remove(key) & !world.Loaded.Remove(key)) continue;
-            if (far) _parked.Add(key);
+            if (far)
+            {
+                if (world.HasColumn(key.X, key.Z)) _parked.Add(key);
+            }
             else if (unseen) _unseen.Add(key);
             else if (empty) Forget(key);
             else
