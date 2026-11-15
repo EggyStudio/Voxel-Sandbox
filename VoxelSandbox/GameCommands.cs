@@ -107,6 +107,7 @@ public static class GameCommands
     internal static string Look(float heading, float pitch)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (!float.IsFinite(heading) || !float.IsFinite(pitch)) return "a heading and a pitch are numbers, and one of these is none";
         game.Player.Heading = heading;
         game.Player.Pitch = Math.Clamp(pitch, -89, 89) * MathF.PI / 180;
         return $"the player faces {heading} and is pitched {pitch}";
@@ -680,6 +681,7 @@ public static class GameCommands
     internal static string Flicker(int frames, float turn, float step, int over, string path)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (!float.IsFinite(turn) || !float.IsFinite(step)) return "a turn and a step are numbers, and one of these is none";
         over = Math.Max(1, over);
         frames = Math.Max(frames, 12 + over);
         game.Flicker = new FlickerRun(frames, 10, over, turn, step, Path.GetFullPath(path));

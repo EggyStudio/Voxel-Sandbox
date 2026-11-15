@@ -19,8 +19,8 @@ public sealed class Body(float halfWidth, float height)
     private const float Skin = 1e-4f;
     // How high the box climbs onto what it walks into, as onto a slab or a stair.
     private const float StepHeight = 0.6f;
-    // Far past the most a frame steps a body by, some 20 blocks, a fall's limit of 78 a second over
-    // the longest frame's quarter of a second.
+    // Far past the most a frame steps a body by, some 4 blocks, a fall's limit of 78 a second over the
+    // game's longest step of a twentieth of a second.
     private const float LongestMove = 1024;
 
     /// <summary>The player's box.</summary>

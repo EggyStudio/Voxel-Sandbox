@@ -24,6 +24,8 @@ public static class VoxelRay
     public static BlockHit? Cast(VoxelWorld world, Vector3 origin, Vector3 direction, float reach)
     {
         direction = Vector3.Normalize(direction);
+        // A way that is no number, as a heading that is none gives the eye, meets no block.
+        if (!float.IsFinite(direction.X) || !float.IsFinite(direction.Y) || !float.IsFinite(direction.Z)) return null;
         int x = (int)MathF.Floor(origin.X), y = (int)MathF.Floor(origin.Y), z = (int)MathF.Floor(origin.Z);
         int stepX = Math.Sign(direction.X), stepY = Math.Sign(direction.Y), stepZ = Math.Sign(direction.Z);
         float deltaX = Across(direction.X), deltaY = Across(direction.Y), deltaZ = Across(direction.Z);

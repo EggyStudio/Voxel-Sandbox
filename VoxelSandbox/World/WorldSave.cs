@@ -237,6 +237,21 @@ public sealed class WorldSave
         File.Move(written, path, overwrite: true);
     }
 
+    /// <summary>
+    /// Leaves out a kept column whose blocks could not be read, so it is generated again, and moves
+    /// its region's file aside, the region's other columns written again at the next
+    /// <see cref="Flush"/>.
+    /// </summary>
+    public void Unreadable(int x, int z)
+    {
+        _kept.TryRemove((x, z), out _);
+        var region = RegionOf(x, z);
+        var path = RegionPath(region);
+        var aside = File.Exists(path) ? $" and {SetAside(path)}" : "";
+        TraceLog(LogLevel.Warning, $"The column {x}, {z} of the region {path} could not be read, so it is generated again{aside}.");
+        _changedRegions.Add(region);
+    }
+
     /// <summary>Keeps a changed column, to be written with its region at the next <see cref="Flush"/>.</summary>
     public void Keep(ChunkColumn column)
     {

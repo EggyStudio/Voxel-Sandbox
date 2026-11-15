@@ -173,6 +173,42 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Kept_Column_Whose_Blocks_Do_Not_Inflate_Is_Generated_Again_And_Its_Regions_Others_Kept()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A glowstone 70 high in the player's column and in the one east of it, the region's two
+            // columns, the first it lists given a zlib head no stream begins with.
+            using (var first = new HeadlessGame(save: folder))
+            {
+                first.Game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
+                first.Game.World.SetBlock(18, 70, 2, BlockId.Glowstone);
+            }
+            var path = Path.Combine(folder, "regions", "r.0.0.bin");
+            var bytes = File.ReadAllBytes(path);
+            Assert.Equal(2, BitConverter.ToInt32(bytes, 8));
+            var (cut, whole) = BitConverter.ToInt16(bytes, 12) == 0 ? (2, 18) : (18, 2);
+            bytes[20] = 0;
+            File.WriteAllBytes(path, bytes);
+
+            using (var opened = new HeadlessGame(save: folder))
+            {
+                Assert.Equal(BlockId.Air, opened.Game.World.GetBlock(cut, 70, 2));
+                Assert.Equal(BlockId.Glowstone, opened.Game.World.GetBlock(whole, 70, 2));
+                Assert.Equal(bytes, File.ReadAllBytes(path + ".unread"));
+            }
+
+            using var again = new HeadlessGame(save: folder);
+            Assert.Equal(BlockId.Glowstone, again.Game.World.GetBlock(whole, 70, 2));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_World_Whose_Blocks_Were_Numbered_Otherwise_Keeps_Them_Through_A_Save()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

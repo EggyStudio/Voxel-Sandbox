@@ -34,6 +34,12 @@ public class BodyTests
     }
 
     [Fact]
+    public void A_Ray_Along_A_Way_That_Is_No_Number_Meets_No_Block()
+    {
+        Assert.Null(VoxelRay.Cast(Floor(), new Vector3(4.5f, 13.5f, 4.5f), new Vector3(float.NaN, 0, float.NaN), 5));
+    }
+
+    [Fact]
     public void A_Falling_Body_Lands_On_The_Floor_And_Stands_On_It()
     {
         var world = Floor();

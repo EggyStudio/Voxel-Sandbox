@@ -1,12 +1,17 @@
 # Review
 
-Reviewed up to `a3c9897`, item 181's first commit, the mobs file's list of kinds held to what a byte
-tells apart and its file moved aside, a furnace or a chest listed with no slots and a slot that is
-none reading as empty with their file kept, each test failing first, 418 tests and the play in 180
-s, pushed at 07:34 on 2026-11-15, its build run 43686079311 started; it keeps the form and carries
-the review's files. Before it `0be5c8e`, item 180's last commit, the haze dome's material marking
-its corners as under the open sky, read by a picture pair under a roof, with `201701a`, a section's
-part taking new colors where its faces keep their packed bytes and a section of a column not loaded
+Reviewed up to `f761d7d`, item 181's second commit, the world's info taking each value the game
+cannot hold as a new world's, a body's cells and moves bounded, the save writing a float that is no
+number by its name and the shadows' march taking no way that is none, each test failing first, 428
+tests and the play in 177 s, pushed at 08:37 on 2026-11-15 once the run before it had ended, its
+build run 43690794766 started; it keeps the form and carries the review's files. Before it
+`a3c9897`, item 181's first commit, the mobs file's list of kinds held to what a byte tells apart
+and its file moved aside, a furnace or a chest listed with no slots and a slot that is none reading
+as empty with their file kept, each test failing first, 418 tests and the play in 180 s, pushed at
+07:34 on 2026-11-15, its build run 43686079311 green at 08:37; it keeps the form and carries the
+review's files. Before it `0be5c8e`, item 180's last commit, the haze dome's material marking its
+corners as under the open sky, read by a picture pair under a roof, with `201701a`, a section's part
+taking new colors where its faces keep their packed bytes and a section of a column not loaded
 dropped rather than parked, each test failing first, 414 tests and the play passing, both pushed at
 05:03 on 2026-11-15 once the run before them had ended, their build run 43675059297 green at 05:51;
 they keep the form and carry the review's files, and all 23 findings are mended. Before them
@@ -720,4 +725,62 @@ hour that is no number reads as 10, the hour the sky begins at (`ChunkRenderer.M
 first frame, and `A_Ray_Along_A_Way_That_Is_No_Number_Marks_No_Section` by the same out of `March`.
 
 The strict build is clean, 428 tests pass outside the GPU's lock, and the play passes in 177 s, its
+captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+Read 10 of item 181, mended, with what the heading's row showed and the moves' bound, as asked. Each
+test was run first on a copy of `f761d7d` with the tests added.
+
+Read 10. A kept column whose blocks do not inflate is made by its generator, as one never kept is,
+and the save leaves its bytes out, moves its region's file aside and writes the region's other
+columns again at the next save (`ChunkStreamer.Make` and `Take`, `WorldSave.Unreadable`). The path
+that makes the spawn's column on the main thread after a death goes the same way (`LoadNow`). The
+test `A_Kept_Column_Whose_Blocks_Do_Not_Inflate_Is_Generated_Again_And_Its_Regions_Others_Kept`
+saves a glowstone 70 high in the player's column and in the one east of it, the region's two, gives
+the first the region lists a zlib head of 0, opens the world and holds that the cut column stands as
+generated, the other keeps its glowstone, the region's file lies aside as it was cut, and a third
+open keeps the other's glowstone. It fails on the head, whose world does not stand within 30 s,
+10,567 frames.
+
+The heading's row stood with 5 columns asked for on the head since the game's frame threw before it
+took them in. With a heading of infinity the yaw is minus infinity and the eye's look no number, and
+`VoxelRay.Cast` (`VoxelRay.cs:28`) gives `Math.Sign` the look's x, which throws, from `Aim`
+(`VoxelGame.cs:975`) in `Play` (:727), so every frame's `Play` ended there, short of the streamer's
+update at :799, and the columns its workers had made, each to the last step of `Make`, waited in its
+queue. A scratch probe on a copy of `0be5c8e` read it in the engine's log, the streamer's update
+reached in five frames once the world stood and in none after, `Play` throwing `ArithmeticException`
+in each frame from there, past 1,000 times within 5 s, and the timed save throwing in `Begin` too
+once 30 s of the game had passed. With the ray's way that is no number taken as meeting no block,
+the same world stands with its 69 columns and the frame logs no throw. The other ways in are
+`voxel.look`, whose heading or pitch the console reads as NaN or, past a float, infinity, and which
+set it as given, a pitch that is no number passing `Math.Clamp`, and `voxel.flicker`, which turns
+the player by its turn over its frames and steps it by its step (`Measurements.cs:45-46`). The ray
+meets no block along a way that is no number (`VoxelRay.Cast`), and `voxel.look` refuses a heading
+or a pitch that is none and `voxel.flicker` a turn or a step, as `voxel.tp` refuses such a place.
+`A_Ray_Along_A_Way_That_Is_No_Number_Meets_No_Block` fails on the head by `ArithmeticException`, and
+`A_Look_Or_A_Turn_That_Is_No_Number_Leaves_The_Player_Facing_As_Before` sends `voxel.look` `NaN 0`,
+`0 NaN` and `1e39 0` and `voxel.flicker` a turn and a step of NaN, and fails on the head at its
+first look, which the head answers with the player facing NaN. The game's other turn of the yaw is
+the mouse's, by a finite step (`FirstPersonController.cs:129`).
+
+No path of the game's moves a body more than 1,024 blocks in one `Move`. The six that call it move
+by a velocity times the game's step, which `VoxelGame.cs:680` holds to a twentieth of a second,
+given the behaviors at :712 and the bits at :753, the player (`FirstPersonController.cs:218`), the
+mobs (`Mob.cs:460`), the dropped stacks (`ItemDrops.cs:158`), the bits (`BlockBits.cs:181`), the
+primed TNT (`PrimedTnt.cs:49`) and the falling blocks (`FallingBlocks.cs:47`). Their velocities are
+held, a fall at 78 a second for the player and the mobs (`FirstPersonController.cs:14` and :211,
+`Mob.cs:134` and :455), a stack's at 40 (`ItemDrops.cs:152`), the TNT's and the falling blocks' by a
+drag each tick (`PrimedTnt.cs:46-47`, `FallingBlocks.cs:45-46`), a walk or a flight at 21.6 at most
+(`FirstPersonController.cs:17`), a mob's hit pushing the player by 6 and 5 (`VoxelGame.cs:907`), a
+blast's by 12 at most (:937, `Explosion.Impact` at most the exposure, a share), and the crowd's push
+about one a second for each mob pressing on another (`Mobs.cs:67-80`). So a move takes some 4 blocks
+at most, and one past 1,024 needs a velocity past 20,480 a second, some 1,700 blasts reaching the
+player in one step. The places the game puts a body at are set and not moved, `voxel.tp`
+(`GameCommands.cs:102`), the open (`VoxelGame.cs:471` and :476), the landing on the spawn (:542 and
+:630) and the respawn (:873), each by `FirstPersonController.Teleport` (:288-294), which sets the
+place and lets the velocity go, and the origin's step, which shifts every body's place by the step,
+the player's among them as an entity of the game's ECS (`VoxelGame.cs:564`, :75). The comment on
+`LongestMove` said a fall took 20 blocks over the longest frame's quarter of a second, where the
+game's step is a twentieth, and says some 4 blocks over a twentieth.
+
+The strict build is clean, 431 tests pass outside the GPU's lock, and the play passes in 196 s, its
 captures within 8 levels of the last play's but sky2's, which moves as much between plays.

@@ -308,4 +308,21 @@ public sealed class OriginMoveTests : IDisposable
         Assert.Equal(before, game.Player.Body.Position);
         Assert.Equal(0, game.Drops.Count);
     }
+
+    [Fact]
+    public void A_Look_Or_A_Turn_That_Is_No_Number_Leaves_The_Player_Facing_As_Before()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        Serve(game);
+        var (heading, pitch) = (game.Player.Heading, game.Player.Pitch);
+
+        foreach (var look in new[] { "NaN 0", "0 NaN", "1e39 0" })
+            Assert.DoesNotContain("the player faces", Run($"voxel.look {look}"));
+        foreach (var motion in new[] { "NaN 0", "0 NaN" })
+            Assert.DoesNotContain("recording", Run($"voxel.flicker 20 {motion} 5 flicker.txt"));
+
+        Assert.Equal((heading, pitch), (game.Player.Heading, game.Player.Pitch));
+        Assert.Null(game.Flicker);
+    }
 }

@@ -19,7 +19,7 @@ namespace VoxelSandbox;
 /// </remarks>
 public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null)
 {
-    private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column)> _done = new();
+    private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column, bool Unread)> _done = new();
     private readonly HashSet<(int X, int Z)> _pending = [];
     private readonly List<(int X, int Z)> _wanted = [];
     private readonly List<(int X, int Z)> _leaving = [];
@@ -48,7 +48,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         var (cx, cz) = LandOrigin.ColumnOf(at);
         for (int z = cz - radius; z <= cz + radius; z++)
             for (int x = cx - radius; x <= cx + radius; x++)
-                if (!world.HasColumn(x, z)) Join(Make(world.Generator, Kept(x, z), x, z, Reach.Of(at), radius + Reach.Kept));
+                if (!world.HasColumn(x, z)) Take(x, z, Make(world.Generator, Kept(x, z), x, z, Reach.Of(at), radius + Reach.Kept));
     }
 
     /// <summary>Takes in the columns the workers finished, asks for those now in reach, and unloads those out of it.</summary>
@@ -58,7 +58,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         {
             Interlocked.Decrement(ref _running);
             _pending.Remove((result.X, result.Z));
-            if (result.Column is not null) Join(result.Column);
+            if (result.Column is not null) Take(result.X, result.Z, (result.Column, result.Unread));
         }
 
         var (cx, cz) = LandOrigin.ColumnOf(player);
@@ -102,10 +102,10 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             Interlocked.Increment(ref _running);
             Task.Run(() =>
             {
-                ChunkColumn? column = null;
+                (ChunkColumn? Column, bool Unread) made = (null, false);
                 try
                 {
-                    column = Make(generator, saved, x, z, eye, kept, readings);
+                    made = Make(generator, saved, x, z, eye, kept, readings);
                 }
                 catch (Exception ex)
                 {
@@ -113,10 +113,17 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
                     // player moves, rather than the exception ending a task nobody waits on.
                     Console.Error.WriteLine($"Column {x}, {z} could not be generated. {ex}");
                 }
-                _done.Enqueue((x, z, column));
+                _done.Enqueue((x, z, made.Column, made.Unread));
             });
         }
         _wanted.RemoveAll(c => world.HasColumn(c.X, c.Z) || _pending.Contains(c));
+    }
+
+    // Joins a column made, the save leaving out the kept blocks of one that could not read them.
+    private void Take(int x, int z, (ChunkColumn Column, bool Unread) made)
+    {
+        if (made.Unread) save?.Unreadable(x, z);
+        Join(made.Column);
     }
 
     private void Join(ChunkColumn column)
@@ -136,20 +143,27 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
 
     // A column from its kept blocks or its generator, with its own light worked out, which leaves the
     // main thread only the light across its edges, its open air sharing its arrays and its deep
-    // sections out of the eye's reach packed.
-    private static ChunkColumn Make(IWorldGenerator generator, byte[]? kept, int x, int z, SectionKey eye, int distance, ArraySegment<int>? readings = null)
+    // sections out of the eye's reach packed. A kept column whose blocks do not inflate is made by
+    // its generator, as one never kept is, and said to be unread.
+    private static (ChunkColumn Column, bool Unread) Make(IWorldGenerator generator, byte[]? kept, int x, int z, SectionKey eye, int distance, ArraySegment<int>? readings = null)
     {
-        ChunkColumn column;
-        if (kept is null) column = readings is not null && generator is Overworld land ? land.Generate(x, z, readings) : generator.Generate(x, z);
-        else
-        {
-            column = WorldSave.Decode(x, z, kept, WorldSave.Shallow(kept) ? generator.Generate(x, z) : null);
-            generator.Paint(column);
-        }
+        ChunkColumn? column = null;
+        if (kept is not null)
+            try
+            {
+                column = WorldSave.Decode(x, z, kept, WorldSave.Shallow(kept) ? generator.Generate(x, z) : null);
+                generator.Paint(column);
+            }
+            catch (InvalidDataException)
+            {
+                // Made below by the generator.
+            }
+        var unread = kept is not null && column is null;
+        column ??= readings is not null && generator is Overworld land ? land.Generate(x, z, readings) : generator.Generate(x, z);
         Lighting.Compute(column);
         column.Settle();
         column.Pack(eye, distance);
-        return column;
+        return (column, unread);
     }
 
     // The columns within the load distance, nearest first.
