@@ -21,6 +21,10 @@ public sealed class ResourcePacks : IDisposable
 {
     private const string Root = "assets/minecraft/";
 
+    // The most bytes a file of a pack is read to, so an entry that inflates to gigabytes is left out
+    // before it is read.
+    private const long MostBytes = 64L << 20;
+
     // Each pack's files by their path under assets/minecraft, as a zip's entry or a folder's file.
     private readonly List<(string Name, ZipArchive? Zip, Dictionary<string, string> Files)> _packs = [];
 
@@ -47,6 +51,15 @@ public sealed class ResourcePacks : IDisposable
 
     /// <summary>The packs that could not be read, by name, each with the reason.</summary>
     public List<(string Name, string Reason)> Unread { get; } = [];
+
+    /// <summary>
+    /// The files that could not be read, each by its pack's name with the file and the reason, which
+    /// the packs take as files that pack lacks, so the next pack's or the game's own is drawn.
+    /// </summary>
+    public List<(string Name, string Reason)> Faults { get; } = [];
+
+    // The files of the packs that could not be read, by the pack's place in the list and the path.
+    private readonly HashSet<(int, string)> _failed = [];
 
     // Opens one pack, a folder or a zip, into the list.
     private void Open(string path)
@@ -78,7 +91,7 @@ public sealed class ResourcePacks : IDisposable
     public bool Any => _packs.Count > 0;
 
     /// <summary>The bytes of a file under <c>assets/minecraft</c> from the first pack that has it, or null where none does.</summary>
-    public byte[]? Read(string path) => Find(path) is { } pack ? Read(pack, path) : null;
+    public byte[]? Read(string path) => First(path)?.Bytes;
 
     /// <summary>The paths under <c>assets/minecraft</c> of every pack's files in a folder and the folders in it, each once, in order.</summary>
     public IEnumerable<string> Under(string folder) =>
@@ -92,23 +105,63 @@ public sealed class ResourcePacks : IDisposable
         return image.Data is null || image.Width <= 0 ? null : image;
     }
 
-    // The first pack holding a file, or null.
+    // The first pack holding a file that it could read, or null.
     private int? Find(string path)
     {
         for (int i = 0; i < _packs.Count; i++)
-            if (_packs[i].Files.ContainsKey(path)) return i;
+            if (_packs[i].Files.ContainsKey(path) && !_failed.Contains((i, path))) return i;
         return null;
     }
 
+    // A file's bytes from the first pack that holds it and can read it, and that pack.
+    private (int Pack, byte[] Bytes)? First(string path)
+    {
+        while (Find(path) is { } pack)
+            if (Read(pack, path) is { } bytes) return (pack, bytes);
+        return null;
+    }
+
+    // A file's bytes from one pack, or null where it lacks the file or the file cannot be read, which
+    // marks it as one the pack lacks. A folder's file is read only where the system gives it a size
+    // within the bound, its link's target's where it is a link, so a pipe or a device, whose size it
+    // gives as none, is left out before it is opened, and a zip's entry only within the bound by the
+    // size its headers give, to which the entry is read.
     private byte[]? Read(int pack, string path)
     {
         var (_, zip, files) = _packs[pack];
         if (!files.TryGetValue(path, out var at)) return null;
-        if (zip is null) return File.ReadAllBytes(at);
-        using var stream = zip.GetEntry(at)!.Open();
-        using var copy = new MemoryStream();
-        stream.CopyTo(copy);
-        return copy.ToArray();
+        try
+        {
+            if (zip is null)
+            {
+                var file = new FileInfo(at);
+                var length = (file.LinkTarget is null ? file : file.ResolveLinkTarget(returnFinalTarget: true) as FileInfo)?.Length ?? 0;
+                if (length <= 0) return Failed(pack, path, "the system gives it no size, as it gives a pipe or a device none");
+                if (length > MostBytes) return Failed(pack, path, $"it holds {length} bytes, past the {MostBytes} a file is read to");
+                using var stream = new FileStream(at, FileMode.Open, FileAccess.Read, FileShare.Read);
+                var bytes = new byte[length];
+                var read = stream.ReadAtLeast(bytes, bytes.Length, throwOnEndOfStream: false);
+                return read == bytes.Length ? bytes : bytes[..read];
+            }
+            var entry = zip.GetEntry(at)!;
+            if (entry.Length > MostBytes) return Failed(pack, path, $"it inflates to {entry.Length} bytes, past the {MostBytes} a file is read to");
+            using var inflating = entry.Open();
+            var inflated = new byte[entry.Length];
+            inflating.ReadExactly(inflated);
+            return inflated;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            return Failed(pack, path, ex.Message);
+        }
+    }
+
+    // A file a pack cannot read, kept as one it lacks with the reason.
+    private byte[]? Failed(int pack, string path, string reason)
+    {
+        _failed.Add((pack, path));
+        Faults.Add((_packs[pack].Name, $"{path}, {reason.TrimEnd('.')}"));
+        return null;
     }
 
     /// <summary>
@@ -124,7 +177,7 @@ public sealed class ResourcePacks : IDisposable
     public (Image Image, JsonElement? Meta)? Picture(string name)
     {
         var path = $"textures/{name}.png";
-        if (Find(path) is not { } pack || Read(pack, path) is not { } png) return null;
+        if (First(path) is not (int pack, byte[] png)) return null;
         var image = LoadImageFromMemory(".png", png);
         if (image.Data is null || image.Width <= 0) return null;
         var meta = Meta(Read(pack, path + ".mcmeta"));
@@ -148,7 +201,7 @@ public sealed class ResourcePacks : IDisposable
     public (Image[] Frames, int[] Ticks)? Animation(string name)
     {
         var path = $"textures/{name}.png";
-        if (Find(path) is not { } pack || Read(pack, path) is not { } png) return null;
+        if (First(path) is not (int pack, byte[] png)) return null;
         if (Meta(Read(pack, path + ".mcmeta")) is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return null;
         var image = LoadImageFromMemory(".png", png);
         if (image.Data is null || image.Width <= 0) return null;

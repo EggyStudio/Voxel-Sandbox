@@ -123,8 +123,11 @@ public static class ConnectedTextures
     public static int RandomTile(int face, int x, int y, int z, int count, IReadOnlyList<int> weights)
     {
         var roll = PlaceHash.Of(x, z, y * 6 + face);
-        if (weights.Count < count || weights.Take(count).Sum() <= 0) return (int)(roll % (uint)count);
-        var left = (int)(roll % (uint)weights.Take(count).Sum());
+        // The weights are summed in a long, since each is an int a pack gives and their sum can pass
+        // the int's top.
+        var total = weights.Count < count ? 0 : weights.Take(count).Sum(w => (long)w);
+        if (total <= 0) return (int)(roll % (uint)count);
+        var left = (long)(roll % (ulong)total);
         for (int i = 0; i < count; i++)
             if ((left -= weights[i]) < 0) return i;
         return count - 1;
@@ -181,10 +184,14 @@ public static class ConnectedTextures
         var tiles = new List<string?>();
         foreach (var token in list.Split(' ', StringSplitOptions.RemoveEmptyEntries))
         {
+            // A rule naming more tiles than the atlas holds is left out by it, so the list stops
+            // there.
+            if (tiles.Count > TerrainAtlas.MostTiles) break;
             var dash = token.IndexOf('-');
-            if (dash > 0 && int.TryParse(token[..dash], out var from) && int.TryParse(token[(dash + 1)..], out var to) && to >= from && to - from < 256)
+            if (dash > 0 && int.TryParse(token[..dash], out var from) && int.TryParse(token[(dash + 1)..], out var to) && to >= from && (long)to - from < 256)
             {
-                for (int n = from; n <= to; n++) tiles.Add($"{folder}/{n}.png");
+                // Counted in a long, so a range ending at the int's top ends there.
+                for (long n = from; n <= to; n++) tiles.Add($"{folder}/{n}.png");
                 continue;
             }
             if (token is "<default>" or "<skip>")

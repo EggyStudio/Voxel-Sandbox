@@ -901,7 +901,7 @@ public sealed class ChunkRenderer : IDisposable
             catch (Exception ex)
             {
                 // The section keeps the faces it had, and is meshed again once it is marked.
-                Console.Error.WriteLine($"Section {key} could not be meshed. {ex}");
+                TraceLog(LogLevel.Warning, $"Section {key} could not be meshed. {ex}");
                 made = false;
             }
             finally

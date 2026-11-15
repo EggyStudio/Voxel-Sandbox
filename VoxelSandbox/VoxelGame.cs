@@ -88,7 +88,7 @@ public sealed class VoxelGame : IDisposable
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
         PackEntries = given.Count > 0 || !_settings ? given : Guarded("The packs' list could not be read", () => PackList.Read(), []);
         Sky = new Sky(Sky.FirstHour);
-        ReloadPacks();
+        ReloadHeld();
         if (given.Count == 0 && _settings && !File.Exists(PackList.File)) FetchDefaults();
         Light.ApplyAll();
         Open(kind, seed, name);
@@ -193,33 +193,92 @@ public sealed class VoxelGame : IDisposable
     {
         PackEntries = entries;
         if (_settings) Guarded("The packs' list could not be kept", () => { PackList.Write(entries); return true; }, false);
-        ReloadPacks();
+        ReloadHeld();
     }
 
     /// <summary>
     /// Reads the packs on again from their files, as F3 with T asks, and draws the terrain, the
     /// icons and the interface with them, the sections shaded again with their tiles.
     /// </summary>
+    /// <remarks>
+    /// Each piece drawn with the packs takes them in turn and loads its textures as it does, so a
+    /// fault of the packs' content partway leaves some pieces on the new packs. Each piece then takes
+    /// the packs before again, the game's own art at the start, and the new packs are closed, so the
+    /// game draws on with one set and the packs are named once on the HUD. Where the packs before
+    /// fault too, the pieces take none, which reads nothing of a pack.
+    /// </remarks>
     public void ReloadPacks()
     {
         var list = PackList;
         var packs = new ResourcePacks(PackEntries.Select(list.PathOf));
         foreach (var (name, reason) in packs.Unread) FileFault($"The pack {name} could not be read", reason);
-        var terrain = TerrainAtlas.Build(packs);
-        Renderer.Atlas = terrain;
-        Icons.Use(terrain, packs);
-        DropRenderer.Use(terrain);
-        Bits.Use(terrain);
-        Cracks.Use(packs);
-        PackGui.Use(packs);
-        InWall.Use(packs);
-        Sky.Use(packs);
-        MobRenderer.Use(packs);
-        Blasts.Use(packs);
+        try
+        {
+            Use(packs);
+        }
+        catch (Exception ex)
+        {
+            foreach (var (name, reason) in packs.Faults) FileFault($"A file of the pack {name} could not be read", reason);
+            FileFault($"The packs {string.Join(", ", packs.Names)} could not be drawn", ex.Message);
+            packs.Dispose();
+            try
+            {
+                Use(Packs);
+            }
+            catch (Exception again)
+            {
+                FileFault("The packs drawn before could not be drawn again", again.Message);
+                Packs.Dispose();
+                Packs = ResourcePacks.None;
+                Use(Packs);
+            }
+            if (World is { } shown) shown.ReshadeAll();
+            return;
+        }
+        foreach (var (name, reason) in packs.Faults) FileFault($"A file of the pack {name} could not be read", reason);
         Packs.Dispose();
         Packs = packs;
         // The world is not there yet as the game begins, and its sections are meshed as it opens.
         if (World is { } world) world.ReshadeAll();
+    }
+
+    /// <summary>A step the reload takes before each piece takes the packs, by the piece's name, which a test sets to throw at one.</summary>
+    public Action<string>? PackStep { get; set; }
+
+    // Every piece drawn with the packs set to them.
+    private void Use(ResourcePacks packs)
+    {
+        PackStep?.Invoke("terrain");
+        var terrain = TerrainAtlas.Build(packs);
+        Renderer.Atlas = terrain;
+        PackStep?.Invoke("icons");
+        Icons.Use(terrain, packs);
+        DropRenderer.Use(terrain);
+        Bits.Use(terrain);
+        PackStep?.Invoke("cracks");
+        Cracks.Use(packs);
+        PackStep?.Invoke("interface");
+        PackGui.Use(packs);
+        InWall.Use(packs);
+        PackStep?.Invoke("sky");
+        Sky.Use(packs);
+        PackStep?.Invoke("mobs");
+        MobRenderer.Use(packs);
+        Blasts.Use(packs);
+    }
+
+    // The packs read again where the start, F3 with T or a choice of packs asks, a fault the reload
+    // did not hold said on the HUD, so no pack ends the program.
+    private void ReloadHeld()
+    {
+        try
+        {
+            ReloadPacks();
+        }
+        catch (Exception ex)
+        {
+            FileFault("The packs could not be read again", ex.Message);
+        }
     }
 
     /// <summary>The animals and villagers of the loaded columns, and those the unloaded ones keep.</summary>
@@ -1096,7 +1155,7 @@ public sealed class VoxelGame : IDisposable
         // or hides its debug overlay, as Minecraft's debug screen opens when F3 is let go alone.
         if (IsKeyDown(Key.F3) && IsKeyPressed(Key.F4)) Switcher.Step(Mode, PreviousMode);
         // F3 held with T reads the resource packs again.
-        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.T)) ReloadPacks();
+        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.T)) ReloadHeld();
         if (IsKeyReleased(Key.F3) && Switcher.Release() is { } chosen) Mode = chosen;
         if (IsKeyPressed(Key.F5)) Player.View = ThirdPerson.Next(Player.View);
         if (IsKeyPressed(Key.F2)) Screenshot();

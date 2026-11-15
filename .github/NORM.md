@@ -85,9 +85,10 @@ grove sheets of item 136 did. A title and a label a panel go where several panel
 a box is drawn at a place only where a number read there is given in the caption or the note, never
 a box with no reading; a difference panel against a reference, or a plot, as the light hall's floor
 against the turn in BevyCSharp's item 82, goes where it says more than the frames do; and every
-panel keeps the same view and exposure. The ground stays white, with labels in dark text. By the
-decision of 2026-10-31 the plain form stays as it was, and a sheet's parts come from its reading and
-not from a list. By review.
+panel keeps the same view and exposure. A difference panel of any kind is signed, brighter than its
+reference or its before in red and darker in blue, at a gain the caption names. The ground stays
+white, with labels in dark text. By the decision of 2026-10-31 the plain form stays as it was, and a
+sheet's parts come from its reading and not from a list. By review.
 
 **N 4.10 Every picture a session makes is kept in the repository's dump folder, apart from the
 devlog's chosen few.** N 4.8 keeps the pictures chosen for the devlog; the rest, every shot,

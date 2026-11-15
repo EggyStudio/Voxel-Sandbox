@@ -3205,6 +3205,24 @@ before a batch.
     drawing's kind first, then the start, then the update, a commit a kind, each path with a test
     that fails first where the test game can reach it.
 
+185. **The console's commands the tests do not send.** The coder's third read of 2026-11-15 in the
+    Replies, seven findings, the first, the fifth and the sixth read against the code by the review
+    at 17:00 and standing. In one commit, a fill or a room whose corner lies at the end of the
+    integers counting its sides in long and refusing a corner past the land's edge as the teleport
+    does, with a test bounded in time, and the biome search stepping in rings 8 apart to 512 blocks
+    and 32 apart beyond, its time measured again. In a second commit, a save that answers whether it
+    wrote, tested on a folder that cannot be written; "unsaved" in place of "transient" for a world
+    played without a folder; the quality of the illumination and the world's mode refused when they
+    name no defined value; the flicker's frame count bounded at 36,000; and the button's summary put
+    back over the button. Open.
+
+186. **Comments that liken a thing to another game's.** About 76 comment lines explain a thing by
+    likeness to another game's, as the button's summary does (N 4.11). Asked on 2026-11-15, one
+    commit of comments alone. The likeness clause goes, and where it stood in for the rule the
+    comment states the rule in the game's own terms. The lines that name the source of a number or a
+    rule stay, and so do the command descriptions a person reads. Each hit is read, no code changes,
+    the count before and after given. Open.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -5825,6 +5843,87 @@ the room do.
 
 The order I would take is 1 and 2, the frame held, then 3 and 4, the console's words, then 5 with 7,
 and 6 last, a commit for the first two and one for the rest.
+
+Item 185's first commit, the third read's findings 1 and 2, mended. A fill or a room refuses a
+corner past the land's edge on any axis, 1,073,741,824 blocks from its zero, as `voxel.tp` refuses a
+place past it, and counts each side of its box in a long, so its loops end short of the int's end
+and a box from edge to edge counts its 2,147,483,649 blocks and is refused by the fill's bound
+(`GameCommands.Box`). `A_Fill_Or_A_Room_Reaching_The_Ints_End_Answers_At_Once_And_Changes_No_Block`
+gives four boxes on a thread each, the two of the read, one from the int's low end and one from
+edge to edge, and fails on a copy of `40bcc10` with the test added, its first box giving no answer
+within 10 s.
+
+The biome's search steps its rings 8 blocks apart to 512 blocks and 32 apart past them to 2,976,
+50,521 places where 564,001. Timed on cores 16 to 31 for a biome it never meets, the whole search
+takes 0.59 s where 6.85 s, read twice each. In the game, over the 16 biomes from the spawns of the
+overworlds of seeds 1, 2, 3 and 42, the longest search takes 0.24 s where 1.39 s on the head, the
+mountains 1,312 blocks out of seed 42's spawn, and of the 64 answers the 9 past 512 blocks name a
+place of the biome 8 to 24 blocks farther than the head's, the rest the same place. Every biome
+stands within 1,312 blocks of those four spawns, so the whole search's time is measured in the
+place of a test, as the item asks.
+
+The strict build is clean, 453 tests pass outside the GPU's lock, and the play passes in 227 s, its
+captures within 11 levels of the last play's but sky2's, which moves as much between plays.
+
+Item 185's second commit, the third read's findings 3 to 7, mended, with what the engine drew at a
+quality of 7. Each test was run first on a copy of `9f96eae` with the tests added.
+
+Finding 3. The game keeps why its last save could not be written (`VoxelGame.SaveFault`), which
+holds the HUD's line to the first failure, and `voxel.save` answers that the world could not be
+saved, with the reason, where it was not.
+`The_Save_Command_Says_So_Where_The_Worlds_Files_Cannot_Be_Written` puts a folder in the place of
+each file a save writes, as item 183's test does, and fails on the head, which answers that it
+saved to the world's folder.
+
+Finding 4. `voxel.state` and `voxel.save` call a world played unsaved, its folder not made,
+unsaved, and transient only where the game is.
+`A_World_Played_Unsaved_Is_Said_To_Be_Unsaved_And_Not_Transient` fails on the head, whose state
+says transient.
+
+Finding 5. `voxel.gi` refuses a quality the enum names none of, as `voxel.view` and `voxel.mode`
+refuse theirs, and the world's info giving a mode the enum names none of is read as a new world's,
+creative. `A_Quality_Of_The_Light_Naming_No_Value_Is_Refused` fails on the head, which answers that
+global illumination is at 7, and
+`A_Mode_The_Worlds_Info_Gives_By_A_Number_Naming_None_Is_Read_As_A_New_Worlds` fails on the head,
+which plays the mode 7. At a quality of 7 the engine draws no frame. Read on `9f96eae`, the flat
+world in a room of glowstone offscreen, `RenderPlugin.Render` threw `IndexOutOfRangeException` in
+every frame from `Illumination.TexelsFor`, which indexes the empty list of cascades `TexelsAt`
+gives such a quality, 100 times within 1.8 s. The window held the last frame drawn at High, which
+`voxel.color` read, and `./e3d shot` gave no answer within 600 frames, until the quality went off.
+That stands in the engine's ASKS.md as an entry, uncommitted there, since the flat call takes the
+value.
+
+Finding 6. `voxel.flicker` refuses a recording past 36,000 frames, ten minutes at 60 a second, or a
+motion past 35,988 of them, and says the most.
+`A_Recording_Past_36000_Frames_Is_Refused_With_Its_Most` gives 36,001 frames, 2,147,483,647 frames
+and a motion over 2,147,483,647, and fails on the head, which records 36,001.
+
+Finding 7. The button's summary and returns stand over `Gui.Button`, and the text field's alone
+over `Gui.TextField`.
+
+The comment over the biome's rings says why 32 blocks serve past 512, a far biome found within a
+step of its nearest place, where a patch narrower than the step can lie unseen between two rings.
+
+The strict build is clean, 458 tests pass outside the GPU's lock, and the play passes in 249 s, its
+captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+Item 186, the comments that liken a thing to another game's, reworded. Before, 302 comment lines
+named Minecraft, 83 of them by likeness, 76 on one line and 7 across a line's break, which the
+read's count of 76 missed, with one more in the summary of a block's facing, its torch. After, 218
+name it and none by likeness. In each the likeness clause is gone, and where it stood for the rule
+the comment says the rule, the button lit with its label yellow so the one a click takes stands
+out, the crosshair's middle pixel on the window's middle, the wool's odds in a thousand, a sprite
+whose metadata gives no scaling drawn stretched, the furnace's sprites drawn as far as the fuel and
+the smelting have gone, a block on a wall facing away from it, and the packs read again as F3 with
+T asks. The player's box keeps its 0.6 by 1.8 without the likeness, as the item's line takes the
+form. The 111 lines left that say "as Minecraft's model definitions give it", "as Minecraft's 32
+ticks" and the like name where a rule or a number comes from and stay, and so do the command
+descriptions. 44 files change, in comments alone, 167 lines in and 173 out, each block a clause
+left short wrapped again to 100 columns, and the mode switcher's summary has a sentence's end where
+it had a semicolon.
+
+The strict build is clean, 458 tests pass outside the GPU's lock, and the play passes in 208 s, its
+captures within 8 levels of the last play's but sky2's, which moves as much between plays.
 
 ## Items closed, parked or shortened
 
