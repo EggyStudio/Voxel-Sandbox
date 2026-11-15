@@ -15,6 +15,9 @@ public static class GameCommands
     // The most blocks one fill changes, a cube of 64, so a mistyped corner does not stall the frame.
     private const long FillLimit = 64 * 64 * 64;
 
+    // The most frames one recording of voxel.flicker reads.
+    private const int MostFlickerFrames = 36000;
+
     /// <summary>The game being played, which <c>./e3d eval</c> reaches too.</summary>
     public static VoxelGame? Game { get; internal set; }
 
@@ -45,7 +48,7 @@ public static class GameCommands
             + $"{renderer.Sections} sections, {renderer.Draws} draws, {renderer.Triangles} triangles, {renderer.Lamps} lamps, {renderer.Culled} culled, {renderer.Deep.Sections} deep of {renderer.Deep.Triangles} triangles; "
             + $"{game.Mobs.All.Count} mobs loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws; "
             + $"hour {game.Sky.Hour:0.00} of day {game.Sky.Day}, light {game.Light.Quality}, render distance {game.RenderDistance}, world {game.World.Generator.Name} of seed {game.World.Generator.Seed}, origin at {LandOrigin.X}, {LandOrigin.Z} moved {game.Recentered} times, "
-            + $"{(game.Save is { } save ? $"saved in {save.Name}" : "transient")}, {game.Mode.ToString().ToLowerInvariant()}, "
+            + $"{(game.Save is { } save ? $"saved in {save.Name}" : game.Transient ? "transient" : "unsaved")}, {game.Mode.ToString().ToLowerInvariant()}, "
             + $"holding {(game.Hotbar.Current is { } held ? $"{held.Count} {held.Item.Key}" : "nothing")}, {game.Drops.Count} stacks on the ground; "
             + Vitals(game.Vitals);
     }
@@ -249,9 +252,9 @@ public static class GameCommands
     internal static string SaveNow()
     {
         if (Game is not { } game) return "no world is loaded";
-        if (game.Save is null) return "the world is transient and is not saved";
+        if (game.Save is null) return game.Transient ? "the world is transient and is not saved" : "the world is played unsaved, since its folder could not be made";
         game.SaveWorld();
-        return $"saved to {game.Save.Folder}";
+        return game.SaveFault is { } fault ? $"the world could not be saved, {fault}" : $"saved to {game.Save.Folder}";
     }
 
     [Command("voxel.gpu", "Says whether the GPU reads the caves' noises for the columns to generate and how many columns it has read, turns it on or off for the session, or compares its readings with the CPU's over a square of columns about the player: voxel.gpu [on|off|verify] [columns across]")]
@@ -616,7 +619,7 @@ public static class GameCommands
     internal static string Gi(string quality)
     {
         if (Game is not { } game) return "no world is loaded";
-        if (!Enum.TryParse<GlobalIllumination>(quality, ignoreCase: true, out var chosen)) return $"no quality is called {quality}, which is off, low, medium or high";
+        if (!Enum.TryParse<GlobalIllumination>(quality, ignoreCase: true, out var chosen) || !Enum.IsDefined(chosen)) return $"no quality is called {quality}, which is off, low, medium or high";
         game.Light.Quality = chosen;
         SetGlobalIllumination(chosen);
         return $"global illumination is at {chosen}";
@@ -697,12 +700,15 @@ public static class GameCommands
         return $"the field of view is {game.Player.FieldOfView:0.#} degrees";
     }
 
-    [Command("voxel.flicker", "Records each frame's change in the picture from the one before for some frames, the player turning some degrees and stepping some blocks ahead in equal parts over some frames from the tenth, into a file: voxel.flicker <frames> <turn> <step> <over> <path>")]
+    [Command("voxel.flicker", "Records each frame's change in the picture from the one before for some frames, 36000 at most, the player turning some degrees and stepping some blocks ahead in equal parts over some frames from the tenth, into a file: voxel.flicker <frames> <turn> <step> <over> <path>")]
     internal static string Flicker(int frames, float turn, float step, int over, string path)
     {
         if (Game is not { } game) return "no world is loaded";
         if (NotNumbers(turn, step) is { } refused) return refused;
         over = Math.Max(1, over);
+        // The recording reads the screen back in each of its frames, so it is held to ten minutes at
+        // 60 frames a second.
+        if (frames > MostFlickerFrames || over > MostFlickerFrames - 12) return $"a recording takes at most {MostFlickerFrames} frames, ten minutes at 60 a second, and its motion at most {MostFlickerFrames - 12} of them";
         frames = Math.Max(frames, 12 + over);
         game.Flicker = new FlickerRun(frames, 10, over, turn, step, Path.GetFullPath(path));
         return $"recording {frames} frames into {Path.GetFullPath(path)}, the motion over frames 10 to {10 + over}";
@@ -845,8 +851,9 @@ public static class GameCommands
             return $"no biome is called {name}, which is {string.Join(", ", Biomes.All.Select(b => b.Name))}";
         if (game.World.Generator is not Overworld land) return "only the overworld has biomes";
         var (px, _, pz) = LandOrigin.BlockOf(game.Player.Body.Position);
-        // The rings 32 blocks apart past 512, as Minecraft's search of a biome steps 32 blocks, so the
-        // whole search samples 50,521 places in its frame.
+        // Past 512 blocks the rings stand 32 apart, so the whole search samples 50,521 places in its
+        // frame and a far biome is found within a step of its nearest place, where a patch narrower
+        // than the step can lie between two rings unseen.
         for (int reach = 0; reach <= 3000; reach += reach < 512 ? 8 : 32)
         {
             var step = reach <= 512 ? 8 : 32;

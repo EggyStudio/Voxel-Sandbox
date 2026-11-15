@@ -136,8 +136,6 @@ public static class Gui
     // known by its box since its label shows its value and changes as it moves.
     private static Rectangle? _sliding;
 
-    /// <summary>A button of the interface's, lit under the pointer with its label yellow, as Minecraft's is.</summary>
-    /// <returns>Whether it was clicked this frame.</returns>
     /// <summary>
     /// A field of typed text as Minecraft's edit boxes are, a black box in a gray border with its text,
     /// its selection and a blinking caret, the engine's text edit taking the typing, the clipboard,
@@ -178,6 +176,8 @@ public static class Gui
         return entered;
     }
 
+    /// <summary>A button of the interface's, lit under the pointer with its label yellow, as Minecraft's is.</summary>
+    /// <returns>Whether it was clicked this frame.</returns>
     public static bool Button(string label, Rectangle box)
     {
         var over = Over(box);

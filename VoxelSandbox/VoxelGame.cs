@@ -38,8 +38,6 @@ public sealed class VoxelGame : IDisposable
     private const float EatSeconds = 1.6f;
 
     private float _breakWait, _placeWait, _sinceSave, _saveWait = SaveSeconds;
-    // Whether the last save could not be written, so the player is told once while it stands.
-    private bool _saveFailing;
     private int _teleports;
     private bool _spilled;
     private bool _captured, _swallowClick;
@@ -417,6 +415,12 @@ public sealed class VoxelGame : IDisposable
     /// <summary>How long the game waits between its timed saves, longer while a save cannot be written.</summary>
     public float SaveWait => _saveWait;
 
+    /// <summary>
+    /// Why the last save could not be written, or null where it was written or none has failed since
+    /// the world opened, so the player is told once while it stands and <c>voxel.save</c> says it.
+    /// </summary>
+    public string? SaveFault { get; private set; }
+
     // Says a line on the HUD for a few seconds, from the next frame.
     private void Say(string text) => (_said, _saidFresh) = ((text, 0), true);
 
@@ -519,7 +523,8 @@ public sealed class VoxelGame : IDisposable
         // The weather turns by the world's own seed, held as its save held it.
         (Weather.Seed, Weather.Held, _overcast) = (World.Generator.Seed, info?.Weather, 0);
         // The mode and the inventory are the world's own, a new world's in creative with its hotbar of blocks.
-        Mode = Enum.TryParse<GameMode>(info?.Mode, ignoreCase: true, out var mode) ? mode : GameMode.Creative;
+        // A mode the file gives by a number the modes name none of is read as a new world's.
+        Mode = Enum.TryParse<GameMode>(info?.Mode, ignoreCase: true, out var mode) && Enum.IsDefined(mode) ? mode : GameMode.Creative;
         PreviousMode = null;
         Inventory.Clear();
         if (info?.Inventory is { } slots) Inventory.Load(slots);
@@ -531,7 +536,7 @@ public sealed class VoxelGame : IDisposable
         CaveFields.Use((World.Generator as Overworld)?.Caves);
         Streamer = new ChunkStreamer(World, Renderer, Mobs, Drops, Chests, Save, CaveFields);
         Clouds.Follow(generator.Seed);
-        (_sinceSave, _saveWait, _saveFailing) = (0, SaveSeconds, false);
+        (_sinceSave, _saveWait, SaveFault) = (0, SaveSeconds, null);
         Loading = true;
 
         if (info is not null) (Sky.Hour, Sky.Day) = (info.Hour, info.Day);
@@ -719,8 +724,8 @@ public sealed class VoxelGame : IDisposable
             Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
                 Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
                 Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
-            if (_saveFailing) Say("The world is saved again");
-            (_saveFailing, _saveWait) = (false, SaveSeconds);
+            if (SaveFault is not null) Say("The world is saved again");
+            (SaveFault, _saveWait) = (null, SaveSeconds);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -728,8 +733,8 @@ public sealed class VoxelGame : IDisposable
             // leaves the game going, a world switched to and the quit among it, and what it did not
             // write is kept to be written by a later save. The log says each, the HUD the first.
             TraceLog(LogLevel.Warning, $"The world {WorldName} could not be saved, and it is tried again in {MathF.Min(_saveWait * 2, MostSaveSeconds):0} s. {ex.Message}");
-            if (!_saveFailing) Say($"The world could not be saved, {ex.Message.TrimEnd('.')}");
-            (_saveFailing, _saveWait) = (true, MathF.Min(_saveWait * 2, MostSaveSeconds));
+            if (SaveFault is null) Say($"The world could not be saved, {ex.Message.TrimEnd('.')}");
+            (SaveFault, _saveWait) = (ex.Message.TrimEnd('.'), MathF.Min(_saveWait * 2, MostSaveSeconds));
         }
     }
 
