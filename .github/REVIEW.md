@@ -712,3 +712,17 @@ Finding 9. A section of a column not loaded is dropped rather than parked, since
 arrival marks it again (`ChunkRenderer.Update`). The test
 `No_Section_Of_A_Column_That_Never_Loaded_Is_Kept_Parked` fails on the head, where 960 of the 2,040
 sections parked once the test game stands are of columns never loaded.
+
+Finding 19 of item 180, mended, the last of the audit's. The haze dome is drawn with a material of
+an alpha of 252, as water's of 253, and the terrain shader gives every corner of a draw so marked
+the open sky's level, the fading rings' among them, which the packed form keeps none of under an
+alpha of 240 (`HazeMark` in terrain.slang, `ChunkRenderer`'s `_haze`). No test of the suite runs a
+shader, so it is read in pictures. In the flat world at noon under a roof of stone nine blocks
+square three over the feet, the eye at sky level 10, looking level east, the head draws a line along
+the horizon, its rows 357 to 359 at 218.8, 212.9 and 204.3 of luma across the middle where the rows
+about them read 197.9 to 198.2, and the mended build reads 198.0 to 198.1 there, as both read in the
+open, where the frame of either is the other's within 1 level. The pair is
+`04-03-haze-dome-line-under-a-roof.png` in the dump. The material's alpha takes 1.2% from the dome's
+cover, so as much of the sky behind it shows through at the horizon. The play's captures read as
+before, within 5 levels of the 6.2.60 pin's but sky2's, which moves as much between that pin's own
+runs.

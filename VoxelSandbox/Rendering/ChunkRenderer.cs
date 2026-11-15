@@ -281,7 +281,9 @@ public sealed class ChunkRenderer : IDisposable
         _solidCutout = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Mask, Roughness = 0.9f, Shader = _shader };
         (_terrainLook, _clearLook, _waterLook) = (Look(_terrain), Look(_clear), Look(_water));
         (_cutoutGlassLook, _solidCutoutLook) = (Look(_cutoutGlass), Look(_solidCutout));
-        _haze = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Blend, CastsShadows = false, Shader = _shader };
+        // The haze dome's material, its alpha of 252 telling the terrain shader the dome's corners
+        // stand under the open sky.
+        _haze = new ModelMaterial(new Color(255, 255, 255, 252)) { AlphaMode = MaterialAlphaMode.Blend, CastsShadows = false, Shader = _shader };
         var dome = HazeDome.Build();
         _dome = UploadMesh([.. dome.Positions], [.. dome.Indices], MeshStream.From(MeshStreamFormat.UInt2, dome.Packed.ToArray().AsSpan()), null);
         Fog(Color.White, float.MaxValue, float.MaxValue);

@@ -133,6 +133,11 @@ static const float3 FaceCorners[24] = {
 // The alpha of the material water's own faces are drawn with, which tells them from the rest.
 static const float WaterMark = 253.0 / 255.0;
 
+// The alpha of the material the haze dome is drawn with, which gives every corner of it the open
+// sky's level, since the packed form keeps none under an alpha of 240, as the dome's fading rings
+// have.
+static const float HazeMark = 252.0 / 255.0;
+
 // The six faces' outward normals in the order +x, -x, +y, -y, +z, -z, as SectionMesher's Normals
 // lays them, then a plant's walls along x and along z, lit as if they faced up, as Minecraft lights
 // its plants with no shade by the way they face.
@@ -159,7 +164,8 @@ TerrainOutput vertexMain(float3 position : POSITION, uint2 packed : CUSTOM0, Mod
     float shade = float((packed.x >> 5) & 127) / 127.0;
     uint top = packed.y >> 24;
     float4 tint = float4(float(packed.y & 255), float((packed.y >> 8) & 255), float((packed.y >> 16) & 255), top >= 240 ? 255.0 : float(top)) / 255.0;
-    float sky = top >= 240 ? float(top & 15) : 0.0;
+    bool dome = abs(instance.color.a - HazeMark) < 0.5 / 255.0;
+    float sky = dome ? 15.0 : top >= 240 ? float(top & 15) : 0.0;
     TerrainOutput output;
     uint over = (packed.x >> 22) & 511;
     uint kind = (packed.x >> 31) | ((packed.x >> 12) & 1) << 1;
