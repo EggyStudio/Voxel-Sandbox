@@ -718,10 +718,10 @@ public sealed class ChunkRenderer : IDisposable
     }
 
     /// <summary>How many times their own color a fire's flames show, whatever light reaches them.</summary>
-    public const float FlamesShown = 2;
+    public const float FlamesShown = 1;
 
     /// <summary>How many times its own color a pack's lava shows, whatever light reaches it, where without a pack it shows its surface's emission over its light.</summary>
-    public const float LavaShown = 2;
+    public const float LavaShown = 1;
 
     /// <summary>How many times its own color a lit piece's bright pixels show, a lantern's glass or a torch's flame.</summary>
     public const float LampShown = 4;

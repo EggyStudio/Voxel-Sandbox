@@ -387,8 +387,10 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
     ModelVertexOutput facing = streams.base;
     if (surface.x >= 6)
         facing.toEye = float3(0.0, length(streams.base.toEye), 0.0);
-    float3 shown = int(surface.y) + 1 == int(flames.x) ? color.rgb * flames.y
-        : int(surface.y) + 1 == int(flames.z) ? color.rgb * flames.w
+    // Flames and lava are shown at their light for the frame as every other face is, by the view's
+    // exposure and encoding.
+    float3 shown = int(surface.y) + 1 == int(flames.x) ? toDisplay(color.rgb * flames.y)
+        : int(surface.y) + 1 == int(flames.z) ? toDisplay(color.rgb * flames.w)
         : litStepped(color.rgb, facing, streams.uv2.y);
     // The rim, lit by the light the face takes, so it shows by day and by a lamp and stays dark where
     // the face is, on whole blocks' faces alone, not a plant's, a shaped piece's or water's.
@@ -407,9 +409,10 @@ float4 fragmentMain(TerrainOutput input) : SV_Target
         float alpha = lerp(1.0, min(color.a, 0.4) * lerp(0.65, 1.0, smoothstep(0.0, 1.0, input.waterDepth)), clear);
         float fresnel = 0.02 + 0.98 * pow(1.0 - saturate(abs(v.y)), 5.0);
         // The sky as the frame draws it along the view's mirror, its haze over the horizon too, by as
-        // much of the sky as reaches the water, its sky level where the corner carries one and its
-        // light otherwise, so a pool under the ground mirrors none of it.
-        float open = streams.uv2.y > 0.0 ? streams.uv2.y / 15.0 : streams.uv2.x;
+        // much of the sky as reaches the water, its sky level where the corner carries one, as its
+        // color's alpha of 1 says, and its light otherwise, so a pool under the ground mirrors none
+        // of it.
+        float open = streams.vertexColor.a > 0.95 ? streams.uv2.y / 15.0 : streams.uv2.x;
         float3 sky = hazeColor(-reflect(-v, float3(0.0, 1.0, 0.0)), 1.0) * open;
         // Where the water lies in the plane the game sets at its top, it mirrors the shore and the sky
         // as the frame draws them, in place of the sky's light alone.
