@@ -49,7 +49,11 @@ public partial struct MobMind
     /// <summary>Whether the world stands to be played.</summary>
     public static bool Playing(World world) => world.TryGetResource<State<WorldState>>(out var state) && state.Current == WorldState.Playing;
 
-    /// <summary>Pushes each pair of overlapping mobs apart along x and z, and a mob the player overlaps away from the player.</summary>
+    /// <summary>
+    /// Pushes each pair of overlapping mobs apart along x and z, and a mob the player overlaps away
+    /// from the player, each mob only where it moves, its column's neighbors loaded, so one standing
+    /// still beside land not loaded takes no push it cannot spend.
+    /// </summary>
     [OnPostUpdate]
     public static void Crowd(BehaviorContext ctx)
     {
@@ -61,7 +65,8 @@ public partial struct MobMind
         foreach (var (_, _, body) in ctx.Ecs.Query<Mob, Body>())
         {
             var cell = CellOf(body.Position);
-            Bodies.Add((body, Cells.GetValueOrDefault(cell, -1)));
+            var (cx, cz) = Mobs.ColumnOf(body.Position);
+            Bodies.Add((body, Cells.GetValueOrDefault(cell, -1), Mobs.Around(step.World, cx, cz)));
             Cells[cell] = Bodies.Count - 1;
         }
         var strength = MathF.Min(1, 8 * step.Seconds);
@@ -74,16 +79,16 @@ public partial struct MobMind
                     for (int j = Cells.GetValueOrDefault((x + dx, z + dz), -1); j >= 0; j = Bodies[j].Next)
                     {
                         if (j <= i || Apart(a, Bodies[j].Body) is not { } push) continue;
-                        a.Velocity -= push * strength * 4;
-                        Bodies[j].Body.Velocity += push * strength * 4;
+                        if (Bodies[i].Moves) a.Velocity -= push * strength * 4;
+                        if (Bodies[j].Moves) Bodies[j].Body.Velocity += push * strength * 4;
                     }
-            if (Apart(step.Player, a) is { } away) a.Velocity += away * strength * 6;
+            if (Bodies[i].Moves && Apart(step.Player, a) is { } away) a.Velocity += away * strength * 6;
         }
     }
 
-    // The mobs' bodies of the frame, each with the one before it in its cell, and the last of each
-    // cell, kept from frame to frame so crowding allocates nothing.
-    private static readonly List<(Body Body, int Next)> Bodies = [];
+    // The mobs' bodies of the frame, each with the one before it in its cell and whether it moves, and
+    // the last of each cell, kept from frame to frame so crowding allocates nothing.
+    private static readonly List<(Body Body, int Next, bool Moves)> Bodies = [];
     private static readonly Dictionary<(int X, int Z), int> Cells = [];
 
     // The cell of two blocks along x and z a place lies in, wider than the widest mob, a spider.
@@ -419,11 +424,13 @@ public sealed class Mobs
     public static bool Spawnable(VoxelWorld world, MobKind kind, int x, int y, int z, float hour, int roll)
     {
         if (!Blocks.IsOpaque(world.GetBlock(x, y - 1, z))) return false;
+        // Every cell the kind's box takes about the cell's middle, a spider's reaching into the cells
+        // beside it, holds no box and no water at each height it takes.
+        int near = (int)MathF.Floor(0.5f - kind.HalfWidth), far = (int)MathF.Floor(0.5f + kind.HalfWidth - 1e-4f);
         for (int i = 0; i < (int)MathF.Ceiling(kind.Height); i++)
-        {
-            var block = world.GetBlock(x, y + i, z);
-            if (world.BoxesAt(x, y + i, z).Count > 0 || Blocks.IsWater(block)) return false;
-        }
+            for (int dz = near; dz <= far; dz++)
+                for (int dx = near; dx <= far; dx++)
+                    if (world.BoxesAt(x + dx, y + i, z + dz).Count > 0 || Blocks.IsWater(world.GetBlock(x + dx, y + i, z + dz))) return false;
         var (sky, light) = world.GetLight(x, y, z);
         return light == 0 && Math.Max(0, sky - Darkening(hour)) <= roll;
     }

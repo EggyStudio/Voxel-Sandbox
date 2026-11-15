@@ -109,4 +109,41 @@ public class LightingTests
 
         Assert.Equal(14, world.GetLight(16, 11, 8).Block);
     }
+
+    // A floor of stone with its top at 10 and a lamp on the edge of the middle column alone, at x 15.
+    private static VoxelWorld LampOnAnEdge() => Laid.World(c =>
+    {
+        Laid.Fill(c, 0, 10, BlockId.Stone);
+        if (c.X == 0 && c.Z == 0) c.Set(15, 11, 8, BlockId.Glowstone);
+    });
+
+    [Fact]
+    public void A_Lamp_On_A_Columns_Edge_Takes_Its_Light_Back_From_The_Column_Beside_It()
+    {
+        var world = LampOnAnEdge();
+        Assert.Equal(14, world.GetLight(16, 11, 8).Block);
+
+        world.SetBlock(15, 11, 8, BlockId.Air);
+
+        Assert.Equal(0, world.GetLight(16, 11, 8).Block);
+        Assert.Equal(0, world.GetLight(18, 11, 8).Block);
+    }
+
+    [Fact]
+    public void A_Column_Loading_Again_Beside_A_Lamp_Takes_Its_Light_And_Gives_It_Back_Behind_A_Wall()
+    {
+        var world = LampOnAnEdge();
+        world.Remove(1, 0);
+        var column = world.Generator.Generate(1, 0);
+        Lighting.Compute(column);
+        world.Add(column);
+        Assert.Equal(14, world.GetLight(16, 11, 8).Block);
+        Assert.Equal(12, world.GetLight(18, 11, 8).Block);
+
+        // A wall across the edge in the column that came back, which the light goes over.
+        for (int y = 11; y <= 13; y++)
+            for (int z = 4; z <= 12; z++) world.SetBlock(16, y, z, BlockId.Stone);
+
+        Assert.Equal(7, world.GetLight(17, 11, 8).Block);
+    }
 }

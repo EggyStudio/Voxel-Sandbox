@@ -118,4 +118,29 @@ public sealed class MobFrameTests
 
         Assert.True(west.Body.Velocity.X < 0 && east.Body.Velocity.X > 0, $"the pigs move by {west.Body.Velocity} and {east.Body.Velocity}");
     }
+
+    [Fact]
+    public void A_Mob_Standing_Still_Beside_Land_Not_Loaded_Takes_No_Push_And_One_That_Moves_Takes_Its_Own()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mobs.Clear(null);
+        // The last loaded column east of the player's, whose neighbor east is not loaded, so its mobs
+        // stand still, and the column west of it, whose mobs move.
+        var edge = 0;
+        while (game.World.HasColumn(edge + 1, 0)) edge++;
+        var feet = LandOrigin.LandOf(game.Player.Body.Position);
+        Mob Pig(double x) => game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(x, feet.Y, feet.Z), 0, MobKinds.Pig.Health, null));
+        var (still, stillToo) = (Pig(edge * 16 + 8.4), Pig(edge * 16 + 8.6));
+        var (moving, standing) = (Pig(edge * 16 - 0.1), Pig(edge * 16 + 0.1));
+        foreach (var mob in new[] { still, stillToo, moving, standing }) mob.Body.Velocity = Vector3.Zero;
+        (game.Step.Seconds, game.Step.MobsStill) = (HeadlessGame.FrameSeconds, false);
+
+        for (int frame = 0; frame < 90; frame++) MobMind.Crowd(new BehaviorContext(E3D.GetApp().World));
+
+        Assert.Equal(Vector3.Zero, still.Body.Velocity);
+        Assert.Equal(Vector3.Zero, stillToo.Body.Velocity);
+        Assert.Equal(Vector3.Zero, standing.Body.Velocity);
+        Assert.True(moving.Body.Velocity.X < 0, $"the pig that moves is pushed by {moving.Body.Velocity}");
+    }
 }

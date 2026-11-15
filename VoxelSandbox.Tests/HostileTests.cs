@@ -188,4 +188,18 @@ public class HostileTests
         Assert.True(creeper.Fuse < 0);
         Assert.False(creeper.Hunting);
     }
+
+    [Fact]
+    public void A_Spider_Does_Not_Spawn_Into_The_Wall_Or_The_Water_Beside_Its_Cell_Where_A_Zombie_Does()
+    {
+        var world = Floor();
+        world.SetBlock(5, 11, 4, BlockId.Stone);
+        world.SetBlock(9, 11, 4, BlockId.Water);
+
+        Assert.True(Mobs.Spawnable(world, MobKinds.Zombie, 4, 11, 4, hour: 0, roll: 7));
+        Assert.False(Mobs.Spawnable(world, MobKinds.Spider, 4, 11, 4, hour: 0, roll: 7));
+        Assert.True(Mobs.Spawnable(world, MobKinds.Zombie, 8, 11, 4, hour: 0, roll: 7));
+        Assert.False(Mobs.Spawnable(world, MobKinds.Spider, 8, 11, 4, hour: 0, roll: 7));
+        Assert.True(Mobs.Spawnable(world, MobKinds.Spider, 4, 11, 12, hour: 0, roll: 7));
+    }
 }
