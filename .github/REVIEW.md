@@ -1,19 +1,22 @@
 # Review
 
-Reviewed up to `069a7d9`, the comments that likened a thing to another game's saying their rule in
-the game's own terms, comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build run
-43750307975 green by 21:02, the form kept. Before it `c250bcd`, the second commit of item 185, the
-save command saying a failed save, an unsaved world called so, a quality or a mode that names no
-value refused, a recording held to 36,000 frames and the button keeping its summary, five tests each
-failing on the commit before, pushed at 19:04 on 2026-11-15, its build run 43744639031 green at
-20:04, the form kept. Before it `9f96eae`, the first commit of item 185, a fill or a room refusing a
-corner past the land's edge with its sides counted in long and the biome search stepping 32 blocks
-apart past 512, the whole search 0.59 s against 6.85, pushed at 18:04 on 2026-11-15, its build run
-43739070767 green at 19:04, the form kept, one comment naming another game to be reworded in the
-second commit. Before it `40bcc10`, the packs list keeping no default of its own, pushed at 17:02 on
-2026-11-15, its build run 43733183016 green by 18:02, the form kept. Before it `aebc6f3`, the game
-taking the folder its settings and packs' list are kept in and the start's reads and the packs
-screen's listing tested where they fail, with `cc25bcb`, item 184's third and last commit, the
+Reviewed up to `2061c17`, item 187's first commit, a pack's file read within 64 MB and left out
+where it cannot be read, a reload that fails drawing on with the packs before, a connected texture's
+tiles and weights counted in a long, eight tests of hostile packs, pushed at 21:07 on 2026-11-15,
+the form kept. Before it `069a7d9`, the comments that likened a thing to another game's saying their
+rule in the game's own terms, comments alone across 45 files, pushed at 20:04 on 2026-11-15, its
+build run 43750307975 green by 21:02, the form kept. Before it `c250bcd`, the second commit of item
+185, the save command saying a failed save, an unsaved world called so, a quality or a mode that
+names no value refused, a recording held to 36,000 frames and the button keeping its summary, five
+tests each failing on the commit before, pushed at 19:04 on 2026-11-15, its build run 43744639031
+green at 20:04, the form kept. Before it `9f96eae`, the first commit of item 185, a fill or a room
+refusing a corner past the land's edge with its sides counted in long and the biome search stepping
+32 blocks apart past 512, the whole search 0.59 s against 6.85, pushed at 18:04 on 2026-11-15, its
+build run 43739070767 green at 19:04, the form kept, one comment naming another game to be reworded
+in the second commit. Before it `40bcc10`, the packs list keeping no default of its own, pushed at
+17:02 on 2026-11-15, its build run 43733183016 green by 18:02, the form kept. Before it `aebc6f3`,
+the game taking the folder its settings and packs' list are kept in and the start's reads and the
+packs screen's listing tested where they fail, with `cc25bcb`, item 184's third and last commit, the
 screenshot, the switch and the recording going on at a file error, with `2e6c699`, its second, the
 start going on where a file cannot be read, the three pushed at 15:33 on 2026-11-15, their build run
 43725048754 green at 17:02, and `c51b643`, its first, the settings, the worlds' list and the packs
@@ -638,3 +641,20 @@ the head, as it is a test that stays.
 The test game takes the paths of packs to open (`HeadlessGame`). The eight tests take 7 s together.
 The strict build is clean, 466 tests pass outside the GPU's lock, and the play passes in 190 s, its
 captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+The pin of the engine's 6.2.86, `c54a38c6`, published at 20:45 and listed by nuget by 21:02, with
+the parts that waited on it as rehearsed on 6.2.83, the engine having added only the scene packs'
+types between. 3DEngine is at 6.2.86 and the workflows' engine checkout at
+`c54a38c66f3ff6f1240396c0265cb3e6972928cb`. The bits' shader takes the bit's middle as a place
+(`bits.slang`). The origin's step is told to the engine by `MoveWorld`, the land's meshes, its
+groups and its lamps' cubes kept as they are. A lamp filling its cell with no face showing is left
+out of the lights (`SectionMesher.Emitters` and `ChunkRenderer`). The diffs applied as rehearsed,
+one context line of the mesher's moved by item 186's wrapping, and one comment over the lamps
+reworded. `A_Lamp_Shows_The_Faces_Its_Neighbors_Leave_Open` reads the faces the emitters of the head
+lack.
+
+The strict build is clean on 6.2.86 restored from nuget, 467 tests pass outside the GPU's lock, and
+the play passes cold in 260 s and warm in 173 s in a cache of its own. Against the captures of
+6.2.60 the pictures move by 44 levels at most and on 116 pixels at most past 8, the shadow's along
+its soft edge both ways and noon's at lone pixels, sky2 as it moves between plays, a sheet of the
+two in the dump at `21-28-item-264-pin.png`.

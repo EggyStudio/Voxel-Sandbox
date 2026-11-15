@@ -75,16 +75,16 @@ public sealed class OriginMoveTests : IDisposable
         Assert.Equal(things, Things(game, ecs));
         Assert.Equal((new LandPlace(X0 + 1003.25, Feet, 0.75), new LandPlace(X0 + 1010.5, Feet, -3.5)), (LandOrigin.LandOf(villager.Body.Position), LandOrigin.LandOf(villager.Home!.Value)));
 
-        // The lamps are placed again in the next frame, the land's groups made again, and each
-        // stands where it stood, its cube and every section's mesh uploaded again, so the scene
-        // field takes them as come, not as moved.
+        // The lamps are placed again in the next frame, and each lamp and section stands where it
+        // stood with the same cube and mesh, drawn at its place moved by the step the engine hears
+        // of, so the scene field takes them as the same still meshes.
         headless.Step(1);
         Assert.Equal(LandOrigin.Reach, LandOrigin.X);
         Assert.Equal(lamps.Select(lamp => lamp.At), Lamps(game).Select(lamp => lamp.At));
-        Assert.Empty(lamps.Select(lamp => lamp.Cube).Intersect(Lamps(game).Select(lamp => lamp.Cube)));
+        Assert.Equal(lamps.Select(lamp => lamp.Cube), Lamps(game).Select(lamp => lamp.Cube));
         var after = Sections(ecs);
         Assert.Equal(sections.Select(section => section.Place), after.Select(section => section.Place));
-        Assert.Empty(sections.Select(section => section.Mesh).Intersect(after.Select(section => section.Mesh)));
+        Assert.Equal(sections.Select(section => section.Mesh), after.Select(section => section.Mesh));
     }
 
     // Every float place the game keeps that a move shifts, each named, in the land's coordinates.

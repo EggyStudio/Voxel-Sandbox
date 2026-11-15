@@ -13,7 +13,8 @@ ModelStreamsOutput vertexMain(float3 position : POSITION, float3 normal : NORMAL
     [[vk::location(9)]] float4 color : COLOR0, [[vk::location(10)]] float2 uv2 : TEXCOORD1)
 {
     ModelStreamsOutput output = transformModelVertex(position, normal, uv, color, uv2, instance);
-    // The bit's middle, its square's translation, carried in the vertex color, which a bit leaves white.
+    // The bit's middle, its square's translation as a place, carried in the vertex color, which a bit
+    // leaves white.
     output.vertexColor = float4(instance.worldX.w, instance.worldY.w, instance.worldZ.w, 1.0);
     return output;
 }
@@ -41,8 +42,8 @@ float4 fragmentMain(ModelStreamsOutput input) : SV_Target
 {
     float4 color = alphaTested(baseColor(input.base), input.base);
     ModelVertexOutput middle = input.base;
-    middle.toEye += middle.world - input.vertexColor.xyz;
-    middle.world = input.vertexColor.xyz;
+    middle.toEye += middle.place - input.vertexColor.xyz;
+    middle.place = input.vertexColor.xyz;
     // Drawn unlit as the engine's lit draws it, without lit's own copy of litLight, as terrain.slang's
     // litStepped says.
     if (drawnUnlit(middle))

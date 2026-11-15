@@ -238,8 +238,12 @@ public sealed class SectionMesher
     /// </summary>
     public Faces Foliage { get; } = new();
 
-    /// <summary>The emissive blocks of the last section, by their index in it.</summary>
-    public List<(int Index, BlockId Block)> Emitters { get; } = [];
+    /// <summary>
+    /// The emissive blocks of the last section, by their index in it, each with the faces of its cell
+    /// that show, a bit a face in the order +x, -x, +y, -y, +z, -z, those beside a block that hides
+    /// them left out.
+    /// </summary>
+    public List<(int Index, BlockId Block, int Faces)> Emitters { get; } = [];
 
     // The six directions in the order +x, -x, +y, -y, +z, -z, each face's corners counterclockwise
     // seen from outside the block, which is the side the model pass draws. The terrain shader holds
@@ -360,7 +364,7 @@ public sealed class SectionMesher
                     var block = (BlockId)_blocks[at];
                     if (block == BlockId.Air) continue;
                     var info = Blocks.Get(block);
-                    if (info.Glows.Length > 0) Emitters.Add((Section.Index(x, y, z), block));
+                    if (info.Glows.Length > 0) Emitters.Add((Section.Index(x, y, z), block, FacesShowing(at)));
                     if (info.Shape is { } shape)
                     {
                         // A fence joins the fences and whole blocks on its four sides, stairs turn
@@ -393,6 +397,16 @@ public sealed class SectionMesher
                             Blocks.IsLeaves(block));
                     }
                 }
+    }
+
+    // The faces of a cell that show, a bit a face in the order of Steps, each but those beside a
+    // block that hides it.
+    private int FacesShowing(int at)
+    {
+        int faces = 0;
+        for (int face = 0; face < 6; face++)
+            if (!Atlas.Hides((BlockId)_blocks[at + Steps[face]])) faces |= 1 << face;
+        return faces;
     }
 
     // Whether a block's face shows beside a neighbor. An opaque block shows a face to anything that

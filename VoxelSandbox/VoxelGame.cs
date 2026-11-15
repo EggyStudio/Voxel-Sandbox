@@ -687,14 +687,17 @@ public sealed class VoxelGame : IDisposable
     /// walks far or is put far.
     /// </summary>
     /// <remarks>
-    /// The land drawn moves first, since its meshes are uploaded again and an upload may throw, and
-    /// the origin last, so a throw leaves the origin and the places kept against it as they were.
+    /// The engine hears of the step first (<see cref="E3D.MoveWorld"/>), in the frame's first stage
+    /// before anything is drawn, and moves what it keeps by place, the sounds playing among them,
+    /// which the steps heard then set again at their own places. The origin moves last, so every
+    /// place kept against it moves from where it stood under the origin before.
     /// </remarks>
     /// <returns>Whether the origin moved.</returns>
     public bool Recenter(LandPlace near)
     {
         if (LandOrigin.Toward(near) is not { } origin) return false;
         var by = LandOrigin.StepTo(origin);
+        MoveWorld(by);
         Renderer.Shift(by);
         var ecs = GetApp().World.Resource<EcsWorld>();
         foreach (var (_, body) in ecs.Query<Body>()) body.Position += by;

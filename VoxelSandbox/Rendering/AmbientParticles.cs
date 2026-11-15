@@ -131,8 +131,8 @@ public sealed class AmbientParticles : IDisposable
 
     /// <summary>
     /// Moves the rings on the water by the whole step the <see cref="LandOrigin"/> moves by. The
-    /// particles the engine keeps in the world's places stay where they were, a thousand blocks and
-    /// more from the eye then, out of sight until they die, a few seconds at most.
+    /// particles the engine keeps in the world's places move with the step the engine hears of
+    /// (<see cref="E3D.MoveWorld"/>).
     /// </summary>
     public void Shift(Vector3 by)
     {

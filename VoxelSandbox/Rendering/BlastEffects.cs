@@ -107,7 +107,7 @@ public sealed class BlastEffects(EcsWorld ecs) : IDisposable
     /// <summary>
     /// Moves the clouds' emitters and the flashes' lights by the whole step the <see cref="LandOrigin"/>
     /// moves by, so the puffs still to come and the light stand at the blast. The puffs the engine
-    /// keeps stay where they were, out of sight until they die within a second.
+    /// keeps move with the step the engine hears of (<see cref="E3D.MoveWorld"/>).
     /// </summary>
     public void Shift(Vector3 by)
     {

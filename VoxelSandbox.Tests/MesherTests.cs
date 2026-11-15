@@ -125,6 +125,25 @@ public class MesherTests
     }
 
     [Fact]
+    public void A_Lamp_Shows_The_Faces_Its_Neighbors_Leave_Open()
+    {
+        // A glowstone in the middle of a block of stone shows no face, and one set in a wall of
+        // stone shows the one face toward the open.
+        var world = Floor();
+        for (int x = 6; x <= 8; x++)
+            for (int y = 20; y <= 22; y++)
+                for (int z = 6; z <= 8; z++) world.SetBlock(x, y, z, BlockId.Stone);
+        world.SetBlock(7, 21, 7, BlockId.Glowstone);
+        for (int x = 11; x <= 13; x++)
+            for (int y = 20; y <= 22; y++)
+                for (int z = 12; z <= 13; z++) world.SetBlock(x, y, z, BlockId.Stone);
+        world.SetBlock(12, 21, 12, BlockId.Glowstone);
+
+        var mesher = Meshed(world);
+        Assert.Equal(new[] { 0, 1 << 5 }, mesher.Emitters.Select(e => e.Faces).Order());
+    }
+
+    [Fact]
     public void A_Corner_Where_Two_Blocks_Meet_Is_Darker_Than_An_Open_One()
     {
         var world = Floor();

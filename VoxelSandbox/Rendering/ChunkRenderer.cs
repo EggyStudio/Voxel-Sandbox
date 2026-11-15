@@ -225,6 +225,8 @@ public sealed class ChunkRenderer : IDisposable
     // face, both made again as the origin moves (Shift).
     private ModelMesh[] _lampCubes = [];
     private readonly List<Matrix4x4>[] _emitterDraws = [.. Surfaces.All.Select(_ => new List<Matrix4x4>())];
+    // The place of a lamp's cube filling its cell (Blocks.Glows).
+    private static readonly Matrix4x4 WholeCell = Matrix4x4.CreateTranslation(new Vector3(0.5f));
     private readonly List<SectionKey> _queue = [];
     // The loaded sections out of the eye's reach, meshed once it comes near, and the eye's section
     // and render distance they were last sorted for.
@@ -948,10 +950,13 @@ public sealed class ChunkRenderer : IDisposable
         _changed = true;
 
         entry.Emitters.Clear();
-        foreach (var (index, block) in mesher.Emitters)
+        foreach (var (index, block, faces) in mesher.Emitters)
         {
             var cell = Matrix4x4.CreateTranslation(LandOrigin.PlaceOf(key) + new Vector3(index & Section.Mask, index >> 8, (index >> 4) & Section.Mask));
-            foreach (var (local, surface) in Blocks.Get(block).Glows) entry.Emitters.Add((surface, local * cell));
+            // A lamp filling its cell with no face showing, closed in on every side, is left out, so
+            // no light is placed where its light reaches nothing.
+            foreach (var (local, surface) in Blocks.Get(block).Glows)
+                if (faces != 0 || local != WholeCell) entry.Emitters.Add((surface, local * cell));
         }
     }
 
@@ -969,24 +974,13 @@ public sealed class ChunkRenderer : IDisposable
     /// moves by a whole step, so the land drawn stands where it stood.
     /// </summary>
     /// <remarks>
-    /// Each part's mesh is uploaded again, a group's made again from its sections' arrays in the
-    /// update that follows, and the lamps' cubes uploaded again, since the engine's scene field knows
-    /// a mesh by its vertices and takes the same mesh at another place for a figure that walks,
-    /// stamped as a box and lit as one until it has stood for 1,024 frames, where a mesh that came,
-    /// as a section streamed in, is built into the field at once. The meshes are uploaded before any entity
-    /// moves, and each place is the one under the origin before the move, which moves after this.
+    /// The meshes, the groups' faces and the lamps' cubes stay as they are, each drawn at its place
+    /// moved by the step, which the engine hears of in the same frame
+    /// (<see cref="E3D.MoveWorld"/>), so its scene field takes each for the same still mesh. Each
+    /// place is the one under the origin before the move, which moves after this.
     /// </remarks>
     public void Shift(Vector3 by)
     {
-        foreach (var (_, entry) in _sections)
-            foreach (var part in entry.Parts)
-            {
-                if (part.Entity < 0 || !part.HasFaces) continue;
-                part.Forget();
-                part.Mesh = UploadMesh(part.Positions, part.Indices, MeshStream.From(MeshStreamFormat.UInt2, part.Packed.AsSpan()), part.Colors.ToArray());
-                _ecs.Update(part.Entity, new Mesh(part.Mesh));
-            }
-        MakeLampCubes();
         foreach (var (key, entry) in _sections)
         {
             foreach (var part in entry.Parts)
@@ -999,11 +993,8 @@ public sealed class ChunkRenderer : IDisposable
             }
         }
         foreach (var (at, group) in _groups)
-        {
             foreach (var part in group.Parts)
                 if (part.Entity >= 0) _ecs.Update(part.Entity, new Transform(LandOrigin.PlaceOf(new SectionKey(at.X << GroupX, at.Y << GroupY, at.Z << GroupZ)) + by));
-            group.Change = Change.Faces;
-        }
         // The lamps are gathered again at the next placement.
         _changed = true;
     }
