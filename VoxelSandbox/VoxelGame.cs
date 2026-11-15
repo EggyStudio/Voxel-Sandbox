@@ -87,7 +87,7 @@ public sealed class VoxelGame : IDisposable
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer(ecs);
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
-        PackEntries = given.Count > 0 || !_settings ? given : PackList.Default.Read();
+        PackEntries = given.Count > 0 || !_settings ? given : Guarded("The packs' list could not be read", () => PackList.Default.Read(), []);
         Sky = new Sky(Sky.FirstHour);
         ReloadPacks();
         if (given.Count == 0 && _settings && !File.Exists(PackList.Default.File)) FetchDefaults();
@@ -96,7 +96,7 @@ public sealed class VoxelGame : IDisposable
         // The settings kept from the run before, read once the world is open, so the corner shade
         // has sections to shade again. A run that keeps no settings neither reads nor writes them.
         _options = _settings ? OptionsFile.Default : null;
-        _options?.Read(Menus.Screens(this).All());
+        if (_options is { } file) Guarded("The settings could not be read", () => file.Read(Menus.Screens(this).All()), 0);
         Capture(true);
     }
 
@@ -112,6 +112,9 @@ public sealed class VoxelGame : IDisposable
     // The lines said of the files the game could not read or write, each said once on the HUD until
     // that file is read or written again.
     private readonly HashSet<string> _fileFaults = [];
+
+    /// <summary>What the game said of the files it could not read or write, each until it reads or writes that file again.</summary>
+    public IReadOnlyCollection<string> FileFaults => _fileFaults;
 
     /// <summary>
     /// Reads or writes a file the game keeps, giving <paramref name="fallback"/> where it fails as a
@@ -459,7 +462,8 @@ public sealed class VoxelGame : IDisposable
 
     private void Open(string kind, int seed, string? name)
     {
-        Save = _transient ? null : new WorldSave(Path.Combine(WorldSave.Root, name ?? $"{kind}-{seed}"));
+        // A world whose folder cannot be made is played unsaved, the player told.
+        Save = _transient ? null : Guarded<WorldSave?>("The world's folder could not be made, so it is played unsaved", () => new WorldSave(Path.Combine(WorldSave.Root, name ?? $"{kind}-{seed}")), null);
         WorldName = Save?.Name ?? $"{kind}-{seed}";
         var info = Save?.ReadInfo();
         // Every float place of the world is kept against an origin near where the player stands.

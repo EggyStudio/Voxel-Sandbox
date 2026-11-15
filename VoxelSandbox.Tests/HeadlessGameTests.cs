@@ -387,6 +387,57 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void An_Unreadable_Options_File_Keeps_The_Defaults_And_Is_Written_Once_A_Setting_Changes()
+    {
+        // A file's mode the account cannot read is set on Linux and macOS alone.
+        if (OperatingSystem.IsWindows()) return;
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var path = Path.Combine(folder, "options.txt");
+        try
+        {
+            Directory.CreateDirectory(folder);
+            File.WriteAllText(path, "render.Render_Distance:7\n");
+            File.SetUnixFileMode(path, UnixFileMode.None);
+            using var headless = new HeadlessGame();
+            var game = headless.Game;
+            var (file, screens) = (new OptionsFile(folder), game.Menus.Screens(game).All().ToList());
+            var distance = game.RenderDistance;
+
+            Assert.Null(file.Find("render", screens.First(s => s.Name == "render").Options.First(o => o.Kept)));
+            Assert.ThrowsAny<UnauthorizedAccessException>(() => file.Read(screens));
+            Assert.Equal(distance, game.RenderDistance);
+            Assert.False(file.Write(screens));
+            game.RenderDistance = distance + 1;
+            Assert.True(file.Write(screens));
+        }
+        finally
+        {
+            if (File.Exists(path)) File.SetUnixFileMode(path, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_World_Whose_Folder_Cannot_Be_Made_Is_Played_Unsaved_And_Said()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A file where the world's folder would stand above it.
+            Directory.CreateDirectory(folder);
+            File.WriteAllText(Path.Combine(folder, "a file"), "");
+            using var headless = new HeadlessGame(save: Path.Combine(folder, "a file", "world"));
+
+            Assert.Null(headless.Game.Save);
+            Assert.Contains("The world's folder could not be made, so it is played unsaved", headless.Game.FileFaults);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Pack_That_Cannot_Be_Read_Is_Left_Out_And_Said()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

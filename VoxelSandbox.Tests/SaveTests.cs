@@ -198,6 +198,40 @@ public sealed class SaveTests : IDisposable
         Assert.True(File.Exists(path + ".unread"));
     }
 
+    [Theory]
+    [InlineData("world.json")]
+    [InlineData("mobs.bin")]
+    [InlineData("furnaces.json")]
+    [InlineData("chests.json")]
+    [InlineData("regions/r.0.0.bin")]
+    public void A_File_Of_The_Save_The_Account_Cannot_Read_Is_Kept_Beside_And_The_World_Opens(string name)
+    {
+        // A file's mode the account cannot read is set on Linux and macOS alone.
+        if (OperatingSystem.IsWindows()) return;
+        var save = new WorldSave(_folder);
+        save.WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]));
+        save.WriteMobs([]);
+        save.WriteFurnaces(new Furnaces());
+        save.WriteChests(new Chests());
+        var column = new ChunkColumn(0, 0);
+        column.Set(1, 2, 3, BlockId.Glowstone);
+        column.Changed = true;
+        save.Keep(column);
+        save.Flush();
+        var path = Path.Combine(_folder, name);
+        File.SetUnixFileMode(path, UnixFileMode.None);
+
+        var read = new WorldSave(_folder);
+        read.ReadInfo();
+        read.ReadMobs();
+        read.ReadFurnaces();
+        read.ReadChests();
+        read.ReadRegion(0, 0);
+
+        Assert.True(File.Exists(path + ".unread"));
+        File.SetUnixFileMode(path + ".unread", UnixFileMode.UserRead | UnixFileMode.UserWrite);
+    }
+
     [Fact]
     public void A_World_Whose_Info_The_Account_Cannot_Read_Is_Left_Out_Of_The_Worlds_Listed()
     {

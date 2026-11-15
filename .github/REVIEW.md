@@ -607,3 +607,32 @@ reaches it only through the player's own data folder, which a test leaves alone.
 
 The strict build is clean, 439 tests pass outside the GPU's lock, and the play passes in 204 s, its
 captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+Item 184's second kind, the start's, mended. Each test was run first on a copy of `c51b643` with the
+tests added and the list of what the game said of its files, a line, which the start's test reads
+since the HUD's line ages out while the test game stands.
+
+The start goes on where a file cannot be read. The settings the game reads (`VoxelGame.cs:99`) and
+the packs' list (:90) go through `Guarded`, the player told once and the defaults kept, and the
+window's own read of the options file finds no value in one it cannot read (`OptionsFile.Find`,
+`OptionsFile.cs:126`), so the window takes its defaults. An options file that cannot be read is held
+as written with the defaults (:85), so it is written over only once the player changes a setting
+from them, as asked. A world whose folder cannot be made is played unsaved, the player told
+(`VoxelGame.cs:466`), where the program ended. The save's readers take an
+`UnauthorizedAccessException` as the fault they take an `IOException` for, the file moved aside and
+the world opened from what reads (`WorldSave.cs:146`, :336, :432, :505 and :537), so a save's file
+the account cannot read is neither the end of the open nor of the start.
+
+The test `A_File_Of_The_Save_The_Account_Cannot_Read_Is_Kept_Beside_And_The_World_Opens` gives each
+of the save's five files a mode the account cannot read, on Linux and macOS, reads the save and
+holds that the file lies aside, and fails on the head by `UnauthorizedAccessException` for each.
+`An_Unreadable_Options_File_Keeps_The_Defaults_And_Is_Written_Once_A_Setting_Changes` finds no value
+in such a file, reads it with the render distance kept, writes nothing with the defaults standing
+and writes once the render distance changes, and fails on the head at the find.
+`A_World_Whose_Folder_Cannot_Be_Made_Is_Played_Unsaved_And_Said` opens the test game at a world
+under a file and fails on the head by `DirectoryNotFoundException` out of the start. The game's own
+reads at the start are read and not tested, since the test game keeps no settings and reads no
+packs' list.
+
+The strict build is clean, 446 tests pass outside the GPU's lock, and the play passes in 195 s, its
+captures within 9 levels of the last play's but sky2's, which moves as much between plays.

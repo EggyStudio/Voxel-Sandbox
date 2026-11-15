@@ -72,7 +72,19 @@ public sealed class OptionsFile(string root)
     public int Read(IEnumerable<(string Name, IReadOnlyList<Option> Options)> screens)
     {
         if (!System.IO.File.Exists(File)) return 0;
-        var text = System.IO.File.ReadAllText(File);
+        string text;
+        try
+        {
+            text = System.IO.File.ReadAllText(File);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // A file that cannot be read, as one the account cannot read, leaves every setting at its
+            // default and is held as written with the defaults, so it is written over only once a
+            // setting is changed from them.
+            _held = Text(screens);
+            throw;
+        }
         _held = text;
         var kept = new Dictionary<string, Option>(StringComparer.OrdinalIgnoreCase);
         foreach (var (screen, options) in screens)
@@ -102,7 +114,18 @@ public sealed class OptionsFile(string root)
     {
         if (!System.IO.File.Exists(File)) return null;
         var key = Key(screen, option);
-        foreach (var line in System.IO.File.ReadAllLines(File))
+        string[] lines;
+        try
+        {
+            lines = System.IO.File.ReadAllLines(File);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // A file that cannot be read keeps no value, so the window takes its default, and the
+            // game says why once it reads the file.
+            return null;
+        }
+        foreach (var line in lines)
         {
             var colon = line.IndexOf(':');
             if (colon >= 0 && line[..colon].Trim().Equals(key, StringComparison.OrdinalIgnoreCase)) return Parse(option, line[(colon + 1)..].Trim());

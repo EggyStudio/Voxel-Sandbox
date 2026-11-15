@@ -143,7 +143,7 @@ public sealed class WorldSave
                 _kept[(region.X * RegionSize + lx, region.Z * RegionSize + lz)] = renumber is null ? bytes : Renumbered(bytes, renumber);
             }
         }
-        catch (Exception ex) when (ex is IOException or InvalidDataException or EndOfStreamException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or EndOfStreamException)
         {
             // The region's columns are made again by the generator rather than the world not loading,
             // and those read before the fault are written again at the next save.
@@ -333,7 +333,7 @@ public sealed class WorldSave
             if (info.Blocks is { } keys) (_keys, _renumber) = (keys, Renumbering(keys));
             return info;
         }
-        catch (Exception ex) when (ex is IOException or JsonException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
         {
             TraceLog(LogLevel.Warning, $"{path} could not be read, so the world begins as a new one of its name and {SetAside(path)}. {ex.Message}");
             return null;
@@ -429,7 +429,7 @@ public sealed class WorldSave
             if (homed.Count + lost > 0)
                 TraceLog(LogLevel.Warning, $"{path} kept {homed.Count + lost} mobs whose place was no number, {homed.Count} set down at their homes and {lost} left out.");
         }
-        catch (Exception ex) when (ex is IOException or InvalidDataException or EndOfStreamException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or EndOfStreamException)
         {
             // The columns' mobs are placed again by their generator rather than the world not loading.
             TraceLog(LogLevel.Warning, $"{path} could not be read, so the columns' mobs are placed again and {SetAside(path)}. {ex.Message}");
@@ -502,7 +502,7 @@ public sealed class WorldSave
                 furnaces.Add((r.X, r.Y, r.Z), furnace);
             }
         }
-        catch (Exception ex) when (ex is IOException or JsonException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
         {
             TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's furnaces begin empty and {SetAside(path)}. {ex.Message}");
         }
@@ -534,7 +534,7 @@ public sealed class WorldSave
                 chests.Add((r.X, r.Y, r.Z), chest);
             }
         }
-        catch (Exception ex) when (ex is IOException or JsonException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
         {
             TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's chests begin empty and {SetAside(path)}. {ex.Message}");
         }
