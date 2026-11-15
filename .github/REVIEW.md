@@ -1,14 +1,18 @@
 # Review
 
-Reviewed up to `7785818`, item 182, every console command that takes a number refusing NaN and the
+Reviewed up to `2e6c699`, item 184's second commit, the start going on where a file cannot be read,
+checked at 14:29 on 2026-11-15 and pushed once the run before it has ended, and `c51b643`, its
+first, the settings, the worlds' list and the packs read and written through one way that tells the
+player once, pushed at 14:29, its build run started, the form kept and the messages free of numbers.
+Before them `7785818`, item 182, every console command that takes a number refusing NaN and the
 infinities with one line, with `c3c402f`, item 183, a save that cannot be written leaving the game
 going with the player told once and the timed save waiting twice as long each time, the two pushed
-at 13:41 on 2026-11-15, their build run 43715162302 started, the form kept and the messages free of
-numbers. Before them `fc97f0f`, item 181's last commit, the scripts' low Reads 23 to 33, with
-`64dff21`, the furnace's values and the animations' steps in doubles (Reads 11 and 16, Reads 14 and
-15 left with reasons), and `c180b45`, the flames and lava at their light and the pool's sky level
-(Reads 12 and 13), the three pushed at 12:13 on 2026-11-15, their build run 43707903533 green at
-13:41, the form kept and the messages free of numbers. Before them `8fe9094`, item 181's fifth
+at 13:41 on 2026-11-15, their build run 43715162302 green at 14:29, the form kept and the messages
+free of numbers. Before them `fc97f0f`, item 181's last commit, the scripts' low Reads 23 to 33,
+with `64dff21`, the furnace's values and the animations' steps in doubles (Reads 11 and 16, Reads 14
+and 15 left with reasons), and `c180b45`, the flames and lava at their light and the pool's sky
+level (Reads 12 and 13), the three pushed at 12:13 on 2026-11-15, their build run 43707903533 green
+at 13:41, the form kept and the messages free of numbers. Before them `8fe9094`, item 181's fifth
 commit, the play's false passes and fails (Reads 17 to 22 and 34), pushed at 10:56 on 2026-11-15,
 its build run 43701659233 green at 12:13, the form kept and the message free of numbers. Before it
 `10f81cb`, item 181's fourth commit, a region's column whose length is past what the file has left
@@ -636,3 +640,29 @@ packs' list.
 
 The strict build is clean, 446 tests pass outside the GPU's lock, and the play passes in 195 s, its
 captures within 9 levels of the last play's but sky2's, which moves as much between plays.
+
+Item 184's third kind, the update's, mended, and the screenshot's write that fails after the frame
+in the engine's ASKS.md. Each test was run first on a copy of `2e6c699` with the tests added and the
+two seams they reach the screenshot by, the screenshot taken as F2 takes it and the folder it goes
+into given.
+
+F2 says "Saved screenshot as" only where the screenshots' folder could be made, and where it could
+not, "Screenshots could not be kept" with the reason, once (`VoxelGame.Screenshot`,
+`VoxelGame.cs:419`). The engine writes the picture after the frame and says a write that fails to
+its log alone (`E3D.Window.cs:115` of `baa21ff4`), so the HUD cannot know of it, and the engine's
+ASKS.md holds that as an entry of 2026-11-15, uncommitted in the engine's tree. A switch to a world
+whose folder cannot be made keeps the player in the world played and says so, where the game begins
+plays it unsaved (:477). A recording of `voxel.flicker` whose file cannot be written ends and says
+so (`Measurements.cs:55`), where it stayed set and ended every frame's `Begin` after. The settings
+written by G and `voxel.options`, F3 with T and the default packs taken were mended with the
+drawing's kind at `c51b643`, the same writes and the same packs' opening.
+
+The test `A_Screenshot_Whose_Folder_Cannot_Be_Made_Says_So_And_Not_That_It_Was_Saved` fails on the
+head by `DirectoryNotFoundException`,
+`A_Switch_To_A_World_Whose_Folder_Cannot_Be_Made_Keeps_The_World_Played_And_Says_So` fails on the
+head, which opened the world asked for unsaved, and
+`A_Recording_Whose_File_Cannot_Be_Written_Ends_And_Says_So` fails on the head, whose recording stays
+set after its frames.
+
+The strict build is clean, 449 tests pass outside the GPU's lock, and the play passes in 181 s, its
+captures within 8 levels of the last play's but sky2's, which moves as much between plays.

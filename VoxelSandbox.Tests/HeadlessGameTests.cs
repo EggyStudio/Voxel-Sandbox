@@ -438,6 +438,71 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Screenshot_Whose_Folder_Cannot_Be_Made_Says_So_And_Not_That_It_Was_Saved()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: Path.Combine(folder, "world"));
+            File.WriteAllText(Path.Combine(folder, "a file"), "");
+            var game = headless.Game;
+            game.Shots = new Screenshots(Path.Combine(folder, "a file", "screenshots"));
+
+            game.Screenshot();
+
+            Assert.StartsWith("Screenshots could not be kept", game.Said?.Text);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Switch_To_A_World_Whose_Folder_Cannot_Be_Made_Keeps_The_World_Played_And_Says_So()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: Path.Combine(folder, "world"));
+            File.WriteAllText(Path.Combine(folder, "a file"), "");
+            var game = headless.Game;
+
+            game.SwitchWorld("flat", 2, Path.Combine(folder, "a file", "other"));
+
+            Assert.Equal(Path.Combine(folder, "world"), game.Save?.Folder);
+            Assert.Contains("The world's folder could not be made, so the world played stays", game.FileFaults);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Recording_Whose_File_Cannot_Be_Written_Ends_And_Says_So()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            Directory.CreateDirectory(folder);
+            File.WriteAllText(Path.Combine(folder, "a file"), "");
+            using var headless = new HeadlessGame();
+            var game = headless.Game;
+
+            game.Flicker = new FlickerRun(13, 10, 1, 0, 0, Path.Combine(folder, "a file", "flicker.txt"));
+            headless.Step(20);
+
+            Assert.Null(game.Flicker);
+            Assert.Contains("The recording could not be written", game.FileFaults);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Pack_That_Cannot_Be_Read_Is_Left_Out_And_Said()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

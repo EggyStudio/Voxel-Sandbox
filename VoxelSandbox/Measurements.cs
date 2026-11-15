@@ -51,7 +51,8 @@ public sealed class FlickerRun(int frames, int motionAt, int over, float turn, f
         text.AppendLine(CultureInfo.InvariantCulture, $"# the change of each frame from the one before, the mean in sRGB levels and the share of pixels past 8 levels, the player turning {turn} degrees and stepping {step} blocks over frames {motionAt} to {motionAt + over}");
         text.AppendLine("frame\tchange\tshare");
         for (int i = 0; i < _changes.Count; i++) text.AppendLine(CultureInfo.InvariantCulture, $"{i + 1}\t{_changes[i].Mean:0.0000}\t{_changes[i].Share:0.00000}");
-        File.WriteAllText(path, text.ToString());
+        // A recording whose file cannot be written ends all the same, the player told.
+        if (!game.Guarded("The recording could not be written", () => { File.WriteAllText(path, text.ToString()); return true; }, false)) return false;
 
         // The first frame after the motion, the last, and their difference sixteen times over, which
         // shows where the picture went on changing.

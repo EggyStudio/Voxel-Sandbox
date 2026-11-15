@@ -397,7 +397,7 @@ public sealed class VoxelGame : IDisposable
     public bool HudHidden { get; set; }
 
     /// <summary>Where F2 writes its screenshots.</summary>
-    public Screenshots Shots { get; } = Screenshots.Default;
+    public Screenshots Shots { get; set; } = Screenshots.Default;
 
     // The line on the HUD saying where the last screenshot went and how long it has shown, and
     // whether it was said this frame, which the picture is of, so the line shows from the next.
@@ -415,7 +415,16 @@ public sealed class VoxelGame : IDisposable
 
     // F2 writes the frame as a screenshot, as Minecraft's does, but in a transient run, which
     // writes nowhere, and says so on the HUD.
-    private void Screenshot() => Say(_transient ? "Screenshots are not kept in a transient run" : $"Saved screenshot as {Shots.Take()}");
+    /// <summary>Takes a screenshot as F2 does, saying on the HUD where it went, or that none is kept.</summary>
+    public void Screenshot()
+    {
+        if (_transient)
+            Say("Screenshots are not kept in a transient run");
+        // "Saved screenshot as" is said only where the folder could be made, the engine writing the
+        // picture after the frame and saying a write that fails to its log alone.
+        else if (Guarded<string?>("Screenshots could not be kept", Shots.Take, null) is { } taken)
+            Say($"Saved screenshot as {taken}");
+    }
 
     /// <summary>Whether the world fades into the sky's color toward the render distance, as Minecraft's fog hides where the world ends.</summary>
     public bool Fog { get; set; } = true;
@@ -462,8 +471,14 @@ public sealed class VoxelGame : IDisposable
 
     private void Open(string kind, int seed, string? name)
     {
-        // A world whose folder cannot be made is played unsaved, the player told.
-        Save = _transient ? null : Guarded<WorldSave?>("The world's folder could not be made, so it is played unsaved", () => new WorldSave(Path.Combine(WorldSave.Root, name ?? $"{kind}-{seed}")), null);
+        // A world whose folder cannot be made is played unsaved where the game begins, and where it
+        // would take the place of the world played, is not opened and that world kept, the player
+        // told either way.
+        var leaving = World is not null;
+        var save = _transient ? null : Guarded<WorldSave?>(leaving ? "The world's folder could not be made, so the world played stays" : "The world's folder could not be made, so it is played unsaved",
+            () => new WorldSave(Path.Combine(WorldSave.Root, name ?? $"{kind}-{seed}")), null);
+        if (!_transient && save is null && leaving) return;
+        Save = save;
         WorldName = Save?.Name ?? $"{kind}-{seed}";
         var info = Save?.ReadInfo();
         // Every float place of the world is kept against an origin near where the player stands.
