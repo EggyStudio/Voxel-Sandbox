@@ -272,6 +272,28 @@ change.
     list is agreed, each test failing on a head copy. A finding that is the engine's goes to ASKS.md
     and is not worked around.
 
+190. **The player and the land's generation, the sixth read.** Given at 22:45 on 2026-11-15, the
+    coder's own read as the fifth was. The lane is `Player` whole and `Generation` whole, read by
+    what their tests do not reach. Look for a player moved into a block or through one at a column's
+    edge, a low frame rate or a long frame that tunnels, a fall's damage counted twice or lost
+    across a teleport, a respawn or a mode change, a vital that leaves its range or is not finite, a
+    view or a reach that acts through a wall, and in the generation a column that differs between
+    two runs of one seed, a tree, an ore or a cave cut at a column's edge by the order the columns
+    generate in, a height or an index past its array for a far place or a negative one, and a seed
+    whose extremes overflow. Each finding is told with the lines that make it and a test that fails
+    on the head, in a Reply, the order proposed with it. The mends follow once the list is agreed. A
+    finding that is the engine's goes to ASKS.md and is not worked around.
+
+191. **The blocks, the items and the world's ticking, the seventh read.** Given at 23:00 on
+    2026-11-15, to follow item 190's commit without a wait. The lane is `Blocks`, `Items` and
+    `World` apart from the save and the lighting, read by what their tests do not reach. Look for an
+    item made or lost by a furnace, a chest or a crafting grid across a save, a broken block or a
+    closed window, a stack past its size or under zero, a tool's wear that wraps, a fluid, a fire, a
+    falling block or a blast that spreads without a bound or reaches into a column not loaded, a
+    scheduled tick kept for a block that is gone, and a block's shape whose boxes and drawn faces
+    disagree. Each finding is told with the lines that make it and a test that fails on the head, in
+    a Reply, the order proposed with it. The mends follow once the list is agreed.
+
 ## Verdicts
 
 No verdict is open. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
@@ -879,4 +901,74 @@ taking its light and giving it back over a wall set across the edge. Both pass o
 under a second together.
 
 The strict build is clean, 480 tests pass outside the GPU's lock, and the play passes in 191 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+The sixth read, of `Player` whole and `Generation` whole by what their tests do not reach, before
+any mend. Each candidate was held by a test on a copy of `e84d2db`, outside the GPU's lock, and one
+fault failed two of them.
+
+1. The vitals' reckoning carries over a time out of survival. The vitals are taken only while the
+   player lives, in survival or adventure (`GameFrame.Live`, `[InState(Living.Yes)]`), and each
+   frame they take the move since the place they last read (`Vitals.Update`, `Vitals.cs:82` to
+   :99). Nothing starts that reckoning again as the mode comes back, as `Vitals.Arrived` starts it
+   after a teleport (`VoxelGame.cs:1003` to :1007), so the first frame back in survival takes the
+   whole way since the mode left it as one move, and the fall it had counted.
+   - `A_Flight_In_Creative_Tires_The_Player_Nothing_Back_In_Survival` flies 200 blocks east in
+     creative and fails on the head, which gives the player 2.0 of exhaustion on its return, half a
+     point of food. An hour's flight at creative's 21.6 blocks a second would take 194 points at
+     once, every point of food the player holds and its saturation.
+   - `A_Fall_Begun_In_Survival_And_Ended_In_Creative_Harms_Nothing_Back_In_Survival` falls 12.4
+     blocks in survival, lands in creative and comes back, and fails on the head, which takes 10 of
+     the player's 20 health on its return, the fall's damage dealt minutes after the fall.
+   The mend I would make starts the reckoning again as the player comes to live, by
+   `Vitals.Arrived` on entering `Living.Yes`, as a teleport starts it.
+
+Read clean, by tests that pass on the head where named. A seed's columns are the same made alone, in
+order and on eight workers at once, 49 columns of seed 1 alike block for block
+(`A_Seeds_Columns_Are_The_Same_Made_Alone_In_Order_Or_On_Many_Workers_At_Once`). Seeds at the ints'
+ends, 0 and -1, and columns at the land's edge, 67,108,863 columns out either way, make ground
+within the world, the overworld's and the flat world's, with no index past its array. A tree, a
+patch or a structure is placed by every column its reach covers from the cells around, each column
+asking the same noise of the ground under a trunk in a neighbor (`Caves.Places.DensityAt` reads the
+noise's corners at any place), so a crown is not cut at a column's edge. A body moves in steps of at
+most 0.45 of a block, shorter than the player's or any mob's box is wide or tall, so no frame the
+game takes carries one through a block, and one standing in a block walks out. The ray to the block
+aimed at meets a smaller block's pieces, a mob is aimed at only where it is nearer than the block,
+and the camera behind or before the player stands short of the nearest block any of five rays meets.
+A teleport and a respawn start the vitals again, a vital set by a save or a command is held to its
+range, and breath, food and saturation stay within theirs.
+
+One aside of the last lane's, read on the way and low. A stack, a quarter of a block tall, falling
+at its 40 blocks a second in a frame of a twentieth moves 0.4 a step, so in a sixteenth of the
+places over a snow layer, an eighth of a block thick, it passes the layer and lies inside it on the
+block under it. At 60 frames a second it steps 0.33 and does not. I would leave it.
+
+The order I would take is the one mend, its two tests in one commit.
+
+Item 190, the sixth read's finding mended in one commit, in the game's mode setter rather than on
+entering `Living.Yes`. Each test was run first on a copy of `e84d2db` with the tests added.
+
+The vitals' reckoning starts again as the mode comes to one in which the player lives from one in
+which it does not (`VoxelGame.Mode`, which calls `Vitals.Arrived` as a teleport does). Every way
+into survival or adventure sets the mode through it, from creative or spectator by the switcher or
+`voxel.mode`, and into a world opened in survival or adventure, whose mode is set as it opens,
+where `Vitals.Set` starts the reckoning too. A switch between survival and adventure keeps the
+reckoning, both taking the vitals, and a respawn starts it by `Vitals.Set`.
+
+The mend was first an `[OnEnter(Living.Yes)]` system, and both tests failed on it. A probe logging
+the frame showed the `InState(Living.Yes)` system that takes the vitals running in the frame of the
+switch, the fall dealt there, and the enter system in the next frame, after it. `Living` is computed
+from the mode, and the engine activates a computed state that comes back from none for its enter at
+the next transition point, while its `InState` systems take it as current at once. That stands in
+the engine's ASKS.md as an entry, uncommitted there. The setter is the game's own place for the
+reckoning, and no system of the game's needs the enter.
+- `A_Flight_In_Creative_Or_Spectator_Tires_The_Player_Nothing_Back_In_Survival` flies 200 blocks
+  east in creative and 200 in spectator, each followed by survival, and holds the exhaustion, the
+  saturation and the food as they were. It fails on the head, whose 4.0 of exhaustion take a point
+  of the player's saturation.
+- `A_Fall_Begun_In_Survival_And_Ended_In_Creative_Harms_Nothing_Back_In_Survival` falls twelve
+  blocks in survival and lands in creative, and fails on the head, which takes 10 of the player's
+  20 health on its return.
+
+The strict build is clean, 482 tests pass outside the GPU's lock, and the play passes in 186 s, its
 captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
