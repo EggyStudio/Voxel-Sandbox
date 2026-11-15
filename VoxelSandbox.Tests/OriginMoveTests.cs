@@ -310,6 +310,39 @@ public sealed class OriginMoveTests : IDisposable
     }
 
     [Fact]
+    public void Every_Command_Taking_A_Number_Refuses_One_That_Is_NaN_Or_Infinite()
+    {
+        using var headless = new HeadlessGame();
+        Serve(headless.Game);
+        // Each command that takes a float or a double, a line for each number it takes, given at {0}.
+        string[] lines =
+        [
+            "voxel.tp {0} 80 0", "voxel.tp 0 {0} 0", "voxel.tp 0 80 {0}",
+            "voxel.look {0} 0", "voxel.look 0 {0}",
+            "voxel.corners {0}", "voxel.time {0}",
+            "voxel.drop stick {0} 80 0", "voxel.drop stick 0 {0} 0", "voxel.drop stick 0 80 {0}",
+            "voxel.clouds on {0}",
+            "voxel.bits {0} 4 0", "voxel.bits 0 {0} 0", "voxel.bits 0 4 {0}",
+            "voxel.field 3 {0} 100", "voxel.shadows {0}", "voxel.fov {0}",
+            "voxel.flicker 20 {0} 0 5 flicker.txt", "voxel.flicker 20 0 {0} 5 flicker.txt",
+            "voxel.ring {0} 4 0 2 8", "voxel.ring 0 {0} 0 2 8", "voxel.ring 0 4 {0} 2 8", "voxel.ring 0 4 0 {0} 8",
+            "voxel.spots 0 0 10 10 {0}",
+            "voxel.pixel {0} 4 0", "voxel.pixel 0 {0} 0", "voxel.pixel 0 4 {0}",
+            "voxel.line {0} 4 0 1 4 0 4", "voxel.line 0 {0} 0 1 4 0 4", "voxel.line 0 4 {0} 1 4 0 4",
+            "voxel.line 0 4 0 {0} 4 0 4", "voxel.line 0 4 0 1 {0} 0 4", "voxel.line 0 4 0 1 4 {0} 4",
+            "voxel.options render Rim_Light {0}",
+        ];
+
+        foreach (var line in lines)
+            foreach (var number in new[] { "NaN", "Infinity", "-Infinity" })
+            {
+                var sent = string.Format(line, number);
+                var said = Run($"{sent}");
+                Assert.True(said.Contains("NaN or infinite"), $"{sent} said {said}");
+            }
+    }
+
+    [Fact]
     public void A_Look_Or_A_Turn_That_Is_No_Number_Leaves_The_Player_Facing_As_Before()
     {
         using var headless = new HeadlessGame();

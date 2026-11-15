@@ -107,7 +107,7 @@ public static class GameCommands
     internal static string Look(float heading, float pitch)
     {
         if (Game is not { } game) return "no world is loaded";
-        if (!float.IsFinite(heading) || !float.IsFinite(pitch)) return "a heading and a pitch are numbers, and one of these is none";
+        if (NotNumbers(heading, pitch) is { } refused) return refused;
         game.Player.Heading = heading;
         game.Player.Pitch = Math.Clamp(pitch, -89, 89) * MathF.PI / 180;
         return $"the player faces {heading} and is pitched {pitch}";
@@ -178,6 +178,7 @@ public static class GameCommands
     internal static string Corners(float strength)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(strength) is { } refused) return refused;
         game.Renderer.CornerStrength = strength;
         game.World.ReshadeAll();
         return $"corners darken at {game.Renderer.CornerStrength:0.##} of Minecraft's levels, every section shaded again over the next frames";
@@ -187,6 +188,7 @@ public static class GameCommands
     internal static string Time(float hour)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(hour) is { } refused) return refused;
         game.Sky.Hour = (hour % 24 + 24) % 24;
         return $"the hour is {game.Sky.Hour:0.00}";
     }
@@ -339,9 +341,13 @@ public static class GameCommands
     // Why a place given is none a body may stand at, where it is no number or its height lies past
     // the land's edge, so a float holds it, or null for one that is.
     private static string? Unplaced(double x, double y, double z) =>
-        !double.IsFinite(x) || !double.IsFinite(y) || !double.IsFinite(z) ? "a place is three numbers, and one of these is none"
-        : Math.Abs(y) > LandOrigin.Edge ? $"a height lies within {LandOrigin.Edge} blocks of the land's"
-        : null;
+        NotNumbers(x, y, z) ?? (Math.Abs(y) > LandOrigin.Edge ? $"a height lies within {LandOrigin.Edge} blocks of the land's" : null);
+
+    // Why a command's numbers are refused, where one is NaN or infinite as the console reads "NaN",
+    // "Infinity" or a number past a float, or null where each is a number, so no command sets a value
+    // that spreads through the frame or the save.
+    private static string? NotNumbers(params double[] numbers) =>
+        numbers.All(double.IsFinite) ? null : "a number given is NaN or infinite, which no command takes";
 
     [Command("voxel.drop", "Lays one of an item on the ground at a place, as a block broken there drops it: voxel.drop <item> <x> <y> <z>")]
     internal static string Drop(string item, double x, double y, double z)
@@ -432,6 +438,7 @@ public static class GameCommands
     internal static string ShowClouds(bool on, float drift = -1)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(drift) is { } refused) return refused;
         game.Clouds.Shown = on;
         if (drift >= 0) game.Clouds.Drift = drift;
         return on ? $"the clouds are drawn, {game.Clouds.Faces} faces, drifted {game.Clouds.Drift:0.0} blocks east" : "the clouds are hidden";
@@ -537,6 +544,7 @@ public static class GameCommands
     internal static string BitsAround(double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(x, y, z) is { } refused) return refused;
         var place = LandOrigin.PlaceOf(new LandPlace(x, y, z));
         var nearest = LandOrigin.LandOf(game.Bits.All.Select(b => b.Body.Position + new Vector3(0, b.Size / 2, 0)).OrderBy(p => Vector3.DistanceSquared(p, place)).FirstOrDefault());
         return game.Bits.All.Count == 0 ? "no bits fly" : $"{game.Bits.All.Count} bits, the nearest at {nearest.X:F2}, {nearest.Y:F2}, {nearest.Z:F2}";
@@ -613,6 +621,7 @@ public static class GameCommands
     internal static string Field(int cascades, float cell, int budget)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(cell) is { } refused) return refused;
         var light = game.Light;
         (light.Cascades, light.CellSize, light.Budget) = (Math.Clamp(cascades, 1, 8), Math.Max(0.05f, cell), Math.Clamp(budget, 1, 8));
         light.ApplyField();
@@ -633,7 +642,11 @@ public static class GameCommands
         {
             var choice = option.Choices is { } choices ? Array.FindIndex(choices, c => c.Replace(' ', '_').Equals(value, StringComparison.OrdinalIgnoreCase)) : -1;
             if (choice >= 0) option.Change(choice);
-            else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number)) option.Change(number);
+            else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number))
+            {
+                if (NotNumbers(number) is { } refused) return refused;
+                option.Change(number);
+            }
             else return $"{value} is neither a number nor a choice of {option.Name}";
             option.Settled?.Invoke();
             game.KeepOptions();
@@ -649,6 +662,7 @@ public static class GameCommands
     internal static string Shadows(float distance)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(distance) is { } refused) return refused;
         game.Light.ShadowDistance = Math.Max(1, distance);
         SetShadowDistance(game.Light.ShadowDistance);
         return $"the sun's shadows reach {game.Light.ShadowDistance} blocks";
@@ -673,6 +687,7 @@ public static class GameCommands
     internal static string SetFieldOfView(float degrees)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(degrees) is { } refused) return refused;
         game.Player.FieldOfView = Math.Clamp(degrees, 30, 110);
         return $"the field of view is {game.Player.FieldOfView:0.#} degrees";
     }
@@ -681,7 +696,7 @@ public static class GameCommands
     internal static string Flicker(int frames, float turn, float step, int over, string path)
     {
         if (Game is not { } game) return "no world is loaded";
-        if (!float.IsFinite(turn) || !float.IsFinite(step)) return "a turn and a step are numbers, and one of these is none";
+        if (NotNumbers(turn, step) is { } refused) return refused;
         over = Math.Max(1, over);
         frames = Math.Max(frames, 12 + over);
         game.Flicker = new FlickerRun(frames, 10, over, turn, step, Path.GetFullPath(path));
@@ -692,6 +707,7 @@ public static class GameCommands
     internal static string Ring(double x, double y, double z, float radius, int samples)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(x, y, z, radius) is { } refused) return refused;
         if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
         return Measurements.Ring(LoadImageFromScreen(), game.Player.Camera, LandOrigin.PlaceOf(new LandPlace(x, y, z)), radius, Math.Clamp(samples, 8, 720));
     }
@@ -700,6 +716,7 @@ public static class GameCommands
     internal static string Spots(int x, int y, int width, int height, float levels)
     {
         if (Game is null) return "no world is loaded";
+        if (NotNumbers(levels) is { } refused) return refused;
         if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
         var (darker, lighter, read) = Measurements.Spots(LoadImageFromScreen(), x, y, width, height, levels);
         return $"{darker} darker, {lighter} lighter of {read} at {x}, {y}";
@@ -709,6 +726,7 @@ public static class GameCommands
     internal static string Pixel(double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(x, y, z) is { } refused) return refused;
         if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
         return Measurements.Pixel(LoadImageFromScreen(), game.Player.Camera, LandOrigin.PlaceOf(new LandPlace(x, y, z)));
     }
@@ -717,6 +735,7 @@ public static class GameCommands
     internal static string Line(double x1, double y1, double z1, double x2, double y2, double z2, int samples)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (NotNumbers(x1, y1, z1, x2, y2, z2) is { } refused) return refused;
         if (!Measurements.Keeping()) return "the frames are kept from now on, so ask again after a frame";
         return Measurements.Line(LoadImageFromScreen(), game.Player.Camera, LandOrigin.PlaceOf(new LandPlace(x1, y1, z1)), LandOrigin.PlaceOf(new LandPlace(x2, y2, z2)), Math.Clamp(samples, 2, 720));
     }

@@ -1097,3 +1097,20 @@ that two saves tell the player once and leave the wait at 120 s, that the first 
 reads back, and that a switch opens the next world with the wait at 30. It fails on the head as the
 game closes, by `UnauthorizedAccessException` out of the region's write. The checks of both items
 are read once, under item 182's Reply.
+
+Item 182, mended. Every console command that takes a float or a double refuses a number that is NaN
+or infinite, as the console reads "NaN", "Infinity", "-Infinity" or a number past a float, with one
+line, "a number given is NaN or infinite, which no command takes" (`GameCommands.NotNumbers`, :349).
+The place commands' check, `voxel.look`'s and `voxel.flicker`'s go through it, and `voxel.options`
+refuses such a value for a setting (:647). The test
+`Every_Command_Taking_A_Number_Refuses_One_That_Is_NaN_Or_Infinite` gives each number of the 16
+commands that take one NaN and both infinities, 102 lines, and holds that each is refused. On the
+head 30 were refused, the place's, the look's and the flicker's, and 72 taken, `voxel.time NaN`
+answering "the hour is NaN", `voxel.options render Rim_Light NaN` "NaN%", `voxel.fov Infinity`
+taking 110, and the corners, the shadows, the field, the clouds, the bits, the ring, the spots, the
+pixel and the line taking them as given. A scratch copy of the test on the head wrote each answer,
+where the test itself stops at its first line, the place's, which the head refused in other words.
+
+The strict build is clean over both items, 436 tests pass outside the GPU's lock, and the play
+passes in 184 s, its captures within 8 levels of the last play's but sky2's, which moves as much
+between plays.
