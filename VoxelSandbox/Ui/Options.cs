@@ -7,7 +7,7 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// A setting of an options screen, a slider between two ends or a button that steps through its
-/// choices, as Minecraft's options are, which reads a value of the game's and sets it.
+/// choices, which reads a value of the game's and sets it.
 /// </summary>
 public sealed class Option(string name, Func<float> get, Action<float> set)
 {

@@ -3,9 +3,9 @@ using System.Numerics;
 namespace VoxelSandbox;
 
 /// <summary>
-/// A box that stands for the player or a mob, the player's 0.6 blocks wide and 1.8 tall as
-/// Minecraft's is, moved through the blocks one axis at a time and stopped by the first solid box
-/// on each, climbing onto a slab or a stair in its way.
+/// A box that stands for the player or a mob, the player's 0.6 blocks wide and 1.8 tall, moved
+/// through the blocks one axis at a time and stopped by the first solid box on each, climbing onto
+/// a slab or a stair in its way.
 /// </summary>
 /// <remarks>
 /// The box moves up or down first, then along x, then along z, as Minecraft moves an entity, so

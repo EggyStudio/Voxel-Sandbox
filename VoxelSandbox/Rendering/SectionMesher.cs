@@ -397,12 +397,12 @@ public sealed class SectionMesher
 
     // Whether a block's face shows beside a neighbor. An opaque block shows a face to anything that
     // does not hide it, and a see-through block to anything that neither hides it nor is of its own
-    // kind, so two panes of glass or two blocks of water meet with no face between them. A block cut
-    // out where a pack's texture is clear hides nothing, so its neighbors and its own kind beside it
-    // keep their faces, as Minecraft draws its leaves. An opaque block keeps its face against a lamp
-    // too, hidden behind the lamp's cube, so the mesh stays closed around the lamp, since the scene's
-    // distance field reads a cell whose nearest point lies on an edge no other triangle of its mesh
-    // shares as open, and would read the stone beside a lamp as the air in front of the lamp's faces.
+    // kind, so two panes of glass or two blocks of water meet with no face between them. A block
+    // cut out where a pack's texture is clear hides nothing, so its neighbors and its own kind
+    // beside it keep their faces. An opaque block keeps its face against a lamp too, hidden behind
+    // the lamp's cube, so the mesh stays closed around the lamp, since the scene's distance field
+    // reads a cell whose nearest point lies on an edge no other triangle of its mesh shares as
+    // open, and would read the stone beside a lamp as the air in front of the lamp's faces.
     private bool Shows(BlockId block, BlockKind kind, BlockId neighbor)
     {
         if (Atlas.Hides(neighbor)) return kind == BlockKind.Opaque && Blocks.IsLamp(neighbor);
@@ -490,7 +490,7 @@ public sealed class SectionMesher
         {
             int side1 = front + Side1[face, i], side2 = front + Side2[face, i], across = front + Across[face, i];
             bool closed1 = Blocks.IsOpaque((BlockId)_blocks[side1]), closed2 = Blocks.IsOpaque((BlockId)_blocks[side2]), closed3 = Blocks.IsOpaque((BlockId)_blocks[across]);
-            // Two blocks on either side close the corner whatever is across it, as Minecraft has it.
+            // Two blocks on either side close the corner whatever is across it.
             occlusion[i] = closed1 && closed2 ? 0 : 3 - (closed1 ? 1 : 0) - (closed2 ? 1 : 0) - (closed3 ? 1 : 0);
 
             int sky = _light[front] >> 4, lit = _light[front] & 15, open = 1;

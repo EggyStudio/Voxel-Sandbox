@@ -1,9 +1,9 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// A ravine, a long narrow cut in the ground open to the sky as Minecraft's are, up to seven blocks
-/// wide at its middle and narrowing to its ends, its floor up to thirty blocks under the ground,
-/// with a few emissive magma blocks on it.
+/// A ravine, a long narrow cut in the ground open to the sky, up to seven blocks wide at its middle
+/// and narrowing to its ends, its floor up to thirty blocks under the ground, with a few emissive
+/// magma blocks on it.
 /// </summary>
 /// <remarks>
 /// Its line runs across its cell along a way the start's hash picks, swaying to either side, so

@@ -447,7 +447,7 @@ public sealed partial class Mob
         Body.Velocity.Z += (wish.Z - Body.Velocity.Z) * grip;
         if (swimming)
         {
-            // A mob floats in water and bobs at its top, as Minecraft's do.
+            // A mob floats in water and bobs at its top.
             Body.Velocity.Y = jump ? JumpSpeed * 0.8f : MathF.Min(Body.Velocity.Y + 24 * seconds, 2.5f);
         }
         else

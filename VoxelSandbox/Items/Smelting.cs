@@ -1,10 +1,10 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// What a furnace makes of what it is given and how long each fuel burns, as Minecraft's furnace
-/// does. It takes ten seconds an item, cooking raw meat and turning sand to glass, cobblestone to
-/// stone, iron ore to an ingot and a log to charcoal, and burns coal or charcoal 80 seconds, a log,
-/// planks or a crafting table 15, a wooden tool 10, a slab 7.5 and a stick 5.
+/// What a furnace makes of what it is given and how long each fuel burns. It takes ten seconds an
+/// item, cooking raw meat and turning sand to glass, cobblestone to stone, iron ore to an ingot and
+/// a log to charcoal, and burns coal or charcoal 80 seconds, a log, planks or a crafting table 15,
+/// a wooden tool 10, a slab 7.5 and a stick 5.
 /// </summary>
 public static class Smelting
 {

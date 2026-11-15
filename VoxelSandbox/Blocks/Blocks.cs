@@ -755,7 +755,7 @@ public static class Blocks
     /// <summary>Whether a block hides the faces beside it, stops light and darkens the corners around it, but for leaves, which let light through at a cost.</summary>
     public static bool IsOpaque(BlockId id) => _opaque[(int)id];
 
-    /// <summary>Whether a block is leaves, which take a level of the light passing through each of them, as Minecraft's do.</summary>
+    /// <summary>Whether a block is leaves, which take a level of the light passing through each of them.</summary>
     public static bool IsLeaves(BlockId id) => _leaves[(int)id];
 
     /// <summary>Whether a body stands on and walks into a block, which it does all but air, water and lava.</summary>
@@ -777,7 +777,7 @@ public static class Blocks
     /// <summary>The block an item places facing a way, in the upper half where asked, or air where it is not placed that way.</summary>
     public static BlockId Variant(BlockId item, Facing facing, bool upper = false) => _variants[(int)item, (int)facing, upper ? 1 : 0];
 
-    /// <summary>Whether the crosshair rests on a block, which it does on all but air, water and lava, as Minecraft's does.</summary>
+    /// <summary>Whether the crosshair rests on a block, which it does on all but air, water and lava.</summary>
     public static bool IsTarget(BlockId id) => id != BlockId.Air && !IsFluid(id);
 
     /// <summary>Whether a block is water, still, flowing or falling.</summary>

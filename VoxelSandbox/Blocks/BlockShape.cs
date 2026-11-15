@@ -4,9 +4,8 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// Which way a block smaller than its cell faces, up where it stands on the block below, down where
-/// it hangs from the block above, and toward a side where it is fixed to the block behind it, as
-/// Minecraft's torch on a wall faces away from the wall. North is toward -z and east toward +x, as
-/// Minecraft has them.
+/// it hangs from the block above, and toward a side where it is fixed to the block behind it,
+/// facing away from the wall it is fixed to. North is toward -z and east toward +x.
 /// </summary>
 public enum Facing
 {
@@ -19,9 +18,9 @@ public enum Facing
 }
 
 /// <summary>
-/// The form stairs take from the stairs beside them, as Minecraft's do, straight, or turned into
-/// an inner corner, the step and a quarter before it, or an outer one, a quarter of the step, toward
-/// the left or the right of the way they climb.
+/// The form stairs take from the stairs beside them, straight, or turned into an inner corner, the
+/// step and a quarter before it, or an outer one, a quarter of the step, toward the left or the
+/// right of the way they climb.
 /// </summary>
 public enum StairForm
 {
@@ -87,7 +86,7 @@ public readonly record struct Box(Vector3 Min, Vector3 Max)
 /// </para>
 /// <para>
 /// A solid one stops the player at its boxes, a fence at a box half a block taller than its post,
-/// as Minecraft's is, so it cannot be jumped over.
+/// so it cannot be jumped over.
 /// </para>
 /// </remarks>
 public sealed class BlockShape
@@ -388,11 +387,12 @@ public sealed class BlockShape
     }
 
     /// <summary>
-    /// A plant of two flat walls crossed from corner to corner of the cell, as Minecraft draws its grasses,
+    /// A plant of two flat walls crossed from corner to corner of the cell, the shape of grasses,
     /// saplings and flowers, so many sixteenths high, its lower part of one surface and from
-    /// <paramref name="split"/> up of another, as a flower's stem and its petals are. A pack's texture
-    /// lies across the walls from the cell's foot, so its plant drawn at the bottom of the texture
-    /// shows whole, and its clear pixels are cut out. It falls when the block under it is broken.
+    /// <paramref name="split"/> up of another, as a flower's stem and its petals are. A pack's
+    /// texture lies across the walls from the cell's foot, so its plant drawn at the bottom of the
+    /// texture shows whole, and its clear pixels are cut out. It falls when the block under it is
+    /// broken.
     /// </summary>
     public static BlockShape Plant(int lower, float height, int upper = -1, float split = 0, PlantOffset offset = PlantOffset.None)
     {
@@ -463,7 +463,7 @@ public sealed class BlockShape
     /// <summary>A carpet of petals a sixteenth high over the ground, as the cherry grove's pink petals lie, cut out where its texture is clear.</summary>
     public static BlockShape Carpet(int surface) => new(Facing.Up, [Px(0, 0, 0, 16, 1, 16, surface)], cutout: true);
 
-    /// <summary>Ripe wheat, four thin stalks' walls crossed as Minecraft's crops are, which falls when its farmland is broken.</summary>
+    /// <summary>Ripe wheat, four thin stalks' walls crossed, which falls when its farmland is broken.</summary>
     public static BlockShape Wheat(int stalks) => new(Facing.Up,
     [
         Wall(0, 0, 4, 16, 14, 4, stalks),

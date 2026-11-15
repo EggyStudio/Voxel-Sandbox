@@ -3,8 +3,8 @@ using System.Numerics;
 namespace VoxelSandbox;
 
 /// <summary>
-/// The player's health, food and breath in survival, as Minecraft's are, with 20 points of health
-/// and of food, the saturation spent before the food, and the exhaustion that spends them.
+/// The player's health, food and breath in survival, with 20 points of health and of food, the
+/// saturation spent before the food, and the exhaustion that spends them.
 /// </summary>
 /// <remarks>
 /// <para>

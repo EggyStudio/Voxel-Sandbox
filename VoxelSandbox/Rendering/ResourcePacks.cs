@@ -14,8 +14,8 @@ namespace VoxelSandbox;
 /// A pack's files are listed once as it loads, a zip's entries and a folder's files under
 /// <c>assets/minecraft</c>, and read when asked for. A texture is decoded from its PNG to RGBA with
 /// the <c>.mcmeta</c> beside it in the same pack, and an animated one, which its metadata says is a
-/// strip of frames one above another as Minecraft draws water and lanterns, gives its first frame as
-/// its picture and its frames in the order they play through <see cref="Animation"/>.
+/// strip of frames one above another, gives its first frame as its picture and its frames in the
+/// order they play through <see cref="Animation"/>.
 /// </remarks>
 public sealed class ResourcePacks : IDisposable
 {

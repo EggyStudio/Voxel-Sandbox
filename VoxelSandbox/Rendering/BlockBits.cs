@@ -7,8 +7,7 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// The bits a block throws as it is hit and as it breaks, each a square cut from a quarter of its
-/// side's picture, as Minecraft's are, falling, resting on the blocks they land on, and gone at the
-/// end of their lives.
+/// side's picture, falling, resting on the blocks they land on, and gone at the end of their lives.
 /// </summary>
 /// <remarks>
 /// <para>

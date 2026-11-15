@@ -1,17 +1,17 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// Water that flows as Minecraft's does, down into the air under it as falling water, and where it
-/// cannot fall, sideways one level further from its source for each block, up to seven, drying back
-/// as its source goes. Two sources beside each other over ground make a third between them.
+/// Water that flows down into the air under it as falling water, and where it cannot fall, sideways
+/// one level further from its source for each block, up to seven, drying back as its source goes.
+/// Two sources beside each other over ground make a third between them.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Water moves in ticks of 20 a second, a block every five as Minecraft's does. A block that
-/// changes asks the water at and around it to look again at what feeds it five ticks on, and each
-/// cell of water so asked takes the level its neighbors give it and spreads from there, so a still
-/// lake stays still until something beside it changes. Each tick moves at most so many cells, so a
-/// flood is spread over frames rather than taken in one.
+/// Water moves in ticks of 20 a second, a block every five. A block that changes asks the water at
+/// and around it to look again at what feeds it five ticks on, and each cell of water so asked
+/// takes the level its neighbors give it and spreads from there, so a still lake stays still until
+/// something beside it changes. Each tick moves at most so many cells, so a flood is spread over
+/// frames rather than taken in one.
 /// </para>
 /// <para>
 /// What is waiting is not saved, so water half flowed when the world is left stands as it was when

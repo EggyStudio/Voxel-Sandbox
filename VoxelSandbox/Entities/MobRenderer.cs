@@ -12,16 +12,15 @@ namespace VoxelSandbox;
 /// by turning each piece about its pivot by the head's look, the legs' stride or a wing's flap, and
 /// the whole by its yaw. A piece that takes its mob's own color, a sheep's wool or a villager's
 /// robe, is meshed once for each variant. A mob hit, or dying, is drawn through a red material for
-/// the half second it stays red, and one dying falls onto its side, as Minecraft's do.
+/// the half second it stays red, and one dying falls onto its side.
 /// </para>
 /// <para>
-/// Mobs are drawn within 64 blocks of the eye, as Minecraft draws its entities, through the game's
-/// mob shader, which has none of the haze the sections fade into and takes the color out of the
-/// light from all around them, as the README's section on mobs says. They cast shadows and hold
-/// no light for others, their materials' <see cref="ModelMaterial.BouncesLight"/>
-/// off, which leaves them out of the scene's distance field, where each piece that moves would be
-/// stamped as a box every frame, milliseconds a frame for a herd walking in sight. A pig's pink so
-/// does not reach the grass.
+/// Mobs are drawn within 64 blocks of the eye, through the game's mob shader, which has none of the
+/// haze the sections fade into and takes the color out of the light from all around them, as the
+/// README's section on mobs says. They cast shadows and hold no light for others, their materials'
+/// <see cref="ModelMaterial.BouncesLight"/> off, which leaves them out of the scene's distance
+/// field, where each piece that moves would be stamped as a box every frame, milliseconds a frame
+/// for a herd walking in sight. A pig's pink so does not reach the grass.
 /// </para>
 /// </remarks>
 public sealed class MobRenderer : IDisposable
@@ -72,14 +71,14 @@ public sealed class MobRenderer : IDisposable
     /// is not of the size its cuboids are laid on.
     /// </summary>
     /// <remarks>
-    /// A kind's picture is drawn cut out where it is clear, and a cuboid whose faces it leaves clear
-    /// throughout, as most packs leave a zombie's hat, is left out of the mesh. A box of the game's
-    /// own drawn with the picture, the skeleton's bow, takes a row of white laid below the picture,
-    /// tinted by its color. A villager's clothes of its biome are laid over its body's picture where
-    /// they are not clear, as Minecraft draws the layer of its type over the villager cut out, into
-    /// one picture a biome, rather than drawn as a second layer on the same cuboids, whose faces
-    /// would meet the first's at the same depth. A sheep's wool is a picture of its own on cuboids
-    /// of its own, grown about the body's, tinted by the sheep's color.
+    /// A kind's picture is drawn cut out where it is clear, and a cuboid whose faces it leaves
+    /// clear throughout, as most packs leave a zombie's hat, is left out of the mesh. A box of the
+    /// game's own drawn with the picture, the skeleton's bow, takes a row of white laid below the
+    /// picture, tinted by its color. A villager's clothes of its biome are laid over its body's
+    /// picture where they are not clear, into one picture a biome, rather than drawn as a second
+    /// layer on the same cuboids, whose faces would meet the first's at the same depth. A sheep's
+    /// wool is a picture of its own on cuboids of its own, grown about the body's, tinted by the
+    /// sheep's color.
     /// </remarks>
     public void Use(ResourcePacks packs)
     {

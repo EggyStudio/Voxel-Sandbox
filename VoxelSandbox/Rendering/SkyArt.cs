@@ -31,7 +31,7 @@ public static class SkyArt
     /// <summary>How many texels the sun's and the moon's pictures are across.</summary>
     public const int Texels = Across * Fine;
 
-    /// <summary>How many phases the moon goes through, a day each, as Minecraft's does.</summary>
+    /// <summary>How many phases the moon goes through, a day each.</summary>
     public const int Phases = 8;
 
     /// <summary>How many texels apart the moon's phases are in their sheet, each with its clear edge.</summary>

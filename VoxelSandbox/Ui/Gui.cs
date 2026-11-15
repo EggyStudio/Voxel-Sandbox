@@ -5,9 +5,9 @@ using static Engine.E3D;
 namespace VoxelSandbox;
 
 /// <summary>
-/// The interface's drawing, in its own pixels at a whole number of the screen's, as Minecraft draws
-/// its interface, of the pictures of <see cref="GuiArt"/>, panels stretched between their edges,
-/// text with its shadow, an item's icon with its count and its wear, and a tooltip.
+/// The interface's drawing, in its own pixels at a whole number of the screen's, of the pictures of
+/// <see cref="GuiArt"/>, panels stretched between their edges, text with its shadow, an item's icon
+/// with its count and its wear, and a tooltip.
 /// </summary>
 /// <remarks>
 /// The scale is the largest whole number at which 320 by 240 of the interface's pixels fit the
@@ -67,7 +67,7 @@ public static class Gui
         EndBox();
     }
 
-    /// <summary>Text at a place on the screen with its shadow a pixel of the interface's below and to the right, as Minecraft's is.</summary>
+    /// <summary>Text at a place on the screen with its shadow a pixel of the interface's below and to the right.</summary>
     public static void Text(string text, int x, int y, Color color, bool shadow = true)
     {
         var s = Scale;
@@ -120,7 +120,7 @@ public static class Gui
         if (x + width > GetScreenWidth()) x = (int)mouse.X - 12 * s - width;
         y = Math.Clamp(y, 0, Math.Max(0, GetScreenHeight() - height));
         // A pack's tooltip is its background and its frame over the lines and twelve pixels around
-        // them, as Minecraft draws its tooltips, the frame's glow reaching past the box.
+        // them, the frame's glow reaching past the box.
         if (PackGui.Get("sprites/tooltip/background") is { } background)
         {
             var around = new Rectangle(x - 8 * s, y - 8 * s, width + 16 * s, height + 16 * s);
@@ -148,8 +148,7 @@ public static class Gui
         var s = Scale;
         var (font, size) = PackGui.Font is { } pack ? (pack.Measure, 8f * s) : (GetFontDefault(10 * s), 10f * s);
         // The engine starts the text a quarter of the font's size in from the left of the box it
-        // measures in, so that box is the field's two pixels in, which puts the text four in, as
-        // Minecraft's is.
+        // measures in, so that box is the field's two pixels in, which puts the text four in.
         var measured = new Rectangle(box.X + 2 * s, box.Y, box.Width - 4 * s, box.Height);
         var entered = EditText(ref edit, measured, most, font, size);
         DrawRectangleRec(box, new Color(160, 160, 160, 255));
@@ -165,7 +164,7 @@ public static class Gui
         var ink = new Color(224, 224, 224, 255);
         Text(text, x, y, ink);
         // The caret blinks a third of a second on and off, an underscore past the text's end and a
-        // line between its characters, as Minecraft's does.
+        // line between its characters.
         if (edit.Focused && (int)(GetTime() * 3) % 2 == 0)
         {
             var at = x + TextWidth(text[..edit.Caret]);
@@ -176,7 +175,7 @@ public static class Gui
         return entered;
     }
 
-    /// <summary>A button of the interface's, lit under the pointer with its label yellow, as Minecraft's is.</summary>
+    /// <summary>A button of the interface's, lit under the pointer with its label yellow, so the one a click takes stands out.</summary>
     /// <returns>Whether it was clicked this frame.</returns>
     public static bool Button(string label, Rectangle box)
     {
@@ -187,8 +186,8 @@ public static class Gui
     }
 
     /// <summary>
-    /// A slider of the interface's, its knob along a darker button at its value between two ends and
-    /// its label over it, which a press and a drag along it move, as Minecraft's are.
+    /// A slider of the interface's, its knob along a darker button at its value between two ends
+    /// and its label over it, which a press and a drag along it move.
     /// </summary>
     /// <returns>The value, moved where the slider is held, and through <paramref name="letGo"/> whether it was let go this frame.</returns>
     public static float Slider(string label, Rectangle box, float value, float low, float high, out bool letGo)
@@ -209,7 +208,7 @@ public static class Gui
         var lit = Over(box) || _sliding == box;
         var at = (value - low) / (high - low);
         var knob = new Rectangle(box.X + (box.Width - 8 * s) * Math.Clamp(at, 0, 1), box.Y, 8 * s, box.Height);
-        // A pack's slider is its track, lit under the pointer, and its handle, as Minecraft's are.
+        // A pack's slider is its track, lit under the pointer, and its handle.
         if (PackGui.Get(lit ? "sprites/widget/slider_highlighted" : "sprites/widget/slider") is { } track
             && PackGui.Get(lit ? "sprites/widget/slider_handle_highlighted" : "sprites/widget/slider_handle") is { } handle)
         {

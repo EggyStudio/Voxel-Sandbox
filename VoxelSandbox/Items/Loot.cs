@@ -1,8 +1,7 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// What breaking a block in survival and killing a mob give, and how long a block takes to break,
-/// as Minecraft's do.
+/// What breaking a block in survival and killing a mob give, and how long a block takes to break.
 /// </summary>
 /// <remarks>
 /// A block takes its hardness times one and a half seconds to break, divided by the speed of the
@@ -20,7 +19,7 @@ public static class Loot
     /// time in twenty and an oak's or a dark oak's an apple one in two hundred, the grasses a seed of
     /// wheat one time in eight, a dead bush up to two sticks, glass and ice nothing, wheat its wheat
     /// and a few seeds, cave vines their glow berries where they bear them, any other block the item that places it, and a block that asks for a pickaxe
-    /// broken without one nothing, as Minecraft's do.
+    /// broken without one nothing.
     /// </summary>
     public static IEnumerable<(Item Item, int Count)> Of(BlockId block, Random random, Item? held = null)
     {
@@ -145,7 +144,7 @@ public static class Loot
         _ => 1,
     };
 
-    /// <summary>The kind of tool a block breaks fastest to, and whether it drops anything broken without one, as Minecraft's stone does not.</summary>
+    /// <summary>The kind of tool a block breaks fastest to, and whether it drops anything broken without one, which stone does not.</summary>
     public static (ToolKind Tool, bool Needed) ToolFor(BlockId block) => Ores.Plain(Blocks.Get(block).Item) switch
     {
         var wood when BlockGroups.Logs.Contains(wood) || BlockGroups.Planks.Contains(wood) => (ToolKind.Axe, false),

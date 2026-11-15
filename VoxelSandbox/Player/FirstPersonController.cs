@@ -12,7 +12,7 @@ public sealed class FirstPersonController
 {
     private const float Gravity = 32;
     private const float FallLimit = 78;
-    // A jump of a block and a quarter under that gravity, which clears one block as Minecraft's does.
+    // A jump of a block and a quarter under that gravity, which clears one block.
     private const float JumpSpeed = 9;
     private const float Walk = 4.3f, Sprint = 5.6f, Sneak = 1.3f, Fly = 10.9f, FlySprint = 21.6f, FlyVertical = 7.5f;
     private const float StandingEyes = 1.62f, SneakingEyes = 1.27f;

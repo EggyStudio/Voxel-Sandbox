@@ -4,8 +4,8 @@ using Engine;
 namespace VoxelSandbox;
 
 /// <summary>
-/// A stack of an item lying in the world, an entity of the engine's ECS beside its <see cref="Body"/>,
-/// which falls, slides to a stop and is picked up, as Minecraft's are.
+/// A stack of an item lying in the world, an entity of the engine's ECS beside its <see
+/// cref="Body"/>, which falls, slides to a stop and is picked up.
 /// </summary>
 /// <remarks>
 /// <para>

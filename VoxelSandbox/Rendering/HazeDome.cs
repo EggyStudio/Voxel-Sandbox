@@ -5,8 +5,8 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// The dome about the eye below the horizon, drawn in the haze's color, so the land's fading edge
-/// meets a sky of the color it fades into, as Minecraft draws what lies below its horizon in its
-/// fog's color, and a band over the horizon fading into the sky above it.
+/// meets a sky of the color it fades into, and a band over the horizon fading into the sky above
+/// it.
 /// </summary>
 /// <remarks>
 /// The dome is drawn through the terrain shader beyond the haze's end, which gives every pixel of it

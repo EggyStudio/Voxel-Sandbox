@@ -40,9 +40,9 @@ var video = new VideoSettings();
 if (!transient) video.Restore(OptionsFile.Default);
 // Escape frees the cursor, as it opens Minecraft's menu, rather than closing the window.
 SetExitKey(Key.Null);
-// F1 hides the HUD and F3 shows the debug overlay, the engine's own, as Minecraft's do, and F2 is the
-// game's own screenshot, which says on the HUD where it went and keeps none in a transient run, so
-// the engine's screenshot on it is turned off.
+// F1 hides the HUD and F3 shows the debug overlay, the engine's own, and F2 is the game's own
+// screenshot, which says on the HUD where it went and keeps none in a transient run, so the
+// engine's screenshot on it is turned off.
 InitAudioDevice();
 SetScreenshotKey(Key.Null);
 

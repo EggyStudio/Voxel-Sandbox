@@ -98,7 +98,7 @@ public static class Surfaces
     public static readonly int Magma = Add("magma", new Color(180, 98, 40), emissive: new Color(255, 90, 30), glow: 1.5f);
     public static readonly int BirchBark = Add("birch bark", new Color(239, 239, 239));
     public static readonly int BirchTop = Add("birch top", new Color(209, 194, 156));
-    // Birch and spruce leaves keep a color of their own whatever the climate, as Minecraft's do.
+    // Birch and spruce leaves keep a color of their own whatever the climate.
     public static readonly int BirchLeaves = Add("birch leaves", new Color(98, 129, 29));
     public static readonly int SpruceBark = Add("spruce bark", new Color(56, 36, 17));
     public static readonly int SpruceTop = Add("spruce top", new Color(113, 83, 48));

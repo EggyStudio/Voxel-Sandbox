@@ -126,7 +126,7 @@ public sealed class BirchTree : IFeature
         for (int i = 1; i <= height; i++) clip.Set(x, y + i, z, BlockId.BirchLog);
         for (int dy = -2; dy <= 1; dy++)
         {
-            // Two wide layers, then a cross, then the single block on top, as Minecraft's birch has.
+            // Two wide layers, then a cross, then the single block on top.
             var radius = dy < 0 ? 2 : 1;
             for (int dz = -radius; dz <= radius; dz++)
                 for (int dx = -radius; dx <= radius; dx++)

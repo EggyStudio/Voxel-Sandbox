@@ -5,9 +5,9 @@ using static Engine.E3D;
 namespace VoxelSandbox;
 
 /// <summary>
-/// The view from inside a block, its side's texture over the whole window and darkened, as
-/// Minecraft draws the inside of a block the eye has gone into, so a camera set down in a wall shows
-/// the wall rather than the faces around it from behind.
+/// The view from inside a block, its side's texture over the whole window and darkened, where the
+/// eye has gone into a block, so a camera set down in a wall shows the wall rather than the faces
+/// around it from behind.
 /// </summary>
 /// <remarks>
 /// It shows while the eye's cell holds a whole opaque block, in every mode but spectator, which flies

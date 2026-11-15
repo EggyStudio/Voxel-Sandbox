@@ -1,8 +1,8 @@
 namespace VoxelSandbox;
 
 /// <summary>
-/// The player's 36 slots of items, the first nine of them the hotbar, as Minecraft's inventory is,
-/// each holding a stack of one item.
+/// The player's 36 slots of items, the first nine of them the hotbar, each holding a stack of one
+/// item.
 /// </summary>
 public sealed class Inventory
 {

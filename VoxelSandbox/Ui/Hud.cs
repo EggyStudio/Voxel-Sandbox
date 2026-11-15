@@ -30,7 +30,8 @@ public static class Hud
     public static void DrawCrosshair()
     {
         int cx = GetScreenWidth() / 2, cy = GetScreenHeight() / 2;
-        // A pack's crosshair is fifteen of the interface's pixels across, centered as Minecraft's is.
+        // A pack's crosshair is fifteen of the interface's pixels across, its middle pixel on the
+        // window's middle.
         if (PackGui.Get("sprites/hud/crosshair") is { } crosshair)
         {
             var s = Gui.Scale;
@@ -65,9 +66,8 @@ public static class Hud
 
     /// <summary>
     /// Ten hearts of health over the hotbar's left half and ten drumsticks of food over its right,
-    /// each worth two points and half drawn for one over the empty place, as Minecraft's are, and
-    /// while breath runs short, bubbles of it over the food, each row as much as
-    /// <paramref name="fade"/> shows of it.
+    /// each worth two points and half drawn for one over the empty place, and while breath runs
+    /// short, bubbles of it over the food, each row as much as <paramref name="fade"/> shows of it.
     /// </summary>
     public static void DrawVitals(Vitals vitals, VitalsFade fade)
     {
@@ -83,7 +83,7 @@ public static class Hud
                 Gui.Sprite(GuiArt.HeartEmpty, x0 + i * 8 * s, y, Faded(fade.Hearts));
                 if (health > 0) Gui.Sprite(health == 2 ? GuiArt.HeartFull : GuiArt.HeartHalf, x0 + i * 8 * s, y, Faded(fade.Hearts));
             }
-            // Food from the right, as Minecraft's is drawn.
+            // Food drawn from the right.
             if (fade.Food > 0)
             {
                 var food = Math.Clamp(vitals.Food - i * 2, 0, 2);
@@ -99,8 +99,8 @@ public static class Hud
     public const float SaidSeconds = 6;
 
     /// <summary>
-    /// A line the game says, as a screenshot's name, at the lower left over a dark band, as
-    /// Minecraft's chat shows it, above the hearts and food where they show, fading over its last second.
+    /// A line the game says, as a screenshot's name, at the lower left over a dark band, above the
+    /// hearts and food where they show, fading over its last second.
     /// </summary>
     public static void DrawSaid(string text, float age, bool vitals)
     {

@@ -103,7 +103,7 @@ public static class PackGui
 
     /// <summary>
     /// A sprite's size in the interface's pixels and its edges, from the <c>gui.scaling</c> of its
-    /// metadata, none for a sprite drawn stretched, as Minecraft's are unless their metadata says.
+    /// metadata, none for a sprite whose metadata gives no scaling, which is drawn stretched.
     /// </summary>
     public static (int Width, int Height, int Left, int Top, int Right, int Bottom) Scaling(JsonElement? meta)
     {

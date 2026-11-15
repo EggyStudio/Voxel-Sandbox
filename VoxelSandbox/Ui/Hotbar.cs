@@ -56,7 +56,7 @@ public sealed class Hotbar(Inventory inventory)
             for (int i = 0; i < Size; i++)
                 if (IsKeyPressed(Key.One + i)) Selected = i;
         if (!wheel) return;
-        // The wheel turned away from the player moves left, as Minecraft's does.
+        // The wheel turned away from the player moves left.
         var turned = GetMouseWheelMove();
         if (turned > 0) Selected = (Selected + Size - 1) % Size;
         else if (turned < 0) Selected = (Selected + 1) % Size;

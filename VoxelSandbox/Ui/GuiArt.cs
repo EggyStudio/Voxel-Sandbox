@@ -26,7 +26,7 @@ public static class GuiArt
 {
     private const int Width = 256, Height = 64;
 
-    // The panel's gray and its edges, a slot's and the hotbar's, as Minecraft's interface has them.
+    // The panel's gray and its edges, a slot's and the hotbar's.
     private static readonly Color Outline = new(0, 0, 0), Light = new(255, 255, 255), Shade = new(85, 85, 85), Face = new(198, 198, 198);
     private static readonly Color SlotFill = new(139, 139, 139), SlotDark = new(55, 55, 55);
     private static readonly Color BarEdge = new(150, 150, 150), BarInner = new(96, 96, 96), BarFill = new(20, 20, 20, 150);

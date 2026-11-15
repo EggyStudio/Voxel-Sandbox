@@ -6,9 +6,9 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// The switcher F3 held with F4 opens, a row of the four modes' icons in boxes under the chosen
-/// mode's name, as Minecraft's is. It opens on the mode played before the one now, or where there
-/// is none on survival from creative and on creative from the others; each press of F4 while F3 is
-/// held steps it to the next mode, and letting F3 go plays the one chosen.
+/// mode's name. It opens on the mode played before the one now, or where there is none on survival
+/// from creative and on creative from the others. Each press of F4 while F3 is held steps it to the
+/// next mode, and letting F3 go plays the one chosen.
 /// </summary>
 public sealed class ModeSwitcher
 {

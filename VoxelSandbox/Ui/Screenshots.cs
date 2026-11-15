@@ -23,7 +23,7 @@ public sealed class Screenshots(string folder)
     /// <summary>The folder the screenshots are written into.</summary>
     public string Folder => folder;
 
-    /// <summary>A screenshot's name for its time and its count within that second, the first with none, as Minecraft's are.</summary>
+    /// <summary>A screenshot's name for its time and its count within that second, the first with none.</summary>
     public static string Name(DateTime time, int count) => $"{time:yyyy-MM-dd_HH.mm.ss}{(count > 1 ? $"_{count}" : "")}.png";
 
     /// <summary>The path the next screenshot at a time is written to, the first count of that second neither on disk nor taken, kept as taken.</summary>

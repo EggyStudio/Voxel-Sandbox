@@ -12,14 +12,14 @@ namespace VoxelSandbox;
 /// texture of the player's resource packs where one has it.
 /// </summary>
 /// <remarks>
-/// The slots are laid out as Minecraft's are, three rows of nine and the hotbar's below them. A left
-/// click takes up a slot's stack, puts the stack held down, joins it to a stack of its item or swaps
-/// it with another, and a right click takes up half a stack or puts down one of the held stack, as
-/// Minecraft's clicks do, in the inventory and in the grid alike. A click on what the grid makes
-/// takes it up, using one item of each of the grid's stacks, onto the held stack where it is of the
-/// same item and has room. What is held and what the grid holds go back into the inventory when the
-/// window closes. The slot under the pointer is lit and its item named in a tooltip, and the stack
-/// held follows the pointer.
+/// The slots are laid out in three rows of nine and the hotbar's below them. A left click takes up
+/// a slot's stack, puts the stack held down, joins it to a stack of its item or swaps it with
+/// another, and a right click takes up half a stack or puts down one of the held stack, in the
+/// inventory and in the grid alike. A click on what the grid makes takes it up, using one item of
+/// each of the grid's stacks, onto the held stack where it is of the same item and has room. What
+/// is held and what the grid holds go back into the inventory when the window closes. The slot
+/// under the pointer is lit and its item named in a tooltip, and the stack held follows the
+/// pointer.
 /// <para>
 /// The quick moves are Minecraft's too, as <see cref="SlotMoves"/> makes them. Shift with a click
 /// moves a slot's stack between the hotbar and the rest of the inventory, into the furnace open, or
@@ -129,14 +129,15 @@ public sealed class InventoryWindow
         Window(slots, inventory, "furnace", (left, top, s, packed) =>
         {
             // The flame burns down from its top as the fuel burns out, and the arrow fills from its
-            // left as the smelting goes on, as Minecraft's furnace shows them.
+            // left as the smelting goes on.
             var burnt = furnace.BurnTotal > 0 ? furnace.Burning / furnace.BurnTotal : 0;
             var lit = PackGui.Get("sprites/container/furnace/lit_progress");
             var burn = PackGui.Get("sprites/container/furnace/burn_progress");
             if (packed && lit is { } flameSprite && burn is { } arrowSprite)
             {
-                // A pack's furnace holds the empty flame and arrow, over which its sprites are drawn
-                // where and as far as Minecraft draws them, the flame a pixel high at least while it burns.
+                // A pack's furnace holds the empty flame and arrow, over which its sprites are
+                // drawn at their places in the window as far as the fuel and the smelting have
+                // gone, the flame a pixel high at least while it burns.
                 var high = furnace.Burning > 0 ? (int)MathF.Ceiling(burnt * 13) + 1 : 0;
                 PackGui.DrawPart(flameSprite, 14, 14, 0, 14 - high, 14, high, left + 56 * s, top + (50 - high) * s, s);
                 PackGui.DrawPart(arrowSprite, 24, 16, 0, 0, (int)MathF.Ceiling(furnace.Cooked / Smelting.Seconds * 24), 16, left + 79 * s, top + 34 * s, s);

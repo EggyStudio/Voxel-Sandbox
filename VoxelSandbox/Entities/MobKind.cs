@@ -405,7 +405,8 @@ public static class MobKinds
             .. Legs(3, 12, 7, -5, leg =>
                 [Mc(leg, -2, 0, -2, 4, 12, 4, skin, uv: (0, 16), mirror: leg.X < 0), Mc(leg, -2, 0, -2, 4, 6, 4, null, grow: 0.5f, uv: (0, 16), picture: 1, tinted: true)]),
         ];
-        // White, light gray, gray, black, brown and pink wool, as often as Minecraft's sheep are born each.
+        // White, light gray, gray, black, brown and pink wool, a sheep born with each as often in a
+        // thousand as its odds.
         Color[] wool = [new(233, 236, 236), new(142, 142, 135), new(63, 68, 72), new(24, 24, 30), new(114, 71, 40), new(237, 141, 172)];
         return new MobKind("sheep", 0.45f, 1.3f, 1.15f, 8, wool, parts) { Id = 2, Odds = [818, 50, 50, 50, 30, 2] };
     }
@@ -415,8 +416,8 @@ public static class MobKinds
         Color feathers = new(240, 240, 238), beak = new(234, 164, 44), wattle = new(198, 34, 36), leg = new(226, 170, 52);
         Vector3 body = new(0, 16, 0), head = new(0, 15, -4), leftWing = new(4, 13, 0), rightWing = new(-4, 13, 0), leftLeg = new(1, 19, 1), rightLeg = new(-2, 19, 1);
         // A leg's cuboid holds a stick a pixel square at its middle and the toes, a plate half a
-        // pixel thick across its foot, as Minecraft's leg is drawn on its cuboid, which a pack's
-        // picture draws, clear around the leg.
+        // pixel thick across its foot, the parts of its cuboid a pack's picture draws, clear around
+        // the leg.
         IEnumerable<ModelBox> Leg(Vector3 at) =>
             [Mc(at, 0, 0, -2, 1, 4.5f, 1, leg), Mc(at, -1, 4.5f, -3, 3, 0.5f, 3, leg), Mc(at, -1, 0, -3, 3, 5, 3, leg, uv: (26, 0), pack: true)];
         ModelPart[] parts =
@@ -458,8 +459,8 @@ public static class MobKinds
         ];
         // A robe of the plains, the desert, the taiga, the snow and the savanna, as Minecraft's villagers wear by biome.
         Color[] robes = [new(118, 86, 58), new(204, 168, 112), new(86, 62, 46), new(214, 218, 228), new(170, 98, 56)];
-        // Drawn at the scale Minecraft's layer gives it, about its feet, so its 34 pixels stand 1.99
-        // blocks as Minecraft's villager does, where at 1 they would stand 2.13.
+        // Drawn at the scale Minecraft's layer gives it, about its feet, so its 34 pixels stand
+        // 1.99 blocks, where at 1 they would stand 2.13.
         return new MobKind("villager", 0.3f, 1.95f, 1.5f, 20, robes, parts) { Id = 4, OpensDoors = true, Scale = 0.9375f, StrideSwing = 0.7f, PictureSize = new(64, 64) };
     }
 

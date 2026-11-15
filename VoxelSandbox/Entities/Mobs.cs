@@ -132,25 +132,24 @@ public partial struct MobMind
 /// the mobs standing in it go with it, and come back with it.
 /// </para>
 /// <para>
-/// Mobs push each other apart and are pushed away by the player, as Minecraft's are, a little each
-/// frame by how far their boxes overlap.
+/// Mobs push each other apart and are pushed away by the player, a little each frame by how far
+/// their boxes overlap.
 /// </para>
 /// <para>
 /// Each mob is an entity of an ECS world, its <see cref="Mob"/> and its <see cref="Body"/>, which
 /// <see cref="MobMind"/> steps in the engine's frame.
 /// </para>
 /// <para>
-/// Hostile mobs spawn as Minecraft's do, in packs of one to four on a solid block in the dark,
-/// where no light from blocks reaches and the sky's light, less its darkening at night, is no
-/// brighter than a roll from 0 to 7. Four tries a second look for a place between 24 and 64 blocks
-/// from the player while fewer than 30 are about, and a hostile mob more than 128 blocks off is
-/// gone at once, and one more than 32 off now and then. They are not kept by a column that unloads,
-/// nor saved.
+/// Hostile mobs spawn in packs of one to four on a solid block in the dark, where no light from
+/// blocks reaches and the sky's light, less its darkening at night, is no brighter than a roll from
+/// 0 to 7. Four tries a second look for a place between 24 and 64 blocks from the player while
+/// fewer than 30 are about, and a hostile mob more than 128 blocks off is gone at once, and one
+/// more than 32 off now and then. They are not kept by a column that unloads, nor saved.
 /// </para>
 /// </remarks>
 public sealed class Mobs
 {
-    // How far the crosshair reaches a mob, as Minecraft's does.
+    // How far the crosshair reaches a mob.
     public const float Reach = 3.5f;
 
     // At most so many hostile mobs about, a try for a pack each quarter second.

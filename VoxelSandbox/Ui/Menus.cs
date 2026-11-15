@@ -25,8 +25,8 @@ public enum Menu
 }
 
 /// <summary>
-/// The menu Escape opens, which holds the world still while it is open, as Minecraft's does when
-/// played alone, and its options of the player's own, drawn as the game's own buttons and sliders.
+/// The menu Escape opens, which holds the world still while it is open, and its options of the
+/// player's own, drawn as the game's own buttons and sliders.
 /// </summary>
 /// <remarks>
 /// The options are the field of view, the mouse's sensitivity, the interface's scale and whether full

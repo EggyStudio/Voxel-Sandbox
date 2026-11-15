@@ -1,38 +1,42 @@
 # Review
 
-Reviewed up to `9f96eae`, the first commit of item 185, a fill or a room refusing a corner past the
-land's edge with its sides counted in long and the biome search stepping 32 blocks apart past 512,
-the whole search 0.59 s against 6.85, pushed at 18:04 on 2026-11-15, its build run 43739070767
-started, the form kept, one comment naming another game to be reworded in the second commit. Before
-it `40bcc10`, the packs list keeping no default of its own, pushed at 17:02 on 2026-11-15, its build
-run 43733183016 green by 18:02, the form kept. Before it `aebc6f3`, the game taking the folder its
-settings and packs' list are kept in and the start's reads and the packs screen's listing tested
-where they fail, with `cc25bcb`, item 184's third and last commit, the screenshot, the switch and
-the recording going on at a file error, with `2e6c699`, its second, the start going on where a file
-cannot be read, the three pushed at 15:33 on 2026-11-15, their build run 43725048754 green at 17:02,
-and `c51b643`, its first, the settings, the worlds' list and the packs read and written through one
-way that tells the player once, pushed at 14:29, its build run 43719245849 green at 15:33, the form
-kept and the messages free of numbers. Before them `7785818`, item 182, every console command that
-takes a number refusing NaN and the infinities with one line, with `c3c402f`, item 183, a save that
-cannot be written leaving the game going with the player told once and the timed save waiting twice
-as long each time, the two pushed at 13:41 on 2026-11-15, their build run 43715162302 green at
-14:29, the form kept and the messages free of numbers. Before them `fc97f0f`, item 181's last
-commit, the scripts' low Reads 23 to 33, with `64dff21`, the furnace's values and the animations'
-steps in doubles (Reads 11 and 16, Reads 14 and 15 left with reasons), and `c180b45`, the flames and
-lava at their light and the pool's sky level (Reads 12 and 13), the three pushed at 12:13 on
-2026-11-15, their build run 43707903533 green at 13:41, the form kept and the messages free of
-numbers. Before them `8fe9094`, item 181's fifth commit, the play's false passes and fails (Reads 17
-to 22 and 34), pushed at 10:56 on 2026-11-15, its build run 43701659233 green at 12:13, the form
-kept and the message free of numbers. Before it `10f81cb`, item 181's fourth commit, a region's
-column whose length is past what the file has left read as its early end before an array is made,
-with `91af9b2`, its third, a kept column whose blocks do not inflate generated again with its
-region's file moved aside, the voxel ray meeting no block along a way that is no number and the look
-and flicker commands refusing one, each test failing first, 433 tests and the play in 183 s, both
-pushed at 09:55 on 2026-11-15 once the run before them had ended, their build run 43696744589 green
-at 10:56; they keep the form and carry the review's files. Before them `f761d7d`, item 181's second
-commit, the world's info taking each value the game cannot hold as a new world's, a body's cells and
-moves bounded, the save writing a float that is no number by its name and the shadows' march taking
-no way that is none, each test failing first, 428 tests and the play in 177 s, pushed at 08:37 on
+Reviewed up to `c250bcd`, the second commit of item 185, the save command saying a failed save, an
+unsaved world called so, a quality or a mode that names no value refused, a recording held to 36,000
+frames and the button keeping its summary, five tests each failing on the commit before, pushed at
+19:04 on 2026-11-15, its build run 43744639031 started, the form kept. Before it `9f96eae`, the
+first commit of item 185, a fill or a room refusing a corner past the land's edge with its sides
+counted in long and the biome search stepping 32 blocks apart past 512, the whole search 0.59 s
+against 6.85, pushed at 18:04 on 2026-11-15, its build run 43739070767 green at 19:04, the form
+kept, one comment naming another game to be reworded in the second commit. Before it `40bcc10`, the
+packs list keeping no default of its own, pushed at 17:02 on 2026-11-15, its build run 43733183016
+green by 18:02, the form kept. Before it `aebc6f3`, the game taking the folder its settings and
+packs' list are kept in and the start's reads and the packs screen's listing tested where they fail,
+with `cc25bcb`, item 184's third and last commit, the screenshot, the switch and the recording going
+on at a file error, with `2e6c699`, its second, the start going on where a file cannot be read, the
+three pushed at 15:33 on 2026-11-15, their build run 43725048754 green at 17:02, and `c51b643`, its
+first, the settings, the worlds' list and the packs read and written through one way that tells the
+player once, pushed at 14:29, its build run 43719245849 green at 15:33, the form kept and the
+messages free of numbers. Before them `7785818`, item 182, every console command that takes a number
+refusing NaN and the infinities with one line, with `c3c402f`, item 183, a save that cannot be
+written leaving the game going with the player told once and the timed save waiting twice as long
+each time, the two pushed at 13:41 on 2026-11-15, their build run 43715162302 green at 14:29, the
+form kept and the messages free of numbers. Before them `fc97f0f`, item 181's last commit, the
+scripts' low Reads 23 to 33, with `64dff21`, the furnace's values and the animations' steps in
+doubles (Reads 11 and 16, Reads 14 and 15 left with reasons), and `c180b45`, the flames and lava at
+their light and the pool's sky level (Reads 12 and 13), the three pushed at 12:13 on 2026-11-15,
+their build run 43707903533 green at 13:41, the form kept and the messages free of numbers. Before
+them `8fe9094`, item 181's fifth commit, the play's false passes and fails (Reads 17 to 22 and 34),
+pushed at 10:56 on 2026-11-15, its build run 43701659233 green at 12:13, the form kept and the
+message free of numbers. Before it `10f81cb`, item 181's fourth commit, a region's column whose
+length is past what the file has left read as its early end before an array is made, with `91af9b2`,
+its third, a kept column whose blocks do not inflate generated again with its region's file moved
+aside, the voxel ray meeting no block along a way that is no number and the look and flicker
+commands refusing one, each test failing first, 433 tests and the play in 183 s, both pushed at
+09:55 on 2026-11-15 once the run before them had ended, their build run 43696744589 green at 10:56;
+they keep the form and carry the review's files. Before them `f761d7d`, item 181's second commit,
+the world's info taking each value the game cannot hold as a new world's, a body's cells and moves
+bounded, the save writing a float that is no number by its name and the shadows' march taking no way
+that is none, each test failing first, 428 tests and the play in 177 s, pushed at 08:37 on
 2026-11-15 once the run before it had ended, its build run 43690794766 green at 09:55; it keeps the
 form and carries the review's files. Before it `a3c9897`, item 181's first commit, the mobs file's
 list of kinds held to what a byte tells apart and its file moved aside, a furnace or a chest listed
@@ -229,6 +233,21 @@ change.
     played without a folder; the quality of the illumination and the world's mode refused when they
     name no defined value; the flicker's frame count bounded at 36,000; and the button's summary put
     back over the button. Open.
+
+186. **Comments that liken a thing to another game's.** About 76 comment lines explain a thing by
+    likeness to another game's, as the button's summary does (N 4.11). Asked on 2026-11-15, one
+    commit of comments alone. The likeness clause goes, and where it stood in for the rule the
+    comment states the rule in the game's own terms. The lines that name the source of a number or a
+    rule stay, and so do the command descriptions a person reads. Each hit is read, no code changes,
+    the count before and after given. Open.
+
+187. **Resource packs as hostile input.** The coder's pick of 2026-11-15, agreed. The packs come
+    from the internet and from whatever lies in the packs folder, and no read has fed the readers
+    malformed content. Read and fuzzed without a device, bounded by a timeout, an archive with a bad
+    directory or a huge entry, a picture of absurd size or cut short, a model or a block state file
+    malformed, deeply nested or vast, an animation's frame times at zero, negative or enormous and
+    its frames past the strip, a connected texture's tile range, and a font's glyph sizes. For each
+    what the reader does, with its place and a scenario, in a Reply before any mend. Open.
 
 ## Verdicts
 
@@ -536,4 +555,22 @@ The comment over the biome's rings says why 32 blocks serve past 512, a far biom
 step of its nearest place, where a patch narrower than the step can lie unseen between two rings.
 
 The strict build is clean, 458 tests pass outside the GPU's lock, and the play passes in 249 s, its
+captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+Item 186, the comments that liken a thing to another game's, reworded. Before, 302 comment lines
+named Minecraft, 83 of them by likeness, 76 on one line and 7 across a line's break, which the
+read's count of 76 missed, with one more in the summary of a block's facing, its torch. After, 218
+name it and none by likeness. In each the likeness clause is gone, and where it stood for the rule
+the comment says the rule, the button lit with its label yellow so the one a click takes stands
+out, the crosshair's middle pixel on the window's middle, the wool's odds in a thousand, a sprite
+whose metadata gives no scaling drawn stretched, the furnace's sprites drawn as far as the fuel and
+the smelting have gone, a block on a wall facing away from it, and the packs read again as F3 with
+T asks. The player's box keeps its 0.6 by 1.8 without the likeness, as the item's line takes the
+form. The 111 lines left that say "as Minecraft's model definitions give it", "as Minecraft's 32
+ticks" and the like name where a rule or a number comes from and stay, and so do the command
+descriptions. 44 files change, in comments alone, 167 lines in and 173 out, each block a clause
+left short wrapped again to 100 columns, and the mode switcher's summary has a sentence's end where
+it had a semicolon.
+
+The strict build is clean, 458 tests pass outside the GPU's lock, and the play passes in 208 s, its
 captures within 8 levels of the last play's but sky2's, which moves as much between plays.

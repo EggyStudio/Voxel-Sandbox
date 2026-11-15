@@ -2,7 +2,7 @@ using Engine;
 
 namespace VoxelSandbox;
 
-/// <summary>The kinds of tool, each breaking its own blocks faster, as Minecraft's are.</summary>
+/// <summary>The kinds of tool, each breaking its own blocks faster.</summary>
 public enum ToolKind
 {
     None,
@@ -46,7 +46,7 @@ public sealed record Item(string Key, string Name, Color Color, BlockId? Block)
     /// <summary>The food points eating it gives, or 0 for an item that is not eaten.</summary>
     public int Food { get; init; }
 
-    /// <summary>The saturation eating it gives, which is spent before the food points are, as Minecraft's is.</summary>
+    /// <summary>The saturation eating it gives, which is spent before the food points are.</summary>
     public float Saturation { get; init; }
 }
 
@@ -95,8 +95,8 @@ public static class Items
             // A block placed in more than one way is one item, the block held to place it, and the
             // water that flows from a source is none.
             if (block.Id == BlockId.Air || block.Item != block.Id) continue;
-            // The crop's item plants it, as Minecraft's seeds do, its wheat being an item of its own,
-            // and glow berries, eaten as the source's are, hang cave vines.
+            // The crop's item plants it, its wheat being an item of its own, and glow berries,
+            // eaten as the source's are, hang cave vines.
             var (name, food, saturation) = block.Id switch
             {
                 BlockId.Wheat => ("Wheat Seeds", 0, 0f),

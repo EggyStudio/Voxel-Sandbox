@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace VoxelSandbox;
 
-/// <summary>What an explosion breaks and the harm it does, as Minecraft's explosions are worked out.</summary>
+/// <summary>What an explosion breaks and the harm it does.</summary>
 /// <remarks>
 /// Rays go out from the middle toward the 1,352 points on the faces of a cube of 16 a side, each
 /// with a strength of the power times 0.7 to 1.3, and every step of 0.3 blocks along one takes 0.225

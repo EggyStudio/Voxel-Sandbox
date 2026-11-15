@@ -70,7 +70,7 @@ public partial struct MobHostile
 public sealed partial class Mob
 {
     // A strike or a shot every second or two, and a creeper's fuse of a second and a half, which it
-    // gives up where the player gets seven blocks away, as Minecraft's do.
+    // gives up where the player gets seven blocks away.
     private const float StrikeEvery = 1, ShotEvery = 2, FuseTime = 1.5f, FuseReach = 3, FuseLeave = 7, ArrowSpeed = 30;
 
     // Its hunt as its entity holds it, which a hostile mob alone has.

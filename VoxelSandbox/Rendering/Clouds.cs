@@ -5,9 +5,8 @@ using static Engine.E3D;
 namespace VoxelSandbox;
 
 /// <summary>
-/// A layer of blocky clouds drifting east over the world, as Minecraft's are, in cells of 12 by 12
-/// blocks and 4 high at 120 blocks up, each a box whose faces against a cloud beside it are left
-/// out.
+/// A layer of blocky clouds drifting east over the world, in cells of 12 by 12 blocks and 4 high at
+/// 120 blocks up, each a box whose faces against a cloud beside it are left out.
 /// </summary>
 /// <remarks>
 /// <para>

@@ -1,6 +1,6 @@
 namespace VoxelSandbox;
 
-/// <summary>How the player plays, as Minecraft's modes are, in the order its switcher steps through them.</summary>
+/// <summary>How the player plays, in the order the mode switcher steps through them.</summary>
 public enum GameMode
 {
     /// <summary>Every block to place without end, blocks broken at once and dropping nothing, and flight, for building a test of the light.</summary>

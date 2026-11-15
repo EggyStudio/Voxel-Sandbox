@@ -110,8 +110,8 @@ public static class SlotMoves
 
     /// <summary>
     /// What a drag over slots puts in each and leaves held, as <see cref="Spread"/> puts it, read
-    /// while the drag goes on, so the slots it passes show their shares and the pointer what is left
-    /// before the button is let go, as Minecraft shows them.
+    /// while the drag goes on, so the slots it passes show their shares and the pointer what is
+    /// left before the button is let go.
     /// </summary>
     public static (List<(SlotAt At, ItemStack Stack)> Put, ItemStack? Left) Shares(ItemStack held, IReadOnlyList<SlotAt> over, bool one)
     {

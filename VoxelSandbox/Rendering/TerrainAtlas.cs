@@ -352,7 +352,7 @@ public sealed class TerrainAtlas
     /// <summary>
     /// Whether a block hides the faces beside it and the cells behind it from the eye, which an
     /// opaque block does but for one cut out where a pack's texture is clear, which shows what lies
-    /// behind it and so keeps its own faces against its kind, as Minecraft draws its leaves.
+    /// behind it and so keeps its own faces against its kind.
     /// </summary>
     public bool Hides(BlockId block) => Blocks.IsOpaque(block) && !_cutOut[(int)block];
 

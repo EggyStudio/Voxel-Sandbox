@@ -197,8 +197,8 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>
-    /// Reads the packs on again from their files, as Minecraft does with F3 and T, and draws the
-    /// terrain, the icons and the interface with them, the sections shaded again with their tiles.
+    /// Reads the packs on again from their files, as F3 with T asks, and draws the terrain, the
+    /// icons and the interface with them, the sections shaded again with their tiles.
     /// </summary>
     public void ReloadPacks()
     {
@@ -424,8 +424,8 @@ public sealed class VoxelGame : IDisposable
     // Says a line on the HUD for a few seconds, from the next frame.
     private void Say(string text) => (_said, _saidFresh) = ((text, 0), true);
 
-    // F2 writes the frame as a screenshot, as Minecraft's does, but in a transient run, which
-    // writes nowhere, and says so on the HUD.
+    // F2 writes the frame as a screenshot, but in a transient run, which writes nowhere, and says
+    // so on the HUD.
     /// <summary>Takes a screenshot as F2 does, saying on the HUD where it went, or that none is kept.</summary>
     public void Screenshot()
     {
@@ -769,8 +769,7 @@ public sealed class VoxelGame : IDisposable
         // A long frame, as when the window is dragged, is taken as a short one, so the player does
         // not fall through the time it took.
         var seconds = MathF.Min(GetFrameTime(), 0.05f);
-        // The menu holds the world still, as Minecraft's does when played alone, the frame taking
-        // no time, as the game's first does.
+        // The menu holds the world still, the frame taking no time, as the game's first does.
         if (Menus.Open != Menu.None) seconds = 0;
         _seconds = seconds;
         _sinceSave += seconds;
@@ -1001,7 +1000,7 @@ public sealed class VoxelGame : IDisposable
     /// <summary>
     /// Sets off an explosion of a power at a place, as a creeper's of 3, which breaks the blocks
     /// its rays reach, drops a third of them in survival, and harms and throws the player and the
-    /// mobs near it by its impact, as Minecraft's explosions do.
+    /// mobs near it by its impact.
     /// </summary>
     public void Explode(Vector3 at, float power, string cause)
     {
@@ -1096,7 +1095,7 @@ public sealed class VoxelGame : IDisposable
         // chosen. F3 let go with no other key pressed while it was held is the engine's, which shows
         // or hides its debug overlay, as Minecraft's debug screen opens when F3 is let go alone.
         if (IsKeyDown(Key.F3) && IsKeyPressed(Key.F4)) Switcher.Step(Mode, PreviousMode);
-        // F3 held with T reads the resource packs again, as Minecraft's does.
+        // F3 held with T reads the resource packs again.
         if (IsKeyDown(Key.F3) && IsKeyPressed(Key.T)) ReloadPacks();
         if (IsKeyReleased(Key.F3) && Switcher.Release() is { } chosen) Mode = chosen;
         if (IsKeyPressed(Key.F5)) Player.View = ThirdPerson.Next(Player.View);
@@ -1183,9 +1182,9 @@ public sealed class VoxelGame : IDisposable
     }
 
     // In survival a click hits a mob, and holding the button on a block breaks it over the time its
-    // hardness takes, from the start again on another block, the progress kept while the aim is lost
-    // for a moment, as over a jump toward a block above reach, and waits a quarter second before the
-    // next, as Minecraft's does.
+    // hardness takes, from the start again on another block, the progress kept while the aim is
+    // lost for a moment, as over a jump toward a block above reach, and waits a quarter second
+    // before the next.
     private void Dig(float seconds)
     {
         if (!IsMouseButtonDown(MouseButton.Left))
@@ -1270,9 +1269,9 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>
-    /// Hits the mob the crosshair rests on with the item held, a hand's one point for an item that is
-    /// not a weapon or a tool, unless it is still red from the last hit, wearing a sword by one use
-    /// and another tool by two, as Minecraft's do.
+    /// Hits the mob the crosshair rests on with the item held, a hand's one point for an item that
+    /// is not a weapon or a tool, unless it is still red from the last hit, wearing a sword by one
+    /// use and another tool by two.
     /// </summary>
     public bool Attack()
     {
@@ -1295,10 +1294,10 @@ public sealed class VoxelGame : IDisposable
     private int _fellingAxe;
 
     /// <summary>
-    /// Breaks the block the crosshair rests on at once, unless it cannot be broken or the mode breaks
-    /// none, as adventure and spectator do, and in survival drops what it leaves to the item held and
-    /// wears a tool held by a use, a sword by two, as Minecraft's do for a block that does not break
-    /// at once.
+    /// Breaks the block the crosshair rests on at once, unless it cannot be broken or the mode
+    /// breaks none, as adventure and spectator do, and in survival drops what it leaves to the item
+    /// held and wears a tool held by a use, a sword by two, for a block that does not break at
+    /// once.
     /// </summary>
     public bool Break()
     {
@@ -1479,9 +1478,9 @@ public sealed class VoxelGame : IDisposable
         }
         EndMode3D();
 
-        // From inside a block that blocks the view its inside covers the window, as Minecraft's does.
+        // From inside a block that blocks the view its inside covers the window.
         if (InWall.Block(World, Player.Eye, Mode) is { } wall) InWall.Draw(wall, Player.Heading, float.RadiansToDegrees(Player.Pitch));
-        // Under water the view is tinted blue, as Minecraft's is.
+        // Under water the view is tinted blue.
         if (Player.EyeInWater) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(20, 50, 140, 110));
         // A hit reddens the view for the half second no other harms.
         if (Mode.Lives() && Vitals.Hurt > 0) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(200, 0, 0, (byte)(90 * Vitals.Hurt / 0.5f)));
