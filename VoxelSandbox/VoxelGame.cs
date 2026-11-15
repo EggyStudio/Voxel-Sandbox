@@ -511,6 +511,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>Whether the window open is a crafting table's, which a right click on one opens.</summary>
     public bool AtTable { get; private set; }
 
+    // The place of the crafting table whose window is open, which shuts as the table goes.
+    private (int X, int Y, int Z)? _table;
+
     /// <summary>The place of the furnace whose window is open, which a right click on one opens, or null.</summary>
     public (int X, int Y, int Z)? AtFurnace { get; private set; }
 
@@ -754,6 +757,16 @@ public sealed class VoxelGame : IDisposable
     /// <summary>How many times the origin has moved since the game began.</summary>
     public int Recentered { get; private set; }
 
+    /// <summary>Why the world keeps no save, transient or played unsaved since its folder could not be made, or null where it keeps one.</summary>
+    public string? NoSave => Save is not null ? null : _transient ? "the world is transient and is not saved" : "the world is played unsaved, since its folder could not be made";
+
+    /// <summary>Saves the world as the menu's Save the World asks, or says on the HUD why it keeps no save.</summary>
+    public void SaveAsked()
+    {
+        if (NoSave is { } why) Say(char.ToUpperInvariant(why[0]) + why[1..]);
+        else SaveWorld();
+    }
+
     /// <summary>Keeps every loaded column the player changed and the player's place, and writes them, unless the world is transient.</summary>
     public void SaveWorld()
     {
@@ -897,6 +910,7 @@ public sealed class VoxelGame : IDisposable
             if (AtFurnace == (x, y, z)) CloseInventory();
             Drops.Spawn(stack.Item, stack.Count, LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
+        if (_table is var (tx, ty, tz) && World.GetBlock(tx, ty, tz) != BlockId.CraftingTable) CloseInventory();
         foreach (var ((x, y, z), stack) in Chests.Update(World))
         {
             if (AtChest == (x, y, z)) CloseInventory();
@@ -1133,10 +1147,14 @@ public sealed class VoxelGame : IDisposable
         }
     }
 
+    /// <summary>The keys a test presses for the toggles in place of the engine's, which give a test game none.</summary>
+    public Func<Key, bool>? Pressed { get; set; }
+
     private void Toggles()
     {
+        bool Press(Key key) => Pressed?.Invoke(key) ?? IsKeyPressed(key);
         // Escape shuts the window open, goes back a menu, or opens the menu over the game.
-        if (IsKeyPressed(Key.Escape))
+        if (Press(Key.Escape))
         {
             if (InventoryOpen)
             {
@@ -1147,7 +1165,8 @@ public sealed class VoxelGame : IDisposable
             else if (Menus.Open != Menu.None) Menus.Back();
             else Menus.Open = Menu.Pause;
         }
-        if (IsKeyPressed(Key.E) && Mode.Touches() && Menus.Open == Menu.None)
+        // A dead player's inventory has spilled, so the death's screen takes E as a menu does.
+        if (Press(Key.E) && Mode.Touches() && Menus.Open == Menu.None && !(Mode.Lives() && Vitals.Dead))
         {
             if (InventoryOpen) CloseInventory();
             else InventoryOpen = true;
@@ -1156,14 +1175,17 @@ public sealed class VoxelGame : IDisposable
         // F3 held with F4 opens the mode switcher and steps it, and letting F3 go plays the mode
         // chosen. F3 let go with no other key pressed while it was held is the engine's, which shows
         // or hides its debug overlay, as Minecraft's debug screen opens when F3 is let go alone.
-        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.F4)) Switcher.Step(Mode, PreviousMode);
+        if (IsKeyDown(Key.F3) && Press(Key.F4)) Switcher.Step(Mode, PreviousMode);
         // F3 held with T reads the resource packs again.
-        if (IsKeyDown(Key.F3) && IsKeyPressed(Key.T)) ReloadHeld();
+        if (IsKeyDown(Key.F3) && Press(Key.T)) ReloadHeld();
         if (IsKeyReleased(Key.F3) && Switcher.Release() is { } chosen) Mode = chosen;
-        if (IsKeyPressed(Key.F5)) Player.View = ThirdPerson.Next(Player.View);
-        if (IsKeyPressed(Key.F2)) Screenshot();
+        // The view's key and the light's act on the world in view, so a screen over it holds them as
+        // it holds the inventory's.
+        var screen = InventoryOpen || Menus.Open != Menu.None;
+        if (!screen && Press(Key.F5)) Player.View = ThirdPerson.Next(Player.View);
+        if (Press(Key.F2)) Screenshot();
         if (_said is var (said, age)) _said = age + GetFrameTime() < Hud.SaidSeconds ? (said, age + GetFrameTime()) : null;
-        if (IsKeyPressed(Key.G))
+        if (!screen && Press(Key.G))
         {
             Light.NextQuality();
             KeepOptions();
@@ -1187,7 +1209,7 @@ public sealed class VoxelGame : IDisposable
     // not fit thrown.
     private void CloseInventory()
     {
-        (InventoryOpen, AtTable, AtFurnace, AtChest) = (false, false, null, null);
+        (InventoryOpen, AtTable, AtFurnace, AtChest, _table) = (false, false, null, null, null);
         foreach (var left in InventoryWindow.Close(Inventory))
             Drops.Spawn(left.Item, left.Count, Player.Eye - new Vector3(0, 0.3f, 0), Vector3.Normalize(Player.Look) * 3, ItemDrops.ThrownDelay, left.Wear);
     }
@@ -1295,7 +1317,7 @@ public sealed class VoxelGame : IDisposable
         }
         if (Target is { } table && World.GetBlock(table.X, table.Y, table.Z) == BlockId.CraftingTable)
         {
-            (InventoryOpen, AtTable) = (true, true);
+            (InventoryOpen, AtTable, _table) = (true, true, (table.X, table.Y, table.Z));
             Capture(false);
             return BlockId.CraftingTable;
         }

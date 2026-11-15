@@ -309,4 +309,25 @@ public sealed class HostilePackTests : IDisposable
         using var read = new ResourcePacks([Zip("fine", ("optifine/cem/pig.jem", Model("[64,32]", "[0,-13,-2]", 2)))]);
         Assert.NotNull(PackModels.Read(read, pig));
     }
+
+    [Fact]
+    public void A_Pack_On_The_List_That_Is_Not_There_Is_Named()
+    {
+        using var headless = new HeadlessGame(packs: [Path.Combine(_folder, "gone.zip")]);
+
+        Assert.Empty(headless.Game.Packs.Names);
+        Assert.Contains("The pack gone.zip could not be read", headless.Game.FileFaults);
+    }
+
+    [Fact]
+    public void A_Picture_Refused_By_Its_Size_Gives_Way_To_The_Next_Packs_In_The_Same_Call()
+    {
+        var first = Zip("vast", ("textures/block/stone.png", WidePng(4097, 1)), ("textures/block/dirt.png", WidePng(4097, 1)));
+        var second = Zip("fine", ("textures/block/stone.png", WidePng(16, 16)), ("textures/block/dirt.png", WidePng(16, 16)));
+        using var packs = new ResourcePacks([first, second]);
+
+        Assert.Equal(16, packs.Texture("block/stone")?.Width);
+        Assert.Equal(16, packs.ImageAt("textures/block/dirt.png")?.Width);
+        Assert.Equal(2, packs.Faults.Count(f => f.Name == "vast"));
+    }
 }

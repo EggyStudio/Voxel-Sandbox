@@ -128,7 +128,7 @@ public sealed class Menus
                 (_saves, _worldScroll) = (game.Transient ? [] : game.Guarded("The saved worlds could not be listed", () => WorldSave.Saved(), []), 0);
                 Open = Menu.World;
             }
-            if (Gui.Button("Save the World", Row(3))) game.SaveWorld();
+            if (Gui.Button("Save the World", Row(3))) game.SaveAsked();
             if (Gui.Button("Save and Quit", Row(4)))
             {
                 game.SaveWorld();
@@ -314,7 +314,7 @@ public sealed class Menus
         Title("Resource Packs", top);
 
         List<string> rows = [.. _chosen, .. _available.Where(a => !_chosen.Contains(a))];
-        _packScroll = Math.Clamp(_packScroll - Math.Sign(GetMouseWheelMove()), 0, Math.Max(0, rows.Count - PackRows));
+        _packScroll = Scrolled(_packScroll, GetMouseWheelMove(), rows.Count, PackRows);
         for (int row = 0; row < PackRows && row + _packScroll < rows.Count; row++)
         {
             var entry = rows[row + _packScroll];
@@ -351,6 +351,12 @@ public sealed class Menus
         }
     }
 
+    /// <summary>
+    /// The rows a list is scrolled past after the wheel's move, a row for each move of either way
+    /// however small, as a touchpad gives it, held so the list's last rows stay shown.
+    /// </summary>
+    public static int Scrolled(int past, float wheel, int rows, int shown) => Math.Clamp(past - Math.Sign(wheel), 0, Math.Max(0, rows - shown));
+
     // A line cut short with dots where it is wider than a width of the screen.
     private static string Fitted(string text, int width)
     {
@@ -370,7 +376,7 @@ public sealed class Menus
         var gray = new Color(160, 160, 160, 255);
         if (game.Transient) Gui.Centered("A transient run keeps no saves", Wide(0), gray);
         else if (_saves.Count == 0) Gui.Centered("No world is saved yet", Wide(0), gray);
-        _worldScroll = Math.Clamp(_worldScroll - (int)GetMouseWheelMove(), 0, Math.Max(0, _saves.Count - Shown));
+        _worldScroll = Scrolled(_worldScroll, GetMouseWheelMove(), _saves.Count, Shown);
         for (int i = 0; i < Math.Min(Shown, _saves.Count - _worldScroll); i++)
         {
             var (name, kind, seed) = _saves[_worldScroll + i];

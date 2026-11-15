@@ -252,9 +252,9 @@ public static class GameCommands
     internal static string SaveNow()
     {
         if (Game is not { } game) return "no world is loaded";
-        if (game.Save is null) return game.Transient ? "the world is transient and is not saved" : "the world is played unsaved, since its folder could not be made";
+        if (game.NoSave is { } why) return why;
         game.SaveWorld();
-        return game.SaveFault is { } fault ? $"the world could not be saved, {fault}" : $"saved to {game.Save.Folder}";
+        return game.SaveFault is { } fault ? $"the world could not be saved, {fault}" : $"saved to {game.Save!.Folder}";
     }
 
     [Command("voxel.gpu", "Says whether the GPU reads the caves' noises for the columns to generate and how many columns it has read, turns it on or off for the session, or compares its readings with the CPU's over a square of columns about the player: voxel.gpu [on|off|verify] [columns across]")]

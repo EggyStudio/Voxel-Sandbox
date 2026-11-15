@@ -38,9 +38,9 @@ public sealed class ResourcePacks : IDisposable
     public static readonly ResourcePacks None = new([]);
 
     /// <summary>
-    /// Opens the packs at the paths given, the first over the rest, leaving out a path that is neither
-    /// a zip nor a folder, and one that cannot be read, a zip that is no zip or a folder the account
-    /// cannot read, which <see cref="Unread"/> names.
+    /// Opens the packs at the paths given, the first over the rest, leaving out a path that is not
+    /// there or is neither a zip nor a folder, and one that cannot be read, a zip that is no zip or a
+    /// folder the account cannot read, each of which <see cref="Unread"/> names.
     /// </summary>
     public ResourcePacks(IEnumerable<string> paths)
     {
@@ -88,6 +88,7 @@ public sealed class ResourcePacks : IDisposable
                     files[entry.FullName[Root.Length..]] = entry.FullName;
             _packs.Add((Path.GetFileNameWithoutExtension(path), zip, files));
         }
+        else Unread.Add((Path.GetFileName(Path.TrimEndingDirectorySeparator(path)), File.Exists(path) ? "it is neither a zip nor a folder" : "it is not there"));
     }
 
     /// <summary>The packs' names, the first over the rest.</summary>
@@ -104,19 +105,33 @@ public sealed class ResourcePacks : IDisposable
         _packs.SelectMany(p => p.Files.Keys).Where(path => path.StartsWith(folder, StringComparison.Ordinal)).Distinct().Order(StringComparer.Ordinal);
 
     /// <summary>A picture by its path under <c>assets/minecraft</c>, decoded to RGBA, from the first pack that has it, or null.</summary>
-    public Image? ImageAt(string path) => First(path) is (int pack, byte[] png) ? Decoded(pack, path, png) : null;
+    public Image? ImageAt(string path) => FirstPicture(path) is (_, byte[] png) ? Decoded(png) : null;
 
-    // A pack's picture decoded to RGBA, or null where its header gives a size past the bounds, which
-    // marks it as a file the pack lacks, or where it is no PNG or does not decode.
-    private Image? Decoded(int pack, string path, byte[] png)
+    // A picture's bytes from the first pack holding one it can read and whose header gives a size
+    // within the bounds, and that pack, so a picture refused by its size gives way to the next
+    // pack's in the same call.
+    private (int Pack, byte[] Png)? FirstPicture(string path)
+    {
+        while (First(path) is (int pack, byte[] png))
+            if (Sized(pack, path, png)) return (pack, png);
+        return null;
+    }
+
+    // Whether a picture's PNG header gives a size within the bounds, a picture past them marked as a
+    // file its pack lacks. A file that is no PNG is left to the decoder, which takes it as none.
+    private bool Sized(int pack, string path, byte[] png)
+    {
+        if (png.Length < 24 || !png.AsSpan(1, 3).SequenceEqual("PNG"u8)) return true;
+        long width = BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(16)), height = BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(20));
+        if (width <= MostWidth && width * height <= MostPixels) return true;
+        Failed(pack, path, $"it is {width} by {height} pixels, past the {MostWidth} wide and {MostPixels} pixels a picture is taken within");
+        return false;
+    }
+
+    // A pack's picture decoded to RGBA, or null where it is no PNG or does not decode.
+    private static Image? Decoded(byte[] png)
     {
         if (png.Length < 24 || !png.AsSpan(1, 3).SequenceEqual("PNG"u8)) return null;
-        long width = BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(16)), height = BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(20));
-        if (width > MostWidth || width * height > MostPixels)
-        {
-            Failed(pack, path, $"it is {width} by {height} pixels, past the {MostWidth} wide and {MostPixels} pixels a picture is taken within");
-            return null;
-        }
         var image = LoadImageFromMemory(".png", png);
         return image.Data is null || image.Width <= 0 ? null : image;
     }
@@ -193,7 +208,7 @@ public sealed class ResourcePacks : IDisposable
     public (Image Image, JsonElement? Meta)? Picture(string name)
     {
         var path = $"textures/{name}.png";
-        if (First(path) is not (int pack, byte[] png) || Decoded(pack, path, png) is not { } image) return null;
+        if (FirstPicture(path) is not (int pack, byte[] png) || Decoded(png) is not { } image) return null;
         var meta = Meta(Read(pack, path + ".mcmeta"));
         if (meta is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return (image, meta);
         // A strip of frames one above another, each as tall as it is wide unless the metadata says
@@ -215,9 +230,9 @@ public sealed class ResourcePacks : IDisposable
     public (Image[] Frames, int[] Ticks)? Animation(string name)
     {
         var path = $"textures/{name}.png";
-        if (First(path) is not (int pack, byte[] png)) return null;
+        if (FirstPicture(path) is not (int pack, byte[] png)) return null;
         if (Meta(Read(pack, path + ".mcmeta")) is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return null;
-        if (Decoded(pack, path, png) is not { } image) return null;
+        if (Decoded(png) is not { } image) return null;
         int width = Number(animation, "width") ?? image.Width, height = Number(animation, "height") ?? width;
         if (width > image.Width || height > image.Height) return null;
         var count = image.Height / height;
