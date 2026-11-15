@@ -199,6 +199,25 @@ public sealed class SaveTests : IDisposable
     }
 
     [Fact]
+    public void A_World_Whose_Info_The_Account_Cannot_Read_Is_Left_Out_Of_The_Worlds_Listed()
+    {
+        // A file's mode the account cannot read is set on Linux and macOS alone.
+        if (OperatingSystem.IsWindows()) return;
+        var (unread, read) = (Path.Combine(_folder, "unread"), Path.Combine(_folder, "read"));
+        new WorldSave(read).WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]));
+        new WorldSave(unread).WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]));
+        File.SetUnixFileMode(Path.Combine(unread, "world.json"), UnixFileMode.None);
+        try
+        {
+            Assert.Equal(["read"], WorldSave.Saved(_folder).Select(w => w.Name));
+        }
+        finally
+        {
+            File.SetUnixFileMode(Path.Combine(unread, "world.json"), UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        }
+    }
+
+    [Fact]
     public void A_Furnace_Or_A_Chest_Listed_With_No_Slots_Stands_Empty()
     {
         new WorldSave(_folder);

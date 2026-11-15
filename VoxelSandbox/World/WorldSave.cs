@@ -293,14 +293,15 @@ public sealed class WorldSave
     }
 
     /// <summary>
-    /// The worlds saved under <see cref="Root"/>, the one played last first, each by its folder's name
-    /// with its kind and seed, a folder whose info cannot be read left out.
+    /// The worlds saved under <see cref="Root"/>, or under the folder given, the one played last first,
+    /// each by its folder's name with its kind and seed, a folder whose info cannot be read left out.
     /// </summary>
-    public static IReadOnlyList<(string Name, string Kind, int Seed)> Saved()
+    public static IReadOnlyList<(string Name, string Kind, int Seed)> Saved(string? root = null)
     {
-        if (!Directory.Exists(Root)) return [];
+        root ??= Root;
+        if (!Directory.Exists(root)) return [];
         var found = new List<(string Name, string Kind, int Seed, DateTime Played)>();
-        foreach (var folder in Directory.GetDirectories(Root))
+        foreach (var folder in Directory.GetDirectories(root))
         {
             var path = Path.Combine(folder, "world.json");
             if (!File.Exists(path)) continue;
@@ -309,7 +310,7 @@ public sealed class WorldSave
                 if (JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.WorldInfo) is { } info)
                     found.Add((Path.GetFileName(folder), Bounded(info).Kind, info.Seed, File.GetLastWriteTimeUtc(path)));
             }
-            catch (Exception ex) when (ex is IOException or JsonException)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
             {
                 // A world whose info cannot be read is left out, as opening it would begin it anew.
             }

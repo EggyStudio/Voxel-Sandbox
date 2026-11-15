@@ -356,6 +356,60 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void Leaving_A_Menu_Whose_Settings_Cannot_Be_Kept_Draws_On_And_Tells_The_Player_Once()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A folder in the place of the copy the options file is written to before it takes its name.
+            Directory.CreateDirectory(Path.Combine(folder, "options.txt.new"));
+            using var headless = new HeadlessGame();
+            var game = headless.Game;
+            game.SettingsFile = new OptionsFile(folder);
+
+            game.Menus.Open = Menu.Options;
+            headless.Step(2);
+            game.Menus.Open = Menu.None;
+            headless.Step(3);
+            var told = game.Said;
+            game.Menus.Open = Menu.Options;
+            headless.Step(2);
+            game.Menus.Open = Menu.None;
+            headless.Step(3);
+
+            Assert.StartsWith("The settings could not be kept", told?.Text);
+            Assert.True(game.Said?.Age > told?.Age, "leaving the menu again told the player again");
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Pack_That_Cannot_Be_Read_Is_Left_Out_And_Said()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            Directory.CreateDirectory(folder);
+            var cut = Path.Combine(folder, "cut.zip");
+            File.WriteAllText(cut, "no zip");
+            using var headless = new HeadlessGame();
+
+            headless.Game.ChoosePacks([cut]);
+            headless.Step(2);
+
+            Assert.StartsWith("The pack cut.zip could not be read", headless.Game.Said?.Text);
+            Assert.False(headless.Game.Packs.Any);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Game_That_Saves_Leaves_The_Players_Settings_Alone()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

@@ -125,7 +125,7 @@ public sealed class Menus
             if (Gui.Button("Options...", Row(1))) Open = Menu.Options;
             if (Gui.Button("World...", Row(2)))
             {
-                (_saves, _worldScroll) = (game.Transient ? [] : WorldSave.Saved(), 0);
+                (_saves, _worldScroll) = (game.Transient ? [] : game.Guarded("The saved worlds could not be listed", () => WorldSave.Saved(), []), 0);
                 Open = Menu.World;
             }
             if (Gui.Button("Save the World", Row(3))) game.SaveWorld();
@@ -300,12 +300,12 @@ public sealed class Menus
     {
         var defaults = game.Defaults;
         if (_chosen is null || !ReferenceEquals(_seen, game.PackEntries))
-            (_chosen, _seen, _available) = ([.. game.PackEntries], game.PackEntries, PackList.Default.Available());
+            (_chosen, _seen, _available) = ([.. game.PackEntries], game.PackEntries, game.Guarded("The packs' folder could not be read", PackList.Default.Available, []));
         if (_fetchSeen != defaults.State)
         {
             _fetchSeen = defaults.State;
             _missing = defaults.State != FetchState.Fetching && defaults.Packs.Count > 0 && defaults.Missing(PackList.Default);
-            _available = PackList.Default.Available();
+            _available = game.Guarded("The packs' folder could not be read", PackList.Default.Available, []);
         }
         var top = GetScreenHeight() / 8;
         var width = Math.Min(320 * s, GetScreenWidth() - 40 * s);

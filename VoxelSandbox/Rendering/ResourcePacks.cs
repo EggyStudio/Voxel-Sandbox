@@ -27,29 +27,47 @@ public sealed class ResourcePacks : IDisposable
     /// <summary>No pack, so every texture is the game's own color.</summary>
     public static readonly ResourcePacks None = new([]);
 
-    /// <summary>Opens the packs at the paths given, the first over the rest, leaving out a path that is neither a zip nor a folder.</summary>
+    /// <summary>
+    /// Opens the packs at the paths given, the first over the rest, leaving out a path that is neither
+    /// a zip nor a folder, and one that cannot be read, a zip that is no zip or a folder the account
+    /// cannot read, which <see cref="Unread"/> names.
+    /// </summary>
     public ResourcePacks(IEnumerable<string> paths)
     {
         foreach (var path in paths)
+            try
+            {
+                Open(path);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+            {
+                Unread.Add((Path.GetFileName(Path.TrimEndingDirectorySeparator(path)), ex.Message));
+            }
+    }
+
+    /// <summary>The packs that could not be read, by name, each with the reason.</summary>
+    public List<(string Name, string Reason)> Unread { get; } = [];
+
+    // Opens one pack, a folder or a zip, into the list.
+    private void Open(string path)
+    {
+        if (Directory.Exists(path))
         {
-            if (Directory.Exists(path))
-            {
-                var files = new Dictionary<string, string>(StringComparer.Ordinal);
-                var root = Path.Combine(path, "assets", "minecraft");
-                if (Directory.Exists(root))
-                    foreach (var file in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
-                        files[Path.GetRelativePath(root, file).Replace('\\', '/')] = file;
-                _packs.Add((Path.GetFileName(Path.TrimEndingDirectorySeparator(path)), null, files));
-            }
-            else if (File.Exists(path) && path.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-            {
-                var zip = ZipFile.OpenRead(path);
-                var files = new Dictionary<string, string>(StringComparer.Ordinal);
-                foreach (var entry in zip.Entries)
-                    if (entry.FullName.StartsWith(Root, StringComparison.Ordinal) && entry.Length > 0)
-                        files[entry.FullName[Root.Length..]] = entry.FullName;
-                _packs.Add((Path.GetFileNameWithoutExtension(path), zip, files));
-            }
+            var files = new Dictionary<string, string>(StringComparer.Ordinal);
+            var root = Path.Combine(path, "assets", "minecraft");
+            if (Directory.Exists(root))
+                foreach (var file in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
+                    files[Path.GetRelativePath(root, file).Replace('\\', '/')] = file;
+            _packs.Add((Path.GetFileName(Path.TrimEndingDirectorySeparator(path)), null, files));
+        }
+        else if (File.Exists(path) && path.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+        {
+            var zip = ZipFile.OpenRead(path);
+            var files = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var entry in zip.Entries)
+                if (entry.FullName.StartsWith(Root, StringComparison.Ordinal) && entry.Length > 0)
+                    files[entry.FullName[Root.Length..]] = entry.FullName;
+            _packs.Add((Path.GetFileNameWithoutExtension(path), zip, files));
         }
     }
 

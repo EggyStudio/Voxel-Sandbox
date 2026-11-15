@@ -30,7 +30,7 @@ public sealed class VoxelGame : IDisposable
     // took them for Play.
     private float _seconds;
     private bool _keys, _alive;
-    private readonly OptionsFile? _options;
+    private OptionsFile? _options;
     // The menu open as the last frame was drawn, so leaving a screen of it writes the settings.
     private Menu _menuSeen;
     private readonly Random _random = new();
@@ -101,7 +101,44 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>Writes the settings of the options' screens to the options file where any has changed, unless the run keeps no settings.</summary>
-    public void KeepOptions() => _options?.Write(Menus.Screens(this).All());
+    public void KeepOptions()
+    {
+        if (_options is { } file) Guarded("The settings could not be kept", () => file.Write(Menus.Screens(this).All()), false);
+    }
+
+    /// <summary>The options file the settings are kept in, as a test gives one, where the run keeps none of its own.</summary>
+    public OptionsFile? SettingsFile { set => _options = value; }
+
+    // The lines said of the files the game could not read or write, each said once on the HUD until
+    // that file is read or written again.
+    private readonly HashSet<string> _fileFaults = [];
+
+    /// <summary>
+    /// Reads or writes a file the game keeps, giving <paramref name="fallback"/> where it fails as a
+    /// full disk or a folder the account cannot read or write does, the log told each time and the
+    /// player once on the HUD by <paramref name="failed"/> and the reason, so no frame ends at a file.
+    /// </summary>
+    internal T Guarded<T>(string failed, Func<T> read, T fallback)
+    {
+        try
+        {
+            var value = read();
+            _fileFaults.Remove(failed);
+            return value;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            FileFault(failed, ex.Message);
+            return fallback;
+        }
+    }
+
+    // Tells the log of a file the game could not read or write, and the player once on the HUD.
+    private void FileFault(string failed, string reason)
+    {
+        TraceLog(LogLevel.Warning, $"{failed}. {reason}");
+        if (_fileFaults.Add(failed)) Say($"{failed}, {reason.TrimEnd('.')}");
+    }
 
     public VoxelWorld World { get; private set; } = null!;
 
@@ -147,7 +184,7 @@ public sealed class VoxelGame : IDisposable
     public void ChoosePacks(IReadOnlyList<string> entries)
     {
         PackEntries = entries;
-        if (_settings) PackList.Default.Write(entries);
+        if (_settings) Guarded("The packs' list could not be kept", () => { PackList.Default.Write(entries); return true; }, false);
         ReloadPacks();
     }
 
@@ -159,6 +196,7 @@ public sealed class VoxelGame : IDisposable
     {
         var list = PackList.Default;
         var packs = new ResourcePacks(PackEntries.Select(list.PathOf));
+        foreach (var (name, reason) in packs.Unread) FileFault($"The pack {name} could not be read", reason);
         var terrain = TerrainAtlas.Build(packs);
         Renderer.Atlas = terrain;
         Icons.Use(terrain, packs);
