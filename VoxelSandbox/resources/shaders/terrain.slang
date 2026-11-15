@@ -83,12 +83,12 @@ Sampler2D atlas;
 uniform float4 atlasLayout;
 
 // The atlas's animated textures, each its first tile, which a face carries, how many tiles its
-// steps take one after another, and the game ticks each is held, and the game ticks now, a
-// twentieth of a second each, as Minecraft steps its textures.
+// steps take one after another, the game ticks each is held, and the step it shows this frame,
+// which the game works out in doubles as TerrainAtlas.Step does for the lamps' light, where a float
+// of the ticks steps by a whole tick after some five days of play.
 uniform float4 animations[16];
-uniform float ticks;
 
-// A tile stepped to the frame its animation shows now, as TerrainAtlas.Step steps it.
+// A tile stepped to the step its animation shows in this frame.
 uint stepped(uint tile)
 {
     int count = int(atlasLayout.w);
@@ -96,7 +96,7 @@ uint stepped(uint tile)
     {
         float4 animation = animations[i];
         if (float(tile) == animation.x)
-            return tile + uint(fmod(floor(ticks / animation.z), animation.y));
+            return tile + uint(animation.w);
     }
     return tile;
 }

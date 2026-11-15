@@ -884,3 +884,51 @@ an alpha below 240, which carries no sky level, and takes its light as before. T
 The strict build is clean, 433 tests pass outside the GPU's lock, and the play passes in 176 s, its
 captures within 9 levels of the last play's but sky2's, which moves as much between plays, the play
 drawing with no pack.
+
+Reads 11, 14, 15 and 16 of item 181, two mended and two left with their reasons, and the lava's
+flecks and halo of `c180b45`'s sheet, as asked.
+
+Read 11, mended. A furnace's burn or smelt that is no number or below none reads as none, and a burn
+past its fuel's whole takes itself as the whole, so the window's flame and arrow stay within their
+pictures (`WorldSave.ReadFurnaces`). The test
+`A_Furnace_Burning_Or_Smelting_By_No_Number_Or_Below_None_Reads_As_None` reads a furnace burning
+1e300 of -1 with a smelt of NaN, and one burning 8 of 5 with a smelt of -2, and fails on the head,
+which reads the first burning at infinity.
+
+Read 16, mended. The game works out the step each animated texture shows in doubles each frame, as
+`TerrainAtlas.Step` does for the lamps' light, and gives it the shader in the animation's unused
+fourth number, so the shader takes no float of the ticks (`ChunkRenderer.AnimationSteps`,
+`terrain.slang:84-100`). Worked out over two seconds of frames at 60 a second for an animation of 32
+steps, a float of the ticks puts 40 of 120 frames a step off the lamps' from 4.9 days of the game
+running, and shows 16 of the 32 steps at 10 days and 8 at 20, where the doubles show all 32. No test
+of the suite runs a shader, and short of a copy of the head's float sum in a test none fails first,
+so it is read in pictures. With the animated textures held at tick 0 and at tick 40, the lava of the
+sheet below is drawn by the mended build as by `c180b45`'s, at most 18 levels apart on under 0.01%
+of the pixels, the step the table gives being the one the float gave at those ticks.
+
+Read 14, left. The rim is laid on water's side faces and on a shaped piece with no parts, a fence's
+post or a carpet, and shows only with Rim Light above 0, which is its default
+(`ChunkRenderer.cs:253`). Water's side faces could be told by the water's material in the vertex
+stage, but a piece with no parts carries no bit that tells it from a whole block's face, every bit
+of the packed vertex's first four bytes being taken, so it would take a change to the packing for a
+look that is off unless chosen.
+
+Read 15, left. Unshaded takes away the sun's light by `shadow * NdotL` where the engine adds it by
+the light arrived times the diffuse color, one less the fresnel and the sun's contact, so a face
+toward the sun reads about 4% darker than one turned from it. Matching it means working out the
+engine's sun term again in the game's shader, which a later pin of the engine may change under it,
+for a look that is off unless chosen (`ChunkRenderer.cs:254`). An entry in the engine's ASKS.md for
+the sun term a face took could close it, if you want one written.
+
+The lava's flecks. With the animated textures held at one tick, noon and midnight draw the lava
+alike to the level in both builds, so the flatter lava of the sheet's midnight is another step of
+its animation, not the night. Over the pool's middle, the mended build at tick 0 reads a luma of 150
+and a spread of 16.2 against the pack's first frame's 154 and 17.7, and at tick 40 144 and 9.5
+against its frame's 147 and 10.2, where the head reads 141 and 35.2, and 125 and 21.3. The pack's
+brightest lava texel is 255, 179, 56, so none of its flecks reaches a green of 200, where 21% of the
+head's pixels did at tick 0, its bright texels shown past white. The flecks read as the pack draws
+them. The halo follows from the lower value shown, the lava's red, 255 in nearly every texel, going
+to the frame at 2 on the head and at 1.6 mended, before the pass after the scene bends it under 1.
+
+The strict build is clean, 434 tests pass outside the GPU's lock, and the play passes in 190 s, its
+captures within 9 levels of the last play's but sky2's, which moves as much between plays.

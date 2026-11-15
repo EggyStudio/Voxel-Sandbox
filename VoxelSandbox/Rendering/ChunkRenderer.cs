@@ -194,7 +194,9 @@ public sealed class ChunkRenderer : IDisposable
     private readonly ModelMesh _dome;
     private float _fogEnd = float.MaxValue;
     private readonly Shader _shader;
-    private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _hazeHeight, _eyeCovered, _atlas, _atlasLayout, _animations, _ticks, _flames, _looks;
+    private readonly int _fogColor, _fogStart, _fogEndAt, _atmosphere, _hazeHeight, _eyeCovered, _atlas, _atlasLayout, _animations, _flames, _looks;
+    // The atlas's animations as the terrain shader takes them, the step each shows set each frame.
+    private readonly Vector4[] _animationTable = new Vector4[TerrainAtlas.MostAnimations];
     private Texture2D _atlasTexture;
     // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with its
     // own texture where a pack has one, which the scene's distance field reads its average of, and
@@ -267,7 +269,7 @@ public sealed class ChunkRenderer : IDisposable
         _looks = GetShaderLocation(_shader, "looks");
         SetLooks();
         (_atlas, _atlasLayout) = (GetShaderLocation(_shader, "atlas"), GetShaderLocation(_shader, "atlasLayout"));
-        (_animations, _ticks) = (GetShaderLocation(_shader, "animations"), GetShaderLocation(_shader, "ticks"));
+        _animations = GetShaderLocation(_shader, "animations");
         MakeLampCubes();
         Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
@@ -296,6 +298,18 @@ public sealed class ChunkRenderer : IDisposable
     /// lavapipe's can, and a held tick shows each frame of an animation however the frames fall.
     /// </remarks>
     public double? HeldTicks { get; set; }
+
+    // The atlas's animations as the terrain shader takes them, each with the step it shows at a time
+    // in game ticks as TerrainAtlas.Step gives it.
+    private static Vector4[] AnimationSteps(TerrainAtlas atlas, Vector4[] table, double ticks)
+    {
+        for (int i = 0; i < atlas.Animations.Count; i++)
+        {
+            var (_, count, held) = atlas.Animations[i];
+            table[i].W = TerrainAtlas.Step(count, held, ticks);
+        }
+        return table;
+    }
 
     /// <summary>Whether the haze dome is drawn, which it is while a haze fades the land's edge short of it.</summary>
     public bool Hazed => _fogEnd < HazeDome.Radius;
@@ -335,9 +349,9 @@ public sealed class ChunkRenderer : IDisposable
             SetTextureFilter(_atlasTexture, TextureFilter.Point);
             SetShaderValueTexture(_shader, _atlas, _atlasTexture);
             SetShaderValue(_shader, _atlasLayout, new Vector4(TerrainAtlas.Columns, value.Rows, value.Pixels, value.Animations.Count));
-            var table = new Vector4[TerrainAtlas.MostAnimations];
-            for (int i = 0; i < value.Animations.Count; i++) table[i] = new Vector4(value.Animations[i].First, value.Animations[i].Count, value.Animations[i].Ticks, 0);
-            SetShaderValueV<Vector4>(_shader, _animations, table);
+            Array.Clear(_animationTable);
+            for (int i = 0; i < value.Animations.Count; i++) _animationTable[i] = new Vector4(value.Animations[i].First, value.Animations[i].Count, value.Animations[i].Ticks, 0);
+            SetShaderValueV<Vector4>(_shader, _animations, _animationTable);
             SetShaderValue(_shader, _flames, new Vector4(value.Tile(Surfaces.Fire) is > 0 and var flames ? flames + 1 : 0, FlamesShown,
                 value.Tile(Surfaces.Lava) is > 0 and var lava ? lava + 1 : 0, LavaShown));
             LoadLamps();
@@ -1192,7 +1206,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         // The game ticks the animated textures step by, a twentieth of a second each, as Minecraft steps them.
         var ticks = HeldTicks ?? GetTime() * 20;
-        SetShaderValue(_shader, _ticks, (float)ticks);
+        SetShaderValueV<Vector4>(_shader, _animations, AnimationSteps(Atlas, _animationTable, ticks));
         int cx = LandOrigin.BlockX(eye.X) >> Section.Shift, cz = LandOrigin.BlockZ(eye.Z) >> Section.Shift;
         var laps = System.Diagnostics.Stopwatch.StartNew();
         // The sections held back as unseen that a new flood reaches or that now cast toward the light,

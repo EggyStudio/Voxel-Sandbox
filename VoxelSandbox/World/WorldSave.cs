@@ -485,11 +485,16 @@ public sealed class WorldSave
         var furnaces = new Furnaces();
         var path = Path.Combine(Folder, "furnaces.json");
         if (!File.Exists(path)) return furnaces;
+        // A burn or a smelt that is no number or below none, as a file changed by hand may hold, is
+        // none, and a burn past its fuel's whole takes itself as the whole, so the furnace's flame and
+        // arrow stay within their pictures.
+        static float Held(float value) => float.IsFinite(value) && value > 0 ? value : 0;
         try
         {
             foreach (var r in JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.FurnaceRecordArray) ?? [])
             {
-                var furnace = new Furnace { Burning = r.Burning, BurnTotal = r.BurnTotal, Cooked = r.Cooked };
+                var (burning, cooked) = (Held(r.Burning), Held(r.Cooked));
+                var furnace = new Furnace { Burning = burning, BurnTotal = MathF.Max(Held(r.BurnTotal), burning), Cooked = cooked };
                 // A furnace listed with no slots, as a file changed by hand may list one, stands empty.
                 var slots = r.Slots ?? [];
                 for (int i = 0; i < Math.Min(3, slots.Length); i++) furnace.Slots[i] = Inventory.Decode(slots[i]);

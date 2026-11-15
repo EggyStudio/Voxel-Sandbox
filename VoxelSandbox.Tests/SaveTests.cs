@@ -212,6 +212,18 @@ public sealed class SaveTests : IDisposable
     }
 
     [Fact]
+    public void A_Furnace_Burning_Or_Smelting_By_No_Number_Or_Below_None_Reads_As_None()
+    {
+        new WorldSave(_folder);
+        File.WriteAllText(Path.Combine(_folder, "furnaces.json"), """[{"X":1,"Y":2,"Z":3,"Slots":[],"Burning":1e300,"BurnTotal":-1,"Cooked":"NaN"},{"X":4,"Y":5,"Z":6,"Slots":[],"Burning":8,"BurnTotal":5,"Cooked":-2}]""");
+
+        var furnaces = new WorldSave(_folder).ReadFurnaces().All;
+
+        Assert.Equal((0f, 0f, 0f), (furnaces[(1, 2, 3)].Burning, furnaces[(1, 2, 3)].BurnTotal, furnaces[(1, 2, 3)].Cooked));
+        Assert.Equal((8f, 8f, 0f), (furnaces[(4, 5, 6)].Burning, furnaces[(4, 5, 6)].BurnTotal, furnaces[(4, 5, 6)].Cooked));
+    }
+
+    [Fact]
     public void A_Slot_That_Is_None_Reads_Empty_Beside_The_Stacks_Of_The_Rest()
     {
         new WorldSave(_folder);
