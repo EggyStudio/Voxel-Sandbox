@@ -3176,6 +3176,20 @@ before a batch.
     Then the shaders' Reads 12 and 13 with a picture pair each. The low ones last, each mended or
     left with its reason in a Reply.
 
+182. **A number typed at the console that is not a number.** Every command taking a float or a
+    double read with NaN and with both infinities, the time, the field of view, the scale, the ring
+    and the options' values among them, the teleport, the look and the flicker refusing them
+    already. Each either refuses with a line saying so or bounds the value, one way across all of
+    them, and a test gives every such command the three values and reads that the state stays
+    finite.
+
+183. **A save that cannot be written.** A save throwing an input or output error, a full disk or a
+    folder without write access, ends a world switch before the next world opens and ends the quit's
+    save, and the timed save spends a frame's update every 30 seconds on it. The switch and the quit
+    go on, the player told once on screen that the world is not being saved and why, the timed save
+    backing off while the error stands. A test with a save folder that cannot be written reads the
+    switch, the quit and the message.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -5509,6 +5523,103 @@ more, the scene's 4.78 to 4.95 ms at Low and 4.52 to 4.70 at High and the scene'
 and 1.42 to 1.51, so the low flight's median is 0.30 ms more, its ranges meeting at 8.98, and the
 high flight's within its spread. Its 99th part is 26.16 ms against 24.61 at Low and 35.70 against
 44.12 at High, where one run of 6.2.60's read 60.50.
+
+Item 183, mended. The test was run first on a copy of `fc97f0f` with the test added, but for the
+lines that read the HUD's line and the wait, which the head has no way to give.
+
+A save that cannot be written, an `IOException` or an `UnauthorizedAccessException` out of any of
+its files, leaves the game going (`VoxelGame.SaveWorld`, :661). A world switched to opens and the
+quit goes on, what the save did not write is kept to be written by a later one, the log says each
+failure, and the HUD says the first, "The world could not be saved", with the system's reason, and
+"The world is saved again" once a save is written. While saves fail, the timed save waits twice as
+long each time, from 30 s to at most 480 (:23, :708), and a world opened begins at 30 again (:470).
+The test `A_Save_That_Cannot_Be_Written_Lets_The_Game_Close_And_Switch_And_Waits_Longer` saves a
+world once, sets a folder in the place of each file's copy written before it takes the name, so no
+file of the save can be written on any system, and holds that the game closes with a block changed,
+that two saves tell the player once and leave the wait at 120 s, that the first save's block still
+reads back, and that a switch opens the next world with the wait at 30. It fails on the head as the
+game closes, by `UnauthorizedAccessException` out of the region's write. The checks of both items
+are read once, under item 182's Reply.
+
+Item 182, mended. Every console command that takes a float or a double refuses a number that is NaN
+or infinite, as the console reads "NaN", "Infinity", "-Infinity" or a number past a float, with one
+line, "a number given is NaN or infinite, which no command takes" (`GameCommands.NotNumbers`, :349).
+The place commands' check, `voxel.look`'s and `voxel.flicker`'s go through it, and `voxel.options`
+refuses such a value for a setting (:647). The test
+`Every_Command_Taking_A_Number_Refuses_One_That_Is_NaN_Or_Infinite` gives each number of the 16
+commands that take one NaN and both infinities, 102 lines, and holds that each is refused. On the
+head 30 were refused, the place's, the look's and the flicker's, and 72 taken, `voxel.time NaN`
+answering "the hour is NaN", `voxel.options render Rim_Light NaN` "NaN%", `voxel.fov Infinity`
+taking 110, and the corners, the shadows, the field, the clouds, the bits, the ring, the spots, the
+pixel and the line taking them as given. A scratch copy of the test on the head wrote each answer,
+where the test itself stops at its first line, the place's, which the head refused in other words.
+
+The strict build is clean over both items, 436 tests pass outside the GPU's lock, and the play
+passes in 184 s, its captures within 8 levels of the last play's but sky2's, which moves as much
+between plays.
+
+The read of the other places a file error can end the game outside `SaveWorld`, as asked, written
+before any mend, at `7785818`. A file error here is an `IOException` or an
+`UnauthorizedAccessException`, as a full disk, a folder the account cannot write or read, or a
+directory where a file is to be. They fall in three kinds by where they throw.
+
+File error 1, in the frame's drawing, the worst. `VoxelGame.Draw` calls `Menus.Draw`
+(`VoxelGame.cs:1448`) and then `KeepOptions` as a menu screen is left (:1452) before its
+`EndDrawing` (:1456), so a throw from either leaves the drawing begun, and every frame after throws
+"BeginDrawing was called twice", as the open fuzz's cascade showed, and the game draws no frame
+again until it is closed. Four paths reach it. (a) Leaving a menu screen writes the options file
+(`OptionsFile.Write`, `OptionsFile.cs:62-65`) with no catch, so a data folder that cannot be written
+or a full disk ends the drawing. (b) The menu's World button lists the saves (`Menus.cs:128`,
+`WorldSave.Saved`), where `Directory.GetDirectories` (`WorldSave.cs:303`) has no catch and each
+world's info is caught as an `IOException` or a `JsonException` alone (:312), so a saves folder or a
+`world.json` the account cannot read ends it. (c) The packs screen lists the packs' folder
+(`Menus.cs:303` and :308, `PackList.Available`, `PackList.cs:28-31`), made and listed with no catch.
+(d) The packs screen's Done (`Menus.cs:349`) writes the packs' list (`VoxelGame.cs:150`,
+`PackList.Write`, `PackList.cs:44-45`) and opens the packs (:161, `ResourcePacks`,
+`ResourcePacks.cs:40` and :46), where a pack zip that is no zip throws `InvalidDataException` and
+one the account cannot read throws too. A test can fail first for (b), (c) and (d) on the test game
+with a folder in a file's place or a cut zip, the menu opened and frames drawn after. For (a) the
+test game keeps no options (`settings: false`), so a test needs the options file's folder given, a
+seam of a line.
+
+File error 2, at the start, where the program ends before its first frame. The options file is read
+by `video.Restore` (`Program.cs:40`, `OptionsFile.Find`, `OptionsFile.cs:105`) and by the game
+(`VoxelGame.cs:99`, `OptionsFile.Read`, :75), the packs' list by :90 (`PackList.Read`,
+`PackList.cs:38`), the packs by :92, and the first world's folder is made by :424 (`new WorldSave`,
+`WorldSave.cs:99`), each with no catch, so an options file or a pack the account cannot read, a pack
+zip that is no zip, or a saves folder that cannot be made ends the program. The save's readers catch
+an `IOException` and a `JsonException` or an `InvalidDataException` (`WorldSave.cs:146`, :335, :431,
+:504 and :536), so a `world.json`, a region, `mobs.bin`, `furnaces.json` or `chests.json` the
+account cannot read throws `UnauthorizedAccessException` past them and ends the open, at the start
+or at a switch. A test can fail first for each on the test game, as item 183's did, with a folder in
+a file's place or a file the test cannot read.
+
+File error 3, in a frame's update, where the frame's `Begin` ends at the throw and the player is
+told nothing. (a) F2 (`VoxelGame.cs:1034`) makes the screenshots' folder (`Screenshots.Take`,
+`Screenshots.cs:43`) with no catch, so one that cannot be made loses the frame's update and says
+nothing, and where the folder is there but cannot be written, the engine writes the picture after
+the frame and only logs that it could not (`E3D.Window.cs:115` of `baa21ff4`), so the HUD says
+"Saved screenshot as" a file that was never written. (b) G (:1038) and `voxel.options`
+(`GameCommands.cs:652`) write the options file as (1a) does, the frame or the command ending at the
+throw. (c) F3 with T (:1031) opens the packs as (1d) does. (d) The default packs, once fetched, are
+chosen in `TakeDefaults` (:681), which clears its wait before `ChoosePacks` writes the list and
+opens the packs, so a throw there leaves them not taken and not tried again in the run. (e) A world
+switched to whose folder cannot be made throws in `Open` (:424) after the world left is saved, so
+the player stays in the world left with the next world's ask cleared and is told nothing. (f)
+`voxel.flicker`'s recording writes its files when its frames end (`Measurements.cs:54` and :61-69)
+and stays set where the write throws, so every frame's `Begin` ends there after, and the game's
+update stops, a command of the measuring's alone. A test can fail first for each but the
+screenshot's write, which the engine does after the frame and the test game, drawing to no device,
+takes none of.
+
+Clean are the default packs' fetch, on a worker that catches its IO and access errors and says the
+problem on the packs screen (`DefaultPacks.cs:94-109`), the setting aside of a save's file, which
+catches both (`WorldSave.cs:221`), and the engine's own writing of a screenshot, which logs. The
+mend I would make is one way across them, as item 183's is for the save, where the drawing and the
+update never end at a file error, the player told once on the HUD with the file and the reason, a
+setting or a list not written kept to be written at the next change, a world that cannot be opened
+left unopened with the world before kept, and the start going on with defaults where a file cannot
+be read.
 
 ## Items closed, parked or shortened
 
