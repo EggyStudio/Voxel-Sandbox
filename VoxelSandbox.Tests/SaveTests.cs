@@ -151,6 +151,33 @@ public sealed class SaveTests : IDisposable
     }
 
     [Theory]
+    [InlineData(2_000_000_000)]
+    [InlineData(int.MaxValue)]
+    public void A_Region_Whose_Column_Names_More_Bytes_Than_It_Holds_Is_Kept_Beside_With_No_Array_Made_For_Them(int length)
+    {
+        new WorldSave(_folder);
+        var path = Path.Combine(_folder, "regions", "r.0.0.bin");
+        using (var writer = new BinaryWriter(File.Create(path)))
+        {
+            writer.Write("E3DR"u8);
+            writer.Write(1);
+            writer.Write(1);
+            writer.Write((short)0);
+            writer.Write((short)0);
+            writer.Write(length);
+            writer.Write(new byte[16]);
+        }
+
+        var save = new WorldSave(_folder);
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        save.ReadRegion(0, 0);
+
+        Assert.InRange(GC.GetAllocatedBytesForCurrentThread() - before, 0, 1 << 20);
+        Assert.Null(save.Kept(0, 0));
+        Assert.True(File.Exists(path + ".unread"));
+    }
+
+    [Theory]
     [InlineData(-1)]
     [InlineData(int.MaxValue)]
     public void A_Mobs_File_Listing_More_Kinds_Than_A_Byte_Tells_Apart_Is_Kept_Beside_And_Its_Mobs_Placed_Again(int listed)

@@ -136,8 +136,10 @@ public sealed class WorldSave
             {
                 int lx = reader.ReadInt16(), lz = reader.ReadInt16(), length = reader.ReadInt32();
                 if (length < 0) throw new InvalidDataException("a column of it has no length");
+                // A length past what the file has left is taken as the early end it is before an array
+                // of it is made.
+                if (length > reader.BaseStream.Length - reader.BaseStream.Position) throw new EndOfStreamException("a column of it ends early");
                 var bytes = reader.ReadBytes(length);
-                if (bytes.Length < length) throw new EndOfStreamException("a column of it ends early");
                 _kept[(region.X * RegionSize + lx, region.Z * RegionSize + lz)] = renumber is null ? bytes : Renumbered(bytes, renumber);
             }
         }

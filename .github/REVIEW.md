@@ -784,3 +784,15 @@ game's step is a twentieth, and says some 4 blocks over a twentieth.
 
 The strict build is clean, 431 tests pass outside the GPU's lock, and the play passes in 196 s, its
 captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+Read 1 of item 181, mended. The test was run first on a copy of `91af9b2` with the test added.
+
+Read 1. A region's column whose length is past what the file has left is taken as the early end it
+is before an array of that length is made, and the region is moved aside and its columns made again,
+as for a region that cannot be read (`WorldSave.ReadRegion`). The test
+`A_Region_Whose_Column_Names_More_Bytes_Than_It_Holds_Is_Kept_Beside_With_No_Array_Made_For_Them`
+writes a region of one column naming 2,000,000,000 bytes and one naming `int.MaxValue`, each with 16
+bytes after, and holds that the read takes under 1 MB, keeps no column and moves the file aside. It
+fails on the head, the first taking past the 1 MB and the second throwing `OutOfMemoryException`.
+The strict build is clean, 433 tests pass outside the GPU's lock, and the play passes in 183 s, its
+captures within 9 levels of the last play's but sky2's, which moves as much between plays.
