@@ -18,8 +18,9 @@ public sealed class VoxelGame : IDisposable
     // reach stands in a few frames rather than hundreds.
     private static double MeshBudget() => Math.Max(MeshBudgetMs, GetFrameTime() * 100);
 
-    // The changed columns and the player are saved this often, beside a save on leaving a world.
-    private const float SaveSeconds = 30;
+    // The changed columns and the player are saved this often, beside a save on leaving a world, and
+    // while a save cannot be written, as to a full disk, at twice the wait each time to this most.
+    private const float SaveSeconds = 30, MostSaveSeconds = 480;
 
     private readonly bool _transient;
     // Whether the run reads and writes the player's settings, the packs' setting and the options,
@@ -36,7 +37,9 @@ public sealed class VoxelGame : IDisposable
     // Seconds food takes to eat, as Minecraft's 32 ticks.
     private const float EatSeconds = 1.6f;
 
-    private float _breakWait, _placeWait, _sinceSave;
+    private float _breakWait, _placeWait, _sinceSave, _saveWait = SaveSeconds;
+    // Whether the last save could not be written, so the player is told once while it stands.
+    private bool _saveFailing;
     private int _teleports;
     private bool _spilled;
     private bool _captured, _swallowClick;
@@ -360,13 +363,18 @@ public sealed class VoxelGame : IDisposable
     private (string Text, float Age)? _said;
     private bool _saidFresh;
 
+    /// <summary>The line the HUD says, as where the last screenshot went or that the world could not be saved, and how long it has shown.</summary>
+    public (string Text, float Age)? Said => _said;
+
+    /// <summary>How long the game waits between its timed saves, longer while a save cannot be written.</summary>
+    public float SaveWait => _saveWait;
+
+    // Says a line on the HUD for a few seconds, from the next frame.
+    private void Say(string text) => (_said, _saidFresh) = ((text, 0), true);
+
     // F2 writes the frame as a screenshot, as Minecraft's does, but in a transient run, which
     // writes nowhere, and says so on the HUD.
-    private void Screenshot()
-    {
-        _said = (_transient ? "Screenshots are not kept in a transient run" : $"Saved screenshot as {Shots.Take()}", 0);
-        _saidFresh = true;
-    }
+    private void Screenshot() => Say(_transient ? "Screenshots are not kept in a transient run" : $"Saved screenshot as {Shots.Take()}");
 
     /// <summary>Whether the world fades into the sky's color toward the render distance, as Minecraft's fog hides where the world ends.</summary>
     public bool Fog { get; set; } = true;
@@ -459,7 +467,7 @@ public sealed class VoxelGame : IDisposable
         CaveFields.Use((World.Generator as Overworld)?.Caves);
         Streamer = new ChunkStreamer(World, Renderer, Mobs, Drops, Chests, Save, CaveFields);
         Clouds.Follow(generator.Seed);
-        _sinceSave = 0;
+        (_sinceSave, _saveWait, _saveFailing) = (0, SaveSeconds, false);
         Loading = true;
 
         if (info is not null) (Sky.Hour, Sky.Day) = (info.Hour, info.Day);
@@ -630,21 +638,35 @@ public sealed class VoxelGame : IDisposable
             Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
             (_landing, _respawned) = (false, false);
         }
-        foreach (var column in World.Columns)
-            if (column.Changed) Save.Keep(column);
-        Save.Flush();
-        Save.WriteMobs(Mobs.Columns());
-        Save.WriteFurnaces(Furnaces);
-        Save.WriteChests(Chests);
-        // The stacks the window E opens holds are saved in the inventory as shutting it puts them,
-        // so a save while it is open keeps them.
-        var inventory = new Inventory();
-        inventory.Load(Inventory.Save());
-        foreach (var stack in InventoryWindow.Holding) inventory.Add(stack.Item, stack.Count, stack.Wear);
-        var at = LandOrigin.LandOf(Player.Body.Position);
-        Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
-            Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
-            Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
+        try
+        {
+            foreach (var column in World.Columns)
+                if (column.Changed) Save.Keep(column);
+            Save.Flush();
+            Save.WriteMobs(Mobs.Columns());
+            Save.WriteFurnaces(Furnaces);
+            Save.WriteChests(Chests);
+            // The stacks the window E opens holds are saved in the inventory as shutting it puts them,
+            // so a save while it is open keeps them.
+            var inventory = new Inventory();
+            inventory.Load(Inventory.Save());
+            foreach (var stack in InventoryWindow.Holding) inventory.Add(stack.Item, stack.Count, stack.Wear);
+            var at = LandOrigin.LandOf(Player.Body.Position);
+            Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
+                Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
+                Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
+            if (_saveFailing) Say("The world is saved again");
+            (_saveFailing, _saveWait) = (false, SaveSeconds);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // A save that cannot be written, as to a full disk or a folder that cannot be written,
+            // leaves the game going, a world switched to and the quit among it, and what it did not
+            // write is kept to be written by a later save. The log says each, the HUD the first.
+            TraceLog(LogLevel.Warning, $"The world {WorldName} could not be saved, and it is tried again in {MathF.Min(_saveWait * 2, MostSaveSeconds):0} s. {ex.Message}");
+            if (!_saveFailing) Say($"The world could not be saved, {ex.Message.TrimEnd('.')}");
+            (_saveFailing, _saveWait) = (true, MathF.Min(_saveWait * 2, MostSaveSeconds));
+        }
     }
 
     /// <summary>
@@ -683,7 +705,7 @@ public sealed class VoxelGame : IDisposable
         if (Menus.Open != Menu.None) seconds = 0;
         _seconds = seconds;
         _sinceSave += seconds;
-        if (_sinceSave > SaveSeconds) SaveWorld();
+        if (_sinceSave > _saveWait) SaveWorld();
         var io = ImGui.GetIO();
         // A field taking typed text takes the keys too, so a seed typed acts no toggle, though Escape,
         // which no field takes, still goes back from its screen.

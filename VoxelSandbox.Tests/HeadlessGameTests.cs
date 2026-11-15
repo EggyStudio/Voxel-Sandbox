@@ -314,6 +314,48 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Save_That_Cannot_Be_Written_Lets_The_Game_Close_And_Switch_And_Waits_Longer()
+    {
+        var (folder, other) = (Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")), Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")));
+        try
+        {
+            // A world saved once, then a folder in the place of each file a save writes before it
+            // takes the file's name, so none can be written, on every system alike.
+            using (var first = new HeadlessGame(save: folder)) first.Game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
+            foreach (var name in new[] { "world.json", "mobs.bin", "furnaces.json", "chests.json", Path.Combine("regions", "r.0.0.bin") })
+                Directory.CreateDirectory(Path.Combine(folder, name + ".new"));
+
+            // Closed with a block changed, which it cannot write.
+            using (var closed = new HeadlessGame(save: folder)) closed.Game.World.SetBlock(3, 70, 2, BlockId.Glowstone);
+
+            using var headless = new HeadlessGame(save: folder);
+            var game = headless.Game;
+            game.World.SetBlock(4, 70, 2, BlockId.Glowstone);
+            game.SaveWorld();
+            var told = game.Said;
+            headless.Step(3);
+            game.SaveWorld();
+
+            Assert.StartsWith("The world could not be saved", told?.Text);
+            Assert.True(game.Said?.Age > 0, "the second save that failed told the player again");
+            Assert.Equal(120, game.SaveWait);
+            var read = new WorldSave(folder);
+            read.ReadRegion(0, 0);
+            Assert.Equal(BlockId.Glowstone, WorldSave.Decode(0, 0, read.Kept(0, 0)!).Get(2, 70, 2));
+
+            game.SwitchWorld("flat", 2, other);
+
+            Assert.Equal(other, game.Save?.Folder);
+            Assert.Equal(30, game.SaveWait);
+        }
+        finally
+        {
+            foreach (var path in new[] { folder, other })
+                if (Directory.Exists(path)) Directory.Delete(path, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Game_That_Saves_Leaves_The_Players_Settings_Alone()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
