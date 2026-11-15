@@ -909,4 +909,34 @@ public sealed class HeadlessGameTests
             if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
         }
     }
+
+    [Fact]
+    public void A_Block_Falling_And_A_Lit_Tnt_As_The_World_Closes_Are_In_It_When_It_Opens_Again()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using (var headless = new HeadlessGame(save: folder))
+            {
+                var game = headless.Game;
+                // A sand let fall from twelve, its cell taken out as a fall takes it, one over a torch,
+                // which it would break on, and a TNT lit on the ground.
+                game.World.SetBlock(4, 4, 2, BlockId.Torch);
+                game.Falling.Drop(BlockId.Sand, 2, 12, 2);
+                game.Falling.Drop(BlockId.Sand, 4, 12, 2);
+                game.Tnt.Light(6, 4, 2);
+                headless.Step(1);
+            }
+
+            using var again = new HeadlessGame(save: folder);
+            var world = again.Game.World;
+            Assert.Equal(BlockId.Sand, world.GetBlock(2, 4, 2));
+            Assert.Equal((BlockId.Torch, BlockId.Sand), (world.GetBlock(4, 4, 2), world.GetBlock(4, 5, 2)));
+            Assert.Equal(BlockId.Tnt, world.GetBlock(6, 4, 2));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
 }

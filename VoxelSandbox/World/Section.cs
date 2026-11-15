@@ -45,6 +45,8 @@ public sealed class Section
 
     /// <summary>Whether, packed, every level in it is 0, so no light crosses into it or out of it.</summary>
     public bool Dark { get; private set; }
+    /// <summary>Whether, packed, it holds flowing water, which is read for across a column's edge as the column beside it arrives.</summary>
+    public bool Flows { get; private set; }
 
     /// <summary>The bytes it holds of its own, its arrays or its packed bytes, and none while it shares.</summary>
     public int Bytes => _packed?.Length ?? (Open ? 0 : Volume * sizeof(ushort) + Volume);
@@ -116,6 +118,7 @@ public sealed class Section
         var packed = new byte[BrotliEncoder.GetMaxCompressedLength(raw.Length)];
         if (!BrotliEncoder.TryCompress(raw, packed, out var written, 1, 16)) return;
         Dark = !_light.AsSpan().ContainsAnyExcept((byte)0);
+        Flows = _blocks.AsSpan().ContainsAnyInRange((ushort)BlockId.Water1, (ushort)BlockId.FallingWater);
         (_packed, _blocks, _light) = (packed[..written], null, null);
     }
 

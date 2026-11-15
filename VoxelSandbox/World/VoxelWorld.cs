@@ -69,6 +69,7 @@ public sealed class VoxelWorld
         column.Settle();
         Kindled.AddRange(column.Burning);
         _light.Join(column);
+        Fluids.Join(column);
     }
 
     public bool Remove(int x, int z)

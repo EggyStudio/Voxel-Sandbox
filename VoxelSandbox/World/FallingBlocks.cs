@@ -98,6 +98,33 @@ public sealed class FallingBlocks(EcsWorld ecs)
         ecs.Add(id, new Body(0.49f, 0.98f) { Position = LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f, 0, 0.5f) });
     }
 
+    /// <summary>
+    /// Sets every falling block down as a block where it would land and lets it go, as the world
+    /// closes or is left, since the save keeps no falling block. Each lands straight down on the
+    /// first block that does not give way, the lowest first so a column of sand stacks again. One
+    /// over a block it would break on, as a torch or a slab, rests on it as a block placed there
+    /// does, since the save keeps no item it would break into either.
+    /// </summary>
+    public void SetDown(VoxelWorld world)
+    {
+        var all = new List<(int Id, Vector3 At, BlockId Block)>();
+        foreach (var (id, falling, body) in ecs.Query<FallingBlock, Body>()) all.Add((id, body.Position, falling.Block));
+        foreach (var (id, at, block) in all.OrderBy(f => f.At.Y))
+        {
+            var (x, y, z) = Landing(world, at);
+            if (BlockGroups.GivesWay(world.GetBlock(x, y, z))) world.SetBlock(x, y, z, block);
+            ecs.Despawn(id);
+        }
+    }
+
+    /// <summary>The cell a body falling from a place comes to rest in, over the first block under it that does not give way.</summary>
+    internal static (int X, int Y, int Z) Landing(VoxelWorld world, Vector3 at)
+    {
+        int x = LandOrigin.BlockX(at.X), y = (int)MathF.Floor(at.Y + 0.01f), z = LandOrigin.BlockZ(at.Z);
+        while (y > ChunkColumn.Bottom && BlockGroups.GivesWay(world.GetBlock(x, y - 1, z))) y--;
+        return (x, y, z);
+    }
+
     /// <summary>Lets go of every falling block, as a world closes.</summary>
     public void Clear()
     {

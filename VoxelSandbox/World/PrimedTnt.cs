@@ -106,6 +106,22 @@ public sealed class PrimedTnt(EcsWorld ecs)
     /// <summary>Lights the TNT of a cell that another blast reached, its fuse 10 to 29 ticks.</summary>
     public void Chain(int x, int y, int z) => Light(x, y, z, (10 + _random.Next(20)) * Tick);
 
+    /// <summary>
+    /// Puts out every TNT and sets it back as a block where it would land, as the world closes or is
+    /// left, since the save keeps no lit TNT.
+    /// </summary>
+    public void SetDown(VoxelWorld world)
+    {
+        var all = new List<(int Id, Vector3 At)>();
+        foreach (var (id, _, body) in ecs.Query<LitTnt, Body>()) all.Add((id, body.Position));
+        foreach (var (id, at) in all.OrderBy(t => t.At.Y))
+        {
+            var (x, y, z) = FallingBlocks.Landing(world, at);
+            if (BlockGroups.GivesWay(world.GetBlock(x, y, z))) world.SetBlock(x, y, z, BlockId.Tnt);
+            ecs.Despawn(id);
+        }
+    }
+
     /// <summary>Puts out every TNT, as a world closes.</summary>
     public void Clear()
     {

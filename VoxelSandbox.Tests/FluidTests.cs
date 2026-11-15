@@ -75,4 +75,43 @@ public class FluidTests
         float TopAt(int x) => tops.Where(t => (int)MathF.Floor(t.Middle.X) == x && (int)MathF.Floor(t.Middle.Z) == 8).Select(t => t.Height).DefaultIfEmpty(-1).Max();
         Assert.True(TopAt(8) > TopAt(9) && TopAt(9) > TopAt(10), $"the tops stand at {TopAt(8)}, {TopAt(9)} and {TopAt(10)}");
     }
+
+    [Fact]
+    public void Water_Stopped_At_A_Column_Not_Loaded_Flows_On_As_It_Loads()
+    {
+        var world = Floor();
+        world.Remove(1, 0);
+        world.SetBlock(14, 11, 8, BlockId.Water);
+        world.Fluids.Update(5);
+        Assert.Equal(Blocks.FlowingWater(1), world.GetBlock(15, 11, 8));
+
+        var column = world.Generator.Generate(1, 0);
+        Lighting.Compute(column);
+        world.Add(column);
+        world.Fluids.Update(5);
+
+        Assert.Equal(Blocks.FlowingWater(2), world.GetBlock(16, 11, 8));
+        Assert.Equal(Blocks.FlowingWater(4), world.GetBlock(18, 11, 8));
+    }
+
+    [Fact]
+    public void A_Column_Arriving_With_Flowing_Water_On_Its_Edge_Lets_It_Flow_On_And_Its_Source_Stay()
+    {
+        // The column at x 1 comes with a source and a level of water flowing from it at its west
+        // edge, and a source alone at its edge further along than the flow reaches, as a save
+        // keeps them, beside air.
+        var world = Laid.World(c =>
+        {
+            Laid.Fill(c, 0, 10, BlockId.Stone);
+            if (c.X != 1 || c.Z != 0) return;
+            c.Set(1, 11, 13, BlockId.Water);
+            c.Set(0, 11, 13, Blocks.FlowingWater(1));
+            c.Set(0, 11, 2, BlockId.Water);
+        });
+
+        world.Fluids.Update(5);
+
+        Assert.Equal(Blocks.FlowingWater(2), world.GetBlock(15, 11, 13));
+        Assert.Equal(BlockId.Air, world.GetBlock(15, 11, 2));
+    }
 }

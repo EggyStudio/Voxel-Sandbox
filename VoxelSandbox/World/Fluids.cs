@@ -39,6 +39,43 @@ public sealed class Fluids(VoxelWorld world)
         for (int d = 0; d < 6; d++) Ask(x + Lighting.Dx[d], y + Lighting.Dy[d], z + Lighting.Dz[d]);
     }
 
+    /// <summary>
+    /// Asks the flowing water along the edges between a column that has arrived and the loaded
+    /// columns beside it to look again where it faces air across the edge, on either side, so water
+    /// that stopped at the edge of a column not loaded flows on into it. A source is left alone, so a
+    /// sea or a lake the land made beside a cave across the edge stays as it was made. A packed
+    /// section is read only where it holds flowing water or flowing water faces it, so the land's
+    /// deep sections stay packed.
+    /// </summary>
+    public void Join(ChunkColumn column)
+    {
+        ReadOnlySpan<(int Dx, int Dz)> sides = [(1, 0), (-1, 0), (0, 1), (0, -1)];
+        foreach (var (dx, dz) in sides)
+        {
+            if (!world.TryGetColumn(column.X + dx, column.Z + dz, out var other)) continue;
+            for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
+            {
+                var (near, far) = (column.At(y), other.At(y));
+                bool nearFlows = !near.Open && (!near.Packed || near.Flows), farFlows = !far.Open && (!far.Packed || far.Flows);
+                if (!nearFlows && !farFlows)
+                {
+                    y += Section.Mask;
+                    continue;
+                }
+                for (int t = 0; t < Section.Size; t++)
+                {
+                    // The cell on this column's edge and the one across it in the neighbor.
+                    int ax = dx == 0 ? t : dx > 0 ? Section.Mask : 0, az = dz == 0 ? t : dz > 0 ? Section.Mask : 0;
+                    int bx = dx == 0 ? t : dx > 0 ? 0 : Section.Mask, bz = dz == 0 ? t : dz > 0 ? 0 : Section.Mask;
+                    if (nearFlows && Flowing(column.Get(ax, y, az)) && other.Get(bx, y, bz) == BlockId.Air) Ask(column.X * Section.Size + ax, y, column.Z * Section.Size + az);
+                    else if (farFlows && Flowing(other.Get(bx, y, bz)) && column.Get(ax, y, az) == BlockId.Air) Ask(other.X * Section.Size + bx, y, other.Z * Section.Size + bz);
+                }
+            }
+        }
+    }
+
+    private static bool Flowing(BlockId block) => Blocks.IsWater(block) && block != BlockId.Water;
+
     private void Ask(int x, int y, int z)
     {
         if (Blocks.IsWater(world.GetBlock(x, y, z)) && _waiting.Add((x, y, z))) _due.Enqueue((x, y, z, _tick + Delay));

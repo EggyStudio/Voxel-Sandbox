@@ -3223,6 +3223,34 @@ before a batch.
     rule stay, and so do the command descriptions a person reads. Each hit is read, no code changes,
     the count before and after given. Open.
 
+187. **Resource packs as hostile input.** The coder's pick of 2026-11-15, agreed. The packs come
+    from the internet and from whatever lies in the packs folder, and no read has fed the readers
+    malformed content. Read and fuzzed without a device, bounded by a timeout, an archive with a bad
+    directory or a huge entry, a picture of absurd size or cut short, a model or a block state file
+    malformed, deeply nested or vast, an animation's frame times at zero, negative or enormous and
+    its frames past the strip, a connected texture's tile range, and a font's glyph sizes. For each
+    what the reader does, with its place and a scenario, in a Reply before any mend. The Reply came
+    at 19:38 on 2026-11-15, 27 cases run, eight findings, the worst a throw out of the reload ending
+    the program at every start while the pack stays in the list. The mends are asked in two commits,
+    each with tests that fail first and make their own pack. First, the reload building everything
+    and swapping only when all of it built, a pack file read within a bound and from a regular file
+    alone with a failed read taken as a file the pack lacks and the pack named once on the screen,
+    the connected range held below the integers end and stopped at the atlas bound as it is read,
+    the weights summed in long, and a section that cannot be meshed said in the log. Second, a
+    picture refused by its header past a bound that an animation strip of a large pack still passes,
+    one frame kept for each index, and a model held to 4,096 boxes of finite numbers. Open.
+
+188. **The inventory windows and the world menus, the fourth read's six findings.** The read's Reply
+    names six low findings in what the tests do not reach, and each is mended as the Reply proposes,
+    in one commit or two. The light quality's key and the view's key held behind an open inventory
+    or a menu as the inventory's key is, and the inventory's key held while the player is dead. A
+    crafting table's window closed when the block at its place is no table. A pack on the list whose
+    file is gone named once. The worlds screen scrolled by the wheel's sign as the packs screen is.
+    The menu's save in a run that is not saved answering on the HUD what the console's save answers.
+    With them, a picture refused by its size passed over for the next pack's copy in the same call,
+    as an unreadable file is. Each with a test through the game's state, a seam no larger than the
+    reload's where one is needed.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -5924,6 +5952,343 @@ it had a semicolon.
 
 The strict build is clean, 458 tests pass outside the GPU's lock, and the play passes in 208 s, its
 captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+Item 187, the resource packs read as hostile input, read and fuzzed, before any mend. A script made
+27 packs, the 24 cases the item and the review's message name and three of connected textures on
+the flat world's grass, which the cases on stone did not reach since the flat world shows none. The
+test game of a copy of `c250bcd` opened each at its start, drew 30 frames, read the packs again as
+F3 with T reads them and drew 10 more, each pack in a process of its own outside the GPU's lock on
+cores 16 to 31, bounded by 180 s and a memory group of 8 GB, each step written to a report as it
+ended. A pack of one valid picture opens in 2.6 s at 183 MB, the control.
+
+The rule the findings fall under. A throw out of `VoxelGame.ReloadPacks` (`VoxelGame.cs:203`) ends
+the program, since nothing between it and the loop in `Program.cs` catches. It runs at the start
+(`VoxelGame.cs:91`), where the packs' list keeps the pack, so every start ends until the player
+takes it out of `resourcepacks.txt` by hand, on F3 with T (:1099) and at the packs screen's Done
+(`Menus.cs:349`), in the frame, and by `voxel.packs` and `voxel.reload` (`GameCommands.cs:306` and
+:326), where the console catches it. A throw past the atlas, as finding 6's, leaves the reload half
+done, the terrain, the icons, the interface and the sky on the new packs, the mobs on some of them,
+`Packs` on the old ones and the new zips left open.
+
+1. A file of a pack whose read throws ends the start. The constructor's catch
+   (`ResourcePacks.cs:42`) covers a zip's opening, and nothing covers its entries' reads.
+   - A zip entry whose data does not inflate throws `InvalidDataException` from the entry's copy in
+     `ResourcePacks.Read` (`ResourcePacks.cs:110`), through `Picture` (:127) out of
+     `TerrainAtlas.Build` (`TerrainAtlas.cs:121`), the start ended in 1.6 s.
+   - An entry that inflates past 2 GB, a 2.6 MB zip holding 2.5 GB of zeros as `stone.png`,
+     throws `IOException`, "Stream was too long", from the same copy at 4.2 GB in 5.7 s.
+   - A folder pack whose `stone.png` is a link to `/dev/zero` throws `OutOfMemoryException` from
+     `File.ReadAllBytes` (:107) at 4.3 GB in 5.1 s.
+   - An entry whose headers say 1,000 bytes and which inflates to 1.5 GB is read to its 1,000 by
+     .NET and taken as a picture that does not decode, and a zip cut in half is left out and said,
+     as they should.
+2. A folder pack whose `stone.png` is a named pipe holds the start without end, `File.ReadAllBytes`
+   (`ResourcePacks.cs:107`) waiting for a writer, the case ended by its bound at 180 s.
+3. A connected texture's tiles and weights.
+   - `ConnectedTextures.cs:187`, `for (int n = from; n <= to; n++)`, where a range ending at
+     2,147,483,647 wraps past its end and adds names until memory runs out, 6.2 GB in 32 s, out of
+     the start. The range's check holds its length, `to - from < 256`, and not its end. Of the
+     game's 193 loops with an inclusive upper bound, two take the bound from a file or a command,
+     this one and `GameCommands.Box`, mended at `9f96eae`. The rest end at a constant, at a body's
+     cells, which `Body.Floor` holds within the land's edge, or at a clamped value, the render
+     distance's clouds' cells, and the loops that count down end at constants or at the column's
+     bottom.
+   - A properties file of 400,000 ranges of 256, 2.4 MB, names 102 million tiles in
+     `ConnectedTextures.Tiles` before the atlas's bound of 512 tiles is read
+     (`TerrainAtlas.cs:182`), out of memory at 5.7 GB in 29 s.
+   - Random tiles whose weights sum past the int's top throw `OverflowException` from
+     `Enumerable.Sum` in `RandomTile` (`ConnectedTextures.cs:126`), on the mesher's worker, where
+     `ChunkRenderer.cs:904` writes it to the console's error stream alone and keeps the section
+     unmeshed. Every section holding the rule's block goes undrawn, 0 sections drawn after 30
+     frames with the rule on grass, where the same rule without weights draws 37, nothing in the
+     engine's log.
+   - A repeated sheet of 2,147,483,647 by 2,147,483,647 overflows its tile's index, which the
+     mesher's check (`SectionMesher.cs:463`) takes as the surface's own tile, and draws.
+4. A picture of a vast size within the decoder's. A 16,384 by 16,384 picture of one color, 8 KB
+   zipped, as `stone.png` or as the font's sheet, takes the start to 2.2 GB and 7.5 s and the
+   reload to 3.3 GB, the font's to 4.3 GB. Each is decoded whole before the atlas resizes it to its
+   tile of at most 128 pixels (`TerrainAtlas.Resized`), and the font's sheet is made a texture
+   whole (`PackGui.cs:190`). A picture of 25,000 by 25,000 and a header of 65,535 by 65,535 are
+   refused by the decoder as too large, and a picture cut short is taken as one that does not
+   decode, as they should.
+5. An animation's frames list copies a frame for each of its entries (`ResourcePacks.cs:171` to
+   :177). A list of 2,000,000 entries over a strip of two frames of 16 pixels, a 12 KB zip, takes
+   the start to 2.4 GB in 8 s, and frames of 64 pixels would take 32 GB. Times of 0, below 0 or
+   2,147,483,647, indexes past the strip and a width or a height past the picture are refused or
+   bounded (`ResourcePacks.Number`, :180, and :169), and that pack draws.
+6. A model of OptiFine's form has no bound on its boxes. A `.jem` of 1,000,000 boxes, a 180 KB zip,
+   takes the start to 3.9 GB in 19 s and the reload out of memory in `BoxMesh.AddFace`
+   (`BoxMesh.cs:97`, from `MobRenderer.PicturedBoxes`, `MobRenderer.cs:235`), past the atlas. A
+   number past a float, 1e39 in a box's corner or a part's translation, reads as infinity and makes
+   the pig's box NaN at both corners, which the mob's mesh takes, what it draws not read. A texture
+   size of 0 leaves the boxes finite and their pictures' offsets infinite. A nesting of 300 parts
+   is past the JSON reader's depth of 64 and the model is left out, as is a file that is no JSON.
+7. No entry's name reaches the disk. The game reads a zip's entries by the names its own listing
+   gives, into memory (`ResourcePacks.Open`, :63 to :70), a folder's files are those its listing
+   finds under `assets/minecraft`, and nothing of a pack is written. Entries named
+   `assets/minecraft/../../../../../../tmp/voxel-187-climb.txt`, one climbing from
+   `textures/block`, an absolute `/assets/minecraft/...`, one parted by backslashes and one
+   beginning `../` opened, drew and were read again with nothing written, a search of the disk
+   after finding none of their names. A folder pack holding a link to its own parent is listed and
+   drawn. The default packs are taken only by their SHA-512 (`DefaultPacks.Accepts`).
+8. The game reads no block model and no block state. Its blocks' shapes are its own
+   (`BlockShape`), and the JSON it reads of a pack is a texture's `.mcmeta` (`ResourcePacks.Meta`,
+   which takes a file that is no JSON as none) and the models of OptiFine's form
+   (`PackModels.Read`, which catches the reader's exceptions and four others). The font is the
+   `font/ascii` sheet alone (`PackGui.cs:99`), its glyphs' widths measured from its pixels, with no
+   file of glyph sizes, and a sheet that is not square or not of 16 cells is left out.
+
+The mends I would make, in this order. First the rule and 1 to 3, the start ended, a hang and the
+world undrawn. The reload builds the new packs' pieces and takes them all only once each is built,
+so a throw leaves the game drawing with the packs before. A file of a pack is read within a bound,
+a regular file or an entry of its declared length up to 64 MB, a read that fails or passes the
+bound taken as a file the pack lacks, and the pack named once on the HUD. The connected tiles' range
+is held below the int's top and its list stopped at the atlas's bound as it is read, the weights
+summed in a long, and a section that cannot be meshed said in the engine's log. Then 4 to 6, the
+memory. A picture's size is read from its header before it decodes and refused past 4,096 a side,
+an animation keeps one frame for each index it plays, and a model is held to 4,096 boxes with each
+number finite or the model left out. Each with a test that fails first on a pack the test makes,
+the zip of 2.5 GB of zeros among them, made in the test in about 10 s.
+
+Item 187's first commit, the rule and findings 1 to 3 mended within the bounds as set, and finding
+7's result held by a test. Each test was run first on a copy of `069a7d9` with the tests added, the
+reload's test with its seam's lines added there too.
+
+The reload. The pieces drawn with the packs, the terrain's atlas, the icons, the stacks on the
+ground, the bits, the cracks, the interface, the view from inside a block, the sky, the mobs and the
+blasts, take the packs in turn, each loading its textures as it does. A fault partway is met by each
+piece taking the packs before again, the game's own art at the start, and the new packs closed
+(`VoxelGame.ReloadPacks`). The pieces are not split into a build and a swap, since each makes its
+textures in its own `Use` and splitting them would touch ten classes for the same end, every piece
+on one set. Where the packs before fault too, each piece takes none, which reads nothing of a pack.
+The packs are named once on the HUD and in the log. The start, F3 with T and a choice of packs, the
+packs screen's Done, `voxel.packs` and the default packs' arrival among them, call the reload
+through a catch of their own, so a fault the reload let through is said and the program goes on
+(`VoxelGame.ReloadHeld`). The seam is `VoxelGame.PackStep`, called before each piece by its name, an
+instance member and public since the tests see none of the game's internals.
+`A_Reload_Failing_At_A_Piece_Draws_On_With_The_Packs_Before_And_Holds_None_Of_The_New` throws at
+the sky once and then twice, and holds that the game draws on with the packs before, named once, and
+then with its own art, each zip opened after to be written alone, which a handle kept would refuse.
+It fails on the head by the fault out of `ChoosePacks`.
+
+The reads. A file of a pack is read within 64 MB, and one that cannot be read is taken as a file
+that pack lacks, the next pack's or the game's own drawn, its pack named once on the HUD with the
+file and the reason (`ResourcePacks.Read` and `Faults`). A folder's file is read only where the
+system gives it a size within the bound, its link's target's where it is a link, so a pipe or a
+device, which the system gives no size, is left out before it is opened, since .NET tells a file's
+kind no further than a folder or a link. A zip's entry is refused by the size its headers give and
+read to that size.
+- `A_Pack_Entry_That_Does_Not_Inflate_Is_Left_Out_And_The_Game_Opens_Saying_So` fails on the head
+  by `InvalidDataException` out of the start.
+- `A_Pack_Entry_Inflating_Past_64_MB_Is_Left_Out_Before_It_Is_Read`, 2 GB of zeros zipped in the
+  test, fails on the head by `IOException`, "Stream was too long", out of the start.
+- `A_Folder_Packs_Picture_That_Is_A_Link_To_A_Device_Is_Left_Out_Before_It_Is_Opened` fails on the
+  head by `OutOfMemoryException` out of the start.
+- `A_Folder_Packs_Picture_That_Is_A_Pipe_Is_Left_Out_Before_It_Is_Opened` fails on the head, its
+  read giving no answer within 10 s. It and the device's test run on Linux and macOS alone.
+
+The connected textures. A range is counted in a long, so one ending at the int's top ends there,
+the list stops past the atlas's 512 tiles, which leave its rule out, the random tiles' weights are
+summed in a long, and a section that cannot be meshed is said in the engine's log, where it went to
+the console's error stream alone.
+- `A_Connected_Rule_Naming_Tiles_To_The_Ints_Top_Or_Past_The_Atlas_Is_Read_At_Once` fails on the
+  head, its first rule giving no answer within 10 s.
+- `Random_Tiles_Whose_Weights_Pass_The_Ints_Top_Together_Choose_One_Of_Them` fails on the head by
+  `OverflowException`.
+
+Finding 7. `A_Packs_Entries_Named_Out_Of_The_Packs_Folder_Write_Nothing_Outside_It` opens a zip of
+entries climbing out of the packs folder, an absolute one and one parted by backslashes among them,
+draws it, reads it again and holds that the test's folder holds the zip alone after. It passes on
+the head, as it is a test that stays.
+
+The test game takes the paths of packs to open (`HeadlessGame`). The eight tests take 7 s together.
+The strict build is clean, 466 tests pass outside the GPU's lock, and the play passes in 190 s, its
+captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+The pin of the engine's 6.2.86, `c54a38c6`, published at 20:45 and listed by nuget by 21:02, with
+the parts that waited on it as rehearsed on 6.2.83, the engine having added only the scene packs'
+types between. 3DEngine is at 6.2.86 and the workflows' engine checkout at
+`c54a38c66f3ff6f1240396c0265cb3e6972928cb`. The bits' shader takes the bit's middle as a place
+(`bits.slang`). The origin's step is told to the engine by `MoveWorld`, the land's meshes, its
+groups and its lamps' cubes kept as they are. A lamp filling its cell with no face showing is left
+out of the lights (`SectionMesher.Emitters` and `ChunkRenderer`). The diffs applied as rehearsed,
+one context line of the mesher's moved by item 186's wrapping, and one comment over the lamps
+reworded. `A_Lamp_Shows_The_Faces_Its_Neighbors_Leave_Open` reads the faces the emitters of the head
+lack.
+
+The strict build is clean on 6.2.86 restored from nuget, 467 tests pass outside the GPU's lock, and
+the play passes cold in 260 s and warm in 173 s in a cache of its own. Against the captures of
+6.2.60 the pictures move by 44 levels at most and on 116 pixels at most past 8, the shadow's along
+its soft edge both ways and noon's at lone pixels, sky2 as it moves between plays, a sheet of the
+two in the dump at `21-28-item-264-pin.png`.
+
+Item 187's second commit, findings 4 to 6 mended within the bounds as set. Each test was run first
+on a copy of `aa19470` with the tests added.
+
+A picture's size is read from its PNG header before it decodes, and one past 4,096 wide or past
+4,096 by 16,384 pixels is taken as a file its pack lacks and its pack named once, a strip of 32
+frames of 512 pixels taken whole (`ResourcePacks.Decoded`). A file that is no PNG is taken as a
+picture that does not decode, as the decoder took it. The default packs' largest picture is 1,024
+wide, a title panorama's, their tallest strip 1,024 by 64, the conduit's wind, and a block's 512 by
+32, the flowing lava's, their largest file 440 KB. The engine's decoder reads a PNG whole with no
+smaller decode, so a strip wider than the atlas's tile is decoded whole and resized after, and the
+bounds stand alone. An animation cuts each frame from its strip once however often its list plays
+it, and its list stops past the atlas's 512 tiles, past which the atlas draws it still. A model of
+OptiFine's form is read with 4,096 parts and 4,096 boxes at most, every number finite and its
+picture's size above 0, or it is left out and the mob drawn with its own model
+(`PackModels.Parse`). A folder's file the system gives no size is refused with that reason alone.
+- `A_Picture_Past_4096_Wide_Or_4096_By_16384_Pixels_Is_Left_Out_Before_It_Is_Decoded` gives a
+  picture 4,097 by 1, one 4,096 by 16,385 and a strip 512 by 16,384, made in the test, and fails on
+  the head, which decodes the first.
+- `An_Animations_Frames_Are_Cut_Once_Each_However_Long_Its_List_Plays_Them` gives a list of 200,000
+  entries over a strip of two frames and fails on the head, which cuts 200,000 frames.
+- `A_Model_Past_4096_Boxes_Or_With_A_Number_Past_A_Float_Or_No_Picture_Size_Is_Left_Out` gives a
+  model of 4,097 boxes, one translated by 1e39 and one with a picture's size of 0, each refused, and
+  one of two boxes read, and fails on the head, which reads the first.
+
+The strict build is clean, 470 tests pass outside the GPU's lock, and the play passes in 172 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+The fourth read, of the inventory's windows and the world's menus by what their tests do not reach,
+before any mend. The tests reach the slots' moves (`SlotMovesTests`), the crafting grids, the
+chests' loot, the inventory's save, the new world's screen and the packs screen's listing, and
+none of the window's clicks or the menus' buttons, since those take the pointer and the keys through
+the engine, which a test game is given none of. The read went by the code through the window's
+click, right click, drag, double click, shift click, number keys, Q and sort in the inventory, the
+crafting table, the furnace, the chest and the creative window, its open and its close, and through
+the game menu, the worlds' screen, the packs screen, the options' screens and the death screen. A
+seed typed with a G in it acts no toggle, since a field taking text holds the keys back
+(`VoxelGame.cs:842`). Six findings, all low.
+
+1. G and F5 act behind an open screen. `VoxelGame.Toggles` (:1136) runs wherever no field takes
+   text, so with the inventory or a menu open G steps the light's quality and writes the options
+   file (:1166) and F5 steps the view (:1163), where the frame's comment says no key of the
+   player's acts behind a screen (:854 to :857). The mend I would make is the two held to the game
+   with no screen open, as E is (:1150).
+2. A pack on the list whose file is gone is left out unsaid. `ResourcePacks.Open` passes over a
+   path that is neither a folder nor a zip (`ResourcePacks.cs:71` to :91), so a pack the player
+   deleted from the folder stays on the list, drawn by nothing, where one that cannot be read is
+   named on the HUD. The mend I would make names it once as a pack that is not there.
+3. The worlds' screen scrolls by the wheel's move cut to an int (`Menus.cs:373`), so a touchpad's
+   steps of less than one never scroll it, where the packs screen (:317) and the creative window
+   (`InventoryWindow.cs:168`) take the move's sign. The mend I would make takes its sign.
+4. Save the World in a transient run or a world played unsaved does nothing and says nothing
+   (`Menus.cs:131`, `VoxelGame.SaveWorld` returning where there is no save). The mend I would make
+   says on the HUD what `voxel.save` answers.
+5. E opens the inventory under the death screen (`VoxelGame.cs:1150`, the death spilling and
+   clearing the inventory at :1001 to :1009), an empty window under the Respawn button, closed by E
+   or Escape. The mend I would make holds E while the player is dead.
+6. A crafting table's window stays open as a table's after a blast takes the table. Furnaces and
+   chests close theirs as their blocks go (`VoxelGame.cs:897` and :902), and nothing closes
+   `AtTable`, so its grid of three crafts on until the window shuts. The player cannot break a block
+   with the window open, so only TNT or a creeper takes it. The mend I would make closes the window
+   where the block at the table's place is no table.
+
+Read clean. The window's clicks take, put, join, swap and split within each stack's room, and a
+right click puts one only onto its item with room (`InventoryWindow.Click` and `RightClick`). A
+drag's spread and its shares, a double click's gathering and a sort keep every item
+(`SlotMoves`, tested). A shift click into a furnace goes by what the item smelts or burns, into a
+chest by its rows, and out of either into the inventory. A shift craft stops where the grid's
+materials or the inventory's room end. The made slot and the furnace's output are only taken from.
+The number keys swap a slot with the hotbar's, but its own, and Q drops one or with Control the
+stack, thrown by the game in the frame. Closing the window puts the grids' stacks and the held one
+back and throws what does not fit (`InventoryWindow.Close`). A chest or a furnace broken while open
+closes its window as its contents drop, so nothing is taken out twice, and a death closes the
+window before the inventory spills. The creative window's scroll is clamped to its rows and a click
+puts one of the item in the chosen slot. The game menu's buttons, the worlds' screen, its list
+clamped to its saves, and the packs screen, its rows, its order and its Done through the reload's
+catch, read clean, as do the options' sliders and choices and the sky's colors' screens.
+
+The gap the tests leave is the window's and the menus' input, which the engine gives a test game
+none of. The mends above can each be tested through the game's state, by a seam no larger than the
+reload's where one is needed, and the clicks themselves stay read by the code and by the play's
+picture of the inventory. The order I would take is 1 and 5 together, the keys behind a screen,
+then 6, then 2 to 4, in one commit or two.
+
+Item 188, the fourth read's six findings mended as proposed, with the picture refused by its size
+giving way to the next pack's. Each test was run first on a copy of `39e5442` with the tests added,
+and with the seams' lines added there too.
+
+The keys. G and F5 act only with no screen open, the inventory's or a menu's, as E acts only with no
+menu open, and E does nothing while the player is dead, whose inventory has spilled
+(`VoxelGame.Toggles`). The seam is `VoxelGame.Pressed`, the keys a test presses for the toggles in
+place of the engine's, an instance member as `PackStep` is.
+`The_Light_And_View_Keys_Act_On_No_Screen_And_The_Inventorys_Key_On_No_Death` presses G and F5 with
+the inventory open, with the game menu open and with neither, and E after a death, and fails on the
+head, whose G steps the light's quality behind the inventory.
+
+The crafting table's window shuts where the block at the table's place is no table, as a furnace's
+and a chest's shut as theirs go. `A_Crafting_Tables_Window_Shuts_As_The_Table_Goes` opens a table
+by `voxel.place`, sets air at its place as a blast would and fails on the head, whose window stays
+open.
+
+The game menu's Save the World in a run that keeps no save says on the HUD what `voxel.save`
+answers, the same words from one place (`VoxelGame.NoSave` and `SaveAsked`).
+`The_Menus_Save_In_A_Run_That_Keeps_None_Says_What_The_Consoles_Save_Answers` fails on the head,
+whose save says nothing.
+
+The worlds' screen and the packs screen scroll a row for each move of the wheel by its sign
+(`Menus.Scrolled`), so a touchpad's moves of less than one row scroll them.
+`A_Lists_Wheel_Moves_It_A_Row_For_A_Move_However_Small` fails on the head's worlds' screen, whose
+cut to an int takes a move of a quarter as none.
+
+A pack on the list that is not there, or that is neither a zip nor a folder, is named once
+(`ResourcePacks.Open`). `A_Pack_On_The_List_That_Is_Not_There_Is_Named` fails on the head, which
+names nothing. A picture refused by its header's size is passed over for the next pack's copy in
+the same call, the size read from the header before the metadata and before the decode, so a
+texture that does not animate is decoded once as before (`ResourcePacks.FirstPicture`).
+`A_Picture_Refused_By_Its_Size_Gives_Way_To_The_Next_Packs_In_The_Same_Call` fails on the head,
+whose first call gives no picture, the game's own drawn until a reload.
+
+The strict build is clean, 476 tests pass outside the GPU's lock, and the play passes in 182 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+The fifth read, of `Entities` whole, the item drops and `World/Lighting.cs` by what their tests do
+not reach, before any mend. The tests reach a mob's fall, hit, way, home and keeping by its column,
+the hostile mobs' spawning, hunting, burning and blasts, the crowding of two mobs across a cell's
+edge, the origin's step, and the light's sky, shafts, lamps, water, canopies, glass and a lamp at a
+column's edge. Each candidate below was held by a test on a copy of `ff96b6e`, outside the GPU's
+lock, and two failed. Those are the findings, each test the one that fails on the head.
+
+1. Mobs that stand still beside land not loaded gain speed while they overlap. `MobMind.Crowd`
+   (`Mobs.cs:52` to :82) pushes every pair of mobs whose boxes overlap, adding to their velocities
+   each frame, while `MobMind.Think` (:27 to :37) moves only a mob whose column has the columns
+   around it loaded, so a frozen mob's velocity is never spent or slowed (`Mob.Move`, `Mob.cs:442`
+   to :460). Two pigs a third of a block apart in a test game's last loaded column east of the
+   player gain 57.6 blocks a second over 90 frames of a thirtieth of a second, and each moves 1.9
+   blocks in the frame its neighbors load, the speed growing for as long as the player stays. A herd
+   placed close at the edge of what is loaded is flung across the land as the player comes near,
+   into land not loaded where it stands frozen again, and a mob standing in a column never loaded is
+   left out of a save made while it stands there, since `Mobs.Columns` (:335 to :354) gives the mobs
+   of the columns placed alone.
+   `Two_Mobs_Overlapping_Where_Their_Neighbors_Are_Not_Loaded_Gain_No_Speed` holds their speed under
+   10 blocks a second and fails on the head at 57.6. The mend I would make pushes a mob only where
+   its own column has the columns around it loaded, as it thinks only there.
+2. A spider spawns into the wall beside its cell. `Mobs.Spawnable` (`Mobs.cs:419` to :429) holds
+   free only the cells over the spawn's middle, while a spider's box is 1.4 blocks wide, reaching
+   0.2 of a block into each cell beside it, so in a cave a spider spawns with its sides in the
+   stone. `A_Spider_Does_Not_Spawn_Into_The_Wall_Beside_Its_Cell` sets a stone beside a cell of a
+   stone floor, where a zombie may spawn, and fails on the head, which lets the spider spawn there.
+   The mend I would make holds free every cell the kind's box covers at its place.
+
+Read clean, by the code and the light by two tests of mine that pass on the head. A stack whose
+column unloads is kept by the column at its place in the land and set down as the column loads, and
+a stack ages and moves only in a loaded column (`ItemDrop.Fall`, `ItemDrops.Leaving` and `Joined`).
+The player picks up only while alive and while the game's time passes, which a menu holds, and picks
+up with the inventory's window open, as the source does. An arrow is gone a minute after it is
+loosed, stuck or flying, and moves with the origin. A mob's hit on a dead player harms nothing,
+`Vitals.Damage` returning on a death, and the hostile mobs hunt only a living one. A mob's hit
+knocks it away from a hit at its own place along its facing. A dying mob ages wherever it stands,
+`MobLife.Age` running over every mob, so it vanishes and drops its loot in a column not loaded too.
+The origin's step moves every body, arrow, blast and mob's home (`VoxelGame.Recenter`), and the kept
+mobs and stacks hold places of the land. A lamp on a column's edge takes its light back from the
+column beside it as it is broken, and a column loading again beside a lamp takes its light and gives
+it back behind a wall set across the edge (two tests, passing on the head). The light keeps the
+land's block places, which the origin's step does not touch. Two ways normalized in the blast's push
+on the player and in a skeleton's shot are zero only for a blast half a block over the player's
+middle or a skeleton's eye on the player's, which play does not reach, and are left.
+
+The order I would take is 1 and then 2, in one commit, each test failing on a head copy.
 
 ## Items closed, parked or shortened
 

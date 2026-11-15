@@ -541,6 +541,7 @@ public sealed class VoxelGame : IDisposable
         // The window E opens is shut first, its stacks put back into the inventory of the world left,
         // so none comes into the next and no chest or furnace of the last is drawn there.
         CloseInventory();
+        SetDownMoving();
         SaveWorld();
         Open(kind, seed, name);
     }
@@ -768,6 +769,14 @@ public sealed class VoxelGame : IDisposable
     {
         if (NoSave is { } why) Say(char.ToUpperInvariant(why[0]) + why[1..]);
         else SaveWorld();
+    }
+
+    // The blocks falling and the TNT lit are set down as blocks before the last save of a world
+    // closed or left, which keeps neither, a timed save leaving them falling and burning.
+    private void SetDownMoving()
+    {
+        Falling.SetDown(World);
+        Tnt.SetDown(World);
     }
 
     /// <summary>Keeps every loaded column the player changed and the player's place, and writes them, unless the world is transient.</summary>
@@ -1685,6 +1694,7 @@ public sealed class VoxelGame : IDisposable
         // holding no mob.
         if (_disposed) return;
         _disposed = true;
+        SetDownMoving();
         SaveWorld();
         Renderer.Dispose();
         CaveFields.Dispose();
