@@ -658,3 +658,30 @@ the play passes cold in 260 s and warm in 173 s in a cache of its own. Against t
 6.2.60 the pictures move by 44 levels at most and on 116 pixels at most past 8, the shadow's along
 its soft edge both ways and noon's at lone pixels, sky2 as it moves between plays, a sheet of the
 two in the dump at `21-28-item-264-pin.png`.
+
+Item 187's second commit, findings 4 to 6 mended within the bounds as set. Each test was run first
+on a copy of `aa19470` with the tests added.
+
+A picture's size is read from its PNG header before it decodes, and one past 4,096 wide or past
+4,096 by 16,384 pixels is taken as a file its pack lacks and its pack named once, a strip of 32
+frames of 512 pixels taken whole (`ResourcePacks.Decoded`). A file that is no PNG is taken as a
+picture that does not decode, as the decoder took it. The default packs' largest picture is 1,024
+wide, a title panorama's, their tallest strip 1,024 by 64, the conduit's wind, and a block's 512 by
+32, the flowing lava's, their largest file 440 KB. The engine's decoder reads a PNG whole with no
+smaller decode, so a strip wider than the atlas's tile is decoded whole and resized after, and the
+bounds stand alone. An animation cuts each frame from its strip once however often its list plays
+it, and its list stops past the atlas's 512 tiles, past which the atlas draws it still. A model of
+OptiFine's form is read with 4,096 parts and 4,096 boxes at most, every number finite and its
+picture's size above 0, or it is left out and the mob drawn with its own model
+(`PackModels.Parse`). A folder's file the system gives no size is refused with that reason alone.
+- `A_Picture_Past_4096_Wide_Or_4096_By_16384_Pixels_Is_Left_Out_Before_It_Is_Decoded` gives a
+  picture 4,097 by 1, one 4,096 by 16,385 and a strip 512 by 16,384, made in the test, and fails on
+  the head, which decodes the first.
+- `An_Animations_Frames_Are_Cut_Once_Each_However_Long_Its_List_Plays_Them` gives a list of 200,000
+  entries over a strip of two frames and fails on the head, which cuts 200,000 frames.
+- `A_Model_Past_4096_Boxes_Or_With_A_Number_Past_A_Float_Or_No_Picture_Size_Is_Left_Out` gives a
+  model of 4,097 boxes, one translated by 1e39 and one with a picture's size of 0, each refused, and
+  one of two boxes read, and fails on the head, which reads the first.
+
+The strict build is clean, 470 tests pass outside the GPU's lock, and the play passes in 172 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.

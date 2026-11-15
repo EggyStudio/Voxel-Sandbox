@@ -33,6 +33,10 @@ namespace VoxelSandbox;
 /// </remarks>
 public static class PackModels
 {
+    // The most parts and boxes a model of a pack's is read with, so a file of a million boxes is left
+    // out rather than meshed for each of its kind's variants.
+    private const int MostParts = 4096, MostBoxes = 4096;
+
     // The roles of the top parts the source names.
     private static readonly Dictionary<string, Swing> Roles = new()
     {
@@ -96,11 +100,13 @@ public static class PackModels
     {
         using var document = JsonDocument.Parse(json);
         var root = document.RootElement;
-        var size = root.TryGetProperty("textureSize", out var given) ? new Vector2(given[0].GetSingle(), given[1].GetSingle()) : kind.PictureSize;
+        var size = root.TryGetProperty("textureSize", out var given) ? new Vector2(Finite(given[0]), Finite(given[1])) : kind.PictureSize;
+        if (size.X <= 0 || size.Y <= 0) throw new FormatException("the model's picture has no size");
         // The model's pixels of picture in the kind's, since a pack may give its pictures' parts on a
         // picture four times the source's.
         var scale = kind.PictureSize.X / size.X;
         var pieces = new List<Piece>();
+        int parts = 0, boxes = 0;
         foreach (var top in root.GetProperty("models").EnumerateArray())
         {
             var name = top.TryGetProperty("part", out var part) ? part.GetString() ?? "" : "";
@@ -118,10 +124,14 @@ public static class PackModels
         // parts after them, one named for a role lifted out into a piece of its own.
         void Gather(JsonElement element, Piece piece, Matrix4x4 placed, Vector3 origin, int depth, bool absolute, List<Piece> into)
         {
+            if (++parts > MostParts) throw new FormatException($"the model has more than {MostParts} parts");
             var mirror = element.TryGetProperty("mirrorTexture", out var mirrored) && (mirrored.GetString() ?? "").Contains('u');
-            if (element.TryGetProperty("boxes", out var boxes))
-                foreach (var box in boxes.EnumerateArray())
+            if (element.TryGetProperty("boxes", out var listed))
+                foreach (var box in listed.EnumerateArray())
+                {
+                    if (++boxes > MostBoxes) throw new FormatException($"the model has more than {MostBoxes} boxes");
                     piece.Boxes.Add(Box(box, absolute ? placed : Matrix4x4.CreateTranslation(origin) * placed, mirror));
+                }
             if (!element.TryGetProperty("submodels", out var subs)) return;
             foreach (var sub in subs.EnumerateArray())
             {
@@ -145,13 +155,13 @@ public static class PackModels
         ModelBox Box(JsonElement box, Matrix4x4 placed, bool mirror)
         {
             var c = box.GetProperty("coordinates");
-            float x = c[0].GetSingle(), y = c[1].GetSingle(), z = c[2].GetSingle(), w = c[3].GetSingle(), h = c[4].GetSingle(), d = c[5].GetSingle();
-            var grow = box.TryGetProperty("sizeAdd", out var added) ? added.GetSingle() : 0;
+            float x = Finite(c[0]), y = Finite(c[1]), z = Finite(c[2]), w = Finite(c[3]), h = Finite(c[4]), d = Finite(c[5]);
+            var grow = box.TryGetProperty("sizeAdd", out var added) ? Finite(added) : 0;
             Vector4?[]? faces = null;
             var offset = Vector2.Zero;
-            if (box.TryGetProperty("textureOffset", out var at)) offset = new Vector2(at[0].GetSingle(), at[1].GetSingle()) * scale;
+            if (box.TryGetProperty("textureOffset", out var at)) offset = new Vector2(Finite(at[0]), Finite(at[1])) * scale;
             else faces = [.. new[] { "uvDown", "uvUp", "uvWest", "uvNorth", "uvEast", "uvSouth" }.Select(face =>
-                box.TryGetProperty(face, out var uv) ? (Vector4?)(new Vector4(uv[0].GetSingle(), uv[1].GetSingle(), uv[2].GetSingle(), uv[3].GetSingle()) * scale) : null)];
+                box.TryGetProperty(face, out var uv) ? (Vector4?)(new Vector4(Finite(uv[0]), Finite(uv[1]), Finite(uv[2]), Finite(uv[3])) * scale) : null)];
             // The corner in the source's space, x mirrored and y down from 24 pixels, which the
             // cuboid places back into the game's.
             var cuboid = new Cuboid(Vector3.Zero, new Vector3(-(x + w), 24 - (y + h), z), new Vector3(w, h, d), grow, false, offset, mirror, picture, tinted)
@@ -172,8 +182,13 @@ public static class PackModels
         return Matrix4x4.CreateTranslation(-pivot) * ModelPart.Turned(angles) * Matrix4x4.CreateTranslation(pivot);
     }
 
+    // A number of the model's, refused where it is past a float, which the reader gives as an
+    // infinity, so no box stands at a place that is no number.
+    private static float Finite(JsonElement value) =>
+        value.GetSingle() is var number && float.IsFinite(number) ? number : throw new FormatException("a number of the model is past a float");
+
     private static Vector3 Vector3OrZero(JsonElement element, string name) =>
-        element.TryGetProperty(name, out var value) ? new Vector3(value[0].GetSingle(), value[1].GetSingle(), value[2].GetSingle()) : Vector3.Zero;
+        element.TryGetProperty(name, out var value) ? new Vector3(Finite(value[0]), Finite(value[1]), Finite(value[2])) : Vector3.Zero;
 
     // The box around a cuboid's eight placed corners, whichever of its faces are drawn.
     private static (Vector3 Min, Vector3 Max) Corners(Cuboid cuboid)

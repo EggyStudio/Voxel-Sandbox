@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Text.Json;
 using Engine;
@@ -24,6 +25,11 @@ public sealed class ResourcePacks : IDisposable
     // The most bytes a file of a pack is read to, so an entry that inflates to gigabytes is left out
     // before it is read.
     private const long MostBytes = 64L << 20;
+
+    // The widest picture of a pack's decoded and the most pixels one holds, so a picture of a vast
+    // size in a few bytes is left out before it is decoded, and a strip of 32 frames of 512 pixels
+    // is taken whole.
+    private const int MostWidth = 4096, MostPixels = 4096 * 16384;
 
     // Each pack's files by their path under assets/minecraft, as a zip's entry or a folder's file.
     private readonly List<(string Name, ZipArchive? Zip, Dictionary<string, string> Files)> _packs = [];
@@ -98,9 +104,19 @@ public sealed class ResourcePacks : IDisposable
         _packs.SelectMany(p => p.Files.Keys).Where(path => path.StartsWith(folder, StringComparison.Ordinal)).Distinct().Order(StringComparer.Ordinal);
 
     /// <summary>A picture by its path under <c>assets/minecraft</c>, decoded to RGBA, from the first pack that has it, or null.</summary>
-    public Image? ImageAt(string path)
+    public Image? ImageAt(string path) => First(path) is (int pack, byte[] png) ? Decoded(pack, path, png) : null;
+
+    // A pack's picture decoded to RGBA, or null where its header gives a size past the bounds, which
+    // marks it as a file the pack lacks, or where it is no PNG or does not decode.
+    private Image? Decoded(int pack, string path, byte[] png)
     {
-        if (Read(path) is not { } png) return null;
+        if (png.Length < 24 || !png.AsSpan(1, 3).SequenceEqual("PNG"u8)) return null;
+        long width = BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(16)), height = BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(20));
+        if (width > MostWidth || width * height > MostPixels)
+        {
+            Failed(pack, path, $"it is {width} by {height} pixels, past the {MostWidth} wide and {MostPixels} pixels a picture is taken within");
+            return null;
+        }
         var image = LoadImageFromMemory(".png", png);
         return image.Data is null || image.Width <= 0 ? null : image;
     }
@@ -136,7 +152,7 @@ public sealed class ResourcePacks : IDisposable
             {
                 var file = new FileInfo(at);
                 var length = (file.LinkTarget is null ? file : file.ResolveLinkTarget(returnFinalTarget: true) as FileInfo)?.Length ?? 0;
-                if (length <= 0) return Failed(pack, path, "the system gives it no size, as it gives a pipe or a device none");
+                if (length <= 0) return Failed(pack, path, "the system gives it no size");
                 if (length > MostBytes) return Failed(pack, path, $"it holds {length} bytes, past the {MostBytes} a file is read to");
                 using var stream = new FileStream(at, FileMode.Open, FileAccess.Read, FileShare.Read);
                 var bytes = new byte[length];
@@ -177,9 +193,7 @@ public sealed class ResourcePacks : IDisposable
     public (Image Image, JsonElement? Meta)? Picture(string name)
     {
         var path = $"textures/{name}.png";
-        if (First(path) is not (int pack, byte[] png)) return null;
-        var image = LoadImageFromMemory(".png", png);
-        if (image.Data is null || image.Width <= 0) return null;
+        if (First(path) is not (int pack, byte[] png) || Decoded(pack, path, png) is not { } image) return null;
         var meta = Meta(Read(pack, path + ".mcmeta"));
         if (meta is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return (image, meta);
         // A strip of frames one above another, each as tall as it is wide unless the metadata says
@@ -203,8 +217,7 @@ public sealed class ResourcePacks : IDisposable
         var path = $"textures/{name}.png";
         if (First(path) is not (int pack, byte[] png)) return null;
         if (Meta(Read(pack, path + ".mcmeta")) is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return null;
-        var image = LoadImageFromMemory(".png", png);
-        if (image.Data is null || image.Width <= 0) return null;
+        if (Decoded(pack, path, png) is not { } image) return null;
         int width = Number(animation, "width") ?? image.Width, height = Number(animation, "height") ?? width;
         if (width > image.Width || height > image.Height) return null;
         var count = image.Height / height;
@@ -213,6 +226,9 @@ public sealed class ResourcePacks : IDisposable
         if (animation.TryGetProperty("frames", out var frames) && frames.ValueKind == JsonValueKind.Array)
             foreach (var frame in frames.EnumerateArray())
             {
+                // An animation of more steps than the atlas holds is drawn still, so the list stops
+                // there.
+                if (order.Count > TerrainAtlas.MostTiles) break;
                 if (frame.ValueKind == JsonValueKind.Number && frame.TryGetInt32(out var index)) order.Add((index, time));
                 else if (frame.ValueKind == JsonValueKind.Object && frame.TryGetProperty("index", out var at) && at.TryGetInt32(out index))
                     order.Add((index, Number(frame, "time") ?? time));
@@ -221,11 +237,14 @@ public sealed class ResourcePacks : IDisposable
             order.AddRange(Enumerable.Range(0, count).Select(i => (i, time)));
         order.RemoveAll(f => f.Index < 0 || f.Index >= count);
         if (order.Select(f => f.Index).Distinct().Count() < 2) return null;
+        // Each frame cut from the strip once, however often the order plays it.
+        var cut = new Dictionary<int, Image>();
         Image Frame(int index)
         {
+            if (cut.TryGetValue(index, out var made)) return made;
             var pixels = new byte[width * height * 4];
             for (int y = 0; y < height; y++) Array.Copy(image.Data, ((index * height + y) * image.Width) * 4, pixels, y * width * 4, width * 4);
-            return new Image(pixels, width, height);
+            return cut[index] = new Image(pixels, width, height);
         }
         return ([.. order.Select(f => Frame(f.Index))], [.. order.Select(f => f.Ticks)]);
     }

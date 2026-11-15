@@ -223,4 +223,90 @@ public sealed class HostilePackTests : IDisposable
         game.ChoosePacks([next]);
         Assert.Equal(["next"], game.Packs.Names);
     }
+
+    // A PNG of one gray, so many pixels across and down, its rows compressed as they are made, so a
+    // vast one costs its compression alone.
+    private static byte[] WidePng(int width, int height)
+    {
+        static void Chunk(Stream to, string kind, ReadOnlySpan<byte> data)
+        {
+            Span<byte> length = stackalloc byte[4];
+            System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(length, data.Length);
+            to.Write(length);
+            var named = new byte[4 + data.Length];
+            Encoding.ASCII.GetBytes(kind).CopyTo(named, 0);
+            data.CopyTo(named.AsSpan(4));
+            to.Write(named);
+            // The decoder reads past a chunk's check without it, so it is left at zero.
+            to.Write(new byte[4]);
+        }
+        using var png = new MemoryStream();
+        png.Write([0x89, (byte)'P', (byte)'N', (byte)'G', 13, 10, 26, 10]);
+        var header = new byte[13];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(header, width);
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32BigEndian(header.AsSpan(4), height);
+        (header[8], header[9]) = (8, 6);
+        Chunk(png, "IHDR", header);
+        using var packed = new MemoryStream();
+        using (var z = new ZLibStream(packed, CompressionLevel.Fastest, leaveOpen: true))
+        {
+            var row = new byte[1 + width * 4];
+            for (int i = 1; i < row.Length; i++) row[i] = 128;
+            for (int y = 0; y < height; y++) z.Write(row);
+        }
+        Chunk(png, "IDAT", packed.ToArray());
+        Chunk(png, "IEND", []);
+        return png.ToArray();
+    }
+
+    [Fact]
+    public void A_Picture_Past_4096_Wide_Or_4096_By_16384_Pixels_Is_Left_Out_Before_It_Is_Decoded()
+    {
+        var pack = Zip("vast", ("textures/block/stone.png", WidePng(4097, 1)), ("textures/block/dirt.png", WidePng(4096, 16385)),
+            ("textures/block/sand.png", WidePng(512, 16384)));
+        using var packs = new ResourcePacks([pack]);
+
+        Assert.Null(packs.Texture("block/stone"));
+        Assert.Null(packs.Texture("block/dirt"));
+        Assert.Equal(512, packs.Texture("block/sand")?.Width);
+        Assert.Equal(2, packs.Faults.Count);
+    }
+
+    [Fact]
+    public void An_Animations_Frames_Are_Cut_Once_Each_However_Long_Its_List_Plays_Them()
+    {
+        var strip = WidePng(16, 32);
+        var pack = Zip("long", ("textures/block/stone.png", strip),
+            ("textures/block/stone.png.mcmeta", Encoding.UTF8.GetBytes($"{{\"animation\":{{\"frames\":[{string.Join(",", Enumerable.Repeat("0,1", 100_000))}]}}}}")));
+        using var packs = new ResourcePacks([pack]);
+
+        var (frames, ticks) = packs.Animation("block/stone")!.Value;
+
+        Assert.Equal(2, frames.Select(f => f.Data).Distinct(ReferenceEqualityComparer.Instance).Count());
+        Assert.InRange(frames.Length, 2, TerrainAtlas.MostTiles + 1);
+        Assert.Equal(frames.Length, ticks.Length);
+    }
+
+    [Fact]
+    public void A_Model_Past_4096_Boxes_Or_With_A_Number_Past_A_Float_Or_No_Picture_Size_Is_Left_Out()
+    {
+        const string box = "{\"coordinates\":[-5,7,-8,10,16,8],\"textureOffset\":[28,8]}";
+        static byte[] Model(string size, string translate, int boxes) => Encoding.UTF8.GetBytes(
+            $"{{\"textureSize\":{size},\"models\":[{{\"part\":\"body\",\"translate\":{translate},\"boxes\":[{string.Join(",", Enumerable.Repeat(box, boxes))}]}}]}}");
+        var pig = MobKinds.All.First(k => k.Name == "pig");
+        (string Name, byte[] Model)[] refused =
+        [
+            ("many", Model("[64,32]", "[0,-13,-2]", 4097)),
+            ("huge", Model("[64,32]", "[1e39,-13,-2]", 1)),
+            ("unsized", Model("[0,0]", "[0,-13,-2]", 1)),
+        ];
+        foreach (var (name, model) in refused)
+        {
+            using var packs = new ResourcePacks([Zip(name, ("optifine/cem/pig.jem", model))]);
+            Assert.Null(PackModels.Read(packs, pig));
+        }
+
+        using var read = new ResourcePacks([Zip("fine", ("optifine/cem/pig.jem", Model("[64,32]", "[0,-13,-2]", 2)))]);
+        Assert.NotNull(PackModels.Read(read, pig));
+    }
 }
