@@ -18,14 +18,18 @@ git -C .engine remote get-url origin > /dev/null 2>&1 || git -C .engine remote a
 if [ "$(git -C .engine rev-parse --verify --quiet HEAD || true)" != "$ref" ]; then
   git -C .engine fetch --quiet --depth 1 origin "$ref"
   git -C .engine checkout --quiet --force --detach FETCH_HEAD
-  git -C .engine submodule update --quiet --init --recursive --depth 1
 fi
+# The submodules are set to the commits the checkout names each time, so one moved by hand is moved
+# back before the client is built against it.
+git -C .engine submodule update --quiet --init --recursive --depth 1
 
 # Built whenever the checkout moved or the program is missing, so a client of the last pin is not kept.
 client=.engine/3DEngine.Cli/bin/Debug/net10.0/e3d
 built=.engine/3DEngine.Cli/bin/Debug/net10.0/e3d.commit
 if [ "$(cat "$built" 2> /dev/null || true)" != "$ref" ] || { [ ! -x "$client" ] && [ ! -f "$client.exe" ]; }; then
-  dotnet build .engine/3DEngine.Cli/3DEngine.Cli.csproj -v q --nologo -p:UseSharedCompilation=false > /dev/null
+  # The build's output is kept back but for its last lines where it fails, which say why.
+  output=$(dotnet build .engine/3DEngine.Cli/3DEngine.Cli.csproj -v q --nologo -p:UseSharedCompilation=false 2>&1) \
+    || { printf '%s\n' "$output" | tail -n 30 >&2; echo "the engine's client did not build" >&2; exit 1; }
   printf '%s\n' "$ref" > "$built"
 fi
 echo "e3d of the engine's $ref, with ENGINE_CHECKOUT=$PWD/.engine"

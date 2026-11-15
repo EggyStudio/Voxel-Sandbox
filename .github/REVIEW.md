@@ -932,3 +932,56 @@ to the frame at 2 on the head and at 1.6 mended, before the pass after the scene
 
 The strict build is clean, 434 tests pass outside the GPU's lock, and the play passes in 190 s, its
 captures within 9 levels of the last play's but sky2's, which moves as much between plays.
+
+Reads 23 to 33 of item 181, mended, and Read 15's entry in the engine's ASKS.md, as asked. Each line
+was run first as the head writes it, fed the answer it misreads under the script's
+`set -euo pipefail`, where a line can be run apart from the game, and the rest read. The entry, the
+sun's share of a face's light that a look replacing it cannot read, stands at the end of the
+engine's `.github/ASKS.md`, written in the engine checkout and left for its next commit.
+
+Read 23. The tunnel's bits are held alike only over two readings at least, so a run that reads one
+fails, naming its levels (`play.sh:852`). Fed one level, the head's line passes on a spread of 0 and
+the mended one fails.
+
+Read 24. `stood` takes a world as standing where `voxel.state` begins with the player's feet, waits
+while it begins with `loading` and fails on any other answer (`play.sh:103`). Fed "no world is
+loaded", the head's form returns as stood and the mended one fails.
+
+Read 25. Once the game is stopped, the play lets its process's number go, so the trap stops no
+process given it since (`play.sh:1259`).
+
+Read 26. The pictures' open waits 600 s, and the trap is set before it, ending a game whose open ran
+out by the run's link, `VoxelSandbox-pictures-` and the script's process, as `play.sh` does, and
+taking the link away (`pictures.sh:75-82`).
+
+Read 27. `go` fails, naming the place, once the world has not stood and meshed within its 600 reads,
+rather than go on to the next picture (`pictures.sh:106`). Fed an answer that never stands, the
+head's form goes on and the mended one fails.
+
+Read 28. F4 goes once the engine holds F3, read from `input.state`, as `play.sh` sends Control and V
+(`pictures.sh:319`). It is read and not run, since the pictures' run fetches the default packs and
+takes every picture.
+
+Read 29. The list of packs is read whole before the loop, so a `packs.json` that does not parse ends
+the run (`pictures.sh:49`). Fed a cut `packs.json`, the head's loop reads no pack and goes on and
+the mended line fails.
+
+Read 30. The publish clears the game's intermediate files for its system before it compiles, so a
+second publish in a checkout compiles and warns as the first did (`publish.sh:34`). I read it as
+before and did not run a publish.
+
+Read 31. `fetch-slang.sh` holds each archive's sha256 as the release lists it and refuses a download
+of other bytes, and a version without its sums fails until they are written (`fetch-slang.sh:61` and
+:75). Run in a copy with a folder of its own, the archive of the version pinned passes, and with its
+sum changed the download is refused and taken away, with no stamp left.
+
+Read 32. The stamp is written once `slangc` runs, so a compiler that does not is fetched again
+(`fetch-slang.sh:94`).
+
+Read 33. The engine's checkout sets its submodules to the commits it names on every run, and a
+client that does not build prints its build's last lines (`engine.sh:24` and :31). The play below
+ran it.
+
+The strict build is clean, 434 tests pass outside the GPU's lock, and the play passes in 178 s, the
+tunnel's bits read five times, its captures within 8 levels of the last play's but sky2's, which
+moves as much between plays.

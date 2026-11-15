@@ -29,6 +29,9 @@ if ! ls build/shader-cache/terrain.*.spv > /dev/null 2>&1; then
 fi
 
 rm -rf "$out" "$out.zip"
+# The game is compiled anew for the system each time, its intermediate files cleared, so a second
+# publish in a checkout warns as the first did rather than skip the compile it would warn in.
+rm -rf "VoxelSandbox/obj/Release/net10.0/$rid"
 published="build/publish/$name-publish.log"
 mkdir -p build/publish
 dotnet publish VoxelSandbox -c Release -r "$rid" -p:PublishAot=true -p:Version="$version" -o "$out" "$@" 2>&1 | tee "$published"

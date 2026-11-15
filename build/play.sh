@@ -98,10 +98,14 @@ check() {
   checking=$1
   since=$SECONDS
 }
-# Waits until the world opened stands, its loading screen gone.
+# Waits until the world opened stands, its loading screen gone, its state then beginning with the
+# player's feet, and fails on any other answer, as one of no world loaded.
 stood() {
+  local state
   for i in $(seq 1 600); do
-    ask voxel.state | grep -q "^loading " || return 0
+    state=$(ask voxel.state)
+    [[ "$state" == "feet at "* ]] && return 0
+    [[ "$state" == "loading "* ]] || fail "the world opened did not stand, voxel.state said $state"
     cmd frames.wait 10
   done
   fail "the world did not stand within 6000 frames, $(ask voxel.state)"
@@ -844,7 +848,8 @@ done
 cmd voxel.still off
 cmd voxel.fly on
 echo "the tunnel's bits:$levels"
-[ -n "${levels// /}" ] || fail "voxel.pixel read none of the tunnel's bits"
+# The levels' spread holds the wall's light alike only over two bits at least.
+[ "$(wc -w <<< "$levels")" -ge 2 ] || fail "voxel.pixel read fewer than two of the tunnel's bits,${levels:- none}, where their spread takes two"
 printf '%s\n' $levels | sort -n | awk 'NR == 1 { low = $1 } { high = $1 } END { exit !(high - low <= 6) }' \
   || fail "a broken block's bit by the tunnel's wall takes light through the wall, its levels among the rest$levels"
 
@@ -1250,6 +1255,8 @@ echo "the seed's field began the $seeded"
 [ "$seeded" = "world overworld of seed 12345" ] || fail "the seed typed and pasted began the $seeded, where the overworld of seed 12345 was typed"
 
 ./e3d stop --session "$pid" --quiet > /dev/null 2> "$said" || fail "./e3d stop ended with $?, $(head -n 1 "$said")"
+# The game stopped, its process's number is let go, so the trap stops no process given it since.
+pid=""
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
 if grep -F 'Validation Error' "$log"; then fail "the validation layer reported an error"; fi

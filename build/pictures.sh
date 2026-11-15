@@ -44,7 +44,12 @@ opened=captures/pictures.json
 # fetched with the user agent the game sends, as Modrinth asks a program to name itself.
 sha512() { sha512sum "$1" | cut -d ' ' -f 1; }
 packs=()
+# The list is read whole first, so a packs.json that does not parse ends the run rather than leave
+# the pictures taken without its packs.
+listed=$(perl -MJSON::PP -0777 -ne 'print join("\t", @$_{qw(file url sha512)}), "\n" for @{decode_json($_)->{packs}}' VoxelSandbox/resources/packs.json) \
+  || { echo "VoxelSandbox/resources/packs.json could not be read" >&2; exit 1; }
 while IFS=$'\t' read -r file url sum; do
+  [ -n "$file" ] || continue
   path="captures/packs/$file"
   if [ ! -f "$path" ] || [ "$(sha512 "$path")" != "$sum" ]; then
     curl -fsSL -A "VoxelSandbox build/pictures.sh (+https://github.com/EggyStudio/Voxel-Sandbox)" -o "$path.part" "$url"
@@ -52,21 +57,31 @@ while IFS=$'\t' read -r file url sum; do
     mv "$path.part" "$path"
   fi
   packs+=(--pack "$PWD/$path")
-done < <(perl -MJSON::PP -0777 -ne 'print join("\t", @$_{qw(file url sha512)}), "\n" for @{decode_json($_)->{packs}}' VoxelSandbox/resources/packs.json)
+done <<< "$listed"
 
-./e3d open "$program" --offscreen --transient "${packs[@]}" --json > "$opened"
-pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' "$opened")
-[ -n "$pid" ] || { echo "e3d did not open the game, it said $(cat "$opened")" >&2; exit 1; }
 # A game the stop through e3d leaves running, as one does where ./e3d itself fails, is stopped by
 # its process ten seconds on, and killed five after that.
 stop_by_process() {
   local n
+  [ -n "$1" ] || return 0
   for n in $(seq 1 100); do kill -0 "$1" 2> /dev/null || return 0; sleep 0.1; done
   kill "$1" 2> /dev/null || true
   for n in $(seq 1 50); do kill -0 "$1" 2> /dev/null || return 0; sleep 0.1; done
   kill -9 "$1" 2> /dev/null || true
 }
-trap './e3d stop --session "$pid" --quiet > /dev/null 2>&1 || true; stop_by_process "$pid"' EXIT
+# The game is opened by a link of this run's own name beside it, as build/play.sh opens it, and the
+# trap is set before the open, so a game whose open ran out before it answered is ended by that
+# link, which no other program's command line names, and the link is taken away.
+run=VoxelSandbox-pictures-$$
+if [ -f "$program.exe" ]; then cp "$program.exe" "$(dirname "$program")/$run.exe"; else ln -sf "$(basename "$program")" "$(dirname "$program")/$run"; fi
+program=$(dirname "$program")/$run
+pid=""
+trap 'if [ -n "$pid" ]; then ./e3d stop --session "$pid" --quiet > /dev/null 2>&1 || true; fi; stop_by_process "$pid"
+  pkill -f -- "/$run( |\$)" 2> /dev/null || true
+  rm -f "$program" "$program.exe"' EXIT
+./e3d open "$program" --offscreen --transient "${packs[@]}" --timeout 600 --json > "$opened" || true
+pid=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' "$opened")
+[ -n "$pid" ] || { echo "e3d did not open the game, it said $(cat "$opened")" >&2; exit 1; }
 cmd() { ./e3d command "$@" --quiet --timeout 600 --session "$pid"; }
 shot() { ./e3d shot "$PWD/captures/$1.png" --timeout 600 --session "$pid" > /dev/null; }
 
@@ -85,9 +100,11 @@ cmd voxel.fov 40
 go() {
   cmd voxel.tp "$1" "$2" "$3"
   for i in $(seq 1 600); do
-    ./e3d command voxel.state --timeout 600 --session "$pid" | grep -v "^loading " | grep -q " 0 generating, 0 sections to mesh" && break
+    ./e3d command voxel.state --timeout 600 --session "$pid" | grep -v "^loading " | grep -q " 0 generating, 0 sections to mesh" && return 0
     cmd frames.wait 10
   done
+  echo "the world at $1, $2, $3 did not stand and mesh within 6000 frames" >&2
+  exit 1
 }
 
 # Raises the eye a block at a time, up to eight, until its cell holds air, so no view is taken from
@@ -298,7 +315,8 @@ cmd input.key E 1
 window creative center
 cmd input.key E 1
 ./e3d command input.key F3 90 --quiet --timeout 600 --session "$pid" &
-cmd frames.wait 10
+# F4 goes once the engine holds F3, as build/play.sh sends Control and V.
+for i in $(seq 1 50); do ./e3d command input.state --timeout 600 --session "$pid" | grep -q '^keys: .*F3' && break; done
 cmd input.key F4 1
 window switcher center
 wait

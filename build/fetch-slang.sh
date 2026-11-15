@@ -56,9 +56,27 @@ fi
 url="https://github.com/shader-slang/slang/releases/download/v$VERSION/$archive"
 download="$TOOLS_DIR/$archive"
 
+# Each archive's sha256 as the release lists it, so one of other bytes is refused. A new version
+# fails here until its sums are written.
+case "$archive" in
+    slang-2026.18.2-linux-x86_64-glibc-2.28.tar.gz) sum=991f521829100d06846a2697425d588f604f3bf3a23a6bfc499136585f7e6a6f ;;
+    slang-2026.18.2-linux-aarch64-glibc-2.28.tar.gz) sum=56fe614bc019c9b53cd1de01537c4ac8d95120e46f4bb6b9cce56e916883f55c ;;
+    slang-2026.18.2-windows-x86_64.zip) sum=747602aec6b3623658d55fea87492d71828e15d16802d7941204fde418ceee8e ;;
+    slang-2026.18.2-windows-aarch64.zip) sum=89d9c9b9a89d8f819239db0b33adf7d885b6ddba12d3a798f2cf8e6c8855361e ;;
+    slang-2026.18.2-macos-x86_64.tar.gz) sum=d09a2993b4ed6d81c0c19ff8bede27944bf73437d982549bd7b2ac5a1a3202b9 ;;
+    slang-2026.18.2-macos-aarch64.tar.gz) sum=410c0ed14e231089a58437bb0d8e00389c48e29ed9ffe23e3b04a5c74f1ce809 ;;
+    *) echo "No sha256 is written here for $archive. Write the one its release lists." >&2; exit 1 ;;
+esac
+sha256() { if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi | cut -d ' ' -f 1; }
+
 mkdir -p "$TOOLS_DIR"
 echo "==> downloading $url"
 curl -fsSL --retry 3 -o "$download" "$url"
+if [ "$(sha256 "$download")" != "$sum" ]; then
+    rm -f "$download"
+    echo "$url is not the archive its release lists, its sha256 not $sum" >&2
+    exit 1
+fi
 
 rm -rf "$SLANG_DIR"
 mkdir -p "$SLANG_DIR"
@@ -70,7 +88,8 @@ else
 fi
 
 rm -f "$download"
-echo "$VERSION" > "$STAMP"
 
+# The stamp is written once the compiler runs, so one that does not is fetched again next time.
 "$SLANG_DIR/bin/slangc" -v >/dev/null
+echo "$VERSION" > "$STAMP"
 echo "==> slangc $VERSION is at $SLANG_DIR/bin"
