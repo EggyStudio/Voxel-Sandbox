@@ -3190,6 +3190,21 @@ before a batch.
     backing off while the error stands. A test with a save folder that cannot be written reads the
     switch, the quit and the message.
 
+184. **A file error outside the save.** The coder's read of 2026-11-15 in the Replies, three kinds.
+    In the drawing, where a throw between the frame's begin and its end leaves the game never
+    drawing again, the options write, the worlds list, the packs screen's listing and its Done. At
+    the start, where the program ends before its first frame, the options read, the pack list, the
+    packs, the first world's folder and the save's readers that let an access error through. In a
+    frame's update, the screenshot's folder and its claim of a file never written, the options
+    written by a key or a command, the packs reopened, the defaults taken, a switch to a world whose
+    folder cannot be made, and the flicker run's file. One rule across them as item 183 set for the
+    save. The drawing and the update never end at a file error, the player is told once on the HUD
+    with the file and the reason, a setting or a list not written is kept for the next change, a
+    world that cannot be opened is left unopened with the player kept in the current one and told,
+    and the start goes on with defaults where a file cannot be read, the log saying which. The
+    drawing's kind first, then the start, then the update, a commit a kind, each path with a test
+    that fails first where the test game can reach it.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -5620,6 +5635,196 @@ update never end at a file error, the player told once on the HUD with the file 
 setting or a list not written kept to be written at the next change, a world that cannot be opened
 left unopened with the world before kept, and the start going on with defaults where a file cannot
 be read.
+
+Item 184's first kind, the drawing's, mended. Each test was run first on a copy of `7785818` with
+the tests added and the two seams the tests reach the paths by, the options file given and the
+worlds listed under a folder given.
+
+A file the game keeps is read or written through one way, `VoxelGame.Guarded` (:121), which gives a
+fallback where the file fails as a full disk or a folder the account cannot read or write does,
+tells the log each time, and the player once on the HUD by what failed and the reason until that
+file is read or written again. The drawing reaches four, and none ends it. (a) The settings, written
+as a menu screen is left (`KeepOptions`, :104), the same write G and `voxel.options` make. (b) The
+worlds listed by the menu's World button (`Menus.cs:128`), where a world whose info the account
+cannot read is left out too, as one whose info does not parse is (`WorldSave.cs:313`). (c) The
+packs' folder listed by the packs screen (`Menus.cs:303` and :308). (d) The packs chosen on it
+(`VoxelGame.cs:187`), whose list is kept through the same way, and a pack that cannot be read, a zip
+that is no zip or a folder the account cannot read, is left out of those drawn and said by its name
+(`ResourcePacks`, :35 and :49, `VoxelGame.cs:199`), where it ended the drawing and the opening of
+every pack beside it.
+
+The test `Leaving_A_Menu_Whose_Settings_Cannot_Be_Kept_Draws_On_And_Tells_The_Player_Once` gives the
+test game an options file with a folder in the place of its copy, leaves a menu screen twice, frames
+drawn after each, and holds that the HUD says "The settings could not be kept" once. It fails on the
+head by `UnauthorizedAccessException` out of the frame.
+`A_World_Whose_Info_The_Account_Cannot_Read_Is_Left_Out_Of_The_Worlds_Listed` lists two saved
+worlds, one whose `world.json` the account cannot read, a mode set on Linux and macOS alone, and
+fails on the head by `UnauthorizedAccessException`.
+`A_Pack_That_Cannot_Be_Read_Is_Left_Out_And_Said` chooses a pack that is no zip and fails on the
+head by `InvalidDataException`. The packs' folder listed is read and not tested, since the test game
+reaches it only through the player's own data folder, which a test leaves alone.
+
+The strict build is clean, 439 tests pass outside the GPU's lock, and the play passes in 204 s, its
+captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+Item 184's second kind, the start's, mended. Each test was run first on a copy of `c51b643` with the
+tests added and the list of what the game said of its files, a line, which the start's test reads
+since the HUD's line ages out while the test game stands.
+
+The start goes on where a file cannot be read. The settings the game reads (`VoxelGame.cs:99`) and
+the packs' list (:90) go through `Guarded`, the player told once and the defaults kept, and the
+window's own read of the options file finds no value in one it cannot read (`OptionsFile.Find`,
+`OptionsFile.cs:126`), so the window takes its defaults. An options file that cannot be read is held
+as written with the defaults (:85), so it is written over only once the player changes a setting
+from them, as asked. A world whose folder cannot be made is played unsaved, the player told
+(`VoxelGame.cs:466`), where the program ended. The save's readers take an
+`UnauthorizedAccessException` as the fault they take an `IOException` for, the file moved aside and
+the world opened from what reads (`WorldSave.cs:146`, :336, :432, :505 and :537), so a save's file
+the account cannot read is neither the end of the open nor of the start.
+
+The test `A_File_Of_The_Save_The_Account_Cannot_Read_Is_Kept_Beside_And_The_World_Opens` gives each
+of the save's five files a mode the account cannot read, on Linux and macOS, reads the save and
+holds that the file lies aside, and fails on the head by `UnauthorizedAccessException` for each.
+`An_Unreadable_Options_File_Keeps_The_Defaults_And_Is_Written_Once_A_Setting_Changes` finds no value
+in such a file, reads it with the render distance kept, writes nothing with the defaults standing
+and writes once the render distance changes, and fails on the head at the find.
+`A_World_Whose_Folder_Cannot_Be_Made_Is_Played_Unsaved_And_Said` opens the test game at a world
+under a file and fails on the head by `DirectoryNotFoundException` out of the start. The game's own
+reads at the start are read and not tested, since the test game keeps no settings and reads no
+packs' list.
+
+The strict build is clean, 446 tests pass outside the GPU's lock, and the play passes in 195 s, its
+captures within 9 levels of the last play's but sky2's, which moves as much between plays.
+
+Item 184's third kind, the update's, mended, and the screenshot's write that fails after the frame
+in the engine's ASKS.md. Each test was run first on a copy of `2e6c699` with the tests added and the
+two seams they reach the screenshot by, the screenshot taken as F2 takes it and the folder it goes
+into given.
+
+F2 says "Saved screenshot as" only where the screenshots' folder could be made, and where it could
+not, "Screenshots could not be kept" with the reason, once (`VoxelGame.Screenshot`,
+`VoxelGame.cs:419`). The engine writes the picture after the frame and says a write that fails to
+its log alone (`E3D.Window.cs:115` of `baa21ff4`), so the HUD cannot know of it, and the engine's
+ASKS.md holds that as an entry of 2026-11-15, uncommitted in the engine's tree. A switch to a world
+whose folder cannot be made keeps the player in the world played and says so, where the game begins
+plays it unsaved (:477). A recording of `voxel.flicker` whose file cannot be written ends and says
+so (`Measurements.cs:55`), where it stayed set and ended every frame's `Begin` after. The settings
+written by G and `voxel.options`, F3 with T and the default packs taken were mended with the
+drawing's kind at `c51b643`, the same writes and the same packs' opening.
+
+The test `A_Screenshot_Whose_Folder_Cannot_Be_Made_Says_So_And_Not_That_It_Was_Saved` fails on the
+head by `DirectoryNotFoundException`,
+`A_Switch_To_A_World_Whose_Folder_Cannot_Be_Made_Keeps_The_World_Played_And_Says_So` fails on the
+head, which opened the world asked for unsaved, and
+`A_Recording_Whose_File_Cannot_Be_Written_Ends_And_Says_So` fails on the head, whose recording stays
+set after its frames.
+
+The strict build is clean, 449 tests pass outside the GPU's lock, and the play passes in 181 s, its
+captures within 8 levels of the last play's but sky2's, which moves as much between plays.
+
+Item 184's paths left read, given tests, as asked. The game takes the folder its settings file and
+its packs' list are kept in, the data folder beside the saves where none is given, and reaches its
+packs' list through itself (`VoxelGame`, its `settingsFolder` and `PackList`), where
+`PackList.Default` and `OptionsFile.Default` fixed it to the player's data folder, so the nine uses
+of the list in the game, the menus and `voxel.packs` go through the game. `Program` gives no folder,
+so the player's game reads and writes its files where it did. The test game given a folder keeps its
+settings there, with an empty packs' list where the test gives none so it fetches no pack, and one
+given none keeps no settings and is transient where it is given no save, as before, so no test reads
+or writes the real data folder. Read over the suite, no test opens the packs screen or sends
+`voxel.packs` but with a folder of its own, and the tests that choose packs give their whole paths
+with the settings off.
+
+Each test was run first on a copy of `7785818`, before item 184's mends, with the same change made
+to it by one script.
+`A_Start_Whose_Options_File_Cannot_Be_Read_Keeps_The_Defaults_And_Leaves_The_File` fails there by
+`UnauthorizedAccessException` out of the start, and passes with the file's write time unchanged
+through the start, the stand and the close.
+`A_Start_Whose_Packs_List_Cannot_Be_Read_Draws_No_Pack_And_Says_So` fails there likewise and passes
+with no pack drawn. Both set a file's mode the account cannot read, on Linux and macOS alone.
+`The_Packs_Screen_Over_A_Packs_Folder_That_Cannot_Be_Listed_Draws_On_And_Says_So` opens the packs
+screen over a file in the place of the packs' folder, on every system, and fails there by
+`IOException` out of the frame. The options file written over only once a setting changes stays
+tested on the file itself, since the test game sets its render distance after its start. The strict
+build is clean, 452 tests pass outside the GPU's lock, and the play passes in 186 s, its captures
+within 11 levels of the last play's, on no pixel past 8 but sky2's, which moves as much between
+plays.
+
+`PackList.Default` had no caller left, the game's nine uses of the list going through the game's
+own, and is taken out. `OptionsFile.Default` keeps its one, `Program.cs:40`, which restores the
+window's resolution and mode from the options file before the window opens and before the game is
+made, the same file the game given no folder reads, so it stays. The strict build is clean, 452
+tests pass outside the GPU's lock, and the play passes in 193 s, its captures within 8 levels of the
+last play's but sky2's, which moves as much between plays.
+
+The third read of the lane, the play's script and the workflow apart, of what a player can do in
+the menus and the console that the tests do not reach, before any mend, as asked. The tests send 26
+of the game's 71 console commands, and the read went through the bodies of the other 45, the menus'
+screens and the inventory's window. Each finding was read in the code and not run, but for the
+search's time in the second.
+
+1. `voxel.fill` and `voxel.room` hang the game where a corner stands at int's top.
+   `GameCommands.cs:146` counts each side of the box in int before it widens the count, so a side
+   from 0 to 2,147,483,647 counts minus 2,147,483,648 blocks and the box passes the fill's bound at
+   :147, and the loops at :150 to :152 run while a place stays at or under its corner, which a
+   corner at 2,147,483,647 never ends, the place wrapping past it. So
+   `voxel.fill 0 0 0 2147483647 0 0 stone` holds the frame without end, and
+   `voxel.fill 2147483647 0 0 2147483647 0 0 stone`, a box of one block counted right, as well.
+   The mend I would make is the sides counted in long and a corner past `LandOrigin.Edge` on any
+   axis refused with a line, as `voxel.tp` refuses a place past it (:97), with a test giving both
+   boxes and failing first by a time bound.
+2. `voxel.biome` holds a frame for seconds where the biome named lies past its reach.
+   `GameCommands.cs:843` to :851 sample the overworld 8 blocks apart over 375 rings, 564,001 places,
+   each by `Overworld.At`, the land's height with its climate, on the frame's thread. A scratch test
+   of the same loop on cores 16 to 31 took 6.74 s for the whole search, so a biome none of the land
+   within 3,000 blocks holds freezes the game that long, and e3d's command waits as long. The mend I
+   would make keeps the rings 8 apart to 512 blocks and takes them 32 apart past it to 2,976, as
+   Minecraft's search of a biome steps 32 blocks, 50,521 places, some 0.6 s by the same cost a
+   place, with a test timing a search that finds nothing and failing first.
+3. `voxel.save` answers "saved to" a folder where the save failed. The save catches its error
+   (`VoxelGame.cs:724` to :733), so `SaveNow` (`GameCommands.cs:248` to :249) answers alike either
+   way, and a player asking again while the disk stays full is told the world was saved, where the
+   HUD said once that it could not be. The mend I would make is the save saying whether it wrote and
+   the command answering that the world could not be saved, with the reason, a test with a folder
+   that cannot be written failing first.
+4. A world played unsaved, its folder not made at the start, is called transient by `voxel.state`
+   (`GameCommands.cs:48`) and `voxel.save` (:247), where the game is not transient
+   (`VoxelGame.Transient`) and the HUD said it is played unsaved. The mend I would make says
+   unsaved where the game is not transient, held in a test of a folder not made.
+5. `voxel.gi` takes a number as a quality (`GameCommands.cs:614`), `Enum.TryParse` reading `7` or
+   `-1` as a value the enum names none of, where `voxel.view` (:451) and `voxel.mode` (:424) hold
+   theirs to `Enum.IsDefined`. The game keeps it as its quality, the HUD's help reads "G light: 7",
+   and the engine's table gives such a quality no cascades (`Illumination.cs:37` in the engine),
+   what it draws then not read. G and the options' button step it back to off. The mend I would
+   make is the same `Enum.IsDefined`, a test giving `7` and `-1` failing first. Beside it, the
+   world's info reads its mode the same way (`VoxelGame.cs:522`), so a world.json whose mode is `7`
+   plays a mode that touches but neither builds nor lives, titled as spectator, and is saved back as
+   7, a reader item 181 left, mended alike.
+6. `voxel.flicker` takes any count of frames (`GameCommands.cs:701`), and the recording reads the
+   screen back in each of them (`Measurements.cs:34`) and keeps 16 bytes a frame, so a count of
+   2,147,483,647 records for 414 days at 60 frames a second, through a switch of worlds, until
+   another recording takes its place. Nothing hangs. The mend I would make is a bound of 36,000
+   frames, ten minutes at 60 a second, or the count is left as given, a measuring command's choice.
+7. `Gui.cs:139` and :140 hold the button's summary and returns over the text field's, so
+   `TextField` carries two summaries and `Button` (:181) none, since `b25e668` added the field. I
+   would mend it in passing with the first commit.
+
+The rest reads clean. The commands that take a number hold it where a loop, an index or a size takes
+it, `voxel.distance` to 2 to 16, `voxel.scale` to 0 to 4, `voxel.field` and `voxel.gpu` to 1 to 8,
+`voxel.day` from 0 with its moon by a modulo, `voxel.give` from 1, `voxel.furnace` and
+`voxel.vitals` to their slots' and their bars' ranges, `voxel.spawn` its variant by a modulo,
+`voxel.mobs` and `voxel.fires` a count taken, none below 0, `voxel.find` to 40 rings of cells,
+`voxel.ticks` from 0, `voxel.hurt` none below 0, and `voxel.color`, `voxel.gaps` and `voxel.edge` to
+the window. `voxel.craft` ends where the materials do, and `voxel.view` and `voxel.mode` take only a
+value named. The packs' screen and the worlds' screen index within their lists and scroll within
+them, the new world's screen takes a seed of 32 characters, any text giving one (`Menus.SeedOf`),
+the options' sliders and choices hold their values to their ends (`Option.Change`, `Option.Shown`),
+the sky's colors index a list of a fixed size, and the inventory's window takes, splits, spreads,
+gathers, sorts and drops within its slots and the stacks' sizes, the made slot and the furnace's
+output only taken from (`InventoryWindow.Pointer`), a shifted craft ending where the materials or
+the room do.
+
+The order I would take is 1 and 2, the frame held, then 3 and 4, the console's words, then 5 with 7,
+and 6 last, a commit for the first two and one for the rest.
 
 ## Items closed, parked or shortened
 

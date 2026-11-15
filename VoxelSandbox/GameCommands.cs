@@ -140,10 +140,15 @@ public static class GameCommands
     {
         if (Game is not { } game) return "no world is loaded";
         if (!Blocks.TryFind(block, out var id)) return $"no block is called {block}, and voxel.blocks lists them";
+        // Corners within the land's edge keep each loop short of the int's end, where a place would
+        // wrap past its corner and the loop never end, and each side counts in a long, which holds
+        // one from edge to edge.
+        int[] corners = [x1, y1, z1, x2, y2, z2];
+        if (corners.Any(c => Math.Abs((long)c) > LandOrigin.Edge)) return $"a box's corners lie within {LandOrigin.Edge} blocks of the land's zero along each axis";
         (x1, x2) = (Math.Min(x1, x2), Math.Max(x1, x2));
         (y1, y2) = (Math.Min(y1, y2), Math.Max(y1, y2));
         (z1, z2) = (Math.Min(z1, z2), Math.Max(z1, z2));
-        var volume = (long)(x2 - x1 + 1) * (y2 - y1 + 1) * (z2 - z1 + 1);
+        var volume = ((long)x2 - x1 + 1) * ((long)y2 - y1 + 1) * ((long)z2 - z1 + 1);
         if (volume > FillLimit) return $"the box holds {volume} blocks, more than the {FillLimit} one fill changes";
 
         var changed = 0;
@@ -832,7 +837,7 @@ public static class GameCommands
         return $"no {structure.Name} within {40 * structure.CellSize} blocks";
     }
 
-    [Command("voxel.biome", "The nearest place of a biome from the player, its ground's top, searched outward in rings 8 blocks apart to 3000 blocks: voxel.biome <name>")]
+    [Command("voxel.biome", "The nearest place of a biome from the player, its ground's top, searched outward in rings 8 blocks apart to 512 blocks and 32 apart past them to 3000 blocks: voxel.biome <name>")]
     internal static string FindBiome(string name)
     {
         if (Game is not { } game) return "no world is loaded";
@@ -840,15 +845,21 @@ public static class GameCommands
             return $"no biome is called {name}, which is {string.Join(", ", Biomes.All.Select(b => b.Name))}";
         if (game.World.Generator is not Overworld land) return "only the overworld has biomes";
         var (px, _, pz) = LandOrigin.BlockOf(game.Player.Body.Position);
-        for (int ring = 0; ring <= 375; ring++)
+        // The rings 32 blocks apart past 512, as Minecraft's search of a biome steps 32 blocks, so the
+        // whole search samples 50,521 places in its frame.
+        for (int reach = 0; reach <= 3000; reach += reach < 512 ? 8 : 32)
+        {
+            var step = reach <= 512 ? 8 : 32;
+            var ring = reach / step;
             for (int z = -ring; z <= ring; z++)
                 for (int x = -ring; x <= ring; x++)
                 {
                     if (Math.Max(Math.Abs(x), Math.Abs(z)) != ring) continue;
-                    int wx = px + x * 8, wz = pz + z * 8;
+                    int wx = px + x * step, wz = pz + z * step;
                     var (height, _, _, found) = land.At(wx, wz);
-                    if (found == biome) return $"the nearest {biome.Name} is at {wx}, {height}, {wz}, {ring * 8} blocks away";
+                    if (found == biome) return $"the nearest {biome.Name} is at {wx}, {height}, {wz}, {reach} blocks away";
                 }
+        }
         return $"no {biome.Name} within 3000 blocks";
     }
 
