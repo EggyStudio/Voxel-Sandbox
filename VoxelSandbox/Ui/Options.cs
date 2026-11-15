@@ -170,9 +170,11 @@ public sealed class OptionScreens
                 light.ShadowSoftness = v;
                 SetShadowSoftness(v);
             }) { High = 5, Step = 0.01f, Format = v => $"{v:0.00} degrees" },
-            // The sections are shaded again once the slider is let go, rather than each frame it moves.
+            // The sections of the world played are shaded again once the slider is let go, rather
+            // than each frame it moves. The world is read as it is let go, since the screens
+            // outlast a switch.
             new("Corner Shade", () => renderer.CornerStrength * 100, v => renderer.CornerStrength = v / 100)
-                { High = 100, Step = 5, Format = Option.Percent, Settled = game.World.ReshadeAll },
+                { High = 100, Step = 5, Format = Option.Percent, Settled = () => game.World.ReshadeAll() },
             new("Emission", () => renderer.GlowScale, v => renderer.GlowScale = v) { High = 4, Step = 0.1f, Format = v => $"{v:0.0}" },
             Option.Toggle("Colored Lamps", () => renderer.ColoredLamps, on => renderer.ColoredLamps = on),
             new("Rim Light", () => renderer.Rim * 100, v => renderer.Rim = v / 100) { High = 100, Step = 5, Format = Option.Percent },

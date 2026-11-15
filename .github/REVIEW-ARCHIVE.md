@@ -3251,6 +3251,30 @@ before a batch.
     as an unreadable file is. Each with a test through the game's state, a seam no larger than the
     reload's where one is needed.
 
+189. **The mobs, the drops and the block light, the fifth read.** Given at 22:20 on 2026-11-15, the
+    coder's own read as the fourth was. The lane is `Entities` whole, the item drops, and
+    `World/Lighting.cs`, read by what their tests do not reach. Look for a mob or a drop that
+    outlives its column's unloading or is kept twice across a save and a load, a count that grows
+    without a bound, a place or a speed that is not finite after a blast or a fall, a mob spawned or
+    moved into a block, a hit or a pickup that acts behind a screen or on a dead player, and block
+    light left behind or missing after a block is set, a column loads beside a lit one, or the
+    origin moves. Each finding is told with the lines that make it and a test that fails on the
+    head, in a Reply, the order proposed with it. The mends follow in one or two commits once the
+    list is agreed, each test failing on a head copy. A finding that is the engine's goes to ASKS.md
+    and is not worked around.
+
+190. **The player and the land's generation, the sixth read.** Given at 22:45 on 2026-11-15, the
+    coder's own read as the fifth was. The lane is `Player` whole and `Generation` whole, read by
+    what their tests do not reach. Look for a player moved into a block or through one at a column's
+    edge, a low frame rate or a long frame that tunnels, a fall's damage counted twice or lost
+    across a teleport, a respawn or a mode change, a vital that leaves its range or is not finite, a
+    view or a reach that acts through a wall, and in the generation a column that differs between
+    two runs of one seed, a tree, an ore or a cave cut at a column's edge by the order the columns
+    generate in, a height or an index past its array for a far place or a negative one, and a seed
+    whose extremes overflow. Each finding is told with the lines that make it and a test that fails
+    on the head, in a Reply, the order proposed with it. The mends follow once the list is agreed. A
+    finding that is the engine's goes to ASKS.md and is not worked around.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -6287,6 +6311,149 @@ it back behind a wall set across the edge (two tests, passing on the head). The 
 land's block places, which the origin's step does not touch. Two ways normalized in the blast's push
 on the player and in a skeleton's shot are zero only for a blast half a block over the player's
 middle or a skeleton's eye on the player's, which play does not reach, and are left.
+
+The order I would take is 1 and then 2, in one commit, each test failing on a head copy.
+
+Item 189, the fifth read's two findings mended as agreed, in one commit. Each test was run first on
+a copy of `ff96b6e` with the tests added.
+
+1. The crowding pushes each mob of a pair only where it moves, its column's neighbors loaded, the
+   same check by which the passive mobs think and the hostile ones hunt, and pushes a mob away
+   from the player likewise, so a mob standing still beside land not loaded takes no push and the
+   one of a pair that moves takes its own (`MobMind.Crowd`).
+   `A_Mob_Standing_Still_Beside_Land_Not_Loaded_Takes_No_Push_And_One_That_Moves_Takes_Its_Own`
+   crowds two pigs in the last loaded column east of the player and two either side of its west
+   edge for 90 frames, and holds the three standing still at no speed and the one that moves pushed
+   west. It fails on the head, which gives the first a speed.
+2. A hostile mob spawns where every cell its box takes about the cell's middle, at each height it
+   takes, holds no box and no water, a spider's reaching into the cells beside its own
+   (`Mobs.Spawnable`).
+   `A_Spider_Does_Not_Spawn_Into_The_Wall_Or_The_Water_Beside_Its_Cell_Where_A_Zombie_Does` sets a
+   stone and a water beside two cells of a stone floor, and holds that a zombie spawns in each and
+   a spider in neither, and one in an open cell. It fails on the head, which lets the spider spawn
+   beside the stone.
+
+The light's two tests of the read stay in `LightingTests`, a lamp on a column's edge taking its
+light back from the column beside it as it is broken, and a column loading again beside a lamp
+taking its light and giving it back over a wall set across the edge. Both pass on the head and take
+under a second together.
+
+The strict build is clean, 480 tests pass outside the GPU's lock, and the play passes in 191 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+The sixth read, of `Player` whole and `Generation` whole by what their tests do not reach, before
+any mend. Each candidate was held by a test on a copy of `e84d2db`, outside the GPU's lock, and one
+fault failed two of them.
+
+1. The vitals' reckoning carries over a time out of survival. The vitals are taken only while the
+   player lives, in survival or adventure (`GameFrame.Live`, `[InState(Living.Yes)]`), and each
+   frame they take the move since the place they last read (`Vitals.Update`, `Vitals.cs:82` to
+   :99). Nothing starts that reckoning again as the mode comes back, as `Vitals.Arrived` starts it
+   after a teleport (`VoxelGame.cs:1003` to :1007), so the first frame back in survival takes the
+   whole way since the mode left it as one move, and the fall it had counted.
+   - `A_Flight_In_Creative_Tires_The_Player_Nothing_Back_In_Survival` flies 200 blocks east in
+     creative and fails on the head, which gives the player 2.0 of exhaustion on its return, half a
+     point of food. An hour's flight at creative's 21.6 blocks a second would take 194 points at
+     once, every point of food the player holds and its saturation.
+   - `A_Fall_Begun_In_Survival_And_Ended_In_Creative_Harms_Nothing_Back_In_Survival` falls 12.4
+     blocks in survival, lands in creative and comes back, and fails on the head, which takes 10 of
+     the player's 20 health on its return, the fall's damage dealt minutes after the fall.
+   The mend I would make starts the reckoning again as the player comes to live, by
+   `Vitals.Arrived` on entering `Living.Yes`, as a teleport starts it.
+
+Read clean, by tests that pass on the head where named. A seed's columns are the same made alone, in
+order and on eight workers at once, 49 columns of seed 1 alike block for block
+(`A_Seeds_Columns_Are_The_Same_Made_Alone_In_Order_Or_On_Many_Workers_At_Once`). Seeds at the ints'
+ends, 0 and -1, and columns at the land's edge, 67,108,863 columns out either way, make ground
+within the world, the overworld's and the flat world's, with no index past its array. A tree, a
+patch or a structure is placed by every column its reach covers from the cells around, each column
+asking the same noise of the ground under a trunk in a neighbor (`Caves.Places.DensityAt` reads the
+noise's corners at any place), so a crown is not cut at a column's edge. A body moves in steps of at
+most 0.45 of a block, shorter than the player's or any mob's box is wide or tall, so no frame the
+game takes carries one through a block, and one standing in a block walks out. The ray to the block
+aimed at meets a smaller block's pieces, a mob is aimed at only where it is nearer than the block,
+and the camera behind or before the player stands short of the nearest block any of five rays meets.
+A teleport and a respawn start the vitals again, a vital set by a save or a command is held to its
+range, and breath, food and saturation stay within theirs.
+
+One aside of the last lane's, read on the way and low. A stack, a quarter of a block tall, falling
+at its 40 blocks a second in a frame of a twentieth moves 0.4 a step, so in a sixteenth of the
+places over a snow layer, an eighth of a block thick, it passes the layer and lies inside it on the
+block under it. At 60 frames a second it steps 0.33 and does not. I would leave it.
+
+The order I would take is the one mend, its two tests in one commit.
+
+Item 190, the sixth read's finding mended in one commit, in the game's mode setter rather than on
+entering `Living.Yes`. Each test was run first on a copy of `e84d2db` with the tests added.
+
+The vitals' reckoning starts again as the mode comes to one in which the player lives from one in
+which it does not (`VoxelGame.Mode`, which calls `Vitals.Arrived` as a teleport does). Every way
+into survival or adventure sets the mode through it, from creative or spectator by the switcher or
+`voxel.mode`, and into a world opened in survival or adventure, whose mode is set as it opens,
+where `Vitals.Set` starts the reckoning too. A switch between survival and adventure keeps the
+reckoning, both taking the vitals, and a respawn starts it by `Vitals.Set`.
+
+The mend was first an `[OnEnter(Living.Yes)]` system, and both tests failed on it. A probe logging
+the frame showed the `InState(Living.Yes)` system that takes the vitals running in the frame of the
+switch, the fall dealt there, and the enter system in the next frame, after it. `Living` is computed
+from the mode, and the engine activates a computed state that comes back from none for its enter at
+the next transition point, while its `InState` systems take it as current at once. That stands in
+the engine's ASKS.md as an entry, uncommitted there. The setter is the game's own place for the
+reckoning, and no system of the game's needs the enter.
+- `A_Flight_In_Creative_Or_Spectator_Tires_The_Player_Nothing_Back_In_Survival` flies 200 blocks
+  east in creative and 200 in spectator, each followed by survival, and holds the exhaustion, the
+  saturation and the food as they were. It fails on the head, whose 4.0 of exhaustion take a point
+  of the player's saturation.
+- `A_Fall_Begun_In_Survival_And_Ended_In_Creative_Harms_Nothing_Back_In_Survival` falls twelve
+  blocks in survival and lands in creative, and fails on the head, which takes 10 of the player's
+  20 health on its return.
+
+The strict build is clean, 482 tests pass outside the GPU's lock, and the play passes in 186 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+The seventh read, of `Blocks`, `Items` and `World` apart from the save and the lighting by what
+their tests do not reach, before any mend. Each candidate was held by a test on a copy of `e84d2db`,
+outside the GPU's lock, and two findings failed theirs.
+
+1. Water stopped at the edge of a column not loaded stays stopped once that column loads. A cell of
+   water flows only at its tick, which a block changed beside it asks for (`Fluids.Around`,
+   `VoxelWorld.cs:152`), and its flow into a column not loaded is refused, `SetBlock` setting
+   nothing there (`VoxelWorld.cs:131` to :132). As the column arrives nothing asks the water beside
+   its edge to look again (`VoxelWorld.Add`, :60 to :72), so a stream or a fall the player made ends
+   in a wall of air along the edge for good.
+   `Water_Stopped_At_A_Column_Not_Loaded_Flows_On_As_It_Loads` sets a source at x 14 beside a column
+   not loaded, runs 100 ticks, loads the column and runs 100 more, and fails on the head, which
+   leaves air at x 16. The mend I would make has a column's arrival ask each cell of water on its
+   loaded neighbors' edges that faces air across the edge to look again.
+2. A block falling and a lit TNT as the world closes or switches are lost. Both are entities of the
+   engine's ECS while they fall or burn, their cells taken out of the world as they began, and the
+   save keeps neither (`VoxelGame.SaveWorld`), the switch letting them go with the world left
+   (`VoxelGame.cs:573` and :576). A sand, a gravel, a felled tree's log or a TNT is gone, neither a
+   block nor an item.
+   `A_Block_Falling_And_A_Lit_Tnt_As_The_World_Closes_Are_In_It_When_It_Opens_Again` lets a sand
+   fall from 12 and lights a TNT, closes the world a frame after and opens it again, and fails on
+   the head, which holds neither, the column's other change kept. The mend I would make sets each
+   falling block down where it would land and each lit TNT back as a block at its cell as the world
+   closes or switches, before the last save, a timed save leaving them falling and lit.
+
+Read clean, by the code and the tests named. A furnace's save keeps its slots, its burning and its
+smelting, and a chest's its slots and its loot to roll (`WorldSave.FurnaceRecord`, `ChestRecord`), a
+furnace or a chest whose block goes spills what it held, and one in a column not loaded is left
+alone, both updates asking the column first (`Furnaces.Update`, `Chests.Update`). A crafting grid's
+and the held stack go back on the window's close. A furnace smelts only where its output has room, a
+tool breaks at its durability (`VoxelGame.Wear`), the inventory adds within a stack's size, and the
+chests' loot rolls at most 24 of an item and one of a tool. A blast's rays end as their strength
+does and set nothing in a column not loaded, a fire in a column not loaded is let go at its tick and
+named again as its column arrives (`VoxelWorld.Kindled`), a water's tick at a cell that is no water
+is dropped, and a falling block landing where it cannot stand drops its item. Of every shaped block,
+`Every_Shaped_Blocks_Collision_Against_What_It_Draws` finds the boxes that stop the player the boxes
+it draws, but the cactus's a sixteenth inside them and the fence's half a block over its post, as
+each is meant, and the plants, the torches, the rails, the carpets, the fire and the cobweb walked
+through.
+
+One low finding is left. A fire held only by a block in a neighbor column not loaded goes out at its
+tick, `Fires.CanStand` reading that block as air, at least 32 blocks from the player where no fire
+is seen.
 
 The order I would take is 1 and then 2, in one commit, each test failing on a head copy.
 

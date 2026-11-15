@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using Engine;
 using Xunit;
@@ -938,5 +939,61 @@ public sealed class HeadlessGameTests
         {
             if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
         }
+    }
+
+    [Fact]
+    public void The_Corner_Shade_Let_Go_After_A_World_Switch_Shades_The_World_Played_Again()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        // The screens as the game builds them reading its settings at its start, before any switch.
+        var shade = game.Menus.Screens(game).All().SelectMany(s => s.Options).First(o => o.Name == "Corner Shade");
+        var left = game.World;
+        Switch(headless, 2);
+        left.Reshaded.Clear();
+        game.World.Reshaded.Clear();
+
+        shade.Change(50);
+        shade.Settled?.Invoke();
+
+        Assert.NotEmpty(game.World.Reshaded);
+        Assert.Empty(left.Reshaded);
+    }
+
+    [Fact]
+    public void A_World_Switched_From_Is_Let_Go()
+    {
+        using var headless = new HeadlessGame();
+        headless.Game.Menus.Screens(headless.Game);
+
+        var left = Leave(headless);
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        Assert.False(left.IsAlive);
+    }
+
+    // Switches the game to another world, giving the world left by a reference that does not hold
+    // it, in a frame of its own so no local of the test's holds it either.
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference Leave(HeadlessGame headless)
+    {
+        var left = new WeakReference(headless.Game.World);
+        Switch(headless, 2);
+        return left;
+    }
+
+    // Switches the game to the flat world of a seed and steps it until the world stands.
+    private static void Switch(HeadlessGame headless, int seed)
+    {
+        headless.Game.SwitchWorld("flat", seed);
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        do
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        while ((headless.Game.Loading || headless.Game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30);
     }
 }
