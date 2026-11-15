@@ -300,12 +300,12 @@ public sealed class Menus
     {
         var defaults = game.Defaults;
         if (_chosen is null || !ReferenceEquals(_seen, game.PackEntries))
-            (_chosen, _seen, _available) = ([.. game.PackEntries], game.PackEntries, game.Guarded("The packs' folder could not be read", PackList.Default.Available, []));
+            (_chosen, _seen, _available) = ([.. game.PackEntries], game.PackEntries, game.Guarded("The packs' folder could not be read", game.PackList.Available, []));
         if (_fetchSeen != defaults.State)
         {
             _fetchSeen = defaults.State;
-            _missing = defaults.State != FetchState.Fetching && defaults.Packs.Count > 0 && defaults.Missing(PackList.Default);
-            _available = game.Guarded("The packs' folder could not be read", PackList.Default.Available, []);
+            _missing = defaults.State != FetchState.Fetching && defaults.Packs.Count > 0 && defaults.Missing(game.PackList);
+            _available = game.Guarded("The packs' folder could not be read", game.PackList.Available, []);
         }
         var top = GetScreenHeight() / 8;
         var width = Math.Min(320 * s, GetScreenWidth() - 40 * s);
@@ -331,7 +331,7 @@ public sealed class Menus
         var fetching = defaults.State == FetchState.Fetching;
         var said = fetching ? $"Fetching the default packs from Modrinth, {defaults.Fetched} of {defaults.Packs.Count} in"
             : defaults.State == FetchState.Failed ? $"The default packs were not fetched: {defaults.Problem}"
-            : $"Packs go in {PackList.Default.Folder}";
+            : $"Packs go in {game.PackList.Folder}";
         Gui.Centered(Fitted(said, width), Row(PackRows), new Color(170, 170, 170));
         // The switch beside Done while the fetch runs or a default pack is missing.
         var half = (width - 10 * s) / 2;

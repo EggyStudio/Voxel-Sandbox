@@ -16,6 +16,9 @@ public sealed class PackList(string root)
     /// <summary>The game's own, beside the saves under the local application data folder.</summary>
     public static PackList Default => new(Path.GetDirectoryName(WorldSave.Root)!);
 
+    /// <summary>The folder the list and the packs' folder are kept in.</summary>
+    public string Root => root;
+
     /// <summary>The folder the packs are kept in.</summary>
     public string Folder => Path.Combine(root, "resourcepacks");
 

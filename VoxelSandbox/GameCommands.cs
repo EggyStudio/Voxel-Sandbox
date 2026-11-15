@@ -289,7 +289,7 @@ public static class GameCommands
     internal static string Packs(string packs = "")
     {
         if (Game is not { } game) return "no world is loaded";
-        var list = PackList.Default;
+        var list = game.PackList;
         if (packs.Length > 0)
         {
             var entries = packs.Trim() == "none" ? [] : packs.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();

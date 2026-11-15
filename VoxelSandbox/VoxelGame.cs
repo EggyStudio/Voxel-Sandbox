@@ -61,10 +61,11 @@ public sealed class VoxelGame : IDisposable
     /// own, leaves the player's settings alone, the packs' setting and the options neither read nor
     /// written and the default packs not fetched.
     /// </summary>
-    public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null, VideoSettings? video = null, bool settings = true)
+    public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null, VideoSettings? video = null, bool settings = true, string? settingsFolder = null)
     {
         _transient = transient;
         _settings = settings && !transient;
+        PackList = new PackList(settingsFolder ?? Path.GetDirectoryName(WorldSave.Root)!);
         Video = video ?? new VideoSettings();
         // The game, its step and the inventory are the engine's resources, and the player an entity
         // of its controller, its body, its vitals and its hand, which the behaviors reach.
@@ -87,15 +88,15 @@ public sealed class VoxelGame : IDisposable
         Hotbar = new Hotbar(Inventory);
         Renderer = new ChunkRenderer(ecs);
         var given = packs?.Select(Path.GetFullPath).ToList() ?? [];
-        PackEntries = given.Count > 0 || !_settings ? given : Guarded("The packs' list could not be read", () => PackList.Default.Read(), []);
+        PackEntries = given.Count > 0 || !_settings ? given : Guarded("The packs' list could not be read", () => PackList.Read(), []);
         Sky = new Sky(Sky.FirstHour);
         ReloadPacks();
-        if (given.Count == 0 && _settings && !File.Exists(PackList.Default.File)) FetchDefaults();
+        if (given.Count == 0 && _settings && !File.Exists(PackList.File)) FetchDefaults();
         Light.ApplyAll();
         Open(kind, seed, name);
         // The settings kept from the run before, read once the world is open, so the corner shade
         // has sections to shade again. A run that keeps no settings neither reads nor writes them.
-        _options = _settings ? OptionsFile.Default : null;
+        _options = _settings ? new OptionsFile(PackList.Root) : null;
         if (_options is { } file) Guarded("The settings could not be read", () => file.Read(Menus.Screens(this).All()), 0);
         Capture(true);
     }
@@ -143,6 +144,12 @@ public sealed class VoxelGame : IDisposable
         if (_fileFaults.Add(failed)) Say($"{failed}, {reason.TrimEnd('.')}");
     }
 
+    /// <summary>
+    /// The packs' list and the folder it and the settings file are kept in, the data folder beside the
+    /// saves unless the game was given another, as a test gives one of its own.
+    /// </summary>
+    public PackList PackList { get; }
+
     public VoxelWorld World { get; private set; } = null!;
 
     /// <summary>The player's resource packs the game is drawn with, or none.</summary>
@@ -161,7 +168,7 @@ public sealed class VoxelGame : IDisposable
     public void FetchDefaults()
     {
         _awaitingDefaults = true;
-        Defaults.Start(PackList.Default);
+        Defaults.Start(PackList);
     }
 
     /// <summary>Stops fetching the default packs, saving the packs on as they are, so the next start does not fetch them again.</summary>
@@ -187,7 +194,7 @@ public sealed class VoxelGame : IDisposable
     public void ChoosePacks(IReadOnlyList<string> entries)
     {
         PackEntries = entries;
-        if (_settings) Guarded("The packs' list could not be kept", () => { PackList.Default.Write(entries); return true; }, false);
+        if (_settings) Guarded("The packs' list could not be kept", () => { PackList.Write(entries); return true; }, false);
         ReloadPacks();
     }
 
@@ -197,7 +204,7 @@ public sealed class VoxelGame : IDisposable
     /// </summary>
     public void ReloadPacks()
     {
-        var list = PackList.Default;
+        var list = PackList;
         var packs = new ResourcePacks(PackEntries.Select(list.PathOf));
         foreach (var (name, reason) in packs.Unread) FileFault($"The pack {name} could not be read", reason);
         var terrain = TerrainAtlas.Build(packs);

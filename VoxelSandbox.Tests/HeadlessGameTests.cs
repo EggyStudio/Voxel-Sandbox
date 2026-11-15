@@ -503,6 +503,81 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Start_Whose_Options_File_Cannot_Be_Read_Keeps_The_Defaults_And_Leaves_The_File()
+    {
+        // A file's mode the account cannot read is set on Linux and macOS alone.
+        if (OperatingSystem.IsWindows()) return;
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var options = Path.Combine(folder, "settings", "options.txt");
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(options)!);
+            File.WriteAllText(options, "render.Render_Distance:7\n");
+            File.SetUnixFileMode(options, UnixFileMode.None);
+            var written = File.GetLastWriteTimeUtc(options);
+
+            using (var headless = new HeadlessGame(save: Path.Combine(folder, "world"), settings: Path.Combine(folder, "settings")))
+                Assert.Contains("The settings could not be read", headless.Game.FileFaults);
+
+            Assert.Equal(written, File.GetLastWriteTimeUtc(options));
+        }
+        finally
+        {
+            if (File.Exists(options)) File.SetUnixFileMode(options, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Start_Whose_Packs_List_Cannot_Be_Read_Draws_No_Pack_And_Says_So()
+    {
+        if (OperatingSystem.IsWindows()) return;
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var list = Path.Combine(folder, "settings", "resourcepacks.txt");
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(list)!);
+            File.WriteAllText(list, "a pack.zip\n");
+            File.SetUnixFileMode(list, UnixFileMode.None);
+
+            using var headless = new HeadlessGame(save: Path.Combine(folder, "world"), settings: Path.Combine(folder, "settings"));
+
+            Assert.Contains("The packs' list could not be read", headless.Game.FileFaults);
+            Assert.Empty(headless.Game.PackEntries);
+        }
+        finally
+        {
+            if (File.Exists(list)) File.SetUnixFileMode(list, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void The_Packs_Screen_Over_A_Packs_Folder_That_Cannot_Be_Listed_Draws_On_And_Says_So()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A file in the place of the packs' folder, on every system alike.
+            Directory.CreateDirectory(Path.Combine(folder, "settings"));
+            File.WriteAllText(Path.Combine(folder, "settings", "resourcepacks"), "");
+            using var headless = new HeadlessGame(save: Path.Combine(folder, "world"), settings: Path.Combine(folder, "settings"));
+            var game = headless.Game;
+
+            game.Menus.Open = Menu.Packs;
+            headless.Step(3);
+            game.Menus.Open = Menu.None;
+            headless.Step(3);
+
+            Assert.Contains("The packs' folder could not be read", game.FileFaults);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Pack_That_Cannot_Be_Read_Is_Left_Out_And_Said()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

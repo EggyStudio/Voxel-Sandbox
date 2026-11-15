@@ -32,7 +32,7 @@ public sealed class HeadlessGame : IDisposable
     /// <summary>The seconds each frame steps the game by unless a test gives another.</summary>
     public const float FrameSeconds = 1 / 30f;
 
-    public HeadlessGame(int seed = 1, float frameSeconds = FrameSeconds, LandPlace? at = null, string? save = null, bool still = false)
+    public HeadlessGame(int seed = 1, float frameSeconds = FrameSeconds, LandPlace? at = null, string? save = null, bool still = false, string? settings = null)
     {
         Environment.SetEnvironmentVariable("E3D_HEADLESS", "1");
         Environment.SetEnvironmentVariable("E3D_FRAME_TIME", frameSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture));
@@ -45,7 +45,14 @@ public sealed class HeadlessGame : IDisposable
         {
             // A save's folder given whole stands in for its name, which the saves' folder is joined to,
             // and a game that saves leaves the player's settings alone.
-            Game = new VoxelGame("flat", seed, save, transient: save is null, [], settings: false) { RenderDistance = 2 };
+            // A test game that keeps settings keeps them under the folder it is given, with a list of
+            // packs there, empty where the test gives none, so it fetches no pack.
+            if (settings is not null && !File.Exists(Path.Combine(settings, "resourcepacks.txt")))
+            {
+                Directory.CreateDirectory(settings);
+                File.WriteAllText(Path.Combine(settings, "resourcepacks.txt"), "");
+            }
+            Game = new VoxelGame("flat", seed, save, transient: save is null, [], settings: settings is not null, settingsFolder: settings) { RenderDistance = 2 };
             Game.Mobs.Still = still;
             Stand();
             if (at is { } place)
