@@ -759,14 +759,15 @@ cmd frames.wait 2
 tops=""
 for x in 40.3 40.5 40.7; do
   for i in 1 2 3; do
-    top=$(ask voxel.line "$x" 5.44 -49.9994 "$x" 5.36 -49.9994 40 | sed -nE 's/.*by place (.*)$/\1/p')
+    line=$(ask voxel.line "$x" 5.44 -49.9994 "$x" 5.36 -49.9994 40)
+    top=$(printf '%s\n' "$line" | sed -nE 's/.*by place (.*)$/\1/p')
+    [ "$(printf '%s\n' $top | grep -c .)" -eq 40 ] || fail "voxel.line read no 40 samples across a fire's top edge at $x, $line"
     tops="$tops $(printf '%s\n' $top | awk 'NR == 1 { first = $1 } $1 > high { high = $1 } END { printf "%.1f", high - first }')"
     cmd frames.wait 5
   done
 done
 cmd voxel.set 40 4 -50 air
 echo "the brightest over the ground across a fire's top edge:$tops"
-[ -n "${tops// /}" ] || fail "voxel.line read nothing across a fire's top edge"
 printf '%s\n' $tops | awk '$1 > 15 { bad = 1 } END { exit bad }' || fail "a fire's walls show a line along their tops, brighter than the ground by$tops"
 cmd voxel.packs none
 

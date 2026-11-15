@@ -90,9 +90,10 @@ public sealed partial class Mob
     private MobTarget? Hunts(VoxelWorld world, MobTarget? target)
     {
         ref var hostile = ref Hostile;
+        // With no player to hunt, a creeper's fuse goes out with the hunt.
         if (target is not { } prey)
         {
-            hostile.Hunting = false;
+            (hostile.Hunting, hostile.Fuse) = (false, -1);
             return null;
         }
         var eye = Body.Position + new Vector3(0, Kind.Eyes, 0);

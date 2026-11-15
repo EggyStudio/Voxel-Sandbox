@@ -93,6 +93,7 @@ public static class GameCommands
     internal static string Teleport(double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
+        if (Unplaced(x, y, z) is { } refused) return refused;
         if (Math.Abs(x) > LandOrigin.Edge || Math.Abs(z) > LandOrigin.Edge) return $"the land reaches {LandOrigin.Edge} blocks out along x and z";
         // What is left behind is unloaded and the origin moves near the place first, so the feet
         // stand there exactly.
@@ -334,11 +335,19 @@ public static class GameCommands
         return $"{Math.Max(1, count) - left} {found.Key} put in{(left > 0 ? $", {left} did not fit" : "")}";
     }
 
+    // Why a place given is none a body may stand at, where it is no number or its height lies past
+    // the land's edge, so a float holds it, or null for one that is.
+    private static string? Unplaced(double x, double y, double z) =>
+        !double.IsFinite(x) || !double.IsFinite(y) || !double.IsFinite(z) ? "a place is three numbers, and one of these is none"
+        : Math.Abs(y) > LandOrigin.Edge ? $"a height lies within {LandOrigin.Edge} blocks of the land's"
+        : null;
+
     [Command("voxel.drop", "Lays one of an item on the ground at a place, as a block broken there drops it: voxel.drop <item> <x> <y> <z>")]
     internal static string Drop(string item, double x, double y, double z)
     {
         if (Game is not { } game) return "no world is loaded";
         if (Items.Find(item) is not { } found) return $"no item is called {item}, and voxel.items lists them";
+        if (Unplaced(x, y, z) is { } refused) return refused;
         game.Drops.Spawn(found, 1, LandOrigin.PlaceOf(new LandPlace(x, y, z)), Vector3.Zero);
         return $"one {found.Key} lies at {x:0.00}, {y:0.00}, {z:0.00}";
     }

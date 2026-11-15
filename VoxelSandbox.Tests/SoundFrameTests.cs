@@ -45,6 +45,7 @@ public sealed class SoundFrameTests
         // The near pig's steps are heard, each from the left while it runs west of the player, and
         // the far one's, 28 blocks off, not at all.
         Assert.NotEmpty(heard);
+        Assert.All(heard, h => Assert.True(Vector3.Distance(h.At, game.Player.Eye) <= GameSounds.Hearing, $"a step heard at {h.At}, past hearing"));
         Assert.All(heard, h => Assert.True(h.At.X < feet.X - 1, $"a step heard at {h.At}, past the near pig's side"));
         Assert.All(heard, h => Assert.True(h.Pan < -0.3f, $"a step at {h.At} pans {h.Pan}"));
     }

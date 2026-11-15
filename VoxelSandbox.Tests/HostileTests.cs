@@ -172,4 +172,20 @@ public class HostileTests
         // A search sets the wait to half a second, which runs down over the frames after it.
         Assert.True(waits.Zip(waits.Skip(1)).Count(w => w.Second < w.First) >= 12, $"the waits ran {string.Join(", ", waits)}");
     }
+
+    [Fact]
+    public void A_Creepers_Fuse_Goes_Out_As_Its_Hunt_Ends_With_No_Player_To_Hunt()
+    {
+        var world = Floor();
+        var creeper = Spawn(MobKinds.Creeper, 4.5f, 4.5f);
+        var player = new Body { Position = new Vector3(6.5f, 11, 4.5f) };
+        Hunt(creeper, world, player, hour: 0, seconds: 0.5f);
+        Assert.True(creeper.Fuse > 0);
+
+        // The player dies or plays in creative mode, so no mob hunts it.
+        creeper.Update(world, null, player.Position, 0, Step, []);
+
+        Assert.True(creeper.Fuse < 0);
+        Assert.False(creeper.Hunting);
+    }
 }

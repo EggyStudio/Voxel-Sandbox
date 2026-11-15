@@ -292,4 +292,20 @@ public sealed class OriginMoveTests : IDisposable
             if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
         }
     }
+
+    [Fact]
+    public void A_Place_That_Is_No_Number_Neither_Moves_The_Player_Nor_Lays_A_Stack()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        Serve(game);
+        var before = game.Player.Body.Position;
+
+        foreach (var place in new[] { "NaN 80 0", "0 NaN 0", "0 80 Infinity", "0 1e39 0" })
+            Assert.DoesNotContain("the player stands at", Run($"voxel.tp {place}"));
+        Assert.DoesNotContain("lies at", Run($"voxel.drop stick 0 NaN 0"));
+
+        Assert.Equal(before, game.Player.Body.Position);
+        Assert.Equal(0, game.Drops.Count);
+    }
 }
