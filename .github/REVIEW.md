@@ -1,24 +1,30 @@
 # Review
 
-Reviewed up to `f761d7d`, item 181's second commit, the world's info taking each value the game
-cannot hold as a new world's, a body's cells and moves bounded, the save writing a float that is no
-number by its name and the shadows' march taking no way that is none, each test failing first, 428
-tests and the play in 177 s, pushed at 08:37 on 2026-11-15 once the run before it had ended, its
-build run 43690794766 started; it keeps the form and carries the review's files. Before it
-`a3c9897`, item 181's first commit, the mobs file's list of kinds held to what a byte tells apart
-and its file moved aside, a furnace or a chest listed with no slots and a slot that is none reading
-as empty with their file kept, each test failing first, 418 tests and the play in 180 s, pushed at
-07:34 on 2026-11-15, its build run 43686079311 green at 08:37; it keeps the form and carries the
-review's files. Before it `0be5c8e`, item 180's last commit, the haze dome's material marking its
-corners as under the open sky, read by a picture pair under a roof, with `201701a`, a section's part
-taking new colors where its faces keep their packed bytes and a section of a column not loaded
-dropped rather than parked, each test failing first, 414 tests and the play passing, both pushed at
-05:03 on 2026-11-15 once the run before them had ended, their build run 43675059297 green at 05:51;
-they keep the form and carry the review's files, and all 23 findings are mended. Before them
-`a28ab91`, item 180's fifth commit, a creeper's fuse going out with its hunt, the place commands
-refusing a place that is no number, the play failing a fire's top read with no samples and the
-steps' test holding every step within hearing, each test failing first, 412 tests and the play in
-175 s, pushed at 03:28 on 2026-11-15, its build run 43667922780 green at 05:01; it keeps the form
+Reviewed up to `10f81cb`, item 181's fourth commit, a region's column whose length is past what the
+file has left read as its early end before an array is made, with `91af9b2`, its third, a kept
+column whose blocks do not inflate generated again with its region's file moved aside, the voxel ray
+meeting no block along a way that is no number and the look and flicker commands refusing one, each
+test failing first, 433 tests and the play in 183 s, both pushed at 09:55 on 2026-11-15 once the run
+before them had ended, their build run 43696744589 started; they keep the form and carry the
+review's files. Before them `f761d7d`, item 181's second commit, the world's info taking each value
+the game cannot hold as a new world's, a body's cells and moves bounded, the save writing a float
+that is no number by its name and the shadows' march taking no way that is none, each test failing
+first, 428 tests and the play in 177 s, pushed at 08:37 on 2026-11-15 once the run before it had
+ended, its build run 43690794766 green at 09:55; it keeps the form and carries the review's files.
+Before it `a3c9897`, item 181's first commit, the mobs file's list of kinds held to what a byte
+tells apart and its file moved aside, a furnace or a chest listed with no slots and a slot that is
+none reading as empty with their file kept, each test failing first, 418 tests and the play in 180
+s, pushed at 07:34 on 2026-11-15, its build run 43686079311 green at 08:37; it keeps the form and
+carries the review's files. Before it `0be5c8e`, item 180's last commit, the haze dome's material
+marking its corners as under the open sky, read by a picture pair under a roof, with `201701a`, a
+section's part taking new colors where its faces keep their packed bytes and a section of a column
+not loaded dropped rather than parked, each test failing first, 414 tests and the play passing, both
+pushed at 05:03 on 2026-11-15 once the run before them had ended, their build run 43675059297 green
+at 05:51; they keep the form and carry the review's files, and all 23 findings are mended. Before
+them `a28ab91`, item 180's fifth commit, a creeper's fuse going out with its hunt, the place
+commands refusing a place that is no number, the play failing a fire's top read with no samples and
+the steps' test holding every step within hearing, each test failing first, 412 tests and the play
+in 175 s, pushed at 03:28 on 2026-11-15, its build run 43667922780 green at 05:01; it keeps the form
 and carries the review's files. Before it `042862b`, item 180's fourth commit, the audit's cost
 findings, pushed at 00:16 on 2026-11-15 once the run before it had ended, its build run 43652362892
 green; it keeps the form. Before it `fcd5574`, item 180's third commit, a save keeping the stacks
@@ -796,3 +802,53 @@ bytes after, and holds that the read takes under 1 MB, keeps no column and moves
 fails on the head, the first taking past the 1 MB and the second throwing `OutOfMemoryException`.
 The strict build is clean, 433 tests pass outside the GPU's lock, and the play passes in 183 s, its
 captures within 9 levels of the last play's but sky2's, which moves as much between plays.
+
+Reads 17 to 22 and 34 of item 181, mended, with the line that refuses a negative length, as asked.
+`ReadRegion` refuses a column whose length is below 0 at `WorldSave.cs:138`, before the bound of
+`10f81cb` at :141, as the region's fault, the file moved aside and its columns made again. Each line
+of the scripts below was run first as the head writes it, the play's against a decoy and the rest
+fed the answer each misreads, under the play's `set -euo pipefail` with `ask` answering the fed line
+and `fail` saying it failed.
+
+Read 17. The play opens the game by a link of the run's own name beside it, `VoxelSandbox-play-` and
+the script's process, which e3d names the game's log after (`3DEngine.Cli/Launch.cs:54` and :23 of
+`baa21ff4`), so the log in the engine checkout's `build/sessions` is the run's alone, and the trap
+takes the link away (`play.sh:55-57`, :84). On Windows the apphost is copied there, which finds the
+game beside it as the link does. Run with a decoy, a VoxelSandbox opened 33 s into the play through
+the same checkout's `./e3d` by a script of my own, with folders of its own for its sessions and
+data, no validation layer and the shared lock after the quiet check, the head's play fails at its
+layer check, "the game drew without the validation layer", the decoy having written over the log the
+two shared, and the mended play passes with the decoy opened 28 s into it, its log
+`VoxelSandbox-play-3887385.log` beside the decoy's `VoxelSandbox.log` and no link left after. Each
+run leaves its log under its own name there, which the workflow takes up as its artifact.
+
+Read 18. The kept run's open waits 600 s as every other open does, and the trap ends a game of the
+run that no stop reached by the link it was opened by, a pattern no other program's command line
+holds, `pkill -f` matching the link's path to its end, so it ends neither another session's game nor
+the owner's (`play.sh:1266`, :83). Tried on three stand-in processes whose first words were the link
+of a run of the process 999, the link of one of 9990 and the game's own name, the pattern for the
+run of 999 ended the first alone.
+
+Read 19. The four assignments that take a `grep` go on where it finds nothing, so the check after
+each says why (`play.sh:136`, :156, :892 and :1248). Fed an answer holding no match, each line of
+the head ends the run with no error line, and each mended one fails with its own.
+
+Read 20. The sky's check fails where `voxel.color` gives no blue to read, as an error answers
+(`play.sh:1001`). Fed "no world is loaded", the head's line passes and the mended one fails. The
+bank's check at :416, which reads a line too, is given a line by its `printf` whatever `feet` finds,
+and an empty field fails it, so it stands as it was.
+
+Read 21. The two reads of the pool's water fail where `pipelines.wait` answers that pipelines are
+still being made, not "no pipeline is being made" (`play.sh:568-570` and :577-579). Fed the wait's
+answer that it is still waiting, the head goes on and the mended line fails.
+
+Read 22. The play exports `LC_ALL=C`, as `pictures.sh` does (`play.sh:34`), so the numbers it writes
+and the game's answers it reads take a point, the game starting in the invariant culture. A program
+of .NET 10 writing 65.02 with `F2` writes `65,02` under `de_DE.UTF-8` and `65.02` under `C`.
+
+Read 34. Both steps that work out the version take it on a line of its own, so a `version.sh` that
+fails ends the step (`pack.yml:133-134` and :160-161). Run as the head writes it with a `version.sh`
+that exits 1, the step passes with `version=`, and the mended step fails.
+
+The strict build is clean, 433 tests pass outside the GPU's lock, and the play passes in 182 s, its
+captures within 8 levels of the last play's but sky2's, which moves as much between plays.

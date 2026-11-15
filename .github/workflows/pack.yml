@@ -128,7 +128,10 @@ jobs:
 
       - name: Work out the version
         id: version
-        run: echo "version=$(build/version.sh)" >> "$GITHUB_OUTPUT"
+        # The version is taken on a line of its own, so a version.sh that fails ends the step.
+        run: |
+          version=$(build/version.sh)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - run: build/publish.sh "${{ steps.version.outputs.version }}" "${{ matrix.rid }}"
 
@@ -153,7 +156,9 @@ jobs:
 
       - name: Work out the version
         id: version
-        run: echo "version=$(build/version.sh)" >> "$GITHUB_OUTPUT"
+        run: |
+          version=$(build/version.sh)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - uses: actions/download-artifact@v8
         with:

@@ -24,10 +24,14 @@
 #
 # The game is the Debug build that `dotnet build VoxelSandbox.slnx` makes. ./e3d runs out of the
 # engine checkout ENGINE_CHECKOUT names, or the folder above this one, and keeps the session's log
-# in that checkout's build/sessions. The captures and what e3d answered go to captures.
+# in that checkout's build/sessions, named after the run. The captures and what e3d answered go to
+# captures.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p captures
+# Numbers are read and written with a point, whatever the machine's own locale writes them with,
+# the game's answers among them, which it writes in the culture it starts in.
+export LC_ALL=C
 
 program=VoxelSandbox/bin/Debug/net10.0/VoxelSandbox
 opened=captures/opened.json
@@ -44,6 +48,13 @@ kept=""
 # screenshots, so it leaves the machine's own alone, and the folder of this run's sessions.
 data=$(mktemp -d)
 export E3D_SESSIONS="$data/sessions"
+# The game is opened by a link of this run's own name beside it, which e3d names the game's log
+# after, so the log in the engine checkout's build/sessions is this run's alone and no other game
+# opened from that checkout writes over it. On Windows the apphost is copied, which finds the game
+# beside it as the link does.
+run=VoxelSandbox-play-$$
+if [ -f "$program.exe" ]; then cp "$program.exe" "$(dirname "$program")/$run.exe"; else ln -sf "$(basename "$program")" "$(dirname "$program")/$run"; fi
+program=$(dirname "$program")/$run
 # The script's own output, which an error is written to, so one said inside $(ask ...) reaches the
 # page and not the variable.
 exec 3>&1
@@ -64,10 +75,13 @@ stop_by_process() {
   for n in $(seq 1 50); do kill -0 "$1" 2> /dev/null || return 0; sleep 0.1; done
   kill -9 "$1" 2> /dev/null || true
 }
+# A game of the run that no stop reached, as one whose open ran out before it answered, is ended by
+# the link it was opened by, which no other program's command line names, and the link is taken away.
 trap 'if [ -n "$pid" ]; then ./e3d stop --session "$pid" --quiet; else ./e3d stop --quiet; fi > /dev/null 2>&1 || true
   [ -n "$kept" ] && ./e3d stop --session "$kept" --quiet > /dev/null 2>&1 || true
   stop_by_process "$pid"; stop_by_process "$kept"
-  rm -rf "$data"' EXIT
+  pkill -f -- "/$run( |\$)" 2> /dev/null || true
+  rm -rf "$data"; rm -f "$program" "$program.exe"' EXIT
 # A command e3d refuses fails with its code and sentence, which it writes to standard error.
 cmd() { ./e3d command "$@" --quiet --timeout 600 --session "$pid" 2> "$said" || fail "./e3d command $* ended with $?, $(head -n 1 "$said")"; }
 ask() {
@@ -119,7 +133,7 @@ if ! ENGINE_VULKAN_VALIDATION=1 ./e3d open "$program" --offscreen --transient --
   log=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{log} // ""' "$opened")
   # The game stops at its open with an error naming a file of its own that is missing or did not
   # compile, which the log's last lines, its shutdown, leave out.
-  stopped=$([ -n "$log" ] && grep -m 1 '\[ERROR\]' "$log" 2> /dev/null | sed 's/^.*\] //; s/\.$//')
+  stopped=$([ -n "$log" ] && grep -m 1 '\[ERROR\]' "$log" 2> /dev/null | sed 's/^.*\] //; s/\.$//') || true
   fail "did not open, e3d said $answer${stopped:+, and the game said $stopped}"
 fi
 log=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{log} // ""' "$opened")
@@ -139,7 +153,7 @@ stood
 check "the screen probes"
 # Global illumination takes the screen's probes at the game's quality of High, as the engine traces
 # them at Medium and High.
-probes=$(ask gi.state | grep "screen probes")
+probes=$(ask gi.state | grep "screen probes") || true
 echo "$probes"
 [[ "$probes" == "screen probes every "* ]] || fail "global illumination takes no screen probes, $probes"
 
@@ -551,14 +565,18 @@ cmd voxel.fill 60 4 29 66 8 29 red_concrete
 cmd voxel.tp 63.5 4 40
 cmd voxel.look 0 -8
 cmd frames.wait 30
-echo "the pool's pipelines, $(ask pipelines.wait 300)"
+waited=$(ask pipelines.wait 300)
+echo "the pool's pipelines, $waited"
+[[ "$waited" == "no pipeline is being made"* ]] || fail "the pool's pipelines were still being made at its pixel's read, $waited"
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
 water() { printf '%s\n' "$1" | sed -nE 's/^red ([0-9]+), green ([0-9]+), blue ([0-9]+) .*/\1 \2 \3/p'; }
 mirror=$(ask voxel.pixel 63.5 3.876 33.5)
 cmd voxel.options render Water_Reflections 0
 cmd frames.wait 30
-echo "the plain water's pipelines, $(ask pipelines.wait 300)"
+waited=$(ask pipelines.wait 300)
+echo "the plain water's pipelines, $waited"
+[[ "$waited" == "no pipeline is being made"* ]] || fail "the plain water's pipelines were still being made at its pixel's read, $waited"
 plain=$(ask voxel.pixel 63.5 3.876 33.5)
 cmd voxel.options render Water_Reflections 1
 echo "the water where the wall mirrors, $mirror, and with Water Reflections off, $plain"
@@ -871,7 +889,7 @@ for heading in 0 90 180 270; do
   cmd voxel.look "$heading" -60
   cmd frames.wait 40
   ring=$(ask voxel.ring 20.5 4.001 -40.5 2 8)
-  samples="$samples $(printf '%s\n' "$ring" | sed -nE 's/.*by angle (.*)$/\1/p' | tr ' ' '\n' | grep -v NaN | tr '\n' ' ')"
+  samples="$samples $(printf '%s\n' "$ring" | sed -nE 's/.*by angle (.*)$/\1/p' | tr ' ' '\n' | { grep -v NaN || true; } | tr '\n' ' ')"
 done
 cmd voxel.fly on
 echo "the ground's light about a held torch from four headings:$samples"
@@ -980,7 +998,7 @@ cmd voxel.look 0 10
 cmd frames.wait 2
 sky=$(ask voxel.color 1220 16 40 24)
 echo "$sky"
-printf '%s\n' "$sky" | sed -nE 's/^red ([0-9.]+), green ([0-9.]+), blue ([0-9.]+) .*/\3/p' | awk '{ exit !($1 > 100) }' \
+printf '%s\n' "$sky" | sed -nE 's/^red ([0-9.]+), green ([0-9.]+), blue ([0-9.]+) .*/\3/p' | awk 'NR == 1 { ok = $1 > 100 } END { exit !ok }' \
   || fail "the world shown after its loading has no sky in the window's corner, $sky"
 cmd voxel.fly on
 cmd voxel.time 10
@@ -1227,7 +1245,7 @@ cmd input.key V 1
 wait "$held" || fail "./e3d command input.key LeftControl ended with an error"
 cmd input.key Enter 1
 cmd frames.wait 3
-seeded=$(ask voxel.state | grep -o "world [a-z]* of seed [0-9-]*")
+seeded=$(ask voxel.state | grep -o "world [a-z]* of seed [0-9-]*") || true
 echo "the seed's field began the $seeded"
 [ "$seeded" = "world overworld of seed 12345" ] || fail "the seed typed and pasted began the $seeded, where the overworld of seed 12345 was typed"
 
@@ -1245,7 +1263,7 @@ mkdir -p "$data/VoxelSandbox"
 : > "$data/VoxelSandbox/resourcepacks.txt"
 printf 'render.Render_Distance:5\nrender.Corner_Shade:far\n' > "$data/VoxelSandbox/options.txt"
 keep() { XDG_DATA_HOME="$data" ./e3d "$@"; }
-keep open "$program" --offscreen --flat --world shot --json > captures/opened-kept.json || fail "the run that keeps its files did not open"
+keep open "$program" --offscreen --flat --world shot --timeout 600 --json > captures/opened-kept.json || fail "the run that keeps its files did not open"
 kept=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' captures/opened-kept.json)
 [ -n "$kept" ] || fail "e3d opened the run that keeps its files and did not say its process"
 keep command frames.wait 30 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command frames.wait ended with $?, $(head -n 1 "$said")"
