@@ -28,7 +28,10 @@ size and read within bounds, with `2213951` and `88519d6`, twelve pictures of th
 kept. After them `a54bc10` and `e18b681`, item 197, the default packs' fetch read as it ended and a
 saved world's chests kept by region with a soak in the suite, pushed at 06:13, their build run
 43808852138 green at 07:15, the form kept. After them `6530931`, the soak test's world opened in its
-own folder, pushed at 07:15, its build run 43815530795 started, the form kept. Before it `069a7d9`,
+own folder, pushed at 07:15, its build run 43815530795 green at 08:45, the form kept. After it `bf62c5f`, item
+198, a save written whole behind a list, `03d30d2`, the tests' saves in a folder of their own, and
+`dd8b0d4`, the meshing after a pause held to a quarter second's frame, pushed at 08:45, their build
+run 43826021283 started. Before it `069a7d9`,
 the comments that likened a thing to another game's saying their rule in the game's own terms,
 comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build run 43750307975 green by
 21:02, the form kept. Before it `c250bcd`, the second commit of item 185, the save command saying a
@@ -718,3 +721,10 @@ clamped to a quarter second (`VoxelGame.MeshBudget`), 25 ms at most after a paus
 which gives a frame of a minute 6,000 ms. The strict build is clean, 540 tests pass outside the
 GPU's lock with the long soak skipped, and the play passes in 184 s, its captures as the last
 commit's play's.
+
+Item 199's second mend, the second proposed. A herd's animal is set only on a cell none of the herd
+took, a cell taken tried again within the herd's tries (`Herds.Place`). The test,
+`No_Two_Animals_Of_A_Herd_Stand_In_One_Cell`, places herds over 1,024 columns of plains under grass
+and takes the overworld's column whose chickens stood two in one cell. On the head 9 of its 1,025
+herds hold two in a cell. The strict build is clean, 541 tests pass outside the GPU's lock with
+the long soak skipped, and the play passes in 183 s, its captures as the last commit's play's.

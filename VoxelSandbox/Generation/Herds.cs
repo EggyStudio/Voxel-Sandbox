@@ -27,9 +27,12 @@ public static class Herds
         var random = new Random((int)(hash >> 4));
         var count = 2 + random.Next(3);
         int mx = 4 + random.Next(8), mz = 4 + random.Next(8);
+        // A cell one of the herd took is tried again, so no two stand in one.
+        var taken = new HashSet<(int X, int Z)>();
         for (int tries = 0; tries < count * 4 && count > 0; tries++)
         {
             int x = Math.Clamp(mx + random.Next(-3, 4), 0, Section.Mask), z = Math.Clamp(mz + random.Next(-3, 4), 0, Section.Mask);
+            if (!taken.Add((x, z))) continue;
             var y = column.Top(x, z);
             var ground = y < ChunkColumn.Bottom ? BlockId.Air : column.Get(x, y, z);
             if (ground != biome.Top && ground != BlockId.Grass || y + 3 >= ChunkColumn.Ceiling

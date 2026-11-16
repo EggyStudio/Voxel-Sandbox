@@ -319,4 +319,27 @@ public class GenerationTests
             return false;
         }
     }
+
+    [Fact]
+    public void No_Two_Animals_Of_A_Herd_Stand_In_One_Cell()
+    {
+        // A column of plains under grass at each place of a stretch of the world, some tenth of
+        // which hold a herd, and the overworld's column whose chickens stood two in one cell.
+        var plains = (byte)Array.IndexOf(Biomes.All, Biomes.Plains);
+        var herds = new List<List<MobRecord>>();
+        for (int cz = 0; cz < 32; cz++)
+            for (int cx = 0; cx < 32; cx++)
+            {
+                var column = new ChunkColumn(cx, cz);
+                Array.Fill(column.Biome, plains);
+                for (int z = 0; z < Section.Size; z++)
+                    for (int x = 0; x < Section.Size; x++) column.Set(x, 64, z, BlockId.Grass);
+                Herds.Place(column, 1);
+                herds.Add(column.Spawns);
+            }
+        herds.Add(new Overworld(1).Generate(38, -29).Spawns);
+
+        Assert.True(herds.Count(herd => herd.Count > 0) > 50);
+        Assert.All(herds, herd => Assert.Equal(herd.Count, herd.Select(mob => (mob.Position.X, mob.Position.Z)).Distinct().Count()));
+    }
 }
