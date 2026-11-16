@@ -429,4 +429,15 @@ public class MesherTests
         world.SetBlock(8, 23, 8, BlockId.Stone);
         Assert.Null(WaterMirror.WaterTop(world, new Vector3(8.5f, 26, 8.5f), down));
     }
+
+    [Fact]
+    public void The_Meshing_A_Frame_Is_Given_After_A_Pause_Is_That_After_A_Quarter_Second()
+    {
+        // A frame of a minute, as after the machine slept, then a slow device's frames and a fast
+        // one's.
+        Assert.Equal(25, VoxelGame.MeshBudget(60), 3);
+        Assert.Equal(25, VoxelGame.MeshBudget(0.25f), 3);
+        Assert.Equal(10, VoxelGame.MeshBudget(0.1f), 3);
+        Assert.Equal(4, VoxelGame.MeshBudget(1 / 60f), 3);
+    }
 }

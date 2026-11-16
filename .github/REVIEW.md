@@ -266,6 +266,15 @@ change.
     each leaves, then the mends in their own commits with a test each, the smallest order of writes
     that leaves a world whole proposed where one exists.
 
+199. **A fifteenth read, a world the same however its columns load.** One seed's columns loaded in
+    several orders (row by row, reversed, a spiral from each side, at random), with one worker and
+    with many, approached from different directions, and generated again after an unload, each
+    column's blocks compared byte for byte in the overworld and the other kinds. Read most closely,
+    what crosses a column's edge (trees, structures and villages, caves, ores, lakes, the chests'
+    places and loot seeds, the mobs placed at generation). Beside it one line on the long frame, the
+    mesh budget reading the raw frame's length after a pause. A Reply first with what differs and
+    where, then the mends by cause, each with its test.
+
 ## Verdicts
 
 No verdict is open. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
@@ -647,3 +656,65 @@ changed before each, against 17.4 and 16.5 ms before, on the powersave-bazzite p
 The strict build is clean, 538 tests pass outside the GPU's lock with the long soak skipped,
 and the play passes in 186 s, its captures as the last commit's play's. Five comments were
 mended after, and the strict build is clean on that.
+
+Item 199, the fifteenth read, a world the same however its columns load, before its mends.
+
+Nothing differs. A probe compared every block, the sky's and the blocks' light, the chests and the
+mobs held still, by a hash that is the same from run to run.
+
+| Compared | Ways | Columns | Differing |
+|---|---|---|---|
+| The generator, the overworld about the origin | 9 | 64 | none |
+| The generator, the overworld about the nearest village | 9 | 64 | none |
+| The generator, the flat world | 9 | 64 | none |
+| The game, about the origin, at a render distance of two | 12 | 9 | none |
+| The game, about the nearest village | 14 | 25 | none |
+| The game, about the nearest mineshaft's chests, in an ocean | 14 | 25 | none |
+
+- The generator's ways were row by row, reversed, inward from each side, at random, on sixteen
+  threads at once, after 64 far columns on the same generator, and a second time on it.
+- The game's ways were a teleport and a flight of twelve columns from each side, each with one
+  worker and with eight, and in the last two places also a flight away and back in a world kept
+  only in memory and in a saved world. Each settled for 600 frames before it was read.
+- The compared columns held the village's houses and villagers, the mineshaft's two chests, an
+  ocean's water over gravel, lava, sand and herds.
+
+A column is made from its place and the world's seed alone (`Overworld.Generate`), so the order
+cannot enter it. What crosses its edge is made again for it and kept to it, the trees and the
+plant patches of the eight columns about it, the structures whose starts lie in reach, the caves'
+and the aquifers' noises, and each chest's place and its loot's seed, hashed from the place. The
+light and the water at a column's edge are joined both ways as it loads.
+
+Three things read alongside:
+- Ores do not cross an edge. A vein walks from a place in its own column and drops the steps that
+  leave it (`Ores.Blob`), some 5% of a vein of four blocks and 14% of one of seventeen, and a vein
+  reaching an edge ends flat on it, which a cave or a ravine along an edge shows. Its test for a
+  cave's air beside it sees its own column alone. This is the same in every order.
+- Two animals of a herd may stand in one cell, the herd's places drawn with no check of those taken
+  (`Herds.Place`), as two chickens of the village's herd at (615.5, -460.5).
+- The meshing a frame is given reads the frame before it unclamped (`VoxelGame.MeshBudget`), a tenth
+  of it, so the frame after a pause of a minute meshes for up to six seconds where columns wait,
+  and that frame's length gives the next a tenth of that again.
+
+Proposed, each in its own commit with its test:
+1. The ores of a column taken from the veins of the nine columns about it, each walked from its own
+   column's random and kept to this column, as the trees are, its roll for a cave's air drawn at
+   every step so its path does not depend on the blocks it meets. A vein then goes on across an
+   edge and none of its steps is lost, so a world holds some 5% to 14% more of each ore, as many
+   as the veins' sizes give. This changes what is seen underground, so it carries a picture of a
+   cave's wall where a vein crosses an edge, before and after, and its cost to a column is said.
+2. A herd's animal set only on a cell none of the herd took.
+3. The mesh budget read from the frame clamped to a quarter second, so the frame after a pause
+   meshes for 25 ms at most, while a slow device's frames of up to a quarter second mesh in
+   proportion as before.
+4. A test in the suite that generates a few columns of the overworld and of the flat world in two
+   orders and on many threads at once and finds them the same, in some seconds, so a change that
+   came to depend on the order would fail it. The game's comparison from two sides takes some ten
+   seconds more, which I leave out unless asked.
+
+Item 199's first mend, the third proposed. The meshing a frame is given reads the frame before
+clamped to a quarter second (`VoxelGame.MeshBudget`), 25 ms at most after a pause. The test,
+`The_Meshing_A_Frame_Is_Given_After_A_Pause_Is_That_After_A_Quarter_Second`, fails on the head,
+which gives a frame of a minute 6,000 ms. The strict build is clean, 540 tests pass outside the
+GPU's lock with the long soak skipped, and the play passes in 184 s, its captures as the last
+commit's play's.

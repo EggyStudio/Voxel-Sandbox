@@ -12,11 +12,18 @@ public sealed class VoxelGame : IDisposable
     // Holding a mouse button breaks or places a block four times a second, as creative mode does.
     private const float Repeat = 0.25f;
     private const double MeshBudgetMs = 4;
+    // The longest frame before whose length the meshing of the next follows, in seconds.
+    private const float MostMeshFrame = 0.25f;
 
     // The time a frame gives meshing, 4 ms or a tenth of the frame before, whichever is more, so a
     // slow frame, as on a device that draws on the processor, meshes in proportion and the land in
-    // reach stands in a few frames rather than hundreds.
-    private static double MeshBudget() => Math.Max(MeshBudgetMs, GetFrameTime() * 100);
+    // reach stands in a few frames rather than hundreds. The frame before is read to a quarter
+    // second at most, so the frame after a pause, as of a machine that slept, meshes as long as
+    // one after a slow frame and is not slow in turn.
+    private static double MeshBudget() => MeshBudget(GetFrameTime());
+
+    /// <summary>The milliseconds a frame gives meshing after a frame of so many seconds.</summary>
+    internal static double MeshBudget(float frame) => Math.Max(MeshBudgetMs, Math.Min(frame, MostMeshFrame) * 100);
 
     // The changed columns and the player are saved this often, beside a save on leaving a world, and
     // while a save cannot be written, as to a full disk, at twice the wait each time to this most.
