@@ -265,7 +265,7 @@ public sealed class Overworld : IWorldGenerator
                     column.Set(x, y, z, y == SeaLevel && temperature < 0.3f ? BlockId.Ice : BlockId.Water);
             }
 
-        Ores.Place(column, Seed);
+        Ores.Place(column, Seed, (x, z) => Shape(x, z).Biome);
         LushCaves.Decorate(column, Seed, [.. grounds.Select(g => g.Height)], _climate.Humidity);
         var clip = new ColumnClip(column);
         // The ravines are cut before the trees, as the source carves before it places its features,

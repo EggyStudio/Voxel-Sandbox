@@ -21,8 +21,17 @@ namespace VoxelSandbox;
 /// <para>
 /// A blob may leave out the blocks of it open to a cave's air, by a share the source gives each,
 /// half for the lower coal, gold and the smaller diamonds and all for the buried lapis and
-/// diamonds, so those lie only behind the walls. Each blob stays within its column and depends on
-/// the seed and the column alone, so a column is generated the same every time.
+/// diamonds, so those lie only behind the walls, where the air beside a block is seen within its
+/// column alone.
+/// </para>
+/// <para>
+/// A column walks the blobs of the nine columns about it, each from its own column's seed, and
+/// keeps the blocks that fall in it, as the trees are placed, so a blob goes on across a column's
+/// edge and a column is generated the same every time and in any order. A walk's every step draws
+/// its roll for a cave's air, so its path is the same in each column it is walked in. A blob's
+/// blocks that left its column were lost before blobs crossed, so a placement tries its count less
+/// that share, by the size of its blobs, and a world holds as much of each ore as it held then, the
+/// fraction of a try left over tried at that chance.
 /// </para>
 /// </remarks>
 public static class Ores
@@ -45,8 +54,13 @@ public static class Ores
 
     // One of the source's ore placements, its blobs a chunk, one in so many chunks where it is rare,
     // its blocks a blob, its heights and how they spread, the share of a blob's blocks open to air
-    // left out, and the biome it alone is placed in.
-    private readonly record struct Placement(BlockId Ore, int Count, int Size, int Low, int High, bool Trapezoid, float Discard, int Rarity = 1, string? Only = null);
+    // left out, the biome it alone is placed in, and the share of its tries it makes.
+    private readonly record struct Placement(BlockId Ore, int Count, int Size, int Low, int High, bool Trapezoid, float Discard, int Rarity = 1, string? Only = null, float Tried = 1);
+
+    // The share of the diamonds' tries made, as their blobs lie in a narrow band where blobs walked
+    // within their columns alone set more of the same cells twice, so a world holds as many
+    // diamonds as it held before blobs crossed, measured over three stretches of the overworld.
+    private const float DiamondsTried = 0.965f;
 
     private static readonly Placement[] All =
     [
@@ -63,28 +77,67 @@ public static class Ores
         new(BlockId.RedstoneOre, 8, 8, -96, -32, true, 0),
         new(BlockId.LapisOre, 2, 7, -32, 32, true, 0),
         new(BlockId.LapisOre, 4, 7, ChunkColumn.Bottom, 64, false, 1),
-        new(BlockId.DiamondOre, 7, 4, -144, 16, true, 0.5f),
-        new(BlockId.DiamondOre, 2, 8, -64, -4, false, 0.5f),
-        new(BlockId.DiamondOre, 1, 12, -144, 16, true, 0.7f, Rarity: 9),
-        new(BlockId.DiamondOre, 4, 8, -144, 16, true, 1),
+        new(BlockId.DiamondOre, 7, 4, -144, 16, true, 0.5f, Tried: DiamondsTried),
+        new(BlockId.DiamondOre, 2, 8, -64, -4, false, 0.5f, Tried: DiamondsTried),
+        new(BlockId.DiamondOre, 1, 12, -144, 16, true, 0.7f, Rarity: 9, Tried: DiamondsTried),
+        new(BlockId.DiamondOre, 4, 8, -144, 16, true, 1, Tried: DiamondsTried),
         new(BlockId.EmeraldOre, 100, 3, -16, 480, true, 0, Only: "mountains"),
     ];
 
-    public static void Place(ChunkColumn column, int seed)
+    /// <summary>Places the ores of a column, among them those of the blobs of the columns about it that reach into it, each column's by the biome at its middle.</summary>
+    public static void Place(ChunkColumn column, int seed, Func<int, int, Biome> biomeAt)
     {
-        var random = new Random((int)PlaceHash.Of(column.X, column.Z, seed ^ Salt));
-        var biome = Biomes.All[column.Biome[8 * Section.Size + 8]].Name;
-        foreach (var placement in All)
-        {
-            if (placement.Only is { } only && only != biome) continue;
-            if (placement.Rarity > 1 && random.Next(placement.Rarity) != 0) continue;
-            for (int blob = 0; blob < placement.Count; blob++)
+        for (int cz = column.Z - 1; cz <= column.Z + 1; cz++)
+            for (int cx = column.X - 1; cx <= column.X + 1; cx++)
             {
-                var y = placement.Trapezoid ? Trapezoid(random, placement.Low, placement.High) : placement.Low + random.Next(placement.High - placement.Low + 1);
-                Blob(column, random, placement, random.Next(Section.Size), y, random.Next(Section.Size));
+                var random = new Random((int)PlaceHash.Of(cx, cz, seed ^ Salt));
+                var biome = biomeAt(cx * Section.Size + 8, cz * Section.Size + 8).Name;
+                int ox = (cx - column.X) * Section.Size, oz = (cz - column.Z) * Section.Size;
+                foreach (var placement in All)
+                {
+                    if (placement.Only is { } only && only != biome) continue;
+                    if (placement.Rarity > 1 && random.Next(placement.Rarity) != 0) continue;
+                    var tries = placement.Count * Kept[placement.Size] * placement.Tried;
+                    var count = (int)tries + (random.NextSingle() < tries - (int)tries ? 1 : 0);
+                    for (int blob = 0; blob < count; blob++)
+                    {
+                        var y = placement.Trapezoid ? Trapezoid(random, placement.Low, placement.High) : placement.Low + random.Next(placement.High - placement.Low + 1);
+                        Blob(column, random, placement, ox + random.Next(Section.Size), y, oz + random.Next(Section.Size));
+                    }
+                }
             }
-        }
     }
+
+    // The share of a blob of each size whose blocks fall in the column it starts in, a walk from an
+    // even place in it stepping one way of six each time, the sum over the steps of the chance its
+    // place is still in the column, worked out over a grid of those chances once.
+    private static readonly Dictionary<int, float> Kept = All.Select(p => p.Size).Distinct().ToDictionary(size => size, size =>
+    {
+        var span = Section.Size + 2 * size;
+        var chances = new double[span, span];
+        for (int z = 0; z < Section.Size; z++)
+            for (int x = 0; x < Section.Size; x++) chances[size + x, size + z] = 1.0 / (Section.Size * Section.Size);
+        var kept = 0.0;
+        for (int step = 0; step < size; step++)
+        {
+            for (int z = 0; z < Section.Size; z++)
+                for (int x = 0; x < Section.Size; x++) kept += chances[size + x, size + z];
+            var next = new double[span, span];
+            for (int z = 0; z < span; z++)
+                for (int x = 0; x < span; x++)
+                {
+                    var chance = chances[x, z];
+                    if (chance == 0) continue;
+                    next[x, z] += chance / 3;
+                    if (x + 1 < span) next[x + 1, z] += chance / 6;
+                    if (x > 0) next[x - 1, z] += chance / 6;
+                    if (z + 1 < span) next[x, z + 1] += chance / 6;
+                    if (z > 0) next[x, z - 1] += chance / 6;
+                }
+            chances = next;
+        }
+        return (float)(kept / size);
+    });
 
     // A height of a trapezoid spread with no plateau, the sum of two even draws over its halves, as the source's.
     private static int Trapezoid(Random random, int low, int high)
@@ -98,13 +151,25 @@ public static class Ores
     // open to a cave's air left out at the placement's share.
     private static void Blob(ChunkColumn column, Random random, Placement placement, int x, int y, int z)
     {
+        // A blob starting farther from the column than its steps reach makes its draws alone, so
+        // the blobs after it draw as they do in the column it starts in.
+        if (Math.Max(0, Math.Max(-x, x - Section.Mask)) + Math.Max(0, Math.Max(-z, z - Section.Mask)) >= placement.Size)
+        {
+            for (int step = 0; step < placement.Size; step++)
+            {
+                random.NextSingle();
+                random.Next(6);
+            }
+            return;
+        }
         for (int step = 0; step < placement.Size; step++)
         {
+            var roll = random.NextSingle();
             if ((uint)x < Section.Size && (uint)z < Section.Size && ChunkColumn.Holds(y))
             {
                 var there = column.Get(x, y, z);
                 var ore = there == BlockId.Stone ? placement.Ore : there == BlockId.Deepslate ? InDeepslate[placement.Ore] : BlockId.Air;
-                if (ore != BlockId.Air && !(placement.Discard > 0 && OpenToAir(column, x, y, z) && random.NextSingle() < placement.Discard))
+                if (ore != BlockId.Air && !(roll < placement.Discard && OpenToAir(column, x, y, z)))
                     column.Set(x, y, z, ore);
             }
             var way = random.Next(6);

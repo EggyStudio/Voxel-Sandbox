@@ -31,7 +31,9 @@ saved world's chests kept by region with a soak in the suite, pushed at 06:13, t
 own folder, pushed at 07:15, its build run 43815530795 green at 08:45, the form kept. After it `bf62c5f`, item
 198, a save written whole behind a list, `03d30d2`, the tests' saves in a folder of their own, and
 `dd8b0d4`, the meshing after a pause held to a quarter second's frame, pushed at 08:45, their build
-run 43826021283 started. Before it `069a7d9`,
+run 43826021283 green at 09:54. After them `76034ec`, a herd's animals each on a cell of their own,
+and `1f95f63`, a test of a world's columns the same in any order, pushed at 09:54, their build run
+43835105810 started. Before it `069a7d9`,
 the comments that likened a thing to another game's saying their rule in the game's own terms,
 comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build run 43750307975 green by
 21:02, the form kept. Before it `c250bcd`, the second commit of item 185, the save command saying a
@@ -256,18 +258,6 @@ change.
     against several commits over days, for a decision, Decision 12 being the owner's. The item as it
     stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
     about 16:40, part two stays parked.
-
-198. **A fourteenth read, a save ended partway.** A save is several files written one after another
-    (the regions' blocks, mobs and chests, the furnaces, the player and the world's own file), each
-    replaced whole. Read what a world holds when the game ends between two of them or during one, by
-    a test that ends the write after each file in turn and loads what is left. Named for each place,
-    what the loaded world shows against the world before the save and the world after it, and
-    whether anything is lost twice or held twice (a chest's contents beside the items taken from it,
-    a mob in two regions, a block broken with its chest kept). Also read, a written file left under
-    its scratch name, whether the next load or save clears it, and whether a write is flushed to the
-    disk before it takes the old file's place. A Reply first with the places as a table and what
-    each leaves, then the mends in their own commits with a test each, the smallest order of writes
-    that leaves a world whole proposed where one exists.
 
 199. **A fifteenth read, a world the same however its columns load.** One seed's columns loaded in
     several orders (row by row, reversed, a spiral from each side, at random), with one worker and
@@ -546,120 +536,6 @@ The strict build is clean, 530 tests pass outside the GPU's lock with the long s
 suite 23 s longer, and the play passes in 192 s, its captures as the last commit's play's. Its
 comments' lines past 100 columns were wrapped after, and the strict build is clean on that.
 
-Item 198, the fourteenth read, a save ended partway, before its mends.
-
-A probe saves a flat world, changes it in seven ways and saves it again, the second save copied
-aside before each file it writes, and opens each copy as the game opens a world. The changes are
-eight coal taken from chest A into the inventory, five iron put from the inventory into chest B,
-three planks put into a furnace, a glowstone placed from the inventory in region (1, 0), a sea
-lantern broken into the inventory in region (0, 0), chest C broken there with its six redstone taken
-up, and a pig moved from region (0, 0) into (1, 0). A save writes the regions' blocks, the regions'
-mobs, the furnaces, the regions' chests and the world's file, in that order, the regions of a kind
-in the order of a set, which changes from run to run (`VoxelGame.SaveWorld`).
-
-| The save ends before | Lost | Held twice |
-|---|---|---|
-| the first region's blocks | | |
-| the second region's blocks | | the glowstone |
-| the mobs' regions | the lantern | the glowstone |
-| the pig's old region, its new one written | the lantern | the glowstone, the pig |
-| the furnaces | the lantern | the glowstone |
-| the chests' regions | the lantern | the glowstone, the planks |
-| chest A's region, chest B's written | the lantern | the glowstone, the planks, the iron |
-| the world's file | the lantern, the coal, the redstone | the glowstone, the planks, the iron |
-| none, the save whole | | |
-
-- A save ended during a file opens as one ended before it, the old file standing whole and the new
-  one under its scratch name beside it.
-- From the mobs' regions to chest A's region, chest C is kept under its broken block, and its column
-  spills the six redstone on the ground as it loads, held once, as the inventory before the save
-  lacks them. A save keeps nothing on the ground, so a quit there loses them.
-- The pig is held twice where its new region's file is written before its old one's, and is lost
-  where the old one's comes first, as the set may order them in another run.
-- A file left under its scratch name is read past and left by the next load. The next save writes
-  over it only where it writes the same file, as it does each region's mobs and chests, the
-  furnaces and the world's file every time, and a region's blocks only where a column of it
-  changed, so the probe's scratch file of a region's blocks stood after the next save.
-- Each file is flushed to the disk under its scratch name before it moves over the old one
-  (`WorldSave.Replace`), so a file a save ended in is the old one or the new, whole. The move
-  itself is not flushed, as .NET has no call to flush a folder.
-
-No order of these writes leaves a world whole. The coal and the iron move between the chests' files
-and the world's file in opposite ways, so whichever is written first loses one and holds the other
-twice, the glowstone and the lantern do the same between the blocks and the world's file, and the
-pig between two regions of mobs.
-
-Proposed, in one commit with its test, a save written whole or not at all:
-1. Every file of a save is written under its scratch name and flushed, and none moves yet.
-2. The save writes a list of those files, `save.list`, by the same scratch name and move. The world
-   after the save stands from that move.
-3. Each scratch file moves over its file, the old one-file saves read once move to their names as
-   read, and the list is deleted.
-4. A folder opened with a list moves the scratch files it names that still stand, of a save ended
-   among its moves, and deletes the list. A folder opened without one deletes the scratch files
-   it holds, of a save ended before its list, which mends the scratch files left too.
-5. What the save holds as written, its regions changed and the regions it lets go, is cleared once
-   the list stands, so a save that fails before it, as on a full disk, is written again whole by
-   the next.
-
-The test ends the save at every place, before each file it writes, during each, and before each
-move, opens each, and holds that it opens as the world before the save or the world after it, with
-no scratch file or list left. It needs a hook the save calls before each write and move, internal
-to the game and open to its tests. The list's moves rest on a filesystem that keeps its moves in
-their order after a power loss, as a journaling one does.
-
-Item 198's mend, a save written whole, in one commit.
-
-A save writes each of its files under its scratch name, flushed, then a list of them, `save.list`,
-flushed under its own scratch name and moved into its name, and then moves each file into its own,
-deleting the list after (`WorldSave.WriteWhole`). The world after the save stands from the list's
-move. A world opened with a list moves the scratch files it names that still stand and deletes it,
-a listed file whose scratch file is gone being one the save moved, and one opened without a list
-deletes the scratch files it holds. A save looks for a list first too, as one left by a save that
-failed among its moves is finished before the next writes over its scratch files.
-- The old one-file saves are moved to their names as read by the list as well, which names them,
-  rather than after it. A save ended after the regions' files moved and before `mobs.bin` did
-  would read the one file over the regions as the world opens, and a mob that walked into another
-  region would stand in both.
-- The list is a file a stranger could write. It holds names alone, each a file of the save's own
-  kinds in its folder, at most 4,096, where a save names three for each region about the player and
-  one for each region whose blocks changed since the last, in at most 1 MB. A list past these is
-  kept beside as `save.list.unread`, its scratch files left with it while it stands, and the world
-  opens as before that save.
-- What a save holds as written, its changed regions and the regions it lets go, is cleared once its
-  files are in their places, so a save that fails before its list, as on a full disk, deletes its
-  scratch files and is written again whole by the next. The blocks of regions no loaded column lies
-  in are let go of after the save.
-- The save's remarks say that .NET has no call to flush a folder, so the moves rest on a filesystem
-  that keeps them in their order after the machine stops.
-- The tests end a save through a hook the save calls before each file it writes or moves, internal
-  to the game and open to its tests (`InternalsVisibleTo`).
-
-A save of the soak's world, the overworld at a render distance of two, 69 columns and four regions
-of mobs and of chests, takes a median of 20.5 and 21.0 ms in two runs of forty saves, a block
-changed before each, against 17.4 and 16.5 ms before, on the powersave-bazzite profile.
-- `A_Save_Ended_At_Any_Of_Its_Writes_Opens_As_The_World_Before_It_Or_After_It` makes the probe's
-  seven changes, ends the save at each of its 26 places, before each file it writes, before its
-  list's move and before each file's, and opens each, every file of each that opens as before the
-  save or after it alike to that world's. The game finds the probe's counts of the world before in
-  the last place before the list, and those after in a world whose opening is itself ended before
-  each move. On the head, with a hook in its writes, 23 of its 24 places open as neither, all but
-  the first, one of them by its scratch file alone.
-- `A_Save_That_Fails_Before_Its_List_Changes_No_File_And_The_Next_Writes_What_It_Held` fails a save
-  by a folder in the place of the world's file, with the mobs of a far column waiting and a block
-  changed, finds every file as it was, and a save after finds both. It fails on the head, which
-  wrote every file before the world's.
-- `A_Save_Ended_As_It_Reads_The_One_Mobs_File_Into_The_Regions_Holds_Its_Mobs_Once` moves a
-  villager of `mobs.bin` into the next region and ends the save at each place. On the head one of
-  its six places holds the villager twice.
-- `A_Saves_List_Naming_Other_Files_Or_Past_Its_Bounds_Is_Kept_Beside_And_The_World_Opens_As_Before`
-  names a file out of the folder by `..`, by a rooted path and through `regions/..`, a file of no
-  kind the save writes, and the world's file 5,000 times.
-
-The strict build is clean, 538 tests pass outside the GPU's lock with the long soak skipped,
-and the play passes in 186 s, its captures as the last commit's play's. Five comments were
-mended after, and the strict build is clean on that.
-
 Item 199, the fifteenth read, a world the same however its columns load, before its mends.
 
 Nothing differs. A probe compared every block, the sky's and the blocks' light, the chests and the
@@ -737,3 +613,45 @@ animals the same, in some seconds. It passes on the head, as nothing differs the
 test says what its overworld column is. The strict build is clean, 543 tests pass outside the
 GPU's lock with the long soak skipped, and the play passes in 193 s, its captures as the last
 commit's play's.
+
+Item 199's fourth mend, the first proposed, ores across a column's edge.
+
+A column walks the ore blobs of the nine columns about it, each from its own column's seed and by
+the biome at that column's middle, and keeps the blocks that fall in it (`Ores.Place`). A walk
+draws its roll for a cave's air at every step, so its path is the same in each column it is walked
+in. A placement tries its count times the share of a blob of its size that stayed in its column
+before, worked out once over a grid of a walk's chances, 86% for seventeen blocks to 96% for three,
+the fraction of a try left over tried at that chance. The diamonds try 96.5% of that, as their
+narrow band held 3.6% more over the three stretches without it. A blob that starts farther from
+the column than its steps reach makes its draws alone.
+
+| Ore | About the origin | Mountains, about (-4, -4) | Badlands, about (84, 28) |
+|---|---|---|---|
+| Coal | 16,703 to 16,895 | 17,276 to 18,299 | 10,019 to 10,044 |
+| Copper | 25,456 to 25,599 | 27,656 to 27,502 | 19,371 to 19,472 |
+| Diamond | 13,497 to 13,637 | 13,633 to 13,572 | 12,998 to 12,851 |
+| Emerald | 1,597 to 1,583 | 1,553 to 1,546 | none |
+| Gold | 11,795 to 11,621 | 11,665 to 11,598 | 11,952 to 12,045 |
+| Iron | 35,379 to 35,361 | 36,583 to 36,424 | 33,025 to 32,919 |
+| Lapis | 11,397 to 11,625 | 11,609 to 11,778 | 10,740 to 10,466 |
+| Redstone | 17,553 to 17,683 | 17,483 to 17,698 | 17,018 to 17,199 |
+
+- Each stretch is 400 columns of seed 1's overworld. Coal in the mountains' stretch holds 5.9% more,
+  where the stone band its upper placement falls in is narrow, and is left so as agreed.
+- Placing a column's ores takes a median of 1.71 ms against 0.60 ms before, of a column's whole
+  generation of 27.5 ms against 26.1 ms, so the ores take 6.2% of a column's making against 2.3%.
+  The skip of a blob out of reach saved 0.23 ms of the 1.94 it took first, since the draws it must
+  still make are the most of a walk's cost. Both counts and the guard test come out the same with
+  it.
+- `A_Vein_Goes_On_Across_A_Columns_Edge` places the ores of sixteen columns of stone side by side
+  and finds more than an eighth of the ores on an edge with their ore across it. On the head, with
+  the new call passed through, 2 of 249 do, against 6,822 of 524,288 blocks that are ore.
+- The picture, `.github/devlog/2026-11-16-item-199-veins-across-edges.webp`, shows two columns'
+  edges under the ground seen from the south through a column's depth, veins stopping at them
+  before and going on across them after, over the ore lying over each cell of a column with 64
+  columns folded onto one, whose edge cells held 0.82 ore blocks to the middle's 1.11 before and
+  1.06 to 1.04 after.
+
+The strict build is clean, 544 tests pass outside the GPU's lock with the long soak skipped,
+and the play passes in 179 s, its captures as the last commit's play's, none of which shows an
+ore.
