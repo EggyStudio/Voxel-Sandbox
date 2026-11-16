@@ -3405,6 +3405,28 @@ before a batch.
     within a window that holds a save is the reading, before and after. No picture, since nothing
     seen changes.
 
+204. **The sections drawn late inside the drawn reach.** Item 201's Reply counts, of 246 sections
+    with faces, 6 deep ones at height 1 held 1.5 s by the reach in three dimensions and 3 hidden
+    until a flood 6 s after they entered the reach, not drawn meanwhile. Asked, the two groups read
+    first, where each section lies against the eye and what the flood and `Reach.Within` say of it
+    frame by frame, and whether a player sees a hole (a capture at the frame one is missing, beside
+    the frame it is drawn), then the mend where a hole shows, a section within the drawn reach and
+    the eye's sight released by the step's flood or sooner, with a test that holds no visible
+    section undrawn past a bound of frames after it enters the reach. The slow frames and the felt
+    time of item 202's table held no worse, by the same flight. A picture in the devlog where a hole
+    showed.
+
+205. **The land's light shifts where culled sections are drawn.** Item 204's Reply reads, with
+    `voxel.cull off`, 105, 554 and 1,519 pixels changed by 9 to 40 levels of 255 away from the
+    sections in question, the land's light moving with the culled sections drawn. A section the
+    flood hides is not seen, yet it shadows, bounces and fills the field as any other, so the light
+    should not depend on whether it is drawn. Asked, which light moves (the sun's shadow, the
+    field's occlusion, the bounce or the block light), by turning each off in the two captures, and
+    which state is right, by the traced reference or by reasoning where the reference does not
+    reach, then the mend so a culled section gives the light what a drawn one gives, with a test
+    comparing the two captures within a bound of pixels. A sheet with the red and blue difference
+    before and after in the devlog.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -7822,6 +7844,113 @@ The strict build is clean, 549 tests pass outside the GPU's lock with the long s
 the worker fails on the head at its first check, the save there holding the frame for the ten
 seconds the test holds its first file, and the test of the failing save passes on the head too,
 where the save at once says so.
+
+Item 204's read of the sections drawn late inside the drawn reach, at `1d79ca8` with a probe beside
+it, under the shared lock. For each of the nine sections, frame by frame through item 201's flight,
+the probe logs the eye's section, the column's floor, whether the section lies within the drawn
+reach, whether `Reach.Within` reaches it, whether the flood sees it or keeps it as a caster, its
+state, and whether it is meshed and drawn. It then stands the eye two blocks past each step the
+sections entered the reach at (x 4450.5, 4466.5 and 4482.5, feet at 110, looking east and ten
+degrees down) and captures the frame as drawn twice, with every section counted in reach (a switch
+of the probe's that makes `Reach.Within` true) and with no section culled (`voxel.cull off`). The
+hour and the textures' ticks are held and the clouds are off. The flight's marks repeat item 201's
+three runs section for section.
+
+- **The six deep sections**, at height 1 below their columns' floor at section 2. At the eye's step
+  into section 279 three come within the drawn reach and the flood sees them three frames later.
+  `Reach.Within` leaves them parked, their distance in three dimensions 161 to 171 squared sections
+  against its 156, until the next step, when they mesh in a frame. The other three do the same one
+  step later. Each stands seen and unmeshed for 99 to 105 frames.
+- **The three hidden sections**, at height 2, at their columns' floor, so `Reach.Within` reaches
+  them throughout. They lie within the drawn reach from the step into section 278, and the flood
+  sees none of them in any frame of the flight. The sun's casters take them at the step into
+  section 282. Item 201's Reply took that for a later flood's release. One meshes as a caster and is
+  never drawn as seen. The other two are built to no faces and let go, so item 201 counted them
+  among the sections with faces where they hold none.
+
+The two captures as drawn differ in no pixel past 8 levels at any of the three places. With every
+section counted in reach, the six deep sections mesh and draw at their steps' places and change no
+pixel past 8 levels in their boxes on the picture or anywhere in it, so the ground hides them. With
+no section culled, the hidden section with faces draws and changes no pixel in its box. The
+picture changes elsewhere in 105, 554 and 1,519 pixels of 921,600, by 9 to 40 levels, where the
+land's light shifts with the culled sections drawn, and its shapes stand the same. No hole shows,
+so I made no mend and no devlog picture. The two sheets are in `.github/dump/2026-11-16`, the deep
+sections' place as drawn beside every section in reach, and the hidden sections' place beside no
+section culled, each with the changed pixels.
+
+Item 205's read and mend, the land's light where culled sections are drawn, at `da25069` with a
+probe beside it, the places of item 204 at 4450.5, 4466.5 and 4482.5 with the hour and the textures'
+ticks held and the clouds off, each frame with the culling on set against the frame with it off.
+
+| Light | 4482.5 | 4466.5 | 4450.5 |
+|---|---|---|---|
+| the game's own | 1,519 | 555 | 105 |
+| global illumination off | 0 | 0 | 0 |
+| the sun's shadows held to a block | 951 | 384 | 64 |
+| both off | 0 | 0 | 0 |
+
+The cells count pixels changed past 8 levels of 255, by 9 to 40 levels, where the land's light
+shifts and no shape changes. The light that moves is global illumination's, the sun's shadows the
+same either way, so the casters' search holds. The scene's field holds 725 to 745 meshes with the
+culling on and 1,073 to 1,130 with it off. A section the flood leaves out is hidden whole (`Place`,
+`ChunkRenderer.cs:1328`), and the engine's field takes the draws of the shown and the shadow-only
+meshes alone (`SceneField.cs:444`), so the field loses it.
+
+Which state is right the traced reference says, and it is neither. At 4482.5 `gi.reference` traced
+with every section meshed (1,073 copies) and with the culled ones left out (726) gives the same
+light at every pixel, so no path from what is drawn reaches them. Against a reference of 256 paths
+a pixel, the 1,453 pixels the culling changes hold a mean light of 0.089, and the culled frame is
+off it by 0.085 at the mean and the frame with none culled by 0.084, the culled one the nearer in
+723 of them. The field's light moves with geometry that gives the true light nothing, and by
+reasoning the light should not hang on where the eye has been, which it did through which sections
+it had meshed.
+
+The cause is in two parts.
+
+- A culled section the game has meshed is hidden from the field. The mend shows every culled
+  meshed section within the drawn reach in the shadow maps and the field alone, as the engine's
+  `ShadowOnly` keeps a mesh, where only the sections toward the light from a drawn one stood there
+  (`ChunkRenderer.cs:1286`). At 4466.5 and 4450.5, which each session reaches after 4482.5, the
+  sections that place meshed stand culled, and the frame with the culling on and the frame with it
+  off differ there in no pixel past 8 levels after, against 555 and 105 before. The devlog's
+  `2026-11-16-item-205-light-of-culled-sections.webp` holds the red and blue difference at 4466.5
+  before and after.
+- A section the flood never reached has no mesh. At 4482.5 as a session's first place, 837 such
+  sections within the drawn reach, most in the caves under the land, change 1,520 pixels. Meshing
+  them within 8 columns of the eye takes the change to none at 35% more sections meshed and within
+  the whole reach at 70% more. As you asked, they stay unmeshed, the fault being the field's light
+  moving with them, and the engine's entry in ASKS.md holds the two traces, the pixel counts, the
+  reference's error and the sweep.
+
+`A_Section_The_Flood_Leaves_Out_Stands_In_The_Shadow_Maps_And_The_Field` builds stone in the air
+over the flat world's floor, meshes it from above, stands the eye under the floor where the flood
+reaches nothing over it with the shadows held to a block so no section casts toward the light, and
+checks that the stone's parts stand in the shadow maps and the field alone, then drawn with no
+section culled. It fails on the head, where the stone is hidden.
+
+In flight the mend adds 4 to 5 meshes to the field, 680, 689 and 668 against 676, 684 and 663 at
+three moments of a flight under the shared lock, 32 to 38 meshed sections standing culled then.
+Item 202's flight under the exclusive lock, three runs against its table after:
+
+| Three runs each | Item 202 after | With the mend |
+|---|---|---|
+| frames past twice the median | 25, 23, 26 | 30, 23, 24 |
+| their median, ms | 25.8, 26.2, 25.8 | 24.1, 24.3, 25.3 |
+| frames past 22 ms | 25, 21, 26 | 23, 18, 17 |
+| frames past 25 ms | 15, 15, 15 | 12, 9, 12 |
+| frames past 40 ms | 2, 1, 2 | 1, 1, 1 |
+| the frames' median, ms | 11.05, 10.79, 11.15 | 10.42, 10.46, 10.53 |
+| their 99th part, ms | 27.6, 26.3, 27.1 | 27.1, 24.6, 26.4 |
+| within the drawn reach to drawn, median, ms | 42.1, 41.7, 41.7 | 54.7, 38.8, 50.8 |
+| within the drawn reach to drawn, 90th, ms | 69.8, 73.1, 82.5 | 77.8, 71.1, 84.5 |
+
+The frames past twice the median rise in one run as the median falls, the table of item 202 holding
+the timed save's frame that `1d79ca8` took off the main thread, and past every fixed time the runs
+hold as many slow frames or fewer. The felt time's medians lie within the step's flood of 2 to 3
+frames, 191 sections coming within the reach in these records against 246.
+
+The strict build is clean, 550 tests pass outside the GPU's lock with the long soak skipped, and
+the play passes in 180 s, its captures as the pin's.
 
 ## Items closed, parked or shortened
 
