@@ -78,6 +78,9 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             else _made.Add((result.X, result.Z, result.Column, result.Unread, result.Unknown));
         }
 
+        // While a timed save is written on a worker nothing else touches the save, so no column is
+        // taken in, unloaded or asked for, which joining, unloading and reading a kept one would.
+        if (save is { Busy: true }) return;
         var (cx, cz) = LandOrigin.ColumnOf(player);
         TakeMade(cx, cz);
         var load = renderDistance + 2;

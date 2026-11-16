@@ -411,6 +411,53 @@ public sealed class WorldSave
         }
     }
 
+    // A save written on a worker, while which nothing but it reads or changes the save.
+    private Task? _aside;
+
+    /// <summary>
+    /// Whether a save <see cref="WriteAside"/> began is under way, while which nothing but it reads
+    /// or changes the save.
+    /// </summary>
+    public bool Busy => _aside is { IsCompleted: false };
+
+    /// <summary>
+    /// Whether a save <see cref="WriteAside"/> began has ended, for <see cref="Settle"/> to take.
+    /// </summary>
+    public bool Ended => _aside is { IsCompleted: true };
+
+    /// <summary>
+    /// Writes a save whole as <see cref="WriteWhole"/> does, then lets go of the regions as
+    /// <see cref="LetGo"/> does, on a worker, so the frame that begins it does not wait for its
+    /// files to reach the disk.
+    /// </summary>
+    /// <remarks>
+    /// What <paramref name="write"/> writes is gathered before, on the thread the world changes on,
+    /// and that thread touches the save in no other way until <see cref="Settle"/> takes the save's
+    /// end, as the streamer holds its columns while the save is <see cref="Busy"/>. A save begun
+    /// while another is under way waits for it first.
+    /// </remarks>
+    public void WriteAside(Action write, IReadOnlyList<(int X, int Z)> loaded)
+    {
+        Settle();
+        _aside = Task.Run(() =>
+        {
+            WriteWhole(write);
+            LetGo(loaded);
+        });
+    }
+
+    /// <summary>
+    /// Waits for a save <see cref="WriteAside"/> began, where one was, and throws what it threw.
+    /// </summary>
+    /// <returns>Whether a save was taken.</returns>
+    public bool Settle()
+    {
+        if (_aside is not { } aside) return false;
+        _aside = null;
+        aside.GetAwaiter().GetResult();
+        return true;
+    }
+
     // Finishes the moves of a save whose list stands, ended among them, and gives whether the
     // scratch files left may go, as they may not where a list that cannot be read was set aside,
     // whose files are left with it.
@@ -895,11 +942,18 @@ public sealed class WorldSave
         return furnaces;
     }
 
-    public void WriteFurnaces(Furnaces furnaces)
-    {
-        var records = furnaces.All.Select(f => new FurnaceRecord(f.Key.X, f.Key.Y, f.Key.Z, [.. f.Value.Slots.Select(Inventory.Encode)], f.Value.Burning, f.Value.BurnTotal, f.Value.Cooked)).ToArray();
+    public void WriteFurnaces(Furnaces furnaces) => WriteFurnaces(FurnaceRecords(furnaces));
+
+    /// <summary>
+    /// The furnaces as a save keeps them, gathered apart from their writing for a save written
+    /// aside.
+    /// </summary>
+    public static FurnaceRecord[] FurnaceRecords(Furnaces furnaces) =>
+        [.. furnaces.All.Select(f => new FurnaceRecord(f.Key.X, f.Key.Y, f.Key.Z, [.. f.Value.Slots.Select(Inventory.Encode)], f.Value.Burning, f.Value.BurnTotal, f.Value.Cooked))];
+
+    /// <summary>Writes the furnaces <see cref="FurnaceRecords"/> gathered.</summary>
+    public void WriteFurnaces(FurnaceRecord[] records) =>
         Replace(Path.Combine(Folder, "furnaces.json"), file => JsonSerializer.Serialize(file, records, SaveJson.Default.FurnaceRecordArray));
-    }
 
     /// <summary>A chest as a save keeps it, with its place, its slots as <see cref="Inventory.Encode"/> gives them, and the loot it holds not yet rolled.</summary>
     public sealed record ChestRecord(int X, int Y, int Z, string[] Slots, string? Loot, uint Seed);

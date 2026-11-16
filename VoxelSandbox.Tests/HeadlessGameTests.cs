@@ -333,6 +333,113 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Timed_Save_Is_Written_On_A_Worker_While_The_Columns_Wait_And_Reads_Back_As_Gathered()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // Frames of a twentieth of a second, so the timed save comes due within 600.
+            using var headless = new HeadlessGame(frameSeconds: 0.05f, save: folder, still: true);
+            var game = headless.Game;
+            (int X, int Y, int Z)[] changed = [(2, 70, 2), (-30, 60, 17)];
+            game.World.SetBlock(changed[0].X, changed[0].Y, changed[0].Z, BlockId.Glowstone);
+            game.World.SetBlock(changed[1].X, changed[1].Y, changed[1].Z, BlockId.Stone);
+
+            // The save held at its first file, ten seconds at most, so the frames stepped meanwhile
+            // run while it is under way.
+            using var held = new ManualResetEventSlim();
+            using var release = new ManualResetEventSlim();
+            game.Save!.Writing = _ =>
+            {
+                if (held.IsSet) return;
+                held.Set();
+                release.Wait(TimeSpan.FromSeconds(10));
+            };
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (!held.IsSet && clock.Elapsed.TotalSeconds < 60) headless.Step(1);
+            Assert.True(game.Save.Busy);
+            var gathered = LandOrigin.LandOf(game.Player.Body.Position);
+
+            // The changed columns as the save gathered them, then one changed again while the
+            // worker writes, which the save holds as gathered and the next writes.
+            var columns = changed.Select(c => (X: VoxelWorld.ColumnOf(c.X), Z: VoxelWorld.ColumnOf(c.Z))).ToArray();
+            var before = columns.Select(c => game.World.TryGetColumn(c.X, c.Z, out var column) ? Blocks(column) : []).ToArray();
+            game.World.SetBlock(changed[0].X, changed[0].Y, changed[0].Z, BlockId.Air);
+
+            // A step of four columns east asks for columns past the last load's reach, which wait
+            // while the save is under way.
+            var (cx, cz) = LandOrigin.ColumnOf(game.Player.Body.Position);
+            var past = (X: cx + 4 + game.RenderDistance + 2, Z: cz);
+            Assert.False(game.World.HasColumn(past.X, past.Z));
+            game.Player.Teleport(game.Player.Body.Position + new Vector3(64, 0, 0));
+            headless.Step(20);
+            Assert.True(game.Save.Busy);
+            Assert.False(game.World.HasColumn(past.X, past.Z));
+
+            release.Set();
+            while ((game.Save.Busy || game.Save.Ended || game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 120)
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            Assert.Null(game.SaveFault);
+            Assert.True(game.World.HasColumn(past.X, past.Z));
+
+            // Read back by a save of its own, the changed columns block for block as gathered, and
+            // the player where the save gathered it.
+            var read = new WorldSave(folder);
+            for (int i = 0; i < columns.Length; i++)
+            {
+                read.ReadRegion(columns[i].X, columns[i].Z);
+                Assert.Equal(before[i], Blocks(WorldSave.Decode(columns[i].X, columns[i].Z, read.Kept(columns[i].X, columns[i].Z)!)));
+            }
+            var info = read.ReadInfo()!;
+            Assert.Equal((gathered.X, gathered.Z), (info.X, info.Z));
+            Assert.True(game.World.TryGetColumn(columns[0].X, columns[0].Z, out var again) && again.Changed);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+
+        // A column's blocks, every one in order.
+        static BlockId[] Blocks(ChunkColumn column)
+        {
+            var blocks = new List<BlockId>();
+            for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
+                for (int z = 0; z < Section.Size; z++)
+                    for (int x = 0; x < Section.Size; x++)
+                        blocks.Add(column.Get(x, y, z));
+            return [.. blocks];
+        }
+    }
+
+    [Fact]
+    public void A_Timed_Save_That_Fails_On_Its_Worker_Says_So_And_Waits_Longer()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(frameSeconds: 0.05f, save: folder, still: true);
+            var game = headless.Game;
+            game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
+            // A folder in the place of the world's file before it takes its name, as a full disk
+            // fails a save.
+            Directory.CreateDirectory(Path.Combine(folder, "world.json.new"));
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (game.SaveFault is null && clock.Elapsed.TotalSeconds < 60) headless.Step(1);
+
+            Assert.StartsWith("The world could not be saved", game.Said?.Text);
+            Assert.Equal(60, game.SaveWait);
+            Directory.Delete(Path.Combine(folder, "world.json.new"));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Save_That_Cannot_Be_Written_Lets_The_Game_Close_And_Switch_And_Waits_Longer()
     {
         var (folder, other) = (Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")), Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")));

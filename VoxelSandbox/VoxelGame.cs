@@ -746,6 +746,8 @@ public sealed class VoxelGame : IDisposable
     /// </remarks>
     public void Leave(LandPlace to)
     {
+        // The columns left are kept by the save, so a timed save under way ends first.
+        SettleSave();
         Streamer.Leave(to, RenderDistance);
         var ecs = GetApp().World.Resource<EcsWorld>();
         var gone = new List<int>();
@@ -785,7 +787,12 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>Keeps every loaded column the player changed and the player's place, and writes them, unless the world is transient.</summary>
-    public void SaveWorld()
+    public void SaveWorld() => SaveWorld(aside: false);
+
+    // Saves the world, a timed save on a worker once what it writes is gathered here, so the frame
+    // it falls in does not wait for its files to reach the disk, and any other at once, after the
+    // one under way.
+    private void SaveWorld(bool aside)
     {
         // A new world left before its player stood in it has nothing to keep, and a player waiting
         // over the spawn after a death is set on it first, its column made here, so the save keeps
@@ -793,6 +800,7 @@ public sealed class VoxelGame : IDisposable
         if (Save is null || Loading && _landing && !_respawned) return;
         // The next timed save waits its time even where this one throws, rather than one a frame.
         _sinceSave = 0;
+        SettleSave();
         if (Loading && _landing && Player.Teleports == _loadTeleports)
         {
             Streamer.LoadNow(LandOrigin.PlaceOf(0, 0, 0), 0);
@@ -801,37 +809,75 @@ public sealed class VoxelGame : IDisposable
         }
         try
         {
-            Save.WriteWhole(() =>
+            // What the save writes is gathered from the world here, the changed columns encoded
+            // among it.
+            foreach (var column in World.Columns)
+                if (column.Changed) Save.Keep(column);
+            var mobs = Mobs.Columns().ToList();
+            var furnaces = WorldSave.FurnaceRecords(Furnaces);
+            var chests = Chests.Columns(World).ToList();
+            // The stacks the window E opens holds are saved in the inventory as shutting it puts
+            // them, so a save while it is open keeps them.
+            var inventory = new Inventory();
+            inventory.Load(Inventory.Save());
+            foreach (var stack in InventoryWindow.Holding) inventory.Add(stack.Item, stack.Count, stack.Wear);
+            var at = LandOrigin.LandOf(Player.Body.Position);
+            var info = new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
+                Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
+                Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held);
+            List<(int X, int Z)> loaded = [.. World.Columns.Select(column => (column.X, column.Z))];
+            var save = Save;
+            void Write()
             {
-                foreach (var column in World.Columns)
-                    if (column.Changed) Save.Keep(column);
-                Save.Flush();
-                Save.WriteMobs(Mobs.Columns());
-                Save.WriteFurnaces(Furnaces);
-                Save.WriteChests(Chests.Columns(World));
-                // The stacks the window E opens holds are saved in the inventory as shutting it
-                // puts them, so a save while it is open keeps them.
-                var inventory = new Inventory();
-                inventory.Load(Inventory.Save());
-                foreach (var stack in InventoryWindow.Holding) inventory.Add(stack.Item, stack.Count, stack.Wear);
-                var at = LandOrigin.LandOf(Player.Body.Position);
-                Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
-                    Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
-                    Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
-            });
-            Save.LetGo(World.Columns.Select(column => (column.X, column.Z)));
-            if (SaveFault is not null) Say("The world is saved again");
-            (SaveFault, _saveWait) = (null, SaveSeconds);
+                save.Flush();
+                save.WriteMobs(mobs);
+                save.WriteFurnaces(furnaces);
+                save.WriteChests(chests);
+                save.WriteInfo(info);
+            }
+            if (aside)
+            {
+                save.WriteAside(Write, loaded);
+                return;
+            }
+            save.WriteWhole(Write);
+            save.LetGo(loaded);
+            Saved();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            // A save that cannot be written, as to a full disk or a folder that cannot be written,
-            // leaves the game going, a world switched to and the quit among it, and what it did not
-            // write is kept to be written by a later save. The log says each, the HUD the first.
-            TraceLog(LogLevel.Warning, $"The world {WorldName} could not be saved, and it is tried again in {MathF.Min(_saveWait * 2, MostSaveSeconds):0} s. {ex.Message}");
-            if (SaveFault is null) Say($"The world could not be saved, {ex.Message.TrimEnd('.')}");
-            (SaveFault, _saveWait) = (ex.Message.TrimEnd('.'), MathF.Min(_saveWait * 2, MostSaveSeconds));
+            Unsaved(ex);
         }
+    }
+
+    // Takes the end of a timed save under way, waiting for it, and says how it ended as any save
+    // says it.
+    private void SettleSave()
+    {
+        try
+        {
+            if (Save?.Settle() == true) Saved();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Unsaved(ex);
+        }
+    }
+
+    private void Saved()
+    {
+        if (SaveFault is not null) Say("The world is saved again");
+        (SaveFault, _saveWait) = (null, SaveSeconds);
+    }
+
+    // A save that cannot be written, as to a full disk or a folder that cannot be written, leaves
+    // the game going, a world switched to and the quit among it, and what it did not write is kept
+    // to be written by a later save. The log says each, the HUD the first.
+    private void Unsaved(Exception ex)
+    {
+        TraceLog(LogLevel.Warning, $"The world {WorldName} could not be saved, and it is tried again in {MathF.Min(_saveWait * 2, MostSaveSeconds):0} s. {ex.Message}");
+        if (SaveFault is null) Say($"The world could not be saved, {ex.Message.TrimEnd('.')}");
+        (SaveFault, _saveWait) = (ex.Message.TrimEnd('.'), MathF.Min(_saveWait * 2, MostSaveSeconds));
     }
 
     /// <summary>
@@ -844,6 +890,7 @@ public sealed class VoxelGame : IDisposable
         // The behaviors step nothing in a frame the game does not step, as while the world loads.
         (Step.Seconds, _seconds) = (0, 0);
         TakeDefaults();
+        if (Save is { Ended: true }) SettleSave();
         if (NextWorld is { } next)
         {
             NextWorld = null;
@@ -869,7 +916,7 @@ public sealed class VoxelGame : IDisposable
         if (Menus.Open != Menu.None) seconds = 0;
         _seconds = seconds;
         _sinceSave += seconds;
-        if (_sinceSave > _saveWait) SaveWorld();
+        if (_sinceSave > _saveWait) SaveWorld(aside: true);
         var io = ImGui.GetIO();
         // A field taking typed text takes the keys too, so a seed typed acts no toggle, though Escape,
         // which no field takes, still goes back from its screen.
