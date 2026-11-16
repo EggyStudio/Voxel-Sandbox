@@ -498,10 +498,10 @@ public sealed class SaveTests : IDisposable
         var bytes = Zipped(zip => { for (int i = 0; i < 256; i++) zip.Write(zeros); });
 
         GC.Collect();
-        var before = GC.GetTotalAllocatedBytes(precise: true);
+        var before = GC.GetAllocatedBytesForCurrentThread();
         WorldSave.Shallow(bytes);
         WorldSave.Decode(0, 0, bytes);
-        var allocated = GC.GetTotalAllocatedBytes(precise: true) - before;
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
         Assert.InRange(allocated, 0, 64L << 20);
     }
@@ -570,9 +570,9 @@ public sealed class SaveTests : IDisposable
 
         var save = new WorldSave(_folder);
         GC.Collect();
-        var before = GC.GetTotalAllocatedBytes(precise: true);
+        var before = GC.GetAllocatedBytesForCurrentThread();
         var taken = save.TakeMobs(0, 0);
-        var allocated = GC.GetTotalAllocatedBytes(precise: true) - before;
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
         Assert.Null(taken);
         Assert.InRange(allocated, 0, 64L << 20);
@@ -589,9 +589,9 @@ public sealed class SaveTests : IDisposable
 
         var save = new WorldSave(_folder);
         GC.Collect();
-        var before = GC.GetTotalAllocatedBytes(precise: true);
+        var before = GC.GetAllocatedBytesForCurrentThread();
         var taken = save.TakeMobs(0, 0);
-        var allocated = GC.GetTotalAllocatedBytes(precise: true) - before;
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
         Assert.Null(taken);
         Assert.InRange(allocated, 0, 512L << 20);
@@ -633,5 +633,72 @@ public sealed class SaveTests : IDisposable
 
         Assert.All(columns, column => Assert.Equal(16, read.TakeMobs(column.Column.X, column.Column.Z)!.Count));
         Assert.False(File.Exists(Path.Combine(_folder, "regions", "m.0.0.bin.unread")));
+    }
+
+    [Fact]
+    public void A_Worlds_Saturation_That_Is_No_Number_Is_A_New_Worlds()
+    {
+        new WorldSave(_folder).WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]) with { Saturation = float.NaN });
+
+        Assert.Equal(5, new WorldSave(_folder).ReadInfo()!.Saturation);
+    }
+
+    [Fact]
+    public void A_Worlds_List_Of_Blocks_Far_Past_The_Numbers_Is_Read_In_Time_And_Held_To_Them()
+    {
+        // Three hundred thousand keys, a file of some 6 MB.
+        new WorldSave(_folder).WriteInfo(Info([.. Enumerable.Range(0, 300_000).Select(i => $"block_{i}")]));
+        var save = new WorldSave(_folder);
+
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        save.ReadInfo();
+
+        Assert.InRange(clock.ElapsedMilliseconds, 0, 1000);
+        Assert.Equal(ushort.MaxValue + 1, save.BlockKeys.Length);
+    }
+
+    [Fact]
+    public void A_Worlds_List_Of_Blocks_Holding_No_Key_Reads_It_As_Air()
+    {
+        new WorldSave(_folder).WriteInfo(Info(["stone", null!, "air"]));
+        var save = new WorldSave(_folder);
+
+        save.ReadInfo();
+
+        Assert.Equal(["stone", null!, "air"], save.BlockKeys);
+    }
+
+    [Theory]
+    [InlineData("world.json", 20)]
+    [InlineData("chests.json", 80)]
+    [InlineData("furnaces.json", 80)]
+    public void A_Saves_File_Far_Past_What_The_Game_Writes_Is_Kept_Beside(string name, int megabytes)
+    {
+        var save = new WorldSave(_folder);
+        save.WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]));
+        var path = Path.Combine(_folder, name);
+        // Spaces before a file the reader takes, as many megabytes as given.
+        File.WriteAllText(path, new string(' ', megabytes << 20) + (name == "world.json" ? File.ReadAllText(path) : "[]"));
+        var written = File.ReadAllBytes(path);
+
+        var read = new WorldSave(_folder);
+        GC.Collect();
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        switch (name)
+        {
+            case "world.json":
+                Assert.Null(read.ReadInfo());
+                break;
+            case "chests.json":
+                Assert.Empty(read.ReadChests().All);
+                break;
+            default:
+                Assert.Empty(read.ReadFurnaces().All);
+                break;
+        }
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        Assert.InRange(allocated, 0, (megabytes - 4L) << 20);
+        Assert.Equal(written, File.ReadAllBytes(path + ".unread"));
     }
 }

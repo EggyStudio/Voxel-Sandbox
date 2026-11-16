@@ -78,6 +78,10 @@ public sealed class WorldSave
 {
     public const int RegionSize = 32;
     private const int Version = 2;
+    // The bytes past which a world's info, and its chests' or furnaces' file, is one that cannot be
+    // read rather than read whole, where the game writes an info of some 6 KB, its list of blocks
+    // the most of it, and some 700 bytes a chest.
+    private const long MostInfoBytes = 16 << 20, MostRecordsBytes = 64 << 20;
     // The version of the regions' mobs files, after the 1 and 2 of mobs.bin.
     private const int MobsVersion = 3;
     // The mobs a column of a mobs file may hold, past which the file is one that cannot be read,
@@ -203,10 +207,11 @@ public sealed class WorldSave
     {
         var renumber = new ushort[keys.Length];
         var same = keys.Length <= Blocks.All.Count;
+        var known = new Dictionary<string, BlockId>();
+        foreach (var block in Blocks.All) known.TryAdd(block.Key, block.Id);
         for (int i = 0; i < keys.Length; i++)
         {
-            var known = Blocks.All.FirstOrDefault(b => b.Key == keys[i]);
-            renumber[i] = (ushort)(known?.Id ?? BlockId.Air);
+            renumber[i] = (ushort)(keys[i] is { } key && known.TryGetValue(key, out var id) ? id : BlockId.Air);
             same &= renumber[i] == i;
         }
         return same ? null : renumber;
@@ -239,6 +244,13 @@ public sealed class WorldSave
             }
         }
         return output.ToArray();
+    }
+
+    // A file of the save's read whole, one past so many bytes refused as one that cannot be read.
+    private static string ReadText(string path, long most)
+    {
+        var length = new FileInfo(path).Length;
+        return length > most ? throw new IOException($"it holds {length >> 20} MB, past the {most >> 20} MB a file of its kind holds") : File.ReadAllText(path);
     }
 
     // Moves a file that could not be read aside, under its name and .unread, or .unread and a number
@@ -359,7 +371,7 @@ public sealed class WorldSave
             if (!File.Exists(path)) continue;
             try
             {
-                if (JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.WorldInfo) is { } info)
+                if (JsonSerializer.Deserialize(ReadText(path, MostInfoBytes), SaveJson.Default.WorldInfo) is { } info)
                     found.Add((Path.GetFileName(folder), Bounded(info).Kind, info.Seed, File.GetLastWriteTimeUtc(path)));
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
@@ -377,11 +389,11 @@ public sealed class WorldSave
         if (!File.Exists(path)) return null;
         try
         {
-            var read = JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.WorldInfo);
+            var read = JsonSerializer.Deserialize(ReadText(path, MostInfoBytes), SaveJson.Default.WorldInfo);
             if (read is null) return null;
             var info = Bounded(read);
             if (info != read)
-                TraceLog(LogLevel.Warning, $"{path} holds a kind, a place, a heading, a pitch or an hour the game cannot hold, so those open as a new world's and the rest as saved.");
+                TraceLog(LogLevel.Warning, $"{path} holds a kind, a place, a heading, a pitch, an hour, a day, a saturation or a list of blocks the game cannot hold, so those open as a new world's and the rest as saved.");
             if (info.Blocks is { } keys) (_keys, _renumber) = (keys, Renumbering(keys));
             return info;
         }
@@ -395,8 +407,9 @@ public sealed class WorldSave
     // A world's info with each value the game cannot hold taken as a new world's, so a file changed by
     // hand opens with the rest of what it keeps. A kind named by none is one this build makes none
     // of, which opens as the kind asked for. A place that is no number or lies past the land's edge
-    // lands the player over the spawn. A heading, a pitch or an hour that is no number is a new
-    // world's.
+    // lands the player over the spawn. A heading, a pitch, an hour or a saturation that is no number
+    // is a new world's, and a list of blocks past the 65,536 a region's numbers tell apart is held
+    // to them.
     private static WorldInfo Bounded(WorldInfo info)
     {
         if (info.Kind is null) info = info with { Kind = "" };
@@ -408,6 +421,8 @@ public sealed class WorldSave
         // first.
         else if (info.Hour is < 0 or >= 24) info = info with { Hour = (info.Hour % 24 + 24) % 24 };
         if (info.Day < 0) info = info with { Day = 0 };
+        if (!float.IsFinite(info.Saturation)) info = info with { Saturation = 5 };
+        if (info.Blocks is { Length: > ushort.MaxValue + 1 } keys) info = info with { Blocks = keys[..(ushort.MaxValue + 1)] };
         return info;
     }
 
@@ -663,7 +678,7 @@ public sealed class WorldSave
         static float Held(float value) => float.IsFinite(value) && value > 0 ? value : 0;
         try
         {
-            foreach (var r in JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.FurnaceRecordArray) ?? [])
+            foreach (var r in JsonSerializer.Deserialize(ReadText(path, MostRecordsBytes), SaveJson.Default.FurnaceRecordArray) ?? [])
             {
                 var (burning, cooked) = (Held(r.Burning), Held(r.Cooked));
                 var furnace = new Furnace { Burning = burning, BurnTotal = MathF.Max(Held(r.BurnTotal), burning), Cooked = cooked };
@@ -697,7 +712,7 @@ public sealed class WorldSave
         if (!File.Exists(path)) return chests;
         try
         {
-            foreach (var r in JsonSerializer.Deserialize(File.ReadAllText(path), SaveJson.Default.ChestRecordArray) ?? [])
+            foreach (var r in JsonSerializer.Deserialize(ReadText(path, MostRecordsBytes), SaveJson.Default.ChestRecordArray) ?? [])
             {
                 var chest = new Chest { Loot = r.Loot, Seed = r.Seed };
                 var slots = r.Slots ?? [];

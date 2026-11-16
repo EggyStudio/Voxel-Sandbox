@@ -160,4 +160,23 @@ public sealed class OptionTests : IDisposable
             Assert.True(Vector3.Distance(start, now) < 0.01f * MathF.Max(1, start.Length()), $"{color.Name} went from {start} to {now}");
         }
     }
+
+    [Fact]
+    public void An_Options_File_Far_Past_What_The_Game_Writes_Is_Kept_Beside()
+    {
+        var held = new Held();
+        var file = new OptionsFile(_folder);
+        Directory.CreateDirectory(_folder);
+        File.WriteAllText(file.File, "version:3\n" + new string('x', 2 << 20) + "\nrender.Render_Distance:6\n");
+        var written = File.ReadAllBytes(file.File);
+
+        GC.Collect();
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        Assert.ThrowsAny<IOException>(() => file.Read(held.Screens()));
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        Assert.InRange(allocated, 0, 1L << 20);
+        Assert.Equal(12, held.Distance);
+        Assert.Equal(written, File.ReadAllBytes(file.File + ".unread"));
+    }
 }

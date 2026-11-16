@@ -34,6 +34,13 @@ public sealed class OptionsFile(string root)
 
     // The text last read or written, so leaving a screen with nothing changed writes nothing.
     private string? _held;
+    // Whether the file, far past what the game writes, could be neither read nor moved aside, so
+    // no write of this run takes its place.
+    private bool _keep;
+
+    // An options file the game writes is some 3 KB, so one past a megabyte is one that cannot be
+    // read rather than read whole.
+    private const long MostBytes = 1 << 20;
 
     /// <summary>The game's own, beside the saves under the local application data folder.</summary>
     public static OptionsFile Default => new(Path.GetDirectoryName(WorldSave.Root)!);
@@ -58,7 +65,7 @@ public sealed class OptionsFile(string root)
     public bool Write(IEnumerable<(string Name, IReadOnlyList<Option> Options)> screens)
     {
         var text = Text(screens);
-        if (text == _held) return false;
+        if (text == _held || _keep) return false;
         Directory.CreateDirectory(root);
         // Written beside and moved over the file, so a run stopped as it writes leaves the last whole one.
         System.IO.File.WriteAllText(File + ".new", text);
@@ -75,6 +82,7 @@ public sealed class OptionsFile(string root)
         string text;
         try
         {
+            if (new FileInfo(File).Length > MostBytes) throw new IOException($"it holds more than the {MostBytes >> 20} MB an options file holds, so {SetAside()}");
             text = System.IO.File.ReadAllText(File);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -117,6 +125,7 @@ public sealed class OptionsFile(string root)
         string[] lines;
         try
         {
+            if (new FileInfo(File).Length > MostBytes) return null;
             lines = System.IO.File.ReadAllLines(File);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -147,5 +156,23 @@ public sealed class OptionsFile(string root)
         }
         if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var number) || !float.IsFinite(number)) return null;
         return number >= option.Low && number <= option.High ? number : null;
+    }
+
+    // Moves the file aside under its name and .unread, or .unread and a number where an earlier one
+    // lies, or keeps it from being written over where it cannot be moved, and says which.
+    private string SetAside()
+    {
+        var aside = File + ".unread";
+        for (int n = 2; System.IO.File.Exists(aside); n++) aside = $"{File}.unread{n}";
+        try
+        {
+            System.IO.File.Move(File, aside);
+            return $"it is kept as {Path.GetFileName(aside)}";
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            _keep = true;
+            return "it, which could not be moved aside, is written by no save of this run";
+        }
     }
 }

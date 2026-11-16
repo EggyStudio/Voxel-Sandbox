@@ -735,3 +735,38 @@ none (`ReadMob`).
 
 The strict build is clean, 512 tests pass outside the GPU's lock, and the play passes in 194 s,
 its captures as the last commit's play's.
+
+Item 195's third commit, the world's file, the chests', the furnaces' and the options with findings
+5, 6 and 7. Each test was run first on a copy of `195b539` with the tests added.
+
+5. A world's saturation that is no number is a new world's 5 as its file is read
+   (`WorldSave.Bounded`), and the reader's line names it among what it holds the game cannot.
+   - `A_Worlds_Saturation_That_Is_No_Number_Is_A_New_Worlds` fails on the head, which reads NaN.
+6. A world's list of blocks is held to the 65,536 a region's numbers tell apart as its file is
+   read, and each key is found by a dictionary of the game's blocks (`Renumbering`), a key that is
+   none read as air as before.
+   - `A_Worlds_List_Of_Blocks_Far_Past_The_Numbers_Is_Read_In_Time_And_Held_To_Them` reads three
+     hundred thousand keys, a file of some 6 MB within the file's bound, within 1 s and holds
+     65,536 of them. It fails on the head, which holds every one. The two million keys of the read,
+     38 MB, are a file past the bound of 7, which is kept beside before a key is read.
+   - `A_Worlds_List_Of_Blocks_Holding_No_Key_Reads_It_As_Air` stands with it, passing on the head.
+7. A world's file past 16 MB and a chests' or furnaces' file past 64 MB are refused as files that
+   cannot be read and kept beside, where the game writes an info of some 6 KB and some 700 bytes a
+   chest (`WorldSave.ReadText`). An options file past 1 MB, where the game writes some 3 KB, is
+   kept beside as `options.txt.unread`, the settings at their defaults and the fault said on the
+   HUD, and where it cannot be moved no write of the run takes its place (`OptionsFile.Read`). The
+   options' window reads no value of such a file (`OptionsFile.Find`).
+   - `A_Saves_File_Far_Past_What_The_Game_Writes_Is_Kept_Beside`, of world.json at 20 MB and the
+     chests' and the furnaces' files at 80 MB, fails on the head, which reads each whole. The file
+     kept beside holds every byte of the one written.
+   - `An_Options_File_Far_Past_What_The_Game_Writes_Is_Kept_Beside`, of 2 MB, fails on the head,
+     which reads it whole and keeps it under its name. The file kept beside holds every byte.
+
+The tests of these three commits that hold a read to so many bytes count the bytes of their own
+thread, since the suite runs its classes side by side. The options' test first failed in the suite
+counting another class's, as did the list's at two million keys, whose file the bound of 7 kept
+beside, and both pass since with the save's and the options' tests run again.
+
+The strict build is clean, 519 tests ran outside the GPU's lock with the two failures told above,
+the save's and the options' 50 passing since, and the play passes in 192 s, its captures as the
+last commit's play's.
