@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using Xunit;
+using static Engine.E3D;
 
 namespace VoxelSandbox.Tests;
 
@@ -403,5 +404,134 @@ public sealed class SaveTests : IDisposable
                     foreach (var value in (double[])[home.X, home.Y, home.Z]) writer.Write(value);
             }
         }
+    }
+
+    // A column's bytes as the save keeps them, its sections' blocks by their numbers through zlib.
+    private static byte[] Zipped(Action<Stream> write)
+    {
+        using var output = new MemoryStream();
+        using (var zip = new ZLibStream(output, CompressionLevel.Fastest, leaveOpen: true)) write(zip);
+        return output.ToArray();
+    }
+
+    // A region of version 1 of columns by the places in it the file gives, which may lie outside it.
+    private void WriteRegion(int count, params (short X, short Z, byte[] Bytes)[] columns)
+    {
+        Directory.CreateDirectory(Path.Combine(_folder, "regions"));
+        using var writer = new BinaryWriter(File.Create(Path.Combine(_folder, "regions", "r.0.0.bin")));
+        writer.Write("E3DR"u8);
+        writer.Write(1);
+        writer.Write(count);
+        foreach (var (x, z, bytes) in columns)
+        {
+            writer.Write(x);
+            writer.Write(z);
+            writer.Write(bytes.Length);
+            writer.Write(bytes);
+        }
+    }
+
+    [Fact]
+    public void A_Kept_Block_Of_A_Number_Past_The_Games_Blocks_Reads_As_Air()
+    {
+        var blocks = new ushort[ChunkColumn.SectionCount * Section.Volume];
+        blocks[5 * Section.Volume + 1] = 60_000;
+        blocks[5 * Section.Volume + 2] = (ushort)BlockId.Stone;
+
+        var column = WorldSave.Decode(0, 0, Zipped(zip => zip.Write(System.Runtime.InteropServices.MemoryMarshal.AsBytes(blocks.AsSpan()))), out var unknown);
+
+        Assert.Equal((BlockId.Air, BlockId.Stone, 1), (column.Get(1, 16, 0), column.Get(2, 16, 0), unknown));
+        Lighting.Compute(column);
+    }
+
+    [Fact]
+    public void Blocks_Of_Numbers_Past_The_Games_Are_Said_Once_A_Region_With_Their_Count()
+    {
+        var path = Path.Combine(_folder, "regions", "r.0.0.bin");
+        var said = new List<string>();
+        SetTraceLogCallback((_, line) =>
+        {
+            if (line.Contains(path)) lock (said) said.Add(line);
+        });
+        try
+        {
+            var save = new WorldSave(_folder);
+            save.Unknown(0, 0, 3);
+            save.Unknown(5, 7, 2);
+            save.Flush();
+            save.Flush();
+
+            Assert.EndsWith($"The region {path} holds 5 blocks of numbers this game does not know, which are read as air.", Assert.Single(said));
+        }
+        finally
+        {
+            SetTraceLogCallback(null);
+        }
+    }
+
+    [Fact]
+    public void A_Region_Of_Every_Column_The_Game_Keeps_Reads_Whole()
+    {
+        var save = new WorldSave(_folder);
+        for (int z = 0; z < WorldSave.RegionSize; z++)
+            for (int x = 0; x < WorldSave.RegionSize; x++)
+            {
+                var column = new ChunkColumn(x, z);
+                column.Set(1, 2, 3, BlockId.Glowstone);
+                column.Changed = true;
+                save.Keep(column);
+            }
+        save.Flush();
+
+        var read = new WorldSave(_folder);
+        read.ReadRegion(0, 0);
+
+        Assert.All(Enumerable.Range(0, WorldSave.RegionSize * WorldSave.RegionSize), i => Assert.NotNull(read.Kept(i % WorldSave.RegionSize, i / WorldSave.RegionSize)));
+        Assert.False(File.Exists(Path.Combine(_folder, "regions", "r.0.0.bin.unread")));
+    }
+
+    [Fact]
+    public void A_Column_Whose_Blocks_Inflate_Past_Its_Sections_Is_Read_Within_A_Bound()
+    {
+        // 256 MB of zeros, which zlib keeps in a quarter of a megabyte, where a column holds 192 KB.
+        var zeros = new byte[1 << 20];
+        var bytes = Zipped(zip => { for (int i = 0; i < 256; i++) zip.Write(zeros); });
+
+        GC.Collect();
+        var before = GC.GetTotalAllocatedBytes(precise: true);
+        WorldSave.Shallow(bytes);
+        WorldSave.Decode(0, 0, bytes);
+        var allocated = GC.GetTotalAllocatedBytes(precise: true) - before;
+
+        Assert.InRange(allocated, 0, 64L << 20);
+    }
+
+    [Fact]
+    public void A_Region_Placing_A_Column_Outside_It_Is_Kept_Beside_And_What_Came_Before_It_Stays()
+    {
+        var bytes = Zipped(zip => zip.Write(new byte[ChunkColumn.SectionCount * Section.Volume * sizeof(ushort)]));
+        WriteRegion(2, (0, 0, bytes), (40, 0, bytes));
+        var written = File.ReadAllBytes(Path.Combine(_folder, "regions", "r.0.0.bin"));
+
+        var save = new WorldSave(_folder);
+        save.ReadRegion(0, 0);
+
+        Assert.NotNull(save.Kept(0, 0));
+        Assert.Null(save.Kept(40, 0));
+        // The region is kept beside under another name, whole.
+        Assert.Equal(written, File.ReadAllBytes(Path.Combine(_folder, "regions", "r.0.0.bin.unread")));
+    }
+
+    [Fact]
+    public void A_Region_Counting_Far_More_Columns_Than_It_Holds_Is_Kept_Beside()
+    {
+        WriteRegion(int.MaxValue);
+        var written = File.ReadAllBytes(Path.Combine(_folder, "regions", "r.0.0.bin"));
+
+        var save = new WorldSave(_folder);
+        save.ReadRegion(0, 0);
+
+        Assert.Null(save.Kept(0, 0));
+        Assert.Equal(written, File.ReadAllBytes(Path.Combine(_folder, "regions", "r.0.0.bin.unread")));
     }
 }

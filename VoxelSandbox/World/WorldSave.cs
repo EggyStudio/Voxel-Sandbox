@@ -86,6 +86,8 @@ public sealed class WorldSave
     private readonly ConcurrentDictionary<(int X, int Z), byte[]> _kept = new();
     private readonly HashSet<(int X, int Z)> _readRegions = [];
     private readonly HashSet<(int X, int Z)> _changedRegions = [];
+    // The blocks of numbers past the game's read as air, by region, and how many of them were said.
+    private readonly Dictionary<(int X, int Z), (int Read, int Said)> _unknown = [];
     // The mobs of the regions read or kept into, by column, the regions whose mobs changed since
     // they were written, and whether mobs.bin was read.
     private readonly Dictionary<(int X, int Z), Dictionary<(int X, int Z), List<MobRecord>>> _mobRegions = [];
@@ -137,9 +139,11 @@ public sealed class WorldSave
                 throw new InvalidDataException("it is not a region of a version this game reads");
             var renumber = version == 1 ? _renumber : Renumbering(ReadKeys(reader));
             var count = reader.ReadInt32();
+            if (count is < 0 or > RegionSize * RegionSize) throw new InvalidDataException("it counts more columns than a region holds");
             for (int i = 0; i < count; i++)
             {
                 int lx = reader.ReadInt16(), lz = reader.ReadInt16(), length = reader.ReadInt32();
+                if (lx is < 0 or >= RegionSize || lz is < 0 or >= RegionSize) throw new InvalidDataException("a column of it lies outside it");
                 if (length < 0) throw new InvalidDataException("a column of it has no length");
                 // A length past what the file has left is taken as the early end it is before an array
                 // of it is made.
@@ -218,7 +222,8 @@ public sealed class WorldSave
         using (var zip = new ZLibStream(output, CompressionLevel.Fastest))
         {
             var raw = new byte[Section.Volume * sizeof(ushort)];
-            while (input.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length)
+            // A column holds so many sections, so no more is read however far its bytes inflate.
+            for (int s = 0; s < ChunkColumn.SectionCount && input.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length; s++)
             {
                 var blocks = System.Runtime.InteropServices.MemoryMarshal.Cast<byte, ushort>(raw.AsSpan());
                 for (int i = 0; i < blocks.Length; i++) blocks[i] = blocks[i] < renumber.Length ? renumber[blocks[i]] : (ushort)0;
@@ -276,6 +281,18 @@ public sealed class WorldSave
         _changedRegions.Add(region);
     }
 
+    /// <summary>
+    /// Counts the blocks of a column read as air since their numbers lie past the game's, for the
+    /// next <see cref="Flush"/> to say once a region with how many its columns held, so a world
+    /// losing blocks this way is seen.
+    /// </summary>
+    public void Unknown(int x, int z, int count)
+    {
+        var region = RegionOf(x, z);
+        var (read, said) = _unknown.GetValueOrDefault(region);
+        _unknown[region] = (read + count, said);
+    }
+
     /// <summary>Keeps a changed column, to be written with its region at the next <see cref="Flush"/>.</summary>
     public void Keep(ChunkColumn column)
     {
@@ -285,7 +302,7 @@ public sealed class WorldSave
         column.Changed = false;
     }
 
-    /// <summary>Writes every region a column was kept in since the last flush, with the key of each block by its number where the world's info numbers them otherwise.</summary>
+    /// <summary>Writes every region a column was kept in since the last flush, with the key of each block by its number where the world's info numbers them otherwise, and says how many blocks each region gave read as air since it last said.</summary>
     public void Flush()
     {
         foreach (var region in _changedRegions)
@@ -312,6 +329,11 @@ public sealed class WorldSave
             });
         }
         _changedRegions.Clear();
+        foreach (var (region, (read, _)) in _unknown.Where(counted => counted.Value.Read > counted.Value.Said).ToList())
+        {
+            TraceLog(LogLevel.Warning, $"The region {RegionPath(region)} holds {read} blocks of numbers this game does not know, which are read as air.");
+            _unknown[region] = (read, read);
+        }
     }
 
     /// <summary>
@@ -697,13 +719,18 @@ public sealed class WorldSave
     /// of bedrock at 0 taken out for the generated blocks, and is kept again whole when it next
     /// unloads. Where no generated column is given, such a column's deep stone is air.
     /// </remarks>
-    public static ChunkColumn Decode(int x, int z, byte[] bytes, ChunkColumn? generated = null)
+    public static ChunkColumn Decode(int x, int z, byte[] bytes, ChunkColumn? generated = null) => Decode(x, z, bytes, out _, generated);
+
+    /// <summary>A kept column's blocks, as <see cref="Decode(int, int, byte[], ChunkColumn?)"/> gives them, with how many were of numbers past the game's, read as air.</summary>
+    public static ChunkColumn Decode(int x, int z, byte[] bytes, out int unknown, ChunkColumn? generated = null)
     {
+        unknown = 0;
         var column = new ChunkColumn(x, z);
         using var zip = new ZLibStream(new MemoryStream(bytes), CompressionMode.Decompress);
         var raw = new byte[Section.Volume * sizeof(ushort)];
         var sections = new List<ushort[]>();
-        while (zip.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length)
+        // A column holds so many sections, so no more is read however far its bytes inflate.
+        while (sections.Count < ChunkColumn.SectionCount && zip.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length)
             sections.Add(System.Runtime.InteropServices.MemoryMarshal.Cast<byte, ushort>(raw).ToArray());
         var shallow = sections.Count == OldSections;
         var first = shallow ? -ChunkColumn.BottomSection : 0;
@@ -712,8 +739,10 @@ public sealed class WorldSave
             var (section, blocks) = (column.Sections[first + s], sections[s]);
             for (int i = 0; i < Section.Volume; i++)
             {
+                // A block of a number past the game's is air, as a key the build does not know is.
                 var block = blocks[i];
-                if (block != 0) section.Set(i & Section.Mask, i >> 8, (i >> 4) & Section.Mask, (BlockId)block);
+                if (block >= Blocks.All.Count) unknown++;
+                else if (block != 0) section.Set(i & Section.Mask, i >> 8, (i >> 4) & Section.Mask, (BlockId)block);
             }
         }
         column.Changed = false;
@@ -737,7 +766,8 @@ public sealed class WorldSave
         using var zip = new ZLibStream(new MemoryStream(bytes), CompressionMode.Decompress);
         var raw = new byte[Section.Volume * sizeof(ushort)];
         var sections = 0;
-        while (zip.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length) sections++;
+        // One past the eight is enough to tell, however far the bytes inflate.
+        while (sections <= OldSections && zip.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length) sections++;
         return sections == OldSections;
     }
 }

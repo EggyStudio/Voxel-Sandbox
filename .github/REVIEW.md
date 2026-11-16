@@ -260,6 +260,13 @@ change.
     its sheet, the textures held staying as many over six reloads, and the yaw held within a turn as
     it is summed, with a test that a turn far one way still answers a pixel of the mouse.
 
+195. **An eleventh read, every file of a world's folder fed hostile.** The world's own file, the
+    regions' blocks and mobs, the chests, the furnaces, the player and the options, each cut short,
+    with counts and lengths far out of range and with values that are no number, by a test that the
+    world opens or is refused with a line, and that nothing hangs or takes memory past a bound. A
+    Reply first with what fails, then the mends in commits by file. A bound is said in the code
+    where it is set, with what a world the game writes reaches at most.
+
 ## Verdicts
 
 No verdict is open. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
@@ -599,3 +606,108 @@ The strict build is clean, 501 tests pass outside the GPU's lock, and the play p
 captures within 8 levels of the pin's play but the shadow's, at most 19 at a few pixels, and sky2's,
 which moves as much between plays. The shadow's is likely the heading the play sets, held within a
 half turn as it is set, its sine and cosine differing in a float's last step.
+
+The eleventh read, of every file the game reads from a world's folder fed cut short, with counts
+and lengths far out of range and with values that are no number, before any mend. Each case was
+held by a test on a copy of `fd9af04`, outside the GPU's lock, and seven findings failed theirs.
+
+1. A kept block of a number past the game's blocks keeps the world from standing. A block's
+   answers are looked up by its number (`Blocks.Get`, `Blocks.cs:634`), and a column's blocks are
+   set from its bytes as they are (`WorldSave.Decode`, `WorldSave.cs:700`), where a region of
+   version 1, or one listing this build's keys in its order, is renumbered by nothing
+   (`Renumbering`, :190). So the column's light throws as a worker makes it, the column is asked
+   for again as the player moves and throws again, and the loading waits for it for good.
+   - `A_Column_Of_A_Block_Number_Past_The_Games_Blocks_Opens` keeps a column holding a block of
+     60,000 and fails on the head, whose world does not stand in 30 s.
+2. A column's bytes are inflated whole. `Decode`, `Shallow` (:735) and `Renumbered` (:214) read
+   sections until the stream ends, where a column holds 24.
+   - `A_Column_Whose_Blocks_Inflate_Past_Its_Sections_Is_Read_Within_A_Bound` keeps 254 KB that
+     inflate to 256 MB and fails on the head, which takes 257 MB to read them.
+3. A region's column placed outside it is held. A column's place in its region is two shorts the
+   file gives (:142), so a region at 0 may hold a column at x 40, which `Kept` then gives in place
+   of its own region's. The mobs' regions give their places in a byte, so a column of them past 31
+   is held in the wrong region until the next save lets it go.
+   - `A_Regions_Column_Placed_Outside_It_Is_Left_Out` fails on the head, which keeps it.
+4. A region's mobs, and those of `mobs.bin`, are read as many as the file inflates to
+   (`ReadMobRegion`, :473, `ReadOneFile`, :572).
+   - `A_Regions_Mobs_That_Inflate_Past_A_Bound_Are_Read_Within_It` keeps a file of 1.5 MB holding a
+     column of 5,000,000 pigs and fails on the head, which takes 1,280 MB to read them.
+5. A world's saturation that is no number stays one. The save's reader holds the hour and the
+   place but not the saturation (`WorldSave.Bounded`, :370), and the vitals hold it within its
+   ends by a clamp, which gives a NaN back (`Vitals.cs:66`). A mob's turn that is no number is
+   read as it is too (:528), its pose turned by it.
+   - `A_Worlds_Saturation_That_Is_No_Number_Is_Held_To_One` fails on the head, whose saturation is
+     NaN.
+6. A world's list of blocks is read whole and searched for each key, a search of every block of
+   the game (`Renumbering`, :190), where the regions' lists stop at 65,536 (`ReadKeys`).
+   - `A_Worlds_List_Of_Blocks_Far_Past_The_Numbers_Opens_In_Time` lists two million keys, a file of
+     38 MB, and fails on the head, which takes 10.2 s to open.
+7. A world's files and the options are read whole however long (`ReadInfo`, :350, `ReadChests`,
+   `ReadFurnaces`, `OptionsFile.cs:78`).
+   - `A_Worlds_File_Far_Past_Its_Size_Is_Read_Within_A_Bound` keeps a world.json of 100 MB and
+     fails on the head, which takes 913 MB to read it.
+   - `An_Options_File_Far_Past_Its_Size_Is_Read_Within_A_Bound` keeps an options file of 100 MB and
+     fails on the head, which takes 600 MB.
+
+The mends I would make:
+- A block number past the game's blocks is air, as a key the build does not know is.
+- A column's bytes are read to the 24 sections a column holds, and `Shallow` to one past the
+  eight it asks of.
+- A region's column, or a mobs region's, placed outside 0 to 31 sets the file aside as one that
+  cannot be read.
+- A column's mobs are read to 1,024, past which the file is set aside. Generation gives a column a
+  herd of two to four or a villager for each house, and the game breeds none.
+- A world's saturation that is no number is its first 5, and a mob's turn that is no number is 0.
+- A world's list of blocks is read to 65,536, as a region's is, and searched by a dictionary.
+- A world's file past 16 MB, a chests' or furnaces' file past 64 MB and an options file past 1 MB
+  are set aside as files that cannot be read. A world.json the game writes is some 6 KB, its
+  chests some 700 bytes a chest and its options some 3 KB.
+
+Read clean, by tests that pass on the head. Each of world.json, a region's blocks, a region's
+mobs, the chests' file and the furnaces' file cut to half its length is set aside with a line and
+the world opens (`A_Worlds_File_Cut_Short_Lets_The_World_Open`). A region counting 2,147,483,647
+columns in a file of a few bytes opens
+(`A_Region_Counting_Far_More_Columns_Than_It_Holds_Lets_The_World_Open`). Read clean by the code:
+a column's length past what its file holds is refused before an array of it is made, the lists of
+kinds and of keys stop at 256 and 65,536, world.json's place, heading, pitch and hour are held and
+its health, food and slot clamped, a slot's count is held to its stack and its wear to its tool,
+a furnace's burns are held, the slots a chest or a furnace lists past its own are left out, and a
+mob's place that is no number is left out, its variant held to its kind's and its health clamped.
+
+The order I would take is by file, in three commits. The regions' blocks come first, with 1, 2
+and 3, then the mobs' files with 3's part, 4 and the mob's turn, then the world's file, the
+chests', the furnaces' and the options with 5, 6 and 7.
+
+Item 195, the first of three commits by file, the regions' blocks with findings 1, 2 and 3. Each
+test was run first on a copy of `abf70c1` with the tests added and two lines there giving its save
+the count and the line it lacks.
+
+1. A block of a number past the game's is read as air, as a key the build does not know is
+   (`WorldSave.Decode`), and counted. The streamer gives the count of a column's to the save, which
+   says once a region at its next save how many of its blocks were read so, and again only where
+   more come (`WorldSave.Unknown`, `Flush`).
+   - `A_Kept_Block_Of_A_Number_Past_The_Games_Blocks_Reads_As_Air` fails on the head, which keeps
+     the number 60,000 and counts none.
+   - `Blocks_Of_Numbers_Past_The_Games_Are_Said_Once_A_Region_With_Their_Count` counts five
+     blocks of two columns of a region, saves twice and finds one line. It fails on the head,
+     which says none.
+2. A column's bytes are read to the 24 sections a column holds (`Decode`, `Renumbered`), and
+   `Shallow` reads to one past the eight it asks of.
+   - `A_Column_Whose_Blocks_Inflate_Past_Its_Sections_Is_Read_Within_A_Bound` fails on the head,
+     which takes 270 MB to read 256 MB of zeros in a quarter of a megabyte.
+3. A region counting more than its 1,024 columns, or placing one outside 0 to 31, is set aside as
+   one that cannot be read, its columns read before the fault kept and written again
+   (`ReadRegion`).
+   - `A_Region_Placing_A_Column_Outside_It_Is_Kept_Beside_And_What_Came_Before_It_Stays` fails on
+     the head, which keeps the column at x 40. The file kept beside holds every byte of the one
+     written.
+   - `A_Region_Counting_Far_More_Columns_Than_It_Holds_Is_Kept_Beside`, which passes on the head as
+     its read ends early, and `A_Region_Of_Every_Column_The_Game_Keeps_Reads_Whole`, every column of
+     a region kept as the game keeps them and read back whole with no file set aside, stand with
+     them.
+
+The strict build is clean, 507 tests pass outside the GPU's lock, and the play passes in 194 s,
+its captures within 8 levels of the pin's play but the shadow's at most 19 at a few pixels again,
+and sky2's, which moves as much between plays. One test, the count's line, first failed in the
+suite, the log's callback giving the line with its category before it, and passes since it reads
+the line's end, with the save's tests run again.

@@ -19,7 +19,7 @@ namespace VoxelSandbox;
 /// </remarks>
 public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null, FallingBlocks? falling = null)
 {
-    private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column, bool Unread)> _done = new();
+    private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column, bool Unread, int Unknown)> _done = new();
     private readonly HashSet<(int X, int Z)> _pending = [];
     private readonly List<(int X, int Z)> _wanted = [];
     private readonly List<(int X, int Z)> _leaving = [];
@@ -60,7 +60,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             _pending.Remove((result.X, result.Z));
             // A column made at once while its worker made it, as the one a save lands the player in,
             // is the one the world keeps, with what changed in it since and its fires named once.
-            if (result.Column is not null && !world.HasColumn(result.X, result.Z)) Take(result.X, result.Z, (result.Column, result.Unread));
+            if (result.Column is not null && !world.HasColumn(result.X, result.Z)) Take(result.X, result.Z, (result.Column, result.Unread, result.Unknown));
         }
 
         var (cx, cz) = LandOrigin.ColumnOf(player);
@@ -104,7 +104,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             Interlocked.Increment(ref _running);
             Task.Run(() =>
             {
-                (ChunkColumn? Column, bool Unread) made = (null, false);
+                (ChunkColumn? Column, bool Unread, int Unknown) made = (null, false, 0);
                 try
                 {
                     made = Make(generator, saved, x, z, eye, kept, readings);
@@ -115,16 +115,17 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
                     // player moves, rather than the exception ending a task nobody waits on.
                     Console.Error.WriteLine($"Column {x}, {z} could not be generated. {ex}");
                 }
-                _done.Enqueue((x, z, made.Column, made.Unread));
+                _done.Enqueue((x, z, made.Column, made.Unread, made.Unknown));
             });
         }
         _wanted.RemoveAll(c => world.HasColumn(c.X, c.Z) || _pending.Contains(c));
     }
 
     // Joins a column made, the save leaving out the kept blocks of one that could not read them.
-    private void Take(int x, int z, (ChunkColumn Column, bool Unread) made)
+    private void Take(int x, int z, (ChunkColumn Column, bool Unread, int Unknown) made)
     {
         if (made.Unread) save?.Unreadable(x, z);
+        if (made.Unknown > 0) save?.Unknown(x, z, made.Unknown);
         Join(made.Column);
     }
 
@@ -147,13 +148,14 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     // main thread only the light across its edges, its open air sharing its arrays and its deep
     // sections out of the eye's reach packed. A kept column whose blocks do not inflate is made by
     // its generator, as one never kept is, and said to be unread.
-    private static (ChunkColumn Column, bool Unread) Make(IWorldGenerator generator, byte[]? kept, int x, int z, SectionKey eye, int distance, ArraySegment<int>? readings = null)
+    private static (ChunkColumn Column, bool Unread, int Unknown) Make(IWorldGenerator generator, byte[]? kept, int x, int z, SectionKey eye, int distance, ArraySegment<int>? readings = null)
     {
         ChunkColumn? column = null;
+        var unknown = 0;
         if (kept is not null)
             try
             {
-                column = WorldSave.Decode(x, z, kept, WorldSave.Shallow(kept) ? generator.Generate(x, z) : null);
+                column = WorldSave.Decode(x, z, kept, out unknown, WorldSave.Shallow(kept) ? generator.Generate(x, z) : null);
                 generator.Paint(column);
             }
             catch (InvalidDataException)
@@ -165,7 +167,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         Lighting.Compute(column);
         column.Settle();
         column.Pack(eye, distance);
-        return (column, unread);
+        return (column, unread, unknown);
     }
 
     // The columns within the load distance, nearest first.
