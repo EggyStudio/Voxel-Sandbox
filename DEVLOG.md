@@ -6,7 +6,46 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 notes written beside them as Markdown files named the same way. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
+## 2026-11-15
+
+![](.github/devlog/2026-11-15-item-180-fire-and-lava.webp)
+A fire on stone and a pool of lava in the flat world with Bare Bones on, at noon and at midnight,
+before and after the flames and the lava are shown at their light by the view's exposure and
+encoding, at once their own color.
+
+![](.github/devlog/2026-11-15-item-180-haze-dome.webp)
+The haze dome's line over the horizon seen from under a roof in the flat world at noon, the eye at
+sky level 10, before and after the dome's material marks its corners as under the open sky, with the
+horizon's rows at twice their size.
+
+## 2026-11-14
+
+![](.github/devlog/2026-11-14-lamps-by-their-faces.webp)
+Lamps drawn as the faces that show against whole cubes on the engine's package 264.10, in the built
+room as saved and lit, in the room in rock with the lantern showing one and two faces, and at
+midnight on a platform, each against a path-traced reference.
+
+![](.github/devlog/2026-11-14-origin-step-told.webp)
+A hop of three blocks across a step of the game's origin on the engine's 6.2.60 and on its package
+264.10 with the step told to it, at High, at Low and at midnight beside a glowstone, with the change
+after the hop.
+
 ## 2026-11-12
+
+![](.github/devlog/2026-11-12-item-176-blob-mended.webp)
+Snow beside grass behind the patch of logs by the origin, seen from 133 blocks at two of twenty eye
+steps a twentieth of a block apart, with bloom at the options' 0.1, on the engine's 6.2.41 and on
+its package 6.2.41-local.259 with the dither off, four times as large.
+
+![](.github/devlog/2026-11-12-item-177-lamps.webp)
+A room of 400 glowstones at midnight before a move of the origin and 64 and 1,152 frames after it,
+at Low and High, on the game before the mend, whose lamps' cubes the scene field stamped as moved,
+256 of them as boxes, and on the game that uploads them again, alike in every frame.
+
+![](.github/devlog/2026-11-12-item-177-room.webp)
+The closed room as it opens and its east wall at 2560 by 1440 at Low and High, on 6.2.41, on the
+engine's mend and on 6.2.41 with the game's places kept against an origin near the player, every
+picture three times as bright.
 
 Done that day
 
@@ -18,6 +57,22 @@ Done that day
 - Item 180 at `f201940`. The deep audit's findings.
 
 ## 2026-11-11
+
+![](.github/devlog/2026-11-11-item-173-striped-wall.webp)
+The east wall of a closed room in a saved world at Low as it opens, with the sea lantern beside it
+made white concrete, with the 14 magma blocks outside made stone and with gi.show tiles, every
+picture three times as bright, the sea lantern alone drawing the stripes.
+
+![](.github/devlog/2026-11-11-item-173-wall-mended.webp)
+The closed room's east wall on 6.2.41 and on the engine's mend of its item 257 as it opens at Low
+and at 2560 by 1440 at Low, Medium and High, every picture three times as bright, the mend drawing
+no stripes and no sparkles and a faint line across the ceiling at 2560 by 1440.
+
+![](.github/devlog/2026-11-11-item-174-scene-mended.webp)
+The same built scene near the origin and beside the room on the engine's mend of its item 257 at
+Low, Medium and High and with ambient occlusion at 1, each with the two places' difference and two
+runs' difference four times as bright, the screen's probes reading alike at the two places and the
+ambient occlusion not yet.
 
 Done that day
 
