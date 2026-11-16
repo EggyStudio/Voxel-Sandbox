@@ -85,8 +85,7 @@ public sealed partial class FarGameTests : IDisposable
         }
 
         // The save holds the villager and its home where they were, a place of the land in doubles.
-        var (kept, _) = new WorldSave(_folder).ReadMobs();
-        var record = Assert.Single(kept.Values.SelectMany(list => list), m => m.Kind == MobKinds.Villager);
+        var record = Assert.Single(HeadlessGame.SavedMobs(_folder), m => m.Kind == MobKinds.Villager);
         Assert.Equal((villager, home), (record.Position, record.Home));
 
         // Opened again, the player stands where it stood, the origin near it, the block stays broken

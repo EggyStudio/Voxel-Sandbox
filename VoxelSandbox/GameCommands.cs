@@ -513,7 +513,7 @@ public static class GameCommands
             .Select(m => (Mob: m, Place: LandOrigin.LandOf(m.Body.Position), Home: m.Home is { } home ? LandOrigin.LandOf(home) : (LandPlace?)null))
             .Select(m => $"{m.Mob.Kind.Name} {m.Mob.Id} at {m.Place.X:0.0}, {m.Place.Y:0.0}, {m.Place.Z:0.0}, "
                 + $"{Vector3.Distance(m.Mob.Body.Position, at):0} blocks away, {m.Mob.Doing}, health {m.Mob.Health}{(m.Home is { } home ? $", at home at {home.X:0}, {home.Y:0}, {home.Z:0}" : "")}");
-        return $"{mobs.All.Count} loaded ({kinds}), {mobs.Kept} kept by columns not loaded{(mobs.Still ? ", standing still" : "")}"
+        return $"{mobs.All.Count} loaded ({kinds}), {mobs.Kept} held out of the world{(mobs.Still ? ", standing still" : "")}"
             + (count > 0 && mobs.All.Count > 0 ? "; " + string.Join("; ", nearest) : "");
     }
 

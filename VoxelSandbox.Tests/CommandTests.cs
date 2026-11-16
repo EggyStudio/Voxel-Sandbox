@@ -55,7 +55,7 @@ public sealed class CommandTests : IDisposable
             // A world saved once, then a folder in the place of each file a save writes before it
             // takes the file's name, so none can be written, on every system alike.
             using (var first = new HeadlessGame(save: folder)) first.Game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
-            foreach (var name in new[] { "world.json", "mobs.bin", "furnaces.json", "chests.json", Path.Combine("regions", "r.0.0.bin") })
+            foreach (var name in new[] { "world.json", Path.Combine("regions", "m.0.0.bin"), "furnaces.json", "chests.json", Path.Combine("regions", "r.0.0.bin") })
                 Directory.CreateDirectory(Path.Combine(folder, name + ".new"));
             using var headless = new HeadlessGame(save: folder);
             Serve(headless.Game);

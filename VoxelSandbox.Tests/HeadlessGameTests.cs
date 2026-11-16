@@ -124,8 +124,7 @@ public sealed class HeadlessGameTests
             game.Mobs.Clear(null);
             game.Dispose();
 
-            var (kept, _) = new WorldSave(folder).ReadMobs();
-            Assert.Contains(kept.Values.SelectMany(list => list), mob => mob.Kind == MobKinds.Pig && mob.Position == pig);
+            Assert.Contains(HeadlessGame.SavedMobs(folder), mob => mob.Kind == MobKinds.Pig && mob.Position == pig);
         }
         finally
         {
@@ -323,7 +322,7 @@ public sealed class HeadlessGameTests
             // A world saved once, then a folder in the place of each file a save writes before it
             // takes the file's name, so none can be written, on every system alike.
             using (var first = new HeadlessGame(save: folder)) first.Game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
-            foreach (var name in new[] { "world.json", "mobs.bin", "furnaces.json", "chests.json", Path.Combine("regions", "r.0.0.bin") })
+            foreach (var name in new[] { "world.json", Path.Combine("regions", "m.0.0.bin"), "furnaces.json", "chests.json", Path.Combine("regions", "r.0.0.bin") })
                 Directory.CreateDirectory(Path.Combine(folder, name + ".new"));
 
             // Closed with a block changed, which it cannot write.
@@ -995,5 +994,134 @@ public sealed class HeadlessGameTests
             Thread.Sleep(2);
         }
         while ((headless.Game.Loading || headless.Game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30);
+    }
+
+    [Fact]
+    public void A_Column_Made_At_Once_While_A_Worker_Makes_It_Keeps_What_Changed_In_It()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        // A streamer of the game's world far from the game's own, which asks its workers for the
+        // columns around a place, while the one under it is made at once, as a save lands the player.
+        var streamer = new ChunkStreamer(game.World, game.Renderer, game.Mobs, game.Drops, game.Chests, null);
+        var at = LandOrigin.PlaceOf(new LandPlace(16_000.5, 40, 0.5));
+        var (x, z) = LandOrigin.ColumnOf(at);
+        streamer.Update(at, 1);
+        streamer.LoadNow(at, 0);
+        Assert.True(game.World.TryGetColumn(x, z, out var made));
+        game.World.SetBlock(x * Section.Size + 1, 70, z * Section.Size + 1, BlockId.Glowstone);
+
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while (streamer.Pending > 0 && clock.Elapsed.TotalSeconds < 30)
+        {
+            streamer.Update(at, 1);
+            Thread.Sleep(2);
+        }
+
+        Assert.True(game.World.TryGetColumn(x, z, out var kept));
+        Assert.Same(made, kept);
+        Assert.Equal(BlockId.Glowstone, game.World.GetBlock(x * Section.Size + 1, 70, z * Section.Size + 1));
+    }
+
+    [Fact]
+    public void A_Block_Falling_Over_A_Column_That_Unloads_Is_Set_Down_In_It()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: folder);
+            var game = headless.Game;
+            game.Falling.Drop(BlockId.Sand, 2, 12, 2);
+            headless.Step(1);
+
+            Go(headless, 5000.5, 0.5);
+            Go(headless, 0.5, 0.5);
+
+            Assert.Equal(BlockId.Sand, game.World.GetBlock(2, 4, 2));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void The_Mobs_Of_A_Column_Left_Are_Kept_By_The_Save_And_Come_Back_With_It()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            var pig = new LandPlace(2.5, 4, 2.5);
+            bool Back(VoxelGame game) => game.Mobs.All.Any(mob => mob.Kind == MobKinds.Pig && LandOrigin.LandOf(mob.Body.Position) == pig);
+            using (var headless = new HeadlessGame(save: folder))
+            {
+                var game = headless.Game;
+                game.Mobs.Still = true;
+                game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, pig, 0, MobKinds.Pig.Health, null));
+
+                // Its column unloads, the pig held by the save alone, and loads again.
+                Go(headless, 5000.5, 0.5);
+                Assert.Equal(0, game.Mobs.Kept);
+                Assert.DoesNotContain(game.Mobs.Columns(), column => column.Column == (0, 0));
+                Go(headless, 0.5, 0.5);
+                Assert.True(Back(game));
+
+                // And unloads again, the world closed far from it.
+                Go(headless, 5000.5, 0.5);
+            }
+
+            using var again = new HeadlessGame(save: folder);
+            again.Game.Mobs.Still = true;
+            Go(again, 0.5, 0.5);
+
+            Assert.True(Back(again.Game));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void The_Mobs_Hold_The_Loaded_Columns_Alone_However_Far_The_Player_Goes()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: folder);
+            var game = headless.Game;
+            var held = new List<(int Columns, int Loaded, int Regions)>();
+            for (int step = 1; step <= 12; step++)
+            {
+                Go(headless, step * 2000.5, 0.5);
+                game.SaveWorld();
+                held.Add((game.Mobs.Columns().Count(), game.World.ColumnCount, game.Save!.MobRegions));
+            }
+
+            // The columns kept loaded at a render distance of 2 lie in four regions at most.
+            Assert.All(held, h => Assert.Equal(h.Loaded, h.Columns));
+            Assert.All(held, h => Assert.InRange(h.Regions, 1, 4));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    // Puts the player at a place of the land as voxel.tp does and steps the game until it stands.
+    private static void Go(HeadlessGame headless, double x, double z)
+    {
+        var game = headless.Game;
+        var to = new LandPlace(x, 5, z);
+        game.Leave(to);
+        game.Recenter(to);
+        game.Player.Teleport(LandOrigin.PlaceOf(to));
+        headless.Step(2);
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while ((game.Loading || game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30)
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
     }
 }

@@ -134,7 +134,9 @@ public partial struct MobMind
 /// <para>
 /// A mob thinks and moves only while the columns around its own are loaded, so it never walks into
 /// one that is not and never stands on the air an unloaded column reads as. When a column unloads,
-/// the mobs standing in it go with it, and come back with it.
+/// the mobs standing in it go with it, and come back with it. A saved world's column gives them to
+/// the save as it goes and takes them back from it as it loads, so the mobs held are those of the
+/// columns loaded however far the player goes, and a world not saved keeps them here.
 /// </para>
 /// <para>
 /// Mobs push each other apart and are pushed away by the player, a little each frame by how far
@@ -164,15 +166,20 @@ public sealed class Mobs
     private float _spawnWait;
 
     private readonly EcsWorld _ecs;
+    private readonly WorldSave? _save;
     private readonly Dictionary<(int X, int Z), List<MobRecord>> _kept;
     private readonly HashSet<(int X, int Z)> _placed;
     private readonly Random _random = new();
     private int _nextId = 1;
 
-    /// <summary>Begins with the mobs a save kept, or none, as entities of an ECS world.</summary>
-    public Mobs(EcsWorld ecs, Dictionary<(int X, int Z), List<MobRecord>>? kept = null, HashSet<(int X, int Z)>? placed = null)
+    /// <summary>
+    /// Begins with the mobs a world not saved keeps by its columns, or none, as entities of an ECS
+    /// world, or with those a save keeps, which it reads as their columns load.
+    /// </summary>
+    public Mobs(EcsWorld ecs, Dictionary<(int X, int Z), List<MobRecord>>? kept = null, HashSet<(int X, int Z)>? placed = null, WorldSave? save = null)
     {
         _ecs = ecs;
+        _save = save;
         _kept = kept ?? [];
         _placed = placed ?? [];
     }
@@ -204,7 +211,7 @@ public sealed class Mobs
     /// <summary>The hostile mobs alive.</summary>
     public int Hostile => All.Count(m => m.Kind.Hostile && m.Dying < 0);
 
-    /// <summary>Mobs kept by columns not loaded.</summary>
+    /// <summary>Mobs held out of the world, by the columns not loaded of a world not saved and by the loaded columns while mobs are kept out.</summary>
     public int Kept => _kept.Values.Sum(l => l.Count);
 
     /// <summary>Puts a mob into the world, a number of its own given.</summary>
@@ -217,6 +224,12 @@ public sealed class Mobs
     public void Joined(ChunkColumn column)
     {
         var key = (column.X, column.Z);
+        // A saved world's column that has had its mobs placed gives back those its save kept.
+        if (_save?.TakeMobs(key.X, key.Z) is { } saved)
+        {
+            _placed.Add(key);
+            if (saved.Count > 0) Keep(key, saved);
+        }
         if (_placed.Add(key))
         {
             if (Spawning)
@@ -231,7 +244,7 @@ public sealed class Mobs
         column.Spawns.Clear();
     }
 
-    /// <summary>Keeps the mobs standing in a column as it unloads.</summary>
+    /// <summary>Keeps the mobs standing in a column as it unloads, or gives them to the save of a saved world.</summary>
     public void Leaving(int x, int z)
     {
         List<MobRecord>? kept = null;
@@ -243,7 +256,15 @@ public sealed class Mobs
             if (!mob.Kind.Hostile) (kept ??= []).Add(mob.Record);
             return true;
         });
-        if (kept is not null) Keep((x, z), kept);
+        if (_save is null)
+        {
+            if (kept is not null) Keep((x, z), kept);
+            return;
+        }
+        // A saved world's column gives its mobs to the save, those kept out of the world among them,
+        // and the mobs hold nothing of it.
+        if (_kept.Remove((x, z), out var outside)) (kept ??= []).AddRange(outside);
+        if (_placed.Remove((x, z)) || kept is not null) _save.KeepMobs(x, z, kept ?? []);
     }
 
     /// <summary>
@@ -336,7 +357,7 @@ public sealed class Mobs
     /// <summary>The column a place kept against the <see cref="LandOrigin"/> lies in.</summary>
     public static (int X, int Z) ColumnOf(Vector3 at) => LandOrigin.ColumnOf(at);
 
-    /// <summary>Every column that has had its mobs placed, with the mobs it holds, the loaded ones' by where they stand, and those it keeps out of the world.</summary>
+    /// <summary>Every column held that has had its mobs placed, the loaded ones of a saved world, with the mobs it holds, the loaded ones' by where they stand, and those it keeps out of the world.</summary>
     public IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> Columns()
     {
         var loaded = new Dictionary<(int, int), List<MobRecord>>();

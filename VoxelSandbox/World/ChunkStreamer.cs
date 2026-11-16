@@ -17,7 +17,7 @@ namespace VoxelSandbox;
 /// that makes it, and the loaded columns' again, a few a frame, each time the eye enters another
 /// section, as <see cref="Reach"/> has it.
 /// </remarks>
-public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null)
+public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null, FallingBlocks? falling = null)
 {
     private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column, bool Unread)> _done = new();
     private readonly HashSet<(int X, int Z)> _pending = [];
@@ -58,7 +58,9 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         {
             Interlocked.Decrement(ref _running);
             _pending.Remove((result.X, result.Z));
-            if (result.Column is not null) Take(result.X, result.Z, (result.Column, result.Unread));
+            // A column made at once while its worker made it, as the one a save lands the player in,
+            // is the one the world keeps, with what changed in it since and its fires named once.
+            if (result.Column is not null && !world.HasColumn(result.X, result.Z)) Take(result.X, result.Z, (result.Column, result.Unread));
         }
 
         var (cx, cz) = LandOrigin.ColumnOf(player);
@@ -205,6 +207,8 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         }
         foreach (var (x, z) in _leaving)
         {
+            // A block falling over the column is set down in it first, so the column keeps it.
+            falling?.SetDown(world, x, z);
             if (save is not null && world.TryGetColumn(x, z, out var column) && column.Changed) save.Keep(column);
             mobs.Leaving(x, z);
             drops.Leaving(x, z);

@@ -83,9 +83,9 @@ public static class OverlaySections
         yield return $"{renderer.Draws} draws of {renderer.Triangles:N0} triangles, {renderer.Lamps} lamps, {game.Clouds.Faces} faces of clouds";
     }
 
-    /// <summary>The mobs loaded, drawn and kept by columns not loaded.</summary>
+    /// <summary>The mobs loaded, drawn and held out of the world.</summary>
     public static IEnumerable<string> Mobs(VoxelGame game)
     {
-        yield return $"{game.Mobs.All.Count} loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws, {game.Mobs.Kept} kept by columns not loaded";
+        yield return $"{game.Mobs.All.Count} loaded, {game.MobRenderer.Drawn} drawn in {game.MobRenderer.Draws} draws, {game.Mobs.Kept} held out of the world";
     }
 }

@@ -563,12 +563,11 @@ public sealed class VoxelGame : IDisposable
         var generator = (info is null ? null : Generators.Create(info.Kind, info.Seed)) ?? Generators.Create(kind, seed) ?? new Overworld(seed);
         Renderer.Clear();
         World = new VoxelWorld(generator);
-        var (kept, placed) = Save?.ReadMobs() ?? ([], []);
         // The mobs of the world left are taken out of the engine's ECS with it, and those of the
         // world opened kept out as they were, so voxel.spawning holds for the session.
         var spawning = Mobs?.Spawning ?? true;
         Mobs?.Clear(null);
-        Mobs = new Mobs(GetApp().World.Resource<EcsWorld>(), kept, placed);
+        Mobs = new Mobs(GetApp().World.Resource<EcsWorld>(), save: Save);
         Mobs.SetSpawning(World, spawning);
         Drops.Clear();
         Falling.Clear();
@@ -600,7 +599,7 @@ public sealed class VoxelGame : IDisposable
         else Vitals.Set(info.Health, info.Food, info.Saturation);
         // The old streamer's workers finish into its own queue, which nothing reads again.
         CaveFields.Use((World.Generator as Overworld)?.Caves);
-        Streamer = new ChunkStreamer(World, Renderer, Mobs, Drops, Chests, Save, CaveFields);
+        Streamer = new ChunkStreamer(World, Renderer, Mobs, Drops, Chests, Save, CaveFields, Falling);
         Clouds.Follow(generator.Seed);
         (_sinceSave, _saveWait, SaveFault) = (0, SaveSeconds, null);
         Loading = true;
@@ -723,8 +722,8 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>
     /// Unloads what a jump to a place of the land leaves out of reach, before the origin moves near
-    /// it, the columns kept by the save and their mobs and stacks by their places in the land, and
-    /// the arrows, falling blocks, lit TNT and flashes among them let go.
+    /// it, the columns kept by the save with the blocks falling over them set down, their mobs and
+    /// stacks kept by their places in the land, and the arrows, lit TNT and flashes among them let go.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -734,9 +733,8 @@ public sealed class VoxelGame : IDisposable
     /// </para>
     /// <para>
     /// Those let go are no player's. The arrows are the skeletons', which no one picks up, and go
-    /// within a minute. A block falling in land not loaded falls through it and goes within a minute.
-    /// A lit TNT's block is gone from the land as it is lit, and its blast in land not loaded breaks
-    /// nothing. A flash shows for half a second.
+    /// within a minute. A lit TNT's block is gone from the land as it is lit, and its blast in land
+    /// not loaded breaks nothing. A flash shows for half a second.
     /// </para>
     /// </remarks>
     public void Leave(LandPlace to)

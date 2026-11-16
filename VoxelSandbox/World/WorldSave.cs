@@ -78,14 +78,19 @@ public sealed class WorldSave
 {
     public const int RegionSize = 32;
     private const int Version = 2;
-    // The mobs file's places in doubles from its version 2, in floats in its version 1, which is read.
-    private const int MobsVersion = 2;
+    // The version of the regions' mobs files, after the 1 and 2 of mobs.bin.
+    private const int MobsVersion = 3;
     private static readonly byte[] Magic = "E3DR"u8.ToArray();
     private static readonly byte[] MobsMagic = "E3DM"u8.ToArray();
 
     private readonly ConcurrentDictionary<(int X, int Z), byte[]> _kept = new();
     private readonly HashSet<(int X, int Z)> _readRegions = [];
     private readonly HashSet<(int X, int Z)> _changedRegions = [];
+    // The mobs of the regions read or kept into, by column, the regions whose mobs changed since
+    // they were written, and whether mobs.bin was read.
+    private readonly Dictionary<(int X, int Z), Dictionary<(int X, int Z), List<MobRecord>>> _mobRegions = [];
+    private readonly HashSet<(int X, int Z)> _mobsChanged = [];
+    private bool _oneFileRead;
     // The files that could not be read nor moved aside, which no save of the run writes.
     private readonly HashSet<string> _held = [];
     // The keys the world's info lists, and the numbers they give the regions of version 1 in this
@@ -359,103 +364,166 @@ public sealed class WorldSave
         Replace(Path.Combine(Folder, "world.json"), file => JsonSerializer.Serialize(file, info, SaveJson.Default.WorldInfo));
 
     /// <summary>
-    /// The mobs kept by each column that has had its mobs placed, read from the folder's mobs file,
-    /// with the columns that have, or none of either for a folder never saved into.
+    /// The mobs a column kept as it unloaded, or as the world was last saved while it was loaded,
+    /// taken out of the save to stand in the world, or none where the column has not had its mobs
+    /// placed.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// A mob is saved by its kind's name, which the file lists once, so kinds added or reordered
-    /// since keep what was saved, and a mob of a kind this build does not know is left out. Its place and its
-    /// home are the land's own, in doubles, where a file of version 1 holds them in floats, which a
-    /// million blocks out keep them only to an eighth of a block.
+    /// A region's mobs are kept in a file of their own beside its blocks, read as one of its columns
+    /// first loads, and held while a column of it is loaded or its mobs wait to be written, so the
+    /// mobs held stay as many however far the player goes. A mob is saved by its kind's name, which
+    /// the file lists once, so kinds added or reordered since keep what was saved, and a mob of a
+    /// kind this build does not know, or one whose place is no number, is left out.
     /// </para>
     /// <para>
-    /// A mob saved with a place that is no number is set down at its home where it has one that is a
-    /// number, a villager's, in its home's column, and otherwise left out, and the log says how many
-    /// of each. Its place cannot be had again, since it is no number and the mob is kept by the
-    /// column x 0 that no number turns into, not by its own.
+    /// A folder's <c>mobs.bin</c>, which holds every column's mobs in one file, is read once into the
+    /// regions and written into their files at the next <see cref="WriteMobs"/>, then kept beside as
+    /// read.
     /// </para>
     /// </remarks>
-    public (Dictionary<(int X, int Z), List<MobRecord>> Kept, HashSet<(int X, int Z)> Placed) ReadMobs()
+    public List<MobRecord>? TakeMobs(int x, int z) => MobRegion(RegionOf(x, z)).Remove((x, z), out var mobs) ? mobs : null;
+
+    /// <summary>Keeps the mobs of a column that unloads, none among them for one whose mobs were placed and are gone, to be written at the next <see cref="WriteMobs"/>.</summary>
+    public void KeepMobs(int x, int z, List<MobRecord> mobs)
     {
-        var kept = new Dictionary<(int X, int Z), List<MobRecord>>();
-        var placed = new HashSet<(int X, int Z)>();
-        var (homed, lost) = (new List<MobRecord>(), 0);
-        var path = Path.Combine(Folder, "mobs.bin");
-        if (!File.Exists(path)) return (kept, placed);
+        var region = RegionOf(x, z);
+        MobRegion(region)[(x, z)] = mobs;
+        _mobsChanged.Add(region);
+    }
+
+    /// <summary>How many regions' mobs the save holds.</summary>
+    public int MobRegions => _mobRegions.Count;
+
+    /// <summary>
+    /// Writes the mobs of the loaded columns that have had their mobs placed, as they stand, with
+    /// those kept by the columns unloaded since, into their regions' files, and lets go of each region
+    /// no loaded column lies in.
+    /// </summary>
+    public void WriteMobs(IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> loaded)
+    {
+        ReadOneFileOnce();
+        var columns = loaded.ToList();
+        var standing = new HashSet<(int X, int Z)>();
+        foreach (var (column, mobs) in columns)
+        {
+            var region = RegionOf(column.X, column.Z);
+            MobRegion(region)[column] = [.. mobs];
+            _mobsChanged.Add(region);
+            standing.Add(region);
+        }
+        foreach (var region in _mobsChanged) WriteMobRegion(region, _mobRegions[region]);
+        _mobsChanged.Clear();
+        if (File.Exists(OneFile) && !_held.Contains(OneFile)) File.Move(OneFile, OneFile + ".read", overwrite: true);
+        // A loaded column's mobs stand in the world, so what was written of them is let go from its
+        // region too, which takes them again as the column unloads.
+        foreach (var region in _mobRegions.Keys.Where(r => !standing.Contains(r)).ToList()) _mobRegions.Remove(region);
+        foreach (var (column, _) in columns) _mobRegions[RegionOf(column.X, column.Z)].Remove(column);
+    }
+
+    private string OneFile => Path.Combine(Folder, "mobs.bin");
+
+    private string MobRegionPath((int X, int Z) region) => Path.Combine(Folder, "regions", $"m.{region.X}.{region.Z}.bin");
+
+    // The mobs a region's columns keep, read from its file the first time.
+    private Dictionary<(int X, int Z), List<MobRecord>> MobRegion((int X, int Z) region)
+    {
+        ReadOneFileOnce();
+        if (!_mobRegions.TryGetValue(region, out var columns)) _mobRegions[region] = columns = ReadMobRegion(region);
+        return columns;
+    }
+
+    // Takes the mobs of mobs.bin into the regions they lie in, the first time the save's mobs are
+    // asked for.
+    private void ReadOneFileOnce()
+    {
+        if (_oneFileRead) return;
+        _oneFileRead = true;
+        if (!File.Exists(OneFile)) return;
+        foreach (var (column, mobs) in ReadOneFile())
+        {
+            var region = RegionOf(column.X, column.Z);
+            if (!_mobRegions.TryGetValue(region, out var columns)) _mobRegions[region] = columns = ReadMobRegion(region);
+            columns[column] = mobs;
+            _mobsChanged.Add(region);
+        }
+    }
+
+    private Dictionary<(int X, int Z), List<MobRecord>> ReadMobRegion((int X, int Z) region)
+    {
+        var columns = new Dictionary<(int X, int Z), List<MobRecord>>();
+        var path = MobRegionPath(region);
+        if (!File.Exists(path)) return columns;
+        var lost = 0;
         try
         {
             using var reader = new BinaryReader(new ZLibStream(File.OpenRead(path), CompressionMode.Decompress));
-            var version = reader.ReadBytes(4).AsSpan().SequenceEqual(MobsMagic) ? reader.ReadInt32() : 0;
-            if (version is not (1 or MobsVersion))
+            if (!reader.ReadBytes(4).AsSpan().SequenceEqual(MobsMagic) || reader.ReadInt32() != MobsVersion)
                 throw new InvalidDataException("it is not a mobs file of a version this game reads");
-            LandPlace Place() => version == 1 ? new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) : new(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-            var listed = reader.ReadInt32();
-            // A record names its kind by a byte, so no file the game writes lists more kinds than a
-            // byte tells apart.
-            if (listed is < 0 or > 256) throw new InvalidDataException("its list of kinds has no length");
-            var kinds = new MobKind?[listed];
-            for (int i = 0; i < kinds.Length; i++) kinds[i] = MobKinds.Find(reader.ReadString());
-            var columns = reader.ReadInt32();
-            for (int c = 0; c < columns; c++)
+            var kinds = ReadKinds(reader);
+            var count = reader.ReadInt32();
+            for (int c = 0; c < count; c++)
             {
-                var key = (reader.ReadInt32(), reader.ReadInt32());
-                placed.Add(key);
-                var count = reader.ReadUInt16();
-                var list = new List<MobRecord>(count);
-                for (int m = 0; m < count; m++)
-                {
-                    var number = reader.ReadByte();
-                    var kind = number < kinds.Length ? kinds[number] : null;
-                    var variant = reader.ReadByte();
-                    var at = Place();
-                    var yaw = reader.ReadSingle();
-                    var health = reader.ReadByte();
-                    LandPlace? home = reader.ReadBoolean() ? Place() : null;
-                    if (kind is null) continue;
-                    var record = new MobRecord(kind, (byte)(variant % kind.Variants.Length), at, yaw, Math.Clamp((int)health, 1, kind.Health), home);
-                    if (at.Finite) list.Add(record);
-                    else if (home is { Finite: true } stand) homed.Add(record with { Position = stand });
+                var column = (region.X * RegionSize + reader.ReadByte(), region.Z * RegionSize + reader.ReadByte());
+                var mobs = columns[column] = [];
+                var held = reader.ReadInt32();
+                for (int m = 0; m < held; m++)
+                    if (ReadMob(reader, kinds, floats: false) is { Position.Finite: true } mob) mobs.Add(mob);
                     else lost++;
-                }
-                if (list.Count > 0) kept[key] = list;
             }
-            foreach (var record in homed)
-            {
-                var column = (VoxelWorld.ColumnOf((int)Math.Floor(record.Position.X)), VoxelWorld.ColumnOf((int)Math.Floor(record.Position.Z)));
-                if (kept.TryGetValue(column, out var list)) list.Add(record);
-                else kept[column] = [record];
-            }
-            if (homed.Count + lost > 0)
-                TraceLog(LogLevel.Warning, $"{path} kept {homed.Count + lost} mobs whose place was no number, {homed.Count} set down at their homes and {lost} left out.");
+            if (lost > 0) TraceLog(LogLevel.Warning, $"{path} kept {lost} mobs of a kind this game does not know or whose place was no number, which are left out.");
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or EndOfStreamException)
         {
-            // The columns' mobs are placed again by their generator rather than the world not loading.
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the columns' mobs are placed again and {SetAside(path)}. {ex.Message}");
-            kept.Clear();
-            placed.Clear();
+            // The region's columns place their mobs again by their generator rather than the world
+            // not loading.
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the region's mobs are placed again and {SetAside(path)}. {ex.Message}");
+            columns.Clear();
         }
-        return (kept, placed);
+        return columns;
     }
 
-    /// <summary>Writes the mobs of every column that has had its mobs placed, those with none among them, to a file beside the old one that then takes its name.</summary>
-    public void WriteMobs(IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> columns)
+    // The kinds a mobs file lists, each by its name, none for a name this build does not know.
+    private static MobKind?[] ReadKinds(BinaryReader reader)
     {
-        var list = columns.ToList();
-        Replace(Path.Combine(Folder, "mobs.bin"), file =>
+        var listed = reader.ReadInt32();
+        // A record names its kind by a byte, so no file the game writes lists more kinds than a byte
+        // tells apart.
+        if (listed is < 0 or > 256) throw new InvalidDataException("its list of kinds has no length");
+        var kinds = new MobKind?[listed];
+        for (int i = 0; i < kinds.Length; i++) kinds[i] = MobKinds.Find(reader.ReadString());
+        return kinds;
+    }
+
+    // A mob as a mobs file keeps it, its places in doubles or in floats, or none for a kind this
+    // build does not know.
+    private static MobRecord? ReadMob(BinaryReader reader, MobKind?[] kinds, bool floats)
+    {
+        LandPlace Place() => floats ? new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()) : new(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+        var number = reader.ReadByte();
+        var kind = number < kinds.Length ? kinds[number] : null;
+        var variant = reader.ReadByte();
+        var at = Place();
+        var yaw = reader.ReadSingle();
+        var health = reader.ReadByte();
+        LandPlace? home = reader.ReadBoolean() ? Place() : null;
+        return kind is null ? null : new MobRecord(kind, (byte)(variant % kind.Variants.Length), at, yaw, Math.Clamp((int)health, 1, kind.Health), home);
+    }
+
+    private void WriteMobRegion((int X, int Z) region, Dictionary<(int X, int Z), List<MobRecord>> columns) =>
+        Replace(MobRegionPath(region), file =>
         {
             using var writer = new BinaryWriter(new ZLibStream(file, CompressionLevel.Fastest, leaveOpen: true));
             writer.Write(MobsMagic);
             writer.Write(MobsVersion);
             writer.Write(MobKinds.All.Length);
             foreach (var kind in MobKinds.All) writer.Write(kind.Name);
-            writer.Write(list.Count);
-            foreach (var ((x, z), mobs) in list)
+            writer.Write(columns.Count);
+            foreach (var ((x, z), mobs) in columns)
             {
-                writer.Write(x);
-                writer.Write(z);
-                writer.Write((ushort)mobs.Count);
+                writer.Write((byte)(x - region.X * RegionSize));
+                writer.Write((byte)(z - region.Z * RegionSize));
+                writer.Write(mobs.Count);
                 foreach (var mob in mobs)
                 {
                     writer.Write(mob.Kind.Id);
@@ -475,6 +543,49 @@ public sealed class WorldSave
                 }
             }
         });
+
+    // The mobs of mobs.bin, a file of every column's mobs, of version 1 with its places in floats or
+    // 2 in doubles, by the columns that have had their mobs placed. A mob whose place is no number is
+    // set down at its home where it has one that is a number, a villager's, in its home's column, and
+    // otherwise left out, and the log says how many of each.
+    private Dictionary<(int X, int Z), List<MobRecord>> ReadOneFile()
+    {
+        var columns = new Dictionary<(int X, int Z), List<MobRecord>>();
+        var (strays, lost) = (new List<MobRecord>(), 0);
+        try
+        {
+            using var reader = new BinaryReader(new ZLibStream(File.OpenRead(OneFile), CompressionMode.Decompress));
+            var version = reader.ReadBytes(4).AsSpan().SequenceEqual(MobsMagic) ? reader.ReadInt32() : 0;
+            if (version is not (1 or 2)) throw new InvalidDataException("it is not a mobs file of a version this game reads");
+            var kinds = ReadKinds(reader);
+            var count = reader.ReadInt32();
+            for (int c = 0; c < count; c++)
+            {
+                var mobs = columns[(reader.ReadInt32(), reader.ReadInt32())] = [];
+                for (int m = reader.ReadUInt16(); m > 0; m--)
+                {
+                    if (ReadMob(reader, kinds, floats: version == 1) is not { } mob) continue;
+                    if (mob.Position.Finite) mobs.Add(mob);
+                    else if (mob.Home is { Finite: true } home) strays.Add(mob with { Position = home });
+                    else lost++;
+                }
+            }
+            foreach (var mob in strays)
+            {
+                var column = (VoxelWorld.ColumnOf((int)Math.Floor(mob.Position.X)), VoxelWorld.ColumnOf((int)Math.Floor(mob.Position.Z)));
+                if (columns.TryGetValue(column, out var mobs)) mobs.Add(mob);
+                else columns[column] = [mob];
+            }
+            if (strays.Count + lost > 0)
+                TraceLog(LogLevel.Warning, $"{OneFile} kept {strays.Count + lost} mobs whose place was no number, {strays.Count} set down at their homes and {lost} left out.");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or EndOfStreamException)
+        {
+            // The columns' mobs are placed again by their generator rather than the world not loading.
+            TraceLog(LogLevel.Warning, $"{OneFile} could not be read, so the columns' mobs are placed again and {SetAside(OneFile)}. {ex.Message}");
+            columns.Clear();
+        }
+        return columns;
     }
 
     /// <summary>A furnace as a save keeps it, with its place, its three slots as <see cref="Inventory.Encode"/> gives them, and its fire and smelting.</summary>

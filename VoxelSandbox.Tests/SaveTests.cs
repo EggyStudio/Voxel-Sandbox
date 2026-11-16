@@ -105,7 +105,7 @@ public sealed class SaveTests : IDisposable
 
     [Theory]
     [InlineData("world.json")]
-    [InlineData("mobs.bin")]
+    [InlineData("regions/m.0.0.bin")]
     [InlineData("furnaces.json")]
     [InlineData("chests.json")]
     public void A_File_Of_The_Save_That_Cannot_Be_Read_Is_Kept_Beside_The_One_Written_Again(string name)
@@ -119,9 +119,9 @@ public sealed class SaveTests : IDisposable
                 Assert.Null(save.ReadInfo());
                 save.WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]));
                 break;
-            case "mobs.bin":
-                Assert.Empty(save.ReadMobs().Kept);
-                save.WriteMobs([]);
+            case "regions/m.0.0.bin":
+                Assert.Null(save.TakeMobs(0, 0));
+                save.WriteMobs([((0, 0), [])]);
                 break;
             case "furnaces.json":
                 Assert.Empty(save.ReadFurnaces().All);
@@ -182,25 +182,26 @@ public sealed class SaveTests : IDisposable
     [InlineData(int.MaxValue)]
     public void A_Mobs_File_Listing_More_Kinds_Than_A_Byte_Tells_Apart_Is_Kept_Beside_And_Its_Mobs_Placed_Again(int listed)
     {
-        new WorldSave(_folder);
-        var path = Path.Combine(_folder, "mobs.bin");
-        using (var writer = new BinaryWriter(new ZLibStream(File.Create(path), CompressionLevel.Fastest)))
+        // A region's file, and the one file a world saved before kept every column's mobs in.
+        foreach (var (name, version) in new[] { ("regions/m.0.0.bin", 3), ("mobs.bin", 2) })
         {
-            writer.Write("E3DM"u8);
-            writer.Write(2);
-            writer.Write(listed);
+            new WorldSave(_folder);
+            var path = Path.Combine(_folder, name);
+            using (var writer = new BinaryWriter(new ZLibStream(File.Create(path), CompressionLevel.Fastest)))
+            {
+                writer.Write("E3DM"u8);
+                writer.Write(version);
+                writer.Write(listed);
+            }
+
+            Assert.Null(new WorldSave(_folder).TakeMobs(0, 0));
+            Assert.True(File.Exists(path + ".unread"));
         }
-
-        var (kept, placed) = new WorldSave(_folder).ReadMobs();
-
-        Assert.Empty(kept);
-        Assert.Empty(placed);
-        Assert.True(File.Exists(path + ".unread"));
     }
 
     [Theory]
     [InlineData("world.json")]
-    [InlineData("mobs.bin")]
+    [InlineData("regions/m.0.0.bin")]
     [InlineData("furnaces.json")]
     [InlineData("chests.json")]
     [InlineData("regions/r.0.0.bin")]
@@ -210,7 +211,7 @@ public sealed class SaveTests : IDisposable
         if (OperatingSystem.IsWindows()) return;
         var save = new WorldSave(_folder);
         save.WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]));
-        save.WriteMobs([]);
+        save.WriteMobs([((0, 0), [])]);
         save.WriteFurnaces(new Furnaces());
         save.WriteChests(new Chests());
         var column = new ChunkColumn(0, 0);
@@ -223,7 +224,7 @@ public sealed class SaveTests : IDisposable
 
         var read = new WorldSave(_folder);
         read.ReadInfo();
-        read.ReadMobs();
+        read.TakeMobs(0, 0);
         read.ReadFurnaces();
         read.ReadChests();
         read.ReadRegion(0, 0);
@@ -306,10 +307,10 @@ public sealed class SaveTests : IDisposable
         var villager = new MobRecord(MobKinds.Villager, 2, new LandPlace(-284_700.06, 70, 33.5), -2, 13, new LandPlace(-284_698.5, 70, 35.25));
         new WorldSave(_folder).WriteMobs([((71_249, 37), [sheep]), ((-17_794, 2), [villager])]);
 
-        var (kept, _) = new WorldSave(_folder).ReadMobs();
+        var read = new WorldSave(_folder);
 
-        Assert.Equal(sheep, Assert.Single(kept[(71_249, 37)]));
-        Assert.Equal(villager, Assert.Single(kept[(-17_794, 2)]));
+        Assert.Equal(sheep, Assert.Single(read.TakeMobs(71_249, 37)!));
+        Assert.Equal(villager, Assert.Single(read.TakeMobs(-17_794, 2)!));
     }
 
     [Fact]
@@ -334,10 +335,17 @@ public sealed class SaveTests : IDisposable
             foreach (var value in (float[])[-18.5f, 64, 42.5f]) writer.Write(value);
         }
 
-        var (kept, placed) = new WorldSave(_folder).ReadMobs();
+        var villager = new MobRecord(MobKinds.Villager, 2, new LandPlace(-20.5, 64, 40.25), 1.5f, 13, new LandPlace(-18.5, 64, 42.5));
+        var read = new WorldSave(_folder);
+        var taken = read.TakeMobs(-2, 2)!;
+        Assert.Equal(villager, Assert.Single(taken));
 
-        Assert.Equal([(-2, 2)], placed);
-        Assert.Equal(new MobRecord(MobKinds.Villager, 2, new LandPlace(-20.5, 64, 40.25), 1.5f, 13, new LandPlace(-18.5, 64, 42.5)), Assert.Single(kept[(-2, 2)]));
+        // Saved as the game saves its loaded columns, the one file's mobs stand in the regions' files
+        // and the file is kept beside as read.
+        read.WriteMobs([((-2, 2), taken)]);
+        Assert.True(File.Exists(Path.Combine(_folder, "mobs.bin.read")));
+        Assert.False(File.Exists(Path.Combine(_folder, "mobs.bin")));
+        Assert.Equal(villager, Assert.Single(new WorldSave(_folder).TakeMobs(-2, 2)!));
     }
 
     [Fact]
@@ -349,13 +357,51 @@ public sealed class SaveTests : IDisposable
         var cow = new MobRecord(MobKinds.Cow, 0, new LandPlace(double.NaN, 60, -480.25), 1, 10, null);
         var sheep = new MobRecord(MobKinds.Sheep, 0, new LandPlace(double.NaN, 57, double.NaN), 0, 8, null);
         var pig = new MobRecord(MobKinds.Pig, 0, new LandPlace(4.5, 60, -479.5), 2, 10, null);
-        new WorldSave(_folder).WriteMobs([((0, -10), [villager]), ((0, -31), [cow, pig, sheep])]);
+        WriteOneFile(((0, -10), [villager]), ((0, -31), [cow, pig, sheep]));
 
-        var (kept, placed) = new WorldSave(_folder).ReadMobs();
+        var read = new WorldSave(_folder);
 
-        Assert.Equal(pig, Assert.Single(kept[(0, -31)]));
-        Assert.Equal(villager with { Position = new LandPlace(-155.5, 58, 85.5) }, Assert.Single(kept[(-10, 5)]));
-        Assert.Equal([(-10, 5), (0, -31)], kept.Keys.Order());
-        Assert.Equal([(0, -31), (0, -10)], placed.Order());
+        Assert.Equal(pig, Assert.Single(read.TakeMobs(0, -31)!));
+        Assert.Equal(villager with { Position = new LandPlace(-155.5, 58, 85.5) }, Assert.Single(read.TakeMobs(-10, 5)!));
+        Assert.Empty(read.TakeMobs(0, -10)!);
+    }
+
+    [Fact]
+    public void A_Mob_Of_A_Regions_File_Whose_Place_Is_No_Number_Is_Left_Out()
+    {
+        var cow = new MobRecord(MobKinds.Cow, 0, new LandPlace(double.NaN, 60, -480.25), 1, 10, null);
+        var pig = new MobRecord(MobKinds.Pig, 0, new LandPlace(4.5, 60, -479.5), 2, 10, null);
+        new WorldSave(_folder).WriteMobs([((0, -31), [cow, pig])]);
+
+        Assert.Equal(pig, Assert.Single(new WorldSave(_folder).TakeMobs(0, -31)!));
+    }
+
+    // Writes the one file a world saved before kept every column's mobs in, of its version 2.
+    private void WriteOneFile(params ((int X, int Z) Column, MobRecord[] Mobs)[] columns)
+    {
+        Directory.CreateDirectory(_folder);
+        using var writer = new BinaryWriter(new ZLibStream(File.Create(Path.Combine(_folder, "mobs.bin")), CompressionLevel.Fastest));
+        writer.Write("E3DM"u8);
+        writer.Write(2);
+        writer.Write(MobKinds.All.Length);
+        foreach (var kind in MobKinds.All) writer.Write(kind.Name);
+        writer.Write(columns.Length);
+        foreach (var ((x, z), mobs) in columns)
+        {
+            writer.Write(x);
+            writer.Write(z);
+            writer.Write((ushort)mobs.Length);
+            foreach (var mob in mobs)
+            {
+                writer.Write(mob.Kind.Id);
+                writer.Write(mob.Variant);
+                foreach (var value in (double[])[mob.Position.X, mob.Position.Y, mob.Position.Z]) writer.Write(value);
+                writer.Write(mob.Yaw);
+                writer.Write((byte)mob.Health);
+                writer.Write(mob.Home is not null);
+                if (mob.Home is { } home)
+                    foreach (var value in (double[])[home.X, home.Y, home.Z]) writer.Write(value);
+            }
+        }
     }
 }

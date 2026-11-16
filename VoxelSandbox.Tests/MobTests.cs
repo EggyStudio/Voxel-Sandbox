@@ -211,11 +211,11 @@ public sealed class MobTests : IDisposable
         var save = new WorldSave(_folder);
 
         save.WriteMobs(mobs.Columns());
-        var (kept, placed) = new WorldSave(_folder).ReadMobs();
+        var read = new WorldSave(_folder);
 
-        Assert.Equal([(-2, 2), (5, -7)], placed.Order());
-        Assert.Equal([villager, sheep], kept[(-2, 2)]);
-        Assert.False(kept.ContainsKey((5, -7)));
+        Assert.Equal([villager, sheep], read.TakeMobs(-2, 2));
+        Assert.Empty(read.TakeMobs(5, -7)!);
+        Assert.Null(read.TakeMobs(5, -8));
     }
 
     [Fact]

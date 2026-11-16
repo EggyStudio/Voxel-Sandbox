@@ -105,10 +105,16 @@ public sealed class FallingBlocks(EcsWorld ecs)
     /// over a block it would break on, as a torch or a slab, rests on it as a block placed there
     /// does, since the save keeps no item it would break into either.
     /// </summary>
-    public void SetDown(VoxelWorld world)
+    public void SetDown(VoxelWorld world) => SetDown(world, null);
+
+    /// <summary>Sets down the blocks falling over a column, as it unloads, as <see cref="SetDown(VoxelWorld)"/> sets down every one.</summary>
+    public void SetDown(VoxelWorld world, int x, int z) => SetDown(world, (x, z));
+
+    private void SetDown(VoxelWorld world, (int X, int Z)? over)
     {
         var all = new List<(int Id, Vector3 At, BlockId Block)>();
-        foreach (var (id, falling, body) in ecs.Query<FallingBlock, Body>()) all.Add((id, body.Position, falling.Block));
+        foreach (var (id, falling, body) in ecs.Query<FallingBlock, Body>())
+            if (over is not { } column || LandOrigin.ColumnOf(body.Position) == column) all.Add((id, body.Position, falling.Block));
         foreach (var (id, at, block) in all.OrderBy(f => f.At.Y))
         {
             var (x, y, z) = Landing(world, at);
@@ -117,10 +123,19 @@ public sealed class FallingBlocks(EcsWorld ecs)
         }
     }
 
-    /// <summary>The cell a body falling from a place comes to rest in, over the first block under it that does not give way.</summary>
+    /// <summary>
+    /// The cell a body falling from a place comes to rest in, over the first block under it that does
+    /// not give way, or over the block it is caught in where that neither gives way nor stops it, as
+    /// a wall torch or cave vines.
+    /// </summary>
     internal static (int X, int Y, int Z) Landing(VoxelWorld world, Vector3 at)
     {
         int x = LandOrigin.BlockX(at.X), y = (int)MathF.Floor(at.Y + 0.01f), z = LandOrigin.BlockZ(at.Z);
+        if (!BlockGroups.GivesWay(world.GetBlock(x, y, z)))
+        {
+            while (y < ChunkColumn.Ceiling - 1 && !BlockGroups.GivesWay(world.GetBlock(x, y, z))) y++;
+            return (x, y, z);
+        }
         while (y > ChunkColumn.Bottom && BlockGroups.GivesWay(world.GetBlock(x, y - 1, z))) y--;
         return (x, y, z);
     }

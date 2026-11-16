@@ -93,6 +93,21 @@ public sealed class HeadlessGame : IDisposable
     /// <summary>The ECS world the game's entities are in.</summary>
     public EcsWorld Ecs => GetApp().World.Resource<EcsWorld>();
 
+    /// <summary>Every mob a world's folder keeps, read from each region's file of mobs.</summary>
+    public static IEnumerable<MobRecord> SavedMobs(string folder)
+    {
+        var save = new WorldSave(folder);
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(folder, "regions"), "m.*.bin"))
+        {
+            var parts = Path.GetFileName(file).Split('.');
+            var (rx, rz) = (int.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture), int.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture));
+            for (int z = 0; z < WorldSave.RegionSize; z++)
+                for (int x = 0; x < WorldSave.RegionSize; x++)
+                    foreach (var mob in save.TakeMobs(rx * WorldSave.RegionSize + x, rz * WorldSave.RegionSize + z) ?? [])
+                        yield return mob;
+        }
+    }
+
     /// <summary>Steps the game by so many frames, each through the engine's stages.</summary>
     public void Step(int frames)
     {

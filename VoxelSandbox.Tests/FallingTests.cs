@@ -125,4 +125,19 @@ public sealed class FallingTests
         Assert.Equal(firstLog, firstLeaf);
         Assert.InRange(lastLeaf - firstLog, 0.5f, 1);
     }
+
+    [Fact]
+    public void A_Block_Falling_Caught_In_A_Wall_Torch_As_The_World_Closes_Rests_Over_It()
+    {
+        var world = Floor();
+        world.SetBlock(5, 8, 4, BlockId.Stone);
+        world.SetBlock(5, 8, 5, BlockId.WallTorchSouth);
+        var falling = new FallingBlocks(new Engine.EcsWorld());
+        falling.Drop(BlockId.Sand, 5, 8, 5);
+
+        falling.SetDown(world);
+
+        Assert.Equal((BlockId.WallTorchSouth, BlockId.Sand), (world.GetBlock(5, 8, 5), world.GetBlock(5, 9, 5)));
+        Assert.Empty(falling.All);
+    }
 }

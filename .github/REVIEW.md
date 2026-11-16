@@ -609,3 +609,47 @@ here and at :309 in a closure that reads it as it runs.
 
 The strict build is clean, 487 tests pass outside the GPU's lock, and the play passes in 192 s, its
 captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+Item 192's second commit, the three low findings the read left. Each test was run first on a copy
+of `e87ef64` with the tests added, and a line there giving its save no regions' mobs.
+
+1. A column a worker made after the same column was made at once is dropped
+   (`ChunkStreamer.Update`), so the world keeps the column made at once, with what changed in it
+   since and its fires named once.
+   - `A_Column_Made_At_Once_While_A_Worker_Makes_It_Keeps_What_Changed_In_It` fails on the head,
+     which puts the worker's copy in its place.
+2. A block falling caught in a cell that neither gives way nor stops it, as a wall torch or cave
+   vines, rests on the first cell over it that gives way (`FallingBlocks.Landing`). The blocks
+   falling over a column are set down in it as it unloads, before the save keeps it
+   (`ChunkStreamer.Unload`), which the teleport's remarks say.
+   - `A_Block_Falling_Caught_In_A_Wall_Torch_As_The_World_Closes_Rests_Over_It` fails on the head,
+     which lets the block go.
+   - `A_Block_Falling_Over_A_Column_That_Unloads_Is_Set_Down_In_It` fails on the head, whose
+     teleport lets the block go.
+3. The mobs' save form changes. A region's mobs are kept in a file of their own beside its blocks,
+   `regions/m.X.Z.bin` of version 3, read as one of its columns first loads and written at each
+   save, and a region is let go once written where no loaded column lies in it. A saved world's
+   mobs are those of its loaded columns alone. A column that unloads gives its mobs to the save,
+   those kept out of the world among them, and takes them back as it loads. A world not saved
+   keeps them as before. A mob of a region's file whose place is no number is left out.
+   `voxel.mobs` and the overlay say the mobs held out of the world.
+   A folder's `mobs.bin` is read once into the regions, with its versions and its homing rule,
+   written into their files at the next save and kept beside as `mobs.bin.read`. Its reader and
+   the regions' share the reading of the kinds and of a mob. On that path a villager it sets down
+   at its home makes its home's column one whose mobs were placed.
+   - `The_Mobs_Of_A_Column_Left_Are_Kept_By_The_Save_And_Come_Back_With_It` leaves a pig's column
+     and comes back, leaves it again, closes the world far from it, opens the world and comes back,
+     the pig where it stood each time. It fails on the head, which holds the column's 46 mobs in
+     memory as the column is left.
+   - `The_Mobs_Hold_The_Loaded_Columns_Alone_However_Far_The_Player_Goes` takes twelve steps of
+     2,000 blocks, saving at each, and fails on the head at all twelve, holding 138 columns at the
+     first where 69 are loaded. The save holds four regions' mobs at most.
+   - The save's tests of the mobs file read and write the regions' files, and those of
+     `mobs.bin`'s versions and its homing read it into them.
+
+The save holds the compressed blocks of every column it has read or kept, for the session
+(`WorldSave._kept`), which grows with the land changed and the regions read. It is of the same
+kind, outside this lane, and I would take it as an item of its own if you want it.
+
+The strict build is clean, 493 tests pass outside the GPU's lock, and the play passes in 187 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
