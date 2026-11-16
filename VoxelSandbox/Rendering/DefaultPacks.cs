@@ -67,10 +67,28 @@ public sealed class DefaultPacks
     public IReadOnlyList<DefaultPack> Packs => _packs;
 
     /// <summary>How the fetch stands.</summary>
-    public FetchState State { get; private set; }
+    /// <remarks>
+    /// The fetch's task sets its problem and its count before its state, and the state is written
+    /// and read through a volatile field, so the main thread that reads a fetch's end finds the
+    /// problem and the count it ended with, on a processor that orders its stores as loosely as it
+    /// may.
+    /// </remarks>
+    public FetchState State
+    {
+        get => _state;
+        private set => _state = value;
+    }
+
+    private volatile FetchState _state;
 
     /// <summary>How many of the packs are in and checked.</summary>
-    public int Fetched { get; private set; }
+    public int Fetched
+    {
+        get => _fetched;
+        private set => _fetched = value;
+    }
+
+    private volatile int _fetched;
 
     /// <summary>What stopped a failed fetch.</summary>
     public string? Problem { get; private set; }
@@ -104,7 +122,8 @@ public sealed class DefaultPacks
             }
             catch (Exception problem) when (problem is HttpRequestException or IOException or TaskCanceledException or UnauthorizedAccessException)
             {
-                (Problem, State) = (problem.Message, FetchState.Failed);
+                Problem = problem.Message;
+                State = FetchState.Failed;
             }
         }, stop);
     }

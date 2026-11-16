@@ -324,6 +324,30 @@ public sealed class PackTests : IDisposable
     }
 
     [Fact]
+    public void A_Fetchs_End_Is_Read_With_The_Problem_And_The_Count_It_Ended_With()
+    {
+        // A reader on the test's thread that waits on the state alone, as the frame does, and reads
+        // the problem and the count the moment it sees the end, over many fetches.
+        var list = new PackList(Path.Combine(_folder, "game"));
+        byte[] first = [1, 2, 3], second = [4, 5, 6];
+        for (int round = 0; round < 200; round++)
+        {
+            if (Directory.Exists(list.Folder)) Directory.Delete(list.Folder, recursive: true);
+            var fails = round % 2 == 1;
+            var served = new Served(url => fails && url.EndsWith("second.zip") ? [0] : url.EndsWith("first.zip") ? first : second);
+            var defaults = new DefaultPacks([Pinned("first.zip", first), Pinned("second.zip", second)]);
+            defaults.Start(list, served);
+            var state = defaults.State;
+            while (state is FetchState.Fetching) state = defaults.State;
+            var (problem, fetched) = (defaults.Problem, defaults.Fetched);
+            defaults.Wait();
+
+            if (fails) Assert.Equal((FetchState.Failed, true, 1), (state, problem is not null, fetched));
+            else Assert.Equal((FetchState.Done, null, 2), (state, problem, fetched));
+        }
+    }
+
+    [Fact]
     public void A_Fetch_Keeps_A_Pack_In_The_Folder_Takes_The_Right_Bytes_And_Refuses_Others()
     {
         var list = new PackList(Path.Combine(_folder, "game"));

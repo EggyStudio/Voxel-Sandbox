@@ -3308,6 +3308,19 @@ before a batch.
     count that stays level over a long walk. The shadows' distance past the sections seen is left as
     it is.
 
+194. **A tenth read, the rest of the interface, the HUD's lines, the screens not read before and the
+    input.** Read as the reads before it, a Reply first with each finding as a failing test. Agreed
+    from the Reply, in one commit, a pack read again letting go of the font it measured with beside
+    its sheet, the textures held staying as many over six reloads, and the yaw held within a turn as
+    it is summed, with a test that a turn far one way still answers a pixel of the mouse.
+
+195. **An eleventh read, every file of a world's folder fed hostile.** The world's own file, the
+    regions' blocks and mobs, the chests, the furnaces, the player and the options, each cut short,
+    with counts and lengths far out of range and with values that are no number, by a test that the
+    world opens or is refused with a line, and that nothing hangs or takes memory past a bound. A
+    Reply first with what fails, then the mends in commits by file. A bound is said in the code
+    where it is set, with what a world the game writes reaches at most.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -6762,6 +6775,222 @@ One low finding is left. The view's turn is summed without a wrap
 some sixteen thousand whole turns one way in a session, and a save wraps it.
 
 The order I would take is the one mend, its test in one commit.
+
+Item 194, the tenth read's finding mended with the view's turn, in one commit. Each test was run
+first on a copy of `fd9af04` with the tests added.
+
+The packs' font is let go whole as the packs are read again, its measuring font unloaded with its
+sheet (`PackGui.Use`). The view's turn and the body's are held within a half turn either way as
+they are set (`FirstPersonController.Yaw`, `BodyYaw`), so the mouse's sum, a heading a save or
+`voxel.look` gives, and the body's turn after it each keep a float's fine steps.
+- `Reading_A_Pack_Of_A_Font_Again_Holds_As_Many_Textures` fails on the head, whose engine holds 17
+  textures after the first reading and 22 after the sixth.
+- `A_View_Turned_One_Way_A_Long_Time_Keeps_A_Turns_Fine_Steps` sums some eleven thousand whole
+  turns one way and fails on the head, whose turn stands at -69,968 radians.
+
+The strict build is clean, 501 tests pass outside the GPU's lock, and the play passes in 182 s, its
+captures within 8 levels of the pin's play but the shadow's, at most 19 at a few pixels, and sky2's,
+which moves as much between plays. The shadow's is likely the heading the play sets, held within a
+half turn as it is set, its sine and cosine differing in a float's last step.
+
+The eleventh read, of every file the game reads from a world's folder fed cut short, with counts
+and lengths far out of range and with values that are no number, before any mend. Each case was
+held by a test on a copy of `fd9af04`, outside the GPU's lock, and seven findings failed theirs.
+
+1. A kept block of a number past the game's blocks keeps the world from standing. A block's
+   answers are looked up by its number (`Blocks.Get`, `Blocks.cs:634`), and a column's blocks are
+   set from its bytes as they are (`WorldSave.Decode`, `WorldSave.cs:700`), where a region of
+   version 1, or one listing this build's keys in its order, is renumbered by nothing
+   (`Renumbering`, :190). So the column's light throws as a worker makes it, the column is asked
+   for again as the player moves and throws again, and the loading waits for it for good.
+   - `A_Column_Of_A_Block_Number_Past_The_Games_Blocks_Opens` keeps a column holding a block of
+     60,000 and fails on the head, whose world does not stand in 30 s.
+2. A column's bytes are inflated whole. `Decode`, `Shallow` (:735) and `Renumbered` (:214) read
+   sections until the stream ends, where a column holds 24.
+   - `A_Column_Whose_Blocks_Inflate_Past_Its_Sections_Is_Read_Within_A_Bound` keeps 254 KB that
+     inflate to 256 MB and fails on the head, which takes 257 MB to read them.
+3. A region's column placed outside it is held. A column's place in its region is two shorts the
+   file gives (:142), so a region at 0 may hold a column at x 40, which `Kept` then gives in place
+   of its own region's. The mobs' regions give their places in a byte, so a column of them past 31
+   is held in the wrong region until the next save lets it go.
+   - `A_Regions_Column_Placed_Outside_It_Is_Left_Out` fails on the head, which keeps it.
+4. A region's mobs, and those of `mobs.bin`, are read as many as the file inflates to
+   (`ReadMobRegion`, :473, `ReadOneFile`, :572).
+   - `A_Regions_Mobs_That_Inflate_Past_A_Bound_Are_Read_Within_It` keeps a file of 1.5 MB holding a
+     column of 5,000,000 pigs and fails on the head, which takes 1,280 MB to read them.
+5. A world's saturation that is no number stays one. The save's reader holds the hour and the
+   place but not the saturation (`WorldSave.Bounded`, :370), and the vitals hold it within its
+   ends by a clamp, which gives a NaN back (`Vitals.cs:66`). A mob's turn that is no number is
+   read as it is too (:528), its pose turned by it.
+   - `A_Worlds_Saturation_That_Is_No_Number_Is_Held_To_One` fails on the head, whose saturation is
+     NaN.
+6. A world's list of blocks is read whole and searched for each key, a search of every block of
+   the game (`Renumbering`, :190), where the regions' lists stop at 65,536 (`ReadKeys`).
+   - `A_Worlds_List_Of_Blocks_Far_Past_The_Numbers_Opens_In_Time` lists two million keys, a file of
+     38 MB, and fails on the head, which takes 10.2 s to open.
+7. A world's files and the options are read whole however long (`ReadInfo`, :350, `ReadChests`,
+   `ReadFurnaces`, `OptionsFile.cs:78`).
+   - `A_Worlds_File_Far_Past_Its_Size_Is_Read_Within_A_Bound` keeps a world.json of 100 MB and
+     fails on the head, which takes 913 MB to read it.
+   - `An_Options_File_Far_Past_Its_Size_Is_Read_Within_A_Bound` keeps an options file of 100 MB and
+     fails on the head, which takes 600 MB.
+
+The mends I would make:
+- A block number past the game's blocks is air, as a key the build does not know is.
+- A column's bytes are read to the 24 sections a column holds, and `Shallow` to one past the
+  eight it asks of.
+- A region's column, or a mobs region's, placed outside 0 to 31 sets the file aside as one that
+  cannot be read.
+- A column's mobs are read to 1,024, past which the file is set aside. Generation gives a column a
+  herd of two to four or a villager for each house, and the game breeds none.
+- A world's saturation that is no number is its first 5, and a mob's turn that is no number is 0.
+- A world's list of blocks is read to 65,536, as a region's is, and searched by a dictionary.
+- A world's file past 16 MB, a chests' or furnaces' file past 64 MB and an options file past 1 MB
+  are set aside as files that cannot be read. A world.json the game writes is some 6 KB, its
+  chests some 700 bytes a chest and its options some 3 KB.
+
+Read clean, by tests that pass on the head. Each of world.json, a region's blocks, a region's
+mobs, the chests' file and the furnaces' file cut to half its length is set aside with a line and
+the world opens (`A_Worlds_File_Cut_Short_Lets_The_World_Open`). A region counting 2,147,483,647
+columns in a file of a few bytes opens
+(`A_Region_Counting_Far_More_Columns_Than_It_Holds_Lets_The_World_Open`). Read clean by the code:
+a column's length past what its file holds is refused before an array of it is made, the lists of
+kinds and of keys stop at 256 and 65,536, world.json's place, heading, pitch and hour are held and
+its health, food and slot clamped, a slot's count is held to its stack and its wear to its tool,
+a furnace's burns are held, the slots a chest or a furnace lists past its own are left out, and a
+mob's place that is no number is left out, its variant held to its kind's and its health clamped.
+
+The order I would take is by file, in three commits. The regions' blocks come first, with 1, 2
+and 3, then the mobs' files with 3's part, 4 and the mob's turn, then the world's file, the
+chests', the furnaces' and the options with 5, 6 and 7.
+
+Item 195, the first of three commits by file, the regions' blocks with findings 1, 2 and 3. Each
+test was run first on a copy of `abf70c1` with the tests added and two lines there giving its save
+the count and the line it lacks.
+
+1. A block of a number past the game's is read as air, as a key the build does not know is
+   (`WorldSave.Decode`), and counted. The streamer gives the count of a column's to the save, which
+   says once a region at its next save how many of its blocks were read so, and again only where
+   more come (`WorldSave.Unknown`, `Flush`).
+   - `A_Kept_Block_Of_A_Number_Past_The_Games_Blocks_Reads_As_Air` fails on the head, which keeps
+     the number 60,000 and counts none.
+   - `Blocks_Of_Numbers_Past_The_Games_Are_Said_Once_A_Region_With_Their_Count` counts five
+     blocks of two columns of a region, saves twice and finds one line. It fails on the head,
+     which says none.
+2. A column's bytes are read to the 24 sections a column holds (`Decode`, `Renumbered`), and
+   `Shallow` reads to one past the eight it asks of.
+   - `A_Column_Whose_Blocks_Inflate_Past_Its_Sections_Is_Read_Within_A_Bound` fails on the head,
+     which takes 270 MB to read 256 MB of zeros in a quarter of a megabyte.
+3. A region counting more than its 1,024 columns, or placing one outside 0 to 31, is set aside as
+   one that cannot be read, its columns read before the fault kept and written again
+   (`ReadRegion`).
+   - `A_Region_Placing_A_Column_Outside_It_Is_Kept_Beside_And_What_Came_Before_It_Stays` fails on
+     the head, which keeps the column at x 40. The file kept beside holds every byte of the one
+     written.
+   - `A_Region_Counting_Far_More_Columns_Than_It_Holds_Is_Kept_Beside`, which passes on the head as
+     its read ends early, and `A_Region_Of_Every_Column_The_Game_Keeps_Reads_Whole`, every column of
+     a region kept as the game keeps them and read back whole with no file set aside, stand with
+     them.
+
+The strict build is clean, 507 tests pass outside the GPU's lock, and the play passes in 194 s,
+its captures within 8 levels of the pin's play but the shadow's at most 19 at a few pixels again,
+and sky2's, which moves as much between plays. One test, the count's line, first failed in the
+suite, the log's callback giving the line with its category before it, and passes since it reads
+the line's end, with the save's tests run again.
+
+Item 195's second commit, the mobs' files with finding 4, the mobs' part of 3 and a mob's turn.
+Each test was run first on a copy of `f33f9da` with the tests added.
+
+A column of a mobs file holds 1,024 mobs at most, where generation gives a column a herd of two to
+four or a villager for each of its houses and the game breeds none, and `mobs.bin` holds a
+million columns and a million mobs at most, a world explored to a million columns holding some
+three hundred thousand. A region's mobs file counting more than its 1,024 columns, or placing one
+outside 0 to 31, is one that cannot be read too. A file past any of these is kept beside and its
+columns' mobs placed again (`ReadMobRegion`, `ReadOneFile`). A mob's turn that is no number is
+none (`ReadMob`).
+- `A_Regions_Mobs_That_Inflate_Past_A_Bound_Are_Kept_Beside_Within_It` fails on the head, which
+  reads the file's five million pigs. The bound holds the read to 64 MB, and the file kept beside
+  holds every byte of the one written, as in the next two.
+- `A_Mobs_File_Of_One_That_Inflates_Past_A_Bound_Is_Kept_Beside_Within_It`, five thousand columns
+  of a thousand pigs, fails on the head, which reads every one.
+- `A_Regions_Mobs_Placed_Outside_It_Are_Kept_Beside` fails on the head, which keeps the file.
+- `A_Mobs_Turn_That_Is_No_Number_Is_Read_As_None` fails on the head, whose pig turns by NaN.
+- `A_Region_Of_Every_Column_The_Game_Keeps_Holds_Its_Mobs_Whole`, every column of a region with
+  sixteen mobs, a herd and a dozen villagers, reads whole with no file set aside, on the head as
+  since.
+
+The strict build is clean, 512 tests pass outside the GPU's lock, and the play passes in 194 s,
+its captures as the last commit's play's.
+
+Item 195's third commit, the world's file, the chests', the furnaces' and the options with findings
+5, 6 and 7. Each test was run first on a copy of `195b539` with the tests added.
+
+5. A world's saturation that is no number is a new world's 5 as its file is read
+   (`WorldSave.Bounded`), and the reader's line names it among what it holds the game cannot.
+   - `A_Worlds_Saturation_That_Is_No_Number_Is_A_New_Worlds` fails on the head, which reads NaN.
+6. A world's list of blocks is held to the 65,536 a region's numbers tell apart as its file is
+   read, and each key is found by a dictionary of the game's blocks (`Renumbering`), a key that is
+   none read as air as before.
+   - `A_Worlds_List_Of_Blocks_Far_Past_The_Numbers_Is_Read_In_Time_And_Held_To_Them` reads three
+     hundred thousand keys, a file of some 6 MB within the file's bound, within 1 s and holds
+     65,536 of them. It fails on the head, which holds every one. The two million keys of the read,
+     38 MB, are a file past the bound of 7, which is kept beside before a key is read.
+   - `A_Worlds_List_Of_Blocks_Holding_No_Key_Reads_It_As_Air` stands with it, passing on the head.
+7. A world's file past 16 MB and a chests' or furnaces' file past 64 MB are refused as files that
+   cannot be read and kept beside, where the game writes an info of some 6 KB and some 700 bytes a
+   chest (`WorldSave.ReadText`). An options file past 1 MB, where the game writes some 3 KB, is
+   kept beside as `options.txt.unread`, the settings at their defaults and the fault said on the
+   HUD, and where it cannot be moved no write of the run takes its place (`OptionsFile.Read`). The
+   options' window reads no value of such a file (`OptionsFile.Find`).
+   - `A_Saves_File_Far_Past_What_The_Game_Writes_Is_Kept_Beside`, of world.json at 20 MB and the
+     chests' and the furnaces' files at 80 MB, fails on the head, which reads each whole. The file
+     kept beside holds every byte of the one written.
+   - `An_Options_File_Far_Past_What_The_Game_Writes_Is_Kept_Beside`, of 2 MB, fails on the head,
+     which reads it whole and keeps it under its name. The file kept beside holds every byte.
+
+The tests of these three commits that hold a read to so many bytes count the bytes of their own
+thread, since the suite runs its classes side by side. The options' test first failed in the suite
+counting another class's, as did the list's at two million keys, whose file the bound of 7 kept
+beside, and both pass since with the save's and the options' tests run again.
+
+The strict build is clean, 519 tests ran outside the GPU's lock with the two failures told above,
+the save's and the options' 50 passing since, and the play passes in 192 s, its captures as the
+last commit's play's.
+
+The twelfth read, of the packs a player chooses fed hostile, before any mend. Each case was held by
+a test on a copy of `067ffd3`, outside the GPU's lock, its pack built in the test's own temporary
+folder, and two findings failed theirs. The suite owed over `067ffd3` passes whole, 519 tests.
+
+1. The atlas holds every picture it takes whole until it is built, where it draws each at a tile
+   of 128 pixels at most (`TerrainAtlas.cs:135`, :129, the tiles sampled at :164). A pack whose
+   every block texture is a picture within the bound of 4,096 a side, 253 of them, holds 17 GB.
+   - `Every_Texture_A_Picture_At_The_Bound_Builds_In_Time` runs out of its 8 GB on the head.
+2. A picture's file is read whole before its header is asked its size (`ResourcePacks.cs:116`), so
+   a texture of 16 pixels a side followed by 60 MB of zeros, each within the entry's bound of
+   64 MB, is inflated and read whole for every texture.
+   - `Every_Texture_An_Entry_Inflating_Near_The_Bound_Builds_In_Time` takes 5.7 s and 16,740 MB
+     of allocation for 253 such entries on the head, a pack of 15 MB.
+
+The mends I would make, all of the pictures' kind, in one commit:
+- The atlas samples a picture wider than its 128 as the build would before keeping it, after any
+  turn, so the tiles it builds are the same pixels.
+- A picture's header and its file's length are read before its bytes, and a file longer than a
+  picture of its sides can be, a row's bytes uncompressed and a margin, is left out with a line.
+- A pack's pictures are decoded to 536 million pixels in all, past which the rest are left out
+  with a line, where a pack of a thousand textures of 512 pixels a side holds some 262 million.
+  Without it the mend of 1 still decodes every picture of 4,096 a side, some 25 s of a start.
+
+Read clean, by tests that pass on the head. A model, a `.mcmeta` and a font's file cut short or
+nested ten thousand deep are left out, the readers' depth of 64 ending the nesting before any
+recursion goes deep (`Text_And_Models_Cut_Short_Or_Nested_Deep_Are_Left_Out`). A font sheet of
+no glyphs makes a font that measures and draws, each glyph its gap
+(`A_Font_Sheet_Of_No_Glyphs_Measures_And_Draws`). A zip and a folder of a hundred thousand
+entries open in half a second and build the atlas in a fifth
+(`A_Pack_Of_A_Hundred_Thousand_Entries_Opens_In_Time`). Entries named to leave the pack's folder
+write nothing outside it, by item 187's test, which stands.
+
+The order I would take is the one commit of the pictures, its three tests failing on a head copy
+and a test that the atlas of a pack of large pictures draws the same tiles.
 
 ## Items closed, parked or shortened
 

@@ -6,6 +6,17 @@ kept under `.github/devlog` as WebP files named by their day, each on the day it
 notes written beside them as Markdown files named the same way. A line under Done names the item of
 .github/REVIEW.md or .github/REVIEW-ARCHIVE.md and the commit that closed it.
 
+## 2026-11-16
+
+![](.github/devlog/2026-11-16-item-191-water-at-the-edge.webp)
+The water of a source two blocks short of the loaded land's edge in the flat world, seen from above
+once the land past the edge has loaded, stopped at the edge before the mend and flowing on past it
+after.
+
+![](.github/devlog/2026-11-16-item-192-corner-shade-after-a-switch.webp)
+A cube of stone set down in a world switched to with Corner Shade at 100 and then let go at 0, its
+corners still shaded before the mend and unshaded after.
+
 ## 2026-11-15
 
 ![](.github/devlog/2026-11-15-item-180-fire-and-lava.webp)
