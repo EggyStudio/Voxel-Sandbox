@@ -992,6 +992,7 @@ public sealed class VoxelGame : IDisposable
         _meshMs += (clock.Elapsed.TotalMilliseconds - streamed - _meshMs) * 0.05;
         SetProfileValue("update.stream", _streamMs);
         SetProfileValue("update.mesh", _meshMs);
+        SetProfileValue("update.made", Streamer.Made);
     }
 
     private double _streamMs, _meshMs;

@@ -274,6 +274,17 @@ change.
     with their places in the code, then the mends one commit each by size, each with the columns'
     hash the same and the table after. No mend before the Reply.
 
+202. **The made columns join over frames, not a batch in one.** Item 201's Reply reads 203 columns
+    joining in 28 frames of a flight, 8 at the median, and 23 to 25 of those frames slow at 30 ms
+    median against 11. Asked, at most two made columns taken in a frame, the nearest to the eye
+    first, the rest kept made until their frame, and a count of the columns waiting so that a fast
+    flight is shown to drain (the wait's worst in frames and in ms in the Reply). Read as item 201
+    was, the same flight under the exclusive lock, three runs, the slow frames' count and their
+    median before and after, the frame's median and the felt time from entering the drawn reach to
+    drawn held no worse. A test holds the bound of two a frame and the order. The engine's share,
+    the field and the ray scene built for new meshes and the field alone at 21 to 26 ms in frames
+    with nothing joined, goes to ASKS.md with the samples. The flood's spread waits on this read.
+
 ## Verdicts
 
 No verdict is open. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
@@ -659,3 +670,56 @@ spread over frames, at most two made columns taken in a frame, read for the slow
 table after. The engine's field and ray scene on the processor in frames that bring new meshes,
 and its field in frames that bring none, are the engine's to mend, and I would write them in
 ASKS.md with these numbers.
+
+Item 202's mend, the made columns taken in two a frame, the nearest the player first
+(`ChunkStreamer.TakeMade`), read as item 201 was, the same flight with the same probe, three runs
+before at `24d5b8e` and three after, each under the exclusive lock on tuned's powersave-bazzite with
+the GPU at 0% before it. A worker is free once its column is made, and the column stays pending
+until it is taken in, so it is not asked for again. `Made` counts the columns made and not taken
+in, and the profile shows it as `update.made`.
+
+| Three runs each | Before | After |
+|---|---|---|
+| frames past twice the median | 41, 42, 44 | 25, 23, 26 |
+| their median, ms | 29.5, 30.2, 30.5 | 25.8, 26.2, 25.8 |
+| of them with a column joined | 23, 24, 25 | 13, 10, 14 |
+| of them with nothing joined or meshed | 13, 11, 13 | 12, 12, 12 |
+| the slowest with a column joined, ms | 76.0, 65.3, 79.0 | 49.3, 29.9, 44.1 |
+| a collection of generation 0 among them | 25, 27, 29 | 9, 11, 10 |
+| the frames' median, ms | 11.08, 10.77, 11.18 | 11.05, 10.79, 11.15 |
+| their 99th part, ms | 36.7, 38.9, 38.8 | 27.6, 26.3, 27.1 |
+| frames a column joined in, the most in one | 28, 8 | 105, 2 |
+| made to taken in, median, ms | 17.5, 12.7, 18.6 | 104.6, 94.7, 105.0 |
+| made to taken in, worst, ms and frames | 72.0, 1 | 198.5, 12 |
+| made columns waiting in a frame, the most | 8 | 23 |
+| within the drawn reach to drawn, median, ms | 39.7, 34.3, 45.2 | 42.1, 41.7, 41.7 |
+| within the drawn reach to drawn, 90th, ms | 74.8, 78.7, 77.5 | 69.8, 73.1, 82.5 |
+| asked to the column's first mesh, median, ms | 3015, 3015, 3036 | 3013, 3013, 3018 |
+
+The engine's slowest frames with a column joined, 13 sampled after, take in 3 to 6 meshes where
+those before took in 10 to 31, `render.graph` 7.6 to 44 ms against 14 to 64, `cpu.scene_field`
+1.1 to 10.3 against 4 to 23 and the game's `Play` 1.2 to 9.7 against 3 to 19, while
+`cpu.global_illumination` reaches 36 against 46. The slow frames with nothing joined stay as they
+were found, `cpu.scene_field` alone at 20.5 ms at the median in 18 samples, the engine's share
+written in ASKS.md.
+
+Each run after holds one frame of 66 to 75 ms, past the flight's 880th frame, whose time lies in the
+frame's beginning with no column joined, no mesh taken in and no collection, and whose `stage.First`
+takes it with none of its systems above 0.06 ms. It falls where the world's save of every 30 s comes
+due in `Begin` (`VoxelGame.cs:872`), which I take it for from its place and not from a mark. Two
+check runs before the mend under the shared lock hold such a frame, at 64.5 and 70.0 ms, and the
+three read before hold none. The slowest of each run after past it is 49.3, 30.3 and 44.1 ms.
+
+The wait from made to taken in lies inside the streamer's lead. A column waits 7 frames at the
+median and 12 at the worst, the asked column's first mesh comes in when it did, and the felt time
+holds within the runs' spread. Of the late sections, the 19 sent again as a neighbor joined are
+drawn 74 to 83 ms after the step against 85 to 92, and the 14 meshed after the step's flood 59 to 67
+against 64 to 77. The made columns drain with the flight, 23 waiting at the most, and none in the
+frames after its end.
+
+`Made_Columns_Are_Taken_In_Two_A_Frame_The_Nearest_First` gives a streamer of eight workers the
+eight columns nearest a place at once and checks that an update takes in the place's column and one
+beside it, the next two more beside it, and every one after two at most until none waits. It fails
+on the head, which takes in all eight in one update. The strict build is clean, 547 tests pass
+outside the GPU's lock with the long soak skipped, the 400 columns' hash stands, and the play
+passes in 185 s, its captures as the pin's.

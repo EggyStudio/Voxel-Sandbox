@@ -15,7 +15,10 @@ namespace VoxelSandbox;
 /// save rather than generated, and kept by the save as it unloads. The mobs standing in a column
 /// and the stacks lying in it come and go with it. A column's deep sections out of the eye's reach are packed by the worker
 /// that makes it, and the loaded columns' again, a few a frame, each time the eye enters another
-/// section, as <see cref="Reach"/> has it.
+/// section, as <see cref="Reach"/> has it. The columns the workers make are taken in
+/// <see cref="JoinedAFrame"/> a frame, the nearest the player first, since the columns of a batch
+/// of the caves' readings go to the workers together and finish together, and the work their
+/// joining brings, in the game and in the engine, is spread over frames this way.
 /// </remarks>
 public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null, FallingBlocks? falling = null)
 {
@@ -23,7 +26,14 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     private readonly HashSet<(int X, int Z)> _pending = [];
     private readonly List<(int X, int Z)> _wanted = [];
     private readonly List<(int X, int Z)> _leaving = [];
-    private readonly int _workers = Math.Clamp(Environment.ProcessorCount - 2, 1, 8);
+    // The columns the workers made and the update has not taken in.
+    private readonly List<(int X, int Z, ChunkColumn Column, bool Unread, int Unknown)> _made = [];
+
+    /// <summary>How many columns the workers made an update takes into the world at most.</summary>
+    public const int JoinedAFrame = 2;
+
+    /// <summary>How many columns are generated at once.</summary>
+    internal int Workers { get; init; } = Math.Clamp(Environment.ProcessorCount - 2, 1, 8);
     private (int X, int Z, int Distance)? _planned;
     private int _running;
     // The columns still to pack for the eye's section and render distance last packed for.
@@ -32,8 +42,8 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     private const int PackedAFrame = 16;
 
     /// <summary>
-    /// Columns asked for and not yet in the world, those a worker is generating and those waiting for
-    /// a worker or for their caves' readings from the GPU.
+    /// Columns asked for and not yet in the world, those a worker is generating, those waiting for
+    /// a worker or for their caves' readings from the GPU and those made and not yet taken in.
     /// </summary>
     /// <remarks>
     /// Where the GPU reads the caves' noises, a column waits for its readings with no worker on it, so
@@ -41,6 +51,11 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     /// device, as on lavapipe.
     /// </remarks>
     public int Pending => _pending.Count + _wanted.Count;
+
+    /// <summary>
+    /// Columns the workers made that wait to be taken in, <see cref="JoinedAFrame"/> a frame.
+    /// </summary>
+    public int Made => _done.Count + _made.Count;
 
     /// <summary>Generates the columns around a point on this thread, so the player has ground under them before the first frame.</summary>
     public void LoadNow(Vector3 at, int radius)
@@ -54,16 +69,17 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     /// <summary>Takes in the columns the workers finished, asks for those now in reach, and unloads those out of it.</summary>
     public void Update(Vector3 player, int renderDistance)
     {
+        // A worker is free once its column is made, and the column stays pending until it is taken
+        // in, so it is not asked for again.
         while (_done.TryDequeue(out var result))
         {
             Interlocked.Decrement(ref _running);
-            _pending.Remove((result.X, result.Z));
-            // A column made at once while its worker made it, as the one a save lands the player in,
-            // is the one the world keeps, with what changed in it since and its fires named once.
-            if (result.Column is not null && !world.HasColumn(result.X, result.Z)) Take(result.X, result.Z, (result.Column, result.Unread, result.Unknown));
+            if (result.Column is null) _pending.Remove((result.X, result.Z));
+            else _made.Add((result.X, result.Z, result.Column, result.Unread, result.Unknown));
         }
 
         var (cx, cz) = LandOrigin.ColumnOf(player);
+        TakeMade(cx, cz);
         var load = renderDistance + 2;
         var (eye, kept) = (Reach.Of(player), renderDistance + Reach.Kept);
         if (_packedFor != (eye, kept))
@@ -89,15 +105,15 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         var asking = fields is { Running: true } && world.Generator is Overworld;
         foreach (var (x, z) in _wanted)
         {
-            if (_running >= _workers && !asking) break;
+            if (_running >= Workers && !asking) break;
             if (world.HasColumn(x, z) || _pending.Contains((x, z))) continue;
             var (generator, saved) = (world.Generator, Kept(x, z));
             var gpu = asking && saved is null;
             ArraySegment<int>? readings = null;
-            if (_running >= _workers || gpu && !fields!.TryTake(x, z, out readings))
+            if (_running >= Workers || gpu && !fields!.TryTake(x, z, out readings))
             {
                 if (gpu && fields!.Backlog < CaveFields.Batch * CaveFields.Flights * 2) fields.Ask(x, z);
-                else if (_running >= _workers) break;
+                else if (_running >= Workers) break;
                 continue;
             }
             _pending.Add((x, z));
@@ -119,6 +135,28 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             });
         }
         _wanted.RemoveAll(c => world.HasColumn(c.X, c.Z) || _pending.Contains(c));
+    }
+
+    // Takes in the made columns nearest the player's column first, JoinedAFrame at most. A column
+    // made at once while its worker made it, as the one a save lands the player in, is the one the
+    // world keeps, with what changed in it since and its fires named once.
+    private void TakeMade(int cx, int cz)
+    {
+        for (int joined = 0; joined < JoinedAFrame && _made.Count > 0;)
+        {
+            var nearest = 0;
+            for (int i = 1; i < _made.Count; i++)
+                if (Distance(_made[i]) < Distance(_made[nearest])) nearest = i;
+            var (x, z, column, unread, unknown) = _made[nearest];
+            _made.RemoveAt(nearest);
+            _pending.Remove((x, z));
+            if (world.HasColumn(x, z)) continue;
+            Take(x, z, (column, unread, unknown));
+            joined++;
+        }
+        // Squared in longs, as Unload squares them.
+        long Distance((int X, int Z, ChunkColumn, bool, int) made) =>
+            (long)(made.X - cx) * (made.X - cx) + (long)(made.Z - cz) * (made.Z - cz);
     }
 
     // Joins a column made, the save leaving out the kept blocks of one that could not read them.

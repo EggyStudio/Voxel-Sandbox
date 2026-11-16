@@ -1043,6 +1043,50 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void Made_Columns_Are_Taken_In_Two_A_Frame_The_Nearest_First()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        // A streamer of the game's world far from the game's own, whose eight workers make the
+        // eight columns nearest a place together, as the columns of a batch of the caves' readings
+        // are.
+        var streamer = new ChunkStreamer(game.World, game.Renderer, game.Mobs, game.Drops, game.Chests, null) { Workers = 8 };
+        var at = LandOrigin.PlaceOf(new LandPlace(16_000.5, 40, 0.5));
+        var (cx, cz) = LandOrigin.ColumnOf(at);
+        streamer.Update(at, 1);
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while (streamer.Made < 8 && clock.Elapsed.TotalSeconds < 30) Thread.Sleep(2);
+        Assert.Equal(8, streamer.Made);
+
+        // Of the eight made, the place's column, the four beside it and three on its corners, an
+        // update takes the place's column and one beside it, and the next two more beside it.
+        Assert.Equal([0L, 1L], Taken());
+        Assert.Equal([1L, 1L], Taken());
+        while (streamer.Pending > 0 && clock.Elapsed.TotalSeconds < 60)
+        {
+            Assert.InRange(Taken().Count, 0, ChunkStreamer.JoinedAFrame);
+            Thread.Sleep(2);
+        }
+        Assert.Equal(0, streamer.Pending);
+
+        // The squared distances from the place's column of the columns an update takes in.
+        List<long> Taken()
+        {
+            var before = Loaded();
+            streamer.Update(at, 1);
+            return [.. Loaded().Except(before).Select(c => (long)(c.X - cx) * (c.X - cx) + (long)(c.Z - cz) * (c.Z - cz)).Order()];
+        }
+        HashSet<(int X, int Z)> Loaded()
+        {
+            var loaded = new HashSet<(int X, int Z)>();
+            for (int z = cz - 3; z <= cz + 3; z++)
+                for (int x = cx - 3; x <= cx + 3; x++)
+                    if (game.World.HasColumn(x, z)) loaded.Add((x, z));
+            return loaded;
+        }
+    }
+
+    [Fact]
     public void A_Block_Falling_Over_A_Column_That_Unloads_Is_Set_Down_In_It()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
