@@ -728,3 +728,12 @@ took, a cell taken tried again within the herd's tries (`Herds.Place`). The test
 and takes the overworld's column whose chickens stood two in one cell. On the head 9 of its 1,025
 herds hold two in a cell. The strict build is clean, 541 tests pass outside the GPU's lock with
 the long soak skipped, and the play passes in 183 s, its captures as the last commit's play's.
+
+Item 199's third mend, the fourth proposed. The guard,
+`A_Worlds_Columns_Are_The_Same_In_Any_Order_And_Made_On_Many_Threads_At_Once`, makes 25 columns
+of the overworld and of the flat world row by row on one generator, in the reverse order on
+another and all at once on sixteen threads on a third, and finds each column's blocks, chests and
+animals the same, in some seconds. It passes on the head, as nothing differs there. The herd's
+test says what its overworld column is. The strict build is clean, 543 tests pass outside the
+GPU's lock with the long soak skipped, and the play passes in 193 s, its captures as the last
+commit's play's.

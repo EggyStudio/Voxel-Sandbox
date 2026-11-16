@@ -324,7 +324,8 @@ public class GenerationTests
     public void No_Two_Animals_Of_A_Herd_Stand_In_One_Cell()
     {
         // A column of plains under grass at each place of a stretch of the world, some tenth of
-        // which hold a herd, and the overworld's column whose chickens stood two in one cell.
+        // which hold a herd, and a column of the overworld where a herd's draws meet one cell
+        // twice.
         var plains = (byte)Array.IndexOf(Biomes.All, Biomes.Plains);
         var herds = new List<List<MobRecord>>();
         for (int cz = 0; cz < 32; cz++)
@@ -341,5 +342,28 @@ public class GenerationTests
 
         Assert.True(herds.Count(herd => herd.Count > 0) > 50);
         Assert.All(herds, herd => Assert.Equal(herd.Count, herd.Select(mob => (mob.Position.X, mob.Position.Z)).Distinct().Count()));
+    }
+
+    [Theory]
+    [InlineData("overworld")]
+    [InlineData("flat")]
+    public void A_Worlds_Columns_Are_The_Same_In_Any_Order_And_Made_On_Many_Threads_At_Once(string kind)
+    {
+        // A stretch of columns made row by row on one generator, in the reverse order on another,
+        // and all at once on a third, as the game's workers make them in the order the player
+        // comes to them, each column's blocks, chests and animals the same.
+        var area = Enumerable.Range(0, 25).Select(i => (X: i % 5 - 2, Z: i / 5 - 2)).ToList();
+        static string Made(ChunkColumn column) =>
+            $"{Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Runtime.InteropServices.MemoryMarshal.AsBytes(Blocks(column).AsSpan())))} {string.Join(" ", column.Chests)} {string.Join(" ", column.Spawns)}";
+        var rows = Generators.Create(kind, 1)!;
+        var made = area.ToDictionary(c => c, c => Made(rows.Generate(c.X, c.Z)));
+        var reversed = Generators.Create(kind, 1)!;
+        var back = Enumerable.Reverse(area).ToDictionary(c => c, c => Made(reversed.Generate(c.X, c.Z)));
+        var together = Generators.Create(kind, 1)!;
+        var atOnce = new System.Collections.Concurrent.ConcurrentDictionary<(int X, int Z), string>();
+        Parallel.ForEach(area, new ParallelOptions { MaxDegreeOfParallelism = 16 }, c => atOnce[c] = Made(together.Generate(c.X, c.Z)));
+
+        Assert.All(area, c => Assert.Equal(made[c], back[c]));
+        Assert.All(area, c => Assert.Equal(made[c], atOnce[c]));
     }
 }
