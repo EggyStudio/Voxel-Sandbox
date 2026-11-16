@@ -82,6 +82,12 @@ public sealed class WorldSave
     // read rather than read whole, where the game writes an info of some 6 KB, its list of blocks
     // the most of it, and some 700 bytes a chest.
     private const long MostInfoBytes = 16 << 20, MostRecordsBytes = 64 << 20;
+    // The version of the regions' chests files, the chests a column of one may hold, past which the
+    // file is one that cannot be read, where a column's floor holds 256 a layer and generation
+    // places a few, and the longest text a slot or a loot's name is kept as, an item's key with its
+    // count and wear.
+    private const int ChestsVersion = 1, MostChestsInColumn = 4096, MostChestText = 256;
+    private static readonly byte[] ChestsMagic = "E3DC"u8.ToArray();
     // The version of the regions' mobs files, after the 1 and 2 of mobs.bin.
     private const int MobsVersion = 3;
     // The mobs a column of a mobs file may hold, past which the file is one that cannot be read,
@@ -100,11 +106,9 @@ public sealed class WorldSave
     private readonly HashSet<(int X, int Z)> _changedRegions = [];
     // The blocks of numbers past the game's read as air, by region, and how many of them were said.
     private readonly Dictionary<(int X, int Z), (int Read, int Said)> _unknown = [];
-    // The mobs of the regions read or kept into, by column, the regions whose mobs changed since
-    // they were written, and whether mobs.bin was read.
-    private readonly Dictionary<(int X, int Z), Dictionary<(int X, int Z), List<MobRecord>>> _mobRegions = [];
-    private readonly HashSet<(int X, int Z)> _mobsChanged = [];
-    private bool _oneFileRead;
+    // The mobs and the chests the save keeps by region, beside the blocks.
+    private readonly Regional<MobRecord> _mobs;
+    private readonly Regional<ChestRecord> _chests;
     // The files that could not be read nor moved aside, which no save of the run writes.
     private readonly HashSet<string> _held = [];
     // The keys the world's info lists, and the numbers they give the regions of version 1 in this
@@ -116,6 +120,8 @@ public sealed class WorldSave
     {
         Folder = folder;
         Directory.CreateDirectory(Path.Combine(folder, "regions"));
+        _mobs = new(this, ReadMobRegion, WriteMobRegion, OneFile, ReadOneFile);
+        _chests = new(this, ReadChestRegion, WriteChestRegion, OneChestsFile, ReadOneChestsFile);
     }
 
     /// <summary>The folder every world is saved under, one folder a world.</summary>
@@ -448,70 +454,92 @@ public sealed class WorldSave
     /// read.
     /// </para>
     /// </remarks>
-    public List<MobRecord>? TakeMobs(int x, int z) => MobRegion(RegionOf(x, z)).Remove((x, z), out var mobs) ? mobs : null;
+    public List<MobRecord>? TakeMobs(int x, int z) => _mobs.Take(x, z);
 
     /// <summary>Keeps the mobs of a column that unloads, none among them for one whose mobs were placed and are gone, to be written at the next <see cref="WriteMobs"/>.</summary>
-    public void KeepMobs(int x, int z, List<MobRecord> mobs)
-    {
-        var region = RegionOf(x, z);
-        MobRegion(region)[(x, z)] = mobs;
-        _mobsChanged.Add(region);
-    }
+    public void KeepMobs(int x, int z, List<MobRecord> mobs) => _mobs.Keep(x, z, mobs);
 
     /// <summary>How many regions' mobs the save holds.</summary>
-    public int MobRegions => _mobRegions.Count;
+    public int MobRegions => _mobs.Regions;
 
     /// <summary>
     /// Writes the mobs of the loaded columns that have had their mobs placed, as they stand, with
     /// those kept by the columns unloaded since, into their regions' files, and lets go of each region
     /// no loaded column lies in.
     /// </summary>
-    public void WriteMobs(IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> loaded)
-    {
-        ReadOneFileOnce();
-        var columns = loaded.ToList();
-        var standing = new HashSet<(int X, int Z)>();
-        foreach (var (column, mobs) in columns)
-        {
-            var region = RegionOf(column.X, column.Z);
-            MobRegion(region)[column] = [.. mobs];
-            _mobsChanged.Add(region);
-            standing.Add(region);
-        }
-        foreach (var region in _mobsChanged) WriteMobRegion(region, _mobRegions[region]);
-        _mobsChanged.Clear();
-        if (File.Exists(OneFile) && !_held.Contains(OneFile)) File.Move(OneFile, OneFile + ".read", overwrite: true);
-        // A loaded column's mobs stand in the world, so what was written of them is let go from its
-        // region too, which takes them again as the column unloads.
-        foreach (var region in _mobRegions.Keys.Where(r => !standing.Contains(r)).ToList()) _mobRegions.Remove(region);
-        foreach (var (column, _) in columns) _mobRegions[RegionOf(column.X, column.Z)].Remove(column);
-    }
+    public void WriteMobs(IEnumerable<((int X, int Z) Column, IReadOnlyList<MobRecord> Mobs)> loaded) => _mobs.Write(loaded);
 
     private string OneFile => Path.Combine(Folder, "mobs.bin");
 
     private string MobRegionPath((int X, int Z) region) => Path.Combine(Folder, "regions", $"m.{region.X}.{region.Z}.bin");
 
-    // The mobs a region's columns keep, read from its file the first time.
-    private Dictionary<(int X, int Z), List<MobRecord>> MobRegion((int X, int Z) region)
+    // The records of a kind the save keeps by region in files of their own beside the blocks, a
+    // region's read from its file the first time one of its columns asks and held while a column of
+    // it is loaded or its records wait to be written, so the records held stay as many however far
+    // the player goes. The one file a folder kept every column's records of the kind in is read
+    // into the regions the first time they are asked for and kept beside as read once they are
+    // written.
+    private sealed class Regional<T>(WorldSave save, Func<(int X, int Z), Dictionary<(int X, int Z), List<T>>> read,
+        Action<(int X, int Z), Dictionary<(int X, int Z), List<T>>> write, string oneFile, Func<Dictionary<(int X, int Z), List<T>>> readOneFile)
     {
-        ReadOneFileOnce();
-        if (!_mobRegions.TryGetValue(region, out var columns)) _mobRegions[region] = columns = ReadMobRegion(region);
-        return columns;
-    }
+        private readonly Dictionary<(int X, int Z), Dictionary<(int X, int Z), List<T>>> _regions = [];
+        private readonly HashSet<(int X, int Z)> _changed = [];
+        private bool _oneFileRead;
 
-    // Takes the mobs of mobs.bin into the regions they lie in, the first time the save's mobs are
-    // asked for.
-    private void ReadOneFileOnce()
-    {
-        if (_oneFileRead) return;
-        _oneFileRead = true;
-        if (!File.Exists(OneFile)) return;
-        foreach (var (column, mobs) in ReadOneFile())
+        public int Regions => _regions.Count;
+
+        public List<T>? Take(int x, int z) => Region(RegionOf(x, z)).Remove((x, z), out var records) ? records : null;
+
+        public void Keep(int x, int z, List<T> records)
         {
-            var region = RegionOf(column.X, column.Z);
-            if (!_mobRegions.TryGetValue(region, out var columns)) _mobRegions[region] = columns = ReadMobRegion(region);
-            columns[column] = mobs;
-            _mobsChanged.Add(region);
+            var region = RegionOf(x, z);
+            Region(region)[(x, z)] = records;
+            _changed.Add(region);
+        }
+
+        public void Write(IEnumerable<((int X, int Z) Column, IReadOnlyList<T> Records)> loaded)
+        {
+            ReadOneFileOnce();
+            var columns = loaded.ToList();
+            var standing = new HashSet<(int X, int Z)>();
+            foreach (var (column, records) in columns)
+            {
+                var region = RegionOf(column.X, column.Z);
+                Region(region)[column] = [.. records];
+                _changed.Add(region);
+                standing.Add(region);
+            }
+            foreach (var region in _changed) write(region, _regions[region]);
+            _changed.Clear();
+            if (File.Exists(oneFile) && !save._held.Contains(oneFile)) File.Move(oneFile, oneFile + ".read", overwrite: true);
+            // A loaded column's records stand in the world, so what was written of them is let go
+            // from its region too, which takes them again as the column unloads.
+            foreach (var region in _regions.Keys.Where(r => !standing.Contains(r)).ToList()) _regions.Remove(region);
+            foreach (var (column, _) in columns) _regions[RegionOf(column.X, column.Z)].Remove(column);
+        }
+
+        // The records a region's columns keep, read from its file the first time.
+        private Dictionary<(int X, int Z), List<T>> Region((int X, int Z) region)
+        {
+            ReadOneFileOnce();
+            if (!_regions.TryGetValue(region, out var columns)) _regions[region] = columns = read(region);
+            return columns;
+        }
+
+        // Takes the records of the one file into the regions they lie in, the first time the save's
+        // records of the kind are asked for.
+        private void ReadOneFileOnce()
+        {
+            if (_oneFileRead) return;
+            _oneFileRead = true;
+            if (!File.Exists(oneFile)) return;
+            foreach (var (column, records) in readOneFile())
+            {
+                var region = RegionOf(column.X, column.Z);
+                if (!_regions.TryGetValue(region, out var columns)) _regions[region] = columns = read(region);
+                columns[column] = records;
+                _changed.Add(region);
+            }
         }
     }
 
@@ -704,33 +732,139 @@ public sealed class WorldSave
     /// <summary>A chest as a save keeps it, with its place, its slots as <see cref="Inventory.Encode"/> gives them, and the loot it holds not yet rolled.</summary>
     public sealed record ChestRecord(int X, int Y, int Z, string[] Slots, string? Loot, uint Seed);
 
-    /// <summary>The world's chests, read from its <c>chests.json</c>, none for a folder never saved into.</summary>
-    public Chests ReadChests()
+    /// <summary>
+    /// The chests a column kept as it unloaded, or as the world was last saved while it was loaded,
+    /// taken out of the save to stand in the world, or none where the save keeps none of the
+    /// column.
+    /// </summary>
+    /// <remarks>
+    /// A region's chests are kept in a file of their own beside its blocks and its mobs, as the
+    /// mobs are, so the chests held stay as many however far the player goes. A folder's
+    /// <c>chests.json</c>, which holds every chest of the world in one file, is read once into the
+    /// regions, each slot read as the inventory reads one, and kept beside as read once they are
+    /// written.
+    /// </remarks>
+    public List<ChestRecord>? TakeChests(int x, int z) => _chests.Take(x, z);
+
+    /// <summary>Keeps the chests of a column that unloads, none for one whose chests are gone, to be written at the next <see cref="WriteChests"/>.</summary>
+    public void KeepChests(int x, int z, List<ChestRecord> chests) => _chests.Keep(x, z, chests);
+
+    /// <summary>How many regions' chests the save holds.</summary>
+    public int ChestRegions => _chests.Regions;
+
+    /// <summary>
+    /// Writes the chests of the loaded columns as they stand, with those kept by the columns
+    /// unloaded since, into their regions' files, and lets go of each region no loaded column lies
+    /// in.
+    /// </summary>
+    public void WriteChests(IEnumerable<((int X, int Z) Column, IReadOnlyList<ChestRecord> Chests)> loaded) => _chests.Write(loaded);
+
+    private string OneChestsFile => Path.Combine(Folder, "chests.json");
+
+    private string ChestRegionPath((int X, int Z) region) => Path.Combine(Folder, "regions", $"c.{region.X}.{region.Z}.bin");
+
+    private Dictionary<(int X, int Z), List<ChestRecord>> ReadChestRegion((int X, int Z) region)
     {
-        var chests = new Chests();
-        var path = Path.Combine(Folder, "chests.json");
-        if (!File.Exists(path)) return chests;
+        var columns = new Dictionary<(int X, int Z), List<ChestRecord>>();
+        var path = ChestRegionPath(region);
+        if (!File.Exists(path)) return columns;
         try
         {
-            foreach (var r in JsonSerializer.Deserialize(ReadText(path, MostRecordsBytes), SaveJson.Default.ChestRecordArray) ?? [])
+            using var reader = new BinaryReader(new ZLibStream(File.OpenRead(path), CompressionMode.Decompress));
+            if (!reader.ReadBytes(4).AsSpan().SequenceEqual(ChestsMagic) || reader.ReadInt32() != ChestsVersion)
+                throw new InvalidDataException("it is not a chests file of a version this game reads");
+            var count = reader.ReadInt32();
+            if (count is < 0 or > RegionSize * RegionSize) throw new InvalidDataException("it counts more columns than a region holds");
+            for (int c = 0; c < count; c++)
             {
-                var chest = new Chest { Loot = r.Loot, Seed = r.Seed };
-                var slots = r.Slots ?? [];
-                for (int i = 0; i < Math.Min(Chest.Size, slots.Length); i++) chest.Slots[i] = Inventory.Decode(slots[i]);
-                chests.Add((r.X, r.Y, r.Z), chest);
+                int lx = reader.ReadByte(), lz = reader.ReadByte();
+                if (lx >= RegionSize || lz >= RegionSize) throw new InvalidDataException("a column of it lies outside it");
+                var (cx, cz) = (region.X * RegionSize + lx, region.Z * RegionSize + lz);
+                var chests = columns[(cx, cz)] = [];
+                var held = reader.ReadInt32();
+                if (held is < 0 or > MostChestsInColumn) throw new InvalidDataException("a column of it holds more chests than a column of the game's");
+                for (int i = 0; i < held; i++)
+                {
+                    int x = cx * Section.Size + reader.ReadByte(), y = reader.ReadInt16(), z = cz * Section.Size + reader.ReadByte();
+                    if (x >= (cx + 1) * Section.Size || z >= (cz + 1) * Section.Size || y is < ChunkColumn.Bottom or >= ChunkColumn.Ceiling)
+                        throw new InvalidDataException("a chest of it lies outside its column");
+                    var slots = new string[reader.ReadByte()];
+                    if (slots.Length > Chest.Size) throw new InvalidDataException("a chest of it holds more slots than a chest");
+                    for (int s = 0; s < slots.Length; s++) slots[s] = ReadChestText(reader);
+                    var loot = reader.ReadBoolean() ? ReadChestText(reader) : null;
+                    chests.Add(new ChestRecord(x, y, z, slots, loot, reader.ReadUInt32()));
+                }
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or EndOfStreamException)
+        {
+            // The region's columns take the chests their generation gives them again rather than
+            // the world not loading.
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the region's chests begin as its columns give them and {SetAside(path)}. {ex.Message}");
+            columns.Clear();
+        }
+        return columns;
+    }
+
+    // A slot's or a loot's text of a chests file, refused past the longest either is kept as.
+    private static string ReadChestText(BinaryReader reader)
+    {
+        var length = reader.Read7BitEncodedInt();
+        if (length is < 0 or > MostChestText) throw new InvalidDataException("a text of it is longer than a slot's");
+        var bytes = reader.ReadBytes(length);
+        return bytes.Length < length ? throw new EndOfStreamException("a text of it ends early") : System.Text.Encoding.UTF8.GetString(bytes);
+    }
+
+    private void WriteChestRegion((int X, int Z) region, Dictionary<(int X, int Z), List<ChestRecord>> columns) =>
+        Replace(ChestRegionPath(region), file =>
+        {
+            using var writer = new BinaryWriter(new ZLibStream(file, CompressionLevel.Fastest, leaveOpen: true));
+            writer.Write(ChestsMagic);
+            writer.Write(ChestsVersion);
+            writer.Write(columns.Count);
+            foreach (var ((x, z), chests) in columns)
+            {
+                writer.Write((byte)(x - region.X * RegionSize));
+                writer.Write((byte)(z - region.Z * RegionSize));
+                writer.Write(chests.Count);
+                foreach (var chest in chests)
+                {
+                    writer.Write((byte)(chest.X - x * Section.Size));
+                    writer.Write((short)chest.Y);
+                    writer.Write((byte)(chest.Z - z * Section.Size));
+                    writer.Write((byte)chest.Slots.Length);
+                    foreach (var slot in chest.Slots) writer.Write(slot ?? "");
+                    writer.Write(chest.Loot is not null);
+                    if (chest.Loot is { } loot) writer.Write(loot);
+                    writer.Write(chest.Seed);
+                }
+            }
+        });
+
+    // The chests of chests.json, a file of every chest of the world, by the columns they lie in,
+    // each slot read as the inventory reads one and written back as it writes one, a chest listed
+    // with no slots standing empty, and one past the land's height or with a loot's name past the
+    // longest a chest keeps left out.
+    private Dictionary<(int X, int Z), List<ChestRecord>> ReadOneChestsFile()
+    {
+        var columns = new Dictionary<(int X, int Z), List<ChestRecord>>();
+        try
+        {
+            foreach (var r in JsonSerializer.Deserialize(ReadText(OneChestsFile, MostRecordsBytes), SaveJson.Default.ChestRecordArray) ?? [])
+            {
+                if (r.Y is < ChunkColumn.Bottom or >= ChunkColumn.Ceiling || r.Loot is { Length: > MostChestText }) continue;
+                var column = (VoxelWorld.ColumnOf(r.X), VoxelWorld.ColumnOf(r.Z));
+                var record = r with { Slots = [.. (r.Slots ?? []).Take(Chest.Size).Select(slot => Inventory.Encode(Inventory.Decode(slot)))] };
+                if (columns.TryGetValue(column, out var chests)) chests.Add(record);
+                else columns[column] = [record];
             }
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
         {
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world's chests begin empty and {SetAside(path)}. {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{OneChestsFile} could not be read, so the world's chests begin as its columns give them and {SetAside(OneChestsFile)}. {ex.Message}");
+            columns.Clear();
         }
-        return chests;
-    }
-
-    public void WriteChests(Chests chests)
-    {
-        var records = chests.All.Select(c => new ChestRecord(c.Key.X, c.Key.Y, c.Key.Z, [.. c.Value.Slots.Select(Inventory.Encode)], c.Value.Loot, c.Value.Seed)).ToArray();
-        Replace(Path.Combine(Folder, "chests.json"), file => JsonSerializer.Serialize(file, records, SaveJson.Default.ChestRecordArray));
+        return columns;
     }
 
     // A column's blocks, every section's in turn, compressed. Its light is left out, since it is

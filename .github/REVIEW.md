@@ -616,3 +616,40 @@ so a frame that reads a fetch's end finds the problem and the count it ended wit
 
 The strict build is clean, 524 tests pass outside the GPU's lock, and the play passes in 192 s, its
 captures as the last commit's play's.
+
+Item 197's second commit, the chests by region and the soak. The soak was run first on a copy of
+`a54bc10` with the soak added and a line there giving its save a count of chests' regions.
+
+A region's chests are kept in a file of their own beside its blocks and its mobs, as the mobs are
+(`WorldSave.TakeChests`, `KeepChests`, `WriteChests`). A saved world's column gives its chests to
+the save as it unloads and takes them back as it loads, before its generated ones, which find
+them there (`Chests.Leaving`, `Joined`), and the save writes every loaded column's chests, a
+column holding none among them. A folder's `chests.json` is read once into the regions, each slot
+read as the inventory reads one, and kept beside as read once they are written. The mobs' and the
+chests' regions share one holder of the regions read and written, the changed ones and the one
+file read once (`WorldSave.Regional`), each kind reading and writing its own file. Furnaces do not
+climb the same way, one joining only as it is opened or as a save names it, and the soak's furnaces
+held none.
+
+Item 195's bounds carry over to the chests' files. A file counting more than its region's 1,024
+columns, placing a column outside 0 to 31 or a chest outside its column, holding more than 4,096
+chests in a column, where a column's floor holds 256 a layer and generation places a few, a chest
+of more than its 27 slots, or a slot's or a loot's text past 256 bytes, is kept beside as a file
+that cannot be read, its columns taking the chests their generation gives them.
+- `A_Short_Session_Holds_Level` flies forty steps of four columns over the overworld and back,
+  saving every ten, reading a pack of a font and a texture again every twenty and turning the
+  render distance and the Corner Shade every thirty, then stays 600 frames, in some 28 s. At each
+  save every chest held lies in a loaded column, the mobs hold the loaded columns alone and the
+  save four regions at most of each, and after the stay the textures, the open files and the heap
+  hold within their marks. It fails on the head at its first save, which holds 9 of its 11 chests
+  in columns not loaded.
+- `A_Long_Session_Holds_Level`, five hundred steps each way and a stay of 3,000 frames, runs where
+  `VOXEL_SOAK=1` asks for it and is skipped otherwise, with that reason.
+- `A_Regions_Chests_Past_A_Bound_Are_Kept_Beside`, of four bounds, and
+  `A_Region_Of_Every_Column_The_Game_Keeps_Holds_Its_Chests_Whole`, every column of a region with a
+  row of full chests and one with 4,096, read whole, test the files' bounds, the file kept beside
+  holding every byte of the one written. The tests of `chests.json` read it into the regions.
+
+The strict build is clean, 530 tests pass outside the GPU's lock with the long soak skipped, the
+suite 23 s longer, and the play passes in 192 s, its captures as the last commit's play's. Its
+comments' lines past 100 columns were wrapped after, and the strict build is clean on that.

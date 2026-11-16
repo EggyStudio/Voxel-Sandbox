@@ -322,7 +322,7 @@ public sealed class HeadlessGameTests
             // A world saved once, then a folder in the place of each file a save writes before it
             // takes the file's name, so none can be written, on every system alike.
             using (var first = new HeadlessGame(save: folder)) first.Game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
-            foreach (var name in new[] { "world.json", Path.Combine("regions", "m.0.0.bin"), "furnaces.json", "chests.json", Path.Combine("regions", "r.0.0.bin") })
+            foreach (var name in new[] { "world.json", Path.Combine("regions", "m.0.0.bin"), "furnaces.json", Path.Combine("regions", "c.0.0.bin"), Path.Combine("regions", "r.0.0.bin") })
                 Directory.CreateDirectory(Path.Combine(folder, name + ".new"));
 
             // Closed with a block changed, which it cannot write.
@@ -1209,7 +1209,7 @@ public sealed class HeadlessGameTests
                 // The text measured, as a menu does, so the font is made.
                 Gui.TextWidth("Options");
                 headless.Step(2);
-                counts.Add(Textures());
+                counts.Add(HeadlessGame.Textures());
             }
 
             Assert.Equal(counts[0], counts[^1]);
@@ -1220,13 +1220,4 @@ public sealed class HeadlessGameTests
         }
     }
 
-    // How many textures the engine holds, read from its store, which the engine keeps to itself.
-    private static int Textures()
-    {
-        var store = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType("Engine.TextureStore")).First(t => t is not null)!;
-        var world = GetApp().World;
-        var held = new object?[] { null };
-        world.GetType().GetMethods().First(m => m.Name == "TryGetResource" && m.IsGenericMethod).MakeGenericMethod(store).Invoke(world, held);
-        return (int)store.GetProperty("Count")!.GetValue(held[0])!;
-    }
 }

@@ -40,11 +40,12 @@ public readonly record struct ChestPlaced(int X, int Y, int Z, string Loot, uint
 /// is gone, broken or blown up.
 /// </summary>
 /// <remarks>
-/// A generated column's chests join as the column does, their loot not yet rolled, and a save keeps
-/// every chest, those of columns not loaded among them, in the world's <c>chests.json</c>. A column
-/// generated again, one no edit changed, finds its chests already there and leaves them as they are.
+/// A generated column's chests join as the column does, their loot not yet rolled. A saved world's
+/// column gives its chests to the save as it unloads and takes them back as it loads, before its
+/// generated ones, which find them there and leave them as they are, so the chests held are those
+/// of the loaded columns however far the player goes. A world not saved keeps every chest here.
 /// </remarks>
-public sealed class Chests
+public sealed class Chests(WorldSave? save = null)
 {
     private readonly Dictionary<(int X, int Y, int Z), Chest> _all = [];
     private readonly List<(int X, int Y, int Z)> _gone = [];
@@ -67,10 +68,41 @@ public sealed class Chests
     /// </summary>
     public void Joined(ChunkColumn column)
     {
+        foreach (var kept in save?.TakeChests(column.X, column.Z) ?? [])
+            _all.TryAdd((kept.X, kept.Y, kept.Z), From(kept));
         foreach (var placed in column.Chests)
             if (IsChest(column.Get(placed.X - column.X * Section.Size, placed.Y, placed.Z - column.Z * Section.Size)))
                 _all.TryAdd((placed.X, placed.Y, placed.Z), new Chest { Loot = placed.Loot, Seed = placed.Seed });
         column.Chests.Clear();
+    }
+
+    /// <summary>Gives the chests of a column that unloads to the save of a saved world, which holds none of them after, as a world not saved keeps them.</summary>
+    public void Leaving(int x, int z)
+    {
+        if (save is null) return;
+        var leaving = _all.Where(chest => VoxelWorld.ColumnOf(chest.Key.X) == x && VoxelWorld.ColumnOf(chest.Key.Z) == z).Select(Record).ToList();
+        foreach (var chest in leaving) _all.Remove((chest.X, chest.Y, chest.Z));
+        save.KeepChests(x, z, leaving);
+    }
+
+    /// <summary>Every loaded column with the chests it holds, none among them, for the save to write.</summary>
+    public IEnumerable<((int X, int Z) Column, IReadOnlyList<WorldSave.ChestRecord> Chests)> Columns(VoxelWorld world)
+    {
+        var held = world.Columns.ToDictionary(column => (column.X, column.Z), _ => new List<WorldSave.ChestRecord>());
+        foreach (var chest in _all)
+            if (held.TryGetValue((VoxelWorld.ColumnOf(chest.Key.X), VoxelWorld.ColumnOf(chest.Key.Z)), out var chests)) chests.Add(Record(chest));
+        return held.Select(column => (column.Key, (IReadOnlyList<WorldSave.ChestRecord>)column.Value));
+    }
+
+    // A chest as the save keeps it, its slots as the inventory writes them, and back.
+    private static WorldSave.ChestRecord Record(KeyValuePair<(int X, int Y, int Z), Chest> chest) =>
+        new(chest.Key.X, chest.Key.Y, chest.Key.Z, [.. chest.Value.Slots.Select(Inventory.Encode)], chest.Value.Loot, chest.Value.Seed);
+
+    private static Chest From(WorldSave.ChestRecord record)
+    {
+        var chest = new Chest { Loot = record.Loot, Seed = record.Seed };
+        for (int i = 0; i < Math.Min(Chest.Size, record.Slots.Length); i++) chest.Slots[i] = Inventory.Decode(record.Slots[i]);
+        return chest;
     }
 
     public static bool IsChest(BlockId block) => block is BlockId.Chest or BlockId.ChestEast or BlockId.ChestSouth or BlockId.ChestWest;

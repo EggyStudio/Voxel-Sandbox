@@ -214,6 +214,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             if (save is not null && world.TryGetColumn(x, z, out var column) && column.Changed) save.Keep(column);
             mobs.Leaving(x, z);
             drops.Leaving(x, z);
+            chests.Leaving(x, z);
             world.Remove(x, z);
             renderer.ForgetColumn(x, z);
         }

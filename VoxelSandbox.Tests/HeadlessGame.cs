@@ -93,6 +93,16 @@ public sealed class HeadlessGame : IDisposable
     /// <summary>The ECS world the game's entities are in.</summary>
     public EcsWorld Ecs => GetApp().World.Resource<EcsWorld>();
 
+    /// <summary>How many textures the engine holds, read from its store, which the engine keeps to itself.</summary>
+    public static int Textures()
+    {
+        var store = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType("Engine.TextureStore")).First(t => t is not null)!;
+        var world = GetApp().World;
+        var held = new object?[] { null };
+        world.GetType().GetMethods().First(m => m.Name == "TryGetResource" && m.IsGenericMethod).MakeGenericMethod(store).Invoke(world, held);
+        return (int)store.GetProperty("Count")!.GetValue(held[0])!;
+    }
+
     /// <summary>Every mob a world's folder keeps, read from each region's file of mobs.</summary>
     public static IEnumerable<MobRecord> SavedMobs(string folder)
     {

@@ -583,7 +583,7 @@ public sealed class VoxelGame : IDisposable
         GetApp().World.ClearEvents<MobEvent>();
         GetApp().World.ClearEvents<MobDied>();
         Furnaces = Save?.ReadFurnaces() ?? new Furnaces();
-        Chests = Save?.ReadChests() ?? new Chests();
+        Chests = new Chests(Save);
         Blasts.Clear();
         // The weather turns by the world's own seed, held as its save held it.
         (Weather.Seed, Weather.Held, _overcast) = (World.Generator.Seed, info?.Weather, 0);
@@ -800,7 +800,7 @@ public sealed class VoxelGame : IDisposable
             Save.LetGo(World.Columns.Select(column => (column.X, column.Z)));
             Save.WriteMobs(Mobs.Columns());
             Save.WriteFurnaces(Furnaces);
-            Save.WriteChests(Chests);
+            Save.WriteChests(Chests.Columns(World));
             // The stacks the window E opens holds are saved in the inventory as shutting it puts them,
             // so a save while it is open keeps them.
             var inventory = new Inventory();

@@ -108,7 +108,7 @@ public sealed class SaveTests : IDisposable
     [InlineData("world.json")]
     [InlineData("regions/m.0.0.bin")]
     [InlineData("furnaces.json")]
-    [InlineData("chests.json")]
+    [InlineData("regions/c.0.0.bin")]
     public void A_File_Of_The_Save_That_Cannot_Be_Read_Is_Kept_Beside_The_One_Written_Again(string name)
     {
         var save = new WorldSave(_folder);
@@ -129,8 +129,8 @@ public sealed class SaveTests : IDisposable
                 save.WriteFurnaces(new Furnaces());
                 break;
             default:
-                Assert.Empty(save.ReadChests().All);
-                save.WriteChests(new Chests());
+                Assert.Null(save.TakeChests(0, 0));
+                save.WriteChests([((0, 0), [])]);
                 break;
         }
 
@@ -204,7 +204,7 @@ public sealed class SaveTests : IDisposable
     [InlineData("world.json")]
     [InlineData("regions/m.0.0.bin")]
     [InlineData("furnaces.json")]
-    [InlineData("chests.json")]
+    [InlineData("regions/c.0.0.bin")]
     [InlineData("regions/r.0.0.bin")]
     public void A_File_Of_The_Save_The_Account_Cannot_Read_Is_Kept_Beside_And_The_World_Opens(string name)
     {
@@ -214,7 +214,7 @@ public sealed class SaveTests : IDisposable
         save.WriteInfo(Info([.. Blocks.All.Select(b => b.Key)]));
         save.WriteMobs([((0, 0), [])]);
         save.WriteFurnaces(new Furnaces());
-        save.WriteChests(new Chests());
+        save.WriteChests([((0, 0), [])]);
         var column = new ChunkColumn(0, 0);
         column.Set(1, 2, 3, BlockId.Glowstone);
         column.Changed = true;
@@ -227,7 +227,7 @@ public sealed class SaveTests : IDisposable
         read.ReadInfo();
         read.TakeMobs(0, 0);
         read.ReadFurnaces();
-        read.ReadChests();
+        read.TakeChests(0, 0);
         read.ReadRegion(0, 0);
 
         Assert.True(File.Exists(path + ".unread"));
@@ -261,9 +261,11 @@ public sealed class SaveTests : IDisposable
         File.WriteAllText(Path.Combine(_folder, "chests.json"), """[{"X":4,"Y":5,"Z":6,"Slots":null,"Loot":null,"Seed":0}]""");
 
         var save = new WorldSave(_folder);
+        var chests = new Chests(save);
+        chests.Joined(new ChunkColumn(0, 0));
 
         Assert.All(save.ReadFurnaces().All[(1, 2, 3)].Slots, slot => Assert.Null(slot));
-        Assert.All(save.ReadChests().All[(4, 5, 6)].Slots, slot => Assert.Null(slot));
+        Assert.All(chests.All[(4, 5, 6)].Slots, slot => Assert.Null(slot));
     }
 
     [Fact]
@@ -284,7 +286,9 @@ public sealed class SaveTests : IDisposable
         new WorldSave(_folder);
         File.WriteAllText(Path.Combine(_folder, "chests.json"), """[{"X":7,"Y":8,"Z":9,"Slots":[null,"stick 2"],"Loot":null,"Seed":0}]""");
 
-        var chest = new WorldSave(_folder).ReadChests().All[(7, 8, 9)];
+        var chests = new Chests(new WorldSave(_folder));
+        chests.Joined(new ChunkColumn(0, 0));
+        var chest = chests.All[(7, 8, 9)];
 
         Assert.Null(chest.Slots[0]);
         Assert.Equal(new ItemStack(Items.Stick, 2), chest.Slots[1]);
@@ -690,7 +694,7 @@ public sealed class SaveTests : IDisposable
                 Assert.Null(read.ReadInfo());
                 break;
             case "chests.json":
-                Assert.Empty(read.ReadChests().All);
+                Assert.Null(read.TakeChests(0, 0));
                 break;
             default:
                 Assert.Empty(read.ReadFurnaces().All);
@@ -700,5 +704,67 @@ public sealed class SaveTests : IDisposable
 
         Assert.InRange(allocated, 0, (megabytes - 4L) << 20);
         Assert.Equal(written, File.ReadAllBytes(path + ".unread"));
+    }
+
+    // A region's chests file of one column at a place in the region, holding so many chests each of
+    // a slot whose text is so long, the file counting so many columns.
+    private static byte[] ChestsFile(int held, byte x, int text, int count) => Zipped(zip =>
+    {
+        using var writer = new BinaryWriter(zip, System.Text.Encoding.UTF8, leaveOpen: true);
+        writer.Write("E3DC"u8);
+        writer.Write(1);
+        writer.Write(count);
+        writer.Write(x);
+        writer.Write((byte)0);
+        writer.Write(held);
+        for (int i = 0; i < held; i++)
+        {
+            writer.Write((byte)(i % 16));
+            writer.Write((short)(i / 16 % 300));
+            writer.Write((byte)0);
+            writer.Write((byte)1);
+            writer.Write(new string('x', text));
+            writer.Write(false);
+            writer.Write(0u);
+        }
+    });
+
+    [Theory]
+    [InlineData(5000, 0, 8, 1)]
+    [InlineData(1, 40, 8, 1)]
+    [InlineData(1, 0, 300, 1)]
+    [InlineData(1, 0, 8, 2000)]
+    public void A_Regions_Chests_Past_A_Bound_Are_Kept_Beside(int held, byte x, int text, int count)
+    {
+        // More chests in a column than the bound, a column outside the region, a slot's text past
+        // its bound, and more columns than a region holds.
+        var path = Path.Combine(_folder, "regions", "c.0.0.bin");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllBytes(path, ChestsFile(held, x, text, count));
+        var written = File.ReadAllBytes(path);
+
+        Assert.Null(new WorldSave(_folder).TakeChests(0, 0));
+        Assert.Equal(written, File.ReadAllBytes(path + ".unread"));
+    }
+
+    [Fact]
+    public void A_Region_Of_Every_Column_The_Game_Keeps_Holds_Its_Chests_Whole()
+    {
+        // Each column of a region with a floor's row of sixteen chests, every slot full, and one
+        // column holding chests to the bound, sixteen floors of them.
+        var full = Enumerable.Repeat("stone 64", Chest.Size).ToArray();
+        var columns = Enumerable.Range(0, WorldSave.RegionSize * WorldSave.RegionSize).Select(i =>
+        {
+            var (cx, cz) = (i % WorldSave.RegionSize, i / WorldSave.RegionSize);
+            var many = i == 0 ? 4096 : 16;
+            return (Column: (X: cx, Z: cz), Chests: (IReadOnlyList<WorldSave.ChestRecord>)[.. Enumerable.Range(0, many)
+                .Select(k => new WorldSave.ChestRecord(cx * 16 + k % 16, 4 + k / 256, cz * 16 + k / 16 % 16, full, null, 0))]);
+        }).ToList();
+        new WorldSave(_folder).WriteChests(columns);
+
+        var read = new WorldSave(_folder);
+
+        Assert.All(columns, column => Assert.Equal(column.Chests.Count, read.TakeChests(column.Column.X, column.Column.Z)!.Count));
+        Assert.False(File.Exists(Path.Combine(_folder, "regions", "c.0.0.bin.unread")));
     }
 }

@@ -63,12 +63,19 @@ public sealed class ChestTests : IDisposable
         Assert.All(spilled, s => Assert.Equal((3, 10, 4), s.At));
         Assert.Empty(chests.All);
 
-        // A chest taken from and one not yet opened come back from a save as they were.
-        var kept = new Chests();
+        // A chest taken from and one not yet opened come back from a save as they were, given to it
+        // as their columns unload and taken back as they load.
+        var save = new WorldSave(_folder);
+        var kept = new Chests(save);
         kept.At(-7, 30, 2).Slots[5] = new ItemStack(Items.Coal, 12);
         kept.Add((40, -20, 9), new Chest { Loot = ChestLoot.Mineshaft.Name, Seed = 77 });
-        new WorldSave(_folder).WriteChests(kept);
-        var back = new WorldSave(_folder).ReadChests();
+        kept.Leaving(-1, 0);
+        kept.Leaving(2, 0);
+        Assert.Empty(kept.All);
+        save.WriteChests([]);
+        var back = new Chests(new WorldSave(_folder));
+        back.Joined(new ChunkColumn(-1, 0));
+        back.Joined(new ChunkColumn(2, 0));
         Assert.Equal(new ItemStack(Items.Coal, 12), back.All[(-7, 30, 2)].Slots[5]);
         Assert.Equal((ChestLoot.Mineshaft.Name, 77u), (back.All[(40, -20, 9)].Loot, back.All[(40, -20, 9)].Seed));
     }
