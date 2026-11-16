@@ -3321,6 +3321,27 @@ before a batch.
     Reply first with what fails, then the mends in commits by file. A bound is said in the code
     where it is set, with what a world the game writes reaches at most.
 
+196. **A twelfth read, the packs a player chooses fed hostile.** Every file the game reads from a
+    resource pack or a folder of packs, the archive, its pictures, its text and its models, each as
+    a hostile pack would give it. An archive whose entries inflate far past their packed size, an
+    entry named to leave the folder it is read into, a picture of sides far past any texture's, text
+    and models cut short or nested deep, a font sheet of no glyphs, a pack of a hundred thousand
+    entries. By a test each that the pack is refused with a line or read within a bound of time and
+    memory, nothing written outside the game's own folders, and the game left with the look it had.
+    A Reply first with what fails, then the mends in commits by kind of file, each bound said where
+    it is set with what the largest pack in common use reaches.
+
+197. **A thirteenth read, what a long session holds.** The game run headless through a long flight
+    and a long stay, by a test each that counts what is held at the start, in the middle and at the
+    end. A flight of some thousands of columns one way and back, the save written along it, a pack
+    read again every so often and the options changed; then the same place stood in for as many
+    frames. Counted each time, the managed heap after a collection, the engine's textures, meshes
+    and buffers, the columns and sections held, the mobs, the queued work of the streamer and the
+    mesher, and the open files. Each count level after its first rise or its growth explained by the
+    world explored. Beside it the hand-offs between the main thread and the workers read for a value
+    one writes while the other reads it, each named with what guards it. A Reply first with the
+    counts as a table and what climbs, then the mends in commits by cause.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -6991,6 +7012,121 @@ write nothing outside it, by item 187's test, which stands.
 
 The order I would take is the one commit of the pictures, its three tests failing on a head copy
 and a test that the atlas of a pack of large pictures draws the same tiles.
+
+Item 196, the twelfth read's two findings mended in one commit of the pictures' kind. Each test
+was run first on a copy of `067ffd3` with the tests added.
+
+The atlas holds a picture wider than its tiles' 128 sampled to a tile as the build samples it,
+after any turn, so a pack of large pictures holds tiles' worth and the tiles it builds are the same
+pixels (`TerrainAtlas.Held`). An animated texture's frames are each held as a tile of their own,
+their count held where the steps are counted against the atlas's 512 before any is made. A
+picture's header and its file's length are read before its bytes (`ResourcePacks.Head`), and a
+file longer than its rows uncompressed and a margin of 1 MB, for the text, the color profile and
+the other chunks an honest pack's pictures carry, is left out with a line (`PictureMargin`). The
+packs' pictures are decoded to 536 million pixels in all, each counted once however often it is
+asked for, past which the rest are left out with a line (`MostPixelsDecoded`).
+- `A_Pack_Whose_Every_Texture_Is_A_Picture_At_The_Bound_Builds_Within_A_Bound`, 253 textures of
+  4,096 a side, builds in some 10 s with the line said, and runs out of its 8 GB on the head.
+- `A_Picture_Inflating_Past_What_Its_Sides_Hold_Is_Left_Out_Before_It_Is_Read`, forty textures of
+  sixteen pixels each followed by 60 MB of zeros, holds the build to 256 MB with the line said, and
+  fails on the head, which reads every entry whole.
+- `Large_Pictures_And_A_Strip_Of_Large_Frames_Draw_The_Tiles_The_Build_Samples` takes a strip of
+  four frames of 256 pixels and a picture of 512, each patterned a pixel fine, and finds every
+  tile's pixels those of its source sampled to a tile. It passes on the head as since.
+- `A_Picture_Carrying_Kilobytes_Of_Text_And_A_Color_Profile_Is_Read`, a picture of sixteen pixels
+  with 8 KB of text and 4 KB of a color profile, is read with no fault, on the head as since.
+
+The strict build is clean, 523 tests pass outside the GPU's lock, and the play passes in 189 s, its
+captures as the last commit's play's. The inflating test, first of every texture, was cut to forty
+after the suite, for the 13 s its zip took, and the hostile packs' 18 tests run again pass.
+
+The thirteenth read, of what a long session holds, before any mend. A headless game on a copy of
+`139679e`, outside the GPU's lock, flew 2,000 columns east in 500 steps of four and back, saving
+every fifty steps, reading the packs again every hundred, a pack of a font and five textures among
+them, and turning the render distance between 2 and 3 and the Corner Shade every seventy-five,
+then stayed 3,000 frames, in the overworld of seed 1 and in the flat world. The counts were taken
+after a collection at the start, halfway out, at the far end, back and after the stay.
+
+| Overworld | Start | Halfway | Far end | Back | Stayed |
+|---|---|---|---|---|---|
+| Heap after a collection, MB | 41 | 70 | 55 | 71 | 83 |
+| Columns loaded | 69 | 112 | 78 | 78 | 97 |
+| Sections meshed | 83 | 170 | 20 | 88 | 143 |
+| The engine's meshes | 194 | 237 | 132 | 190 | 232 |
+| The engine's textures | 17 | 18 | 15 | 15 | 17 |
+| Mobs loaded, columns their mobs held | 10, 69 | 6, 112 | 3, 78 | 10, 78 | 10, 97 |
+| Columns' blocks, regions' mobs the save holds | 0, 4 | 0, 2 | 0, 2 | 0, 4 | 0, 4 |
+| Chests held | 0 | 133 | 315 | 316 | 316 |
+| Columns to make, sections to mesh | 0, 0 | 0, 0 | 0, 0 | 0, 0 | 0, 0 |
+| Sections to shade again | 0 | 0 | 1,872 | 1,872 | 0 |
+| Open files | 229 | 229 | 229 | 229 | 229 |
+
+The heap, the meshes and the sections follow the columns loaded, which follow the render distance
+turned along the flight, and a stay of 12,000 frames in the overworld at a distance of 3 holds the
+heap at 51 MB at each of nine samples, its 97 columns' sections as they were. The sections to shade
+again at the far end and back are those of a reading of the packs in the step before, gone by the
+stay.
+The flat world's counts hold the same way, its heap 26 to 38 MB and its textures 14 to 16, with no
+chest. The engine's buffers read 0 throughout, the headless device keeping none.
+
+1. The chests of every column seen are held for the session and written whole at each save. A
+   column's chests come into the game's chests as it loads (`Chests.Joined`) and leave only as
+   their blocks go (`Chests.Update`), and the save writes every one (`WorldSave.WriteChests`), so
+   they climb with the land explored, 316 after the flight in the overworld, the generated
+   structures' chests with their loot to roll, as the mobs did before item 192 kept them by
+   region. The mend I would make keeps a region's chests in a file of its own beside its blocks
+   and mobs, given to the save as a column unloads and taken back as it loads, `chests.json` read
+   once into the regions, as the mobs are, with a soak's count that stays level.
+2. The default packs' fetch writes its state, its count fetched and its problem on a task of its
+   own (`DefaultPacks.Start`, `Fetch`), and the frame reads them on the main thread (`TakeDefaults`,
+   the loading screen, the packs' menu) with no guard, so on a processor that orders its stores
+   less strictly than x64 the menu may read a fetch as failed before its problem, or the loading
+   screen a count behind. The mend I would make writes the state last and reads it first through
+   a volatile field, the problem and the count published by it.
+
+The hand-offs read clean, each with its guard. A column a worker makes takes its generator, its
+kept bytes, its readings' own array and the eye by value, and comes back through the streamer's
+concurrent queue, its count of workers changed on the main thread alone. A section's mesh is
+gathered on the main thread into a lent mesher, its settings copied by value and the atlas, which
+nothing changes once built, by reference, built on a worker under the semaphore and taken back
+through the renderer's concurrent queue, a mesh asked for since dropped by its number. The cave
+fields' readings land in an array of their own a batch, read by workers after. The mobs' restock
+makes columns on many workers, each writing a slot of its own. The save's kept bytes are a
+concurrent dictionary read on the main thread.
+
+The order I would take is 2, small, then 1, each with its test, and the soak itself as a short
+test in the suite of some 30 s and the long one skipped unless asked for, as the item says.
+
+Item 197, the thirteenth read's second finding mended first, in the first of two commits.
+
+The default packs' fetch keeps its state and its count in volatile fields, the state written on the
+fetch's task after the problem and the count it ends with and read on the main thread before them,
+so a frame that reads a fetch's end finds the problem and the count it ended with
+(`DefaultPacks.State`, `Fetched`). A failure's problem is set in its own line before its state.
+- `A_Fetchs_End_Is_Read_With_The_Problem_And_The_Count_It_Ended_With` runs two hundred fetches
+  through a stand-in for the network, every other one failing, and on the test's thread waits on
+  the state alone, as the frame does, reading the problem and the count the moment it sees the end.
+  It passes on the head too. On x64 a store is never seen before one made earlier, so no test on
+  this machine can show the reordering the volatile field holds back, which an ARM processor, as a
+  Mac's, may make. What it shows here is a state set before its problem in the program's own order,
+  as a change could set it, and on such a processor what the order of the stores lets through.
+
+The strict build is clean, 524 tests pass outside the GPU's lock, and the play passes in 192 s, its
+captures as the last commit's play's.
+
+Item 197's second commit, the chests by region and the soak. The soak was run first on a copy of
+`a54bc10` with the soak added and a line there giving its save a count of chests' regions.
+
+A region's chests are kept in a file of their own beside its blocks and its mobs, as the mobs are
+(`WorldSave.TakeChests`, `KeepChests`, `WriteChests`). A saved world's column gives its chests to
+the save as it unloads and takes them back as it loads, before its generated ones, which find
+them there (`Chests.Leaving`, `Joined`), and the save writes every loaded column's chests, a
+column holding none among them. A folder's `chests.json` is read once into the regions, each slot
+read as the inventory reads one, and kept beside as read once they are written. The mobs' and the
+chests' regions share one holder of the regions read and written, the changed ones and the one
+file read once (`WorldSave.Regional`), each kind reading and writing its own file. Furnaces do not
+climb the same way, one joining only as it is opened or as a save names it, and the soak's furnaces
+held none.
 
 ## Items closed, parked or shortened
 

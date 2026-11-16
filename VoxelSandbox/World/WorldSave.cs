@@ -50,10 +50,16 @@ internal sealed partial class SaveJson : JsonSerializerContext;
 /// <para>
 /// A column the player never changed is not kept, since its seed makes it again the same. A changed
 /// column is kept whole, its blocks compressed, and its light worked out again when it loads, as a
-/// generated one's is. A region file holds every kept column of its 32 by 32 and is written whole,
-/// as every file of the save is, to a file beside it whose bytes are on the disk before it takes
-/// the file's name, so a crash of the game or of the machine in the middle of a save leaves the old
-/// file or the new one, each whole.
+/// generated one's is. A region file holds every kept column of its 32 by 32.
+/// </para>
+/// <para>
+/// A save is written whole (<see cref="WriteWhole"/>). Each of its files is written under its name
+/// and <c>.new</c>, its bytes on the disk before the save goes on, then a list naming them all
+/// (<c>save.list</c>), written the same way and moved into its name, and then each file is moved
+/// into its own. A world opened with a list standing finishes its moves, so a crash of the game or
+/// of the machine opens the world as it was before the save or as the save left it, never a part
+/// of each. .NET has no call to flush a folder, so the moves rest on a filesystem that keeps them
+/// in their order after the machine stops, as a journaling one does.
 /// </para>
 /// <para>
 /// A region of version 1 is numbered by the keys the world's info lists. Where those number the
@@ -98,6 +104,12 @@ public sealed class WorldSave
     // world explored to a million columns holds some three hundred thousand mobs, a herd in a
     // tenth of its columns.
     private const int MostOneFileColumns = 1 << 20, MostOneFileMobs = 1 << 20;
+    // The names a save's list may hold and the bytes it may take, past which it is one that cannot
+    // be read, where a save names three files for each region about the player and one for each
+    // region whose blocks changed since the last, some tens in a flight between saves.
+    private const int MostListed = 4096, MostListBytes = 1 << 20;
+    private const string ListName = "save.list";
+    private static readonly System.Text.RegularExpressions.Regex Listed = new(@"^(world\.json|furnaces\.json|mobs\.bin\.read|chests\.json\.read|regions/[rmc]\.-?[0-9]{1,10}\.-?[0-9]{1,10}\.bin)$");
     private static readonly byte[] Magic = "E3DR"u8.ToArray();
     private static readonly byte[] MobsMagic = "E3DM"u8.ToArray();
 
@@ -111,18 +123,32 @@ public sealed class WorldSave
     private readonly Regional<ChestRecord> _chests;
     // The files that could not be read nor moved aside, which no save of the run writes.
     private readonly HashSet<string> _held = [];
+    // The files a save written whole has written under their scratch names, by the names they are
+    // moved into, and what it does once they are, none outside such a save.
+    private List<string>? _staged;
+    private List<Action>? _afterward;
     // The keys the world's info lists, and the numbers they give the regions of version 1 in this
     // build, null where they are the same or the info lists none.
     private string[]? _keys;
     private ushort[]? _renumber;
 
-    public WorldSave(string folder)
+    public WorldSave(string folder) : this(folder, null)
+    {
+    }
+
+    /// <summary>A world's folder whose writes and moves are each told to a test before they are made, which may end the save there.</summary>
+    internal WorldSave(string folder, Action<string>? writing)
     {
         Folder = folder;
+        Writing = writing;
         Directory.CreateDirectory(Path.Combine(folder, "regions"));
         _mobs = new(this, ReadMobRegion, WriteMobRegion, OneFile, ReadOneFile);
         _chests = new(this, ReadChestRegion, WriteChestRegion, OneChestsFile, ReadOneChestsFile);
+        if (Finish()) ClearScratch();
     }
+
+    /// <summary>Told the path of each file before it is written under its scratch name or moved into its own, for a test to end a save there.</summary>
+    internal Action<string>? Writing { get; set; }
 
     /// <summary>The folder every world is saved under, one folder a world.</summary>
     /// <remarks>
@@ -279,17 +305,152 @@ public sealed class WorldSave
     }
 
     // Writes a file whole beside its name and moves it over the old one once its bytes are on the
-    // disk, but for a file held since it could not be read.
+    // disk, or once a save written whole has its list, but for a file held since it could not be
+    // read.
     private void Replace(string path, Action<Stream> write)
     {
         if (_held.Contains(path)) return;
+        WriteBeside(path, write);
+        if (_staged is null) Move(path);
+        else if (!_staged.Contains(path)) _staged.Add(path);
+    }
+
+    // Writes a file under its name and .new, its bytes on the disk before it is closed.
+    private void WriteBeside(string path, Action<Stream> write)
+    {
         var written = path + ".new";
-        using (var file = new FileStream(written, FileMode.Create, FileAccess.Write, FileShare.None))
+        Writing?.Invoke(written);
+        using var file = new FileStream(written, FileMode.Create, FileAccess.Write, FileShare.None);
+        write(file);
+        file.Flush(flushToDisk: true);
+    }
+
+    // Moves a file written beside its name into it, or an old one-file save to its name as read,
+    // where the file to move still stands, as it does not where a save ended among its moves moved
+    // it.
+    private void Move(string path)
+    {
+        var from = path.EndsWith(".read", StringComparison.Ordinal) ? path[..^".read".Length] : path + ".new";
+        if (!File.Exists(from)) return;
+        Writing?.Invoke(path);
+        File.Move(from, path, overwrite: true);
+    }
+
+    // Does what a save does once its files are in their places, at once outside a save written
+    // whole.
+    private void Afterward(Action then)
+    {
+        if (_afterward is null) then();
+        else _afterward.Add(then);
+    }
+
+    // Moves an old one-file save to its name as read, once the regions it was read into are
+    // written.
+    private void Retire(string oneFile)
+    {
+        if (_staged is null) Move(oneFile + ".read");
+        else _staged.Add(oneFile + ".read");
+    }
+
+    /// <summary>
+    /// Writes a save whole, every file <paramref name="write"/> writes kept beside its name until a
+    /// list of them stands, then moved into its name, so the world opens as before the save or as
+    /// after it wherever the save ends, the save's regions let go of only once the list stands.
+    /// </summary>
+    /// <remarks>
+    /// A save that throws before its list deletes what it wrote beside the names, and what it had
+    /// to write waits for the next. One that throws among its moves leaves its list, which the next
+    /// save or the next opening of the world finishes.
+    /// </remarks>
+    public void WriteWhole(Action write)
+    {
+        Finish();
+        (_staged, _afterward) = ([], []);
+        var list = Path.Combine(Folder, ListName);
+        var listed = false;
+        try
         {
-            write(file);
-            file.Flush(flushToDisk: true);
+            write();
+            WriteBeside(list, file =>
+            {
+                using var writer = new StreamWriter(file, leaveOpen: true);
+                foreach (var path in _staged) writer.Write(Path.GetRelativePath(Folder, path).Replace(Path.DirectorySeparatorChar, '/') + "\n");
+            });
+            Writing?.Invoke(list);
+            File.Move(list + ".new", list, overwrite: true);
+            listed = true;
+            foreach (var path in _staged) Move(path);
+            foreach (var then in _afterward) then();
+            File.Delete(list);
         }
-        File.Move(written, path, overwrite: true);
+        catch when (!listed)
+        {
+            foreach (var path in _staged.Append(list))
+                try
+                {
+                    File.Delete(path + ".new");
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    // A scratch file that cannot be deleted is written over by the next save, or
+                    // deleted as the world opens next.
+                }
+            throw;
+        }
+        finally
+        {
+            (_staged, _afterward) = (null, null);
+        }
+    }
+
+    // Finishes the moves of a save whose list stands, ended among them, and gives whether the
+    // scratch files left may go, as they may not where a list that cannot be read was set aside,
+    // whose files are left with it.
+    private bool Finish()
+    {
+        var list = Path.Combine(Folder, ListName);
+        if (File.Exists(list) && !_held.Contains(list))
+        {
+            string[] names;
+            try
+            {
+                names = ReadList(list);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+            {
+                TraceLog(LogLevel.Warning, $"The list of a save of {Name} cannot be read, so the world opens as before that save, {SetAside(list)}. {ex.Message}");
+                return false;
+            }
+            foreach (var name in names) Move(Path.Combine(Folder, name));
+            File.Delete(list);
+        }
+        return !Directory.EnumerateFiles(Folder, ListName + ".unread*").Any();
+    }
+
+    // Deletes the scratch files of a save that ended before its list, as the world opens.
+    private void ClearScratch()
+    {
+        foreach (var scratch in Directory.EnumerateFiles(Folder, "*.new").Concat(Directory.EnumerateFiles(Path.Combine(Folder, "regions"), "*.new")).ToList())
+            try
+            {
+                File.Delete(scratch);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // A scratch file that cannot be deleted is read by nothing and written over by the
+                // save of its file.
+            }
+    }
+
+    // The names a save's list holds, each a file of the save's own kinds in its folder, a list past
+    // its bounds or naming another file refused as one that cannot be read.
+    private static string[] ReadList(string path)
+    {
+        var names = ReadText(path, MostListBytes).Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length > MostListed) throw new InvalidDataException($"it names {names.Length} files, past the {MostListed} a save writes");
+        foreach (var name in names)
+            if (!Listed.IsMatch(name)) throw new InvalidDataException("it names a file that is not one of the save's");
+        return names;
     }
 
     /// <summary>
@@ -354,7 +515,7 @@ public sealed class WorldSave
                 }
             });
         }
-        _changedRegions.Clear();
+        Afterward(_changedRegions.Clear);
         foreach (var (region, (read, _)) in _unknown.Where(counted => counted.Value.Read > counted.Value.Said).ToList())
         {
             TraceLog(LogLevel.Warning, $"The region {RegionPath(region)} holds {read} blocks of numbers this game does not know, which are read as air.");
@@ -510,12 +671,15 @@ public sealed class WorldSave
                 standing.Add(region);
             }
             foreach (var region in _changed) write(region, _regions[region]);
-            _changed.Clear();
-            if (File.Exists(oneFile) && !save._held.Contains(oneFile)) File.Move(oneFile, oneFile + ".read", overwrite: true);
+            if (File.Exists(oneFile) && !save._held.Contains(oneFile)) save.Retire(oneFile);
             // A loaded column's records stand in the world, so what was written of them is let go
             // from its region too, which takes them again as the column unloads.
-            foreach (var region in _regions.Keys.Where(r => !standing.Contains(r)).ToList()) _regions.Remove(region);
-            foreach (var (column, _) in columns) _regions[RegionOf(column.X, column.Z)].Remove(column);
+            save.Afterward(() =>
+            {
+                _changed.Clear();
+                foreach (var region in _regions.Keys.Where(r => !standing.Contains(r)).ToList()) _regions.Remove(region);
+                foreach (var (column, _) in columns) _regions[RegionOf(column.X, column.Z)].Remove(column);
+            });
         }
 
         // The records a region's columns keep, read from its file the first time.

@@ -13,6 +13,11 @@
         <PackageReference Include="3DEngine" Version="6.2.86" />
     </ItemGroup>
 
+    <!-- The tests end a save at each of its writes through a hook the game keeps to itself. -->
+    <ItemGroup>
+        <InternalsVisibleTo Include="VoxelSandbox.Tests" />
+    </ItemGroup>
+
     <!-- The game's own shaders and packs.json, found beside the program under resources. Each
          names its place by its folders, since MSBuild takes a file reached through a link, as
          /home is to /var/home, as lying outside the project and copies it flat beside the program. -->

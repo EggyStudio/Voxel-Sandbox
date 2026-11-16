@@ -321,8 +321,93 @@ public sealed class SaveTests : IDisposable
     [Fact]
     public void A_Mobs_File_Of_The_First_Version_Reads_With_Its_Places_In_Floats()
     {
-        Directory.CreateDirectory(_folder);
-        using (var writer = new BinaryWriter(new ZLibStream(File.Create(Path.Combine(_folder, "mobs.bin")), CompressionLevel.Fastest)))
+        OneVillager();
+
+        var villager = new MobRecord(MobKinds.Villager, 2, new LandPlace(-20.5, 64, 40.25), 1.5f, 13, new LandPlace(-18.5, 64, 42.5));
+        var read = new WorldSave(_folder);
+        var taken = read.TakeMobs(-2, 2)!;
+        Assert.Equal(villager, Assert.Single(taken));
+
+        // Saved as the game saves its loaded columns, the one file's mobs stand in the regions'
+        // files and the file is kept beside as read.
+        read.WriteMobs([((-2, 2), taken)]);
+        Assert.True(File.Exists(Path.Combine(_folder, "mobs.bin.read")));
+        Assert.False(File.Exists(Path.Combine(_folder, "mobs.bin")));
+        Assert.Equal(villager, Assert.Single(new WorldSave(_folder).TakeMobs(-2, 2)!));
+    }
+
+    [Fact]
+    public void A_Save_Ended_As_It_Reads_The_One_Mobs_File_Into_The_Regions_Holds_Its_Mobs_Once()
+    {
+        // A villager of the one file gone east into a column of the next region, which a save ended
+        // after the regions were written and before the one file was kept as read would hold in
+        // both.
+        var world = Path.Combine(_folder, "world");
+        OneVillager(world);
+        var cuts = new List<string>();
+        var save = new WorldSave(world, _ => cuts.Add(Copied(world, Path.Combine(_folder, $"cut-{cuts.Count}"))));
+        var villager = save.TakeMobs(-2, 2)!.Single() with { Position = new LandPlace(0.5, 64, 40.25) };
+        save.WriteWhole(() => save.WriteMobs([((-2, 2), []), ((0, 2), [villager])]));
+        cuts.Add(Copied(world, Path.Combine(_folder, $"cut-{cuts.Count}")));
+
+        Assert.All(cuts, cut =>
+        {
+            var read = new WorldSave(cut);
+            Assert.Single((read.TakeMobs(-2, 2) ?? []).Concat(read.TakeMobs(0, 2) ?? []));
+        });
+    }
+
+    // A copy of a folder's files beside it.
+    private static string Copied(string from, string to)
+    {
+        foreach (var file in Directory.GetFiles(from, "*", SearchOption.AllDirectories))
+        {
+            var copy = Path.Combine(to, Path.GetRelativePath(from, file));
+            Directory.CreateDirectory(Path.GetDirectoryName(copy)!);
+            File.Copy(file, copy);
+        }
+        return to;
+    }
+
+    [Theory]
+    [InlineData("../outside.json", 1)]
+    [InlineData("regions/../../outside.json", 1)]
+    [InlineData("outside.json", 1)]
+    [InlineData("", 1)]
+    [InlineData("world.json", 5000)]
+    public void A_Saves_List_Naming_Other_Files_Or_Past_Its_Bounds_Is_Kept_Beside_And_The_World_Opens_As_Before(string name, int times)
+    {
+        // A world's file and the one a save wrote beside it, a file beside the world's folder and
+        // one in it of names no save writes, and a list naming one of them, or the world's file
+        // more times than a save names its files. The empty name stands for one rooted at the
+        // file beside the folder.
+        var world = Path.Combine(_folder, "world");
+        Directory.CreateDirectory(world);
+        File.WriteAllText(Path.Combine(world, "world.json"), "before");
+        File.WriteAllText(Path.Combine(world, "world.json.new"), "after");
+        File.WriteAllText(Path.Combine(_folder, "outside.json.new"), "outside");
+        File.WriteAllText(Path.Combine(world, "outside.json.new"), "inside");
+        if (name == "") name = Path.Combine(_folder, "outside.json");
+        var list = string.Concat(Enumerable.Repeat(name + "\n", times));
+        File.WriteAllText(Path.Combine(world, "save.list"), list);
+
+        _ = new WorldSave(world);
+
+        Assert.Equal("before", File.ReadAllText(Path.Combine(world, "world.json")));
+        Assert.Equal("after", File.ReadAllText(Path.Combine(world, "world.json.new")));
+        Assert.Equal(list, File.ReadAllText(Path.Combine(world, "save.list.unread")));
+        Assert.False(File.Exists(Path.Combine(world, "save.list")));
+        Assert.False(File.Exists(Path.Combine(_folder, "outside.json")));
+        Assert.False(File.Exists(Path.Combine(world, "outside.json")));
+    }
+
+    // The one mobs file of the first version in a world's folder, a villager of the column (-2, 2)
+    // its only mob.
+    private void OneVillager(string? folder = null)
+    {
+        folder ??= _folder;
+        Directory.CreateDirectory(folder);
+        using (var writer = new BinaryWriter(new ZLibStream(File.Create(Path.Combine(folder, "mobs.bin")), CompressionLevel.Fastest)))
         {
             writer.Write("E3DM"u8);
             writer.Write(1);
@@ -339,18 +424,6 @@ public sealed class SaveTests : IDisposable
             writer.Write(true);
             foreach (var value in (float[])[-18.5f, 64, 42.5f]) writer.Write(value);
         }
-
-        var villager = new MobRecord(MobKinds.Villager, 2, new LandPlace(-20.5, 64, 40.25), 1.5f, 13, new LandPlace(-18.5, 64, 42.5));
-        var read = new WorldSave(_folder);
-        var taken = read.TakeMobs(-2, 2)!;
-        Assert.Equal(villager, Assert.Single(taken));
-
-        // Saved as the game saves its loaded columns, the one file's mobs stand in the regions' files
-        // and the file is kept beside as read.
-        read.WriteMobs([((-2, 2), taken)]);
-        Assert.True(File.Exists(Path.Combine(_folder, "mobs.bin.read")));
-        Assert.False(File.Exists(Path.Combine(_folder, "mobs.bin")));
-        Assert.Equal(villager, Assert.Single(new WorldSave(_folder).TakeMobs(-2, 2)!));
     }
 
     [Fact]

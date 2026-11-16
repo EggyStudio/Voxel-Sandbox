@@ -794,22 +794,25 @@ public sealed class VoxelGame : IDisposable
         }
         try
         {
-            foreach (var column in World.Columns)
-                if (column.Changed) Save.Keep(column);
-            Save.Flush();
+            Save.WriteWhole(() =>
+            {
+                foreach (var column in World.Columns)
+                    if (column.Changed) Save.Keep(column);
+                Save.Flush();
+                Save.WriteMobs(Mobs.Columns());
+                Save.WriteFurnaces(Furnaces);
+                Save.WriteChests(Chests.Columns(World));
+                // The stacks the window E opens holds are saved in the inventory as shutting it
+                // puts them, so a save while it is open keeps them.
+                var inventory = new Inventory();
+                inventory.Load(Inventory.Save());
+                foreach (var stack in InventoryWindow.Holding) inventory.Add(stack.Item, stack.Count, stack.Wear);
+                var at = LandOrigin.LandOf(Player.Body.Position);
+                Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
+                    Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
+                    Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
+            });
             Save.LetGo(World.Columns.Select(column => (column.X, column.Z)));
-            Save.WriteMobs(Mobs.Columns());
-            Save.WriteFurnaces(Furnaces);
-            Save.WriteChests(Chests.Columns(World));
-            // The stacks the window E opens holds are saved in the inventory as shutting it puts them,
-            // so a save while it is open keeps them.
-            var inventory = new Inventory();
-            inventory.Load(Inventory.Save());
-            foreach (var stack in InventoryWindow.Holding) inventory.Add(stack.Item, stack.Count, stack.Wear);
-            var at = LandOrigin.LandOf(Player.Body.Position);
-            Save.WriteInfo(new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
-                Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
-                Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held));
             if (SaveFault is not null) Say("The world is saved again");
             (SaveFault, _saveWait) = (null, SaveSeconds);
         }
