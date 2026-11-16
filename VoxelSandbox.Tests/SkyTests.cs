@@ -285,4 +285,11 @@ public class SkyTests
         // An hour within a day turns on as it did, past midnight into the next day.
         Assert.Equal((0.5f, 8), Sky.Advance(23.75f, 7, 0.75f));
     }
+
+    [Fact]
+    public void An_Hour_A_Hair_Before_Midnight_Turns_Into_The_Next_Day()
+    {
+        // The float under 24 and a millionth of an hour after it, whose sum rounds to 24 in a float.
+        Assert.Equal((0f, 1), Sky.Advance(23.999998f, 0, 1e-6f));
+    }
 }

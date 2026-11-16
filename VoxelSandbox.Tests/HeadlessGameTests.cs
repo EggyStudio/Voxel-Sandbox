@@ -1158,4 +1158,33 @@ public sealed class HeadlessGameTests
             if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
         }
     }
+
+    [Fact]
+    public void The_Save_Holds_The_Blocks_Of_The_Regions_About_The_Player_However_Far_It_Goes()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: folder);
+            var game = headless.Game;
+            var held = new List<int>();
+            // Twelve steps of 2,000 blocks, a block changed where the player stands at each.
+            for (int step = 1; step <= 12; step++)
+            {
+                Go(headless, step * 2000.5, 0.5);
+                game.World.SetBlock(step * 2000, 70, 0, BlockId.Glowstone);
+                game.SaveWorld();
+                held.Add(game.Save!.ColumnsHeld);
+            }
+
+            Assert.All(held, columns => Assert.InRange(columns, 1, 4));
+            // A block of a region let go is read again as its column loads.
+            Go(headless, 2000.5, 0.5);
+            Assert.Equal(BlockId.Glowstone, game.World.GetBlock(2000, 70, 0));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
 }

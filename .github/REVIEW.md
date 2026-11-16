@@ -633,3 +633,27 @@ on a copy of `0ed436b` with the tests added.
 
 The strict build is clean, 497 tests pass outside the GPU's lock, and the play passes in 193 s, its
 captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+Item 193's second commit, the save's kept blocks let go as the mobs' are. The test was run first on
+a copy of `7bd15f3` with the test added and a line there giving the head's count of the blocks
+held.
+
+The save lets go of the blocks held of each region no loaded column lies in and none of whose
+changes waits to be written, once the save has written them (`WorldSave.LetGo`, from
+`VoxelGame.SaveWorld` after `Flush`), so it holds those of the regions about the player however
+far the player goes. A region let go is read again as one of its columns loads, as the streamer
+asks for it, and a column that unloads changed reads its region again before it is kept, so a
+region's file is written whole.
+- `The_Save_Holds_The_Blocks_Of_The_Regions_About_The_Player_However_Far_It_Goes` takes twelve
+  steps of 2,000 blocks, a block changed where the player stands at each and the world saved, and
+  holds the save to four columns' blocks at most, and comes back to a block of a region let go,
+  which reads again. It fails on the head, which holds a column more at each step, five at the
+  fifth.
+
+The sky's cycle holds its hour under a day's end after the hour is cast to a float, a remainder a
+hair under 24 that rounds to it taken as the next day's start (`Sky.Advance`).
+- `An_Hour_A_Hair_Before_Midnight_Turns_Into_The_Next_Day` turns the float under 24 on by a
+  millionth of an hour and fails on the head, which gives an hour of 24 on the same day.
+
+The strict build is clean, 499 tests pass outside the GPU's lock, and the play passes in 181 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.

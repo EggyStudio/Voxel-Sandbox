@@ -169,7 +169,10 @@ public sealed class Sky : IDisposable
         // hour far past a day comes back within one rather than turning the day to the int's last.
         var next = (double)hour + hours;
         var days = (long)Math.Floor(next / 24);
-        return ((float)((next % 24 + 24) % 24), unchecked((int)(day + days)));
+        var held = (float)((next % 24 + 24) % 24);
+        // A remainder a hair under a day's end rounds to it in a float, which is the next day's start.
+        if (held >= 24) (held, days) = (0, days + 1);
+        return (held, unchecked((int)(day + days)));
     }
 
     /// <summary>

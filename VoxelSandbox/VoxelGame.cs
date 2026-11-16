@@ -797,6 +797,7 @@ public sealed class VoxelGame : IDisposable
             foreach (var column in World.Columns)
                 if (column.Changed) Save.Keep(column);
             Save.Flush();
+            Save.LetGo(World.Columns.Select(column => (column.X, column.Z)));
             Save.WriteMobs(Mobs.Columns());
             Save.WriteFurnaces(Furnaces);
             Save.WriteChests(Chests);

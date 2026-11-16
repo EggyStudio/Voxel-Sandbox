@@ -157,6 +157,23 @@ public sealed class WorldSave
         }
     }
 
+    /// <summary>How many columns' compressed blocks the save holds.</summary>
+    public int ColumnsHeld => _kept.Count;
+
+    /// <summary>
+    /// Lets go of the blocks held of each region no loaded column lies in and none of whose changes
+    /// waits to be written, so the save holds those of the regions about the player however far the
+    /// player goes, and reads a region again as one of its columns loads.
+    /// </summary>
+    public void LetGo(IEnumerable<(int X, int Z)> loaded)
+    {
+        var standing = loaded.Select(column => RegionOf(column.X, column.Z)).ToHashSet();
+        var gone = _readRegions.Where(region => !standing.Contains(region) && !_changedRegions.Contains(region)).ToHashSet();
+        foreach (var column in _kept.Keys)
+            if (gone.Contains(RegionOf(column.X, column.Z))) _kept.TryRemove(column, out _);
+        _readRegions.ExceptWith(gone);
+    }
+
     /// <summary>A kept column's compressed blocks in this build's numbers, or null for one the generator makes. Safe to call from a worker.</summary>
     public byte[]? Kept(int x, int z) => _kept.GetValueOrDefault((x, z));
 
