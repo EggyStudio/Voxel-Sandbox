@@ -23,6 +23,12 @@ depth with the nearest ore drawn, veins stopping at the dashed edges before the 
 across them after, over the ore lying over each cell of a column with eight by eight columns folded
 onto one, fewer at the edges before and as many after.
 
+![](.github/devlog/2026-11-16-item-205-light-of-culled-sections.webp)
+Seed 1's overworld from 4466.5, 111.6, 600.5 looking east and ten degrees down, the frame as drawn
+with the sections the flood leaves out culled, and beside it its difference from the frame with none
+culled, red where the culled frame is lighter and blue where darker, 555 pixels past 8 levels before
+the mend and none after, the culled sections meshed standing in the shadow maps and the field.
+
 ## 2026-11-15
 
 ![](.github/devlog/2026-11-15-item-180-fire-and-lava.webp)

@@ -3395,6 +3395,16 @@ before a batch.
     the field and the ray scene built for new meshes and the field alone at 21 to 26 ms in frames
     with nothing joined, goes to ASKS.md with the samples. The flood's spread waits on this read.
 
+203. **The frame of 66 to 75 ms each half minute, read and mended.** Item 202's Reply holds one
+    frame of 66 to 75 ms past the 880th of each run, its time in `stage.First` with no system above
+    0.06 ms and nothing streamed, taken for the world's save in `Begin` from its place and not from
+    a mark. Asked, marks around the save's parts so that the frame is read and not taken for, the
+    parts in ms over three runs under the exclusive lock, then the mend, the part that takes the
+    time done off the main thread or spread over frames with what is saved unchanged, a save and a
+    load of a changed world compared byte for byte or by its hash in a test. The frame's worst
+    within a window that holds a save is the reading, before and after. No picture, since nothing
+    seen changes.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -7743,6 +7753,75 @@ beside it, the next two more beside it, and every one after two at most until no
 on the head, which takes in all eight in one update. The strict build is clean, 547 tests pass
 outside the GPU's lock with the long soak skipped, the 400 columns' hash stands, and the play
 passes in 185 s, its captures as the pin's.
+
+Item 203's read and mend, the world's save of every 30 s. The flight of item 201 is recorded for
+40 s from its start, so the record holds the timed saves at about 36 and 66 s, with marks around
+each part of the save, three runs before at `7e46c3e` and three after, under the exclusive lock on
+tuned's powersave-bazzite. The GPU read 11, 0 and 0% before the runs before and 8, 2 and 0% before
+those after. 700 columns stand loaded at each save and none is changed, the flight changing no
+block.
+
+The save read before, on the main thread in `Begin` (`VoxelGame.cs:872`), ms:
+
+| Save | Whole | To the disk | Of it the mobs' files | The chests' files | Encoding and writing | Its frame |
+|---|---|---|---|---|---|---|
+| at 36.6 to 36.8 s, 18 files | 40.7, 89.0, 32.4 | 27.2, 77.5, 18.0 | 19.1, 64.5, 9.4 | 5.8, 9.3, 6.2 | 7.0, 5.3, 7.5 | 48.3, 95.3, 49.6 |
+| at 66.6 to 66.7 s, 10 files | 18.6, 19.6 | 11.7, 11.1 | 6.2, 6.0 | 3.1, 3.0 | 2.5, 4.0 | 24.1, 25.4 |
+
+The flushes to the disk, `Flush(flushToDisk: true)` once for each file the save stages
+(`WorldSave.cs:333`), take 56 to 87% of each save. The mobs' and chests' gathering with the
+changed columns kept takes 0.6 to 0.9 ms, the list 0.8 to 1.3, the moves 1.0 to 1.9, the steps
+after them 0.2 to 0.6 and the letting go 0.24 to 0.28.
+
+The mend writes the timed save on a worker (`WorldSave.WriteAside`). The frame it falls in gathers
+what the save writes, the changed columns encoded into the save by `Keep`, the mobs' and the chests'
+records into lists of their own, the furnaces' records (`WorldSave.FurnaceRecords`) and the world's
+info, and the worker writes it whole as `WriteWhole` does and lets go of the regions after. The
+worker reads only those copies and the save's own state, never a live column, so a block set, a
+furnace's tick, a mob's move or the light's spread while it writes is not in the save, and the
+column changed stays marked for the next.
+`A_Timed_Save_Is_Written_On_A_Worker_While_The_Columns_Wait_And_Reads_Back_As_Gathered`
+holds the worker at its first file, sets a block of a column the save kept to air meanwhile and
+reads the save back whole, both changed columns block for block as gathered, the player's place as
+gathered and the column changed again marked.
+
+While the save is under way the main thread touches the save in no way. The streamer takes in no
+made column, unloads none and asks for none, which joining, unloading and reading a kept column
+would touch, and a world switch, a far teleport, the quit and every save asked for wait for the
+save under way first (`SettleSave`). The test steps 20 frames with the worker held and the player
+four columns east, and no column past the last load's reach joins until the save ends. A save that
+fails on its worker is taken at the next frame's beginning and said as item 185's is, in the log
+and on the HUD, the next tried after twice the wait, which
+`A_Timed_Save_That_Fails_On_Its_Worker_Says_So_And_Waits_Longer` holds.
+
+The streamer stands for 2 to 7 frames, 23 to 81 ms, at the first save of each run and 4 to 5
+frames, 38 to 51 ms, at the second, its longest in the run whose save took the worker 89 ms. I give
+it no bound. Its stand is the save's own time, which held the whole frame before. The columns it
+would take in wait made, and the made and wanted columns lie past the drawn reach by the
+streamer's lead of 1.4 to 1.5 s at the flight's speed. A bound would have the streamer read or
+change the save while the worker writes it, which needs a lock the main thread then waits on, the
+frame held again. A disk slow for seconds stood the whole game for as long before, and stands the
+land's edge alone now, seen once the lead is spent.
+
+After, ms:
+
+| Save | The main thread's part | The worker | To the disk | The streamer stands | The slowest frame while under way |
+|---|---|---|---|---|---|
+| at 35.9 to 36.9 s, 18 files | 1.8, 1.9, 3.0 | 29.8, 89.3, 68.7 | 17.4, 77.4, 56.2 | 2, 7, 6 frames | 11.6, 12.1, 12.6 |
+| at 65.9 to 66.9 s, 10 files | 1.5, 0.7, 1.5 | 40.1, 54.6, 55.3 | 30.5, 46.8, 45.6 | 4 and 5 frames | 9.8 and 10.4 |
+
+The second save of the middle run fell just past its record of frames, so its stand is not read. The
+frames' medians are 9.66 to 9.82 ms before and 9.69 to 10.01 after. The window's worst frame is the
+save's in two of the three runs before, at 95.3 and 49.6 ms, and 54.4 in the third, a frame where
+two columns join and the engine's end of the frame takes 50.6. After, it is such a frame in all
+three, 56.5, 46.1 and 54.1 ms, the engine's end of the frame at 42.8 to 53.4 with 2 to 5 meshes
+taken in, which the runs before show too at 44.8 to 56.2 and which ASKS.md holds as the engine's.
+
+The strict build is clean, 549 tests pass outside the GPU's lock with the long soak skipped, the
+400 columns' hash among them, and the play passes in 178 s, its captures as the pin's. The test of
+the worker fails on the head at its first check, the save there holding the frame for the ten
+seconds the test holds its first file, and the test of the failing save passes on the head too,
+where the save at once says so.
 
 ## Items closed, parked or shortened
 

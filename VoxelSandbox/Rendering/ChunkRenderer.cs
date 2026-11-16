@@ -578,10 +578,29 @@ public sealed class ChunkRenderer : IDisposable
     /// </remarks>
     public bool Cull { get; set; } = true;
 
+    /// <summary>Whether the last flood reached a section.</summary>
+    internal bool Sees(SectionKey key) => _visibility.Sees(key);
+
+    /// <summary>
+    /// For each part a section holds faces of, whether its group's part stands in the scene and
+    /// whether it stands in the shadow maps and the field alone.
+    /// </summary>
+    internal IEnumerable<(bool Shown, bool ShadowOnly)> Standing(SectionKey key)
+    {
+        if (!_sections.TryGetValue(key, out var entry) || !_groups.TryGetValue(GroupOf(key), out var group)) yield break;
+        for (int k = 0; k < entry.Grouped.Length; k++)
+            if (entry.Grouped[k].HasFaces && group.Parts[k].Entity >= 0)
+                yield return (_ecs.GetReadOnly<Visible>(group.Parts[k].Entity).Value, _ecs.GetReadOnly<ShadowOnly>(group.Parts[k].Entity).Value);
+    }
+
     /// <summary>Sections the last <see cref="Draw"/> left out as unseen.</summary>
     public int Culled { get; private set; }
 
-    /// <summary>Whether the sections the flood leaves out cast the light's shadow where they stand toward it, as <see cref="Cull"/> says, true unless set.</summary>
+    /// <summary>
+    /// Whether the sections the flood leaves out stand in the shadow maps and the scene's field,
+    /// those meshed and those toward the light from a drawn one, as <see cref="Cull"/> says, true
+    /// unless set.
+    /// </summary>
     public bool Casts { get; set; } = true;
 
     /// <summary>Sections the last <see cref="Draw"/> drew into the shadow maps alone, of those it left out, and the draws it made of them.</summary>
@@ -1264,11 +1283,13 @@ public sealed class ChunkRenderer : IDisposable
             int dx = key.X - cx, dz = key.Z - cz;
             var within = dx * dx + dz * dz <= reach;
             var seen = within && (!Cull || _visibility.Sees(key));
-            var castsAlone = within && !seen && _casters.Contains(key);
+            var castsAlone = within && !seen && Casts;
             // The glass and the water, which the flood's casters leave out, are drawn only where the
             // section is seen. A group draws its parts where one of its sections holding them is
-            // seen, and its parts that cast a shadow, all but the lava, into the shadow maps alone
-            // where none is seen and one casts alone.
+            // seen, and its parts that cast a shadow, all but the lava, into the shadow maps and
+            // the scene's field alone where none is seen, so a section the flood leaves out shadows
+            // and fills the field as a drawn one does, and the light of what is drawn does not hang
+            // on what the eye cannot see.
             foreach (var part in (ReadOnlySpan<Part>)[entry.SeeThrough, entry.Water, entry.CutoutGlass]) Show(part.Entity, seen, false);
             if (_groups.TryGetValue(GroupOf(key), out var group))
             {

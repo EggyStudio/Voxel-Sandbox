@@ -41,7 +41,7 @@ green at 13:34, the form kept. After them `24d5b8e`, item 201's Reply, pushed at
 2026-11-16, and `7e46c3e`, item 202, the made columns taken into the world two a frame, the nearest
 first, pushed at 18:39 on 2026-11-16, its build run 43920753329 green by 19:57, the form kept. After it
 `1d79ca8`, item 203, the timed save gathered in its frame and written on a worker, pushed at 20:04
-on 2026-11-16, its build run 43935536624 started, the form kept. Before them `069a7d9`,
+on 2026-11-16, its build run 43935536624 green at 21:07, the form kept. After it `da25069`, item 204's Reply, no hole seen and no mend, pushed at 21:07, the form kept. Before them `069a7d9`,
 the comments that likened a thing to another game's saying their rule in the game's own terms,
 comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build run 43750307975 green by
 21:02, the form kept. Before it `c250bcd`, the second commit of item 185, the save command saying a
@@ -267,16 +267,6 @@ change.
     stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
     about 16:40, part two stays parked.
 
-203. **The frame of 66 to 75 ms each half minute, read and mended.** Item 202's Reply holds one
-    frame of 66 to 75 ms past the 880th of each run, its time in `stage.First` with no system above
-    0.06 ms and nothing streamed, taken for the world's save in `Begin` from its place and not from
-    a mark. Asked, marks around the save's parts so that the frame is read and not taken for, the
-    parts in ms over three runs under the exclusive lock, then the mend, the part that takes the
-    time done off the main thread or spread over frames with what is saved unchanged, a save and a
-    load of a changed world compared byte for byte or by its hash in a test. The frame's worst
-    within a window that holds a save is the reading, before and after. No picture, since nothing
-    seen changes.
-
 204. **The sections drawn late inside the drawn reach.** Item 201's Reply counts, of 246 sections
     with faces, 6 deep ones at height 1 held 1.5 s by the reach in three dimensions and 3 hidden
     until a flood 6 s after they entered the reach, not drawn meanwhile. Asked, the two groups read
@@ -287,6 +277,17 @@ change.
     section undrawn past a bound of frames after it enters the reach. The slow frames and the felt
     time of item 202's table held no worse, by the same flight. A picture in the devlog where a hole
     showed.
+
+205. **The land's light shifts where culled sections are drawn.** Item 204's Reply reads, with
+    `voxel.cull off`, 105, 554 and 1,519 pixels changed by 9 to 40 levels of 255 away from the
+    sections in question, the land's light moving with the culled sections drawn. A section the
+    flood hides is not seen, yet it shadows, bounces and fills the field as any other, so the light
+    should not depend on whether it is drawn. Asked, which light moves (the sun's shadow, the
+    field's occlusion, the bounce or the block light), by turning each off in the two captures, and
+    which state is right, by the traced reference or by reasoning where the reference does not
+    reach, then the mend so a culled section gives the light what a drawn one gives, with a test
+    comparing the two captures within a bound of pixels. A sheet with the red and blue difference
+    before and after in the devlog.
 
 ## Verdicts
 
@@ -556,75 +557,6 @@ The strict build is clean, 530 tests pass outside the GPU's lock with the long s
 suite 23 s longer, and the play passes in 192 s, its captures as the last commit's play's. Its
 comments' lines past 100 columns were wrapped after, and the strict build is clean on that.
 
-Item 203's read and mend, the world's save of every 30 s. The flight of item 201 is recorded for
-40 s from its start, so the record holds the timed saves at about 36 and 66 s, with marks around
-each part of the save, three runs before at `7e46c3e` and three after, under the exclusive lock on
-tuned's powersave-bazzite. The GPU read 11, 0 and 0% before the runs before and 8, 2 and 0% before
-those after. 700 columns stand loaded at each save and none is changed, the flight changing no
-block.
-
-The save read before, on the main thread in `Begin` (`VoxelGame.cs:872`), ms:
-
-| Save | Whole | To the disk | Of it the mobs' files | The chests' files | Encoding and writing | Its frame |
-|---|---|---|---|---|---|---|
-| at 36.6 to 36.8 s, 18 files | 40.7, 89.0, 32.4 | 27.2, 77.5, 18.0 | 19.1, 64.5, 9.4 | 5.8, 9.3, 6.2 | 7.0, 5.3, 7.5 | 48.3, 95.3, 49.6 |
-| at 66.6 to 66.7 s, 10 files | 18.6, 19.6 | 11.7, 11.1 | 6.2, 6.0 | 3.1, 3.0 | 2.5, 4.0 | 24.1, 25.4 |
-
-The flushes to the disk, `Flush(flushToDisk: true)` once for each file the save stages
-(`WorldSave.cs:333`), take 56 to 87% of each save. The mobs' and chests' gathering with the
-changed columns kept takes 0.6 to 0.9 ms, the list 0.8 to 1.3, the moves 1.0 to 1.9, the steps
-after them 0.2 to 0.6 and the letting go 0.24 to 0.28.
-
-The mend writes the timed save on a worker (`WorldSave.WriteAside`). The frame it falls in gathers
-what the save writes, the changed columns encoded into the save by `Keep`, the mobs' and the chests'
-records into lists of their own, the furnaces' records (`WorldSave.FurnaceRecords`) and the world's
-info, and the worker writes it whole as `WriteWhole` does and lets go of the regions after. The
-worker reads only those copies and the save's own state, never a live column, so a block set, a
-furnace's tick, a mob's move or the light's spread while it writes is not in the save, and the
-column changed stays marked for the next.
-`A_Timed_Save_Is_Written_On_A_Worker_While_The_Columns_Wait_And_Reads_Back_As_Gathered`
-holds the worker at its first file, sets a block of a column the save kept to air meanwhile and
-reads the save back whole, both changed columns block for block as gathered, the player's place as
-gathered and the column changed again marked.
-
-While the save is under way the main thread touches the save in no way. The streamer takes in no
-made column, unloads none and asks for none, which joining, unloading and reading a kept column
-would touch, and a world switch, a far teleport, the quit and every save asked for wait for the
-save under way first (`SettleSave`). The test steps 20 frames with the worker held and the player
-four columns east, and no column past the last load's reach joins until the save ends. A save that
-fails on its worker is taken at the next frame's beginning and said as item 185's is, in the log
-and on the HUD, the next tried after twice the wait, which
-`A_Timed_Save_That_Fails_On_Its_Worker_Says_So_And_Waits_Longer` holds.
-
-The streamer stands for 2 to 7 frames, 23 to 81 ms, at the first save of each run and 4 to 5
-frames, 38 to 51 ms, at the second, its longest in the run whose save took the worker 89 ms. I give
-it no bound. Its stand is the save's own time, which held the whole frame before. The columns it
-would take in wait made, and the made and wanted columns lie past the drawn reach by the
-streamer's lead of 1.4 to 1.5 s at the flight's speed. A bound would have the streamer read or
-change the save while the worker writes it, which needs a lock the main thread then waits on, the
-frame held again. A disk slow for seconds stood the whole game for as long before, and stands the
-land's edge alone now, seen once the lead is spent.
-
-After, ms:
-
-| Save | The main thread's part | The worker | To the disk | The streamer stands | The slowest frame while under way |
-|---|---|---|---|---|---|
-| at 35.9 to 36.9 s, 18 files | 1.8, 1.9, 3.0 | 29.8, 89.3, 68.7 | 17.4, 77.4, 56.2 | 2, 7, 6 frames | 11.6, 12.1, 12.6 |
-| at 65.9 to 66.9 s, 10 files | 1.5, 0.7, 1.5 | 40.1, 54.6, 55.3 | 30.5, 46.8, 45.6 | 4 and 5 frames | 9.8 and 10.4 |
-
-The second save of the middle run fell just past its record of frames, so its stand is not read. The
-frames' medians are 9.66 to 9.82 ms before and 9.69 to 10.01 after. The window's worst frame is the
-save's in two of the three runs before, at 95.3 and 49.6 ms, and 54.4 in the third, a frame where
-two columns join and the engine's end of the frame takes 50.6. After, it is such a frame in all
-three, 56.5, 46.1 and 54.1 ms, the engine's end of the frame at 42.8 to 53.4 with 2 to 5 meshes
-taken in, which the runs before show too at 44.8 to 56.2 and which ASKS.md holds as the engine's.
-
-The strict build is clean, 549 tests pass outside the GPU's lock with the long soak skipped, the
-400 columns' hash among them, and the play passes in 178 s, its captures as the pin's. The test of
-the worker fails on the head at its first check, the save there holding the frame for the ten
-seconds the test holds its first file, and the test of the failing save passes on the head too,
-where the save at once says so.
-
 Item 204's read of the sections drawn late inside the drawn reach, at `1d79ca8` with a probe beside
 it, under the shared lock. For each of the nine sections, frame by frame through item 201's flight,
 the probe logs the eye's section, the column's floor, whether the section lies within the drawn
@@ -657,3 +589,77 @@ land's light shifts with the culled sections drawn, and its shapes stand the sam
 so I made no mend and no devlog picture. The two sheets are in `.github/dump/2026-11-16`, the deep
 sections' place as drawn beside every section in reach, and the hidden sections' place beside no
 section culled, each with the changed pixels.
+
+Item 205's read and mend, the land's light where culled sections are drawn, at `da25069` with a
+probe beside it, the places of item 204 at 4450.5, 4466.5 and 4482.5 with the hour and the textures'
+ticks held and the clouds off, each frame with the culling on set against the frame with it off.
+
+| Light | 4482.5 | 4466.5 | 4450.5 |
+|---|---|---|---|
+| the game's own | 1,519 | 555 | 105 |
+| global illumination off | 0 | 0 | 0 |
+| the sun's shadows held to a block | 951 | 384 | 64 |
+| both off | 0 | 0 | 0 |
+
+The cells count pixels changed past 8 levels of 255, by 9 to 40 levels, where the land's light
+shifts and no shape changes. The light that moves is global illumination's, the sun's shadows the
+same either way, so the casters' search holds. The scene's field holds 725 to 745 meshes with the
+culling on and 1,073 to 1,130 with it off. A section the flood leaves out is hidden whole (`Place`,
+`ChunkRenderer.cs:1328`), and the engine's field takes the draws of the shown and the shadow-only
+meshes alone (`SceneField.cs:444`), so the field loses it.
+
+Which state is right the traced reference says, and it is neither. At 4482.5 `gi.reference` traced
+with every section meshed (1,073 copies) and with the culled ones left out (726) gives the same
+light at every pixel, so no path from what is drawn reaches them. Against a reference of 256 paths
+a pixel, the 1,453 pixels the culling changes hold a mean light of 0.089, and the culled frame is
+off it by 0.085 at the mean and the frame with none culled by 0.084, the culled one the nearer in
+723 of them. The field's light moves with geometry that gives the true light nothing, and by
+reasoning the light should not hang on where the eye has been, which it did through which sections
+it had meshed.
+
+The cause is in two parts.
+
+- A culled section the game has meshed is hidden from the field. The mend shows every culled
+  meshed section within the drawn reach in the shadow maps and the field alone, as the engine's
+  `ShadowOnly` keeps a mesh, where only the sections toward the light from a drawn one stood there
+  (`ChunkRenderer.cs:1286`). At 4466.5 and 4450.5, which each session reaches after 4482.5, the
+  sections that place meshed stand culled, and the frame with the culling on and the frame with it
+  off differ there in no pixel past 8 levels after, against 555 and 105 before. The devlog's
+  `2026-11-16-item-205-light-of-culled-sections.webp` holds the red and blue difference at 4466.5
+  before and after.
+- A section the flood never reached has no mesh. At 4482.5 as a session's first place, 837 such
+  sections within the drawn reach, most in the caves under the land, change 1,520 pixels. Meshing
+  them within 8 columns of the eye takes the change to none at 35% more sections meshed and within
+  the whole reach at 70% more. As you asked, they stay unmeshed, the fault being the field's light
+  moving with them, and the engine's entry in ASKS.md holds the two traces, the pixel counts, the
+  reference's error and the sweep.
+
+`A_Section_The_Flood_Leaves_Out_Stands_In_The_Shadow_Maps_And_The_Field` builds stone in the air
+over the flat world's floor, meshes it from above, stands the eye under the floor where the flood
+reaches nothing over it with the shadows held to a block so no section casts toward the light, and
+checks that the stone's parts stand in the shadow maps and the field alone, then drawn with no
+section culled. It fails on the head, where the stone is hidden.
+
+In flight the mend adds 4 to 5 meshes to the field, 680, 689 and 668 against 676, 684 and 663 at
+three moments of a flight under the shared lock, 32 to 38 meshed sections standing culled then.
+Item 202's flight under the exclusive lock, three runs against its table after:
+
+| Three runs each | Item 202 after | With the mend |
+|---|---|---|
+| frames past twice the median | 25, 23, 26 | 30, 23, 24 |
+| their median, ms | 25.8, 26.2, 25.8 | 24.1, 24.3, 25.3 |
+| frames past 22 ms | 25, 21, 26 | 23, 18, 17 |
+| frames past 25 ms | 15, 15, 15 | 12, 9, 12 |
+| frames past 40 ms | 2, 1, 2 | 1, 1, 1 |
+| the frames' median, ms | 11.05, 10.79, 11.15 | 10.42, 10.46, 10.53 |
+| their 99th part, ms | 27.6, 26.3, 27.1 | 27.1, 24.6, 26.4 |
+| within the drawn reach to drawn, median, ms | 42.1, 41.7, 41.7 | 54.7, 38.8, 50.8 |
+| within the drawn reach to drawn, 90th, ms | 69.8, 73.1, 82.5 | 77.8, 71.1, 84.5 |
+
+The frames past twice the median rise in one run as the median falls, the table of item 202 holding
+the timed save's frame that `1d79ca8` took off the main thread, and past every fixed time the runs
+hold as many slow frames or fewer. The felt time's medians lie within the step's flood of 2 to 3
+frames, 191 sections coming within the reach in these records against 246.
+
+The strict build is clean, 550 tests pass outside the GPU's lock with the long soak skipped, and
+the play passes in 180 s, its captures as the pin's.

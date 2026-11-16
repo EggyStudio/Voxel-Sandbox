@@ -1150,6 +1150,55 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Section_The_Flood_Leaves_Out_Stands_In_The_Shadow_Maps_And_The_Field()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        // The sun's shadows held to a block, so no section is marked to cast one and the stone's
+        // standing is the culling's alone.
+        game.Light.ShadowDistance = 1;
+        // Stone in the air over the flat world's floor, its section seen and meshed from above.
+        for (int y = 20; y < 24; y++)
+            for (int z = 6; z < 10; z++)
+                for (int x = 6; x < 10; x++) game.World.SetBlock(x, y, z, BlockId.Stone);
+        var stone = new SectionKey(0, 1, 0);
+        Stand(new LandPlace(8.5, 40, 2.5));
+        Assert.True(game.Renderer.Sees(stone));
+        Assert.All(Standing(), part => Assert.Equal((true, false), part));
+
+        // Under the floor, from where the flood reaches nothing over it, the stone stands in the
+        // shadow maps and the field alone, which the light reads as it reads a drawn one.
+        Stand(new LandPlace(8.5, -20, 2.5));
+        Assert.False(game.Renderer.Sees(stone));
+        Assert.All(Standing(), part => Assert.Equal((true, true), part));
+
+        // With no section culled it is drawn.
+        game.Renderer.Cull = false;
+        Stand(new LandPlace(8.5, -20, 2.5));
+        Assert.All(Standing(), part => Assert.Equal((true, false), part));
+
+        List<(bool Shown, bool ShadowOnly)> Standing()
+        {
+            var parts = game.Renderer.Standing(stone).ToList();
+            Assert.NotEmpty(parts);
+            return parts;
+        }
+        void Stand(LandPlace at)
+        {
+            game.Player.Teleport(LandOrigin.PlaceOf(at));
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Streamer.Pending > 0 || game.World.Loaded.Count > 0 || game.World.Reshaded.Count > 0 || game.Renderer.Meshing > 0) && clock.Elapsed.TotalSeconds < 30);
+            headless.Step(5);
+        }
+    }
+
+    [Fact]
     public void Made_Columns_Are_Taken_In_Two_A_Frame_The_Nearest_First()
     {
         using var headless = new HeadlessGame();
