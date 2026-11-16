@@ -270,6 +270,17 @@ change.
     A Reply first with what fails, then the mends in commits by kind of file, each bound said where
     it is set with what the largest pack in common use reaches.
 
+197. **A thirteenth read, what a long session holds.** The game run headless through a long flight
+    and a long stay, by a test each that counts what is held at the start, in the middle and at the
+    end. A flight of some thousands of columns one way and back, the save written along it, a pack
+    read again every so often and the options changed; then the same place stood in for as many
+    frames. Counted each time, the managed heap after a collection, the engine's textures, meshes
+    and buffers, the columns and sections held, the mobs, the queued work of the streamer and the
+    mesher, and the open files. Each count level after its first rise or its growth explained by the
+    world explored. Beside it the hand-offs between the main thread and the workers read for a value
+    one writes while the other reads it, each named with what guards it. A Reply first with the
+    counts as a table and what climbs, then the mends in commits by cause.
+
 ## Verdicts
 
 No verdict is open. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
