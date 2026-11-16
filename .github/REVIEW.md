@@ -737,3 +737,18 @@ comments say what holds.
   a column is made, and fails on the head, which holds nothing to find.
 - The strict build is clean, 545 tests pass outside the GPU's lock with the long soak skipped, and
   the play passes in 178 s, its captures as the last commit's play's.
+
+Item 200's second mend, the third proposed. A column's light sets the sky's whole level at once
+over each section of air above every place's highest block, a section shared as open air left as
+it is, and walks each place down from under them, and finds the blocks giving light by their
+numbers in each section's cells under the air against a table of the light each block gives, in
+the order of a section's cells (`Lighting.Compute`).
+- The hash of the blocks and the light of 400 columns is
+  `AA0084A74B5E0FFDDA3B4A751F13A70484317F780C38B18D6CA8932DEA7FFB93` as before, and the guard
+  test and the light's tests pass.
+- After it the sky's setting takes 0.61 ms against 5.14 and the search for the blocks giving light
+  0.42 ms against 3.43, and a column a median of 32.5 ms against 40.4 and at worst 70.4 ms against
+  80.4. The fill, caves and aquifers at 9.04 ms, 31% of a column, and the caves' carve at 8.58 ms,
+  27%, are the largest after it.
+- The strict build is clean, 545 tests pass outside the GPU's lock with the long soak skipped, and
+  the play passes in 194 s, its captures as the last commit's play's.

@@ -59,10 +59,21 @@ public static class Lighting
         var opens = new int[Section.Size * Section.Size];
         // The cells under a canopy spread its light sideways too, as the spreading lit them before.
         var queue = new Queue<(int X, int Y, int Z)>();
+        // The sections of air over every place's highest block take the sky's whole level at once,
+        // as each of their cells would one by one, and each place is walked down from under them.
+        var under = ChunkColumn.SectionCount;
+        while (under > 0 && column.Sections[under - 1].Blocks.AsSpan().IndexOfAnyExcept((ushort)BlockId.Air) < 0) under--;
+        for (int s = under; s < ChunkColumn.SectionCount; s++)
+        {
+            // A section shared as open air holds the open sky's light.
+            if (column.Sections[s].Open) continue;
+            var light = column.Sections[s].Light;
+            for (int i = 0; i < light.Length; i++) light[i] = (byte)(light[i] & 0x0F | Max << 4);
+        }
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
-                int y = ChunkColumn.Ceiling - 1, level = Max, top = int.MinValue;
+                int y = ChunkColumn.Bottom + under * Section.Size - 1, level = Max, top = int.MinValue;
                 for (; y >= ChunkColumn.Bottom; y--)
                 {
                     var block = column.Get(x, y, z);
@@ -97,17 +108,25 @@ public static class Lighting
             }
         Spread(column, queue, sky: true, opens);
 
-        for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
-            for (int z = 0; z < Section.Size; z++)
-                for (int x = 0; x < Section.Size; x++)
-                {
-                    var light = Blocks.Get(column.Get(x, y, z)).Light;
-                    if (light == 0) continue;
-                    column.At(y).SetLevel(Section.Index(x, y & Section.Mask, z), false, light);
-                    queue.Enqueue((x, y, z));
-                }
+        // The blocks that give light, found by their numbers in each section under the air, in the
+        // order of a section's cells, up, then along z, then along x.
+        for (int s = 0; s < under; s++)
+        {
+            var section = column.Sections[s];
+            var blocks = section.Blocks;
+            for (int i = 0; i < blocks.Length; i++)
+            {
+                var light = blocks[i] < Gives.Length ? Gives[blocks[i]] : 0;
+                if (light == 0) continue;
+                section.SetLevel(i, false, light);
+                queue.Enqueue((i & Section.Mask, ChunkColumn.Bottom + s * Section.Size + (i >> 2 * Section.Shift), i >> Section.Shift & Section.Mask));
+            }
+        }
         Spread(column, queue, sky: false, opens);
     }
+
+    // The light each block gives, by its number.
+    private static readonly byte[] Gives = [.. Blocks.All.Select(block => (byte)block.Light)];
 
     private static void Spread(ChunkColumn column, Queue<(int X, int Y, int Z)> queue, bool sky, int[] opens)
     {
