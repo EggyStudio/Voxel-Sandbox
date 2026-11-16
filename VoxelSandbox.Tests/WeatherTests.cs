@@ -84,6 +84,19 @@ public class WeatherTests
         var x = Enumerable.Range(0, 16 * 64).First(i => pixels[i * 4 + 3] > 0 && pixels[(i + 16) * 4 + 3] > 0);
         Assert.True(pixels[x * 4 + 3] < pixels[(x + 16) * 4 + 3], "a streak brightens down the picture");
     }
+
+    [Fact]
+    public void The_Weather_Of_The_Last_Day_An_Int_Counts_Is_Told()
+    {
+        var weather = new Weather { Seed = 1 };
+        var share = -1f;
+        // Asked on a thread of its own, so a loop that never ends fails the test rather than holding it.
+        var asking = new Thread(() => share = weather.Share(int.MaxValue, 12)) { IsBackground = true };
+        asking.Start();
+
+        Assert.True(asking.Join(TimeSpan.FromSeconds(5)));
+        Assert.InRange(share, 0, 1);
+    }
 }
 
 /// <summary>The snow the weather lays on the tops and melts again.</summary>

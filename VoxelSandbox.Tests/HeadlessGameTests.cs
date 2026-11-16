@@ -1124,4 +1124,38 @@ public sealed class HeadlessGameTests
             Thread.Sleep(2);
         }
     }
+
+    [Fact]
+    public void A_World_Whose_Hour_Is_Past_A_Days_Count_Opens_Within_A_Day()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using (new HeadlessGame(save: folder)) { }
+            var path = Path.Combine(folder, "world.json");
+            var json = JsonNode.Parse(File.ReadAllText(path))!;
+            (json["Hour"], json["Day"]) = (1e30, 0);
+            File.WriteAllText(path, json.ToJsonString());
+
+            var (day, hour) = (-1, -1f);
+            // Opened on a thread of its own, so a loop that never ends fails the test rather than
+            // holding it.
+            var opening = new Thread(() =>
+            {
+                using var again = new HeadlessGame(save: folder);
+                again.Game.Sky.Cycle = true;
+                again.Step(3);
+                (day, hour) = (again.Game.Sky.Day, again.Game.Sky.Hour);
+            }) { IsBackground = true };
+            opening.Start();
+
+            Assert.True(opening.Join(TimeSpan.FromSeconds(60)));
+            Assert.InRange(day, 0, 1);
+            Assert.InRange(hour, 0, 24);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
 }

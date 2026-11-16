@@ -3275,6 +3275,16 @@ before a batch.
     on the head, in a Reply, the order proposed with it. The mends follow once the list is agreed. A
     finding that is the engine's goes to ASKS.md and is not worked around.
 
+191. **The blocks, the items and the world's ticking, the seventh read.** Given at 23:00 on
+    2026-11-15, to follow item 190's commit without a wait. The lane is `Blocks`, `Items` and
+    `World` apart from the save and the lighting, read by what their tests do not reach. Look for an
+    item made or lost by a furnace, a chest or a crafting grid across a save, a broken block or a
+    closed window, a stack past its size or under zero, a tool's wear that wraps, a fluid, a fire, a
+    falling block or a blast that spreads without a bound or reaches into a column not loaded, a
+    scheduled tick kept for a block that is gone, and a block's shape whose boxes and drawn faces
+    disagree. Each finding is told with the lines that make it and a test that fails on the head, in
+    a Reply, the order proposed with it. The mends follow once the list is agreed.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -6456,6 +6466,95 @@ tick, `Fires.CanStand` reading that block as air, at least 32 blocks from the pl
 is seen.
 
 The order I would take is 1 and then 2, in one commit, each test failing on a head copy.
+
+Item 191, the seventh read's two findings mended in one commit. Each test was run first on a copy of
+`889288f` with the tests added.
+
+1. A column's arrival asks the water along its edges to look again (`Fluids.Join`, called from
+   `VoxelWorld.Add`). Each cell of flowing water on the edge between the column and a loaded
+   neighbor that faces air across the edge is asked, on either side, the work bounded to the edge
+   cells and passing a height whose two sections are open air. A source is left alone, since the
+   land's generation places sources only and one asked where it faces a cave across the edge would
+   flow, changing a column the player never touched and keeping it in the save. Lava takes no tick
+   in the game, so nothing of it is asked. A packed section is read only where it holds flowing
+   water, which it records as it packs (`Section.Flows`), or where flowing water faces it, so the
+   arrival unpacks none of the land's deep sections. The mend's first form read them all and failed
+   `Joining_A_Column_Leaves_Its_Neighbors_Dark_Packed_Sections_Packed`.
+   - `Water_Stopped_At_A_Column_Not_Loaded_Flows_On_As_It_Loads` fails on the head, which leaves
+     air at x 16 after the column loads.
+   - `A_Column_Arriving_With_Flowing_Water_On_Its_Edge_Lets_It_Flow_On_And_Its_Source_Stay` has the
+     column that arrives hold the flowing water at its edge, and fails on the head, which leaves air
+     beside it. The source at the same edge further along stays as it was on both.
+2. The blocks falling and the TNT lit are set down as blocks before the last save of a world closed
+   or left (`VoxelGame.SetDownMoving`, from `Dispose` and `SwitchWorld`), a timed save leaving them
+   falling and lit. Each lands straight down on the first block under it that does not give way,
+   the lowest first so a column of sand stacks again (`FallingBlocks.Landing`).
+   One departure. A falling block over a block it would break on, as a torch, does not drop its
+   item into the save, since the save keeps no stack (`ItemDrops.cs:25`) and the item would be lost
+   as the block is on the head. It rests on that block as a sand placed there does
+   (`BlockGroups.GivesWay`), and falls once the torch goes. Setting it in the cell it fell through
+   was tried first and lost it too, `SetBlock` loosening sand over a cell that gives way into
+   `VoxelWorld.Loosened`, which nothing reads before the save.
+   - `A_Block_Falling_And_A_Lit_Tnt_As_The_World_Closes_Are_In_It_When_It_Opens_Again` lets a sand
+     fall over the ground and one over a torch, lights a TNT, closes the world a frame after and
+     opens it again, and fails on the head, which holds no sand where the first lands.
+
+The strict build is clean, 485 tests pass outside the GPU's lock, and the play passes in 193 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+The eighth read, of the streamer, the mesher, the chunk renderer, the options and the sound by what
+their tests do not reach, before any mend. Each candidate was held by a test on a copy of `6451a3e`,
+outside the GPU's lock, and one finding failed two of them.
+
+1. The Corner Shade, let go after a world switch, shades the world the game began in again and
+   holds that world for the rest of the game. Its `Settled` is the method of the world it was built
+   with (`Options.cs:175`, `Settled = game.World.ReshadeAll`), and the screens are built once, as
+   the game reads its settings at its start (`VoxelGame.cs:98`, `Menus.cs:91`). A switch makes a
+   new world (`VoxelGame.cs:565`), so the slider let go marks the sections of the world left and
+   none of the world played, whose sections keep the corner shade they were meshed with until each
+   is meshed again. That world is held with every column it had loaded, 665 columns and 68 MB of
+   their sections' blocks and light for seed 1's overworld at the default distance of 12.
+   - `The_Corner_Shade_Let_Go_After_A_World_Switch_Shades_The_World_Played_Again` fails on the head,
+     which marks 1,656 sections of the world left and none of the world played.
+   - `A_World_Left_Is_Let_Go` holds the world left by a weak reference across a switch and fails on
+     the head, which keeps it.
+   The mend I would make has the option shade the game's world as it is let go,
+   `() => game.World.ReshadeAll()`. On the scratch copy both tests pass with it, nothing else
+   holding the world left.
+
+Read clean, by the code and by probes in the scratch copy only. Five journeys of 5,000 blocks out
+and back at a render distance of 4 leave every collection the streamer, the renderer, the world,
+the drops, the chests, the fires, the sounds and the cave fields hold at the counts the first left.
+A render distance changed in play from 4 to 9, 3, 12, 2, 16, 5 and 8 leaves every filled section
+of each column within it meshed or held back as unseen, and the columns past it unloaded to the
+streamer's keep of the distance and three. A section in both the reshaded and the loaded sets is
+meshed once, a worker's mesh asked for before a later ask is dropped by its ask's number, and a
+switch clears those numbers, so no mesh of the world left is taken into the next. The streamer's
+workers finish into the queue of the streamer left, and the cave fields let their readings go as a
+world takes them up, each batch landing in an array of its own. A block changed at a section's
+corner shades the sections across each edge it touches again, the corners' too
+(`VoxelWorld.Reshade`). The options file refuses a value that is not finite or out of range, a
+key it does not know and a line with no colon, keeps a changed default in a file of an older
+version, and is written beside and moved over. The sounds take no step of a frame of no time, end
+each step at its time, and stop the steps and the loops as a world is left (`GameSounds.Stop`).
+
+Two low findings, left unless you ask.
+- `voxel.save` sent as a world loads makes the column the player lands in at once
+  (`ChunkStreamer.LoadNow`), while a worker may be making it, and the worker's copy joins after it,
+  since a column made is joined without asking whether one is loaded (`ChunkStreamer.Update`). The
+  copy is made alike, its fires named twice.
+- The mobs of every column first seen are kept in memory and written whole at each save
+  (`Mobs.Columns`, `WorldSave.WriteMobs`), so both grow with the land the player has seen, outside
+  this lane.
+
+On 191's note, play reaches a falling block let go unset in two ways. The world closes in a frame
+in which the block passes through a block that neither gives way nor stops it, as a wall torch,
+cave vines or a cobweb, a few frames of each such fall. Or its column unloads under it as it falls,
+the column at the streamer's keep of the render distance and three, as where water flowing at the
+edge of the land loaded loosens sand. The first would be mended by resting the block on the first
+cell above it that gives way, if you want it.
+
+The order I would take is the one mend, its two tests in one commit.
 
 ## Items closed, parked or shortened
 

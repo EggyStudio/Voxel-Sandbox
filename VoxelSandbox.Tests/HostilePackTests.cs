@@ -330,4 +330,22 @@ public sealed class HostilePackTests : IDisposable
         Assert.Equal(16, packs.ImageAt("textures/block/dirt.png")?.Width);
         Assert.Equal(2, packs.Faults.Count(f => f.Name == "vast"));
     }
+
+    [Fact]
+    public void An_Animation_Of_A_Frame_Held_Long_Builds_The_Atlas_At_Its_Cost()
+    {
+        // Two frames, one held a tick and one a hundred million.
+        var pixels = Enumerable.Range(0, 16 * 32).SelectMany(i => i < 256 ? new[] { Red.R, Red.G, Red.B, Red.A } : new[] { Blue.R, Blue.G, Blue.B, Blue.A }).ToArray();
+        var pack = Folder("held", ("textures/block/stone.png", ExportImageToMemory(new Image(pixels, 16, 32), ".png")),
+            ("textures/block/stone.png.mcmeta", """{"animation":{"frames":[{"index":0,"time":1},{"index":1,"time":100000000}]}}"""u8.ToArray()));
+        using var packs = new ResourcePacks([pack]);
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        var atlas = TerrainAtlas.Build(packs);
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        Assert.InRange(allocated, 0, 256L << 20);
+        Assert.Empty(atlas.Animations);
+        Assert.NotEqual(0, atlas.Tile(Surfaces.Stone));
+    }
 }

@@ -165,9 +165,11 @@ public sealed class Sky : IDisposable
     /// <summary>The hour and the day so many hours on from an hour of a day.</summary>
     public static (float Hour, int Day) Advance(float hour, int day, float hours)
     {
-        var next = hour + hours;
-        var days = (int)MathF.Floor(next / 24);
-        return (next - days * 24, day + days);
+        // The hour is held within a day by its remainder and the days passed counted in a long, so an
+        // hour far past a day comes back within one rather than turning the day to the int's last.
+        var next = (double)hour + hours;
+        var days = (long)Math.Floor(next / 24);
+        return ((float)((next % 24 + 24) % 24), unchecked((int)(day + days)));
     }
 
     /// <summary>

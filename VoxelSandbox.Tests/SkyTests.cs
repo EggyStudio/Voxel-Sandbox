@@ -275,4 +275,14 @@ public class SkyTests
 
     private static void Near(Vector3 expected, Vector3 actual) =>
         Assert.True(Vector3.Distance(expected, actual) < 1e-4f, $"expected {expected}, got {actual}");
+
+    [Fact]
+    public void An_Hour_Far_Past_A_Day_Comes_Back_Within_One_As_The_Sky_Turns()
+    {
+        var (hour, _) = Sky.Advance(1e30f, 0, 0.01f);
+        Assert.InRange(hour, 0, 24);
+
+        // An hour within a day turns on as it did, past midnight into the next day.
+        Assert.Equal((0.5f, 8), Sky.Advance(23.75f, 7, 0.75f));
+    }
 }

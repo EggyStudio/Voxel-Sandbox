@@ -55,11 +55,12 @@ public sealed class Weather
         if (!Enabled) return 0;
         if (Held is { } held) return held ? 1 : 0;
         var share = 0f;
-        // A turn of the day before may run past midnight.
-        for (int d = day - 1; d <= day; d++)
+        // A turn of the day before may run past midnight, the days counted back from the one asked,
+        // so the int's last day is asked of as any other.
+        for (int before = 1; before >= 0; before--)
         {
-            if (TurnOn(d) is not var (start, hours)) continue;
-            var since = (day - d) * 24 + hour - start;
+            if (TurnOn(unchecked(day - before)) is not var (start, hours)) continue;
+            var since = before * 24 + hour - start;
             if (since < 0 || since > hours) continue;
             share = MathF.Max(share, MathF.Min(1, MathF.Min(since, hours - since) / FadeHours));
         }

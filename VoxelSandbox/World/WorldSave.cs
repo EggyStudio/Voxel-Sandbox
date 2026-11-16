@@ -357,6 +357,10 @@ public sealed class WorldSave
         if (!float.IsFinite(info.Heading)) info = info with { Heading = 0 };
         if (!float.IsFinite(info.Pitch)) info = info with { Pitch = 0 };
         if (!float.IsFinite(info.Hour)) info = info with { Hour = Sky.FirstHour };
+        // An hour past a day is held within one by its remainder, and a day before the first is the
+        // first.
+        else if (info.Hour is < 0 or >= 24) info = info with { Hour = (info.Hour % 24 + 24) % 24 };
+        if (info.Day < 0) info = info with { Day = 0 };
         return info;
     }
 

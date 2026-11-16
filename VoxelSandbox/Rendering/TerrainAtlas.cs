@@ -122,9 +122,11 @@ public sealed class TerrainAtlas
             if (turns == 0 && animations.Count < MostAnimations && packs.Animation(name) is { } animation)
             {
                 var step = animation.Ticks.Aggregate(Gcd);
-                Image[] steps = [.. animation.Frames.SelectMany((frame, i) => Enumerable.Repeat(frame, animation.Ticks[i] / step))];
-                if (found.Count + steps.Length <= MostTiles)
+                // The steps are counted before any is made, so a frame held long draws its texture
+                // still rather than repeat past what the atlas holds.
+                if (found.Count + animation.Ticks.Sum(ticks => (long)(ticks / step)) <= MostTiles)
                 {
+                    Image[] steps = [.. animation.Frames.SelectMany((frame, i) => Enumerable.Repeat(frame, animation.Ticks[i] / step))];
                     animations.Add((found.Count, steps.Length, step));
                     found.AddRange(steps);
                     return numbers[key] = found.Count - steps.Length;
