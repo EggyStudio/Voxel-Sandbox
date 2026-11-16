@@ -126,13 +126,15 @@ public sealed class TerrainAtlas
                 // still rather than repeat past what the atlas holds.
                 if (found.Count + animation.Ticks.Sum(ticks => (long)(ticks / step)) <= MostTiles)
                 {
-                    Image[] steps = [.. animation.Frames.SelectMany((frame, i) => Enumerable.Repeat(frame, animation.Ticks[i] / step))];
+                    // Each frame is held as its own tile, sampled as the build samples it.
+                    Image[] frames = [.. animation.Frames.Select(Held)];
+                    Image[] steps = [.. frames.SelectMany((frame, i) => Enumerable.Repeat(frame, animation.Ticks[i] / step))];
                     animations.Add((found.Count, steps.Length, step));
                     found.AddRange(steps);
                     return numbers[key] = found.Count - steps.Length;
                 }
             }
-            found.Add(framed ? Unstreaked(image) : Turned(image, turns));
+            found.Add(Held(framed ? Unstreaked(image) : Turned(image, turns)));
             return numbers[key] = found.Count - 1;
         }
         static int Gcd(int a, int b) => b == 0 ? a : Gcd(b, a % b);
@@ -188,7 +190,7 @@ public sealed class TerrainAtlas
             for (int i = 0; i < images.Length; i++)
             {
                 numbers[i] = images[i] is { } image ? found.Count : -1;
-                if (images[i] is { } picture) found.Add(picture);
+                if (images[i] is { } picture) found.Add(Held(picture));
             }
             foreach (var surface in surfaces) connected[surface] = (rule, numbers);
         }
@@ -282,6 +284,11 @@ public sealed class TerrainAtlas
         }
         return new Image(pixels, n, n);
     }
+
+    // A picture as the atlas holds it until it is built, one wider than the widest tile sampled to
+    // that tile as the build samples it, so a pack of large pictures holds tiles' worth and the
+    // build, which then makes every tile that wide, gives the same pixels.
+    private static Image Held(Image image) => image.Width > MostPixels ? new Image(Resized(image, MostPixels), MostPixels, MostPixels) : image;
 
     // An image sampled to so many pixels square by its nearest pixel, so a smaller tile's pixels
     // stay square at the size of the largest.

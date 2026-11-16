@@ -348,4 +348,109 @@ public sealed class HostilePackTests : IDisposable
         Assert.Empty(atlas.Animations);
         Assert.NotEqual(0, atlas.Tile(Surfaces.Stone));
     }
+
+    // A picture of a color so many pixels a side.
+    private static byte[] Png(Color color, int side) =>
+        ExportImageToMemory(new Image([.. Enumerable.Range(0, side * side).SelectMany(_ => new[] { color.R, color.G, color.B, color.A })], side, side), ".png");
+
+    // The texture of every block by its key, which the atlas asks for most of.
+    private static IEnumerable<string> BlockTextures => Blocks.All.Select(b => $"textures/block/{b.Key}.png").Distinct();
+
+    [Fact]
+    public void A_Pack_Whose_Every_Texture_Is_A_Picture_At_The_Bound_Builds_Within_A_Bound()
+    {
+        var picture = Png(Red, 4096);
+        using var packs = new ResourcePacks([Zip("wide", [.. BlockTextures.Select(name => (name, picture))])]);
+
+        var clock = Stopwatch.StartNew();
+        var atlas = TerrainAtlas.Build(packs);
+
+        Assert.InRange(clock.ElapsedMilliseconds, 0, 30_000);
+        Assert.NotEqual(0, atlas.Tile(Surfaces.Stone));
+        Assert.Contains(packs.Faults, fault => fault.Reason.Contains("pixels they are decoded to in all"));
+    }
+
+    [Fact]
+    public void A_Picture_Inflating_Past_What_Its_Sides_Hold_Is_Left_Out_Before_It_Is_Read()
+    {
+        // A picture of sixteen pixels a side with 60 MB of zeros after it, within the 64 MB a file
+        // is read to, for forty textures.
+        var picture = Png(Red);
+        var zeros = new byte[1 << 20];
+        var path = Path.Combine(_folder, "inflating.zip");
+        using (var zip = ZipFile.Open(path, ZipArchiveMode.Create))
+            foreach (var name in BlockTextures.Take(40))
+            {
+                using var stream = zip.CreateEntry("assets/minecraft/" + name, CompressionLevel.Fastest).Open();
+                stream.Write(picture);
+                for (int i = 0; i < 60; i++) stream.Write(zeros);
+            }
+        using var packs = new ResourcePacks([path]);
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        TerrainAtlas.Build(packs);
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        Assert.InRange(allocated, 0, 256L << 20);
+        Assert.Contains(packs.Faults, fault => fault.Reason.Contains("a picture of 16 by 16 pixels holds"));
+    }
+
+    [Fact]
+    public void Large_Pictures_And_A_Strip_Of_Large_Frames_Draw_The_Tiles_The_Build_Samples()
+    {
+        // A strip of four frames of 256 pixels, each a pattern of its own a pixel fine, and a
+        // picture of 512 pixels, wider than the atlas's tiles.
+        static byte[] Pattern(int width, int height, int seed) =>
+            [.. Enumerable.Range(0, width * height).SelectMany(i => new[] { (byte)(i * 7 + seed), (byte)(i / width * 13 + seed * 31), (byte)(i % width * 5), (byte)255 })];
+        var strip = Pattern(256, 1024, 1);
+        var wide = Pattern(512, 512, 2);
+        using var packs = new ResourcePacks([Zip("large",
+            ("textures/block/stone.png", ExportImageToMemory(new Image(strip, 256, 1024), ".png")),
+            ("textures/block/stone.png.mcmeta", "{\"animation\":{}}"u8.ToArray()),
+            ("textures/block/dirt.png", ExportImageToMemory(new Image(wide, 512, 512), ".png")))]);
+
+        var atlas = TerrainAtlas.Build(packs);
+
+        // Each pixel of a tile is the source's at its place scaled to it, as the build samples.
+        static byte[] Sampled(byte[] rgba, int width, int height, int top)
+        {
+            var tile = new byte[TerrainAtlas.MostPixels * TerrainAtlas.MostPixels * 4];
+            for (int y = 0; y < TerrainAtlas.MostPixels; y++)
+                for (int x = 0; x < TerrainAtlas.MostPixels; x++)
+                    Array.Copy(rgba, ((top + y * height / TerrainAtlas.MostPixels) * width + x * width / TerrainAtlas.MostPixels) * 4, tile, (y * TerrainAtlas.MostPixels + x) * 4, 4);
+            return tile;
+        }
+        var (steps, _) = atlas.Animated(Surfaces.Stone)!.Value;
+        Assert.Equal(4, steps.Length);
+        for (int frame = 0; frame < 4; frame++) Assert.Equal(Sampled(strip, 256, 256, frame * 256), steps[frame].Data);
+        Assert.Equal(Sampled(wide, 512, 512, 0), atlas.Picture(Surfaces.Dirt)!.Value.Data);
+    }
+
+    [Fact]
+    public void A_Picture_Carrying_Kilobytes_Of_Text_And_A_Color_Profile_Is_Read()
+    {
+        // A picture of sixteen pixels a side with a text chunk of 8 KB and a color profile's chunk
+        // of 4 KB after its header, as an honest pack's picture may carry.
+        var png = Png(Red).ToList();
+        static byte[] Chunk(string type, byte[] data)
+        {
+            var named = Encoding.ASCII.GetBytes(type).Concat(data).ToArray();
+            uint crc = 0xFFFFFFFF;
+            foreach (var b in named)
+            {
+                crc ^= b;
+                for (int k = 0; k < 8; k++) crc = (crc & 1) != 0 ? 0xEDB88320 ^ (crc >> 1) : crc >> 1;
+            }
+            crc = ~crc;
+            return [(byte)(data.Length >> 24), (byte)(data.Length >> 16), (byte)(data.Length >> 8), (byte)data.Length, .. named, (byte)(crc >> 24), (byte)(crc >> 16), (byte)(crc >> 8), (byte)crc];
+        }
+        png.InsertRange(33, [.. Chunk("tEXt", [.. "Comment\0"u8.ToArray(), .. Enumerable.Repeat((byte)'x', 8 << 10)]), .. Chunk("iCCP", [.. "icc\0\0"u8.ToArray(), .. Enumerable.Repeat((byte)7, 4 << 10)])]);
+        using var packs = new ResourcePacks([Zip("chunks", ("textures/block/stone.png", png.ToArray()))]);
+
+        var stone = packs.Texture("block/stone");
+
+        Assert.NotNull(stone);
+        Assert.Equal(Red.R, stone.Value.Data[0]);
+        Assert.Empty(packs.Faults);
+    }
 }

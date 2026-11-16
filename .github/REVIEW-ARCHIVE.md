@@ -3298,6 +3298,16 @@ before a batch.
     test that fails on the head, in a Reply, the order proposed with it. The mends follow once the
     list is agreed.
 
+193. **A ninth read, the game's commands and the rest of the drawing, the terrain atlas, the sky,
+    the ambient particles and the packs' textures.** Read as the reads before it, a Reply first with
+    each finding as a failing test, then the mends once the list is agreed. Agreed from the Reply,
+    in one commit, a day at the last value an int counts answered by the weather and a world whose
+    kept hour or day is far out of range opening with the hour within a day, and an animation whose
+    frames are held long drawn still before any step of it is made, its cost bounded in a test. In a
+    second commit the save letting go of the compressed blocks of columns no longer loaded, with a
+    count that stays level over a long walk. The shadows' distance past the sections seen is left as
+    it is.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -6674,6 +6684,84 @@ stops at its end. The casters it finds are those of the sections seen, so it cos
 them.
 
 The order I would take is 1 and then 2, in one commit, each test failing on a head copy.
+
+Item 193, the ninth read's two findings mended in the first of two commits. Each test was run first
+on a copy of `0ed436b` with the tests added.
+
+1. The weather of a day counts back from it to the day before (`Weather.Share`), so the int's last
+   day is asked of as any other. A world's hour is held within a day by its remainder and its day
+   at 0 or more as its file is read (`WorldSave.Bounded`), and the sky's cycle holds its hour
+   within a day by its remainder and counts its days in a long (`Sky.Advance`).
+   - `The_Weather_Of_The_Last_Day_An_Int_Counts_Is_Told` gives no answer in 5 s on the head.
+   - `An_Hour_Far_Past_A_Day_Comes_Back_Within_One_As_The_Sky_Turns` fails on the head, which
+     keeps the hour at 1e30.
+   - `A_World_Whose_Hour_Is_Past_A_Days_Count_Opens_Within_A_Day` does not open in 60 s on the
+     head.
+2. An animation's steps are counted from its ticks before any is made (`TerrainAtlas.Build`), so a
+   frame held long draws its texture still and no step past what the atlas holds is made.
+   - `An_Animation_Of_A_Frame_Held_Long_Builds_The_Atlas_At_Its_Cost` holds the build to 256 MB and
+     fails on the head, which takes 3,575.
+
+The strict build is clean, 497 tests pass outside the GPU's lock, and the play passes in 193 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+Item 193's second commit, the save's kept blocks let go as the mobs' are. The test was run first on
+a copy of `7bd15f3` with the test added and a line there giving the head's count of the blocks
+held.
+
+The save lets go of the blocks held of each region no loaded column lies in and none of whose
+changes waits to be written, once the save has written them (`WorldSave.LetGo`, from
+`VoxelGame.SaveWorld` after `Flush`), so it holds those of the regions about the player however
+far the player goes. A region let go is read again as one of its columns loads, as the streamer
+asks for it, and a column that unloads changed reads its region again before it is kept, so a
+region's file is written whole.
+- `The_Save_Holds_The_Blocks_Of_The_Regions_About_The_Player_However_Far_It_Goes` takes twelve
+  steps of 2,000 blocks, a block changed where the player stands at each and the world saved, and
+  holds the save to four columns' blocks at most, and comes back to a block of a region let go,
+  which reads again. It fails on the head, which holds a column more at each step, five at the
+  fifth.
+
+The sky's cycle holds its hour under a day's end after the hour is cast to a float, a remainder a
+hair under 24 that rounds to it taken as the next day's start (`Sky.Advance`).
+- `An_Hour_A_Hair_Before_Midnight_Turns_Into_The_Next_Day` turns the float under 24 on by a
+  millionth of an hour and fails on the head, which gives an hour of 24 on the same day.
+
+The strict build is clean, 499 tests pass outside the GPU's lock, and the play passes in 181 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+The tenth read, of the rest of `Ui`, the HUD and its lines, the screens not read before and the
+game's input by what their tests do not reach, before any mend. Each candidate was held by a test
+on a copy of `0ed436b`, outside the GPU's lock, and one finding failed its test.
+
+1. A pack with a font leaks a texture each time the packs are read again. The packs' font keeps
+   its sheet as a texture and an engine font it measures text by (`PackFont.Measure`, made by
+   `LoadFontFromImage` at `PackGui.cs:222`), and reading the packs again unloads the sheet alone
+   (`PackGui.Use`, :64). So each F3 with T, and each choice of packs, keeps one more font's atlas,
+   with those it was baked into at larger sizes, for the game's life.
+   - `Reading_A_Pack_Of_A_Font_Again_Holds_As_Many_Textures` reads a pack of a font sheet six
+     times and fails on the head, whose engine holds 17 textures after the first and 22 after the
+     sixth. A pack of no font, and one of a block, a moon, a sprite of the HUD and a pig's texture,
+     hold as many textures as they began with.
+   The mend I would make unloads the measuring font with the sheet, `UnloadFont(font.Measure)`.
+
+Read clean, by the code and the probes named. The HUD says one line at a time and lets it go
+after six seconds, so no line piles up (`VoxelGame.Say`). The game draws its own text with the
+packs' glyphs or the engine's, a character past the printable ones as a question mark
+(`PackFont.Glyph`), and gives Dear ImGui no text of a pack or a save as a format. The item icons,
+the walls' textures and the interface's pictures are unloaded as the packs are read again, and the
+interface's own atlas is made once. The hotbar's slot is held within its nine by the wheel's step
+and the save's clamp. A screenshot is named by its time with a count within a second, its
+separators literal. The world list opens the saves' own folders, a new world's folder is named by
+its kind, held to the generators' own, and its seed, and the command line's `--world` is the
+player's own. The toggles' keys act only while no field takes typed text, Escape still going
+back, and a screen over the world holds the view's and the light's keys. The mouse turns the view
+only while the cursor is held, and the pitch is held within its ends.
+
+One low finding is left. The view's turn is summed without a wrap
+(`FirstPersonController.cs:129`), so its float steps grow past the mouse's least turn only after
+some sixteen thousand whole turns one way in a session, and a save wraps it.
+
+The order I would take is the one mend, its test in one commit.
 
 ## Items closed, parked or shortened
 

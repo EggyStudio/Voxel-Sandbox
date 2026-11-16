@@ -31,6 +31,16 @@ public sealed class ResourcePacks : IDisposable
     // is taken whole.
     private const int MostWidth = 4096, MostPixels = 4096 * 16384;
 
+    // The bytes a picture's file may hold past its rows uncompressed, for the text, the color
+    // profile and the other chunks an honest pack's pictures carry, some kilobytes, and its
+    // deflate's own, so a picture inflating to far more than its sides hold is left out before it
+    // is read.
+    private const long PictureMargin = 1 << 20;
+
+    // The pixels the packs' pictures are decoded to in all, past which the rest are left out, where
+    // a pack of a thousand textures of 512 pixels a side holds some 262 million.
+    private const long MostPixelsDecoded = 1L << 29;
+
     // Each pack's files by their path under assets/minecraft, as a zip's entry or a folder's file.
     private readonly List<(string Name, ZipArchive? Zip, Dictionary<string, string> Files)> _packs = [];
 
@@ -66,6 +76,10 @@ public sealed class ResourcePacks : IDisposable
 
     // The files of the packs that could not be read, by the pack's place in the list and the path.
     private readonly HashSet<(int, string)> _failed = [];
+    // The pictures counted toward the pixels decoded in all, each once however often it is asked
+    // for, and their pixels.
+    private readonly HashSet<(int, string)> _counted = [];
+    private long _decoded;
 
     // Opens one pack, a folder or a zip, into the list.
     private void Open(string path)
@@ -107,25 +121,82 @@ public sealed class ResourcePacks : IDisposable
     /// <summary>A picture by its path under <c>assets/minecraft</c>, decoded to RGBA, from the first pack that has it, or null.</summary>
     public Image? ImageAt(string path) => FirstPicture(path) is (_, byte[] png) ? Decoded(png) : null;
 
-    // A picture's bytes from the first pack holding one it can read and whose header gives a size
-    // within the bounds, and that pack, so a picture refused by its size gives way to the next
-    // pack's in the same call.
+    // A picture's bytes from the first pack holding one it can read that fits the bounds, and that
+    // pack, so a picture refused gives way to the next pack's in the same call.
     private (int Pack, byte[] Png)? FirstPicture(string path)
     {
-        while (First(path) is (int pack, byte[] png))
-            if (Sized(pack, path, png)) return (pack, png);
+        while (Find(path) is { } pack)
+            if (Fits(pack, path) && Read(pack, path) is { } png) return (pack, png);
         return null;
     }
 
-    // Whether a picture's PNG header gives a size within the bounds, a picture past them marked as a
-    // file its pack lacks. A file that is no PNG is left to the decoder, which takes it as none.
-    private bool Sized(int pack, string path, byte[] png)
+    // Whether a picture's file, by its header and its length read before its bytes, gives a size
+    // within the bounds, holds no more than a picture of that size can, and keeps the pictures
+    // decoded in all within theirs, a picture past any marked as a file its pack lacks. A file that
+    // is no PNG is left to the decoder, which takes it as none, and one whose head cannot be read
+    // to its reading, which says why.
+    private bool Fits(int pack, string path)
     {
-        if (png.Length < 24 || !png.AsSpan(1, 3).SequenceEqual("PNG"u8)) return true;
-        long width = BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(16)), height = BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(20));
-        if (width <= MostWidth && width * height <= MostPixels) return true;
-        Failed(pack, path, $"it is {width} by {height} pixels, past the {MostWidth} wide and {MostPixels} pixels a picture is taken within");
-        return false;
+        if (Head(pack, path) is not (long length, byte[] head) || head.Length < 24 || !head.AsSpan(1, 3).SequenceEqual("PNG"u8)) return true;
+        long width = BinaryPrimitives.ReadUInt32BigEndian(head.AsSpan(16)), height = BinaryPrimitives.ReadUInt32BigEndian(head.AsSpan(20));
+        if (width > MostWidth || width * height > MostPixels)
+        {
+            Failed(pack, path, $"it is {width} by {height} pixels, past the {MostWidth} wide and {MostPixels} pixels a picture is taken within");
+            return false;
+        }
+        var most = height * (1 + width * 4) + PictureMargin;
+        if (length > most)
+        {
+            Failed(pack, path, $"it holds {length} bytes, past the {most} a picture of {width} by {height} pixels holds");
+            return false;
+        }
+        if (!_counted.Contains((pack, path)))
+        {
+            if (_decoded + width * height > MostPixelsDecoded)
+            {
+                Failed(pack, path, $"the packs' pictures pass the {MostPixelsDecoded} pixels they are decoded to in all");
+                return false;
+            }
+            _counted.Add((pack, path));
+            _decoded += width * height;
+        }
+        return true;
+    }
+
+    // A file's length and its first bytes, read before the rest, or null where it cannot be read,
+    // which its reading then says. A folder's file is opened only where the system gives it a size,
+    // as its reading opens it.
+    private (long Length, byte[] Head)? Head(int pack, string path)
+    {
+        var (_, zip, files) = _packs[pack];
+        if (!files.TryGetValue(path, out var at)) return null;
+        try
+        {
+            long length;
+            Stream stream;
+            if (zip is null)
+            {
+                var file = new FileInfo(at);
+                length = (file.LinkTarget is null ? file : file.ResolveLinkTarget(returnFinalTarget: true) as FileInfo)?.Length ?? 0;
+                if (length <= 0) return null;
+                stream = new FileStream(at, FileMode.Open, FileAccess.Read, FileShare.Read);
+            }
+            else
+            {
+                var entry = zip.GetEntry(at)!;
+                length = entry.Length;
+                stream = entry.Open();
+            }
+            using (stream)
+            {
+                var head = new byte[24];
+                return (length, head[..stream.ReadAtLeast(head, head.Length, throwOnEndOfStream: false)]);
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            return null;
+        }
     }
 
     // A pack's picture decoded to RGBA, or null where it is no PNG or does not decode.
