@@ -3373,6 +3373,28 @@ before a batch.
     item 199 and a hash over a stretch of columns show. Two comments of the ores' commit go with the
     first mend, the words on what a placement lost and held before blobs crossed said as what holds.
 
+201. **A seventeenth read, a column's making on the path a play takes.** Item 200 read a column's
+    stages on the processor's path, and its closing Reply says a play on a machine whose device runs
+    the caves' shader carves from the device's readings instead. Read the same stages on that path,
+    a flight east at 110 over seed 1 at the shadow distance of 128 with the far cascade on, under
+    the exclusive lock, from asking the device to the column's mesh in the scene, with the wait for
+    the readings, the readings' way back and the carve from them as stages of their own, the count
+    of columns waiting at each stage through the flight, and the frames whose time passes twice the
+    median with what ran in them. A Reply first with the stage table and the three largest named
+    with their places in the code, then the mends one commit each by size, each with the columns'
+    hash the same and the table after. No mend before the Reply.
+
+202. **The made columns join over frames, not a batch in one.** Item 201's Reply reads 203 columns
+    joining in 28 frames of a flight, 8 at the median, and 23 to 25 of those frames slow at 30 ms
+    median against 11. Asked, at most two made columns taken in a frame, the nearest to the eye
+    first, the rest kept made until their frame, and a count of the columns waiting so that a fast
+    flight is shown to drain (the wait's worst in frames and in ms in the Reply). Read as item 201
+    was, the same flight under the exclusive lock, three runs, the slow frames' count and their
+    median before and after, the frame's median and the felt time from entering the drawn reach to
+    drawn held no worse. A test holds the bound of two a frame and the order. The engine's share,
+    the field and the ray scene built for new meshes and the field alone at 21 to 26 ms in frames
+    with nothing joined, goes to ASKS.md with the samples. The flood's spread waits on this read.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -7550,6 +7572,177 @@ The three mends, by stage, one thread with tiered compilation on, the medians an
 The hash of the blocks and the light of 400 columns stood at
 `AA0084A74B5E0FFDDA3B4A751F13A70484317F780C38B18D6CA8932DEA7FFB93` before and after each, and the
 400 columns are made in 11.5 s against 19.4 s by the probe that hashes them.
+
+Item 201's read, a column's making on the path a play takes, at `586e734` on the engine's 6.2.86,
+with a probe beside the tree that marks each column's stages, each section's way to the scene, the
+floods and each frame. The flight runs over seed 1's overworld, a spectator flying east at 110 from
+(4400.5, 110, 600.5) for 900 frames of W, at the render distance of 12 with the sun's shadows
+reaching 128 and the far cascade on. It ran offscreen at 1280 by 720 with the frame unlimited, three
+times under the exclusive lock on tuned's powersave-bazzite, the GPU at 0% before each. Each run
+makes 203 columns, every one from the device's readings, and the engine's slowest frame of each
+twenty is read beside it. The runs agree within a few milliseconds a stage, so each row gives the
+three runs' medians, then the largest 90th part and the worst of the three.
+
+| From asking the device, ms | Medians | 90th | Worst |
+|---|---|---|---|
+| asked, to sent in a batch (the wait for the readings) | 27.2, 24.4, 28.2 | 48.0 | 60.4 |
+| sent, to back (the device's reading and its way back) | 20.5, 23.3, 19.2 | 37.8 | 47.9 |
+| the readings copied out | 0.62, 0.61, 0.80 | 0.85 | 0.92 |
+| back, to a worker taking them | 28.9, 22.0, 24.3 | 56.1 | 117 |
+| taken, to the worker starting | 0.48, 0.42, 0.44 | 0.91 | 4.9 |
+| the worker's making | 6.0, 7.4, 6.1 | 12.5 | 18.3 |
+| of it the carve from the readings | 0.11, 0.11, 0.09 | 0.13 | 4.4 |
+| made, to taken in on the main thread | 17.5, 12.7, 18.6 | 44.2 | 72.0 |
+| the join | 0.34, 0.35, 0.36 | 0.52 | 5.9 |
+| joined, to the column's first mesh in the scene | 2867, 2886, 2886 | 4398 | 6032 |
+| asked, to the column's first mesh in the scene | 3015, 3015, 3036 | 4573 | 6156 |
+
+Of the worker's making, the ores take 1.1 to 1.2 ms, the fill 0.8 to 0.9, the ground 0.6 to 0.7,
+the trees 0.6, the light 0.4 and the packing 0.2. The carve from the readings takes 0.1 ms, against
+the 8.6 ms of the carve on the processor's path in item 200's read. The hops between the device,
+the workers and the main thread are each checked once a frame, so each costs one to two frames
+(`CaveFields.Update`, `CaveFields.cs:140`, called at `ChunkStreamer.cs:86`, the readings taken at
+`:90` to `:103` and the made columns joined at `:57`), about 100 ms from asking to joined.
+
+The wait from joined to the scene is split below by each section's marks, for each column's first
+section with faces.
+
+| From joined, ms | Medians | 90th | Worst |
+|---|---|---|---|
+| joined, to held as unseen | 5.5, 6.4, 7.6 | 16.7 | 44.5 |
+| held, to released by a flood | 1470, 1456, 1484 | 4278 | 4352 |
+| released, to sent to a mesher | 17.2, 12.7, 17.2 | 33.5 | 33.7 |
+| sent, to meshed | 56.8, 57.1, 48.0 | 1482 | 1628 |
+| meshed, to taken in the scene | 25.9, 28.7, 30.7 | 47.5 | 74.3 |
+
+The sent mark is a section's first send. A section one of whose eight columns around is not loaded
+is let go by `Gather` (`SectionMesher.cs:339`) and sent again as that column joins, which the 90th
+part of sent to meshed holds.
+
+The table below tells the hold for a flood apart by the drawn reach, over the 246 sections with
+faces of the columns joined in a run that came within that reach in the run. The eye's section is
+taken from the floods, each begun for a step east, and agrees with the feet at the end in all three.
+
+| By the drawn reach, ms | Medians | 90th | Worst |
+|---|---|---|---|
+| held for a flood, outside the drawn reach (the lead) | 1444, 1456, 1466 | 2914 | 4314 |
+| held for a flood, inside it | 0, 0, 0 | 0 | 5973 |
+| within the drawn reach, to drawn (felt) | 39.7, 34.3, 45.2 | 78.7 | 6019 |
+
+The hold lies outside the drawn reach. `Reach.Within` (`Reach.cs:13`) counts every section at or
+above a column's floor in reach at any distance, so the columns the streamer makes out to the
+render distance plus 2 (`ChunkStreamer.cs:67`) are held in `_unseen` (`ChunkRenderer.cs:828` and
+`:839`) until a flood reaches them, and the flood's reach moves only as the eye steps into the next
+section (`Visibility.cs:177`), every 1.47 s in the flight, the 7 floods of each run begun for a
+step and each spread over 2 to 3 frames at 2 ms a frame (`ChunkRenderer.cs:552`). Most sections
+come in as the sun's casters before the eye's step brings them within the drawn reach. What is felt
+comes in five groups:
+
+- 204 of the 246 are meshed by the time the step's flood finishes and wait for its spread alone,
+  34 to 45 ms at the median and 61 at the worst, while the last whole flood's sections are drawn.
+- 19 were sent as casters before one of their eight columns around had joined, let go by
+  `Gather` and marked again on its arrival, which outside the drawn reach held them for the next
+  step's flood, and are drawn 85 to 92 ms after the step, 105 at the worst.
+- 14 are released by the step's flood and meshed after it, drawn 64 to 77 ms after the step, 105
+  at the worst.
+- 6 are deep sections at height 1, below their column's floor, which `Reach.Within` reaches by
+  the distance in three dimensions, parked until the next step and drawn 1.49 to 1.50 s after it.
+- 3 are hidden from the eye until a flood 6.0 s later reaches them, and are not drawn meanwhile.
+
+The columns waiting in a frame number 0 at the median at each stage in all three runs. At the worst
+29 are asked with no batch yet, 24 are on the device, 16 to 21 are back with no worker, 8 are on
+the workers and 8 are made and not taken in, with 1235 to 1643 sections waiting to be meshed and
+24 to 31 on the meshers.
+
+The frames number 982, 985 and 1004, their medians 11.08, 10.77 and 11.18 ms, and 41, 42 and 44 of
+them pass twice the median, at 29.5 to 30.5 ms at their median and 65 to 79 at the worst. The
+columns join in groups. 203 columns join in 28 frames a run, 8 at the median, since a batch of 8
+readings (`CaveFields.Batch`, `CaveFields.cs:33`) lands in one frame and its columns go to the 8
+workers (`ChunkStreamer.cs:26`) together, are made in about the same 6 ms and are joined in one
+update (`ChunkStreamer.cs:57` to `:64`). 23 to 25 of those 28 frames pass twice the median. In the
+slow frames the game's update takes 6.9 to 7.4 ms at the median and 22.5 at the worst, the
+streamer's update with its joins 1.7 to 2.1 of it and the renderer's taking in of 9 to 11.5 meshes
+and their groups 3.1 to 3.6 (`ChunkRenderer.cs:782` to `:792`, `Rebuild` at `:1067`), with a
+collection of generation 0 in 25 to 29 of them and of generation 1 in 10 to 12. The end of the frame
+takes 21.3 to 23.7 ms at their median. The engine's slowest frames past twice the median, 39 over
+the three runs, read `render.fence` at 0, so they are held on the processor, the GPU's stages
+staying as in any frame. In the 26 where meshes came in, `render.graph` takes 14 to 64 ms, 26 at the
+median, of it `cpu.scene_field` 4 to 23 and `cpu.global_illumination` 4 to 46, with `gc.pause` up to
+8.4, `prepare.GpuMeshesPrepare` 1.5 to 11 and the game's `Play` 3 to 19. In 10 of the 13 where none
+came in, `cpu.scene_field` alone takes 21 to 26 ms.
+
+The three largest, by what is felt:
+
+1. **The frames where a batch's columns join together**, some 25 frames a run at 30 ms and up to
+   79, against 11 ms for the others. The game's part is the joins and the meshes taken in all in
+   one frame, at `ChunkStreamer.cs:57` to `:64` and `ChunkRenderer.cs:782` to `:792`. The engine's
+   part is its field and its ray scene built on the processor for the new meshes.
+2. **The slow frames with nothing joined**, 11 to 13 a run, at 27 to 33 ms in the samples, held
+   by the engine's `cpu.scene_field` alone with no column joined and no mesh taken in.
+3. **The flood's spread at each step**, 34 to 45 ms at the median for 204 of 246 sections, from
+   the flood held to 2 ms a frame (`ChunkRenderer.cs:552`, `Visibility.cs:177`), with the 33
+   sections released or sent again around it at 64 to 92 ms. The 6 deep sections at 1.5 s follow
+   from `Reach.Within`'s reach in three dimensions below a column's floor.
+
+The streamer's lead, held outside the drawn reach for 1.4 to 1.5 s at the median, and the device's
+path of about 100 ms both lie inside it and are not felt. The mend I would take first is the joins
+spread over frames, at most two made columns taken in a frame, read for the slow frames with the
+table after. The engine's field and ray scene on the processor in frames that bring new meshes,
+and its field in frames that bring none, are the engine's to mend, and I would write them in
+ASKS.md with these numbers.
+
+Item 202's mend, the made columns taken in two a frame, the nearest the player first
+(`ChunkStreamer.TakeMade`), read as item 201 was, the same flight with the same probe, three runs
+before at `24d5b8e` and three after, each under the exclusive lock on tuned's powersave-bazzite with
+the GPU at 0% before it. A worker is free once its column is made, and the column stays pending
+until it is taken in, so it is not asked for again. `Made` counts the columns made and not taken
+in, and the profile shows it as `update.made`.
+
+| Three runs each | Before | After |
+|---|---|---|
+| frames past twice the median | 41, 42, 44 | 25, 23, 26 |
+| their median, ms | 29.5, 30.2, 30.5 | 25.8, 26.2, 25.8 |
+| of them with a column joined | 23, 24, 25 | 13, 10, 14 |
+| of them with nothing joined or meshed | 13, 11, 13 | 12, 12, 12 |
+| the slowest with a column joined, ms | 76.0, 65.3, 79.0 | 49.3, 29.9, 44.1 |
+| a collection of generation 0 among them | 25, 27, 29 | 9, 11, 10 |
+| the frames' median, ms | 11.08, 10.77, 11.18 | 11.05, 10.79, 11.15 |
+| their 99th part, ms | 36.7, 38.9, 38.8 | 27.6, 26.3, 27.1 |
+| frames a column joined in, the most in one | 28, 8 | 105, 2 |
+| made to taken in, median, ms | 17.5, 12.7, 18.6 | 104.6, 94.7, 105.0 |
+| made to taken in, worst, ms and frames | 72.0, 1 | 198.5, 12 |
+| made columns waiting in a frame, the most | 8 | 23 |
+| within the drawn reach to drawn, median, ms | 39.7, 34.3, 45.2 | 42.1, 41.7, 41.7 |
+| within the drawn reach to drawn, 90th, ms | 74.8, 78.7, 77.5 | 69.8, 73.1, 82.5 |
+| asked to the column's first mesh, median, ms | 3015, 3015, 3036 | 3013, 3013, 3018 |
+
+The engine's slowest frames with a column joined, 13 sampled after, take in 3 to 6 meshes where
+those before took in 10 to 31, `render.graph` 7.6 to 44 ms against 14 to 64, `cpu.scene_field`
+1.1 to 10.3 against 4 to 23 and the game's `Play` 1.2 to 9.7 against 3 to 19, while
+`cpu.global_illumination` reaches 36 against 46. The slow frames with nothing joined stay as they
+were found, `cpu.scene_field` alone at 20.5 ms at the median in 18 samples, the engine's share
+written in ASKS.md.
+
+Each run after holds one frame of 66 to 75 ms, past the flight's 880th frame, whose time lies in the
+frame's beginning with no column joined, no mesh taken in and no collection, and whose `stage.First`
+takes it with none of its systems above 0.06 ms. It falls where the world's save of every 30 s comes
+due in `Begin` (`VoxelGame.cs:872`), which I take it for from its place and not from a mark. Two
+check runs before the mend under the shared lock hold such a frame, at 64.5 and 70.0 ms, and the
+three read before hold none. The slowest of each run after past it is 49.3, 30.3 and 44.1 ms.
+
+The wait from made to taken in lies inside the streamer's lead. A column waits 7 frames at the
+median and 12 at the worst, the asked column's first mesh comes in when it did, and the felt time
+holds within the runs' spread. Of the late sections, the 19 sent again as a neighbor joined are
+drawn 74 to 83 ms after the step against 85 to 92, and the 14 meshed after the step's flood 59 to 67
+against 64 to 77. The made columns drain with the flight, 23 waiting at the most, and none in the
+frames after its end.
+
+`Made_Columns_Are_Taken_In_Two_A_Frame_The_Nearest_First` gives a streamer of eight workers the
+eight columns nearest a place at once and checks that an update takes in the place's column and one
+beside it, the next two more beside it, and every one after two at most until none waits. It fails
+on the head, which takes in all eight in one update. The strict build is clean, 547 tests pass
+outside the GPU's lock with the long soak skipped, the 400 columns' hash stands, and the play
+passes in 185 s, its captures as the pin's.
 
 ## Items closed, parked or shortened
 
