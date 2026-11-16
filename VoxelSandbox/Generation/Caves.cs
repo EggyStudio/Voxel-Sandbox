@@ -26,7 +26,10 @@ public sealed class Caves
     public const double SlopedPerBlock = 0.156;
 
     private const int CellWidth = 4, CellHeight = 8;
-    private const int Across = Section.Size / CellWidth + 1, Levels = ChunkColumn.Height / CellHeight + 1;
+    private const int Across = Section.Size / CellWidth + 1;
+
+    /// <summary>The levels of a column's cells' corners, from the world's floor to its ceiling.</summary>
+    public const int Levels = ChunkColumn.Height / CellHeight + 1;
 
     private readonly SourceNoise _layer, _cheese, _entrance, _spaghetti1, _spaghetti2, _rarity, _thickness3d, _spaghetti2d,
         _modulator, _elevation, _thickness2d, _roughness, _roughnessModulator, _noodle, _noodleThickness, _ridgeA, _ridgeB,
@@ -194,11 +197,38 @@ public sealed class Caves
             double fx = x % CellWidth / (double)CellWidth, fz = z % CellWidth / (double)CellWidth, fy = (y - ChunkColumn.Bottom) % CellHeight / (double)CellHeight;
             var values = Values;
             double At(int dx, int dy, int dz) => values[((level + dy) * Across + cz + dz) * Across + cx + dx];
-            double Lerp(double t, double a, double b) => a + t * (b - a);
             return Lerp(fy,
                 Lerp(fz, Lerp(fx, At(0, 0, 0), At(1, 0, 0)), Lerp(fx, At(0, 0, 1), At(1, 0, 1))),
                 Lerp(fz, Lerp(fx, At(0, 1, 0), At(1, 1, 0)), Lerp(fx, At(0, 1, 1), At(1, 1, 1))));
         }
+
+        /// <summary>
+        /// The density at each level of a place's corners, x and z from 0 to 15, interpolated
+        /// across x and z as <see cref="DensityAt"/> interpolates them, for
+        /// <see cref="Between"/> to read each height of the place from.
+        /// </summary>
+        public void ByLevel(int x, int z, Span<double> levels)
+        {
+            int cx = x / CellWidth, cz = z / CellWidth;
+            double fx = x % CellWidth / (double)CellWidth, fz = z % CellWidth / (double)CellWidth;
+            var values = Values;
+            for (int level = 0; level < Levels; level++)
+            {
+                var row = level * Across;
+                levels[level] = Lerp(fz, Lerp(fx, values[(row + cz) * Across + cx], values[(row + cz) * Across + cx + 1]),
+                    Lerp(fx, values[(row + cz + 1) * Across + cx], values[(row + cz + 1) * Across + cx + 1]));
+            }
+        }
+
+        /// <summary>The density at a height of a place from its levels, as <see cref="DensityAt"/> gives it there.</summary>
+        public static double Between(ReadOnlySpan<double> levels, int y)
+        {
+            var level = (y - ChunkColumn.Bottom) / CellHeight;
+            var fy = (y - ChunkColumn.Bottom) % CellHeight / (double)CellHeight;
+            return Lerp(fy, levels[level], levels[level + 1]);
+        }
+
+        private static double Lerp(double t, double a, double b) => a + t * (b - a);
     }
 
     private double Entrances(int x, int y, int z, double roughness, Reading read)

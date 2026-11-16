@@ -112,4 +112,24 @@ public sealed class CaveTests
         Assert.Equal(Items.Diamond, Loot.Of(BlockId.DeepslateDiamondOre, new Random(1), Items.Find("iron_pickaxe")).Single().Item);
         Assert.Equal(4.5f, Loot.Hardness(BlockId.DeepslateDiamondOre));
     }
+
+    [Fact]
+    public void A_Places_Density_Read_Between_Its_Levels_Is_Its_Density_At_Each_Height_To_The_Bit()
+    {
+        // A column of the overworld's caves carved, each of its places read at every height both
+        // ways.
+        var land = new Overworld(1);
+        var grid = land.Caves.Carve(3, -5, (x, z) => land.At(x, z).Height);
+        Span<double> levels = stackalloc double[Caves.Levels];
+        var differ = 0;
+        for (int z = 0; z < Section.Size; z++)
+            for (int x = 0; x < Section.Size; x++)
+            {
+                grid.ByLevel(x, z, levels);
+                for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
+                    if (BitConverter.DoubleToInt64Bits(Caves.Grid.Between(levels, y)) != BitConverter.DoubleToInt64Bits(grid.DensityAt(x, y, z))) differ++;
+            }
+
+        Assert.Equal(0, differ);
+    }
 }

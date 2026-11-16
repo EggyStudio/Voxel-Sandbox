@@ -752,3 +752,21 @@ the order of a section's cells (`Lighting.Compute`).
   27%, are the largest after it.
 - The strict build is clean, 545 tests pass outside the GPU's lock with the long soak skipped, and
   the play passes in 194 s, its captures as the last commit's play's.
+
+Item 200's third mend, the first proposed. A place's caves' density is interpolated across x and z
+once for each level of its corners, and each of its heights reads between the two levels about it
+(`Caves.Grid.ByLevel`, `Between`). The barrier the aquifers keep between two of them is read from
+its noise once at a place, however many pairs of them ask there (`Aquifers.At`).
+- The hash of the blocks and the light of 400 columns is
+  `AA0084A74B5E0FFDDA3B4A751F13A70484317F780C38B18D6CA8932DEA7FFB93` as before, and the guard
+  test and the caves' tests pass.
+- `A_Places_Density_Read_Between_Its_Levels_Is_Its_Density_At_Each_Height_To_The_Bit` reads every
+  place and height of a carved column both ways and finds no bit apart. It holds a reading the head
+  has no second way of, so it guards the two ways rather than failing there.
+- After it the fill, caves and aquifers take 5.60 ms against 9.04 at the median and 25.8 against
+  29.9 at worst, the barrier's noise at each cave's cell where aquifers meet the most of the worst,
+  and a column a median of 30.2 ms against 32.5. The caves' carve, 9.18 ms and 31% of a column, is
+  the largest after it.
+- The strict build is clean, 546 tests pass outside the GPU's lock with the long soak skipped, and
+  the play passes in 191 s, its captures as the last commit's play's. A comment was wrapped after,
+  and the strict build is clean on that.

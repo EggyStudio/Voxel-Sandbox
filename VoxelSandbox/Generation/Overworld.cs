@@ -247,11 +247,14 @@ public sealed class Overworld : IWorldGenerator
         var grounds = new (int Height, Biome Biome, BlockId Top)[Section.Size * Section.Size];
         var caves = _caves.Carve(columnX, columnZ, (x, z) => At(x, z).Height, caveReadings);
         var aquifers = _aquifers.For((x, z) => At(x, z).Height);
+        // The caves' density at each level of a place's corners, which its heights read between.
+        Span<double> levels = stackalloc double[Caves.Levels];
         for (int z = 0; z < Section.Size; z++)
             for (int x = 0; x < Section.Size; x++)
             {
                 int wx = columnX * Section.Size + x, wz = columnZ * Section.Size + z;
                 var (height, biome, top, under, temperature, _) = Ground(wx, wz);
+                caves.ByLevel(x, z, levels);
                 grounds[z * Section.Size + x] = (height, biome, top);
                 // The caves open to the top where an entrance reaches it but under water, which they
                 // would drain, and on a village's ground, which its roads and footings lie on.
@@ -281,7 +284,7 @@ public sealed class Overworld : IWorldGenerator
                     // elsewhere open where the source's entrances reach the top, a mouth the sun
                     // shines into. A cave holds its aquifer's water or lava under its level and air
                     // over it, or keeps the ground as a wall between two aquifers.
-                    if ((y < height - 3 || open) && caves.DensityAt(x, y, z) is var density and <= 0 && aquifers.At(wx, y, wz, density) is { } held)
+                    if ((y < height - 3 || open) && Caves.Grid.Between(levels, y) is var density and <= 0 && aquifers.At(wx, y, wz, density) is { } held)
                     {
                         if (held != BlockId.Air) column.Set(x, y, z, held);
                         continue;

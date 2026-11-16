@@ -85,12 +85,14 @@ public sealed class Aquifers
             if (near12 <= 0) return fluid;
             if (fluid == BlockId.Water && aquifers.Global(y - 1).At(y - 1) == BlockId.Lava) return fluid;
             var two = StatusAt(second.At);
-            if (density + near12 * aquifers.Pressure(x, y, z, one, two) > 0) return null;
+            // The barrier's noise at the place, read the first time a pair of aquifers asks for it.
+            double? barrier = null;
+            if (density + near12 * aquifers.Pressure(x, y, z, one, two, ref barrier) > 0) return null;
             var three = StatusAt(third.At);
             var near13 = Similarity(first.D, third.D);
-            if (near13 > 0 && density + near12 * near13 * aquifers.Pressure(x, y, z, one, three) > 0) return null;
+            if (near13 > 0 && density + near12 * near13 * aquifers.Pressure(x, y, z, one, three, ref barrier) > 0) return null;
             var near23 = Similarity(second.D, third.D);
-            if (near23 > 0 && density + near12 * near23 * aquifers.Pressure(x, y, z, two, three) > 0) return null;
+            if (near23 > 0 && density + near12 * near23 * aquifers.Pressure(x, y, z, two, three, ref barrier) > 0) return null;
             return fluid;
         }
 
@@ -175,7 +177,7 @@ public sealed class Aquifers
 
     // How strongly two aquifers keep a wall between them at a height, as the source reckons it, most
     // where water meets lava and where the height lies between their two levels.
-    private double Pressure(int x, int y, int z, Status one, Status two)
+    private double Pressure(int x, int y, int z, Status one, Status two, ref double? barrierAt)
     {
         var (a, b) = (one.At(y), two.At(y));
         if (a == BlockId.Lava && b == BlockId.Water || a == BlockId.Water && b == BlockId.Lava) return 2;
@@ -194,7 +196,7 @@ public sealed class Aquifers
             var t = 3 + within;
             pressure = t > 0 ? t / 3 : t / 10;
         }
-        var barrier = pressure is >= -2 and <= 2 ? _barrierAt.At(x, y, z) : 0;
+        var barrier = pressure is >= -2 and <= 2 ? barrierAt ??= _barrierAt.At(x, y, z) : 0;
         return 2 * (barrier + pressure);
     }
 }
