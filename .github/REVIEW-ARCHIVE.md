@@ -3354,6 +3354,25 @@ before a batch.
     each leaves, then the mends in their own commits with a test each, the smallest order of writes
     that leaves a world whole proposed where one exists.
 
+199. **A fifteenth read, a world the same however its columns load.** One seed's columns loaded in
+    several orders (row by row, reversed, a spiral from each side, at random), with one worker and
+    with many, approached from different directions, and generated again after an unload, each
+    column's blocks compared byte for byte in the overworld and the other kinds. Read most closely,
+    what crosses a column's edge (trees, structures and villages, caves, ores, lakes, the chests'
+    places and loot seeds, the mobs placed at generation). Beside it one line on the long frame, the
+    mesh budget reading the raw frame's length after a pause. A Reply first with what differs and
+    where, then the mends by cause, each with its test.
+
+200. **A sixteenth read, where a column's making spends its time.** A column's whole generation
+    reads 26 to 27 ms with tiered compilation off, the ores 1.7 of them. Measure the making of a few
+    hundred overworld columns by stage (shape and biomes, caves and aquifers, surface, ores,
+    structures, trees and plants, light, the chests and herds), the median and the worst of each,
+    with tiered compilation on as the game runs and off, on one thread and on the workers the game
+    uses. A Reply first with the table, the three largest stages named with what in each takes the
+    time, and a mend proposed for each that leaves every block as it stands, which the guard test of
+    item 199 and a hash over a stretch of columns show. Two comments of the ores' commit go with the
+    first mend, the words on what a placement lost and held before blobs crossed said as what holds.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -7253,6 +7272,284 @@ changed before each, against 17.4 and 16.5 ms before, on the powersave-bazzite p
 The strict build is clean, 538 tests pass outside the GPU's lock with the long soak skipped,
 and the play passes in 186 s, its captures as the last commit's play's. Five comments were
 mended after, and the strict build is clean on that.
+
+Item 199, the fifteenth read, a world the same however its columns load, before its mends.
+
+Nothing differs. A probe compared every block, the sky's and the blocks' light, the chests and the
+mobs held still, by a hash that is the same from run to run.
+
+| Compared | Ways | Columns | Differing |
+|---|---|---|---|
+| The generator, the overworld about the origin | 9 | 64 | none |
+| The generator, the overworld about the nearest village | 9 | 64 | none |
+| The generator, the flat world | 9 | 64 | none |
+| The game, about the origin, at a render distance of two | 12 | 9 | none |
+| The game, about the nearest village | 14 | 25 | none |
+| The game, about the nearest mineshaft's chests, in an ocean | 14 | 25 | none |
+
+- The generator's ways were row by row, reversed, inward from each side, at random, on sixteen
+  threads at once, after 64 far columns on the same generator, and a second time on it.
+- The game's ways were a teleport and a flight of twelve columns from each side, each with one
+  worker and with eight, and in the last two places also a flight away and back in a world kept
+  only in memory and in a saved world. Each settled for 600 frames before it was read.
+- The compared columns held the village's houses and villagers, the mineshaft's two chests, an
+  ocean's water over gravel, lava, sand and herds.
+
+A column is made from its place and the world's seed alone (`Overworld.Generate`), so the order
+cannot enter it. What crosses its edge is made again for it and kept to it, the trees and the
+plant patches of the eight columns about it, the structures whose starts lie in reach, the caves'
+and the aquifers' noises, and each chest's place and its loot's seed, hashed from the place. The
+light and the water at a column's edge are joined both ways as it loads.
+
+Three things read alongside:
+- Ores do not cross an edge. A vein walks from a place in its own column and drops the steps that
+  leave it (`Ores.Blob`), some 5% of a vein of four blocks and 14% of one of seventeen, and a vein
+  reaching an edge ends flat on it, which a cave or a ravine along an edge shows. Its test for a
+  cave's air beside it sees its own column alone. This is the same in every order.
+- Two animals of a herd may stand in one cell, the herd's places drawn with no check of those taken
+  (`Herds.Place`), as two chickens of the village's herd at (615.5, -460.5).
+- The meshing a frame is given reads the frame before it unclamped (`VoxelGame.MeshBudget`), a tenth
+  of it, so the frame after a pause of a minute meshes for up to six seconds where columns wait,
+  and that frame's length gives the next a tenth of that again.
+
+Proposed, each in its own commit with its test:
+1. The ores of a column taken from the veins of the nine columns about it, each walked from its own
+   column's random and kept to this column, as the trees are, its roll for a cave's air drawn at
+   every step so its path does not depend on the blocks it meets. A vein then goes on across an
+   edge and none of its steps is lost, so a world holds some 5% to 14% more of each ore, as many
+   as the veins' sizes give. This changes what is seen underground, so it carries a picture of a
+   cave's wall where a vein crosses an edge, before and after, and its cost to a column is said.
+2. A herd's animal set only on a cell none of the herd took.
+3. The mesh budget read from the frame clamped to a quarter second, so the frame after a pause
+   meshes for 25 ms at most, while a slow device's frames of up to a quarter second mesh in
+   proportion as before.
+4. A test in the suite that generates a few columns of the overworld and of the flat world in two
+   orders and on many threads at once and finds them the same, in some seconds, so a change that
+   came to depend on the order would fail it. The game's comparison from two sides takes some ten
+   seconds more, which I leave out unless asked.
+
+Item 199's first mend, the third proposed. The meshing a frame is given reads the frame before
+clamped to a quarter second (`VoxelGame.MeshBudget`), 25 ms at most after a pause. The test,
+`The_Meshing_A_Frame_Is_Given_After_A_Pause_Is_That_After_A_Quarter_Second`, fails on the head,
+which gives a frame of a minute 6,000 ms. The strict build is clean, 540 tests pass outside the
+GPU's lock with the long soak skipped, and the play passes in 184 s, its captures as the last
+commit's play's.
+
+Item 199's second mend, the second proposed. A herd's animal is set only on a cell none of the herd
+took, a cell taken tried again within the herd's tries (`Herds.Place`). The test,
+`No_Two_Animals_Of_A_Herd_Stand_In_One_Cell`, places herds over 1,024 columns of plains under grass
+and takes the overworld's column whose chickens stood two in one cell. On the head 9 of its 1,025
+herds hold two in a cell. The strict build is clean, 541 tests pass outside the GPU's lock with
+the long soak skipped, and the play passes in 183 s, its captures as the last commit's play's.
+
+Item 199's third mend, the fourth proposed. The guard,
+`A_Worlds_Columns_Are_The_Same_In_Any_Order_And_Made_On_Many_Threads_At_Once`, makes 25 columns
+of the overworld and of the flat world row by row on one generator, in the reverse order on
+another and all at once on sixteen threads on a third, and finds each column's blocks, chests and
+animals the same, in some seconds. It passes on the head, as nothing differs there. The herd's
+test says what its overworld column is. The strict build is clean, 543 tests pass outside the
+GPU's lock with the long soak skipped, and the play passes in 193 s, its captures as the last
+commit's play's.
+
+Item 199's fourth mend, the first proposed, ores across a column's edge.
+
+A column walks the ore blobs of the nine columns about it, each from its own column's seed and by
+the biome at that column's middle, and keeps the blocks that fall in it (`Ores.Place`). A walk
+draws its roll for a cave's air at every step, so its path is the same in each column it is walked
+in. A placement tries its count times the share of a blob of its size that stayed in its column
+before, worked out once over a grid of a walk's chances, 86% for seventeen blocks to 96% for three,
+the fraction of a try left over tried at that chance. The diamonds try 96.5% of that, as their
+narrow band held 3.6% more over the three stretches without it. A blob that starts farther from
+the column than its steps reach makes its draws alone.
+
+| Ore | About the origin | Mountains, about (-4, -4) | Badlands, about (84, 28) |
+|---|---|---|---|
+| Coal | 16,703 to 16,895 | 17,276 to 18,299 | 10,019 to 10,044 |
+| Copper | 25,456 to 25,599 | 27,656 to 27,502 | 19,371 to 19,472 |
+| Diamond | 13,497 to 13,637 | 13,633 to 13,572 | 12,998 to 12,851 |
+| Emerald | 1,597 to 1,583 | 1,553 to 1,546 | none |
+| Gold | 11,795 to 11,621 | 11,665 to 11,598 | 11,952 to 12,045 |
+| Iron | 35,379 to 35,361 | 36,583 to 36,424 | 33,025 to 32,919 |
+| Lapis | 11,397 to 11,625 | 11,609 to 11,778 | 10,740 to 10,466 |
+| Redstone | 17,553 to 17,683 | 17,483 to 17,698 | 17,018 to 17,199 |
+
+- Each stretch is 400 columns of seed 1's overworld. Coal in the mountains' stretch holds 5.9% more,
+  where the stone band its upper placement falls in is narrow, and is left so as agreed.
+- Placing a column's ores takes a median of 1.71 ms against 0.60 ms before, of a column's whole
+  generation of 27.5 ms against 26.1 ms, so the ores take 6.2% of a column's making against 2.3%.
+  The skip of a blob out of reach saved 0.23 ms of the 1.94 it took first, since the draws it must
+  still make are the most of a walk's cost. Both counts and the guard test come out the same with
+  it.
+- `A_Vein_Goes_On_Across_A_Columns_Edge` places the ores of sixteen columns of stone side by side
+  and finds more than an eighth of the ores on an edge with their ore across it. On the head, with
+  the new call passed through, 2 of 249 do, against 6,822 of 524,288 blocks that are ore.
+- The picture, `.github/devlog/2026-11-16-item-199-veins-across-edges.webp`, shows two columns'
+  edges under the ground seen from the south through a column's depth, veins stopping at them
+  before and going on across them after, over the ore lying over each cell of a column with 64
+  columns folded onto one, whose edge cells held 0.82 ore blocks to the middle's 1.11 before and
+  1.06 to 1.04 after.
+
+The strict build is clean, 544 tests pass outside the GPU's lock with the long soak skipped,
+and the play passes in 179 s, its captures as the last commit's play's, none of which shows an
+ore.
+
+Item 200, the sixteenth read, where a column's making spends its time, before its mends.
+
+A probe timed 400 columns of seed 1's overworld about the origin by stage, its light and its
+settling worked out after as a worker does, on one thread with tiered compilation on, after 40
+columns made to warm the code. With tiered compilation off a column takes the same within 1%, and
+on eight threads at once each takes 4% longer while the 400 are made 7.1 times as fast. A column
+takes a median of 45.8 ms and at worst 109 ms, the light and the settling among them. The caves'
+noises are the processor's, as a worker reads them where no device reads them.
+
+| Stage | Median | Worst | Share |
+|---|---|---|---|
+| Fill, caves and aquifers | 8.95 ms | 29.4 ms | 20.4% |
+| Trees | 5.69 ms | 70.6 ms | 19.4% |
+| Light | 9.40 ms | 14.6 ms | 19.1% |
+| Caves' carve | 8.69 ms | 12.4 ms | 18.2% |
+| Ground and biomes | 5.56 ms | 6.20 ms | 11.3% |
+| Settle | 1.68 ms | 4.09 ms | 3.4% |
+| Ores | 1.61 ms | 1.94 ms | 3.3% |
+| Lush caves | 0.34 ms | 1.17 ms | 1.1% |
+| Plant patches | 0.36 ms | 2.08 ms | 1.0% |
+| Mineshafts | 0.05 ms | 36.1 ms | 1.0% |
+| Ravines | 0.08 ms | 6.26 ms | 0.6% |
+| Villages' ground | 0.10 ms | 2.25 ms | 0.3% |
+| Other structures, plants, herds, aquifers' setup | under 0.05 ms each | 0.19 ms | 0.3% |
+
+A column's ground and climate (`Overworld.Shape`) is worked out 1,032 times a column at the median
+and 7,049 at worst, for 439 and 567 places, and takes 29% of the making across the stages, 10.2 ms
+at the median and 68 ms at worst.
+
+The three largest:
+- The fill, caves and aquifers. Made with no caves the fill takes 2.94 ms, with the caves'
+  density and no aquifers 7.58 ms, so the density takes some 4.6 ms, 140 ns a block, and the
+  aquifers 1.4 ms at the median and 19 of the worst column's 29 ms. Writing the blocks takes 1.9 ms.
+  The mend proposed interpolates the density across x and z once for each level of a place's
+  corners, each block lerping between the two levels about it by the same sums in the same order,
+  so to the bit the same, and holds the aquifers' nearest places for each of their cells as a
+  column is made.
+- The trees. Their ground is shaped for every candidate of the nine columns about, and a tree's
+  test that the caves left its ground whole shapes it again for each corner it reads, 4.0 of 5.7 ms
+  at the median and 64.7 of 70.6 at worst. The mend proposed holds a place's ground and climate
+  for the column's making, so each place is shaped once, which also halves the ground and biomes'
+  share, a place shaped there twice.
+- The light. Setting the sky's level of each open cell from the top down takes 5.1 ms, and reading
+  every one of the 98,304 cells for a block that gives light 3.4 ms. The mend proposed sets the
+  sky's level at once over each section of air above every place's top, walks a place down from
+  its highest section holding a block, and finds the blocks giving light by their numbers in a
+  section's array against a table of them, so the same levels are set.
+- The caves' carve, fourth by a share, is the noise at the corners of the column's cells.
+
+Each mend leaves every block and level as it stands, which the guard test of item 199 and a hash
+of the blocks and the light over 400 columns, the same before and after, show. The two comments of
+the ores' commit go with the first.
+
+Item 200's first mend, the second proposed. A column's making holds the ground and climate of each
+place it asks for on the thread that makes it, by the generator making it, and lets them go as the
+column is made (`Overworld.Generate`), so a place its trees, its caves' corners and its own ground
+ask for is worked out once. What it holds is a map of some 27 KB for up to 521 places and some
+57 KB past them, where a column asks for 439 at the median and 567 at worst. The ores' two
+comments say what holds.
+- The hash of the blocks and the light of 400 columns about the origin is
+  `AA0084A74B5E0FFDDA3B4A751F13A70484317F780C38B18D6CA8932DEA7FFB93` before and after, and the
+  guard test of item 199 passes.
+- After it a column takes a median of 40.4 ms against 45.8 and at worst 80.4 ms against 109. The
+  trees take 2.65 ms against 5.69 and at worst 8.68 against 70.6, the ground and biomes 3.14 ms
+  against 5.56, and a column's shaping 4.5 ms against 10.2. The fill, caves and aquifers at
+  9.05 ms, the caves' carve at 9.15 ms and the light's 9.5 ms are the largest after it.
+- `A_Columns_Making_Holds_The_Ground_Of_Its_Places_Only_While_It_Is_Made` finds nothing held once
+  a column is made, and fails on the head, which holds nothing to find.
+- The strict build is clean, 545 tests pass outside the GPU's lock with the long soak skipped, and
+  the play passes in 178 s, its captures as the last commit's play's.
+
+Item 200's second mend, the third proposed. A column's light sets the sky's whole level at once
+over each section of air above every place's highest block, a section shared as open air left as
+it is, and walks each place down from under them, and finds the blocks giving light by their
+numbers in each section's cells under the air against a table of the light each block gives, in
+the order of a section's cells (`Lighting.Compute`).
+- The hash of the blocks and the light of 400 columns is
+  `AA0084A74B5E0FFDDA3B4A751F13A70484317F780C38B18D6CA8932DEA7FFB93` as before, and the guard
+  test and the light's tests pass.
+- After it the sky's setting takes 0.61 ms against 5.14 and the search for the blocks giving light
+  0.42 ms against 3.43, and a column a median of 32.5 ms against 40.4 and at worst 70.4 ms against
+  80.4. The fill, caves and aquifers at 9.04 ms, 31% of a column, and the caves' carve at 8.58 ms,
+  27%, are the largest after it.
+- The strict build is clean, 545 tests pass outside the GPU's lock with the long soak skipped, and
+  the play passes in 194 s, its captures as the last commit's play's.
+
+Item 200's third mend, the first proposed. A place's caves' density is interpolated across x and z
+once for each level of its corners, and each of its heights reads between the two levels about it
+(`Caves.Grid.ByLevel`, `Between`). The barrier the aquifers keep between two of them is read from
+its noise once at a place, however many pairs of them ask there (`Aquifers.At`).
+- The hash of the blocks and the light of 400 columns is
+  `AA0084A74B5E0FFDDA3B4A751F13A70484317F780C38B18D6CA8932DEA7FFB93` as before, and the guard
+  test and the caves' tests pass.
+- `A_Places_Density_Read_Between_Its_Levels_Is_Its_Density_At_Each_Height_To_The_Bit` reads every
+  place and height of a carved column both ways and finds no bit apart. It holds a reading the head
+  has no second way of, so it guards the two ways rather than failing there.
+- After it the fill, caves and aquifers take 5.60 ms against 9.04 at the median and 25.8 against
+  29.9 at worst, the barrier's noise at each cave's cell where aquifers meet the most of the worst,
+  and a column a median of 30.2 ms against 32.5. The caves' carve, 9.18 ms and 31% of a column, is
+  the largest after it.
+- The strict build is clean, 546 tests pass outside the GPU's lock with the long soak skipped, and
+  the play passes in 191 s, its captures as the last commit's play's. A comment was wrapped after,
+  and the strict build is clean on that.
+
+Item 200's fourth mend, the caves' carve, before it is made. After the three mends the carve is
+the largest stage, 8.6 ms of a column's 29.3 at the median and 12.4 at worst, 30% of the making.
+It works out by the caves' noises the density at a median of 411 corners of a column's cells, the
+corners over the ground taking their density without them, some 21 µs a corner, each reading
+some fifteen noises, none of which a corner's result leaves unread. Of the 411, 263 lie on the
+column's edge, where the columns beside it work out the same corners, as a column's 5 by 5
+corners of a level share 12 with the four columns beside it and 4 more with the four at its
+corners, so one of each corner across the world is 16 of a column's 25.
+
+Proposed, a world's generator holding the density at each level of the corners on its columns'
+edges, by their places, worked out by whichever column asks first and read by the others, on the
+workers at once. What it holds is let go once every column sharing an edge's corners is made, and
+it holds no more than 8,192 places, some 3 MB of 49 levels each, the place asked for longest ago
+let go past them, so a world explored far holds no more. The corners within a column are worked
+out by it as they are. This saves some 36% of the carve, about 3 ms of a column, on a machine
+whose device reads no caves. A device that reads them gives the workers their readings, which
+the noise is not read from on the processor, so it does not help there.
+
+Item 200's carve, the fact that decides it. A play on a machine whose device runs the caves'
+shader reads the caves there by default (`CaveFields.Enabled`), the streamer asking the device for
+every column the save does not keep and a worker carving from the readings it gives, which no
+noise is read from on the processor. The processor's path carves a kept column made again by its
+generator, a world on a machine whose device cannot run the shader, and the tests. So the table of
+the edges' corners would help those alone, and it is not made.
+
+Whether a corner's density can stop reading noises once its result is settled, measured over the
+same 400 columns, a median of 537 densities a column, 411 of them the carve's:
+- At the world's floor, y -64, the density is the floor's whole value whatever the noises give and
+  the noodles open nowhere under -60, so a corner there reads none of its some fifteen noises,
+  25 corners a column.
+- A density already under the least a noodle can lower it to reads no noodle, its four noises
+  spared, at some 5 corners a column on average, none at the median and 117 at worst, the noises
+  reaching 1.23 so the bound is reckoned from that.
+- The pillars never settle it, no corner's ground outweighing the most they could give.
+- Together these spare some 6% of the carve's noise reads.
+
+The three mends, by stage, one thread with tiered compilation on, the medians and a column's worst:
+
+| Stage | Before | Ground held | Light | Fill |
+|---|---|---|---|---|
+| A column | 45.8 ms | 40.4 ms | 32.5 ms | 30.2 ms |
+| A column at worst | 109 ms | 80.4 ms | 70.4 ms | 67.8 ms |
+| Fill, caves and aquifers | 8.95 ms | 9.05 ms | 9.04 ms | 5.60 ms |
+| Caves' carve | 8.69 ms | 9.15 ms | 8.58 ms | 9.18 ms |
+| Light | 9.36 ms | 9.49 ms | 1.94 ms | 2.14 ms |
+| Ground and biomes | 5.56 ms | 3.14 ms | 3.14 ms | 3.60 ms |
+| Trees | 5.69 ms | 2.65 ms | 2.61 ms | 2.67 ms |
+| Trees at worst | 70.6 ms | 8.68 ms | 8.67 ms | 8.74 ms |
+| Shaping, across the stages | 10.2 ms | 4.51 ms | 4.49 ms | 4.54 ms |
+
+The hash of the blocks and the light of 400 columns stood at
+`AA0084A74B5E0FFDDA3B4A751F13A70484317F780C38B18D6CA8932DEA7FFB93` before and after each, and the
+400 columns are made in 11.5 s against 19.4 s by the probe that hashes them.
 
 ## Items closed, parked or shortened
 
