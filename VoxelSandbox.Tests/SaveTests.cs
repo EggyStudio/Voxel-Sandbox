@@ -534,4 +534,104 @@ public sealed class SaveTests : IDisposable
         Assert.Null(save.Kept(0, 0));
         Assert.Equal(written, File.ReadAllBytes(Path.Combine(_folder, "regions", "r.0.0.bin.unread")));
     }
+
+    // A region's mobs file of one column at a place in the region, holding a pig's record so many
+    // times over.
+    private static byte[] Pigs(int count, byte x = 0) => Zipped(zip =>
+    {
+        using var writer = new BinaryWriter(zip, System.Text.Encoding.UTF8, leaveOpen: true);
+        writer.Write("E3DM"u8);
+        writer.Write(3);
+        writer.Write(1);
+        writer.Write(MobKinds.Pig.Name);
+        writer.Write(1);
+        writer.Write(x);
+        writer.Write((byte)0);
+        writer.Write(count);
+        for (int i = 0; i < count; i++)
+        {
+            writer.Write((byte)0);
+            writer.Write((byte)0);
+            foreach (var value in (double[])[2.5, 4, 2.5]) writer.Write(value);
+            writer.Write(0f);
+            writer.Write((byte)10);
+            writer.Write(false);
+        }
+    });
+
+    [Fact]
+    public void A_Regions_Mobs_That_Inflate_Past_A_Bound_Are_Kept_Beside_Within_It()
+    {
+        // Five million pigs in a column, in a file of some 1.5 MB.
+        var path = Path.Combine(_folder, "regions", "m.0.0.bin");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllBytes(path, Pigs(5_000_000));
+        var written = File.ReadAllBytes(path);
+
+        var save = new WorldSave(_folder);
+        GC.Collect();
+        var before = GC.GetTotalAllocatedBytes(precise: true);
+        var taken = save.TakeMobs(0, 0);
+        var allocated = GC.GetTotalAllocatedBytes(precise: true) - before;
+
+        Assert.Null(taken);
+        Assert.InRange(allocated, 0, 64L << 20);
+        Assert.Equal(written, File.ReadAllBytes(path + ".unread"));
+    }
+
+    [Fact]
+    public void A_Mobs_File_Of_One_That_Inflates_Past_A_Bound_Is_Kept_Beside_Within_It()
+    {
+        var pig = new MobRecord(MobKinds.Pig, 0, new LandPlace(2.5, 4, 2.5), 0, 10, null);
+        WriteOneFile([.. Enumerable.Range(0, 5000).Select(c => ((c, 0), Enumerable.Repeat(pig, 1000).ToArray()))]);
+        var path = Path.Combine(_folder, "mobs.bin");
+        var written = File.ReadAllBytes(path);
+
+        var save = new WorldSave(_folder);
+        GC.Collect();
+        var before = GC.GetTotalAllocatedBytes(precise: true);
+        var taken = save.TakeMobs(0, 0);
+        var allocated = GC.GetTotalAllocatedBytes(precise: true) - before;
+
+        Assert.Null(taken);
+        Assert.InRange(allocated, 0, 512L << 20);
+        Assert.Equal(written, File.ReadAllBytes(path + ".unread"));
+    }
+
+    [Fact]
+    public void A_Regions_Mobs_Placed_Outside_It_Are_Kept_Beside()
+    {
+        var path = Path.Combine(_folder, "regions", "m.0.0.bin");
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllBytes(path, Pigs(1, x: 40));
+        var written = File.ReadAllBytes(path);
+
+        new WorldSave(_folder).TakeMobs(0, 0);
+
+        Assert.Equal(written, File.ReadAllBytes(path + ".unread"));
+    }
+
+    [Fact]
+    public void A_Mobs_Turn_That_Is_No_Number_Is_Read_As_None()
+    {
+        var pig = new MobRecord(MobKinds.Pig, 0, new LandPlace(2.5, 4, 2.5), float.NaN, 10, null);
+        new WorldSave(_folder).WriteMobs([((0, 0), [pig])]);
+
+        Assert.Equal(pig with { Yaw = 0 }, Assert.Single(new WorldSave(_folder).TakeMobs(0, 0)!));
+    }
+
+    [Fact]
+    public void A_Region_Of_Every_Column_The_Game_Keeps_Holds_Its_Mobs_Whole()
+    {
+        // Each column of a region with sixteen mobs, a herd of four and a dozen villagers.
+        var cow = new MobRecord(MobKinds.Cow, 0, new LandPlace(2.5, 4, 2.5), 0, 10, null);
+        var columns = Enumerable.Range(0, WorldSave.RegionSize * WorldSave.RegionSize)
+            .Select(i => (Column: (X: i % WorldSave.RegionSize, Z: i / WorldSave.RegionSize), Mobs: (IReadOnlyList<MobRecord>)Enumerable.Repeat(cow, 16).ToList())).ToList();
+        new WorldSave(_folder).WriteMobs(columns);
+
+        var read = new WorldSave(_folder);
+
+        Assert.All(columns, column => Assert.Equal(16, read.TakeMobs(column.Column.X, column.Column.Z)!.Count));
+        Assert.False(File.Exists(Path.Combine(_folder, "regions", "m.0.0.bin.unread")));
+    }
 }

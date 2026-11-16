@@ -711,3 +711,27 @@ its captures within 8 levels of the pin's play but the shadow's at most 19 at a 
 and sky2's, which moves as much between plays. One test, the count's line, first failed in the
 suite, the log's callback giving the line with its category before it, and passes since it reads
 the line's end, with the save's tests run again.
+
+Item 195's second commit, the mobs' files with finding 4, the mobs' part of 3 and a mob's turn.
+Each test was run first on a copy of `f33f9da` with the tests added.
+
+A column of a mobs file holds 1,024 mobs at most, where generation gives a column a herd of two to
+four or a villager for each of its houses and the game breeds none, and `mobs.bin` holds a
+million columns and a million mobs at most, a world explored to a million columns holding some
+three hundred thousand. A region's mobs file counting more than its 1,024 columns, or placing one
+outside 0 to 31, is one that cannot be read too. A file past any of these is kept beside and its
+columns' mobs placed again (`ReadMobRegion`, `ReadOneFile`). A mob's turn that is no number is
+none (`ReadMob`).
+- `A_Regions_Mobs_That_Inflate_Past_A_Bound_Are_Kept_Beside_Within_It` fails on the head, which
+  reads the file's five million pigs. The bound holds the read to 64 MB, and the file kept beside
+  holds every byte of the one written, as in the next two.
+- `A_Mobs_File_Of_One_That_Inflates_Past_A_Bound_Is_Kept_Beside_Within_It`, five thousand columns
+  of a thousand pigs, fails on the head, which reads every one.
+- `A_Regions_Mobs_Placed_Outside_It_Are_Kept_Beside` fails on the head, which keeps the file.
+- `A_Mobs_Turn_That_Is_No_Number_Is_Read_As_None` fails on the head, whose pig turns by NaN.
+- `A_Region_Of_Every_Column_The_Game_Keeps_Holds_Its_Mobs_Whole`, every column of a region with
+  sixteen mobs, a herd and a dozen villagers, reads whole with no file set aside, on the head as
+  since.
+
+The strict build is clean, 512 tests pass outside the GPU's lock, and the play passes in 194 s,
+its captures as the last commit's play's.

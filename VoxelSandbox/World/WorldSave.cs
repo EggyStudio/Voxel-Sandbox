@@ -80,6 +80,14 @@ public sealed class WorldSave
     private const int Version = 2;
     // The version of the regions' mobs files, after the 1 and 2 of mobs.bin.
     private const int MobsVersion = 3;
+    // The mobs a column of a mobs file may hold, past which the file is one that cannot be read,
+    // where generation gives a column a herd of two to four or a villager for each of its houses
+    // and the game breeds none.
+    private const int MostMobsInColumn = 1024;
+    // The columns and the mobs mobs.bin may hold, past which it is one that cannot be read, where a
+    // world explored to a million columns holds some three hundred thousand mobs, a herd in a
+    // tenth of its columns.
+    private const int MostOneFileColumns = 1 << 20, MostOneFileMobs = 1 << 20;
     private static readonly byte[] Magic = "E3DR"u8.ToArray();
     private static readonly byte[] MobsMagic = "E3DM"u8.ToArray();
 
@@ -505,11 +513,14 @@ public sealed class WorldSave
                 throw new InvalidDataException("it is not a mobs file of a version this game reads");
             var kinds = ReadKinds(reader);
             var count = reader.ReadInt32();
+            if (count is < 0 or > RegionSize * RegionSize) throw new InvalidDataException("it counts more columns than a region holds");
             for (int c = 0; c < count; c++)
             {
-                var column = (region.X * RegionSize + reader.ReadByte(), region.Z * RegionSize + reader.ReadByte());
-                var mobs = columns[column] = [];
+                int lx = reader.ReadByte(), lz = reader.ReadByte();
+                if (lx >= RegionSize || lz >= RegionSize) throw new InvalidDataException("a column of it lies outside it");
+                var mobs = columns[(region.X * RegionSize + lx, region.Z * RegionSize + lz)] = [];
                 var held = reader.ReadInt32();
+                if (held is < 0 or > MostMobsInColumn) throw new InvalidDataException("a column of it holds more mobs than a column of the game's");
                 for (int m = 0; m < held; m++)
                     if (ReadMob(reader, kinds, floats: false) is { Position.Finite: true } mob) mobs.Add(mob);
                     else lost++;
@@ -548,6 +559,8 @@ public sealed class WorldSave
         var variant = reader.ReadByte();
         var at = Place();
         var yaw = reader.ReadSingle();
+        // A turn that is no number is none, so no pose is turned by it.
+        if (!float.IsFinite(yaw)) yaw = 0;
         var health = reader.ReadByte();
         LandPlace? home = reader.ReadBoolean() ? Place() : null;
         return kind is null ? null : new MobRecord(kind, (byte)(variant % kind.Variants.Length), at, yaw, Math.Clamp((int)health, 1, kind.Health), home);
@@ -602,10 +615,14 @@ public sealed class WorldSave
             if (version is not (1 or 2)) throw new InvalidDataException("it is not a mobs file of a version this game reads");
             var kinds = ReadKinds(reader);
             var count = reader.ReadInt32();
+            if (count is < 0 or > MostOneFileColumns) throw new InvalidDataException("it counts more columns than a world of the game's");
+            var total = 0;
             for (int c = 0; c < count; c++)
             {
                 var mobs = columns[(reader.ReadInt32(), reader.ReadInt32())] = [];
-                for (int m = reader.ReadUInt16(); m > 0; m--)
+                var held = reader.ReadUInt16();
+                if (held > MostMobsInColumn || (total += held) > MostOneFileMobs) throw new InvalidDataException("it holds more mobs than a world of the game's");
+                for (int m = held; m > 0; m--)
                 {
                     if (ReadMob(reader, kinds, floats: version == 1) is not { } mob) continue;
                     if (mob.Position.Finite) mobs.Add(mob);
