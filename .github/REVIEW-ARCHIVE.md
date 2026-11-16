@@ -3285,6 +3285,19 @@ before a batch.
     disagree. Each finding is told with the lines that make it and a test that fails on the head, in
     a Reply, the order proposed with it. The mends follow once the list is agreed.
 
+192. **The streamer, the mesher and the options, the eighth read.** Given at 23:30 on 2026-11-15, to
+    follow item 191's commit without a wait. The lane is `World/ChunkStreamer.cs`,
+    `Rendering/SectionMesher.cs`, `Rendering/ChunkRenderer.cs`, `Ui/Options.cs` and `Sound`, read by
+    what their tests do not reach. Look for a mesh or a buffer kept after its column unloads or made
+    twice for one section, a section drawn stale after a change in the column beside it, a job that
+    ends after the world closed and writes into the next, a count of columns, jobs or buffers that
+    grows as the player travels far and comes back, a render distance or a far distance changed in
+    play that leaves holes or leaks, an option out of its range or not finite read from the file, an
+    options file cut short or of another version, and a sound played at a place that is not finite
+    or kept playing after its world closed. Each finding is told with the lines that make it and a
+    test that fails on the head, in a Reply, the order proposed with it. The mends follow once the
+    list is agreed.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -6555,6 +6568,112 @@ edge of the land loaded loosens sand. The first would be mended by resting the b
 cell above it that gives way, if you want it.
 
 The order I would take is the one mend, its two tests in one commit.
+
+Item 192, the eighth read's finding mended in the first of two commits. Each test was run first on
+a copy of `6451a3e` with the tests added.
+
+The Corner Shade, let go, shades the game's world as it stands then (`Options.cs:177`,
+`() => game.World.ReshadeAll()`), so a world switched to is shaded again and the world left is let
+go. The other values the option screens take once are the game's own for its life, its light,
+renderer, sky, player, particles, sounds and video. Of the parts a switch makes anew, the world,
+the mobs, the chests, the furnaces, the streamer and the save, the screens reach the world alone,
+here and at :309 in a closure that reads it as it runs.
+- `The_Corner_Shade_Let_Go_After_A_World_Switch_Shades_The_World_Played_Again` fails on the head,
+  which marks no section of the world played.
+- `A_World_Switched_From_Is_Let_Go` fails on the head, which holds the world left.
+
+The strict build is clean, 487 tests pass outside the GPU's lock, and the play passes in 192 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+Item 192's second commit, the three low findings the read left. Each test was run first on a copy
+of `e87ef64` with the tests added, and a line there giving its save no regions' mobs.
+
+1. A column a worker made after the same column was made at once is dropped
+   (`ChunkStreamer.Update`), so the world keeps the column made at once, with what changed in it
+   since and its fires named once.
+   - `A_Column_Made_At_Once_While_A_Worker_Makes_It_Keeps_What_Changed_In_It` fails on the head,
+     which puts the worker's copy in its place.
+2. A block falling caught in a cell that neither gives way nor stops it, as a wall torch or cave
+   vines, rests on the first cell over it that gives way (`FallingBlocks.Landing`). The blocks
+   falling over a column are set down in it as it unloads, before the save keeps it
+   (`ChunkStreamer.Unload`), which the teleport's remarks say.
+   - `A_Block_Falling_Caught_In_A_Wall_Torch_As_The_World_Closes_Rests_Over_It` fails on the head,
+     which lets the block go.
+   - `A_Block_Falling_Over_A_Column_That_Unloads_Is_Set_Down_In_It` fails on the head, whose
+     teleport lets the block go.
+3. The mobs' save form changes. A region's mobs are kept in a file of their own beside its blocks,
+   `regions/m.X.Z.bin` of version 3, read as one of its columns first loads and written at each
+   save, and a region is let go once written where no loaded column lies in it. A saved world's
+   mobs are those of its loaded columns alone. A column that unloads gives its mobs to the save,
+   those kept out of the world among them, and takes them back as it loads. A world not saved
+   keeps them as before. A mob of a region's file whose place is no number is left out.
+   `voxel.mobs` and the overlay say the mobs held out of the world.
+   A folder's `mobs.bin` is read once into the regions, with its versions and its homing rule,
+   written into their files at the next save and kept beside as `mobs.bin.read`. Its reader and
+   the regions' share the reading of the kinds and of a mob. On that path a villager it sets down
+   at its home makes its home's column one whose mobs were placed.
+   - `The_Mobs_Of_A_Column_Left_Are_Kept_By_The_Save_And_Come_Back_With_It` leaves a pig's column
+     and comes back, leaves it again, closes the world far from it, opens the world and comes back,
+     the pig where it stood each time. It fails on the head, which holds the column's 46 mobs in
+     memory as the column is left.
+   - `The_Mobs_Hold_The_Loaded_Columns_Alone_However_Far_The_Player_Goes` takes twelve steps of
+     2,000 blocks, saving at each, and fails on the head at all twelve, holding 138 columns at the
+     first where 69 are loaded. The save holds four regions' mobs at most.
+   - The save's tests of the mobs file read and write the regions' files, and those of
+     `mobs.bin`'s versions and its homing read it into them.
+
+The save holds the compressed blocks of every column it has read or kept, for the session
+(`WorldSave._kept`), which grows with the land changed and the regions read. It is of the same
+kind, outside this lane, and I would take it as an item of its own if you want it.
+
+The strict build is clean, 493 tests pass outside the GPU's lock, and the play passes in 187 s, its
+captures within 10 levels of the pin's play but sky2's, which moves as much between plays.
+
+The ninth read, of `GameCommands` and of `Rendering`'s `TerrainAtlas`, `Sky`, `AmbientParticles`
+and `PackTextures` by what their tests do not reach, before any mend. Each candidate was held by a
+test on a copy of `e87ef64`, outside the GPU's lock, and two findings failed three of them.
+
+1. A day of the int's last, 2,147,483,647, holds the game in a loop for good. The weather of a day
+   looks at it and at the day before, `for (int d = day - 1; d <= day; d++)` (`Weather.cs:59`),
+   whose step past the int's end wraps to its least, and the game asks it each frame
+   (`VoxelGame.cs:961`), as `voxel.weather` does. `voxel.day` holds the day at 0 or more and at no
+   most (`GameCommands.cs:208`), and the save's reader holds neither the day nor an hour that is a
+   number (`WorldSave.Bounded`, :353). So a world's file reaches it by its day, or by an hour past
+   a float's count of days, as 1e30, which the sky's cycle turns into that day at its first frame,
+   since the floor of the days saturates in an int (`Sky.Advance`, `Sky.cs:169`). The loop is of
+   the shape item 187 named, its bound from a value the game keeps rather than from a file or a
+   command, and a grep of every inclusive loop of the game finds no other.
+   - `The_Weather_Of_The_Last_Day_An_Int_Counts_Is_Told` gives no answer in 5 s on the head.
+   - `A_World_Whose_Hour_Is_Past_A_Days_Count_Opens` writes an hour of 1e30 into a world's file and
+     does not open in 60 s on the head. With the loop alone mended it opens, its hour kept at 1e30
+     and its day wrapping by the int's last at each frame.
+   The mend I would make takes the two days in a long, holds a world's hour within 0 to 24 by its
+   remainder and its day at 0 or more as its file is read, and takes the sky's days on in a long.
+2. An animation whose frames are held long has the atlas make every step before it asks whether
+   they fit. A frame held so many ticks is repeated by its ticks over the frames' common divisor
+   (`TerrainAtlas.cs:124` to :125), and the steps are counted against the atlas's 512 once they
+   are made (:126). A pack whose two frames are held 1 tick and 100,000,000 makes 100,000,001
+   steps in 6.6 s and 3,575 MB, and a frame held 2,000,000,000 ticks, which `.mcmeta` reads as a
+   number, would make two billion. The atlas built draws the texture still either way.
+   - `An_Animation_Of_A_Frame_Held_Long_Builds_The_Atlas_At_Its_Cost` holds the build to 64 MB and
+     fails on the head, which takes 3,575.
+   The mend I would make counts the steps from the ticks first, in a long, and draws the texture
+   still where they pass what the atlas holds, before any step is made.
+
+Read clean, by the code. The commands that take a number refuse NaN and the infinities
+(`NotNumbers`), hold places within the land and counts and samples within their ends, and a
+rectangle whose sum passes the int's end measures no pixel (`Measurements`). The sky's other loops
+run over tables of its own, its hour from the options and from `voxel.time` is held within a day,
+and its day lasts a minute or more. The particles take no more a frame than each emitter holds
+(`AmbientParticles.Due`), and their rings stop at 64. The atlas takes a frame time of 1 or more
+(`ResourcePacks.Number`), so its steps divide by no zero. `PackTextures` is a table of names and
+reads nothing of a pack.
+
+One low finding is left. `voxel.shadows` takes any finite distance, where the options' slider
+stops at its end. The casters it finds are those of the sections seen, so it costs nothing past
+them.
+
+The order I would take is 1 and then 2, in one commit, each test failing on a head copy.
 
 ## Items closed, parked or shortened
 

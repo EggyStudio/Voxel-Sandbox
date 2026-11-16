@@ -1187,4 +1187,46 @@ public sealed class HeadlessGameTests
             if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
         }
     }
+
+    [Fact]
+    public void Reading_A_Pack_Of_A_Font_Again_Holds_As_Many_Textures()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A font sheet of 128 pixels, its glyphs lit squares of five by seven.
+            var sheet = new byte[128 * 128 * 4];
+            for (int i = 0; i < 128 * 128; i++)
+                if (i % 128 % 8 < 5 && i / 128 % 8 < 7) sheet[i * 4 + 3] = 255;
+            var at = Path.Combine(folder, "assets", "minecraft", "textures", "font");
+            Directory.CreateDirectory(at);
+            File.WriteAllBytes(Path.Combine(at, "ascii.png"), ExportImageToMemory(new Image(sheet, 128, 128), ".png"));
+            using var headless = new HeadlessGame(packs: [folder]);
+            var counts = new List<int>();
+            for (int i = 0; i < 6; i++)
+            {
+                headless.Game.ReloadPacks();
+                // The text measured, as a menu does, so the font is made.
+                Gui.TextWidth("Options");
+                headless.Step(2);
+                counts.Add(Textures());
+            }
+
+            Assert.Equal(counts[0], counts[^1]);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    // How many textures the engine holds, read from its store, which the engine keeps to itself.
+    private static int Textures()
+    {
+        var store = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType("Engine.TextureStore")).First(t => t is not null)!;
+        var world = GetApp().World;
+        var held = new object?[] { null };
+        world.GetType().GetMethods().First(m => m.Name == "TryGetResource" && m.IsGenericMethod).MakeGenericMethod(store).Invoke(world, held);
+        return (int)store.GetProperty("Count")!.GetValue(held[0])!;
+    }
 }

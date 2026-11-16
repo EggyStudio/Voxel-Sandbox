@@ -46,8 +46,15 @@ public sealed class FirstPersonController
 
     public Body Body { get; } = new();
 
-    /// <summary>The turn about the vertical in radians, 0 looking north (toward -z) and growing to the left.</summary>
-    public float Yaw { get; set; }
+    /// <summary>The turn about the vertical in radians, 0 looking north (toward -z) and growing to the left, held within a half turn either way.</summary>
+    /// <remarks>A turn is held within a half turn as it is set, so a view turned one way for a long session keeps a float's fine steps.</remarks>
+    public float Yaw
+    {
+        get => _yaw;
+        set => _yaw = MathF.IEEERemainder(value, MathF.Tau);
+    }
+
+    private float _yaw, _bodyYaw;
 
     /// <summary>The tilt in radians, positive looking up.</summary>
     public float Pitch { get; set; }
@@ -248,8 +255,12 @@ public sealed class FirstPersonController
         if (View != View.First) _away = ThirdPerson.Distance(world, Eye, View == View.Behind ? -Look : Look);
     }
 
-    /// <summary>The body's turn, which follows the way it walks and the head's, the head leading it by at most 75 degrees.</summary>
-    public float BodyYaw { get; private set; }
+    /// <summary>The body's turn, which follows the way it walks and the head's, the head leading it by at most 75 degrees, held within a half turn either way as <see cref="Yaw"/> is.</summary>
+    public float BodyYaw
+    {
+        get => _bodyYaw;
+        private set => _bodyYaw = MathF.IEEERemainder(value, MathF.Tau);
+    }
 
     /// <summary>Whether it climbs out of water onto a bank, as a swimmer pushing into one does.</summary>
     public bool Climbing => _climbing;

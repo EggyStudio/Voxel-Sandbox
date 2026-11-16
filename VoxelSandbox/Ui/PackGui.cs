@@ -61,7 +61,11 @@ public static class PackGui
     {
         foreach (var picture in _loaded.Values)
             if (picture is { } loaded) UnloadTexture(loaded.Texture);
-        if (_font is { } font) UnloadTexture(font.Texture);
+        if (_font is { } font)
+        {
+            UnloadTexture(font.Texture);
+            UnloadFont(font.Measure);
+        }
         _loaded.Clear();
         (_packs, _font, _fontRead) = (packs, null, false);
     }
