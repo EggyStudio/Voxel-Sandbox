@@ -291,6 +291,25 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_World_A_Test_Opens_By_Its_Name_Alone_Lies_Among_The_Runs_Own_Saves()
+    {
+        var folder = Directory.CreateTempSubdirectory("voxel-named-").FullName;
+        try
+        {
+            using var headless = new HeadlessGame(save: Path.Combine(folder, "world"));
+            headless.Game.SwitchWorld("flat", 2, "named");
+
+            var account = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "VoxelSandbox", "saves");
+            Assert.False(headless.Game.Save!.Folder.StartsWith(account, StringComparison.Ordinal), $"a test opened {headless.Game.Save.Folder} among the account's saves");
+            Assert.Equal(Path.Combine(Path.GetTempPath(), Path.GetFileName(WorldSave.Root), "named"), headless.Game.Save.Folder);
+        }
+        finally
+        {
+            Directory.Delete(folder, true);
+        }
+    }
+
+    [Fact]
     public void A_World_Switched_To_Takes_No_Stack_Of_The_Inventory_Window_From_The_One_Left()
     {
         var (folder, other) = (Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")), Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")));

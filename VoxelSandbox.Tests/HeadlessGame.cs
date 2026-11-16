@@ -33,6 +33,25 @@ public sealed class HeadlessGame : IDisposable
     /// <summary>The seconds each frame steps the game by unless a test gives another.</summary>
     public const float FrameSeconds = 1 / 30f;
 
+    // A world a test opens by its name alone lies in a folder of the run's own, deleted as the run
+    // ends, never among the saves of the account the tests run under.
+    static HeadlessGame()
+    {
+        var saves = Directory.CreateTempSubdirectory("voxel-saves-").FullName;
+        WorldSave.Root = saves;
+        AppDomain.CurrentDomain.ProcessExit += (_, _) =>
+        {
+            try
+            {
+                Directory.Delete(saves, recursive: true);
+            }
+            catch (IOException)
+            {
+                // A world a test left open is left with the system's temporary files.
+            }
+        };
+    }
+
     public HeadlessGame(int seed = 1, float frameSeconds = FrameSeconds, LandPlace? at = null, string? save = null, bool still = false, string? settings = null, IEnumerable<string>? packs = null)
     {
         Environment.SetEnvironmentVariable("E3D_HEADLESS", "1");

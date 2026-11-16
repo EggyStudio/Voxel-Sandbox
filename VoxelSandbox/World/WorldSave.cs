@@ -154,10 +154,18 @@ public sealed class WorldSave
     /// <remarks>
     /// The local application data folder is made where it does not exist yet, as on a new account,
     /// since the path of a missing one is empty, which puts saves under the working folder, where
-    /// the program's own file, named VoxelSandbox on Linux and macOS, stands in their way.
+    /// the program's own file, named VoxelSandbox on Linux and macOS, stands in their way. The
+    /// game's tests set it to a folder of their run's own, so no world a test opens lies among the
+    /// saves of the account it runs under.
     /// </remarks>
-    public static string Root => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.Create), "VoxelSandbox", "saves");
+    public static string Root
+    {
+        get => _root ?? Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.Create), "VoxelSandbox", "saves");
+        internal set => _root = value;
+    }
+
+    private static string? _root;
 
     public string Folder { get; }
 
