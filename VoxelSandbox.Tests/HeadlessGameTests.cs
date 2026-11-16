@@ -1199,6 +1199,76 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void The_Flood_Made_Ahead_Is_Finished_In_The_Frame_The_Eye_Steps_Into_Its_Section()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        // Floods held to sixteen sections a call, which takes a flood of the flat land some thirty
+        // frames, so one begun as the eye steps is not finished in that frame.
+        game.Renderer.FloodBudgetMs = 0;
+        Go(4.5);
+        // Column 4 lies on the ring past the flood's reach that a flood from column 1 marks seen,
+        // and past that ring from column 0.
+        var brought = new SectionKey(4, 1, 0);
+        Assert.False(game.Renderer.Sees(brought));
+
+        // A tenth of a block a frame east up to the face of column 1, the last half section of it
+        // flooded ahead, then the frame the eye steps over it.
+        for (int tenth = 1; tenth <= 113; tenth++) Go(4.5 + tenth / 10.0);
+        Assert.False(game.Renderer.Sees(brought));
+        Go(16.05);
+        Assert.True(game.Renderer.Sees(brought));
+
+        void Go(double x)
+        {
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
+            headless.Step(1);
+        }
+    }
+
+    [Fact]
+    public void A_Flood_Made_Ahead_Is_Taken_Only_Where_It_Is_The_Flood_From_The_Eye()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        var renderer = game.Renderer;
+        var (taken, stale) = (0, new List<string>());
+        renderer.TookAhead = (eye, seen) =>
+        {
+            taken++;
+            var whole = new Visibility();
+            whole.Flood(game.World, eye, game.RenderDistance, renderer.Atlas);
+            if (!whole.Seen.SetEquals(seen)) stale.Add($"at {eye}, {seen.Count} seen against {whole.Seen.Count}");
+        };
+
+        // East over three faces, a turn north short of the next, back east over it, and south, a
+        // block set within the reach every 23 frames, some of them between a flood ahead's start
+        // and the step it is made for.
+        var (x, z) = (4.5, 8.5);
+        var frame = 0;
+        Fly(0.4, 0, 110);
+        Fly(0, -0.4, 50);
+        Fly(0.4, 0, 60);
+        Fly(0, 0.4, 90);
+
+        Assert.True(taken >= 4, $"{taken} floods made ahead were taken");
+        Assert.Empty(stale);
+
+        void Fly(double dx, double dz, int frames)
+        {
+            for (int i = 0; i < frames; i++, frame++)
+            {
+                (x, z) = (x + dx, z + dz);
+                if (frame % 23 == 11) game.World.SetBlock((int)Math.Floor(x) + 20, 6 + frame % 5, (int)Math.Floor(z), BlockId.Stone);
+                game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, z)));
+                headless.Step(1);
+            }
+        }
+    }
+
+    [Fact]
     public void Made_Columns_Are_Taken_In_Two_A_Frame_The_Nearest_First()
     {
         using var headless = new HeadlessGame();

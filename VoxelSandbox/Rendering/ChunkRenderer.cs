@@ -546,10 +546,28 @@ public sealed class ChunkRenderer : IDisposable
         return material with { Emissive = hue, EmissiveIntensity = s.Glow * _glowScale * most };
     }
 
-    private readonly Visibility _visibility = new();
-    // The time a frame gives a flood begun as the eye steps into the next section, which goes on in
-    // the frames after, the last whole flood drawn meanwhile.
-    private const double FloodBudgetMs = 2;
+    // The flood drawn by, and the flood made ahead of the eye from the section it moves into, which
+    // the step into that section takes in place of its own where it holds what that would make.
+    private Visibility _visibility = new(), _ahead = new();
+    private Vector3 _lastEye;
+    // How near the face of the next section along the eye's motion the flood ahead begins, in
+    // blocks, half a section, which a flight crosses in some forty frames and the flood takes three
+    // of.
+    private const float AheadBlocks = Section.Size / 2;
+
+    /// <summary>
+    /// The time a frame gives a flood begun as the eye steps into the next section, or made ahead
+    /// of it, which goes on in the frames after, the last whole flood drawn meanwhile, 2 ms unless
+    /// set.
+    /// </summary>
+    internal double FloodBudgetMs { get; set; } = 2;
+
+    /// <summary>
+    /// Called with the eye at each step that takes the flood made ahead, for a test to set it
+    /// against a whole one.
+    /// </summary>
+    internal Action<Vector3, IReadOnlySet<SectionKey>>? TookAhead { get; set; }
+
     private bool _castsDue;
 
     /// <summary>The most a frame's flood, casters' search and placement of the sections took, in ms, since it was last set to 0.</summary>
@@ -1221,7 +1239,16 @@ public sealed class ChunkRenderer : IDisposable
         var laps = System.Diagnostics.Stopwatch.StartNew();
         // The sections held back as unseen that a new flood reaches or that now cast toward the light,
         // or all of them once culling is off, are meshed from the next update.
-        var flooded = Cull && _visibility.Flood(world, eye, renderDistance, Atlas, FloodBudgetMs);
+        var flooded = false;
+        if (Cull && !_visibility.Flooding && !_visibility.Holds(world, eye, renderDistance, Atlas) && _ahead.Holds(world, eye, renderDistance, Atlas))
+        {
+            (_visibility, _ahead) = (_ahead, _visibility);
+            flooded = true;
+            TookAhead?.Invoke(eye, _visibility.Seen);
+        }
+        flooded |= Cull && _visibility.Flood(world, eye, renderDistance, Atlas, FloodBudgetMs);
+        if (Cull && !_visibility.Flooding) FloodAhead(world, eye, renderDistance);
+        _lastEye = eye;
         // The casters of a finished flood are found in the frame after it, so no frame takes both
         // the flood and the search for its casters.
         var cast = Cull && (!flooded && _castsDue || _castFor != (Casts ? towardLight : Vector3.Zero, shadowDistance));
@@ -1336,6 +1363,33 @@ public sealed class ChunkRenderer : IDisposable
             }
         (_placedDraws, _placedTriangles, Culled, Deep, Casting) = (draws, triangles, culled, (deep, deepTriangles), (casting, castDraws));
         SetProfileValue("draw.sections.shadow", castDraws);
+    }
+
+    // Floods from the section the eye moves into once the eye lies within AheadBlocks of its face
+    // along the motion since the last frame, at the frame's budget, so the step into it finds the
+    // flood finished and draws the land it brings into reach in that frame. A turn leaves it
+    // unused, and a step it does not hold what a flood from the eye would make of floods anew.
+    private void FloodAhead(VoxelWorld world, Vector3 eye, int renderDistance)
+    {
+        var motion = eye - _lastEye;
+        if (motion.LengthSquared() < 1e-8f || motion.LengthSquared() > Section.Size * Section.Size) return;
+        var (axis, toFace) = (-1, 0f);
+        var soonest = float.MaxValue;
+        for (int a = 0; a < 3; a++)
+        {
+            var moved = a == 0 ? motion.X : a == 1 ? motion.Y : motion.Z;
+            if (moved == 0) continue;
+            var at = a == 0 ? eye.X : a == 1 ? eye.Y : eye.Z;
+            // The place within the section, the land's origin lying on whole sections.
+            var inside = at - MathF.Floor(at / Section.Size) * Section.Size;
+            var face = moved > 0 ? Section.Size - inside : inside;
+            if (face > AheadBlocks || face / MathF.Abs(moved) >= soonest) continue;
+            (axis, toFace, soonest) = (a, face, face / MathF.Abs(moved));
+        }
+        if (axis < 0) return;
+        var past = (toFace + 0.01f) * MathF.Sign(axis == 0 ? motion.X : axis == 1 ? motion.Y : motion.Z);
+        var ahead = eye + (axis == 0 ? new Vector3(past, 0, 0) : axis == 1 ? new Vector3(0, past, 0) : new Vector3(0, 0, past));
+        _ahead.Flood(world, ahead, renderDistance, Atlas, FloodBudgetMs, spread: true);
     }
 
     // Marks the sections the flood left out that a ray toward the light meets from a corner of a

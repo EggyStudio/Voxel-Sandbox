@@ -171,10 +171,11 @@ public sealed class Visibility
     /// held by a flood over every section within the render distance, longest where it works out
     /// the sections' joins. A flood under way runs to its end before another begins, so the columns
     /// in reach changing every frame as they arrive still see each flood finished. A jump of
-    /// more than a section floods at once, as a teleport's first frame does.
+    /// more than a section floods at once, as a teleport's first frame does, unless
+    /// <paramref name="spread"/> asks every flood to spread, as a flood made ahead of the eye is.
     /// </remarks>
     /// <returns>Whether a flood finished in this call.</returns>
-    public bool Flood(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance, TerrainAtlas? atlas = null, double budgetMs = double.PositiveInfinity)
+    public bool Flood(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance, TerrainAtlas? atlas = null, double budgetMs = double.PositiveInfinity, bool spread = false)
     {
         atlas ??= TerrainAtlas.None;
         if (_floodingFor is null)
@@ -184,7 +185,7 @@ public sealed class Visibility
             var wanted = (start, exits, Within(world, start, renderDistance), renderDistance, atlas.Serial);
             if (_floodedFor == wanted) return false;
             // A step into a section beside the last flood's start spreads, and any other change floods at once.
-            if (_floodedFor is not { } last || Math.Abs(last.Start.X - start.X) > 1 || Math.Abs(last.Start.Y - start.Y) > 1 || Math.Abs(last.Start.Z - start.Z) > 1)
+            if (!spread && (_floodedFor is not { } last || Math.Abs(last.Start.X - start.X) > 1 || Math.Abs(last.Start.Y - start.Y) > 1 || Math.Abs(last.Start.Z - start.Z) > 1))
                 budgetMs = double.PositiveInfinity;
             _floodingFor = wanted;
             _next.Clear();
@@ -221,6 +222,22 @@ public sealed class Visibility
         }
         Finish(culled: true);
         return true;
+    }
+
+    /// <summary>Whether a flood is under way, begun and not yet finished.</summary>
+    public bool Flooding => _floodingFor is not null;
+
+    /// <summary>
+    /// Whether the last whole flood is the one a flood from the eye would make, with none under
+    /// way, its start, the faces it leaves it by, the columns within its reach and their openings,
+    /// the render distance and the atlas all as the eye has them.
+    /// </summary>
+    public bool Holds(VoxelWorld world, System.Numerics.Vector3 eye, int renderDistance, TerrainAtlas? atlas = null)
+    {
+        atlas ??= TerrainAtlas.None;
+        if (_floodingFor is not null || _floodedFor is not { } last) return false;
+        var start = Reach.Of(eye);
+        return last == (start, ExitsKept(world, eye, atlas), Within(world, start, renderDistance), renderDistance, atlas.Serial);
     }
 
     // The columns loaded within a flood's reach of a section, by their count and a sum of a mix of
