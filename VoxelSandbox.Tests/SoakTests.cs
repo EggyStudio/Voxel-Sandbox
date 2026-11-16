@@ -48,7 +48,7 @@ public sealed class SoakTests : IDisposable
         File.WriteAllBytes(Path.Combine(textures, "block", "stone.png"), ExportImageToMemory(new Image([.. Enumerable.Range(0, 256).SelectMany(_ => new byte[] { 90, 120, 60, 255 })], 16, 16), ".png"));
         using var headless = new HeadlessGame(save: Path.Combine(_folder, "world"), packs: [pack]);
         var game = headless.Game;
-        game.SwitchWorld("overworld", 1, "soak");
+        game.SwitchWorld("overworld", 1, Path.Combine(_folder, "soak"));
         game.RenderDistance = 2;
         var shade = game.Menus.Screens(game).All().SelectMany(s => s.Options).First(o => o.Name == "Corner Shade");
         Go(headless, 0.5);
