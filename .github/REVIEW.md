@@ -770,3 +770,57 @@ its noise once at a place, however many pairs of them ask there (`Aquifers.At`).
 - The strict build is clean, 546 tests pass outside the GPU's lock with the long soak skipped, and
   the play passes in 191 s, its captures as the last commit's play's. A comment was wrapped after,
   and the strict build is clean on that.
+
+Item 200's fourth mend, the caves' carve, before it is made. After the three mends the carve is
+the largest stage, 8.6 ms of a column's 29.3 at the median and 12.4 at worst, 30% of the making.
+It works out by the caves' noises the density at a median of 411 corners of a column's cells, the
+corners over the ground taking their density without them, some 21 µs a corner, each reading
+some fifteen noises, none of which a corner's result leaves unread. Of the 411, 263 lie on the
+column's edge, where the columns beside it work out the same corners, as a column's 5 by 5
+corners of a level share 12 with the four columns beside it and 4 more with the four at its
+corners, so one of each corner across the world is 16 of a column's 25.
+
+Proposed, a world's generator holding the density at each level of the corners on its columns'
+edges, by their places, worked out by whichever column asks first and read by the others, on the
+workers at once. What it holds is let go once every column sharing an edge's corners is made, and
+it holds no more than 8,192 places, some 3 MB of 49 levels each, the place asked for longest ago
+let go past them, so a world explored far holds no more. The corners within a column are worked
+out by it as they are. This saves some 36% of the carve, about 3 ms of a column, on a machine
+whose device reads no caves. A device that reads them gives the workers their readings, which
+the noise is not read from on the processor, so it does not help there.
+
+Item 200's carve, the fact that decides it. A play on a machine whose device runs the caves'
+shader reads the caves there by default (`CaveFields.Enabled`), the streamer asking the device for
+every column the save does not keep and a worker carving from the readings it gives, which no
+noise is read from on the processor. The processor's path carves a kept column made again by its
+generator, a world on a machine whose device cannot run the shader, and the tests. So the table of
+the edges' corners would help those alone, and it is not made.
+
+Whether a corner's density can stop reading noises once its result is settled, measured over the
+same 400 columns, a median of 537 densities a column, 411 of them the carve's:
+- At the world's floor, y -64, the density is the floor's whole value whatever the noises give and
+  the noodles open nowhere under -60, so a corner there reads none of its some fifteen noises,
+  25 corners a column.
+- A density already under the least a noodle can lower it to reads no noodle, its four noises
+  spared, at some 5 corners a column on average, none at the median and 117 at worst, the noises
+  reaching 1.23 so the bound is reckoned from that.
+- The pillars never settle it, no corner's ground outweighing the most they could give.
+- Together these spare some 6% of the carve's noise reads.
+
+The three mends, by stage, one thread with tiered compilation on, the medians and a column's worst:
+
+| Stage | Before | Ground held | Light | Fill |
+|---|---|---|---|---|
+| A column | 45.8 ms | 40.4 ms | 32.5 ms | 30.2 ms |
+| A column at worst | 109 ms | 80.4 ms | 70.4 ms | 67.8 ms |
+| Fill, caves and aquifers | 8.95 ms | 9.05 ms | 9.04 ms | 5.60 ms |
+| Caves' carve | 8.69 ms | 9.15 ms | 8.58 ms | 9.18 ms |
+| Light | 9.36 ms | 9.49 ms | 1.94 ms | 2.14 ms |
+| Ground and biomes | 5.56 ms | 3.14 ms | 3.14 ms | 3.60 ms |
+| Trees | 5.69 ms | 2.65 ms | 2.61 ms | 2.67 ms |
+| Trees at worst | 70.6 ms | 8.68 ms | 8.67 ms | 8.74 ms |
+| Shaping, across the stages | 10.2 ms | 4.51 ms | 4.49 ms | 4.54 ms |
+
+The hash of the blocks and the light of 400 columns stood at
+`AA0084A74B5E0FFDDA3B4A751F13A70484317F780C38B18D6CA8932DEA7FFB93` before and after each, and the
+400 columns are made in 11.5 s against 19.4 s by the probe that hashes them.
