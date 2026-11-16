@@ -93,7 +93,20 @@ public sealed class Overworld : IWorldGenerator
     // and its biome.
     private readonly record struct Land(int Height, float Temperature, float Humidity, float Swamp, float Badlands, float River, Biome Biome);
 
+    // The ground and climate of each place a column's making asks for, by the generator making it,
+    // held on the thread that makes it while it is made and let go after, so a place its trees, its
+    // caves' corners and its own ground all ask for is worked out once.
+    [ThreadStatic] private static (Overworld Land, Dictionary<(int X, int Z), Land> Places)? _making;
+
     private Land Shape(int x, int z)
+    {
+        if (_making is not ({ } land, { } places) || land != this) return Worked(x, z);
+        if (!places.TryGetValue((x, z), out var shaped)) places[(x, z)] = shaped = Worked(x, z);
+        return shaped;
+    }
+
+    // A place's ground and climate worked out from the world's noises.
+    private Land Worked(int x, int z)
     {
         float temperature = _climate.Temperature(x, z), humidity = _climate.Humidity(x, z);
         float badlands = Climate.Badlands(temperature, humidity), swamp = Climate.Swampness(temperature, humidity);
@@ -212,6 +225,21 @@ public sealed class Overworld : IWorldGenerator
 
     /// <summary>A column generated with its caves' readings at its cells' corners where the GPU read them, which are the CPU's to the bit.</summary>
     public ChunkColumn Generate(int columnX, int columnZ, ArraySegment<int>? caveReadings)
+    {
+        var outer = _making;
+        _making = (this, new Dictionary<(int X, int Z), Land>(512));
+        try
+        {
+            return Make(columnX, columnZ, caveReadings);
+        }
+        finally
+        {
+            _making = outer;
+        }
+    }
+
+    // A column's making, while its places' ground is held.
+    private ChunkColumn Make(int columnX, int columnZ, ArraySegment<int>? caveReadings)
     {
         var column = new ChunkColumn(columnX, columnZ);
         int minX = columnX * Section.Size, minZ = columnZ * Section.Size;

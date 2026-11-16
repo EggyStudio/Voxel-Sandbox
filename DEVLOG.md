@@ -17,6 +17,12 @@ after.
 A cube of stone set down in a world switched to with Corner Shade at 100 and then let go at 0, its
 corners still shaded before the mend and unshaded after.
 
+![](.github/devlog/2026-11-16-item-199-veins-across-edges.webp)
+Seed 1's overworld under the ground about two columns' edges, seen from the south through a column's
+depth with the nearest ore drawn, veins stopping at the dashed edges before the mend and going on
+across them after, over the ore lying over each cell of a column with eight by eight columns folded
+onto one, fewer at the edges before and as many after.
+
 ## 2026-11-15
 
 ![](.github/devlog/2026-11-15-item-180-fire-and-lava.webp)

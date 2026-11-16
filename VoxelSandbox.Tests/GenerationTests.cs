@@ -366,4 +366,16 @@ public class GenerationTests
         Assert.All(area, c => Assert.Equal(made[c], back[c]));
         Assert.All(area, c => Assert.Equal(made[c], atOnce[c]));
     }
+
+    [Fact]
+    public void A_Columns_Making_Holds_The_Ground_Of_Its_Places_Only_While_It_Is_Made()
+    {
+        // The ground a column's making holds for its places, read from where the generator holds
+        // it on the thread that made the column, let go once the column is made.
+        new Overworld(1).Generate(3, -2);
+
+        var making = typeof(Overworld).GetField("_making", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        Assert.NotNull(making);
+        Assert.Null(making.GetValue(null));
+    }
 }

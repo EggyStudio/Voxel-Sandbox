@@ -33,7 +33,8 @@ own folder, pushed at 07:15, its build run 43815530795 green at 08:45, the form 
 `dd8b0d4`, the meshing after a pause held to a quarter second's frame, pushed at 08:45, their build
 run 43826021283 green at 09:54. After them `76034ec`, a herd's animals each on a cell of their own,
 and `1f95f63`, a test of a world's columns the same in any order, pushed at 09:54, their build run
-43835105810 started. Before it `069a7d9`,
+43835105810 green at 11:05. After them `bc66d0a`, a column's ores walked from the veins of the nine
+columns about it, pushed at 11:05, its build run 43845676614 started. Before it `069a7d9`,
 the comments that likened a thing to another game's saying their rule in the game's own terms,
 comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build run 43750307975 green by
 21:02, the form kept. Before it `c250bcd`, the second commit of item 185, the save command saying a
@@ -267,6 +268,16 @@ change.
     places and loot seeds, the mobs placed at generation). Beside it one line on the long frame, the
     mesh budget reading the raw frame's length after a pause. A Reply first with what differs and
     where, then the mends by cause, each with its test.
+
+200. **A sixteenth read, where a column's making spends its time.** A column's whole generation
+    reads 26 to 27 ms with tiered compilation off, the ores 1.7 of them. Measure the making of a few
+    hundred overworld columns by stage (shape and biomes, caves and aquifers, surface, ores,
+    structures, trees and plants, light, the chests and herds), the median and the worst of each,
+    with tiered compilation on as the game runs and off, on one thread and on the workers the game
+    uses. A Reply first with the table, the three largest stages named with what in each takes the
+    time, and a mend proposed for each that leaves every block as it stands, which the guard test of
+    item 199 and a hash over a stretch of columns show. Two comments of the ores' commit go with the
+    first mend, the words on what a placement lost and held before blobs crossed said as what holds.
 
 ## Verdicts
 
@@ -655,3 +666,74 @@ the column than its steps reach makes its draws alone.
 The strict build is clean, 544 tests pass outside the GPU's lock with the long soak skipped,
 and the play passes in 179 s, its captures as the last commit's play's, none of which shows an
 ore.
+
+Item 200, the sixteenth read, where a column's making spends its time, before its mends.
+
+A probe timed 400 columns of seed 1's overworld about the origin by stage, its light and its
+settling worked out after as a worker does, on one thread with tiered compilation on, after 40
+columns made to warm the code. With tiered compilation off a column takes the same within 1%, and
+on eight threads at once each takes 4% longer while the 400 are made 7.1 times as fast. A column
+takes a median of 45.8 ms and at worst 109 ms, the light and the settling among them. The caves'
+noises are the processor's, as a worker reads them where no device reads them.
+
+| Stage | Median | Worst | Share |
+|---|---|---|---|
+| Fill, caves and aquifers | 8.95 ms | 29.4 ms | 20.4% |
+| Trees | 5.69 ms | 70.6 ms | 19.4% |
+| Light | 9.40 ms | 14.6 ms | 19.1% |
+| Caves' carve | 8.69 ms | 12.4 ms | 18.2% |
+| Ground and biomes | 5.56 ms | 6.20 ms | 11.3% |
+| Settle | 1.68 ms | 4.09 ms | 3.4% |
+| Ores | 1.61 ms | 1.94 ms | 3.3% |
+| Lush caves | 0.34 ms | 1.17 ms | 1.1% |
+| Plant patches | 0.36 ms | 2.08 ms | 1.0% |
+| Mineshafts | 0.05 ms | 36.1 ms | 1.0% |
+| Ravines | 0.08 ms | 6.26 ms | 0.6% |
+| Villages' ground | 0.10 ms | 2.25 ms | 0.3% |
+| Other structures, plants, herds, aquifers' setup | under 0.05 ms each | 0.19 ms | 0.3% |
+
+A column's ground and climate (`Overworld.Shape`) is worked out 1,032 times a column at the median
+and 7,049 at worst, for 439 and 567 places, and takes 29% of the making across the stages, 10.2 ms
+at the median and 68 ms at worst.
+
+The three largest:
+- The fill, caves and aquifers. Made with no caves the fill takes 2.94 ms, with the caves'
+  density and no aquifers 7.58 ms, so the density takes some 4.6 ms, 140 ns a block, and the
+  aquifers 1.4 ms at the median and 19 of the worst column's 29 ms. Writing the blocks takes 1.9 ms.
+  The mend proposed interpolates the density across x and z once for each level of a place's
+  corners, each block lerping between the two levels about it by the same sums in the same order,
+  so to the bit the same, and holds the aquifers' nearest places for each of their cells as a
+  column is made.
+- The trees. Their ground is shaped for every candidate of the nine columns about, and a tree's
+  test that the caves left its ground whole shapes it again for each corner it reads, 4.0 of 5.7 ms
+  at the median and 64.7 of 70.6 at worst. The mend proposed holds a place's ground and climate
+  for the column's making, so each place is shaped once, which also halves the ground and biomes'
+  share, a place shaped there twice.
+- The light. Setting the sky's level of each open cell from the top down takes 5.1 ms, and reading
+  every one of the 98,304 cells for a block that gives light 3.4 ms. The mend proposed sets the
+  sky's level at once over each section of air above every place's top, walks a place down from
+  its highest section holding a block, and finds the blocks giving light by their numbers in a
+  section's array against a table of them, so the same levels are set.
+- The caves' carve, fourth by a share, is the noise at the corners of the column's cells.
+
+Each mend leaves every block and level as it stands, which the guard test of item 199 and a hash
+of the blocks and the light over 400 columns, the same before and after, show. The two comments of
+the ores' commit go with the first.
+
+Item 200's first mend, the second proposed. A column's making holds the ground and climate of each
+place it asks for on the thread that makes it, by the generator making it, and lets them go as the
+column is made (`Overworld.Generate`), so a place its trees, its caves' corners and its own ground
+ask for is worked out once. What it holds is a map of some 27 KB for up to 521 places and some
+57 KB past them, where a column asks for 439 at the median and 567 at worst. The ores' two
+comments say what holds.
+- The hash of the blocks and the light of 400 columns about the origin is
+  `AA0084A74B5E0FFDDA3B4A751F13A70484317F780C38B18D6CA8932DEA7FFB93` before and after, and the
+  guard test of item 199 passes.
+- After it a column takes a median of 40.4 ms against 45.8 and at worst 80.4 ms against 109. The
+  trees take 2.65 ms against 5.69 and at worst 8.68 against 70.6, the ground and biomes 3.14 ms
+  against 5.56, and a column's shaping 4.5 ms against 10.2. The fill, caves and aquifers at
+  9.05 ms, the caves' carve at 9.15 ms and the light's 9.5 ms are the largest after it.
+- `A_Columns_Making_Holds_The_Ground_Of_Its_Places_Only_While_It_Is_Made` finds nothing held once
+  a column is made, and fails on the head, which holds nothing to find.
+- The strict build is clean, 545 tests pass outside the GPU's lock with the long soak skipped, and
+  the play passes in 178 s, its captures as the last commit's play's.

@@ -28,10 +28,10 @@ namespace VoxelSandbox;
 /// A column walks the blobs of the nine columns about it, each from its own column's seed, and
 /// keeps the blocks that fall in it, as the trees are placed, so a blob goes on across a column's
 /// edge and a column is generated the same every time and in any order. A walk's every step draws
-/// its roll for a cave's air, so its path is the same in each column it is walked in. A blob's
-/// blocks that left its column were lost before blobs crossed, so a placement tries its count less
-/// that share, by the size of its blobs, and a world holds as much of each ore as it held then, the
-/// fraction of a try left over tried at that chance.
+/// its roll for a cave's air, so its path is the same in each column it is walked in. A placement
+/// tries its count times the share of a blob of its size that falls in the column it starts in,
+/// the fraction of a try left over tried at that chance, so a world holds as much of each ore as
+/// blobs kept to their own columns place.
 /// </para>
 /// </remarks>
 public static class Ores
@@ -57,9 +57,9 @@ public static class Ores
     // left out, the biome it alone is placed in, and the share of its tries it makes.
     private readonly record struct Placement(BlockId Ore, int Count, int Size, int Low, int High, bool Trapezoid, float Discard, int Rarity = 1, string? Only = null, float Tried = 1);
 
-    // The share of the diamonds' tries made, as their blobs lie in a narrow band where blobs walked
-    // within their columns alone set more of the same cells twice, so a world holds as many
-    // diamonds as it held before blobs crossed, measured over three stretches of the overworld.
+    // The share of the diamonds' tries made, as their blobs lie in a narrow band where blobs kept
+    // to their own columns set more of the same cells twice, so a world holds as many diamonds as
+    // such blobs place, measured over three stretches of the overworld.
     private const float DiamondsTried = 0.965f;
 
     private static readonly Placement[] All =
