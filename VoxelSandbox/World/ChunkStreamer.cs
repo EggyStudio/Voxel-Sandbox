@@ -34,7 +34,12 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
 
     /// <summary>How many columns are generated at once.</summary>
     internal int Workers { get; init; } = Math.Clamp(Environment.ProcessorCount - 2, 1, 8);
-    private (int X, int Z, int Distance)? _planned;
+    private (int X, int Z, (int X, int Z)? Ahead, int Distance)? _planned;
+    private Vector3 _lastPlayer;
+    // How near the face of the next column along the player's motion that column's circle is asked
+    // for, in blocks, half a column, so the columns at the corners of the drawn reach a step brings
+    // have joined by the step.
+    private const float AheadBlocks = Section.Size / 2;
     private int _running;
     // The columns still to pack for the eye's section and render distance last packed for.
     private readonly Queue<(int X, int Z)> _packing = new();
@@ -93,10 +98,12 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         }
         for (int i = 0; i < PackedAFrame && _packing.TryDequeue(out var place); i++)
             if (world.TryGetColumn(place.X, place.Z, out var column)) column.Pack(eye, kept);
-        if (_planned != (cx, cz, renderDistance))
+        var ahead = Ahead(player, cx, cz);
+        _lastPlayer = player;
+        if (_planned != (cx, cz, ahead, renderDistance))
         {
-            _planned = (cx, cz, renderDistance);
-            Plan(cx, cz, load);
+            _planned = (cx, cz, ahead, renderDistance);
+            Plan(cx, cz, load, ahead);
             Unload(cx, cz, load + 1);
         }
 
@@ -211,16 +218,40 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         return (column, unread, unknown);
     }
 
-    // The columns within the load distance, nearest first.
-    private void Plan(int cx, int cz, int load)
+    // The column the player moves into next, once it lies within AheadBlocks of that column's face
+    // along the motion since the last update, or none.
+    private (int X, int Z)? Ahead(Vector3 player, int cx, int cz)
+    {
+        var motion = player - _lastPlayer;
+        if (motion.LengthSquared() < 1e-8f || motion.LengthSquared() > Section.Size * Section.Size) return null;
+        (int X, int Z)? next = null;
+        var soonest = float.MaxValue;
+        foreach (var (moved, at, step) in new[] { (motion.X, player.X, (1, 0)), (motion.Z, player.Z, (0, 1)) })
+        {
+            if (moved == 0) continue;
+            // The place within the column, the land's origin lying on whole columns.
+            var inside = at - MathF.Floor(at / Section.Size) * Section.Size;
+            var face = moved > 0 ? Section.Size - inside : inside;
+            if (face > AheadBlocks || face / MathF.Abs(moved) >= soonest) continue;
+            soonest = face / MathF.Abs(moved);
+            var sign = MathF.Sign(moved);
+            next = (cx + step.Item1 * (int)sign, cz + step.Item2 * (int)sign);
+        }
+        return next;
+    }
+
+    // The columns within the load distance of the player's column and, where the player nears the
+    // next, of that column too, nearest the player's first.
+    private void Plan(int cx, int cz, int load, (int X, int Z)? ahead)
     {
         _wanted.Clear();
         var reach = load * load + load;
-        for (int z = cz - load; z <= cz + load; z++)
-            for (int x = cx - load; x <= cx + load; x++)
+        var (ax, az) = ahead ?? (cx, cz);
+        for (int z = Math.Min(cz, az) - load; z <= Math.Max(cz, az) + load; z++)
+            for (int x = Math.Min(cx, ax) - load; x <= Math.Max(cx, ax) + load; x++)
             {
-                int dx = x - cx, dz = z - cz;
-                if (dx * dx + dz * dz <= reach && !world.HasColumn(x, z)) _wanted.Add((x, z));
+                int dx = x - cx, dz = z - cz, nx = x - ax, nz = z - az;
+                if ((dx * dx + dz * dz <= reach || nx * nx + nz * nz <= reach) && !world.HasColumn(x, z)) _wanted.Add((x, z));
             }
         _wanted.Sort((a, b) => ((a.X - cx) * (a.X - cx) + (a.Z - cz) * (a.Z - cz)).CompareTo((b.X - cx) * (b.X - cx) + (b.Z - cz) * (b.Z - cz)));
     }

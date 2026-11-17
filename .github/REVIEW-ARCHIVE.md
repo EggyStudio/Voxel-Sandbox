@@ -3427,6 +3427,26 @@ before a batch.
     comparing the two captures within a bound of pixels. A sheet with the red and blue difference
     before and after in the devlog.
 
+206. **The time from within the drawn reach to drawn, by its parts.** Item 205's flight reads a
+    section's time from entering the drawn reach to being drawn at a median of 39 to 55 ms and a
+    90th part of 71 to 85 ms, the medians moving by a frame or two between runs with the step's
+    flood. Asked, the time split for each section into its waits (for the flood to see it, for a
+    mesher, in the queue of two joined a frame, for the engine to take the mesh), the split's
+    medians and 90th parts in a table over three runs under the exclusive lock, then the largest
+    wait shortened where it costs no slow frame, the frames past 22, 25, 30 and 40 ms held no worse
+    than item 205's counts by the same flight. A test for what the mend holds. No picture asked
+    where nothing seen changes.
+
+207. **The sections the meshing holds.** Item 206's split leaves 32 of 191 sections waiting on the
+    meshing, the mesher's build with its semaphore's wait at a median of 52 to 60 ms and a 90th part
+    of 72 to 78, the next update's take 14 to 19 ms after it, and for 16 of them the mesh budget's
+    queue at 54 to 71 ms. Asked, the build read by its parts (the wait for a free mesher, the
+    gathering of the section and its neighbors, the faces, the light), how many meshers work and how
+    many stand free while a section waits, and the budget's queue against what a frame can take,
+    then the largest part shortened where it adds no slow frame, a finished mesh taken in the frame
+    it ends where the frame has room. The frames past 22, 25, 30 and 40 ms held no worse than item
+    206's counts by the same flight, with a test for what the mend holds.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -7951,6 +7971,150 @@ frames, 191 sections coming within the reach in these records against 246.
 
 The strict build is clean, 550 tests pass outside the GPU's lock with the long soak skipped, and
 the play passes in 180 s, its captures as the pin's.
+
+Item 206's read and mend, a section's time from within the drawn reach to drawn by its parts. The
+read is item 205's three runs of the flight under the exclusive lock, 191 sections with faces in
+each that came within the drawn reach in the run. Each section's time is split along the path that
+held it longest, and the end of the frame it is drawn in is added as the engine's taking, ms:
+
+| Wait | Median | 90th |
+|---|---|---|
+| whole | 67.4, 49.4, 63.0 | 99.4, 89.3, 108.6 |
+| the step's flood, holding 159 of the 191 | 42.6, 38.8, 46.6 | 77.8, 46.0, 56.5 |
+| the queue of two joined a frame | none waited in it | |
+| the mesh budget's queue, 16 of the 32 the meshing held | 71.1, 54.3, 68.0 | 1,470, 1,469, 1,467 |
+| the mesher, its semaphore and its build, 32 | 55.5, 51.7, 60.2 | 77.9, 72.2, 73.3 |
+| the next update's take, 32 | 19.0, 15.3, 13.8 | 23.6, 22.4, 26.2 |
+| the engine at the frame's end, 191 | 9.4, 10.6, 12.0 | 20.2, 18.0, 19.7 |
+
+No column joined after its sections came within the reach, so none waited in the queue of joins, and
+the mesh budget's 90th part is the deep sections of item 204. The largest wait is the step's flood.
+It takes 2.1 to 2.7 ms in the step's frame, itself slow at 21 to 38 ms with the engine's field
+moving at the step, then 2.0 to 2.4 in the next and 0.6 to 3.8 in a third. The frames before a step
+run 9 to 14 ms with no flood.
+
+The mend floods ahead. While the eye moves and lies within half a section of the next section's
+face along its motion since the last frame, a second `Visibility` floods from the section it will
+enter, at the same 2 ms a frame (`ChunkRenderer.FloodAhead`, `ChunkRenderer.cs:1372`). The step
+into that section takes it in place of its own flood where it `Holds` what a flood from the eye
+would make (`Visibility.cs:235`), its start, the faces it leaves it by, the columns within its
+reach with their openings, the render distance and the atlas (`ChunkRenderer.cs:1242`). A block
+that may hide what lies behind it changes its column's openings, so a flood made ahead before such
+a change is never taken. A turn leaves it unused, and a jump past a section floods at once as
+before. `Flood` takes `spread`, so the flood ahead spreads over frames whatever changed.
+
+- `The_Flood_Made_Ahead_Is_Finished_In_The_Frame_The_Eye_Steps_Into_Its_Section` holds the floods
+  to sixteen sections a call, moves the eye a tenth of a block a frame east to column 1's face, and
+  checks that a section only a flood from column 1 marks seen is seen in the frame the eye steps
+  over it, and not in the frame before. It fails on the head, which waits frames for the flood.
+- `A_Flood_Made_Ahead_Is_Taken_Only_Where_It_Is_The_Flood_From_The_Eye` flies east over three
+  faces, turns north short of the next, goes back east over it and then south, setting a block
+  within the reach every 23 frames. At each step that takes the flood made ahead, it sets the taken
+  set against a whole flood from the eye in that frame. Four floods or more are taken, every one
+  equal.
+
+The three runs after, on `8bbcf9f` with the mend, under the exclusive lock on tuned's
+powersave-bazzite with the GPU at 0% before each, took the flood made ahead at all 6 steps of
+each run. The flood's wait for the 159 sections it held is 0. The time from within the drawn reach
+to drawn is 0 at the median in each run against 38.8 to 54.7 before, and its 90th part 68.1, 73.2
+and 69.3 ms against 71.1 to 84.5. With the frame's end added the whole is 20.4, 23.9 and 24.8 ms at
+the median, the 32 the meshing holds waiting as before.
+
+The flood ahead works in 22 to 24 frames of a run, about three before each step, at 2.00 to 2.02 ms
+at the median and 2.48 at the most, in frames of 10.1 to 10.7 ms at the median and 15.5 at the
+most, so it makes no slow frame. In memory, a whole flood's sets at the render distance of 12 hold
+9,777 sections and 443 to 445 KB, read by `GC.GetTotalMemory` about a flood, which is the second
+flood's cost.
+
+| Three runs each | Item 205 | With the flood ahead |
+|---|---|---|
+| frames past 22 ms | 23, 18, 17 | 15, 25, 22 |
+| frames past 25 ms | 12, 9, 12 | 11, 11, 11 |
+| frames past 30 ms | 8, 2, 4 | 1, 4, 4 |
+| frames past 40 ms | 1, 1, 1 | 0, 0, 0 |
+| the frames' median, ms | 10.42, 10.46, 10.53 | 10.42, 10.39, 10.35 |
+| their 99th part, ms | 27.1, 24.6, 26.4 | 25.0, 26.6, 25.4 |
+
+Past 22 ms the three runs hold 62 frames against 58. By what ran in them, over the three runs:
+
+| Frames past 22 ms | Item 205 | With the flood ahead |
+|---|---|---|
+| the step's frame | 14 | 14 |
+| the frame after a step | 2 | 1 |
+| a column joined | 34 | 35 |
+| meshes taken in, no column joined | 0 | 4 |
+| nothing joined or meshed | 8 | 8 |
+
+The 4 more are frames that take in the meshes of the sections a step releases in its own frame,
+meshed a few frames sooner than the flood of three frames let them be. Past 25, 30 and 40 ms the
+runs hold as many frames or fewer.
+
+The strict build is clean, 552 tests pass outside the GPU's lock with the long soak skipped, and
+the play passes in 195 s. Its `sky2.png` differs from the pin's in 0.09% of its pixels past 8
+levels, the most 70, among the stars and the clouds of its upper left, a capture of the night sky
+with no section in it, which differed by 0.01 to 0.04% in the plays before.
+
+Item 206's 52 to 60 ms of the mesher's build counted from a section's first send, the sends whose
+gathering failed among it, and not from the send whose mesh was taken. The build itself is under
+a millisecond at the median.
+
+What holds the 32, by the time from within the drawn reach to drawn:
+
+| What held them | Sections a run | Read 1 | Read 2 | Read 3 |
+|---|---|---|---|---|
+| a column around joined after the section came within the reach | 16 | 70 | 77 | 88 |
+| released at the step, then sent | 10 | 40 | 41 | 49 |
+| deep, held by the reach in three dimensions of item 204 | 6 | 1,491 | 1,493 | 1,491 |
+
+- The 16 lie at the drawn reach's corners, at x 12 past the eye and z 3 to either side. Their
+  diagonal neighbor column, 13 past and 4 aside, lies outside the load circle of the eye's previous
+  column (212 against the 210 of a load of 14). The streamer first asks for it at the step, and it
+  joins 53 to 73 ms after the section came within the reach. Each was sent four times as a caster
+  from 1.4 s before, every gathering failing for that column. Item 208 takes this wait.
+- The 10 are released by the step's flood made ahead in its drawing, sent by the next update
+  about 20 ms later and taken by the update after it, 32 to 49 ms after the step.
+
+The mend tried was a draw that takes in the meshes finished since the update within what the update
+left of its budget, so a mesh made early in a frame is drawn in it. It was not taken. The draw
+comes about 1.3 ms after the update's sends, and a mesh needs 0.2 to 0.6 ms to start and 0.6 to 0.8
+to build, so about half of them were done in time. Three runs with it under the exclusive lock:
+
+| Three runs each | Item 206 | Item 207's read, without it | With it |
+|---|---|---|---|
+| the 32's take, median, ms | | 12.1, 13.6, 20.9 | 6.9, 9.7, 8.7 |
+| every mesh's take, median, ms | | 11.8, 13.1, 12.8 | 10.8, 11.2, 11.5 |
+| frames past 22 ms | 15, 25, 22 | 16, 18, 24 | 21, 22, 21 |
+| frames past 25 ms | 11, 11, 11 | 10, 7, 14 | 11, 10, 14 |
+| frames past 30 ms | 1, 4, 4 | 4, 3, 6 | 2, 5, 8 |
+| frames past 40 ms | 0, 0, 0 | 1, 1, 1 | 1, 2, 1 |
+
+The whole time from within the drawn reach to drawn, the frame's end added, stood at 23.6 to
+24.4 ms at the median with it against 20.4 to 24.8 in item 206. About 5 ms for the 32 and 1 ms for
+every other mesh did not pay for counts past 30 and 40 ms that read worse than item 206's and a
+little worse than the runs without it. The runs without it differ from item 206's by as much
+(13 against 9 past 30 ms, 3 against 0 past 40), so the spread between runs there is as large as
+what a mend moves, and item 208 is read over five runs each way.
+
+Item 207's read of the sections the meshing holds, on `dc6994c` with a probe that marks each mesh's
+send, build and take. Three runs of the flight under the exclusive lock on tuned's powersave-bazzite
+with the GPU at 0% before each. Each of the 32 sections the meshing holds past the step is matched
+to the send whose mesh was first taken, against every mesh made in the record, ms:
+
+| Part | The 32, median | The 32, 90th | Every mesh, median | Every mesh, 90th |
+|---|---|---|---|---|
+| the budget's queue | 0.16 to 0.17 | 0.32 to 0.40 | 0.14 | 0.36 to 0.41 |
+| the gathering, on the main thread | 0.05 | 0.10 to 0.12 | 0.04 | 0.06 to 0.07 |
+| the task's start | 0.46 to 0.63 | 3.3 to 5.3 | 0.16 to 0.18 | 0.35 to 0.39 |
+| the wait for a free mesher | 0 | 0 | 0 | 0 |
+| the build | 0.71 to 0.79 | 1.3 to 6.1 | 0.57 to 0.61 | 1.29 to 1.37 |
+| of it the light | 0.22 to 0.23 | 0.47 to 0.54 | 0.20 to 0.21 | 0.45 to 0.49 |
+| the next update's take | 12.1, 13.6, 20.9 | 20.1 to 21.9 | 11.8, 13.1, 12.8 | 19.4 to 21.3 |
+
+All 16 meshers stand free at every send, with 1 or 2 meshes in flight at the median. A build
+makes 438 faces at the median for the 32 and 454 for every mesh. A frame that sends sends 6
+sections at the median and 15 at the 90th part in 0.32 to 0.33 ms of its 4 ms budget, the queue
+holding 13 at the 90th part. The budget ran out in 0, 0 and 2 frames of a run, and no section
+waited for a mesher.
 
 ## Items closed, parked or shortened
 

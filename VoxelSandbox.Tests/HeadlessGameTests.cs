@@ -1199,6 +1199,56 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Corner_Of_The_Drawn_Reach_A_Step_Brings_Is_Drawn_Soon_After_It_With_No_Send_Failing()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        game.RenderDistance = 4;
+        var renderer = game.Renderer;
+        Go(4.5);
+        Stand();
+        // Column 5, two rows aside, lies within the drawn reach of column 1, and column 6 three
+        // rows aside, the corner's diagonal neighbor, outside the load circle of column 0.
+        var corner = new SectionKey(5, 0, 2);
+        var failed = renderer.Ungathered;
+
+        // East at a fifth of a block a frame over column 1's face.
+        var (frame, stepped, drawn) = (0, -1, -1);
+        for (var tenth = 47; tenth <= 260 && drawn < 0; tenth += 2, frame++)
+        {
+            Go(tenth / 10.0);
+            if (stepped < 0 && tenth >= 160) stepped = frame;
+            if (stepped >= 0 && Drawn()) drawn = frame;
+        }
+
+        Assert.True(stepped >= 0 && drawn >= 0, $"stepped at {stepped}, drawn at {drawn}");
+        Assert.True(drawn - stepped <= Frames, $"drawn {drawn - stepped} frames after the step");
+        Assert.Equal(failed, renderer.Ungathered);
+
+        bool Drawn() => renderer.Sees(corner) && renderer.Standing(corner).ToList() is { Count: > 0 } parts && parts.All(p => p.Shown && !p.ShadowOnly);
+        void Go(double x)
+        {
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        void Stand()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Streamer.Pending > 0 || game.World.Loaded.Count > 0 || renderer.Meshing > 0) && clock.Elapsed.TotalSeconds < 30);
+        }
+    }
+
+    // The frames after the step a corner section is drawn by, the step's own or the one after.
+    private const int Frames = 1;
+
+    [Fact]
     public void The_Flood_Made_Ahead_Is_Finished_In_The_Frame_The_Eye_Steps_Into_Its_Section()
     {
         using var headless = new HeadlessGame(still: true);

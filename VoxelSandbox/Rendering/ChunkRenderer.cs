@@ -550,6 +550,9 @@ public sealed class ChunkRenderer : IDisposable
     // the step into that section takes in place of its own where it holds what that would make.
     private Visibility _visibility = new(), _ahead = new();
     private Vector3 _lastEye;
+    // Whether the flood made ahead has finished for the section the eye moves into, whose sections
+    // it sees are meshed before the step, so the step draws them in its own frame.
+    private bool _aheadReady;
     // How near the face of the next section along the eye's motion the flood ahead begins, in
     // blocks, half a section, which a flight crosses in some forty frames and the flood takes three
     // of.
@@ -595,6 +598,11 @@ public sealed class ChunkRenderer : IDisposable
     /// </para>
     /// </remarks>
     public bool Cull { get; set; } = true;
+
+    /// <summary>
+    /// How many sections were sent whose gathering failed for a column around them not loaded.
+    /// </summary>
+    internal int Ungathered { get; private set; }
 
     /// <summary>Whether the last flood reached a section.</summary>
     internal bool Sees(SectionKey key) => _visibility.Sees(key);
@@ -862,7 +870,7 @@ public sealed class ChunkRenderer : IDisposable
             // go, each at once, while one to mesh waits marked for a mesher to come back once every
             // one is lent.
             var far = !InReach(world, key, at, renderDistance);
-            var unseen = !far && Cull && !_visibility.Sees(key) && !_casters.Contains(key);
+            var unseen = !far && Cull && !_visibility.Sees(key) && !_casters.Contains(key) && !(_aheadReady && _ahead.Sees(key));
             var empty = !far && !unseen && (!world.TryGetColumn(key.X, key.Z, out var column) || column.Numbered(key.Y) is not { Filled: > 0 });
             if (!far && !unseen && !empty && _lent.Count == 0) continue;
             // A section whose neighbor column has not arrived is dropped rather than kept, since the
@@ -875,6 +883,9 @@ public sealed class ChunkRenderer : IDisposable
             }
             else if (unseen) _unseen.Add(key);
             else if (empty) Forget(key);
+            // One whose gathering needs a column around it not yet loaded is dropped too, its
+            // column's join marking it again, rather than sent to fail.
+            else if (!AroundLoaded(world, key)) continue;
             else
             {
                 Send(world, key);
@@ -883,6 +894,15 @@ public sealed class ChunkRenderer : IDisposable
         }
         SetProfileValue("update.meshed", meshed);
         SetProfileValue("update.unseen", _unseen.Count);
+    }
+
+    // Whether the eight columns about a section's own are loaded, which its gathering reads.
+    private static bool AroundLoaded(VoxelWorld world, SectionKey key)
+    {
+        for (int dz = -1; dz <= 1; dz++)
+            for (int dx = -1; dx <= 1; dx++)
+                if (!world.HasColumn(key.X + dx, key.Z + dz)) return false;
+        return true;
     }
 
     // Whether a loaded section is within the eye's reach, one of a column not loaded being let go.
@@ -922,6 +942,7 @@ public sealed class ChunkRenderer : IDisposable
         // A section of air has no faces to make, so it is let go here rather than wait a frame for a
         // worker, as most sections over the land are.
         var gathered = mesher.Gather(world, key);
+        if (!gathered) Ungathered++;
         if (!gathered || mesher.Empty)
         {
             if (gathered) Take(world, key, mesher);
@@ -1243,6 +1264,7 @@ public sealed class ChunkRenderer : IDisposable
         if (Cull && !_visibility.Flooding && !_visibility.Holds(world, eye, renderDistance, Atlas) && _ahead.Holds(world, eye, renderDistance, Atlas))
         {
             (_visibility, _ahead) = (_ahead, _visibility);
+            _aheadReady = false;
             flooded = true;
             TookAhead?.Invoke(eye, _visibility.Seen);
         }
@@ -1386,10 +1408,20 @@ public sealed class ChunkRenderer : IDisposable
             if (face > AheadBlocks || face / MathF.Abs(moved) >= soonest) continue;
             (axis, toFace, soonest) = (a, face, face / MathF.Abs(moved));
         }
-        if (axis < 0) return;
+        if (axis < 0)
+        {
+            _aheadReady = false;
+            return;
+        }
         var past = (toFace + 0.01f) * MathF.Sign(axis == 0 ? motion.X : axis == 1 ? motion.Y : motion.Z);
         var ahead = eye + (axis == 0 ? new Vector3(past, 0, 0) : axis == 1 ? new Vector3(0, past, 0) : new Vector3(0, 0, past));
-        _ahead.Flood(world, ahead, renderDistance, Atlas, FloodBudgetMs, spread: true);
+        // The sections the finished flood sees are meshed from the next update, those held back as
+        // unseen among them, and stand in the shadow maps and the field until the step draws them.
+        if (!_ahead.Flood(world, ahead, renderDistance, Atlas, FloodBudgetMs, spread: true)) return;
+        _aheadReady = true;
+        foreach (var key in _unseen)
+            if (_ahead.Sees(key)) world.Loaded.Add(key);
+        _unseen.ExceptWith(world.Loaded);
     }
 
     // Marks the sections the flood left out that a ray toward the light meets from a corner of a
