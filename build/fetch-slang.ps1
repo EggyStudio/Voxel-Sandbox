@@ -4,9 +4,9 @@
 
 .DESCRIPTION
     The PowerShell twin of fetch-slang.sh. The game's terrain shader is Slang, compiled to SPIR-V
-    by slangc when the game loads it, and the engine looks for it at build/tools/slang/bin, walking
-    up from the running program and from the working directory. ENGINE_SLANGC still wins when it
-    is set. A shipped build reads its .slang-cache instead and needs no compiler.
+    by slangc when the game loads it. The engine walks up for build/tools/slang/bin only in a
+    checkout of the engine, so a run of the game names this one in ENGINE_SLANGC, as the last line
+    says. A shipped build reads its .slang-cache instead and needs no compiler.
 
 .PARAMETER Force
     Download it again over what is there.
@@ -55,4 +55,5 @@ if ($archive.EndsWith('.zip')) {
 Remove-Item -Force $download
 Set-Content -Path $Stamp -Value $Version
 
-Write-Host "==> slangc $Version is at $(Join-Path $SlangDir 'bin')"
+Write-Host "==> slangc $Version is at $(Join-Path $SlangDir 'bin'), which a run of the game takes by"
+Write-Host "    `$env:ENGINE_SLANGC = '$(Join-Path $SlangDir 'bin' 'slangc.exe')'"

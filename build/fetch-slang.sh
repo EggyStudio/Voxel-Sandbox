@@ -3,9 +3,10 @@
 # Downloads the Slang compiler this checkout builds its shaders with, into build/tools/slang.
 #
 # The game's terrain shader is Slang, compiled to SPIR-V by slangc when the game loads it, so a
-# checkout needs slangc before the game's Debug build can draw its world. The engine looks for it at
-# build/tools/slang/bin/slangc, walking up from the running program and from the working directory,
-# so nothing has to be put on the PATH. ENGINE_SLANGC still wins when it is set.
+# checkout needs slangc before the game's Debug build can draw its world. The engine walks up for
+# build/tools/slang/bin/slangc only in a checkout of the engine, so a run of the game names this
+# one in ENGINE_SLANGC, as the last line says, which build/play.sh and build/shaders.sh do for
+# themselves.
 #
 # A shipped build does not need it. It carries every shader compiled (build/shaders.sh) in
 # source/.slang-cache beside the program, which the engine reads where there is no compiler.
@@ -92,4 +93,5 @@ rm -f "$download"
 # The stamp is written once the compiler runs, so one that does not is fetched again next time.
 "$SLANG_DIR/bin/slangc" -v >/dev/null
 echo "$VERSION" > "$STAMP"
-echo "==> slangc $VERSION is at $SLANG_DIR/bin"
+echo "==> slangc $VERSION is at $SLANG_DIR/bin, which a run of the game takes by"
+echo "    export ENGINE_SLANGC=$SLANG_DIR/bin/slangc"

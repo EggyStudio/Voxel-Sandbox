@@ -242,7 +242,13 @@ pipeline made in play says from the cache, the pool's three in 1.17 to 1.37 s ea
 pipelines take 54 to 68 s cold, one after another, and 4.4 to 4.6 s warm. The engine's trial puts
 about 1.2 s of each such pipeline on the validation layer, 94 ms compiled without it, so these are
 the layer's seconds, which the play turns on, item 171. It keeps the form and carries the review's
-files. The pushes before these stand in REVIEW-ARCHIVE.md's head records.
+files. The pushes before these stand in REVIEW-ARCHIVE.md's head records. Build run 44078576705 of
+`ac5602d` ended red at 13:58 in its play job alone, Verdict 14. After it `7b848e1`, item 215, the
+items' icons painted on a worker while the world loads, `abbd2cb`, the pin of the engine's 6.2.102,
+`3e9eb37`, the vitals' reckoning started on entering the state in which the player lives, `5b65f20`,
+item 216 closed as read with the README's sentence on a build outside the checkout, and `2f23c46`,
+Verdict 14's mend, the play waiting for a world to stand before it presses keys, were pushed
+together at 14:07, the form kept.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -336,8 +342,8 @@ change.
 
 ## Verdicts
 
-Verdict 14 is open, the play's seed step on run 44078576705. Verdicts 1 to 13 are settled, said
-under each in REVIEW-ARCHIVE.md.
+Verdicts 14 and 15 are open, the play's seed step on run 44078576705 and the play not opening on run
+44089619689. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
 
 14. **The play's seed step read the world before the new one came.** Build run 44078576705 of
     `ac5602d`, item 214, ended red at 13:58 on 2026-11-17 in its play job alone, the three test jobs
@@ -353,6 +359,22 @@ under each in REVIEW-ARCHIVE.md.
     reads the state within a few frames of a world's opening is read for the same; where the seed is
     lost, the mend in the game with a test. The four commits held behind it go up with the mend in
     one push.
+
+15. **The play did not open on the engine's 6.2.102.** Build run 44089619689 of `2f23c46` ended red
+    at 14:17 on 2026-11-17 in its play job alone, the three test jobs green. The game exited with
+    code 1 at the open, 4.3 s in. Its session log says slangc was not found, so shaders load from
+    their caches only, 64 stages read from the caches and none compiled, and then that terrain.slang
+    is not in the shader cache. The job's step before had found slangc 2026.18.2 at
+    build/tools/slang of the game's checkout, restored from the cache. The first local play of the
+    pin stopped the same way and passed once ENGINE_SLANGC named a slangc, and the workflow sets no
+    such name. Asked, a read of why the engine at 6.2.102 does not find the slangc the game's
+    checkout holds, where the play before the pin compiled or read terrain.slang, the walk from the
+    program's folder, the folder's shape or the name looked for among the candidates; the mend where
+    it belongs, in the game's workflow and play script where the game must name it, and told to the
+    review as the engine's where the engine's walk changed; and the pack workflow read for the same,
+    with the word of item 216's Reply that a packed game never meets a missing cache proved by a
+    pack run's game opening with no slangc. Verdict 14's mend is not yet read on a CPU device, the
+    play not having reached its steps.
 
 ## Decisions
 
@@ -829,3 +851,33 @@ seed 12345 in 5 s, its `captures/closed.log` naming nothing left at a close 0.53
 world, and its captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.10%
 of its pixels past 8 levels, the most 116. A play on the GPU passed before the mend too, its respawn
 standing in a few frames.
+
+Verdict 15's read. The engine's walk for slangc changed between 6.2.86 and 6.2.102, in its commit
+`b634f33d`, "the shader compiler is taken from the nearest checkout of the engine alone and only
+where the user owns it". At 6.2.86 `SlangCompiler.Locate` walked up from the program's folder and
+from the working directory and took `build/tools/slang/bin/slangc` in any folder it passed, so the
+play's game in `VoxelSandbox/bin/Debug/net10.0` found the one `build/fetch-slang.sh` puts in the
+game's checkout, and compiled the terrain shader there on a runner whose cache was empty. The green
+run of `fc4a632` on 6.2.86 logs no "slangc was not found" where the red one logs it. At 6.2.102 the
+walk (`SlangCompiler.FromCheckout`) stops at the nearest folder that holds `3DEngine.slnx` and takes
+its `build/tools` alone, so a game's checkout, which holds `VoxelSandbox.slnx`, gives none, and a
+game on the package finds slangc only by `ENGINE_SLANGC`. That is the engine's change, made on
+purpose so no program runs a compiler from a folder others may write, and the game names its own:
+
+- The build workflow's play job and the pack workflow's shaders job name `ENGINE_SLANGC` as the
+  checkout's slangc once `build/fetch-slang.sh` has fetched it.
+- `build/play.sh` and `build/shaders.sh` name the checkout's slangc where none is named, so a local
+  run needs no setting.
+- `build/fetch-slang.sh` and `build/fetch-slang.ps1` end by saying the line that names it, and their
+  notes and the README's Running it say the engine looks in a checkout of the engine alone.
+
+The pack workflow's `build/shaders.sh` runs `./e3d shaders` out of `.engine`, whose `build/tools`
+holds no slangc, so it would have failed the same way on 6.2.102. A packed game carries the shaders
+it compiled and needs no compiler, which a pack run after the build proves.
+
+The scripts, the workflows and the README alone change, so no build or suite was run for them. A
+play with an empty cache and no `ENGINE_SLANGC` set, `slangc` fetched into the game's checkout as
+the workflow fetches it, under the lock taken exclusive with no quiet wait, passes in 287 s,
+compiling terrain.slang in frame 225, its `captures/closed.log` naming nothing left at a close 0.57
+s after the new world, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png`
+differing in 0.02% of its pixels past 8 levels.

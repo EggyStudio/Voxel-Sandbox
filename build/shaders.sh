@@ -17,6 +17,8 @@
 # of the terrain's five.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+# The engine walks up for slangc only in a checkout of the engine, so the checkout's own is named.
+[ -n "${ENGINE_SLANGC:-}" ] || [ ! -x build/tools/slang/bin/slangc ] || export ENGINE_SLANGC="$PWD/build/tools/slang/bin/slangc"
 
 staged=VoxelSandbox/bin/Debug/net10.0/source/shaders
 if [ ! -d "$staged" ]; then

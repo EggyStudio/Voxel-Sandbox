@@ -66,6 +66,9 @@ jobs:
 
       - run: build/fetch-slang.sh
 
+      # The engine walks up for slangc only in a checkout of the engine, so the game's is named.
+      - run: echo "ENGINE_SLANGC=$PWD/build/tools/slang/bin/slangc" >> "$GITHUB_ENV"
+
       # The Debug build stages the engine's shaders from the package beside the program, where
       # build/shaders.sh takes them.
       - run: dotnet build VoxelSandbox.slnx

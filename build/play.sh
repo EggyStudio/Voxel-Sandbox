@@ -29,6 +29,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p captures
+# The engine walks up for slangc only in a checkout of the engine, so the checkout's own, which
+# build/fetch-slang.sh fetches, is named for the game's terrain shader.
+[ -n "${ENGINE_SLANGC:-}" ] || [ ! -x build/tools/slang/bin/slangc ] || export ENGINE_SLANGC="$PWD/build/tools/slang/bin/slangc"
 # Numbers are read and written with a point, whatever the machine's own locale writes them with,
 # the game's answers among them, which it writes in the culture it starts in.
 export LC_ALL=C

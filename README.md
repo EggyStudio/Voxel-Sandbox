@@ -28,12 +28,13 @@ packs.
 
 The game needs the .NET 10 SDK, a Vulkan device and `slangc`, which `build/fetch-slang.sh` fetches
 into `build/tools` once per checkout (`build/fetch-slang.ps1` on Windows), since its terrain shader
-is compiled when the game loads it. A build put outside the checkout, as a scripted play's in a
-folder of its own, finds no `build/tools` above it and takes the `slangc` that `ENGINE_SLANGC`
-names.
+is compiled when the game loads it. The engine looks for `slangc` by itself only in a checkout of
+the engine, so a run of the game names it in `ENGINE_SLANGC`, as the fetch's last line says, which
+`build/play.sh` and `build/shaders.sh` do for themselves.
 
 ```bash
 build/fetch-slang.sh
+export ENGINE_SLANGC=$PWD/build/tools/slang/bin/slangc
 dotnet run --project VoxelSandbox                      # the hills of seed 1
 dotnet run --project VoxelSandbox -- --flat --seed 7   # a flat world to build a test on
 dotnet run --project VoxelSandbox -- --world house     # a save of its own name
