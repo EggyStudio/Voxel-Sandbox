@@ -93,6 +93,21 @@ public sealed class SaveTests : IDisposable
     }
 
     [Fact]
+    public void A_Columns_Blocks_That_Inflate_Short_Of_A_Column_Are_Read_As_Unreadable()
+    {
+        // Whole sections, so many, and so many bytes of one more.
+        var section = new byte[Section.Volume * sizeof(ushort)];
+        byte[] Sections(int whole, int part) => Zipped([.. Enumerable.Repeat(section, whole).SelectMany(bytes => bytes), .. section[..part]]);
+
+        Assert.Throws<InvalidDataException>(() => WorldSave.Decode(0, 0, Sections(10, 0)));
+        Assert.Throws<InvalidDataException>(() => WorldSave.Decode(0, 0, Sections(8, 100)));
+        Assert.Throws<InvalidDataException>(() => WorldSave.Decode(0, 0, Sections(ChunkColumn.SectionCount - 1, 100)));
+        // A whole column, and the eight sections of a world that stood from 0 to 128.
+        WorldSave.Decode(0, 0, Sections(ChunkColumn.SectionCount, 0));
+        WorldSave.Decode(0, 0, Sections(8, 0));
+    }
+
+    [Fact]
     public void A_Furnaces_File_Holding_A_Null_Record_Opens_With_Its_Others()
     {
         var save = new WorldSave(_folder);

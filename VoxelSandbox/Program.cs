@@ -4,6 +4,7 @@
 // its kind and seed by default, `--transient` keeps nothing on disk, as a test run does, and each
 // `--pack <path>` a Minecraft resource pack, a zip or a folder, whose textures the blocks and items
 // are drawn with, the first given over the rest.
+using System.Runtime.InteropServices;
 using Engine;
 using VoxelSandbox;
 using static Engine.E3D;
@@ -46,12 +47,24 @@ SetExitKey(Key.Null);
 InitAudioDevice();
 SetScreenshotKey(Key.Null);
 
+// A request to end the process, as a session's close, a kill by name or Control and C sends, ends
+// the frames as the window's close does, so the world is saved as the game closes.
+using var ending = new CancellationTokenSource();
+void End(PosixSignalContext context)
+{
+    context.Cancel = true;
+    ending.Cancel();
+}
+using var terminated = PosixSignalRegistration.Create(PosixSignal.SIGTERM, End);
+using var hungUp = PosixSignalRegistration.Create(PosixSignal.SIGHUP, End);
+using var interrupted = PosixSignalRegistration.Create(PosixSignal.SIGINT, End);
+
 using (var game = new VoxelGame(flat ? "flat" : "overworld", seed, name, transient, packs, video))
 {
     GameCommands.Game = game;
     OverlaySections.Add(game);
     // The game's frame runs in the engine's stages, which Draw's BeginDrawing and EndDrawing run.
-    while (!WindowShouldClose() && !game.Menus.QuitAsked) game.Draw();
+    while (!WindowShouldClose() && !game.Menus.QuitAsked && !ending.IsCancellationRequested) game.Draw();
     GameCommands.Game = null;
 }
 

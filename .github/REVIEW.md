@@ -265,7 +265,9 @@ three commits of item 221 with Decision 65's among them, read with the form kept
 coder's word on its checks. At 18:46 the three with `e833a74`, the settings written beside their
 files and moved over them, pushed together as item 221, the form kept, the coder's suites of 577 to
 581 tests and four plays passing, their build run 44140582610 started; item 223 written from four of
-its lows.
+its lows. Run 44140582610 of `e833a74` ended green at 19:47 on 2026-11-17 with the play; `b0f3b27`,
+item 222, a pack's metadata of other kinds read as none and a default pack that cannot be read
+counted as missing, pushed at 19:47, the form kept, its build run 44151634894 started.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -791,3 +793,37 @@ fault and no texture left, and its captures within 9 levels of the warm play's o
 `sky2.png` differing in 0.02% of its pixels past 8 levels. A strict build of the first draft failed
 on a `cref` the animation's new overload made ambiguous, and its tests had read an older build. The
 overload is named `Frames`, and the tests were run again on the clean build.
+
+Item 223's mends, each with a test that passes three runs in three and fails on a copy of the head
+given the seams it names:
+
+- A request to end the process, the signal a session's close, a kill by name or Control and C sends,
+  ends the frames as the window's close does (`Program.cs`), so the closing save runs.
+  `A_Request_To_End_The_Process_Saves_The_World_As_The_Windows_Close_Does` runs the game as a
+  program of its own with no window, on a data folder of the test's own, sends it the signal once
+  its world stands, and finds it ended with code 0 and the world's info written. On the head it ends
+  with code 143 and nothing saved.
+- A run takes a lock file in its data folder for as long as it runs (`running.lock`, which the
+  system lets go as the process ends however it ends), and a run that cannot take it, as a second
+  run opened on the folder, keeps nothing there, saying so on the HUD.
+  `A_Run_Opened_On_A_Data_Folder_Another_Run_Holds_Says_So_And_Writes_Nothing_There`, the lock held
+  by the test, a block set, the world saved and the options kept, and neither the world's info nor
+  the options file written. On the head both are.
+- A column's blocks that inflate short of a column, or of the eight sections a column of a world
+  that stood from 0 to 128 holds, or with a part of a section left over, are read as unreadable
+  (`WorldSave.Decode`), so the column is generated again and its region's file copied aside.
+  `A_Columns_Blocks_That_Inflate_Short_Of_A_Column_Are_Read_As_Unreadable`, ten sections, eight and
+  a part, and one short of a whole column and a part, with a whole column and the eight of an old
+  one read. On the head each is read as a column.
+- A screenshot is said saved once its file stands whole, ending with the chunk a PNG ends with,
+  since the engine writes it in its place after the frame, and said not written where it does not
+  stand within five seconds (`VoxelGame.ShotSeconds`), the engine's log saying why.
+  `A_Screenshot_Is_Said_Saved_Once_Its_File_Stands_Whole_And_Said_Not_Written_Where_It_Does_Not`
+  writes the picture as the engine writes it, cut short and then whole, and lets a second go
+  unwritten. On the head the first is said saved at once.
+
+The strict build is clean, 588 tests pass outside the GPU's lock with the long soak skipped, the
+program's own test among them, and the headless game's 81 pass three times in a row. The play, under
+the lock taken exclusive with no quiet wait, passes in 184 s, the seed's step naming its world in 4
+s, its `captures/closed.log` naming no fault and no texture left, and its captures within 8 levels
+of the warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels past 8 levels.

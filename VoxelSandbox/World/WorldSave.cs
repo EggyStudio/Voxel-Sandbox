@@ -1162,8 +1162,13 @@ public sealed class WorldSave
         var raw = new byte[Section.Volume * sizeof(ushort)];
         var sections = new List<ushort[]>();
         // A column holds so many sections, so no more is read however far its bytes inflate.
-        while (sections.Count < ChunkColumn.SectionCount && zip.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length)
+        var read = raw.Length;
+        while (sections.Count < ChunkColumn.SectionCount && (read = zip.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false)) == raw.Length)
             sections.Add(System.Runtime.InteropServices.MemoryMarshal.Cast<byte, ushort>(raw).ToArray());
+        // Bytes that inflate short of a whole column, or of the eight sections a column of a world
+        // that stood from 0 to 128 holds, are no column, and are read as unreadable.
+        if (sections.Count < ChunkColumn.SectionCount && (sections.Count != OldSections || read > 0))
+            throw new InvalidDataException("its blocks inflate short of a column");
         var shallow = sections.Count == OldSections;
         var first = shallow ? -ChunkColumn.BottomSection : 0;
         for (int s = 0; s < sections.Count && first + s < ChunkColumn.SectionCount; s++)

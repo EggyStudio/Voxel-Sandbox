@@ -688,6 +688,74 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Run_Opened_On_A_Data_Folder_Another_Run_Holds_Says_So_And_Writes_Nothing_There()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var world = Path.Combine(folder, "saves", "world");
+        try
+        {
+            // The data folder held by another run.
+            using (new FileStream(Path.Combine(folder, "running.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            using (var headless = new HeadlessGame(save: world, settings: folder, still: true))
+            {
+                var game = headless.Game;
+                Assert.Contains("Another run of the game holds its data folder, so this run keeps nothing there", game.FileFaults);
+                game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
+                game.SaveWorld();
+                game.KeepOptions();
+            }
+
+            Assert.False(File.Exists(Path.Combine(world, "world.json")));
+            Assert.False(File.Exists(Path.Combine(folder, "options.txt")));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Screenshot_Is_Said_Saved_Once_Its_File_Stands_Whole_And_Said_Not_Written_Where_It_Does_Not()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: Path.Combine(folder, "world"), still: true);
+            var game = headless.Game;
+            game.Shots = new Screenshots(Path.Combine(folder, "screenshots"));
+
+            // A run with no window draws nothing for the engine to write, so the picture is written
+            // here as the engine writes it in its place, cut short and then whole.
+            game.Screenshot();
+            headless.Step(1);
+            Assert.DoesNotContain("Saved screenshot", game.Said?.Text ?? "");
+            var path = Assert.Single(game.ShotsWaited);
+            var png = ExportImageToMemory(new Image(new byte[16 * 16 * 4], 16, 16), ".png");
+            File.WriteAllBytes(path, png[..^12]);
+            headless.Step(1);
+            Assert.DoesNotContain("Saved screenshot", game.Said?.Text ?? "");
+            File.WriteAllBytes(path, png);
+            headless.Step(1);
+            Assert.Equal($"Saved screenshot as {Path.GetFileName(path)}", game.Said?.Text);
+
+            // One never written, said so once its time is past.
+            game.Screenshot();
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (game.ShotsWaited.Count > 0 && clock.Elapsed.TotalSeconds < VoxelGame.ShotSeconds + 10)
+            {
+                headless.Step(1);
+                Thread.Sleep(20);
+            }
+            Assert.Matches("^The screenshot .* could not be written$", game.Said?.Text);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Recording_Whose_File_Cannot_Be_Written_Ends_And_Says_So()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

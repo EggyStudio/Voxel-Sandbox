@@ -70,6 +70,10 @@ public sealed class VoxelGame : IDisposable
         _transient = transient;
         _settings = settings && !transient;
         PackList = new PackList(settingsFolder ?? Path.GetDirectoryName(WorldSave.Root)!);
+        // A run holds the data folder while it runs, so a second run opened on it keeps nothing
+        // there rather than writing over what the first writes.
+        var held = transient || HoldDataFolder();
+        if (!held) (_transient, _settings) = (true, false);
         Video = video ?? new VideoSettings();
         // The game, its step and the inventory are the engine's resources, and the player an entity
         // of its controller, its body, its vitals and its hand, which the behaviors reach.
@@ -103,6 +107,26 @@ public sealed class VoxelGame : IDisposable
         _options = _settings ? new OptionsFile(PackList.Root) : null;
         if (_options is { } file) Guarded("The settings could not be read", () => file.Read(Menus.Screens(this).All()), 0);
         Capture(true);
+        if (!held) FileFault("Another run of the game holds its data folder, so this run keeps nothing there", PackList.Root);
+    }
+
+    // The data folder's lock file, held while the run runs, which the system lets go as the process
+    // ends however it ends.
+    private FileStream? _dataLock;
+
+    // Takes the data folder's lock file, false where another run holds it.
+    private bool HoldDataFolder()
+    {
+        try
+        {
+            Directory.CreateDirectory(PackList.Root);
+            _dataLock = new FileStream(Path.Combine(PackList.Root, "running.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            return true;
+        }
+        catch (IOException)
+        {
+            return false;
+        }
     }
 
     /// <summary>Writes the settings of the options' screens to the options file where any has changed, unless the run keeps no settings.</summary>
@@ -494,16 +518,59 @@ public sealed class VoxelGame : IDisposable
 
     // F2 writes the frame as a screenshot, but in a transient run, which writes nowhere, and says
     // so on the HUD.
-    /// <summary>Takes a screenshot as F2 does, saying on the HUD where it went, or that none is kept.</summary>
+    /// <summary>Takes a screenshot as F2 does, saying on the HUD where it went once it is written, or that none is kept.</summary>
     public void Screenshot()
     {
         if (_transient)
             Say("Screenshots are not kept in a transient run");
-        // "Saved screenshot as" is said only where the folder could be made, the engine writing the
-        // picture after the frame and saying a write that fails to its log alone.
         else if (Guarded<string?>("Screenshots could not be kept", Shots.Take, null) is { } taken)
-            Say($"Saved screenshot as {taken}");
+            _shots.Add((Path.Combine(Shots.Folder, taken), System.Diagnostics.Stopwatch.GetTimestamp()));
     }
+
+    /// <summary>The seconds a screenshot's file is waited for before it is said not written.</summary>
+    public const double ShotSeconds = 5;
+
+    // The screenshots asked for and not yet said, each with when it was asked for.
+    private readonly List<(string Path, long Asked)> _shots = [];
+
+    // The paths of the screenshots asked for and not yet said, for a test to write one.
+    internal IReadOnlyList<string> ShotsWaited => [.. _shots.Select(shot => shot.Path)];
+
+    // Says a screenshot saved once its file stands whole, which the engine writes after the frame
+    // is presented, or not written once its time is past, the engine's log saying why.
+    private void ShotsWritten()
+    {
+        for (int i = _shots.Count - 1; i >= 0; i--)
+        {
+            var (path, asked) = _shots[i];
+            if (Whole(path)) Say($"Saved screenshot as {Path.GetFileName(path)}");
+            else if (System.Diagnostics.Stopwatch.GetElapsedTime(asked).TotalSeconds > ShotSeconds) Say($"The screenshot {Path.GetFileName(path)} could not be written");
+            else continue;
+            _shots.RemoveAt(i);
+        }
+    }
+
+    // Whether a picture stands whole, closing with the end a PNG closes with, rather than one the
+    // engine is writing in its place.
+    private static bool Whole(string path)
+    {
+        try
+        {
+            using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            if (file.Length < PngEnd.Length) return false;
+            file.Seek(-PngEnd.Length, SeekOrigin.End);
+            var end = new byte[PngEnd.Length];
+            file.ReadExactly(end);
+            return end.AsSpan().SequenceEqual(PngEnd);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return false;
+        }
+    }
+
+    // The chunk a PNG ends with, its length of none, its name and its check.
+    private static readonly byte[] PngEnd = [0, 0, 0, 0, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82];
 
     /// <summary>Whether the world fades into the sky's color toward the render distance, as Minecraft's fog hides where the world ends.</summary>
     public bool Fog { get; set; } = true;
@@ -1630,6 +1697,7 @@ public sealed class VoxelGame : IDisposable
         _laps.Restart();
         Mirror.Update(World, Player.Camera, Player.EyeInWater);
         Icons.Update();
+        ShotsWritten();
         BeginDrawing();
         // The frame's first stage may have opened a world, so the loading screen is chosen once the
         // frame has begun, and over a world that stands the world is drawn behind it.
@@ -1838,6 +1906,7 @@ public sealed class VoxelGame : IDisposable
         PackGui.Close();
         InWall.Close();
         GuiArt.Close();
+        _dataLock?.Dispose();
     }
 }
 
