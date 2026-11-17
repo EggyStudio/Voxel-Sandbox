@@ -1506,6 +1506,92 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_World_Whose_Column_Beside_The_Player_Is_Left_Out_Opens_With_The_Gap_And_Says_So()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        // A flat world whose column east of the spawn's fails on every try.
+        game.Generating = generator => new Failing(generator, 1, 0);
+        var said = new List<string>();
+        SetTraceLogCallback((_, line) =>
+        {
+            if (line.Contains("Column 1, 0 could not be generated in")) lock (said) said.Add(line);
+        });
+        try
+        {
+            game.NextWorld = ("flat", 6, null);
+            headless.Step(1);
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (game.Loading && clock.Elapsed.TotalSeconds < 30)
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+
+            Assert.False(game.Loading);
+            Assert.False(game.World.HasColumn(1, 0));
+            Assert.True(game.Streamer.LeftOut(1, 0));
+            headless.Step(30);
+            Assert.EndsWith($"Column 1, 0 could not be generated in {ChunkStreamer.Tries} tries, so it is left out of the world.", Assert.Single(said));
+        }
+        finally
+        {
+            SetTraceLogCallback(null);
+        }
+    }
+
+    // A world's generator whose one column fails to be made.
+    private sealed class Failing(IWorldGenerator generator, int failingX, int failingZ) : IWorldGenerator
+    {
+        public string Name => generator.Name;
+
+        public int Seed => generator.Seed;
+
+        public ChunkColumn Generate(int columnX, int columnZ) =>
+            columnX == failingX && columnZ == failingZ ? throw new InvalidOperationException("a test's column") : generator.Generate(columnX, columnZ);
+
+        public void Paint(ChunkColumn column) => generator.Paint(column);
+    }
+
+    [Fact]
+    public void Every_Texture_The_Game_Loads_Is_Let_Go_As_It_Closes()
+    {
+        // The window's close says how many textures the program left loaded, past the engine's own
+        // fonts, which it lets go first.
+        var said = new List<string>();
+        SetTraceLogCallback((_, line) =>
+        {
+            if (line.Contains("were still loaded")) lock (said) said.Add(line);
+        });
+        try
+        {
+            var headless = new HeadlessGame(still: true);
+            try
+            {
+                // The interface's art, which a frame of the HUD draws, among the textures the game
+                // holds.
+                headless.Step(2);
+                var art = GuiArt.Texture();
+                Assert.True(IsTextureValid(art));
+
+                headless.Game.Dispose();
+
+                Assert.False(IsTextureValid(art));
+            }
+            finally
+            {
+                CloseAudioDevice();
+                CloseWindow();
+            }
+            Assert.Empty(said);
+        }
+        finally
+        {
+            SetTraceLogCallback(null);
+        }
+    }
+
+    [Fact]
     public void A_Mesh_Made_With_The_Atlas_Before_The_Packs_Were_Read_Again_Is_Not_Taken_And_Its_Section_Is_Meshed_Again()
     {
         using var headless = new HeadlessGame(still: true);

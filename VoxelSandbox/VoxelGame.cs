@@ -251,6 +251,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>A step the reload takes before each piece takes the packs, by the piece's name, which a test sets to throw at one.</summary>
     public Action<string>? PackStep { get; set; }
 
+    /// <summary>A step that takes each world's generator before the world is made with it, which a test sets to make a column fail.</summary>
+    internal Func<IWorldGenerator, IWorldGenerator>? Generating { get; set; }
+
     // Every piece drawn with the packs set to them.
     private void Use(ResourcePacks packs)
     {
@@ -565,6 +568,7 @@ public sealed class VoxelGame : IDisposable
         // Every float place of the world is kept against an origin near where the player stands.
         LandOrigin.Near(info?.X ?? 0, info?.Z ?? 0);
         var generator = (info is null ? null : Generators.Create(info.Kind, info.Seed)) ?? Generators.Create(kind, seed) ?? new Overworld(seed);
+        generator = Generating?.Invoke(generator) ?? generator;
         Renderer.Clear();
         World = new VoxelWorld(generator);
         // The mobs of the world left are taken out of the engine's ECS with it, and those of the
@@ -679,7 +683,8 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>
     /// How far the world's loading has come, from 0 to 1, half for the columns within two of the
-    /// player's generated and half for the sections of the player's column and its neighbors meshed.
+    /// player's generated, or left out where their tries ended, and half for the sections of the
+    /// player's column and its neighbors meshed.
     /// </summary>
     /// <remarks>
     /// A section is meshed with the columns around it, so one is counted as standing only once all the
@@ -691,7 +696,7 @@ public sealed class VoxelGame : IDisposable
         int made = 0, standing = 0;
         for (int z = cz - 2; z <= cz + 2; z++)
             for (int x = cx - 2; x <= cx + 2; x++)
-                if (World.HasColumn(x, z)) made++;
+                if (World.HasColumn(x, z) || Streamer.LeftOut(x, z)) made++;
         if (made == 25)
             for (int z = cz - 1; z <= cz + 1; z++)
                 for (int x = cx - 1; x <= cx + 1; x++)
@@ -1814,6 +1819,7 @@ public sealed class VoxelGame : IDisposable
         Icons.Close();
         PackGui.Close();
         InWall.Close();
+        GuiArt.Close();
     }
 }
 

@@ -251,7 +251,11 @@ Verdict 14's mend, the play waiting for a world to stand before it presses keys,
 together at 14:07, the form kept. Their build run 44089619689 ended red at 14:17, the play not
 opening, Verdict 15. After it `d7e72fe`, the game naming its checkout's slangc in ENGINE_SLANGC,
 pushed at 14:33, the form kept. At the tick of 15:34 on 2026-11-17, `e69a6e7`, item 217, checked and
-waiting on run 44093860347 of `d7e72fe`, its play still under way; items 218 and 219 written.
+waiting on run 44093860347 of `d7e72fe`, its play still under way; items 218 and 219 written. At the
+tick of 16:34 on 2026-11-17, `ffb417c`, items 217 and 218, pushed at 15:36 with run 44104977993 and
+the pack run 44105017388 without publish under way; Verdicts 14 and 15 settled on run 44093860347;
+`023e542`, item 219, checked and waiting; the seven modules' commits of the sweep pushed at 16:13;
+items 214 to 217 archived, item 220 written.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -302,46 +306,6 @@ change.
     against several commits over days, for a decision, Decision 12 being the owner's. The item as it
     stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
     about 16:40, part two stays parked.
-
-214. **A world's opening frames.** Item 213's read gives the first shown frame of a world at 199 ms
-    and the frames after it at 66 and 105 ms, the longest frames a player meets. Asked, a read of
-    the first ten shown frames of a new world and of a loaded one by their parts from the vitals,
-    what each makes for the first time, then that work taken behind the loading screen where it
-    needs nothing shown, or spread over the frames while the screen still stands, with a test of the
-    first shown frame's count of first-made things and the play's opening read before and after.
-    Judged by five exclusive opens each way within one slot of N 7.9, the longest of the first ten
-    shown frames the measure. What is the engine's first use of a pipeline or a picture goes to the
-    engine as numbers and the game mends nothing there.
-
-215. **The items' icons painted while the world loads.** Item 214 moves the first drawn frame behind
-    the loading screen and leaves the HUD's first draw at 209 to 247 ms in it, the icon atlas
-    painted pixel by pixel in one frame, and the frame of 0.84 to 1.18 s stands still under the
-    screen. Asked, the atlas painted off the main thread while the world is generated, or a part a
-    frame while the screen shows, handed over whole when done, the HUD drawing without icons never
-    shown, and the same for a pack reload, which paints it again, with a test that no frame paints
-    more than its part and that the atlas equals the one painted at once. Judged by five exclusive
-    opens each way within one slot of N 7.9, the HUD's lap in the first behind frame and the wall
-    time from the flow's first record to the tenth shown frame the measures.
-
-216. **A loaded world's first shown frames after the screen goes.** Item 215's ten opens leave a
-    loaded world's time from the flow's first record to the tenth shown frame at 2,428 to 3,047 ms,
-    median 2,927, where a new world's is 2,204 to 2,636, median 2,330, three of five loaded runs
-    spending the time in the shown frames after the screen goes. Asked, a read by the flight's laps
-    of what those frames do in a loaded world that a new one's do not, the saved columns' meshes,
-    the chests and mobs read by region or the lighting's first pass among the candidates, each named
-    with its milliseconds; the largest moved behind the screen or onto a worker where the read shows
-    it can go, with a test, and the ten opens taken again in one slot of N 7.9. Where the read finds
-    the engine's part the larger, it is named for the engine's items 292 and 295 and left there.
-    After the pin of 6.2.102.
-
-217. **The opening's workers read for races.** Items 214 and 215 moved the first drawn frame behind
-    the loading screen and the icons' painting onto a worker, beside the workers that mesh and
-    generate. Asked, a read of every value a worker and the frame both touch while a world opens and
-    while one closes, the icons' atlas, the packs read again during a paint, a world closed or a
-    second one opened before the paint ends, a reload of the packs with the screen up, each named
-    with what guards it; a test for each that has none, opening and closing a world twenty times in
-    turn with the packs read again between, with no fault and no icon of the world before; mends
-    where the read finds a gap. Readers by subagents are welcome. After item 216.
 
 218. **The gaps item 217's read left.** Item 217's Reply names six gaps left as low or needing a
     fault first. Asked for four of them, each with a test that fails before its mend. A column whose
@@ -651,188 +615,6 @@ The strict build is clean, 530 tests pass outside the GPU's lock with the long s
 suite 23 s longer, and the play passes in 192 s, its captures as the last commit's play's. Its
 comments' lines past 100 columns were wrapped after, and the strict build is clean on that.
 
-Item 214's read of a world's first shown frames, three sessions under the lock taken exclusive with
-no quiet wait, each a new world opened into an empty data folder and the same world loaded by a
-second process, a probe reading the engine's profile of each of the first twelve frames after the
-loading screen goes, with laps inside the game's `Begin` and its interface:
-
-- The first shown frame works 784 to 957 ms in a new world and 815 in a loaded one. The engine's
-  render takes 654 to 823 of it, `cpu.hdr_scene` 234 to 318, `cpu.global_illumination` 218 to 236,
-  `cpu.window_depth` 87, `cpu.scene_field` 61 to 103 and `prepare.LightingUboPrepare` 24 to 28. In
-  it the engine makes the scene's field again at 5 cascades in 30 ms and the probes of global
-  illumination again at 5 in 64 ms, both made at 4 in the loading screen's frames, which draw no
-  view of the world, and makes the first 18 pipelines from the driver's cache with their descriptor
-  pools. These went to the engine as its item 295.
-- The game's part of it is the interface, 217 to 338 ms, where the HUD's first draw paints the
-  items' icon atlas pixel by pixel (`Icons.Atlas`).
-- In a new world of a first launch the next frame takes in the default packs the game fetched
-  meanwhile, 177 ms, and the HUD paints the atlas again for 200 ms. That frame follows the fetch's
-  timing and is left as it is.
-- The mirror made ahead draws its first frame in the third, `cpu.mirror` 14 to 24 ms, and the frames
-  to the twelfth run 50 to 200 ms with the scene's field and global illumination taking in the land
-  streaming in to the render distance, which is no first making.
-
-The mend has the world drawn behind the loading screen once it stands, for 8 frames before the
-screen goes (`BehindFrames`, `VoxelGame.cs:659`). In the first of them a new world's player lands on
-its spawn and the mirror is made ahead (`:714`), the world and the HUD are drawn whole each frame
-(`:1601`), and the screen is drawn last over the window (`:1705` and `:1726`). The held loading
-screen of `voxel.loading` stays the plain one.
-
-Ten opens in one slot from 11:52 to 11:56, five each way alternating, the head the same probe
-without the mend, tuned's powersave-bazzite and the GPU at 0 to 25% before each, each a new world
-from a data folder holding the default packs fetched once and the same world loaded by a second
-process. The work of the first shown frame and the longest of the first ten, in ms over five runs:
-
-| | The head | The mend |
-|---|---|---|
-| New world, first shown | 589 to 756, median 698 | 56 to 75, median 69 |
-| New world, longest of ten | 589 to 756, median 698 | 78 to 113, median 91 |
-| Loaded world, first shown | 557 to 777, median 676 | 64 to 80, median 77 |
-| Loaded world, longest of ten | 557 to 777, median 676 | 80 to 94, median 83 |
-
-With the mend the longest of the ten is the game's play stepping the land in, `GameFrame.Play` 16 to
-55 ms, beside the field's 11 to 30 and global illumination's 5 to 28.
-
-The eight frames behind the screen take 1.27 to 1.77 s of the wall clock. The first of them is the
-frame of first making, 0.84 to 1.18 s, which the head shows as its first frame, and the seven after
-take 0.39 to 0.62 s, the time the mend adds before the world shows. The first shown frame then takes
-65 to 97 ms of the wall clock against 0.90 to 1.12 s on the head. From the flow's first record of an
-open to its tenth shown frame both ways take about as long, 2.42 to 2.87 s with the mend against
-2.33 to 2.77 on the head.
-
-The icon atlas is painted in the first frame behind the screen, the HUD's lap 209 to 247 ms there
-and under 1 ms in every shown frame, still pixel by pixel in that one frame, so painting it while
-the world loads stands as the next item.
-
-`A_New_World_Is_Drawn_Behind_The_Loading_Screen_For_Its_Count_Of_Frames_With_The_Player_Landed`
-opens the flat world of seed 2 and counts the loading screen's frames that draw the world behind it,
-exactly `BehindFrames`, the player standing landed on the spawn in each and the mirrored view's
-plane set in them, and none once the world shows. It passes three runs in three. On a copy of the
-head, with the count and a `DrawnBehind` that is always false added as seams, it fails three runs in
-three, no frame drawn behind the screen. The mirror's test of item 213 passes unchanged.
-
-The strict build is clean, 559 tests pass outside the GPU's lock with the long soak skipped, and the
-headless game's 62 pass three times in a row. The play, under the lock taken exclusive with no quiet
-wait, passes in 208 s, its `captures/closed.log` naming the layer enabled and nothing left at a
-close 0.62 s after the new world, and its `sky2.png` differs from the pin's in 0.35% of its pixels
-past 8 levels, the most 168, along the clouds' edges.
-
-Item 215's mend, the items' icons painted on a worker while the world loads, in three parts:
-
-- `Icons.Use` sets the packs and begins the atlas on a worker (`Icons.cs:122` and `:134`). The
-  worker paints from the terrain's atlas, which only reads once made, and from the packs' pictures
-  of the items, read first on the main thread, since `ResourcePacks` reads its zip archives and
-  keeps its lists of faults there alone. The game sets the packs as it starts, so the atlas is
-  painted while the world opens.
-- The texture keeps the atlas it holds until a newer one is whole and then takes that one whole
-  (`:105`), so a pack's reload draws the icons before it meanwhile. Only where no atlas was ever
-  drawn does it wait for the worker. `Pixels`, which a drop's picture and the tests take, paints its
-  one icon where it is called (`:99`).
-- The world waits behind its loading screen until the atlas is painted before it is drawn there
-  (`VoxelGame.cs:712`), so the HUD drawn behind the screen takes a whole atlas and none is shown
-  without its icons.
-
-Ten opens in one slot from 12:20 to 12:24, five each way alternating, the head item 214's mend with
-the same probe, tuned's powersave-bazzite and the GPU at 0 to 17% before each, each a new world from
-the data folder holding the default packs and the same world loaded by a second process, in ms over
-five runs:
-
-| | The head | The mend |
-|---|---|---|
-| The HUD's lap in the first behind frame, new | 219 to 243 (222) | 19.0 to 19.4 (19.0) |
-| The same, loaded | 184 to 221 (215) | 18.9 to 23.7 (19.0) |
-| That frame's wall time, new | 836 to 1,041 | 623 to 807 |
-| That frame's wall time, loaded | 928 to 1,157 | 656 to 971 |
-| To the tenth shown frame, new | 2,247 to 2,858 (2,732) | 2,204 to 2,636 (2,330) |
-| To the tenth shown frame, loaded | 2,483 to 2,891 (2,555) | 2,428 to 3,047 (2,927) |
-
-The medians stand in brackets, and the wall time to the tenth shown frame is counted from the flow's
-first record of the open.
-
-The atlas is painted before the world stands in every open, the first frame behind the screen coming
-417 to 533 ms after the flow's first record each way, so no loading waits for it. The HUD's 19 ms in
-that frame are its first draw with the atlas taken in. The loaded world's tenth shown frame comes
-later with the mend in three runs of five, at 2.93 to 3.05 s against at most 2.89 on the head, the
-time falling in the frames after the screen goes, whose longest of ten is 89 to 133 ms against 83 to
-114 on the head and the first shown 69 to 96 against 68 to 84. No frame there paints or waits for
-the atlas, its texture taken once.
-
-`The_Icons_Of_A_Pack_Are_Painted_On_A_Worker_As_Those_Painted_At_Once` sets a pack with a stick's
-picture and a stone's texture, begins a painting for it and checks that the call returns before the
-worker has painted, that the atlas equals the one `Icons.Paint` paints at once for the same terrain
-and packs byte for byte, and that the stick's icon in it is the pack's picture. It touches no state
-of the icons that other tests share. A first form read the atlas the packs set through `Icons.Use`,
-and failed once in the suite where a headless game of another collection set the packs meanwhile. It
-passes three runs in three with the other tests of the icons. On a copy of the head, with a
-beginning that paints at once added as a seam, it fails three runs in three, the painting done as
-the call returns.
-
-The strict build is clean, 560 tests pass outside the GPU's lock with the long soak skipped, and the
-headless game's 62 pass three times in a row. The play, under the lock taken exclusive with no quiet
-wait, passes in 207 s, its `captures/closed.log` naming the layer enabled and nothing left at a
-close 0.65 s after the new world, and its `sky2.png` differs from the pin's in 0.28% of its pixels
-past 8 levels, the most 168, along the clouds' edges.
-
-The engine's 6.2.102 pinned, the package's reference and the workflows' checkout of the engine at
-its tag's commit `029f60de`. The game builds on it with no change of its own, the strict build
-clean, 560 tests pass outside the GPU's lock with the long soak skipped and the headless game's 62
-pass three times in a row. The play's first run on it stopped as the game opened, its terrain shader
-in no cache of 6.2.102's and no `slangc` within reach of the play's build folder, which
-`build/fetch-slang.sh` gives the build workflow. With `ENGINE_SLANGC` naming the engine tree's
-`slangc`, the same 2026.18.2, the play passes in 286 s, compiling the shaders and filling the
-driver's cache for the first time, its `captures/closed.log` naming the layer enabled and nothing
-left at a close 0.61 s after the new world, and its captures within 12 levels of 6.2.86's,
-`sky2.png` differing in 0.08% of its pixels past 8 levels, the most 70.
-
-The guard of `Vitals.Arrived` in the mode's setter can go. The package carries 81656c12, an ancestor
-of `029f60de`, which enters a computed state at the transition point that brings it in. A copy with
-the setter's call taken out and an `[OnEnter(Living.Yes)]` system calling `Vitals.Arrived` in its
-place passes both tests of `VitalsFrameTests` three runs in three on 6.2.102, and fails both three
-runs in three on 6.2.86, as item 190's first form did. The move is left out of this commit, which
-pins the package alone.
-
-The guard of `Vitals.Arrived` moved from the mode's setter to an enter of the state the game is in
-while the player lives (`GameFrame.Arrive`, `[OnEnter(Living.Yes)]`, `GameFrame.cs:58`), which
-6.2.102 enters at the transition point that brings it in. Both tests of `VitalsFrameTests` pass
-three runs in three with it, and fail three runs in three on a copy with the setter's call taken out
-and nothing in its place, the flight tiring the player and the fall harming it on the return to
-survival.
-
-The strict build is clean, 560 tests pass outside the GPU's lock with the long soak skipped, and the
-headless game's 62 pass three times in a row. The play, under the lock taken exclusive with no quiet
-wait, passes in 185 s, its `captures/closed.log` naming the layer enabled and nothing left at a
-close 0.53 s after the new world, and its captures within 12 levels of the first play's on 6.2.102,
-`sky2.png` differing in 0.04% of its pixels past 8 levels, the most 60.
-
-Item 216's read of a loaded world's first shown frames, from the ten opens of item 215 with the
-mend, each open's frames split by the flow's laps into its load, its frames behind the screen and
-its shown frames, with no new open:
-
-- A save of a world left as it was made holds no column, so the loaded world's columns are generated
-  as the new world's are, and no saved column, chest, mob or first pass of the light sets it apart.
-  It differs in where the player stands while the world loads, on its saved ground, where a new
-  world's player waits over the spawn at the ceiling.
-- Its first frame behind the screen takes 656 to 971 ms against 623 to 807 for a new world, the
-  engine's render 514 to 819 against 476 to 640, as the frame takes in 20 to 28 meshes against 7 or
-  8, the sections by the ground meshed while the screen stood. The game's laps in that frame are
-  alike, the HUD's 19 to 24 ms, the sky's 37 to 49 and the sections' 35 to 45.
-- Its ten shown frames take 539 to 789 ms against 567 to 624, and do the same work, 14 to 16 columns
-  joined, 28 to 32 meshes taken in, 240 sends, 59 to 61 uploads and 72 draws. A frame takes about 9
-  ms more, spread over the engine's render, 4.3, the streaming, 2.8, the fields, 2.0, and the
-  placement, 1.1, no part standing apart, and two loaded opens of five as short as the new world's.
-
-The larger part is the engine's intake of more first meshes in the first frame behind the screen,
-which no player sees, passed to the engine for its items 292 and 295, and no part of the game's
-stands to be moved. The item is closed as read.
-
-A player of a packed game never meets a missing cache of the terrain shader. The pack workflow
-fetches `slangc` and compiles every build of every shader into `build/shader-cache`, keyed by the
-source, its defines and its imports, which `build/publish.sh` puts beside the program, and runs the
-game with no compiler. Only a play built outside the checkout met it on the pin of 6.2.102, its
-terrain shader importing the engine's model pass, whose source changed, and no `build/tools` above
-its folder. The README says under Running it that such a build takes the compiler `ENGINE_SLANGC`
-names.
-
 Verdict 14's read, from the run's job log and its game log in the play artifact. The step read the
 state in time, and its keys were lost before it, to the step before. The death screen's step ends by
 calling `Respawn`, which opens the spawn behind its loading screen, sets creative and goes on at
@@ -892,86 +674,6 @@ the workflow fetches it, under the lock taken exclusive with no quiet wait, pass
 compiling terrain.slang in frame 225, its `captures/closed.log` naming nothing left at a close 0.57
 s after the new world, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png`
 differing in 0.02% of its pixels past 8 levels.
-
-Item 217's read, by three readers in parallel over the icons and the packs, the meshing workers, and
-the streamer, the save and the other workers, each value a worker and the frame both touch named
-with what guards it. Most stand guarded, among them:
-
-- The meshers go out to the workers and come back through the queue of finished meshes, each
-  section's ask numbered across worlds, so no mesh of the world before is taken into the next.
-- An old world's columns, saves and cave readings stay in its own streamer, save and batches, which
-  the next world never reads.
-- The icons are painted from pictures read on the main thread and a terrain atlas that only reads
-  once made, so packs closed during a paint harm nothing.
-- The default packs' fetch writes volatile fields the frame reads.
-
-The gaps found and mended:
-
-- A world's floods stood across its closing and a respawn, so the next loading held the sections the
-  last flood had not seen as unseen and counted them standing, a world shown with land unmeshed. The
-  floods are let go as any loading begins (`ChunkRenderer.cs:1316`, from `VoxelGame.cs:644`), and a
-  new flood sees every section until it has flooded once.
-- A painting of the icons that failed left the texture let go and threw on every draw of the HUD,
-  the game ending. The texture keeps the icons drawn before and the failure is said once
-  (`Icons.cs:145`), and the texture takes a newer atlas between frames alone (`Icons.cs:128`, from
-  the frame's start), so no frame draws icons from two textures.
-- The frames behind the loading screen were not counted again where the world stopped standing among
-  them, as when the default packs land partway, so the screen went after the rest of the count. They
-  are counted from the first again (`VoxelGame.cs:719`).
-- The icons' texture and packs outlived a game, so the next game in the same process drew another's
-  texture by its number and let it go. The icons close with the game (`Icons.cs:137`, from
-  `VoxelGame.Dispose`), a play's close finding one texture still loaded where it found two.
-- A meshing worker gave its mesher back after its warning, so a warning that threw would have held
-  the count of those meshing above none for good. It gives it back in its `finally`
-  (`ChunkRenderer.cs:1005`).
-
-A respawn in a world shown since it opened draws nothing behind its loading screen, its first frames
-made (`VoxelGame.cs:731`), a world not shown since it opened drawing its eight. On the GPU, by the
-game's clock in five respawns beside the spawn of seed 1, the loading took 10.7 to 18.7 ms before
-item 214, 184 to 245 ms after it, and 8.8 to 28.7 ms with the mend on 6.2.102, each read by the e3d
-client at 343 to 376, 473 to 598 and 319 to 370 ms.
-
-Read and left as they are, each low or needing a fault first and none a race of the opening:
-
-- A column whose making fails is asked for no more while the player stands still, so a failure
-  within two columns of a loading player holds the loading screen up.
-- A timed save lets go of a region's kept columns while a column of it is still being made, so a
-  corrupt column of that region read after loses them.
-- A painting that newer packs replace runs to its end.
-- A mesh built with the atlas before a reload is taken after it, until the section is meshed again.
-- The default packs' fetch stays fetching where its task is cancelled before it starts or throws
-  outside its guard.
-- The interface's and the wall's textures of the packs outlive a game as the icons' did.
-
-The tests, each passing three runs in three, and failing on a copy of the head with seams for the
-names it lacks where marked:
-
-- `A_Respawn_From_A_Closed_Room_Forgets_The_Rooms_Flood_As_Its_Loading_Begins`, a room of stone
-  closed in the air far from the spawn whose flood leaves the spawn's ground unseen, then a respawn,
-  whose loading sees it. Fails on the head.
-- `A_Painting_Of_The_Icons_That_Fails_Leaves_Those_Drawn_Before_And_The_Game_Drawing`, a painting
-  made to throw, 30 frames drawn on the icons before, then the packs read again and their icons
-  taken. Fails on the head, the HUD's draw throwing.
-- `The_Frames_Behind_The_Loading_Screen_Are_Counted_Again_Where_The_Packs_Are_Read_Again_Among_Them`,
-  the packs read again in the frames behind the screen, the screen shown alone until the world
-  stands again and then eight frames behind it. Fails on the head.
-- `A_Respawn_In_A_World_Shown_Draws_Nothing_Behind_Its_Loading_Screen`, none drawn behind and the
-  player landed. Fails on the head.
-- `Twenty_Worlds_Opened_In_Turn_With_The_Packs_Read_Again_As_Each_Loads_Stand_With_The_Icons_Of_Their_Packs`,
-  twenty flat worlds opened in turn, the packs read again in each one's first loading frame, each
-  standing with its own seed and the icons of the packs read last, and no fault filed. Passes on the
-  head run alone.
-- The worker test of item 215 holds its painting at a step, so its check that `Begin` returns before
-  the worker paints holds whatever the worker's speed, and the mirror's test of item 213 opens a
-  world where it respawned, a respawn making nothing ahead.
-
-On the head the tests run together fail six of eight, the failed painting's texture carried into the
-games after it, which the icons' closing ends. The strict build is clean, 565 tests pass outside the
-GPU's lock with the long soak skipped, and the headless game's 67 pass three times in a row. The
-play, under the lock taken exclusive with no quiet wait, passes in 203 s, the seed's step naming its
-world in 4 s, its `captures/closed.log` naming nothing left at a close 0.70 s after the new world,
-and its captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.14% of its
-pixels past 8 levels, the most 168, along the clouds' edges.
 
 Item 218's mends, each with a test that passes three runs in three and fails on a copy of the head
 given the seams it names:
@@ -1070,3 +772,30 @@ wait, passes in 210 s, the seed's step naming its world in 4 s, its `captures/cl
 fault at a close 0.58 s after the new world, and its captures within 8 levels of the warm play's on
 6.2.102, `sky2.png` differing in 0.14% of its pixels past 8 levels, the most 168, along the clouds'
 edges.
+
+Item 220's mends, each with a test that passes three runs in three and fails on a copy of the head
+given the seams it names:
+
+- A column whose tries ended counts as answered for the loading screen (`ChunkStreamer.LeftOut`,
+  from `VoxelGame.LoadingShare`), so the world opens with the gap, the error line said once.
+  `A_World_Whose_Column_Beside_The_Player_Is_Left_Out_Opens_With_The_Gap_And_Says_So` opens a flat
+  world whose column east of the spawn's fails on every try, through `Generating`, a step that takes
+  each world's generator before the world is made with it. It fails on the head, the loading screen
+  held past 30 s, with `Generating` and `LeftOut` given to the head.
+- The texture the play's close found is the interface's art, `GuiArt`'s, loaded as the HUD first
+  draws it and held for the process. It is let go as the game closes (`GuiArt.Close`, from
+  `VoxelGame.Dispose`), so a game opened after in the same process loads its own. The engine's store
+  keeps no names, so the store's ids and sizes were read after a headless game's close and set
+  against the game's texture fields: the art's id 17 among them, then held, and the two left, 512 by
+  256 and 512 by 64, let go by the window's close before it counts, as the engine's default fonts'
+  atlases are, which their sizes suggest and the close finding none left bears out.
+  `Every_Texture_The_Game_Loads_Is_Let_Go_As_It_Closes` holds the art valid while the game runs, not
+  valid once it closes, and the window's close saying no texture left. It fails on the head, the art
+  still valid.
+
+The strict build is clean, 572 tests pass outside the GPU's lock with the long soak skipped, and the
+headless game's 73 pass three times in a row. The play, under the lock taken exclusive with no quiet
+wait, passes in 202 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault and no texture left at a close 0.64 s after the new world, and its captures within 8 levels of
+the warm play's on 6.2.102, `sky2.png` differing in 0.23% of its pixels past 8 levels, the most 168,
+along the clouds' edges.

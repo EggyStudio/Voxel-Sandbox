@@ -72,6 +72,9 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     /// </remarks>
     public int Pending => _pending.Count + _wanted.Count;
 
+    /// <summary>Whether a column's tries ended with no column made, so it is left out of the world.</summary>
+    public bool LeftOut(int x, int z) => _failed.GetValueOrDefault((x, z)) >= Tries;
+
     /// <summary>
     /// Columns the workers made that wait to be taken in, <see cref="JoinedAFrame"/> a frame.
     /// </summary>

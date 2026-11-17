@@ -82,6 +82,13 @@ public static class GuiArt
         return _texture;
     }
 
+    /// <summary>Lets go of the texture, as the game closes, so a game opened after in the same process loads its own.</summary>
+    public static void Close()
+    {
+        if (_texture.IsValid) UnloadTexture(_texture);
+        _texture = default;
+    }
+
     private static byte[] Paint()
     {
         var atlas = new byte[Width * Height * 4];
