@@ -108,6 +108,41 @@ public sealed class SaveTests : IDisposable
     }
 
     [Fact]
+    public void A_Region_Held_For_A_Passing_Fault_Keeps_What_Its_Columns_Hold_For_The_Run()
+    {
+        new WorldSave(_folder);
+        var built = new ChunkColumn(0, 0);
+        built.Set(1, 2, 3, BlockId.Glowstone);
+        WriteRegion(_folder, 0, 0, 1, null, (0, 0, Compressed(built)));
+        var regions = Path.Combine(_folder, "regions");
+        File.WriteAllBytes(Path.Combine(regions, "m.0.0.bin"), [1]);
+        File.WriteAllBytes(Path.Combine(regions, "c.0.0.bin"), [1]);
+
+        // The region's three files held by another program through a save of the run, a column of
+        // the region changed and let go with a pig and a chest, and no column of it loaded after.
+        using (new FileStream(Path.Combine(regions, "r.0.0.bin"), FileMode.Open, FileAccess.Read, FileShare.None))
+        using (new FileStream(Path.Combine(regions, "m.0.0.bin"), FileMode.Open, FileAccess.Read, FileShare.None))
+        using (new FileStream(Path.Combine(regions, "c.0.0.bin"), FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            var save = new WorldSave(_folder);
+            var changed = new ChunkColumn(1, 0);
+            changed.Set(4, 5, 6, BlockId.Stone);
+            changed.Changed = true;
+            save.Keep(changed);
+            save.KeepMobs(1, 0, [new MobRecord(MobKinds.Pig, 0, new LandPlace(20.5, 70, 2.5), 0, 10, null)]);
+            save.KeepChests(1, 0, [new WorldSave.ChestRecord(20, 70, 2, ["stick 2"], null, 0)]);
+            save.Flush();
+            save.WriteMobs([]);
+            save.WriteChests([]);
+            save.LetGo([]);
+
+            Assert.Equal(BlockId.Stone, WorldSave.Decode(1, 0, save.Kept(1, 0)!).Get(4, 5, 6));
+            Assert.Single(save.TakeMobs(1, 0)!);
+            Assert.Single(save.TakeChests(1, 0)!);
+        }
+    }
+
+    [Fact]
     public void A_Furnaces_File_Holding_A_Null_Record_Opens_With_Its_Others()
     {
         var save = new WorldSave(_folder);

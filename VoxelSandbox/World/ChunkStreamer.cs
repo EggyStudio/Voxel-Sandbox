@@ -24,7 +24,18 @@ namespace VoxelSandbox;
 /// </remarks>
 public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null, FallingBlocks? falling = null)
 {
-    private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column, bool Unread, int Unknown)> _done = new();
+    private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column, bool Unread, int Unknown, int Left)> _done = new();
+    // How many times the player was put elsewhere, which a worker's column carries, so one made for
+    // the place left is let go rather than joined there.
+    private int _left;
+    // The compressed blocks of the changed columns let go of a world that keeps no save, held for
+    // the run in the order they were let go, so a column walked back to has what was built in it,
+    // those let go longest ago given up past MostUnsavedBytes.
+    private readonly OrderedDictionary<(int X, int Z), byte[]> _unsaved = [];
+    private long _unsavedBytes;
+
+    /// <summary>The bytes of a world that keeps no save its changed columns let go are held to, those let go longest ago given up past them.</summary>
+    internal long MostUnsavedBytes { get; set; } = 256L << 20;
     private readonly HashSet<(int X, int Z)> _pending = [];
     private readonly List<(int X, int Z)> _wanted = [];
     private readonly List<(int X, int Z)> _leaving = [];
@@ -97,7 +108,8 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         while (_done.TryDequeue(out var result))
         {
             Interlocked.Decrement(ref _running);
-            if (result.Column is null) Failed(result.X, result.Z);
+            if (result.Left != _left) _pending.Remove((result.X, result.Z));
+            else if (result.Column is null) Failed(result.X, result.Z);
             else _made.Add((result.X, result.Z, result.Column, result.Unread, result.Unknown));
         }
 
@@ -146,6 +158,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             }
             _pending.Add((x, z));
             Interlocked.Increment(ref _running);
+            var left = _left;
             Task.Run(() =>
             {
                 (ChunkColumn? Column, bool Unread, int Unknown) made = (null, false, 0);
@@ -159,7 +172,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
                     // than the exception ending a task nobody waits on.
                     TraceLog(LogLevel.Warning, $"Column {x}, {z} could not be generated. {ex}");
                 }
-                _done.Enqueue((x, z, made.Column, made.Unread, made.Unknown));
+                _done.Enqueue((x, z, made.Column, made.Unread, made.Unknown, left));
             });
         }
         _wanted.RemoveAll(c => world.HasColumn(c.X, c.Z) || _pending.Contains(c));
@@ -211,8 +224,9 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     // The compressed blocks the save keeps for a column, read on the main thread, or null.
     private byte[]? Kept(int x, int z)
     {
-        save?.ReadRegion(x, z);
-        return save?.Kept(x, z);
+        if (save is null) return _unsaved.GetValueOrDefault((x, z));
+        save.ReadRegion(x, z);
+        return save.Kept(x, z);
     }
 
     // A column from its kept blocks or its generator, with its own light worked out, which leaves the
@@ -301,7 +315,38 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     {
         Unload(VoxelWorld.ColumnOf((int)Math.Floor(to.X)), VoxelWorld.ColumnOf((int)Math.Floor(to.Z)), renderDistance + 3);
         _planned = null;
+        // The columns made or being made for the place left are let go, so none joins at its float
+        // place about an origin moved far from it.
+        _left++;
+        foreach (var (x, z, _, _, _) in _made) _pending.Remove((x, z));
+        _made.Clear();
+        _wanted.Clear();
     }
+
+    // Holds a changed column of a world that keeps no save, giving up those let go longest ago past
+    // the bytes held, which the log says once.
+    private void Unsaved(ChunkColumn column)
+    {
+        var key = (column.X, column.Z);
+        if (_unsaved.Remove(key, out var before)) _unsavedBytes -= before.Length;
+        var bytes = WorldSave.Encode(column);
+        _unsaved.Add(key, bytes);
+        _unsavedBytes += bytes.Length;
+        column.Changed = false;
+        if (_unsavedBytes <= MostUnsavedBytes) return;
+        if (!_gaveUp) TraceLog(LogLevel.Warning, $"The world keeps no save, so the changes of the columns let go longest ago are given up past the {MostUnsavedBytes >> 20} MB held.");
+        _gaveUp = true;
+        while (_unsavedBytes > MostUnsavedBytes && _unsaved.Count > 0)
+        {
+            _unsavedBytes -= _unsaved.GetAt(0).Value.Length;
+            _unsaved.RemoveAt(0);
+        }
+    }
+
+    private bool _gaveUp;
+
+    /// <summary>The bytes the changed columns let go of a world that keeps no save hold.</summary>
+    internal long UnsavedBytes => _unsavedBytes;
 
     private void Unload(int cx, int cz, int keep)
     {
@@ -318,7 +363,11 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         {
             // A block falling over the column is set down in it first, so the column keeps it.
             falling?.SetDown(world, x, z);
-            if (save is not null && world.TryGetColumn(x, z, out var column) && column.Changed) save.Keep(column);
+            if (world.TryGetColumn(x, z, out var column) && column.Changed)
+            {
+                if (save is not null) save.Keep(column);
+                else Unsaved(column);
+            }
             mobs.Leaving(x, z);
             drops.Leaving(x, z);
             chests.Leaving(x, z);

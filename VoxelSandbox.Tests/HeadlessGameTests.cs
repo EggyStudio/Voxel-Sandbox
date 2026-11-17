@@ -842,6 +842,73 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Column_Changed_In_A_World_That_Keeps_No_Save_Holds_Its_Change_Through_A_Jump_Away_And_Back()
+    {
+        // A transient world, a block set beside the spawn and the player put far off and back.
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        void Jump(LandPlace to)
+        {
+            game.Leave(to);
+            game.Recenter(to);
+            game.Player.Teleport(LandOrigin.PlaceOf(to));
+            Settle(headless);
+        }
+        game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
+        Jump(new LandPlace(100_000.5, 10, 0.5));
+        Jump(new LandPlace(0.5, 10, 0.5));
+        Assert.Equal(BlockId.Glowstone, game.World.GetBlock(2, 70, 2));
+        Assert.True(game.Streamer.UnsavedBytes > 0);
+
+        // Past the bytes held, the change let go longest ago is given up and the log says so once.
+        var said = new List<string>();
+        SetTraceLogCallback((_, line) =>
+        {
+            if (line.Contains("keeps no save, so the changes")) lock (said) said.Add(line);
+        });
+        try
+        {
+            game.Streamer.MostUnsavedBytes = 1;
+            game.World.SetBlock(3, 70, 3, BlockId.Glowstone);
+            Jump(new LandPlace(100_000.5, 10, 0.5));
+            Jump(new LandPlace(0.5, 10, 0.5));
+            Assert.NotEqual(BlockId.Glowstone, game.World.GetBlock(3, 70, 3));
+            Assert.Single(said);
+        }
+        finally
+        {
+            SetTraceLogCallback(null);
+        }
+    }
+
+    [Fact]
+    public void Columns_Made_For_A_Place_The_Player_Left_Do_Not_Join_There()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        // A streamer of the game's world asking for the columns about a place far east, then put
+        // far west before they join.
+        var streamer = new ChunkStreamer(game.World, game.Renderer, game.Mobs, game.Drops, game.Chests, null) { Workers = 8 };
+        var (east, west) = (new LandPlace(16_000.5, 40, 0.5), new LandPlace(-16_000.5, 40, 0.5));
+        var (ex, ez) = LandOrigin.ColumnOf(LandOrigin.PlaceOf(east));
+        streamer.Update(LandOrigin.PlaceOf(east), 1);
+        streamer.Leave(west, 1);
+
+        var joinedEast = false;
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        do
+        {
+            streamer.Update(LandOrigin.PlaceOf(west), 1);
+            joinedEast |= game.World.HasColumn(ex, ez);
+            Thread.Sleep(2);
+        }
+        while (streamer.Pending > 0 && clock.Elapsed.TotalSeconds < 30);
+
+        Assert.False(joinedEast);
+        Assert.True(game.World.HasColumn(VoxelWorld.ColumnOf(-16_001), 0));
+    }
+
+    [Fact]
     public void A_Recording_Whose_File_Cannot_Be_Written_Ends_And_Says_So()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

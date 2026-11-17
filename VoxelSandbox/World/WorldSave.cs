@@ -141,8 +141,8 @@ public sealed class WorldSave
         Folder = folder;
         Writing = writing;
         Directory.CreateDirectory(Path.Combine(folder, "regions"));
-        _mobs = new(this, ReadMobRegion, WriteMobRegion, OneFile, ReadOneFile);
-        _chests = new(this, ReadChestRegion, WriteChestRegion);
+        _mobs = new(this, ReadMobRegion, WriteMobRegion, MobRegionPath, OneFile, ReadOneFile);
+        _chests = new(this, ReadChestRegion, WriteChestRegion, ChestRegionPath);
         if (Finish()) ClearScratch();
     }
 
@@ -274,7 +274,9 @@ public sealed class WorldSave
     public void LetGo(IEnumerable<(int X, int Z)> loaded)
     {
         var standing = loaded.Select(column => RegionOf(column.X, column.Z)).ToHashSet();
-        var gone = _readRegions.Where(region => !standing.Contains(region) && !_changedRegions.Contains(region)).ToHashSet();
+        // A region held since its file could not be read is written by no save of the run, so what
+        // its columns hold stays here for the run.
+        var gone = _readRegions.Where(region => !standing.Contains(region) && !_changedRegions.Contains(region) && !_held.Contains(RegionPath(region))).ToHashSet();
         foreach (var column in _kept.Keys)
             if (gone.Contains(RegionOf(column.X, column.Z))) _kept.TryRemove(column, out _);
         _readRegions.ExceptWith(gone);
@@ -766,7 +768,8 @@ public sealed class WorldSave
     // kind is given one, is read into the regions the first time they are asked for and kept beside
     // as read once they are written.
     private sealed class Regional<T>(WorldSave save, Func<(int X, int Z), Dictionary<(int X, int Z), List<T>>> read,
-        Action<(int X, int Z), Dictionary<(int X, int Z), List<T>>> write, string? oneFile = null, Func<Dictionary<(int X, int Z), List<T>>>? readOneFile = null)
+        Action<(int X, int Z), Dictionary<(int X, int Z), List<T>>> write, Func<(int X, int Z), string> path,
+        string? oneFile = null, Func<Dictionary<(int X, int Z), List<T>>>? readOneFile = null)
     {
         private readonly Dictionary<(int X, int Z), Dictionary<(int X, int Z), List<T>>> _regions = [];
         private readonly HashSet<(int X, int Z)> _changed = [];
@@ -798,11 +801,12 @@ public sealed class WorldSave
             foreach (var region in _changed) write(region, _regions[region]);
             if (oneFile is not null && File.Exists(oneFile) && !save._held.Contains(oneFile)) save.Retire(oneFile);
             // A loaded column's records stand in the world, so what was written of them is let go
-            // from its region too, which takes them again as the column unloads.
+            // from its region too, which takes them again as the column unloads. A region held
+            // since its file could not be read is written by no save of the run, so it stays here.
             save.Afterward(() =>
             {
                 _changed.Clear();
-                foreach (var region in _regions.Keys.Where(r => !standing.Contains(r)).ToList()) _regions.Remove(region);
+                foreach (var region in _regions.Keys.Where(r => !standing.Contains(r) && !save._held.Contains(path(r))).ToList()) _regions.Remove(region);
                 foreach (var (column, _) in columns) _regions[RegionOf(column.X, column.Z)].Remove(column);
             });
         }
@@ -1135,7 +1139,7 @@ public sealed class WorldSave
 
     // A column's blocks, every section's in turn, compressed. Its light is left out, since it is
     // worked out again when the column loads.
-    private static byte[] Encode(ChunkColumn column)
+    internal static byte[] Encode(ChunkColumn column)
     {
         using var output = new MemoryStream();
         using (var zip = new ZLibStream(output, CompressionLevel.Fastest))
