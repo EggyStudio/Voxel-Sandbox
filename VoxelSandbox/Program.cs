@@ -1,9 +1,10 @@
 // A voxel game built to test global illumination, with an endless generated world of colored
 // blocks to walk, fly and build in, emissive blocks, and a sky with a sun that crosses it. `--flat`
 // and `--seed <n>` pick the kind of world and its seed, `--world <name>` the save it is kept in,
-// its kind and seed by default, `--transient` keeps nothing on disk, as a test run does, and each
-// `--pack <path>` a Minecraft resource pack, a zip or a folder, whose textures the blocks and items
-// are drawn with, the first given over the rest.
+// its kind and seed by default, `--transient` keeps nothing on disk, as a test run does,
+// `--data <folder>` the folder the saves, the settings and the screenshots are kept in, in place
+// of the account's, and each `--pack <path>` a Minecraft resource pack, a zip or a folder, whose
+// textures the blocks and items are drawn with, the first given over the rest.
 using System.Runtime.InteropServices;
 using Engine;
 using VoxelSandbox;
@@ -21,6 +22,7 @@ for (int i = 0; i < args.Length; i++)
     else if (args[i] == "--seed" && i + 1 < args.Length && int.TryParse(args[i + 1], out var number)) seed = number;
     else if (args[i] == "--world" && i + 1 < args.Length) name = args[i + 1];
     else if (args[i] == "--pack" && i + 1 < args.Length) packs.Add(args[i + 1]);
+    else if (args[i] == "--data" && i + 1 < args.Length) WorldSave.Root = Path.Combine(Path.GetFullPath(args[i + 1]), "saves");
 }
 
 SetConfigFlags(ConfigFlags.WindowResizable);

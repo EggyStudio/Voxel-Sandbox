@@ -47,12 +47,14 @@ application data folder elsewhere, in a folder named by its kind and seed, `over
 `flat-7`, unless `--world` names it. Its mode, inventory, health and food are saved with it. It is
 saved every 30 seconds, on opening another world and on quitting, and opened where it was left.
 `--transient` keeps nothing on disk, as a test run scripted through `./e3d` should, so it leaves the
-saves as they were and takes no screenshot. Screenshots go in a `screenshots` folder beside the
-saves, made the first time F2 is pressed, each named by its time as `2026-10-21_03.45.12.png`, with
-`_2` after it where two fall in one second. The engine's package opens its performance window with
-F2 as well, so the game keeps that window out of sight until the package gives it a key of its own.
-The builds made in the engine's repository saved under `3DEngine.Game/saves` in the same folder, and
-a world moved from there into `VoxelSandbox/saves` opens where it was left.
+saves as they were and takes no screenshot. `--data <folder>` keeps the saves, the settings and the
+screenshots in that folder in place of the account's. Screenshots go in a `screenshots` folder
+beside the saves, made the first time F2 is pressed, each named by its time as
+`2026-10-21_03.45.12.png`, with `_2` after it where two fall in one second. The engine's package
+opens its performance window with F2 as well, so the game keeps that window out of sight until the
+package gives it a key of its own. The builds made in the engine's repository saved under
+`3DEngine.Game/saves` in the same folder, and a world moved from there into `VoxelSandbox/saves`
+opens where it was left.
 
 `./e3d` controls the running game from a terminal through the engine's command line, run out of
 the engine's checkout that `ENGINE_CHECKOUT` names, or the folder above this repository

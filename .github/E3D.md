@@ -39,8 +39,8 @@ works, and nothing appears on the desktop. `--offscreen` needs no display server
 over SSH, in a container or on a locked session, and a software Vulkan device (lavapipe) is enough.
 A run with no window has no window events, so input arrives only through `input.*`. `--transient` is
 the game's own flag, which keeps nothing on disk, so a run scripted from here leaves the saves as
-they were. The game's other flags, `--flat`, `--seed <n>` and `--world <name>`, pass through `open`
-the same way.
+they were. The game's other flags, `--flat`, `--seed <n>`, `--world <name>` and `--data <folder>`,
+pass through `open` the same way.
 
 Any program built on the engine takes the same flags (`--serve`, `--headless`, `--offscreen`,
 `--hidden`, `--frames N`) or the variables `E3D_SERVE`, `E3D_HEADLESS`, `E3D_OFFSCREEN`,

@@ -70,6 +70,9 @@ public sealed class VoxelGame : IDisposable
         _transient = transient;
         _settings = settings && !transient;
         PackList = new PackList(settingsFolder ?? Path.GetDirectoryName(WorldSave.Root)!);
+        // Where the worlds and the settings are kept, which the system's folders for an account's
+        // data decide, said once as the game begins.
+        if (!transient) TraceLog(LogLevel.Info, $"The game keeps its worlds in {WorldSave.Root} and its settings in {PackList.Root}.");
         // A run holds the data folder while it runs, so a second run opened on it keeps nothing
         // there rather than writing over what the first writes.
         var held = transient || HoldDataFolder();
@@ -1012,6 +1015,7 @@ public sealed class VoxelGame : IDisposable
 
     private void Saved()
     {
+        TraceLog(LogLevel.Info, $"The world {WorldName} is saved in {Save?.Folder}.");
         if (SaveFault is not null) Say("The world is saved again");
         (SaveFault, _saveWait) = (null, SaveSeconds);
     }

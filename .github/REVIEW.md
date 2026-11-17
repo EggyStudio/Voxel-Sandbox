@@ -384,8 +384,9 @@ change.
 
 ## Verdicts
 
-Verdict 16 is open, the build run 44167788522 of `e079315` red on Linux and macOS in the end
-request's test. Verdicts 1 to 15 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdicts 16 and 17 are open, the end request's test red on Linux and macOS in run 44167788522 and on
+macOS alone in run 44183588584 after the first mend. Verdicts 1 to 15 are settled, said under each
+in REVIEW-ARCHIVE.md.
 
 16. **The build run of `e079315` is red on Linux and macOS in one test.** Run 44167788522 ended red
     at 22:19 on 2026-11-17, jobs 134338385147 and 134338384947, 587 passed and 1 failed of 589,
@@ -399,6 +400,19 @@ request's test. Verdicts 1 to 15 are settled, said under each in REVIEW-ARCHIVE.
     told in the Reply; the test keeping the child's output and error and giving their last lines and
     the exit code in its failure message; and the mend, with the test green on both runners. The
     four commits after it wait locally and go up with the mend.
+
+17. **The build run of `4fb13f8` is red on macOS alone in the same test.** Run 44183588584 ended red
+    at 23:48 on 2026-11-17, job 134394067224, Linux, Windows and the play green.
+    `ProcessTests.A_Request_To_End_The_Process_Saves_The_World_As_The_Windows_Close_Does` failed at
+    `ProcessTests.cs` line 57 with no world's info written. The child's lines the test gives show
+    the game reaching Playing at 3.1 s, the request taken at 3.5 s, the cleanup run and the process
+    ending with code 0, so the end request holds there and the fault is in where the save is looked
+    for or whether it was written. The lines show no save and name no data folder. Asked, the cause
+    read from the game's own code for where its data folder lies on macOS against where the test
+    looks, a home set by the environment against the account's own among them, and told in the
+    Reply; the game saying its data folder and each save's path in a line of its log, so a run says
+    where it wrote; and the mend, green on macOS. Verdict 16 settles with it. The two commits after
+    it wait locally and go up with the mend.
 
 ## Decisions
 
@@ -981,3 +995,37 @@ play under the lock taken exclusive with no quiet wait passing in 185 and 186 s,
 warm play's on 6.2.102, `sky2.png` differing in at most 0.04% of its pixels past 8 levels. The first
 commit's test of a stack thrown far off first opened the game on the stack's own place, so the
 player picked it up, and opens it a few blocks off.
+
+Verdict 17's read. The game keeps its saves and settings under the folder .NET names for an
+account's local application data (`WorldSave.Root`). On Linux .NET takes that folder from
+`XDG_DATA_HOME`, or from `HOME` under `.local/share`. On macOS .NET 10 asks the system for it, its
+native library calling `NSFileManager`'s `URLsForDirectory:inDomains:` (`SystemNative_SearchPath`),
+and its library for macOS reads no `XDG_DATA_HOME` at all. The system takes an account's home from
+the account's record, not from `HOME`. So on the runner the child game saved `ended` under the
+runner account's own `Library/Application Support`, and the test, which Verdict 16's mend had set
+the child's home for, looked under its own folder and found none. The read is of the runtime pack
+for macOS on this machine, 10.0.12, its library and its native one, the runner taking the newest
+10.0, with no macOS to run on. The log lines below say the folder on the runner.
+
+The mend:
+
+- The program takes `--data <folder>`, the folder its saves, its settings and its screenshots are
+  kept in, in place of the account's, and the test gives the child a folder of its own there, so
+  its data lies in the test's folder on every system and no run of the suite writes into the saves
+  of the account it runs under.
+- The game says in its log, as it begins, the folders it keeps its worlds and its settings in, and
+  at each save the world's name and the folder it was saved in.
+- The test reads the folder the child's log says it saved in, holds it to the folder given, and
+  reads the child's output to its end before.
+- The README and `.github/E3D.md` name the flag among the game's.
+
+Run on this machine as the runner runs it, with no display, a home of its own and no
+`XDG_DATA_HOME`, the test passes three runs in three, in 3 s each, the home left with no
+`VoxelSandbox` folder. On a copy of the head it fails with the save said in no folder, the head's
+game having saved `ended` under that home's `.local/share`, the folder that on macOS is the
+account's own by the read above. The strict build is clean, 606 tests pass outside the GPU's lock
+with the long soak skipped, and the headless game's 93 pass three times in a row. The play, under
+the lock taken exclusive with no quiet wait, passes in 185 s, the seed's step naming its world in
+5 s, its `captures/closed.log` naming no fault and no texture left, and its captures within 8 levels
+of the warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels past 8 levels. The build
+run of this commit says on macOS the folder its child saved in.
