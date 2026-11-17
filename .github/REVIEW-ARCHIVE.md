@@ -3447,6 +3447,40 @@ before a batch.
     it ends where the frame has room. The frames past 22, 25, 30 and 40 ms held no worse than item
     206's counts by the same flight, with a test for what the mend holds.
 
+208. **The corner columns asked for ahead of the step.** Item 207's read finds 16 of the 32 sections
+    the meshing holds at the drawn reach's corners, each waiting 70 to 88 ms on a diagonal neighbor
+    column outside the load circle of the eye's previous column, asked for only at the step and
+    joined 53 to 73 ms later, the corner section meanwhile sent four times as a caster with every
+    gathering failing for that column. Asked, the streamer's load planned ahead as the flood is, the
+    next column's circle asked for once the eye lies within half a section of its face along its
+    motion, so the corner columns have joined by the step, and a section whose gathering cannot
+    succeed for a column not loaded not sent until that column joins. The 16's time from within the
+    reach to drawn before and after over three exclusive runs, the columns loaded and the memory
+    against the head's, and the frames past 22, 25, 30 and 40 ms held no worse than item 207's
+    counts by the same flight, with a test that a corner section is drawn in the step's frame or the
+    one after.
+
+209. **The join frames ahead of a step.** Item 208's five runs keep six frames past 40 ms in which
+    meshes join, 57 to 64 frames before a step, where the head had four after one. Asked, the read
+    first, such a frame by its parts from the vitals (how many meshes are taken in, the uploads, the
+    flood, what else falls in the same frame) over five exclusive runs, then the mend the read
+    points at, the taking in bounded by the frame's time left or spread over the frames before the
+    step, since the flood ahead gives some sixty frames of room. Judged as item 208 was, five runs
+    each way by totals and spread, frames past 22, 25, 30 and 40 ms and the 99th part, with the
+    corners still drawn by the frame after the step and no send failing. The mirror's first frame
+    stays the engine's, its item 290, and is left out of the count by naming its frames.
+
+210. **The circle ahead's joins out of the field's halfway frames.** Item 209's read leaves 32
+    frames past 25 ms over five runs about 60 frames before a step, where the circle ahead is asked
+    for at the same half column at which the field does its own halfway work, and its columns join
+    two a frame with up to 16 uploads beside it. Asked, the circle ahead asked for soon after the
+    step before, or its joins spread over the room up to the next step and kept out of the field's
+    halfway frames, whichever the read of the streamer favors, as a mend with a test of the corners
+    still drawn by the frame after the step and no send failing. Judged as item 208 was, five
+    exclusive runs each way by totals and spread, the ray scene's growth frame and the mirror's
+    first named and left out. The sections the flood ahead sees put into the shadow maps a few a
+    frame waits for the engine's items 288 and 292, which change what a new mesh costs there.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -8115,6 +8149,192 @@ makes 438 faces at the median for the 32 and 454 for every mesh. A frame that se
 sections at the median and 15 at the 90th part in 0.32 to 0.33 ms of its 4 ms budget, the queue
 holding 13 at the 90th part. The budget ran out in 0, 0 and 2 frames of a run, and no section
 waited for a mesher.
+
+Item 208's mend, the corner columns asked for ahead of the step, in three parts:
+
+- The streamer asks for the next column's circle once the player lies within half a column of its
+  face along the motion since the last update, its plan the union of the player's column's circle
+  and the next one's, nearest the player's first, and unloads by the player's column as before
+  (`ChunkStreamer.Ahead` and `Plan`, `ChunkStreamer.cs:223` and `:245`).
+- A section whose eight columns about its own are not all loaded is not sent, its gathering bound to
+  fail, and the join of any of them marks it again, as `VoxelWorld.Add` marks the sections of the
+  nine columns about a column (`ChunkRenderer.cs:888`).
+- The sections the finished flood made ahead sees are released from those held back as unseen, so
+  they are meshed before the step and stand in the shadow maps and the field until the step draws
+  them (`ChunkRenderer.cs:1421`).
+
+Five runs each way under the exclusive lock in rounds of the head, the first two parts, and all
+three, the third under a switch of the probe's, tuned's powersave-bazzite and the GPU at 0% before
+all fifteen, totals over five with the spread run to run:
+
+| Frames past | The head | The first two parts | All three |
+|---|---|---|---|
+| 22 ms | 94 (13 to 24) | 106 (16 to 27) | 85 (15 to 18) |
+| 25 ms | 51 (7 to 13) | 75 (12 to 22) | 48 (7 to 12) |
+| 30 ms | 19 (2 to 8) | 50 (8 to 15) | 22 (3 to 5) |
+| 40 ms | 4 (0 to 1) | 38 (7 to 8) | 11 (2 to 3) |
+| 99th part, ms | 23.7 to 27.9 | 26.2 to 33.8 | 23.6 to 26.9 |
+
+The frames' medians are 10.34 to 10.66 ms in all three. The 16 corner sections of item 207 are drawn
+75 to 82 ms after they come within the drawn reach on the head, 83 to 88 at the worst, and with the
+first two parts or all three they are meshed 620 to 649 ms before, as the sun's casters with every
+column about them loaded, so they are drawn as the step's flood is taken. The sends whose gathering
+failed number 612 to 614 a run on the head and none either way after.
+
+The first two parts alone were not taken. With every column about it loaded, each section a step
+brings can be gathered, so the step's sections, sent together the frame after it, come in together
+the frame after that, some 50 meshes, and every step makes a frame of 52 to 90 ms, the engine's
+field and ray scene taking them all in it. The release ahead meshes them in the frames before the
+step and takes those frames out.
+
+All three hold 11 frames past 40 ms against the head's 4. Six fall 57 to 64 frames before a step,
+five where columns join and one where 7 meshes come in, as the head's 4 are frames where columns
+join 4 to 7 frames after one. The other five, one a run, fall about 20 frames after the fourth step
+with nothing joined and no mesh taken in, the first frame of the water's mirror, whose `cpu.mirror`
+takes 34 to 41 ms in all five runs against 0.5 to 16 ms on the head. One flight each way under the
+shared lock reads 16.8 ms on the head and 34.2 ms after in that frame, with 819 parts drawn and 6
+drawn into the shadow maps alone both ways and 842 against 854 parts standing with a mesh, so its
+time does not follow the meshes drawn or standing. It is the engine's item 290, the entry in ASKS.md
+holding these readings.
+
+The columns loaded, sampled three times a flight, are 669 to 694, 677 to 691 and 700 on the head
+and 698 to 723, 700 to 729 and 700 after, some 50 more, 7%, while the next column's circle is asked
+for, and the same once still. After a flight the managed heap holds 656.0 and 659.6 MB on the head
+and 650.5 and 645.0 MB after, its working set 2,026 and 1,913 MB against 1,868 and 1,802, with
+1,403 and 1,395 sections meshed against 1,450 and 1,453. After a flight with turns, east, north,
+west and south 300 frames each, 26 meshed sections stand culled on the head of 1,446 meshed, 33 of
+1,454 with the first two parts and 35 of 1,461 with all three.
+
+`A_Corner_Of_The_Drawn_Reach_A_Step_Brings_Is_Drawn_Soon_After_It_With_No_Send_Failing` flies the
+eye east over column 1's face in the flat world at the render distance of 4, where the corner
+section of column 5, two rows aside, lies within column 1's drawn reach and its diagonal neighbor
+column outside column 0's load circle, and checks that the corner is drawn in the step's frame or
+the one after and that no send's gathering failed. It fails on the head, where the corner is drawn
+2 frames after the step.
+
+The strict build is clean, also after two comments were wrapped to 100 columns, 553 tests pass
+outside the GPU's lock with the long soak skipped, and the play passes in 198 s. Its `sky2.png`
+differs from the pin's in 0.18% of its pixels past 8 levels, the most 116, along the edges of the
+clouds in its upper left, which stand a fraction of a pixel apart, a capture of the night sky with
+no section in it.
+
+Item 209's read of the frames past 40 ms ahead of a step, five runs under the exclusive lock of the
+game at `84abe75` with a probe that records each frame's uploads and reads the engine's ray scene
+at each frame's end by reflection, tuned's powersave-bazzite and the GPU at 0% before each.
+
+Four of item 208's six are the frame where the 6.2.86 package's ray scene makes the buffer of its
+corners again at four times the size, `cpu.global_illumination` at 32.5 to 43.1 ms with 2 to 5
+meshes taken in. The head's four frames past 40 ms in item 208, at frames 322 to 330, are by their
+parts the same frame, where item 208's Reply named them frames where columns join. In the read the
+buffer grows from 256 to 1,024 MiB in three runs of five, at frames 394 to 406 as its corners pass
+16,777,216, at 34.4 to 35.0 ms. In the other two the load before the flight left it at 512 MiB, and
+it does not grow. Over a flight the scene holds 3,520 to 3,851 meshes and 16.2 to 18.0 million
+corners for the 667 to 700 copies a frame places, the package keeping every mesh the game hands it.
+The copy into the larger buffer waits for the frames in flight, so it is the engine's, and the entry
+in its ASKS.md holds these counts. The other two of the six are a frame of the game's meshing at
+17.8 ms with the field at 12.2 and the collector's pause at 6.8, and a frame of 7 meshes taken in
+with the field at 14.5 and a pause of 6.2. No frame of their kind passes 40 ms in the read's five
+runs.
+
+Totals over five runs, the growth's frames and the mirror's first frames named and left out in the
+last row:
+
+| Frames past | Item 208's head | Item 208's three parts | The read |
+|---|---|---|---|
+| 22 ms | 94 | 85 | 77 |
+| 25 ms | 51 | 48 | 57 |
+| 30 ms | 19 | 22 | 21 |
+| 40 ms | 4 | 11 | 8 |
+| 40 ms, those named left out | 0 | 2 | 0 |
+
+The read's medians are 10.36 to 10.47 ms and its 99th parts 24.6 to 26.7 ms, with the probe's
+reflection in every frame.
+
+What stays the game's are the frames past 25 ms in two places:
+
+- At the eye's step, 16 in the read, where the 25 to 38 meshes of the sections the step first
+  draws are built into the ray scene in that frame, `cpu.global_illumination` at 11.4 to 17.0 ms
+  and the frames at 25.2 to 32.0 ms. Where 1 to 5 come in a frame it takes 3.7 ms at the median.
+- About 60 frames before the step, 32 in the read and 25 in item 208's three parts against 3 on
+  the head. The next column's circle is asked for half a column from its face, the point halfway
+  between steps where the field does its own work, which in the head's 3 took 21 to 27 ms alone.
+  Its columns join two a frame over about 15 frames, the game uploading up to 16 group parts a frame
+  of up to 22,000 triangles, 0 to 5 of them first drawn, and `cpu.scene_field` takes 11.1 to
+  26.2 ms in the 15 sampled. Within 8 frames after a step the head holds 34 frames past 25 ms and
+  the read 16.
+
+No mend is made. The second place would be the game's to mend by asking for the next circle soon
+after the step, or by spreading its joins over the 60 frames before the step, so they do not fall
+in the field's halfway frames, and the first by drawing the sections the flood made ahead sees
+into the shadow maps over the frames before the step, so their structures are built a few at a
+time. Either is read as item 208 was if it is asked for.
+
+Item 210's mend, the next column's circle asked for at the step and the sections the flood made
+ahead sees released eight a frame, in two parts:
+
+- The streamer asks for the circle of the next column along the player's motion as the player steps
+  into a column rather than half a column from its face (`ChunkStreamer.cs:221`). Its 29 columns of
+  a flight's step are asked for in the step's frame, made 2 to 7 frames after it and joined two a
+  frame 3 to 18 frames after it.
+- The read of the first round of runs showed what the circle's joins had hidden. With its columns
+  joined before the flood made ahead finishes, that flood released 42 to 54 sections held back as
+  unseen at once, 6 to 14 columns ahead, and the frame after took them all in with 69 to 87 group
+  uploads, at 28 to 40 ms. The finished flood ahead lists those sections and releases them eight a
+  frame (`ChunkRenderer.cs:564` and `:1437`), some seven frames for the fifty or so, well before the
+  step.
+
+Five runs of the mend in the 06:05 slot against item 209's five runs of the same game, flight and
+probe as the head, tuned's powersave-bazzite and the GPU at 0% or 1% before each, totals over five
+with the spread:
+
+| Frames past | The head | The mend |
+|---|---|---|
+| 22 ms | 77 (14 to 17) | 77 (13 to 18) |
+| 25 ms | 57 (10 to 13) | 50 (9 to 11) |
+| 30 ms | 21 (3 to 6) | 19 (3 to 5) |
+| 40 ms | 8 (1 to 2) | 8 (1 to 2) |
+| 40 ms, the growth and the mirror left out | 0 | 0 |
+| 99th part, ms | 24.6 to 26.7 | 23.6 to 25.9 |
+
+The frames past 40 ms are each run's mirror first frame and, in three runs each way, the growth of
+the ray scene's corners, at frames 394 to 406 on the head and 320 to 422 with the mend. The medians
+are 10.36 to 10.47 ms on the head and 10.37 to 10.57 with the mend. By where they fall, the frames
+past 25 ms are:
+
+- About 60 frames before a step, 32 on the head and 5 with the mend. The 5 join nothing and take in
+  0 to 3 meshes, `cpu.scene_field` alone at 19.9 to 23.3 ms, the field's own work halfway between
+  steps, the engine's item 288.
+- From 3 to 40 frames after a step, none on the head and 16 with the mend, all 4 to 6 frames after
+  it, the circle's first joins, two columns, 3 to 6 meshes taken in and 7 to 17 group uploads, at
+  25.3 to 36.2 ms. In the 6 sampled `cpu.global_illumination` takes 3.9 to 13.9 ms, the field 3.9
+  to 9.9, the collector 2.5 to 5.2 and the game's update 3.1 to 10.4.
+- At a step, 16 on the head and 19 with the mend.
+
+The corner sections of item 207 are meshed 1,343 to 1,393 ms before they come within the drawn
+reach, against 599 to 643 on the head, and no send's gathering fails either way. The columns
+loaded, sampled three times a flight, are 698 to 729 against 700 to 729, the circle ahead loaded
+for the whole of each column the player crosses.
+
+`The_Circle_Of_The_Next_Column_Is_Asked_For_As_The_Player_Steps_Into_A_Column` steps east into
+column 1 in the flat world at the render distance of 4 and checks that column 8, in column 2's load
+circle and neither column 0's nor 1's, joins before the player is a quarter column in. It fails on a
+copy of the head, where it has not joined by then.
+`The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame` raises a
+ridge of stone in the air over columns 5 and 6, a block in each of 8 sections a column, which the
+flood from column 0 leaves out and the flood made ahead of the step into column 1 sees. It walks the
+eye toward column 1's face with each frame's meshes finished before the next, and checks that more
+than eight of the ridge's sections are taken in before the step and no frame takes in more than
+eight. On the tree the most a frame takes in is 3 to 7. On a copy of the head, with the count and
+the workers' finished meshes added as seams, it fails three runs in three, the release taking in 8 a
+frame four times and then 10 or 11. The corner test of item 208 passes unchanged.
+
+The strict build is clean, also after the new comments were wrapped to 100 columns, 555 tests pass
+outside the GPU's lock with the long soak skipped, and the headless game's 58 pass three times in a
+row. The first play failed its check of the validation layer, `vkDestroyDevice()` finding 20 objects
+not destroyed as the app closed 0.7 s after the play's new world began, a check the plays of the
+commits before passed. The play run again passes in 214 s with nothing left, its `sky2.png`
+differing from the pin's in 0.14% of its pixels past 8 levels, the most 116, along the clouds. The
+leak is not mended here and is read again at the next play.
 
 ## Items closed, parked or shortened
 

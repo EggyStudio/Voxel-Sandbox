@@ -1368,6 +1368,65 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void The_Groups_The_Columns_Unloaded_At_A_Step_Leave_Are_Made_Again_The_Count_A_Frame_After_It()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        game.RenderDistance = 4;
+        Go(8.5);
+        Stand();
+
+        // Each step east into columns 1 to 4, settled at the column's face first so the step brings
+        // no work of the walk, and each frame from the step on, the groups made again wholly behind
+        // the column stepped from, two columns across from an even one, where the circle the step
+        // asks for joins no column and only the step's unload past the load circle marks a group.
+        var (made, column, counting) = (new List<int>(), 0, false);
+        game.Renderer.Remade = corner =>
+        {
+            if (counting && corner.X + 1 < column - 1) made[^1]++;
+        };
+        var steps = new List<int>();
+        for (column = 1; column <= 4; column++)
+        {
+            for (var x = Section.Size * column - 7.5; x < Section.Size * column - 0.1; x += 0.2) Go(x);
+            Stand();
+            counting = true;
+            steps.Add(made.Count);
+            made.Add(0);
+            Go(Section.Size * column + 0.1);
+            for (var frame = 0; frame < 30; frame++)
+            {
+                made.Add(0);
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            counting = false;
+        }
+
+        Assert.True(made.Sum() > ChunkRenderer.LeftAFrame, $"{made.Sum()} groups behind the player were made again");
+        Assert.True(steps.All(step => made[step] == 0), $"groups behind the player were made again in the steps' frames, {string.Join(" ", steps.Select(step => made[step]))}");
+        Assert.True(made.Max() <= ChunkRenderer.LeftAFrame, $"{made.Max()} groups behind the player were made again in a frame, {string.Join(" ", made)}");
+
+        void Go(double x)
+        {
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        void Stand()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Streamer.Pending > 0 || game.World.Loaded.Count > 0 || game.Renderer.Meshing > 0) && clock.Elapsed.TotalSeconds < 30);
+        }
+    }
+
+    [Fact]
     public void The_Circle_Of_The_Next_Column_Is_Asked_For_As_The_Player_Steps_Into_A_Column()
     {
         using var headless = new HeadlessGame(still: true);

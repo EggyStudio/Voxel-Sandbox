@@ -133,6 +133,9 @@ public sealed class ChunkRenderer : IDisposable
         public readonly GroupPart[] Parts =
             [new(SectionPart.Solid), new(SectionPart.Foliage), new(SectionPart.Cutout), new(SectionPart.SolidCutout), new(SectionPart.Molten)];
         public Change Change;
+        // Whether the group is marked only by its sections leaving, as they pass out of reach or
+        // their column unloads, and whether since the last Rebuild.
+        public bool Leaving, Fresh;
     }
 
     private sealed class GroupPart(int kind)
@@ -155,6 +158,28 @@ public sealed class ChunkRenderer : IDisposable
     private static (int X, int Y, int Z) GroupOf(SectionKey key) => (key.X >> GroupX, key.Y >> GroupY, key.Z >> GroupZ);
 
     private readonly Dictionary<(int X, int Y, int Z), Group> _groups = [];
+
+    /// <summary>
+    /// How many groups marked only by their sections leaving an update makes again at most, the
+    /// nearest the eye first, each once the first update after its marking has passed.
+    /// </summary>
+    /// <remarks>
+    /// The step into a column unloads the columns past the load circle behind the player, 25 to 29
+    /// of them, and a group holding a section of one and of a column kept is made again without it.
+    /// None of those is drawn, standing past the render distance, so they wait out the step's
+    /// frame, where the flood shows the sections it brings, and are made two a frame after it.
+    /// </remarks>
+    internal const int LeftAFrame = 2;
+
+    // The groups marked only by their sections leaving, and those of them the update makes again.
+    private readonly List<(int X, int Y, int Z)> _left = [];
+    private readonly HashSet<(int X, int Y, int Z)> _leftMade = [];
+
+    /// <summary>
+    /// Called with each group's corner section as it is made again, for a test to count them a
+    /// frame.
+    /// </summary>
+    internal Action<SectionKey>? Remade { get; set; }
 
     // Every section's opaque faces are drawn with the first, their colors in their vertices, and
     // its see-through faces with the second, each vertex's alpha its surface's. An alpha under 255
@@ -839,9 +864,9 @@ public sealed class ChunkRenderer : IDisposable
             if (!Remesh(world, key)) world.Loaded.Add(key);
         world.Reshaded.ExceptWith(world.Edited);
         world.Edited.Clear();
-        Rebuild();
-
         var at = Reach.Of(eye);
+        Rebuild(at);
+
         if (_reachedFor != (at, renderDistance))
         {
             _reachedFor = (at, renderDistance);
@@ -853,7 +878,7 @@ public sealed class ChunkRenderer : IDisposable
                 if (!InReach(world, key, at, renderDistance + 1)) _gone.Add(key);
             foreach (var key in _gone)
             {
-                Forget(key);
+                Forget(key, leaving: true);
                 _parked.Add(key);
             }
         }
@@ -1107,42 +1132,57 @@ public sealed class ChunkRenderer : IDisposable
         if (_ecs.GetReadOnly<ShadowOnly>(entity).Value != shadowOnly) _ecs.Update(entity, new ShadowOnly(shadowOnly));
     }
 
-    private void Forget(SectionKey key)
+    // Lets go of a section's meshes, leaving where it passes out of reach or its column unloads.
+    private void Forget(SectionKey key, bool leaving = false)
     {
         _asked.Remove(key);
         if (!_sections.Remove(key, out var entry)) return;
         _changed = true;
         foreach (var part in entry.Parts) Drop(part);
         foreach (var part in entry.Parts) part.Forget();
-        if (entry.Grouped.Any(part => part.HasFaces)) Regroup(key, Change.Faces);
+        if (entry.Grouped.Any(part => part.HasFaces)) Regroup(key, Change.Faces, leaving);
     }
 
     // Marks a section's group to be made again in the next update, or its light written, the
-    // greater change of its sections standing.
-    private void Regroup(SectionKey key, Change change)
+    // greater change of its sections standing. A group marked by a section leaving stays leaving
+    // until a change of another kind marks it.
+    private void Regroup(SectionKey key, Change change, bool leaving = false)
     {
         if (change == Change.None) return;
         var at = GroupOf(key);
         if (!_groups.TryGetValue(at, out var group)) _groups[at] = group = new Group();
+        (group.Leaving, group.Fresh) = (leaving && (group.Leaving || group.Change == Change.None), leaving);
         if (change > group.Change) group.Change = change;
     }
 
     // Makes each group whose sections changed again from their arrays, a mesh of each part over the
     // sections that hold it, standing at the group's corner, or writes their light where only it
-    // changed, and lets a group whose sections hold nothing go.
-    private void Rebuild()
+    // changed, and lets a group whose sections hold nothing go. A group marked only by its sections
+    // leaving and drawn nowhere waits out the first update after its marking, and then LeftAFrame
+    // of those are made again an update, the nearest the eye first.
+    private void Rebuild(SectionKey eye)
     {
+        _left.Clear();
+        _leftMade.Clear();
+        foreach (var (at, group) in _groups)
+        {
+            if (group.Change == Change.None || !Waits(group)) continue;
+            if (group.Fresh) group.Fresh = false;
+            else _left.Add(at);
+        }
+        _left.Sort((a, b) => Far(a).CompareTo(Far(b)));
+        for (int i = 0; i < _left.Count && i < LeftAFrame; i++) _leftMade.Add(_left[i]);
         List<(int X, int Y, int Z)>? empty = null;
         foreach (var (at, group) in _groups)
         {
-            if (group.Change == Change.None) continue;
+            if (group.Change == Change.None || Waits(group) && !_leftMade.Contains(at)) continue;
             var change = group.Change;
-            group.Change = Change.None;
+            (group.Change, group.Leaving, group.Fresh) = (Change.None, false, false);
             _changed = true;
             var corner = new SectionKey(at.X << GroupX, at.Y << GroupY, at.Z << GroupZ);
             // The group stands at its corner kept against the origin, its sections' faces about it.
             var origin = LandOrigin.PlaceOf(corner);
-            var held = false;
+            var (held, made) = (false, false);
             for (int k = 0; k < group.Parts.Length; k++)
             {
                 var part = group.Parts[k];
@@ -1202,11 +1242,23 @@ public sealed class ChunkRenderer : IDisposable
                     _ecs.Add(part.Entity, new SectionPart(corner, part.Kind));
                 }
                 else _ecs.Update(part.Entity, new Mesh(part.Mesh));
+                made = true;
             }
+            if (made) Remade?.Invoke(corner);
             if (!held) (empty ??= []).Add(at);
         }
         if (empty is null) return;
         foreach (var at in empty) _groups.Remove(at);
+
+        // Whether a group marked waits, marked only by its sections leaving and none of its parts
+        // drawn or casting a shadow at the last placement.
+        static bool Waits(Group group) => group.Leaving && !group.Parts.Any(part => part.Seen || part.Casts);
+        // A group's squared distance from the eye's section across, in half sections.
+        long Far((int X, int Y, int Z) at)
+        {
+            long dx = 2L * (at.X << GroupX) + (1 << GroupX) - 2L * eye.X - 1, dz = 2L * (at.Z << GroupZ) + (1 << GroupZ) - 2L * eye.Z - 1;
+            return dx * dx + dz * dz;
+        }
     }
 
     private readonly List<(SectionKey Key, Part Part)> _members = [];
@@ -1232,7 +1284,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++)
         {
-            Forget(new SectionKey(x, y, z));
+            Forget(new SectionKey(x, y, z), leaving: true);
             _parked.Remove(new SectionKey(x, y, z));
             _unseen.Remove(new SectionKey(x, y, z));
         }
