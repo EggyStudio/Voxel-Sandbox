@@ -28,6 +28,12 @@ namespace VoxelSandbox;
 /// The atlas is <see cref="Columns"/> icons across, each in a cell with a clear pixel around it,
 /// since a sample at an icon's edge, taken without filtering, may land on the pixel past it.
 /// </para>
+/// <para>
+/// The atlas is painted on a worker as the packs are set, from the terrain's tiles and the packs'
+/// pictures of the items, which are read on the main thread first, since the packs read their
+/// archives there alone. The texture takes an atlas once it is whole, the one before drawn
+/// meanwhile, and a world's loading waits behind its screen until it is (<see cref="Painted"/>).
+/// </para>
 /// </remarks>
 public static class Icons
 {
@@ -49,10 +55,19 @@ public static class Icons
     /// <summary>The atlas's height in pixels.</summary>
     public static int Height => Rows * Cell;
 
-    /// <summary>The atlas, a row of pixels at a time from the top, four bytes a pixel.</summary>
-    public static byte[] Atlas => _atlas ??= Paint();
+    /// <summary>
+    /// The atlas for the packs last set, a row of pixels at a time from the top, four bytes a
+    /// pixel, waited for where a worker paints it.
+    /// </summary>
+    public static byte[] Atlas => Painting().Result;
 
-    private static byte[]? _atlas;
+    /// <summary>
+    /// Whether the atlas for the packs last set is painted, its painting begun where none is.
+    /// </summary>
+    public static bool Painted => Painting().IsCompleted;
+
+    // The atlas a worker paints for the packs last set, and the one the texture holds.
+    private static Task<byte[]>? _painting, _drawn;
     private static Texture2D _texture;
     private static TerrainAtlas _terrain = TerrainAtlas.None;
     private static ResourcePacks _packs = ResourcePacks.None;
@@ -78,15 +93,10 @@ public static class Icons
     /// <summary>Whether an item's icon is a flat picture, a pack's of the item or the game's own drawing of one that places no block, rather than a block seen from above.</summary>
     public static bool IsFlat(Item item) => item.Block is null || PackTextures.OfItem(item) is { } name && _packs.Texture(name) is not null;
 
-    /// <summary>An item's icon alone, <see cref="Size"/> pixels square.</summary>
-    public static byte[] Pixels(Item item)
-    {
-        var icon = new byte[Size * Size * 4];
-        var source = Source(item);
-        for (int y = 0; y < Size; y++)
-            Array.Copy(Atlas, (((int)source.Y + y) * Width + (int)source.X) * 4, icon, y * Size * 4, Size * 4);
-        return icon;
-    }
+    /// <summary>
+    /// An item's icon alone, <see cref="Size"/> pixels square, painted on the calling thread.
+    /// </summary>
+    public static byte[] Pixels(Item item) => Icon(item, _terrain, _packs.Texture);
 
     /// <summary>
     /// The atlas as a texture, loaded the first time it is drawn and sampled without filtering, so
@@ -94,30 +104,51 @@ public static class Icons
     /// </summary>
     public static Texture2D Texture()
     {
-        if (_texture.IsValid) return _texture;
-        _texture = LoadTextureFromImage(new Image(Atlas, Width, Height));
+        // An atlas painted for new packs takes the place of the one drawn once it is whole, and the
+        // first is waited for.
+        var painting = Painting();
+        if (painting == _drawn || _texture.IsValid && !painting.IsCompleted) return _texture;
+        if (_texture.IsValid) UnloadTexture(_texture);
+        _texture = LoadTextureFromImage(new Image(painting.Result, Width, Height));
         SetTextureFilter(_texture, TextureFilter.Point);
+        _drawn = painting;
         return _texture;
     }
 
     /// <summary>
     /// Paints the icons again from the textures of the packs, the faces' from the terrain's tiles and
-    /// an item's from the packs' own texture for it, where they have them.
+    /// an item's from the packs' own texture for it, where they have them, on a worker.
     /// </summary>
     public static void Use(TerrainAtlas terrain, ResourcePacks packs)
     {
-        (_terrain, _packs, _atlas) = (terrain, packs, null);
-        if (_texture.IsValid) UnloadTexture(_texture);
-        _texture = default;
+        (_terrain, _packs) = (terrain, packs);
+        _painting = Begin(terrain, packs);
     }
 
-    private static byte[] Paint()
+    private static Task<byte[]> Painting() => _painting ??= Begin(_terrain, _packs);
+
+    /// <summary>
+    /// The atlas painted on a worker for a terrain and packs, the packs' pictures of the items read
+    /// on the calling thread first.
+    /// </summary>
+    internal static Task<byte[]> Begin(TerrainAtlas terrain, ResourcePacks packs)
+    {
+        var pictures = new Dictionary<string, Image>(StringComparer.Ordinal);
+        foreach (var item in Items.All)
+            if (PackTextures.OfItem(item) is { } name && !pictures.ContainsKey(name) && packs.Texture(name) is { } image) pictures[name] = image;
+        return Task.Run(() => Paint(terrain, name => pictures.TryGetValue(name, out var image) ? image : null));
+    }
+
+    /// <summary>
+    /// The atlas painted on the calling thread from the terrain's tiles and a picture of an item's
+    /// texture where one is.
+    /// </summary>
+    internal static byte[] Paint(TerrainAtlas terrain, Func<string, Image?> picture)
     {
         var atlas = new byte[Width * Height * 4];
         foreach (var item in Items.All)
         {
-            var icon = PackTextures.OfItem(item) is { } name && _packs.Texture(name) is { } image ? Flat(image)
-                : item.Block is { } block ? Cube(Blocks.Get(block)) : Drawn(item);
+            var icon = Icon(item, terrain, picture);
             var source = Source(item);
             for (int y = 0; y < Size; y++)
                 Array.Copy(icon, y * Size * 4, atlas, (((int)source.Y + y) * Width + (int)source.X) * 4, Size * 4);
@@ -125,9 +156,15 @@ public static class Icons
         return atlas;
     }
 
+    // An item's icon, a pack's picture of the item where it has one, the block where it places one,
+    // or the game's own drawing.
+    private static byte[] Icon(Item item, TerrainAtlas terrain, Func<string, Image?> picture) =>
+        PackTextures.OfItem(item) is { } name && picture(name) is { } image ? Flat(image)
+            : item.Block is { } block ? Cube(Blocks.Get(block), terrain) : Drawn(item);
+
     // A block seen from above and from the south and east sides, each pixel the face of its boxes
     // the way through the pixel meets first.
-    private static byte[] Cube(BlockInfo block)
+    private static byte[] Cube(BlockInfo block, TerrainAtlas terrain)
     {
         (Vector3 Min, Vector3 Max, int Top, int Side)[] boxes = block.Shape is { Whole: false } shape
             ? [.. shape.Pieces.Select(p => (Vector3.Min(p.From, p.To), Vector3.Max(p.From, p.To), p.Surface, p.Surface))]
@@ -171,7 +208,7 @@ public static class Icons
                 // the east side as a face of the world lays it, its clear pixels showing the slot.
                 var hit = from - ToEye * nearest;
                 var (u, v) = face == 1 ? (hit.X, hit.Z) : face == 2 ? (hit.X, 1 - hit.Y) : (1 - hit.Z, 1 - hit.Y);
-                if (_terrain.Texel(surface, u, v, Biomes.Plains.GrassColor, Biomes.Plains.FoliageColor) is { } texel)
+                if (terrain.Texel(surface, u, v, Biomes.Plains.GrassColor, Biomes.Plains.FoliageColor) is { } texel)
                 {
                     if (texel.A == 0) continue;
                     (pixels[at], pixels[at + 1], pixels[at + 2], pixels[at + 3]) = (Channel(texel.R * shade), Channel(texel.G * shade), Channel(texel.B * shade), 255);

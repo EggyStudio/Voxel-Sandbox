@@ -266,6 +266,26 @@ public sealed class PackTests : IDisposable
     }
 
     [Fact]
+    public async Task The_Icons_Of_A_Pack_Are_Painted_On_A_Worker_As_Those_Painted_At_Once()
+    {
+        var stick = Plain(new Color(150, 100, 50), 16, 16);
+        using var packs = new ResourcePacks([Folder("worker", ("item/stick", stick), ("block/stone", Plain(new Color(100, 100, 100))))]);
+        var terrain = TerrainAtlas.Build(packs);
+
+        // The painting begun returns while its worker paints, and its atlas is the one painted at
+        // once, the stick's icon the pack's picture.
+        var painting = Icons.Begin(terrain, packs);
+        Assert.False(painting.IsCompleted);
+        var atlas = await painting;
+        Assert.Equal(Icons.Paint(terrain, packs.Texture), atlas);
+        var source = Icons.Source(Items.Stick);
+        var icon = new byte[Icons.Size * Icons.Size * 4];
+        for (int y = 0; y < Icons.Size; y++)
+            Array.Copy(atlas, (((int)source.Y + y) * Icons.Width + (int)source.X) * 4, icon, y * Icons.Size * 4, Icons.Size * 4);
+        Assert.Equal(stick.Data, icon);
+    }
+
+    [Fact]
     public void The_List_Keeps_The_Packs_On_In_Order_Names_In_The_Folder_Or_Whole_Paths()
     {
         var list = new PackList(Path.Combine(_folder, "game"));

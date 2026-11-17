@@ -707,7 +707,9 @@ public sealed class VoxelGame : IDisposable
     {
         Streamer.Update(Player.Body.Position, 1);
         Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
-        if (HoldLoading || LoadingShare() < 1) return;
+        // The items' icons, painted on a worker, are waited for, so the HUD drawn behind the screen
+        // takes them whole.
+        if (HoldLoading || LoadingShare() < 1 || !Icons.Painted) return;
         // Once the world stands the player lands and the world is drawn behind the screen from
         // where the player stands, the mirrored view made ahead in those frames, before the screen
         // goes.
