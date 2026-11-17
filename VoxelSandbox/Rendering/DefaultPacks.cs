@@ -90,7 +90,7 @@ public sealed class DefaultPacks
 
     private volatile int _fetched;
 
-    /// <summary>What stopped a failed fetch.</summary>
+    /// <summary>What ended a fetch that failed or was stopped.</summary>
     public string? Problem { get; private set; }
 
     /// <summary>Whether a pack is not in the folder with the right bytes.</summary>
@@ -109,6 +109,8 @@ public sealed class DefaultPacks
         (State, Fetched, Problem) = (FetchState.Fetching, 0, null);
         _stop = new CancellationTokenSource();
         var stop = _stop.Token;
+        // The task begins whether or not the fetch is stopped before it does, and any fault ends it
+        // with its reason, so a fetch never stands as running once its task is over.
         _fetch = Task.Run(async () =>
         {
             try
@@ -118,14 +120,15 @@ public sealed class DefaultPacks
             }
             catch (OperationCanceledException) when (stop.IsCancellationRequested)
             {
+                Problem = "the fetch was stopped";
                 State = FetchState.Stopped;
             }
-            catch (Exception problem) when (problem is HttpRequestException or IOException or TaskCanceledException or UnauthorizedAccessException)
+            catch (Exception problem)
             {
                 Problem = problem.Message;
                 State = FetchState.Failed;
             }
-        }, stop);
+        });
     }
 
     /// <summary>Stops a fetch under way, leaving the packs already in.</summary>

@@ -601,6 +601,12 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     internal Action<Vector3, IReadOnlySet<SectionKey>>? TookAhead { get; set; }
 
+    /// <summary>A step each meshing worker takes with its section before it makes the faces, which a test sets to hold it.</summary>
+    internal Action<SectionKey>? Building { get; set; }
+
+    /// <summary>Called with each section as its faces are taken and the atlas they were made with, for a test to read.</summary>
+    internal Action<SectionKey, TerrainAtlas>? Taking { get; set; }
+
     private bool _castsDue;
 
     /// <summary>The most a frame's flood, casters' search and placement of the sections took, in ms, since it was last set to 0.</summary>
@@ -858,7 +864,11 @@ public sealed class ChunkRenderer : IDisposable
         {
             _asking--;
             _lent.Push(done.Mesher);
-            if (done.Made && _asked.TryGetValue(done.Key, out var asked) && asked == done.Asked) Take(world, done.Key, done.Mesher);
+            if (!done.Made || !_asked.TryGetValue(done.Key, out var asked) || asked != done.Asked) continue;
+            // Faces made with an atlas before the one set would show the tiles of packs let go, so
+            // the section is meshed again with the atlas set.
+            if (done.Mesher.Atlas == _mesher.Atlas) Take(world, done.Key, done.Mesher);
+            else world.Reshaded.Add(done.Key);
         }
         foreach (var key in world.Edited)
             if (!Remesh(world, key)) world.Loaded.Add(key);
@@ -989,6 +999,7 @@ public sealed class ChunkRenderer : IDisposable
             var made = false;
             try
             {
+                Building?.Invoke(key);
                 mesher.Build();
                 made = true;
             }
@@ -1011,6 +1022,7 @@ public sealed class ChunkRenderer : IDisposable
     // where it has none.
     private void Take(VoxelWorld world, SectionKey key, SectionMesher mesher)
     {
+        Taking?.Invoke(key, mesher.Atlas);
         if (!world.HasColumn(key.X, key.Z))
         {
             Forget(key);

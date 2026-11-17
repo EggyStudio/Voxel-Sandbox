@@ -552,7 +552,6 @@ public sealed class VoxelGame : IDisposable
 
     private void Open(string kind, int seed, string? name)
     {
-        _shown = false;
         // A world whose folder cannot be made is played unsaved where the game begins, and where it
         // would take the place of the world played, is not opened and that world kept, the player
         // told either way.
@@ -560,6 +559,7 @@ public sealed class VoxelGame : IDisposable
         var save = _transient ? null : Guarded<WorldSave?>(leaving ? "The world's folder could not be made, so the world played stays" : "The world's folder could not be made, so it is played unsaved",
             () => new WorldSave(Path.Combine(WorldSave.Root, name ?? $"{kind}-{seed}")), null);
         if (!_transient && save is null && leaving) return;
+        _shown = false;
         Save = save;
         WorldName = Save?.Name ?? $"{kind}-{seed}";
         var info = Save?.ReadInfo();
@@ -1812,6 +1812,8 @@ public sealed class VoxelGame : IDisposable
         Sky.Dispose();
         Packs.Dispose();
         Icons.Close();
+        PackGui.Close();
+        InWall.Close();
     }
 }
 

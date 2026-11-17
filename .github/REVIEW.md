@@ -250,7 +250,8 @@ item 216 closed as read with the README's sentence on a build outside the checko
 Verdict 14's mend, the play waiting for a world to stand before it presses keys, were pushed
 together at 14:07, the form kept. Their build run 44089619689 ended red at 14:17, the play not
 opening, Verdict 15. After it `d7e72fe`, the game naming its checkout's slangc in ENGINE_SLANGC,
-pushed at 14:33, the form kept.
+pushed at 14:33, the form kept. At the tick of 15:34 on 2026-11-17, `e69a6e7`, item 217, checked and
+waiting on run 44093860347 of `d7e72fe`, its play still under way; items 218 and 219 written.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -341,6 +342,38 @@ change.
     with what guards it; a test for each that has none, opening and closing a world twenty times in
     turn with the packs read again between, with no fault and no icon of the world before; mends
     where the read finds a gap. Readers by subagents are welcome. After item 216.
+
+218. **The gaps item 217's read left.** Item 217's Reply names six gaps left as low or needing a
+    fault first. Asked for four of them, each with a test that fails before its mend. A column whose
+    making fails is asked for again while the player stands, a bounded count of times, and named in
+    the log when the count ends. A mesh built with the atlas before a reload of the packs is not
+    taken after it, its section meshed again. The default packs' fetch leaves Fetching where it is
+    cancelled or faults, with the reason shown. The textures of the packs' screen and of the view
+    within a wall close with the game. Beside them, `VoxelGame.Open` marks the world not shown
+    before it returns early where a new world's folder cannot be made and the played world is kept,
+    so that world's next respawn draws behind its screen again; the mark moves below the return,
+    with a test. The save dropping a region's kept columns while one is in flight with corrupt
+    bytes, and a replaced painting running to its end, stay as read. After Verdicts 14 and 15
+    settle.
+
+219. **The day's sweep against the norm.** A read of the whole tree against NORM.md found these,
+    each to mend in place with no change of behavior. Comments that carry a date, a run's fact or
+    what the code was before (N 4.11), `LandOriginTests.cs:14`, `ChunkRenderer.cs:478` to 481,
+    `build/play.sh:1251`, `HeldLights.cs:16`, `build/shaders.sh:16`, `TerrainAtlas.cs:381`,
+    `Ores.cs:60`, and the dates in `build.yml:68` to 70, where the limit's reason stays without
+    them. Comments that explain by another thing, `build/mob-pairs.py:245` by a named routine of
+    another program, `Ores.cs:29`, `DefaultPacks.cs:134` and `VoxelGame.cs:154` by a test. The
+    guide's sentences that tell a past fault or say as before, `README.md:183`, 652 to 654, 1180,
+    1185, 1449, and its lines 941 to 943 on reading an older version's options, which no one holds
+    before a release. A four-byte value called a word in `cavefields.slang:22`. British spellings in
+    `ConnectedTextureTests.cs:93`, `MobKind.cs:339` and 504, `VoxelGame.cs:1765`,
+    `terrain.slang:233`, `README.md:138`, `pack.yml:24`, and `VoxelRay.cs`'s `travelled`. The
+    measured counts that a wait or a bound leans on, `CaveFields.cs:22`, `play.sh:152` and 914,
+    stay. In the modules, the comment at `.gitignore:34` of all seven, 41 in Vegetation, which names
+    who reads the dump folder, and in Tools `scripts/devlog.py:7` to 12 and 32, whose table holds
+    sessions' sentences, a date and a game's name, with "cancelled" in `README.md:47` and
+    `scripts/run.py:2`. One commit a repository, after item 218, with STYLE's own search run over
+    the tree and its count in the Reply.
 
 ## Verdicts
 
@@ -963,3 +996,52 @@ play, under the lock taken exclusive with no quiet wait, passes in 203 s, the se
 world in 4 s, its `captures/closed.log` naming nothing left at a close 0.70 s after the new world,
 and its captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.14% of its
 pixels past 8 levels, the most 168, along the clouds' edges.
+
+Item 218's mends, each with a test that passes three runs in three and fails on a copy of the head
+given the seams it names:
+
+- A column whose making fails is asked for again at once, first among the columns wanted, while the
+  player stands still too, three times at most (`ChunkStreamer.Tries`). Once its tries end the log
+  names it as an error, "Column x, z could not be generated in 3 tries, so it is left out of the
+  world", and the plans made after leave it out (`ChunkStreamer.cs:267`, `:286`). The worker's
+  warning goes through the engine's log, where it went to the error stream.
+  `A_Column_Whose_Making_Fails_Is_Asked_For_Again_While_The_Player_Stands_Its_Tries_At_Most`, a
+  world of its own whose column east fails twice and is made on its third try and whose column west
+  fails on every try, the player standing still, then stepping a column over and back. It fails on
+  the head, the east column never made, with `Tries` given to the head.
+- A mesh made with an atlas before the one set is not taken, and its section is marked to shade
+  again (`ChunkRenderer.cs:870`).
+  `A_Mesh_Made_With_The_Atlas_Before_The_Packs_Were_Read_Again_Is_Not_Taken_And_Its_Section_Is_Meshed_Again`,
+  the workers held as they begin the sections marked to shade again, the packs read again, the
+  workers let go and every meshing finished before the next frame. It fails on the head five runs in
+  five, with the seams `Building`, a step each worker takes before it makes the faces, and `Taking`,
+  called with each section's atlas as its faces are taken (`:1002`, `:1025`).
+- The default packs' fetch begins its task whether or not it is stopped first, and any fault ends it
+  as failed with its message, where faults past four kinds left it fetching (`DefaultPacks.cs:126`).
+  A stopped fetch says "the fetch was stopped", which the packs' screen shows as it shows a
+  failure's (`Menus.cs:333`). `A_Fetch_That_Faults_Or_Is_Stopped_As_It_Begins_Ends_With_Its_Reason`,
+  a fault of the network's stand-in no case named, then 200 fetches stopped the moment each begins,
+  none left fetching. It fails on the head at the fault, its wait throwing, and with the fault left
+  out on the head, at the first stop, which gave no reason. Which of the 200 tasks were stopped
+  before they ran is not read apart.
+- The textures, the font and the packs of the packs' screen and of the view within a wall are let go
+  as the game closes (`PackGui.Close` and `InWall.Close`, from `VoxelGame.cs:1815`).
+  `The_Textures_Of_The_Packs_Interface_And_Of_The_View_Within_A_Wall_Close_With_The_Game`, a pack of
+  the hotbar's art and of stone, each texture loaded and held valid, then the game closed and
+  neither valid nor given again. It fails on the head, with the view within a wall's loader made
+  internal.
+- `VoxelGame.Open` marks the world not shown below the return that keeps the played world
+  (`VoxelGame.cs:562`).
+  `A_Respawn_In_A_World_Kept_Where_The_Next_Ones_Folder_Cannot_Be_Made_Draws_Nothing_Behind_Its_Loading_Screen`
+  fails on the head, eight frames drawn behind.
+
+A world whose column fails on every try within two of the player still holds its loading screen,
+since the loading waits for the 25 columns around the player, and the log names the column once.
+
+The strict build is clean, 570 tests pass outside the GPU's lock with the long soak skipped, and the
+headless game's 71 pass three times in a row. The play, under the lock taken exclusive with no quiet
+wait, passes in 201 s, the seed's step naming its world in 5 s, its `captures/closed.log` naming no
+fault at a close 0.69 s after the new world, and its captures within 8 levels of the warm play's on
+6.2.102, `sky2.png` differing in 0.16% of its pixels past 8 levels, the most 168, along the clouds'
+edges. Its close finds one texture still loaded, as at item 217, so it is neither the packs'
+screen's nor the view within a wall's, and which it is is not read.

@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
 using System.Numerics;
+using Engine;
+using static Engine.E3D;
 
 namespace VoxelSandbox;
 
@@ -45,6 +47,12 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
 
     /// <summary>How many columns are generated at once.</summary>
     internal int Workers { get; init; } = Math.Clamp(Environment.ProcessorCount - 2, 1, 8);
+
+    /// <summary>How many times a column whose making fails is asked for before it is left out.</summary>
+    public const int Tries = 3;
+
+    // How many times each column's making failed in this world.
+    private readonly Dictionary<(int X, int Z), int> _failed = [];
     private (int X, int Z, (int X, int Z)? Ahead, int Distance)? _planned;
     private Vector3 _lastPlayer;
     private int _running;
@@ -86,7 +94,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         while (_done.TryDequeue(out var result))
         {
             Interlocked.Decrement(ref _running);
-            if (result.Column is null) _pending.Remove((result.X, result.Z));
+            if (result.Column is null) Failed(result.X, result.Z);
             else _made.Add((result.X, result.Z, result.Column, result.Unread, result.Unknown));
         }
 
@@ -144,9 +152,9 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
                 }
                 catch (Exception ex)
                 {
-                    // The worker's place is given back and the column is asked for again once the
-                    // player moves, rather than the exception ending a task nobody waits on.
-                    Console.Error.WriteLine($"Column {x}, {z} could not be generated. {ex}");
+                    // The worker's place is given back and the column is asked for again, rather
+                    // than the exception ending a task nobody waits on.
+                    TraceLog(LogLevel.Warning, $"Column {x}, {z} could not be generated. {ex}");
                 }
                 _done.Enqueue((x, z, made.Column, made.Unread, made.Unknown));
             });
@@ -254,8 +262,18 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         return next;
     }
 
+    // A column whose making failed is asked for again first, while the player stands still too, for
+    // its tries at most, and once they end it is named and left out of the plans.
+    private void Failed(int x, int z)
+    {
+        _pending.Remove((x, z));
+        var tries = _failed[(x, z)] = _failed.GetValueOrDefault((x, z)) + 1;
+        if (tries < Tries) _wanted.Insert(0, (x, z));
+        else TraceLog(LogLevel.Error, $"Column {x}, {z} could not be generated in {Tries} tries, so it is left out of the world.");
+    }
+
     // The columns within the load distance of the player's column and, where the player nears the
-    // next, of that column too, nearest the player's first.
+    // next, of that column too, nearest the player's first, those whose tries ended left out.
     private void Plan(int cx, int cz, int load, (int X, int Z)? ahead)
     {
         _wanted.Clear();
@@ -265,7 +283,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             for (int x = Math.Min(cx, ax) - load; x <= Math.Max(cx, ax) + load; x++)
             {
                 int dx = x - cx, dz = z - cz, nx = x - ax, nz = z - az;
-                if ((dx * dx + dz * dz <= reach || nx * nx + nz * nz <= reach) && !world.HasColumn(x, z)) _wanted.Add((x, z));
+                if ((dx * dx + dz * dz <= reach || nx * nx + nz * nz <= reach) && !world.HasColumn(x, z) && _failed.GetValueOrDefault((x, z)) < Tries) _wanted.Add((x, z));
             }
         _wanted.Sort((a, b) => ((a.X - cx) * (a.X - cx) + (a.Z - cz) * (a.Z - cz)).CompareTo((b.X - cx) * (b.X - cx) + (b.Z - cz) * (b.Z - cz)));
     }

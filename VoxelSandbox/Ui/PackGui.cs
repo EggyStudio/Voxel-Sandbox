@@ -70,6 +70,9 @@ public static class PackGui
         (_packs, _font, _fontRead) = (packs, null, false);
     }
 
+    /// <summary>Lets go of the textures, the font and the packs, as the game closes, so a game opened after in the same process loads its own.</summary>
+    public static void Close() => Use(ResourcePacks.None);
+
     /// <summary>A texture of the packs by its path under <c>textures/gui</c> without <c>.png</c>, as <c>sprites/hud/hotbar</c>, or null where none has it.</summary>
     public static Picture? Get(string path)
     {

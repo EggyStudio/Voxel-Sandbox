@@ -330,7 +330,7 @@ public sealed class Menus
         if (rows.Count == 0) Gui.Centered("No packs yet", Row(0), new Color(170, 170, 170));
         var fetching = defaults.State == FetchState.Fetching;
         var said = fetching ? $"Fetching the default packs from Modrinth, {defaults.Fetched} of {defaults.Packs.Count} in"
-            : defaults.State == FetchState.Failed ? $"The default packs were not fetched: {defaults.Problem}"
+            : defaults.State is FetchState.Failed or FetchState.Stopped ? $"The default packs were not fetched: {defaults.Problem}"
             : $"Packs go in {game.PackList.Folder}";
         Gui.Centered(Fitted(said, width), Row(PackRows), new Color(170, 170, 170));
         // The switch beside Done while the fetch runs or a default pack is missing.

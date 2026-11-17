@@ -379,6 +379,32 @@ public sealed class PackTests : IDisposable
     }
 
     [Fact]
+    public void A_Fetch_That_Faults_Or_Is_Stopped_As_It_Begins_Ends_With_Its_Reason()
+    {
+        var list = new PackList(Path.Combine(_folder, "game"));
+        byte[] pack = [1, 2, 3];
+
+        // A fault of the network's stand-in that no other case names.
+        var faulted = new DefaultPacks([Pinned("pack.zip", pack)]);
+        faulted.Start(list, new Served(_ => throw new InvalidOperationException("a test's network")));
+        faulted.Wait();
+        Assert.Equal((FetchState.Failed, "a test's network"), (faulted.State, faulted.Problem));
+
+        // Stopped the moment it begins, over many fetches, so its task is often stopped before it
+        // runs, as the switch that stops it may be pressed in the frame the fetch begins.
+        for (int round = 0; round < 200; round++)
+        {
+            if (Directory.Exists(list.Folder)) Directory.Delete(list.Folder, recursive: true);
+            var stopped = new DefaultPacks([Pinned("pack.zip", pack)]);
+            stopped.Start(list, new Served(_ => pack));
+            stopped.Stop();
+            stopped.Wait();
+            Assert.NotEqual(FetchState.Fetching, stopped.State);
+            if (stopped.State == FetchState.Stopped) Assert.Equal("the fetch was stopped", stopped.Problem);
+        }
+    }
+
+    [Fact]
     public void A_Fetch_Keeps_A_Pack_In_The_Folder_Takes_The_Right_Bytes_And_Refuses_Others()
     {
         var list = new PackList(Path.Combine(_folder, "game"));

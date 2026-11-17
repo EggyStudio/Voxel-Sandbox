@@ -43,6 +43,9 @@ public static class InWall
         _packs = packs;
     }
 
+    /// <summary>Lets go of the textures and the packs, as the game closes, so a game opened after in the same process loads its own.</summary>
+    public static void Close() => Use(ResourcePacks.None);
+
     /// <summary>Draws a block's inside over the whole window, the player facing a heading clockwise from north and pitched up, both in degrees.</summary>
     public static void Draw(BlockId block, float heading, float pitch)
     {
@@ -59,7 +62,8 @@ public static class InWall
         DrawRectangleRec(window, new Color((byte)(color.R / 10), (byte)(color.G / 10), (byte)(color.B / 10)));
     }
 
-    private static Texture2D? Texture(string name)
+    // A texture of the packs by its name, loaded as first asked for, or null where none has it.
+    internal static Texture2D? Texture(string name)
     {
         if (_textures.TryGetValue(name, out var known)) return known;
         Texture2D? texture = null;

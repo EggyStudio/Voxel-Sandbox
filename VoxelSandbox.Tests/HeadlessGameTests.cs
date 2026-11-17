@@ -1419,6 +1419,179 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Respawn_In_A_World_Kept_Where_The_Next_Ones_Folder_Cannot_Be_Made_Draws_Nothing_Behind_Its_Loading_Screen()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: Path.Combine(folder, "world"), still: true);
+            File.WriteAllText(Path.Combine(folder, "a file"), "");
+            var game = headless.Game;
+            game.SwitchWorld("flat", 2, Path.Combine(folder, "a file", "other"));
+            Assert.Equal(Path.Combine(folder, "world"), game.Save?.Folder);
+
+            // The world kept has been shown since it opened, so its respawn's loading screen goes
+            // as the spawn stands.
+            game.Respawn();
+            var (behind, clock) = (0, System.Diagnostics.Stopwatch.StartNew());
+            while (game.Loading && clock.Elapsed.TotalSeconds < 30)
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+                if (game.DrawnBehind) behind++;
+            }
+
+            Assert.False(game.Loading);
+            Assert.Equal(0, behind);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Column_Whose_Making_Fails_Is_Asked_For_Again_While_The_Player_Stands_Its_Tries_At_Most()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        // A world of its own whose column east of the player's fails to be made twice and is made
+        // on the third try, and whose column west fails on every try.
+        var tries = new System.Collections.Concurrent.ConcurrentDictionary<(int X, int Z), int>();
+        var world = new VoxelWorld(new Laid(column =>
+        {
+            var tried = tries.AddOrUpdate((column.X, column.Z), 1, (_, count) => count + 1);
+            if (column.X == 1 && column.Z == 0 && tried <= 2 || column.X == -1 && column.Z == 0) throw new InvalidOperationException("a test's column");
+            Laid.Fill(column, 0, 3, BlockId.Stone);
+        }));
+        var streamer = new ChunkStreamer(world, game.Renderer, game.Mobs, game.Drops, game.Chests, null);
+        var said = new List<string>();
+        SetTraceLogCallback((_, line) =>
+        {
+            if (line.Contains("Column -1, 0 could not be generated in")) lock (said) said.Add(line);
+        });
+        try
+        {
+            // The player stands still in the column at the origin, so the plan is made once.
+            var at = new Vector3(8.5f, 10, 8.5f);
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                streamer.Update(at, 1);
+                Thread.Sleep(2);
+            }
+            while (streamer.Pending > 0 && clock.Elapsed.TotalSeconds < 30);
+
+            Assert.Equal(0, streamer.Pending);
+            Assert.True(world.HasColumn(1, 0));
+            Assert.Equal(3, tries[(1, 0)]);
+            Assert.False(world.HasColumn(-1, 0));
+            Assert.Equal(ChunkStreamer.Tries, tries[(-1, 0)]);
+
+            // A plan made again, as the player steps into the next column and back, leaves out the
+            // column whose tries ended.
+            for (int step = 0; step < 20; step++) streamer.Update(at + new Vector3(Section.Size, 0, 0), 1);
+            for (int step = 0; step < 20; step++)
+            {
+                streamer.Update(at, 1);
+                Thread.Sleep(2);
+            }
+            Assert.Equal(ChunkStreamer.Tries, tries[(-1, 0)]);
+            Assert.EndsWith($"Column -1, 0 could not be generated in {ChunkStreamer.Tries} tries, so it is left out of the world.", Assert.Single(said));
+        }
+        finally
+        {
+            SetTraceLogCallback(null);
+        }
+    }
+
+    [Fact]
+    public void A_Mesh_Made_With_The_Atlas_Before_The_Packs_Were_Read_Again_Is_Not_Taken_And_Its_Section_Is_Meshed_Again()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        var renderer = game.Renderer;
+        // The workers held as they begin the sections marked to shade again, which they mesh with
+        // the atlas set when they were sent.
+        using var held = new ManualResetEventSlim();
+        var sent = new System.Collections.Concurrent.ConcurrentDictionary<SectionKey, bool>();
+        renderer.Building = key =>
+        {
+            sent[key] = true;
+            held.Wait();
+        };
+        var before = renderer.Atlas;
+        game.World.ReshadeAll();
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while (sent.IsEmpty && clock.Elapsed.TotalSeconds < 30)
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        Assert.False(sent.IsEmpty);
+
+        // The packs read again while the workers mesh, then let go, and every meshing finished
+        // before the next frame, which takes them in before it sends any section again.
+        var taken = new List<(SectionKey Key, TerrainAtlas Atlas)>();
+        renderer.Taking = (key, atlas) => taken.Add((key, atlas));
+        game.ReloadPacks();
+        Assert.NotSame(before, renderer.Atlas);
+        held.Set();
+        while (renderer.Meshed < renderer.Meshing && clock.Elapsed.TotalSeconds < 30) Thread.Sleep(1);
+        do
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        while ((renderer.Meshing > 0 || game.World.Reshaded.Count > 0) && clock.Elapsed.TotalSeconds < 60);
+
+        Assert.Equal(0, renderer.Meshing);
+        Assert.DoesNotContain(taken, t => t.Atlas == before);
+        Assert.Contains(taken, t => sent.ContainsKey(t.Key));
+    }
+
+    [Fact]
+    public void The_Textures_Of_The_Packs_Interface_And_Of_The_View_Within_A_Wall_Close_With_The_Game()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A pack of the hotbar's art and of stone, which the interface and the view within a
+            // wall load as they first draw them.
+            foreach (var (texture, width, height) in new[] { ("gui/sprites/hud/hotbar", 182, 22), ("block/stone", 16, 16) })
+            {
+                var path = Path.Combine(folder, "assets", "minecraft", "textures", texture + ".png");
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                File.WriteAllBytes(path, ExportImageToMemory(new Image(new byte[width * height * 4], width, height), ".png"));
+            }
+            var headless = new HeadlessGame(packs: [folder]);
+            try
+            {
+                var hotbar = PackGui.Get("sprites/hud/hotbar")?.Texture;
+                var stone = InWall.Texture("block/stone");
+                Assert.True(hotbar is { } h && IsTextureValid(h));
+                Assert.True(stone is { } s && IsTextureValid(s));
+
+                headless.Game.Dispose();
+
+                Assert.False(IsTextureValid(hotbar!.Value));
+                Assert.False(IsTextureValid(stone!.Value));
+                Assert.Null(PackGui.Get("sprites/hud/hotbar"));
+                Assert.Null(InWall.Texture("block/stone"));
+            }
+            finally
+            {
+                CloseAudioDevice();
+                CloseWindow();
+            }
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Respawn_From_A_Closed_Room_Forgets_The_Rooms_Flood_As_Its_Loading_Begins()
     {
         using var headless = new HeadlessGame(still: true);
@@ -1526,7 +1699,7 @@ public sealed class HeadlessGameTests
         }
 
         Assert.False(game.Loading);
-        Assert.True(plain > 0, "the world was drawn behind the screen while it stood no longer");
+        Assert.True(plain > 0, "the world was drawn behind the screen while it did not stand");
         Assert.Equal(VoxelGame.BehindFrames, behind);
     }
 
