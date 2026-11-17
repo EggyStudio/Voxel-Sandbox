@@ -552,6 +552,7 @@ public sealed class VoxelGame : IDisposable
 
     private void Open(string kind, int seed, string? name)
     {
+        _shown = false;
         // A world whose folder cannot be made is played unsaved where the game begins, and where it
         // would take the place of the world played, is not opened and that world kept, the player
         // told either way.
@@ -637,7 +638,11 @@ public sealed class VoxelGame : IDisposable
         private set
         {
             _loading = value;
-            if (value) _behind = 0;
+            if (value)
+            {
+                _behind = 0;
+                Renderer.ForgetFloods();
+            }
             SetState(value ? WorldState.Loading : WorldState.Playing);
         }
     }
@@ -656,8 +661,10 @@ public sealed class VoxelGame : IDisposable
     public const int BehindFrames = 8;
 
     // How many frames the world has been drawn behind the loading screen, from none as a world
-    // loads.
+    // loads, and whether the world opened has shown a frame since, after which a respawn's loading
+    // draws none behind its screen.
     private int _behind;
+    private bool _shown;
 
     /// <summary>Whether this frame draws the world behind the loading screen.</summary>
     internal bool DrawnBehind => _loading && _behind > 0;
@@ -705,19 +712,25 @@ public sealed class VoxelGame : IDisposable
         Streamer.Update(Player.Body.Position, 1);
         Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
         // The items' icons, painted on a worker, are waited for, so the HUD drawn behind the screen
-        // takes them whole.
-        if (HoldLoading || LoadingShare() < 1 || !Icons.Painted) return;
-        // Once the world stands the player lands and the world is drawn behind the screen from
-        // where the player stands, the mirrored view made ahead in those frames, before the screen
-        // goes.
+        // takes them whole, and the frames behind the screen are counted from the first again once
+        // the world stands again, as after the packs are read again partway.
+        if (HoldLoading || LoadingShare() < 1 || !Icons.Painted)
+        {
+            _behind = 0;
+            return;
+        }
+        // Once the world stands the player lands, and a world not shown since it opened is drawn
+        // behind the screen from where the player stands, the mirrored view made ahead in those
+        // frames, before the screen goes. A respawn in a world shown draws none, its first frames
+        // made.
         if (_behind++ == 0)
         {
             if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
-            Mirror.MakeAhead();
+            if (!_shown) Mirror.MakeAhead();
         }
-        if (_behind <= BehindFrames) return;
+        if (_behind <= (_shown ? 0 : BehindFrames)) return;
         Loading = false;
-        (_landing, _respawned) = (false, false);
+        (_landing, _respawned, _shown) = (false, false, true);
     }
 
     /// <summary>
@@ -1594,6 +1607,7 @@ public sealed class VoxelGame : IDisposable
 
         _laps.Restart();
         Mirror.Update(World, Player.Camera, Player.EyeInWater);
+        Icons.Update();
         BeginDrawing();
         // The frame's first stage may have opened a world, so the loading screen is chosen once the
         // frame has begun, and over a world that stands the world is drawn behind it.
@@ -1797,6 +1811,7 @@ public sealed class VoxelGame : IDisposable
         Particles.Dispose();
         Sky.Dispose();
         Packs.Dispose();
+        Icons.Close();
     }
 }
 

@@ -986,22 +986,24 @@ public sealed class ChunkRenderer : IDisposable
         Task.Run(async () =>
         {
             await _building.WaitAsync();
-            var made = true;
+            var made = false;
             try
             {
                 mesher.Build();
+                made = true;
             }
             catch (Exception ex)
             {
                 // The section keeps the faces it had, and is meshed again once it is marked.
                 TraceLog(LogLevel.Warning, $"Section {key} could not be meshed. {ex}");
-                made = false;
             }
             finally
             {
+                // The mesher and the count of those meshing come back whatever the build or its
+                // warning did.
                 _building.Release();
+                _built.Enqueue((key, asked, mesher, made));
             }
-            _built.Enqueue((key, asked, mesher, made));
         });
     }
 
@@ -1303,6 +1305,18 @@ public sealed class ChunkRenderer : IDisposable
         _casters.Clear();
         _castFor = null;
         _reachedFor = null;
+        ForgetFloods();
+    }
+
+    /// <summary>
+    /// Lets go of the floods and what they release, as a world opens or the player is set at its
+    /// spawn, so no section of the place a flood of the place before left out is held back unseen
+    /// while it loads, a new flood seeing every section until it has flooded once.
+    /// </summary>
+    public void ForgetFloods()
+    {
+        (_visibility, _ahead, _aheadReady, _castsDue, _placedFor) = (new(), new(), false, false, null);
+        _releasing.Clear();
     }
 
     /// <summary>

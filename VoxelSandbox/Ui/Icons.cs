@@ -31,8 +31,9 @@ namespace VoxelSandbox;
 /// <para>
 /// The atlas is painted on a worker as the packs are set, from the terrain's tiles and the packs'
 /// pictures of the items, which are read on the main thread first, since the packs read their
-/// archives there alone. The texture takes an atlas once it is whole, the one before drawn
-/// meanwhile, and a world's loading waits behind its screen until it is (<see cref="Painted"/>).
+/// archives there alone. The texture takes an atlas once it is whole, between frames, the one
+/// before drawn meanwhile, and a world's loading waits behind its screen until it is
+/// (<see cref="Painted"/>).
 /// </para>
 /// </remarks>
 public static class Icons
@@ -62,12 +63,23 @@ public static class Icons
     public static byte[] Atlas => Painting().Result;
 
     /// <summary>
-    /// Whether the atlas for the packs last set is painted, its painting begun where none is.
+    /// Whether the atlas for the packs last set is painted, or its painting failed, its painting
+    /// begun where none is.
     /// </summary>
     public static bool Painted => Painting().IsCompleted;
 
-    // The atlas a worker paints for the packs last set, and the one the texture holds.
-    private static Task<byte[]>? _painting, _drawn;
+    /// <summary>Whether the texture holds the atlas painted for the packs last set.</summary>
+    internal static bool Current => _held is not null && _held == _painting;
+
+    /// <summary>
+    /// A step a painting takes on its worker before it paints, which a test sets to hold it or to
+    /// throw.
+    /// </summary>
+    internal static Action? PaintStep { get; set; }
+
+    // The atlas a worker paints for the packs last set, the painting last taken, whether it was
+    // painted or failed, and the one whose atlas the texture holds.
+    private static Task<byte[]>? _painting, _taken, _held;
     private static Texture2D _texture;
     private static TerrainAtlas _terrain = TerrainAtlas.None;
     private static ResourcePacks _packs = ResourcePacks.None;
@@ -104,15 +116,48 @@ public static class Icons
     /// </summary>
     public static Texture2D Texture()
     {
-        // An atlas painted for new packs takes the place of the one drawn once it is whole, and the
-        // first is waited for.
-        var painting = Painting();
-        if (painting == _drawn || _texture.IsValid && !painting.IsCompleted) return _texture;
+        // The first atlas is waited for, and a newer one is taken between frames (Update).
+        if (_taken is null) Take(Painting());
+        return _texture;
+    }
+
+    /// <summary>
+    /// Takes an atlas painted for new packs into the texture once it is whole, called once a frame
+    /// before any icon is drawn, so every icon of a frame is drawn from one texture.
+    /// </summary>
+    public static void Update()
+    {
+        if (_painting is { IsCompleted: true } painting && painting != _taken) Take(painting);
+    }
+
+    /// <summary>
+    /// Lets go of the texture and sets the game's own art again, as a game closes, so the next one
+    /// paints its own.
+    /// </summary>
+    public static void Close()
+    {
+        if (_texture.IsValid) UnloadTexture(_texture);
+        (_texture, _taken, _held, _painting, _terrain, _packs) = (default, null, null, null, TerrainAtlas.None, ResourcePacks.None);
+    }
+
+    // Loads a painted atlas into the texture in place of the one before, or keeps that one where
+    // the painting failed, which is said once and leaves no icon drawn where none was.
+    private static void Take(Task<byte[]> painting)
+    {
+        _taken = painting;
+        try
+        {
+            painting.Wait();
+        }
+        catch (AggregateException fault)
+        {
+            TraceLog(LogLevel.Warning, $"The items' icons could not be painted, so those drawn before stay. {fault.InnerException?.Message}");
+            return;
+        }
         if (_texture.IsValid) UnloadTexture(_texture);
         _texture = LoadTextureFromImage(new Image(painting.Result, Width, Height));
         SetTextureFilter(_texture, TextureFilter.Point);
-        _drawn = painting;
-        return _texture;
+        _held = painting;
     }
 
     /// <summary>
@@ -145,6 +190,7 @@ public static class Icons
     /// </summary>
     internal static byte[] Paint(TerrainAtlas terrain, Func<string, Image?> picture)
     {
+        PaintStep?.Invoke();
         var atlas = new byte[Width * Height * 4];
         foreach (var item in Items.All)
         {

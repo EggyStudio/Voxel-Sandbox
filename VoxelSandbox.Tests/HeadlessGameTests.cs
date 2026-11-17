@@ -1397,6 +1397,167 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Respawn_In_A_World_Shown_Draws_Nothing_Behind_Its_Loading_Screen()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+
+        // The world stands and has been shown, its first frames made, so the respawn's loading
+        // screen goes as the spawn stands, the player landed on it.
+        game.Respawn();
+        var (behind, clock) = (0, System.Diagnostics.Stopwatch.StartNew());
+        while (game.Loading && clock.Elapsed.TotalSeconds < 30)
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+            if (game.DrawnBehind) behind++;
+        }
+
+        Assert.False(game.Loading);
+        Assert.Equal(0, behind);
+        Assert.Equal(new LandPlace(0.5, game.World.Top(0, 0) + 1, 0.5), LandOrigin.LandOf(game.Player.Body.Position));
+    }
+
+    [Fact]
+    public void A_Respawn_From_A_Closed_Room_Forgets_The_Rooms_Flood_As_Its_Loading_Begins()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        game.RenderDistance = 4;
+        var renderer = game.Renderer;
+        renderer.FloodBudgetMs = double.PositiveInfinity;
+
+        // A room of stone closed on every side in the air far east of the spawn, built once the
+        // land there stands, and the player then put in it, so the flood from its inside sees its
+        // own section alone.
+        renderer.Cull = true;
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(200.5, 80, 8.5)));
+        Stand();
+        for (int x = 198; x <= 202; x++)
+            for (int y = 38; y <= 42; y++)
+                for (int z = 6; z <= 10; z++)
+                    if (x is 198 or 202 || y is 38 or 42 || z is 6 or 10) game.World.SetBlock(x, y, z, BlockId.Stone);
+        Stand();
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(200.5, 39, 8.5)));
+        Stand();
+        headless.Step(5);
+        var spawn = new SectionKey(0, 0, 0);
+        Assert.False(renderer.Sees(spawn), "the room's flood sees the spawn's ground");
+
+        // The respawn's loading meshes the spawn's sections by a flood that sees them all, none
+        // held back by the room's.
+        game.Respawn();
+        Assert.True(game.Loading);
+        Assert.True(renderer.Sees(spawn), "the room's flood holds the spawn's ground unseen as its loading begins");
+
+        void Stand()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Streamer.Pending > 0 || game.World.Loaded.Count > 0 || renderer.Meshing > 0) && clock.Elapsed.TotalSeconds < 30);
+        }
+    }
+
+    [Fact]
+    public void A_Painting_Of_The_Icons_That_Fails_Leaves_Those_Drawn_Before_And_The_Game_Drawing()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        headless.Step(2);
+        Assert.True(Icons.Current);
+        var drawn = Icons.Texture();
+
+        Icons.PaintStep = () => throw new InvalidOperationException("a test's painting");
+        try
+        {
+            game.ReloadPacks();
+            headless.Step(30);
+            Assert.False(Icons.Current);
+            Assert.Equal(drawn, Icons.Texture());
+        }
+        finally
+        {
+            Icons.PaintStep = null;
+        }
+
+        // The packs read again paint the icons, which the frame after takes.
+        game.ReloadPacks();
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while (!Icons.Current && clock.Elapsed.TotalSeconds < 10)
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        Assert.True(Icons.Current);
+    }
+
+    [Fact]
+    public void The_Frames_Behind_The_Loading_Screen_Are_Counted_Again_Where_The_Packs_Are_Read_Again_Among_Them()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.NextWorld = ("flat", 4, null);
+        headless.Step(1);
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while (game.Loading && !game.DrawnBehind && clock.Elapsed.TotalSeconds < 30)
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        Assert.True(game.DrawnBehind);
+        headless.Step(2);
+
+        // The packs read again mark every section to shade again, so the world stops standing and
+        // its loading screen shows alone until it does, then the frames behind it from the first.
+        game.ReloadPacks();
+        var (plain, behind) = (0, 0);
+        while (game.Loading && clock.Elapsed.TotalSeconds < 60)
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+            if (!game.Loading) break;
+            if (game.DrawnBehind) behind++;
+            else (plain, behind) = (plain + 1, 0);
+        }
+
+        Assert.False(game.Loading);
+        Assert.True(plain > 0, "the world was drawn behind the screen while it stood no longer");
+        Assert.Equal(VoxelGame.BehindFrames, behind);
+    }
+
+    [Fact]
+    public void Twenty_Worlds_Opened_In_Turn_With_The_Packs_Read_Again_As_Each_Loads_Stand_With_The_Icons_Of_Their_Packs()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        for (int world = 0; world < 20; world++)
+        {
+            // The packs read again in the world's first loading frame, the icons painted again
+            // while it loads and the sections of the world before still meshing.
+            game.NextWorld = ("flat", 100 + world, null);
+            headless.Step(1);
+            Assert.True(game.Loading);
+            game.ReloadPacks();
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (game.Loading && clock.Elapsed.TotalSeconds < 30)
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            Assert.False(game.Loading, $"world {world} did not stand");
+            headless.Step(1);
+            Assert.True(Icons.Current, $"the icons drawn in world {world} are not those of the packs read last");
+            Assert.Equal(100 + world, game.World.Generator.Seed);
+        }
+        Assert.Empty(game.FileFaults);
+    }
+
+    [Fact]
     public void The_Water_Mirror_Is_Made_Ahead_Under_The_Eye_For_Its_Count_Of_Frames_As_A_World_Opens()
     {
         using var headless = new HeadlessGame(still: true);
@@ -1404,9 +1565,12 @@ public sealed class HeadlessGameTests
         headless.Step(WaterMirror.AheadFrames);
 
         // The flat world holds no water, so a plane stands only where it is made ahead, each frame
-        // from the one the respawn's loading screen goes in, the opening's own frames passed.
-        game.Respawn();
+        // from the one the next world's loading screen goes in, the opening's own frames passed.
+        game.NextWorld = ("flat", 3, null);
         var (set, clock) = (0, System.Diagnostics.Stopwatch.StartNew());
+        headless.Step(1);
+        Assert.True(game.Loading);
+        Count();
         while (game.Loading && clock.Elapsed.TotalSeconds < 30)
         {
             headless.Step(1);

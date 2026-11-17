@@ -248,7 +248,9 @@ items' icons painted on a worker while the world loads, `abbd2cb`, the pin of th
 `3e9eb37`, the vitals' reckoning started on entering the state in which the player lives, `5b65f20`,
 item 216 closed as read with the README's sentence on a build outside the checkout, and `2f23c46`,
 Verdict 14's mend, the play waiting for a world to stand before it presses keys, were pushed
-together at 14:07, the form kept.
+together at 14:07, the form kept. Their build run 44089619689 ended red at 14:17, the play not
+opening, Verdict 15. After it `d7e72fe`, the game naming its checkout's slangc in ENGINE_SLANGC,
+pushed at 14:33, the form kept.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -881,3 +883,83 @@ the workflow fetches it, under the lock taken exclusive with no quiet wait, pass
 compiling terrain.slang in frame 225, its `captures/closed.log` naming nothing left at a close 0.57
 s after the new world, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png`
 differing in 0.02% of its pixels past 8 levels.
+
+Item 217's read, by three readers in parallel over the icons and the packs, the meshing workers, and
+the streamer, the save and the other workers, each value a worker and the frame both touch named
+with what guards it. Most stand guarded, among them:
+
+- The meshers go out to the workers and come back through the queue of finished meshes, each
+  section's ask numbered across worlds, so no mesh of the world before is taken into the next.
+- An old world's columns, saves and cave readings stay in its own streamer, save and batches, which
+  the next world never reads.
+- The icons are painted from pictures read on the main thread and a terrain atlas that only reads
+  once made, so packs closed during a paint harm nothing.
+- The default packs' fetch writes volatile fields the frame reads.
+
+The gaps found and mended:
+
+- A world's floods stood across its closing and a respawn, so the next loading held the sections the
+  last flood had not seen as unseen and counted them standing, a world shown with land unmeshed. The
+  floods are let go as any loading begins (`ChunkRenderer.cs:1316`, from `VoxelGame.cs:644`), and a
+  new flood sees every section until it has flooded once.
+- A painting of the icons that failed left the texture let go and threw on every draw of the HUD,
+  the game ending. The texture keeps the icons drawn before and the failure is said once
+  (`Icons.cs:145`), and the texture takes a newer atlas between frames alone (`Icons.cs:128`, from
+  the frame's start), so no frame draws icons from two textures.
+- The frames behind the loading screen were not counted again where the world stopped standing among
+  them, as when the default packs land partway, so the screen went after the rest of the count. They
+  are counted from the first again (`VoxelGame.cs:719`).
+- The icons' texture and packs outlived a game, so the next game in the same process drew another's
+  texture by its number and let it go. The icons close with the game (`Icons.cs:137`, from
+  `VoxelGame.Dispose`), a play's close finding one texture still loaded where it found two.
+- A meshing worker gave its mesher back after its warning, so a warning that threw would have held
+  the count of those meshing above none for good. It gives it back in its `finally`
+  (`ChunkRenderer.cs:1005`).
+
+A respawn in a world shown since it opened draws nothing behind its loading screen, its first frames
+made (`VoxelGame.cs:731`), a world not shown since it opened drawing its eight. On the GPU, by the
+game's clock in five respawns beside the spawn of seed 1, the loading took 10.7 to 18.7 ms before
+item 214, 184 to 245 ms after it, and 8.8 to 28.7 ms with the mend on 6.2.102, each read by the e3d
+client at 343 to 376, 473 to 598 and 319 to 370 ms.
+
+Read and left as they are, each low or needing a fault first and none a race of the opening:
+
+- A column whose making fails is asked for no more while the player stands still, so a failure
+  within two columns of a loading player holds the loading screen up.
+- A timed save lets go of a region's kept columns while a column of it is still being made, so a
+  corrupt column of that region read after loses them.
+- A painting that newer packs replace runs to its end.
+- A mesh built with the atlas before a reload is taken after it, until the section is meshed again.
+- The default packs' fetch stays fetching where its task is cancelled before it starts or throws
+  outside its guard.
+- The interface's and the wall's textures of the packs outlive a game as the icons' did.
+
+The tests, each passing three runs in three, and failing on a copy of the head with seams for the
+names it lacks where marked:
+
+- `A_Respawn_From_A_Closed_Room_Forgets_The_Rooms_Flood_As_Its_Loading_Begins`, a room of stone
+  closed in the air far from the spawn whose flood leaves the spawn's ground unseen, then a respawn,
+  whose loading sees it. Fails on the head.
+- `A_Painting_Of_The_Icons_That_Fails_Leaves_Those_Drawn_Before_And_The_Game_Drawing`, a painting
+  made to throw, 30 frames drawn on the icons before, then the packs read again and their icons
+  taken. Fails on the head, the HUD's draw throwing.
+- `The_Frames_Behind_The_Loading_Screen_Are_Counted_Again_Where_The_Packs_Are_Read_Again_Among_Them`,
+  the packs read again in the frames behind the screen, the screen shown alone until the world
+  stands again and then eight frames behind it. Fails on the head.
+- `A_Respawn_In_A_World_Shown_Draws_Nothing_Behind_Its_Loading_Screen`, none drawn behind and the
+  player landed. Fails on the head.
+- `Twenty_Worlds_Opened_In_Turn_With_The_Packs_Read_Again_As_Each_Loads_Stand_With_The_Icons_Of_Their_Packs`,
+  twenty flat worlds opened in turn, the packs read again in each one's first loading frame, each
+  standing with its own seed and the icons of the packs read last, and no fault filed. Passes on the
+  head run alone.
+- The worker test of item 215 holds its painting at a step, so its check that `Begin` returns before
+  the worker paints holds whatever the worker's speed, and the mirror's test of item 213 opens a
+  world where it respawned, a respawn making nothing ahead.
+
+On the head the tests run together fail six of eight, the failed painting's texture carried into the
+games after it, which the icons' closing ends. The strict build is clean, 565 tests pass outside the
+GPU's lock with the long soak skipped, and the headless game's 67 pass three times in a row. The
+play, under the lock taken exclusive with no quiet wait, passes in 203 s, the seed's step naming its
+world in 4 s, its `captures/closed.log` naming nothing left at a close 0.70 s after the new world,
+and its captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.14% of its
+pixels past 8 levels, the most 168, along the clouds' edges.

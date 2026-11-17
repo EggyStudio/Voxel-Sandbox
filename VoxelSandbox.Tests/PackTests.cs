@@ -272,11 +272,22 @@ public sealed class PackTests : IDisposable
         using var packs = new ResourcePacks([Folder("worker", ("item/stick", stick), ("block/stone", Plain(new Color(100, 100, 100))))]);
         var terrain = TerrainAtlas.Build(packs);
 
-        // The painting begun returns while its worker paints, and its atlas is the one painted at
-        // once, the stick's icon the pack's picture.
-        var painting = Icons.Begin(terrain, packs);
-        Assert.False(painting.IsCompleted);
-        var atlas = await painting;
+        // The painting begun returns while its worker is held at its first step, and its atlas is
+        // the one painted at once, the stick's icon the pack's picture.
+        using var held = new ManualResetEventSlim();
+        Icons.PaintStep = held.Wait;
+        byte[] atlas;
+        try
+        {
+            var painting = Icons.Begin(terrain, packs);
+            Assert.False(painting.IsCompleted);
+            held.Set();
+            atlas = await painting;
+        }
+        finally
+        {
+            Icons.PaintStep = null;
+        }
         Assert.Equal(Icons.Paint(terrain, packs.Texture), atlas);
         var source = Icons.Source(Items.Stick);
         var icon = new byte[Icons.Size * Icons.Size * 4];
