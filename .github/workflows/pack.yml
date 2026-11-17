@@ -21,7 +21,7 @@ on:
 permissions:
   contents: read
 
-# A second pack run on a branch waits for the first rather than cancelling it, since a pack run cut
+# A second pack run on a branch waits for the first rather than canceling it, since a pack run cut
 # short leaves no zips and may be making a release.
 concurrency:
   group: pack-${{ github.ref }}

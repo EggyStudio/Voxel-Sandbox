@@ -6,9 +6,9 @@ a running program over a local socket, and every program built on the engine ans
 
 `build/engine.sh` checks the engine out at the commit the build workflow names into `.engine`, as
 the runner does, and builds its command line there once. A check run with `ENGINE_CHECKOUT` naming
-that folder, as `ENGINE_CHECKOUT="$PWD/.engine" build/play.sh`, drives through a client of the
-pinned engine that no build reaches, where the client in a live engine tree is built again under the
-run whenever its program is missing and fails while that tree is being built. Run it again after
+that folder, as `ENGINE_CHECKOUT="$PWD/.engine" build/play.sh`, runs its checks through a client of
+the pinned engine that no build reaches, where the client in a live engine tree is built again under
+the run whenever its program is missing and fails while that tree is being built. Run it again after
 each pin.
 
 ## Check for a live session first

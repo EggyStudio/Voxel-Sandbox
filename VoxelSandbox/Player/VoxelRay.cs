@@ -31,15 +31,15 @@ public static class VoxelRay
         float deltaX = Across(direction.X), deltaY = Across(direction.Y), deltaZ = Across(direction.Z);
         float nextX = First(origin.X, x, direction.X, deltaX), nextY = First(origin.Y, y, direction.Y, deltaY), nextZ = First(origin.Z, z, direction.Z, deltaZ);
         int nx = 0, ny = 0, nz = 0;
-        float travelled = 0;
+        float traveled = 0;
 
-        while (travelled <= reach)
+        while (traveled <= reach)
         {
             int landX = x + LandOrigin.X, landZ = z + LandOrigin.Z;
             var block = world.GetBlock(landX, y, landZ);
             if (Blocks.IsTarget(block))
             {
-                if (world.ShapeAt(landX, y, landZ) is not { } shape) return new BlockHit(landX, y, landZ, nx, ny, nz, travelled);
+                if (world.ShapeAt(landX, y, landZ) is not { } shape) return new BlockHit(landX, y, landZ, nx, ny, nz, traveled);
                 // A block smaller than its cell is met where the ray first crosses one of its pieces'
                 // boxes, so a ray through a stair's open quarter or between a fence's rails goes on
                 // to the block behind.
@@ -53,21 +53,21 @@ public static class VoxelRay
             if (nextX < nextY && nextX < nextZ)
             {
                 x += stepX;
-                travelled = nextX;
+                traveled = nextX;
                 nextX += deltaX;
                 (nx, ny, nz) = (-stepX, 0, 0);
             }
             else if (nextY < nextZ)
             {
                 y += stepY;
-                travelled = nextY;
+                traveled = nextY;
                 nextY += deltaY;
                 (nx, ny, nz) = (0, -stepY, 0);
             }
             else
             {
                 z += stepZ;
-                travelled = nextZ;
+                traveled = nextZ;
                 nextZ += deltaZ;
                 (nx, ny, nz) = (0, 0, -stepZ);
             }

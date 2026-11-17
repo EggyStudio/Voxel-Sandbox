@@ -336,7 +336,7 @@ public static class MobKinds
     /// <summary>
     /// The player as it is seen from without, the source's layout of a head, a body, two arms and
     /// two legs at its scale, in the game's own colors, a teal shirt with short sleeves, blue
-    /// trousers, grey shoes, brown hair and a face with eyes and a mouth. It is no mob, so it is
+    /// trousers, gray shoes, brown hair and a face with eyes and a mouth. It is no mob, so it is
     /// not among <see cref="All"/>, and its place after them is its <see cref="MobKind.Id"/>.
     /// </summary>
     public static readonly MobKind Player = MakePlayer();
@@ -501,7 +501,7 @@ public static class MobKinds
             new(Swing.None, Vector3.Zero, [Mc(Vector3.Zero, -4, 0, -2, 8, 12, 4, shirt)]),
             new(Swing.ArmA, At(leftArm), [Mc(leftArm, -1, -2, -2, 4, 12, 4, skin, mirror: true), Mc(leftArm, -1, -2, -2, 4, 4, 4, shirt, grow: 0.05f)]),
             new(Swing.ArmB, At(rightArm), [Mc(rightArm, -3, -2, -2, 4, 12, 4, skin), Mc(rightArm, -3, -2, -2, 4, 4, 4, shirt, grow: 0.05f)]),
-            // The face in its fifth row from the top, each eye white outside and coloured within, a
+            // The face in its fifth row from the top, each eye white outside and colored within, a
             // mouth two rows under it, and the hair over the head's top two rows and down its back.
             new(Swing.Head, At(Vector3.Zero),
                 [

@@ -378,10 +378,10 @@ public sealed class TerrainAtlas
     /// its packs list them, and the surface's own tile is taken where none is given.
     /// </summary>
     /// <remarks>
-    /// A surface with no texture carries its own color under the climate's, as it did before packs
-    /// were read. A textured one carries the color its texture is tinted by, its own tint, the
-    /// climate's for a surface the climate tints, or white, opaque, since a see-through texture's
-    /// alpha is its own, and under an overlay the grass color the overlay takes.
+    /// A surface with no texture carries its own color under the climate's. A textured one carries
+    /// the color its texture is tinted by, its own tint, the climate's for a surface the climate
+    /// tints, or white, opaque, since a see-through texture's alpha is its own, and under an
+    /// overlay the grass color the overlay takes.
     /// </remarks>
     public (uint Tiles, Color Tint, Color Albedo) Paint(int surface, Color grass, Color foliage, uint? place = null)
     {

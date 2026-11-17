@@ -46,11 +46,11 @@ public sealed class Sky : IDisposable
     private const float RepaintHours = 0.05f;
 
     // The light's own hour steps this many times an hour while the sun drawn on the sky moves
-    // smoothly, so a shadow stands still between steps and jumps at once to its next place, where the
-    // light turning every frame laid an edge near a step's boundary on either side from frame to
-    // frame. A step turns the light by a 36th of the sky's 15 degrees an hour, so the edge of a
-    // shadow 16 blocks from what casts it jumps 0.12 of a block, under one of the eight steps a block
-    // the terrain's shader takes the shadow on.
+    // smoothly, so a shadow stands still between steps and jumps at once to its next place, rather
+    // than an edge near a step's boundary falling on either side of it from frame to frame. A step
+    // turns the light by a 36th of the sky's 15 degrees an hour, so the edge of a shadow 16 blocks
+    // from what casts it jumps 0.12 of a block, under one of the eight steps a block the terrain's
+    // shader takes the shadow on.
     private const int LightStepsAnHour = 36;
 
     /// <summary>How far out the sun and the moon are drawn.</summary>

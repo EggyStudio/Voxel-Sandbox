@@ -9,16 +9,15 @@ namespace VoxelSandbox;
 /// <remarks>
 /// The logs of a tree are those joined to the cut through any of the 26 blocks about each, edge or
 /// corner, above the cut or under it, within twelve blocks of it across, as a big oak's branches
-/// join its trunk, so a tree whose branches touch another's fells with it whole, where taking only
-/// the logs at the cut's height and above left the other's trunk under its hanging leaves when it
-/// stood lower. They fell only where leaves touch them, so a wall of logs a house or a village
-/// stands on keeps its logs. As the tree is felled, every leaf within seven blocks of its logs is
-/// read for its way through leaves to a log that is not the tree's, and those with none within six
-/// steps decay one after another, in an order of their own, over the second from the tick the first
-/// log goes, so the crown and the falling logs are in the air together and the leaves of a tree
-/// beside it stay. An axe fells a tree by its uses, one for each log that drops as an item and none
-/// for one that falls as a block, and one that runs out leaves the logs still to go standing, and
-/// of the crown only the leaves loose of them decay.
+/// join its trunk, so a tree whose branches touch another's fells with it whole, the other's trunk
+/// too where it stands lower than the cut. They fell only where leaves touch them, so a wall of
+/// logs a house or a village stands on keeps its logs. As the tree is felled, every leaf within
+/// seven blocks of its logs is read for its way through leaves to a log that is not the tree's, and
+/// those with none within six steps decay one after another, in an order of their own, over the
+/// second from the tick the first log goes, so the crown and the falling logs are in the air
+/// together and the leaves of a tree beside it stay. An axe fells a tree by its uses, one for each
+/// log that drops as an item and none for one that falls as a block, and one that runs out leaves
+/// the logs still to go standing, and of the crown only the leaves loose of them decay.
 /// </remarks>
 public sealed class TreeFelling(int seed = 1)
 {

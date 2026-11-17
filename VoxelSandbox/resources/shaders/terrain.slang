@@ -229,10 +229,10 @@ float3 pixelMiddle(float3 world, float3 normal)
 }
 
 // The source's brightness of a sky light level by day at its default brightness setting, 0 at level
-// 0 and 1 at 15, its curve, the level's share f over 4 less three times f, taken halfway to one less
-// the fourth power of what the curve leaves, as the setting takes it, with the grey the source mixes
-// into every level left out, so a face the sky never reaches takes none. Level 13 reads 0.80 of 15 on
-// the screen.
+// 0 and 1 at 15, its curve, the level's share f over 4 less three times f, taken halfway to one
+// less the fourth power of what the curve leaves, as the setting takes it, with the gray the source
+// mixes into every level left out, so a face the sky never reaches takes none. Level 13 reads 0.80
+// of 15 on the screen.
 float skyBrightness(float level)
 {
     float f = level / 15.0;

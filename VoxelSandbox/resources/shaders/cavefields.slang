@@ -19,7 +19,7 @@ RWStructuredBuffer<uint> ranges;
 // Each level's permutation, its offsets along x, y and z and its steps along them in 24 fractional
 // bits, and its weight in 16, eight to a level.
 RWStructuredBuffer<uint> levels;
-// The permutations, 256 bytes each, four bytes to a word.
+// The permutations, 256 bytes each, four packed in a uint.
 RWStructuredBuffer<uint> permutations;
 RWStructuredBuffer<int> values;
 

@@ -3724,6 +3724,39 @@ before a batch.
     green at 04:03 on 2026-11-12, its macOS test job among it and the play in 48 minutes, which
     settles this.
 
+14. **The play's seed step read the world before the new one came.** Build run 44078576705 of
+    `ac5602d`, item 214, ended red at 13:58 on 2026-11-17 in its play job alone, the three test jobs
+    green. Every step up to the menu's button and the death screen passed, at 3,330 s. The seed's
+    field step then failed within seconds, where the green run before it spent 246 s there, with the
+    world read as the overworld of seed 1 where 12345 was typed and pasted. The game's log ends with
+    one frame making a pipeline of bits.slang in 3,328 ms on the runner's CPU device. The step
+    presses Enter, waits three frames and reads voxel.state, and since item 214 the first frames of
+    a new world are drawn behind the loading screen, so on a slow device three frames after Enter
+    the state may still tell the world before. Local plays on the GPU pass. Asked, a read of which
+    it is, the step reading too soon or the typed seed lost; where it reads too soon, the step waits
+    for the state to tell a world opened after Enter, bounded in time, and every other step that
+    reads the state within a few frames of a world's opening is read for the same; where the seed is
+    lost, the mend in the game with a test. The four commits held behind it go up with the mend in
+    one push. Settled at 15:34 on 2026-11-17, the play green in run 44093860347 of `d7e72fe` with
+    the waits for a standing world in `build/play.sh`.
+
+15. **The play did not open on the engine's 6.2.102.** Build run 44089619689 of `2f23c46` ended red
+    at 14:17 on 2026-11-17 in its play job alone, the three test jobs green. The game exited with
+    code 1 at the open, 4.3 s in. Its session log says slangc was not found, so shaders load from
+    their caches only, 64 stages read from the caches and none compiled, and then that terrain.slang
+    is not in the shader cache. The job's step before had found slangc 2026.18.2 at
+    build/tools/slang of the game's checkout, restored from the cache. The first local play of the
+    pin stopped the same way and passed once ENGINE_SLANGC named a slangc, and the workflow sets no
+    such name. Asked, a read of why the engine at 6.2.102 does not find the slangc the game's
+    checkout holds, where the play before the pin compiled or read terrain.slang, the walk from the
+    program's folder, the folder's shape or the name looked for among the candidates; the mend where
+    it belongs, in the game's workflow and play script where the game must name it, and told to the
+    review as the engine's where the engine's walk changed; and the pack workflow read for the same,
+    with the word of item 216's Reply that a packed game never meets a missing cache proved by a
+    pack run's game opening with no slangc. Verdict 14's mend is not yet read on a CPU device, the
+    play not having reached its steps. Settled at 15:34 on 2026-11-17, the play opening and green in
+    run 44093860347 of `d7e72fe` with the compiler's path given to it.
+
 ## Decisions
 
 1. **The old game is replaced in place, its history kept.** Decided on 2026-10-17, the voxel game of

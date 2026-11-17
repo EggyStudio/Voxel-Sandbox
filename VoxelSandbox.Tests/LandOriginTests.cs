@@ -11,8 +11,7 @@ public sealed class LandOrigins;
 [Collection(nameof(LandOrigins))]
 public sealed class LandOriginTests : IDisposable
 {
-    // A block a million blocks out, where a float steps by an eighth of a block, the scene of the
-    // far reads of 2026-11-11 placed there.
+    // A block a million blocks out, where a float steps by an eighth of a block.
     private const int FarX = 1_139_984, FarZ = 592;
 
     public LandOriginTests() => LandOrigin.Near(FarX, FarZ);

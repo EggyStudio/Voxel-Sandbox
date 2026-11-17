@@ -26,12 +26,12 @@ namespace VoxelSandbox;
 /// </para>
 /// <para>
 /// A column walks the blobs of the nine columns about it, each from its own column's seed, and
-/// keeps the blocks that fall in it, as the trees are placed, so a blob goes on across a column's
-/// edge and a column is generated the same every time and in any order. A walk's every step draws
-/// its roll for a cave's air, so its path is the same in each column it is walked in. A placement
-/// tries its count times the share of a blob of its size that falls in the column it starts in,
-/// the fraction of a try left over tried at that chance, so a world holds as much of each ore as
-/// blobs kept to their own columns place.
+/// keeps the blocks that fall in it, so a blob goes on across a column's edge and a column is
+/// generated the same every time and in any order. A walk's every step draws its roll for a cave's
+/// air, so its path is the same in each column it is walked in. A placement tries its count times
+/// the share of a blob of its size that falls in the column it starts in, the fraction of a try
+/// left over tried at that chance, so a world holds as much of each ore as blobs kept to their own
+/// columns place.
 /// </para>
 /// </remarks>
 public static class Ores
@@ -59,7 +59,7 @@ public static class Ores
 
     // The share of the diamonds' tries made, as their blobs lie in a narrow band where blobs kept
     // to their own columns set more of the same cells twice, so a world holds as many diamonds as
-    // such blobs place, measured over three stretches of the overworld.
+    // such blobs place.
     private const float DiamondsTried = 0.965f;
 
     private static readonly Placement[] All =

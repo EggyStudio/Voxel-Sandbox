@@ -65,11 +65,9 @@ jobs:
   play:
     runs-on: ubuntu-24.04
     # build/play.sh takes 30 minutes on a desktop's lavapipe, most of it the frames lavapipe draws,
-    # and the engine's command line builds in a minute. A hosted runner took 77 minutes on
-    # 2026-10-26 and 84 on 2026-10-30, every check slower by about a tenth as the far cascade and the
-    # shadows to 128 blocks gave lavapipe more to draw. So 150 minutes keeps room for the walk to grow
-    # and is reached only where the game or e3d hangs, a public repository's minutes on hosted runners
-    # costing nothing.
+    # and the engine's command line builds in a minute. A hosted runner takes 77 to 84 minutes. So
+    # 150 minutes keeps room for the walk to grow and is reached only where the game or e3d hangs, a
+    # public repository's minutes on hosted runners costing nothing.
     timeout-minutes: 150
     steps:
       - uses: actions/checkout@v7

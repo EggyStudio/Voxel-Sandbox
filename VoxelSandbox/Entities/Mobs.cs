@@ -299,11 +299,11 @@ public sealed class Mobs
     /// many animals and how many villagers it placed and left out.
     /// </summary>
     /// <remarks>
-    /// A column's generation is made again to read its spawns, the same for a seed every time, on as
-    /// many workers as the processor has, as the streamer makes columns. What the generation placed is
-    /// placed as the land was generated, so a mob whose feet's cell or the one over it the player has
-    /// filled, or whose ground the player dug away, is left out rather than placed in a wall, a
-    /// villager whose village the player changed the likeliest.
+    /// A column's generation is made again to read its spawns, the same for a seed every time, on
+    /// as many workers as the processor has. What the generation placed is placed as the land was
+    /// generated, so a mob whose feet's cell or the one over it the player has filled, or whose
+    /// ground the player dug away, is left out rather than placed in a wall, a villager whose
+    /// village the player changed the likeliest.
     /// </remarks>
     public (int Columns, int Filled, (int Placed, int LeftOut) Animals, (int Placed, int LeftOut) Villagers) Restock(VoxelWorld world)
     {

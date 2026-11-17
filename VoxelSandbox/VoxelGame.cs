@@ -55,16 +55,15 @@ public sealed class VoxelGame : IDisposable
     private bool _respawning;
 
     /// <summary>
-    /// Opens the world saved under <paramref name="name"/>, or under its kind and seed when no name is
-    /// given, or begins it there from <paramref name="kind"/> and <paramref name="seed"/> where none is
-    /// saved yet. A <paramref name="transient"/> world is neither read from disk nor written to it, as
-    /// a test run's is. The game is drawn with the resource packs at <paramref name="packs"/>, the first
-    /// over the rest, where they are given, and otherwise with those the setting names, which a
-    /// transient run leaves alone, so it is drawn the same on every machine. Where the setting names
-    /// none yet, as at the first start, the default packs are fetched and turned on once they are in.
-    /// A run without <paramref name="settings"/>, as a test's that saves a world in a folder of its
-    /// own, leaves the player's settings alone, the packs' setting and the options neither read nor
-    /// written and the default packs not fetched.
+    /// Opens the world saved under <paramref name="name"/>, or under its kind and seed when no name
+    /// is given, or begins it there from <paramref name="kind"/> and <paramref name="seed"/> where
+    /// none is saved yet. A <paramref name="transient"/> world is neither read from disk nor
+    /// written to it. The game is drawn with the resource packs at <paramref name="packs"/>, the
+    /// first over the rest, where they are given, and otherwise with those the setting names, which
+    /// a transient run leaves alone, so it is drawn the same on every machine. Where the setting
+    /// names none yet, as at the first start, the default packs are fetched and turned on once they
+    /// are in. A run without <paramref name="settings"/> leaves the player's settings alone, the
+    /// packs' setting and the options neither read nor written and the default packs not fetched.
     /// </summary>
     public VoxelGame(string kind, int seed, string? name, bool transient, IEnumerable<string>? packs = null, VideoSettings? video = null, bool settings = true, string? settingsFolder = null)
     {
@@ -151,7 +150,7 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>
     /// The packs' list and the folder it and the settings file are kept in, the data folder beside the
-    /// saves unless the game was given another, as a test gives one of its own.
+    /// saves unless the game was given another.
     /// </summary>
     public PackList PackList { get; }
 
@@ -1762,7 +1761,8 @@ public sealed class VoxelGame : IDisposable
         }
     }
 
-    // Each arrow a thin shaft along its flight, or along its last flight once stuck, with grey fletching at its tail.
+    // Each arrow a thin shaft along its flight, or along its last flight once stuck, with gray
+    // fletching at its tail.
     private void DrawArrows()
     {
         foreach (var arrow in Arrows.All)

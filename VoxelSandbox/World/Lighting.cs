@@ -57,7 +57,8 @@ public static class Lighting
         // highest the sky does not pass at all, over which only the sky and leaves stand.
         var tops = new int[Section.Size * Section.Size];
         var opens = new int[Section.Size * Section.Size];
-        // The cells under a canopy spread its light sideways too, as the spreading lit them before.
+        // The cells under a canopy spread its light sideways too, as a spread from each cell of the
+        // sky would light them.
         var queue = new Queue<(int X, int Y, int Z)>();
         // The sections of air over every place's highest block take the sky's whole level at once,
         // as each of their cells would one by one, and each place is walked down from under them.

@@ -281,8 +281,8 @@ read -r lr _ <<< "$(printf '%s\n' "$lit" | sed -nE 's/^red ([0-9]+), .*/\1/p')"
 check "the stars at dawn"
 # At dawn the stars brighten the sky and darken none of it. Read low in the east over a band of the
 # window with the clouds hidden, no more than 20 pixels stand darker than all four of their neighbors
-# three pixels away by 8 levels, where stars blended over the sky stood as 272 dark spots, and at
-# least 100 stand lighter, the stars still shown.
+# three pixels away by 8 levels, where stars blended over the sky would stand as hundreds of dark
+# spots, and at least 100 stand lighter, the stars still shown.
 cmd voxel.clouds off
 cmd voxel.tp 0.5 10 0.5
 cmd voxel.time 5.8
@@ -1248,8 +1248,8 @@ cmd frames.wait 2
 cmd input.text 123
 ./e3d eval 'SetClipboardText("45")' --quiet --timeout 600 --session "$pid" > /dev/null 2> "$said" || fail "./e3d eval SetClipboardText ended with $?, $(head -n 1 "$said")"
 # Control is held about a second, as many frames as a second of the median frame takes and 30 at
-# least, since e3d's calls take a few frames and a wall clock's time between them, where a fixed 120
-# held lavapipe's walk 90 frames past V.
+# least, since e3d's calls take a few frames and a wall clock's time between them, so a count of
+# frames fixed for a fast device would hold a slow one's walk far past V.
 median=$(ask voxel.frames | sed -nE 's/.*median ([0-9.]+) ms.*/\1/p')
 hold=$(awk -v m="${median:-17}" 'BEGIN { f = int(1000 / (m > 0 ? m : 17)); print f < 30 ? 30 : f }')
 cmd input.key LeftControl "$hold" &

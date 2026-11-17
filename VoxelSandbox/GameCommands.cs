@@ -378,7 +378,7 @@ public static class GameCommands
     [Command("voxel.items", "Every item's name, the blocks' and the things' of their own, which voxel.select and voxel.give take")]
     internal static string ListItems() => string.Join(", ", Items.All.Select(i => i.Key));
 
-    [Command("voxel.craft", "Makes an item from what the inventory holds as a recipe book does, as at a crafting table, so many times: voxel.craft <item> [times]")]
+    [Command("voxel.craft", "Makes an item from what the inventory holds, as at a crafting table, so many times: voxel.craft <item> [times]")]
     internal static string Craft(string item, int times = 1)
     {
         if (Game is not { } game) return "no world is loaded";

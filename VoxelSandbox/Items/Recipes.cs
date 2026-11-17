@@ -114,8 +114,8 @@ public static class Recipes
     }
 
     /// <summary>
-    /// Makes an item once from the inventory's stacks as a recipe book does, the first recipe for it
-    /// whose cells the inventory can fill, one item a cell, taking those items out.
+    /// Makes an item once from the inventory's stacks, the first recipe for it whose cells the
+    /// inventory can fill, one item a cell, taking those items out.
     /// </summary>
     /// <returns>The recipe used, or null where none could be filled.</returns>
     public static Recipe? CraftFrom(Inventory inventory, Item result)

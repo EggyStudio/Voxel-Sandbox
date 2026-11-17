@@ -90,7 +90,7 @@ public sealed class ConnectedTextureTests : IDisposable
     [Fact]
     public void A_Wall_Of_Glass_Takes_The_Packs_Tiles_By_Its_Neighbors_And_A_Block_Without_A_Pack_Keeps_Its_Own()
     {
-        // A pack of the glass's picture and its 47 tiles, each a colour of its own.
+        // A pack of the glass's picture and its 47 tiles, each a color of its own.
         var root = Path.Combine(_folder, "pack");
         void Write(string path, Image image)
         {

@@ -315,7 +315,7 @@ cmd input.key E 1
 window creative center
 cmd input.key E 1
 ./e3d command input.key F3 90 --quiet --timeout 600 --session "$pid" &
-# F4 goes once the engine holds F3, as build/play.sh sends Control and V.
+# F4 goes once input.state reads F3 held, since each e3d call takes a few frames to start.
 for i in $(seq 1 50); do ./e3d command input.state --timeout 600 --session "$pid" | grep -q '^keys: .*F3' && break; done
 cmd input.key F4 1
 window switcher center

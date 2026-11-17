@@ -903,8 +903,8 @@ public sealed class HeadlessGameTests
             File.WriteAllText(file.File, "video.Window_Mode:Borderless\nvideo.Resolution:1\nrender.Render_Distance:6\n");
             Assert.Equal(2f, file.Find("video", OptionScreens.WindowModeOf(video)));
             Assert.Equal(1f, file.Find("video", OptionScreens.ResolutionOf(video)));
-            // A run with no window holds no monitor's modes nor a borderless state, so the
-            // resolution read is what it shows, the mode being the engine's window's alone.
+            // A run with no window holds no monitor's modes nor a borderless state, so it shows the
+            // resolution read, the mode being the engine's window's alone.
             video.Restore(file);
             Assert.Equal(1, video.Resolution);
             // A mode the file cannot read leaves the window in a window.

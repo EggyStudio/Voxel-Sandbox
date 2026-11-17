@@ -86,10 +86,10 @@ major and minor in `build/version.txt` and as the patch the commits since that f
 
 The build workflow builds the game and runs its tests, and plays it through `build/play.sh` on
 Mesa's lavapipe, every check of the walk read through `./e3d` from an offscreen run. Run here, the
-play drives through the engine's command line as `build/engine.sh` builds it at the pinned commit,
-with `ENGINE_CHECKOUT` naming its `.engine` (`.github/E3D.md`). The play job
-took 84 minutes on a hosted runner on 2026-10-30, the rain's splashes the longest of its checks,
-and is held to 150 minutes.
+play runs its checks through the engine's command line as `build/engine.sh` builds it at the pinned
+commit, with `ENGINE_CHECKOUT` naming its `.engine` (`.github/E3D.md`). The play job takes 77 to 84
+minutes on a hosted runner, the rain's splashes the longest of its checks, and is held to 150
+minutes.
 
 ## The game this repository held before
 
@@ -135,7 +135,7 @@ the look, looking at the eye, and is pulled in a tenth of a block short of the n
 any of five rays from about the eye meets on the way, as Minecraft's is, so a wall behind the player
 does not hide it. The player is seen there with a model of Minecraft's layout at its scale of
 fifteen sixteenths, a head, a body, two arms and two legs in the game's own colors, a teal shirt with
-short sleeves, blue trousers, grey shoes and brown hair, posed as Minecraft poses its player. Its
+short sleeves, blue trousers, gray shoes and brown hair, posed as Minecraft poses its player. Its
 legs swing by how far it walks as a mob's do and its arms against them, its body turns toward the
 way it walks and its head after the aim, leading the body by at most 75 degrees. A sneak leans the
 body over by half a radian, its hips and arms back, the head down, and the whole two pixels lower.
@@ -169,34 +169,32 @@ the 99th part and the slowest of the last 600 frames' times. `voxel.fill`, `voxe
 and `voxel.place` act as the mouse buttons do, `voxel.time`, `voxel.day` and `voxel.cycle` set the
 sky, `voxel.clouds` shows or hides the clouds and places their drift, `voxel.distance` the render
 distance, `voxel.gpu` reads the caves' noises on the GPU or not and compares them with the CPU's,
-`voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the
-shaded corners on or off, `voxel.corners` sets how far the corners darken, `voxel.world` saves the
-world and opens or begins another of a kind and seed, `voxel.loading` holds its loading screen up
-for a capture, `voxel.save` saves at once, and `voxel.blocks` lists the blocks by number and name.
+`voxel.light` reads a block's light levels, `voxel.shade` turns the light levels and the shaded
+corners on or off, `voxel.corners` sets how far the corners darken, `voxel.world` saves the world
+and opens or begins another of a kind and seed, `voxel.loading` holds its loading screen up for a
+capture, `voxel.save` saves at once, and `voxel.blocks` lists the blocks by number and name.
 `voxel.mobs` counts the mobs and lists the nearest, `voxel.spawn` places one where the crosshair
 rests, `voxel.attack` hits the one it rests on as the left button does, `voxel.still` stops them
 where they stand and holds the clouds and the bits of broken blocks for a capture, `voxel.bits` says
-where the bit nearest a place flies, `voxel.kill` takes the mobs away, and `voxel.spawning off` takes
-them away and keeps every one out from the next frame on, in a world opened after too, so two runs'
-captures take no animal wandering into one, until `voxel.spawning on` brings them back.
+where the bit nearest a place flies, `voxel.kill` takes the mobs away, and `voxel.spawning off`
+takes them away and keeps every one out from the next frame on, in a world opened after too, so two
+runs' captures take no animal wandering into one, until `voxel.spawning on` brings them back.
 `voxel.restock` places again the animals and villagers the land first placed in each loaded column
-holding no mob, each where it still has room to stand, as for a save that lost them, a closing game
-having written the loaded columns' mobs as none before 2026-11-12. `voxel.fires` counts the
-fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival, adventure or
-spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the
-inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and
-reads a furnace, `voxel.chest` reads a chest, `voxel.inventory` lists what it holds, `voxel.items` lists every item,
-`voxel.throw` throws as Q does, and `voxel.drop` lays one of an item on the ground at a place.
-`voxel.weather` says, holds or frees the weather, `voxel.view` sets where the camera stands,
-`voxel.sounds` says how loud the place's sounds
-play and the steps played, `voxel.packs` says or sets the resource packs on,
-and `voxel.reload` reads them again. `voxel.vitals` says or sets the health and food, `voxel.hurt`
-harms the player, and `voxel.respawn` gives a new life. `voxel.gi`, `voxel.field` and
-`voxel.shadows` set global illumination, the scene's distance field and the sun's shadows,
-`voxel.options` says or sets any setting of the options' screens by its screen and name, `voxel.hud`
-hides what is drawn over the world for a capture, `voxel.ticks` holds the animated textures and
-lamps at a tick, so a capture or a check reads a frame of an animation however the frames fall,
-`voxel.scale` sets the interface's scale, at which
+holding no mob, each where it still has room to stand, as for a save that lost them. `voxel.fires`
+counts the fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival,
+adventure or spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items
+in the inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills
+and reads a furnace, `voxel.chest` reads a chest, `voxel.inventory` lists what it holds,
+`voxel.items` lists every item, `voxel.throw` throws as Q does, and `voxel.drop` lays one of an item
+on the ground at a place. `voxel.weather` says, holds or frees the weather, `voxel.view` sets where
+the camera stands, `voxel.sounds` says how loud the place's sounds play and the steps played,
+`voxel.packs` says or sets the resource packs on, and `voxel.reload` reads them again.
+`voxel.vitals` says or sets the health and food, `voxel.hurt` harms the player, and `voxel.respawn`
+gives a new life. `voxel.gi`, `voxel.field` and `voxel.shadows` set global illumination, the scene's
+distance field and the sun's shadows, `voxel.options` says or sets any setting of the options'
+screens by its screen and name, `voxel.hud` hides what is drawn over the world for a capture,
+`voxel.ticks` holds the animated textures and lamps at a tick, so a capture or a check reads a frame
+of an animation however the frames fall, `voxel.scale` sets the interface's scale, at which
 `build/pictures.sh` takes the windows, and `voxel.fov` sets the field of view, which the script
 narrows to 40 degrees for its views of the world, as a zoom does for a screenshot. Three measure the
 light. `voxel.flicker` records each frame's change in the picture around a turn or a step into a
@@ -649,10 +647,9 @@ A mob thinks and moves only while the columns around its own are loaded, so it n
 air a column not loaded reads as. The mobs standing in a column go with it when it unloads and come
 back where they stood when it loads, and the save keeps them in `mobs.bin` with the columns that
 have had theirs placed, so a herd or a village's villagers are placed once. A mob saved with a place
-that is no number, as a fault of the mobs' moving left some in saves before it was mended, is set
-down at its home where it has one, as a villager does, and otherwise left out, the log saying how
-many of each. A move or a push that is no number is not taken, so one such mob no longer hands it
-to every mob of its height about it.
+that is no number is set down at its home where it has one, as a villager does, and otherwise left
+out, the log saying how many of each. A move or a push that is no number is not taken, so no such
+number passes from one mob to the mobs of its height about it.
 
 Each piece of a mob, its head, body, legs and a chicken's wings, is a few boxes, one mesh of colored
 vertices drawn instanced for every mob of its kind, its legs swinging about their hips as it walks.
@@ -938,12 +935,10 @@ line a setting, its screen, general for the options' own, and its name joined by
 words by underscores, then a colon and its value, as `render.Render_Distance:12` or
 `video.Window_Mode:Borderless`. The game reads it as it starts and writes it as a screen of the menu
 is left, or as `voxel.options` or G changes a setting, and a line it cannot read leaves its setting
-at the default above. Its first line is its version, and in a file of an older version a line
-holding the value a setting's default had before it changed is read as that default, so a changed
-default stands where the player never chose the old one. The window's resolution and mode are read first, as the window opens and
-before the world loads, so it shows as it was left, 1280 by 720 in a window where the file keeps
-neither. The time, the daylight cycle and the moon are the world's, which its save keeps, and a
-transient run neither reads the file nor writes it.
+at the default above. Its first line is its version. The window's resolution and mode are read
+first, as the window opens and before the world loads, so it shows as it was left, 1280 by 720 in a
+window where the file keeps neither. The time, the daylight cycle and the moon are the world's,
+which its save keeps, and a transient run neither reads the file nor writes it.
 
 A world opens behind a black loading screen, with the world's name over a bar of how far its loading
 has come, and under it, while the default packs are fetched, a line and a bar of their own. Half the
@@ -1177,39 +1172,38 @@ joins where it is the same block, or for a rule of textures where it shows the s
 with inner seams only where the cell before it is not the same too. Glass a rule takes leaves its
 frame to the pack's tiles rather than the game's own joining. The methods `ctm_compact`, `overlay`,
 `fixed` and those joined with a plus are not read, nor is a rule past the atlas's 512 tiles, and
-none of the packs the game fetches has any, so with them the blocks look as before.
+none of the packs the game fetches has any, so with them the blocks join as the game's own do.
 
 Leaves cut out hide nothing behind them, so they keep their faces against each other and the faces
 beside them, as Minecraft draws its leaves, and the sections seen through them are drawn. Bare
 Bones' leaves are covered in every pixel and so stay whole. A texture partly clear, as ice's is,
-blends as before. The cactus is Minecraft's model, its top and bottom across the whole cell and each
-side a pixel in from its side of the cell and as wide as the cell, so its pictures' clear edges are
-cut out, shadow and all, and the thorns on them stick out past the sides beside them. Where its
-side's picture cuts nothing out, as the game's own does not, it is a plain box instead, a pixel in
-from each side of the cell, its top and bottom too, each face showing its picture's middle fourteen
-pixels across. Its box stops
-the player a pixel in at each side and a pixel short of its top, as Minecraft's does. An emissive
-block's cube is drawn with its texture, and one whose faces differ, the lit furnace, with its top's,
-its sides' and its bottom's laid side by side, so it shows the furnace's top above its front, its
-front alone emissive where its pixels are bright. A pack's animated texture, a strip of frames its
-metadata plays in an order and for times of its own, has its frames laid in the atlas one after
-another, each held the shortest frame's time and a longer frame for as many steps as it lasts, a
-face carrying the first and the terrain shader stepping it by the game's ticks, twenty a second, as
-Minecraft steps them, up to 16 such textures. An animated lamp's cube keeps its first frame's
-texture, whose average the scene's distance field reads as its color, since a draw whose color
-changes is stamped again without its light for frames, and steps the map of its emission, which
-shows most of what the face shows, so a lantern's flame flickers and the light it casts holds still.
-`build/play.sh` writes water of a white and a black frame and reads both in turn. An item's icon is
-the pack's texture for it, or a block's cube with its faces' textures. The grass's top shows looks
-of the game's own in its flat style, little blossoms of four colors, patches of clover a shade
-darker than the grass under them and so tinted by the climate as it is, and pebbles, laid over a
-pack's grass or the game's own at four quarter turns, the grass's own tile keeping the way it lies,
-since a pack draws its grass's streaks one way, and about four blocks in five plain, a twelfth
-clover and a few in a hundred flowers or stones, as the looks of the grass in the reference modpack
-are weighed. A hash of the block's place picks one, so the same block shows the same look every
-time. A pack gives the pictures alone, its textures, its sprites and its font, and the game reads
-nothing of its block states or models, which hold how the source draws and chooses its blocks, since
-how the game draws and chooses is its own.
+blends with what lies behind it. The cactus is Minecraft's model, its top and bottom across the
+whole cell and each side a pixel in from its side of the cell and as wide as the cell, so its
+pictures' clear edges are cut out, shadow and all, and the thorns on them stick out past the sides
+beside them. Where its side's picture cuts nothing out, as the game's own does not, it is a plain
+box instead, a pixel in from each side of the cell, its top and bottom too, each face showing its
+picture's middle fourteen pixels across. Its box stops the player a pixel in at each side and a
+pixel short of its top, as Minecraft's does. An emissive block's cube is drawn with its texture, and
+one whose faces differ, the lit furnace, with its top's, its sides' and its bottom's laid side by
+side, so it shows the furnace's top above its front, its front alone emissive where its pixels are
+bright. A pack's animated texture, a strip of frames its metadata plays in an order and for times of
+its own, has its frames laid in the atlas one after another, each held the shortest frame's time and
+a longer frame for as many steps as it lasts, a face carrying the first and the terrain shader
+stepping it by the game's ticks, twenty a second, as Minecraft steps them, up to 16 such textures.
+An animated lamp's cube keeps its first frame's texture, whose average the scene's distance field
+reads as its color, since a draw whose color changes is stamped again without its light for frames,
+and steps the map of its emission, which shows most of what the face shows, so a lantern's flame
+flickers and the light it casts holds still. `build/play.sh` writes water of a white and a black
+frame and reads both in turn. An item's icon is the pack's texture for it, or a block's cube with
+its faces' textures. The grass's top shows looks of the game's own in its flat style, little
+blossoms of four colors, patches of clover a shade darker than the grass under them and so tinted by
+the climate as it is, and pebbles, laid over a pack's grass or the game's own at four quarter turns,
+the grass's own tile keeping the way it lies, since a pack draws its grass's streaks one way, and
+about four blocks in five plain, a twelfth clover and a few in a hundred flowers or stones, as the
+looks of the grass in the reference modpack are weighed. A hash of the block's place picks one, so
+the same block shows the same look every time. A pack gives the pictures alone, its textures, its
+sprites and its font, and the game reads nothing of its block states or models, which hold how the
+source draws and chooses its blocks, since how the game draws and chooses is its own.
 
 The interface takes a pack's pictures where Minecraft reads them, the hotbar, its frame, the hearts,
 the food, the bubbles of breath and the crosshair under `gui/sprites/hud`, the buttons and sliders
@@ -1446,7 +1440,7 @@ power of 1.5 and the share short of noon, times 5, mixed by the square root of t
 as bright at noon as a white sun of the same luminance. By night the sky takes the shader's night
 tint of the reference modpack's settings, its colors multiplied by 1.10, 0.90 and 1.30 in linear
 light as far as the day's light is gone, a violet blue, and the moon lights the world in the
-shader's night light, (0.15, 0.14, 0.20), as bright as before. Its 3,000 stars are squares of 0.28
+shader's night light, (0.15, 0.14, 0.20). Its 3,000 stars are squares of 0.28
 degrees, most faint and a few bright, in a cool white, as the modpack's shader, Aurora's Shaders
 after Complementary, draws its own, each as bright as 40 times the square of how far the product of
 three noises passes 0.7. They are added to the sky, as the sun and the moon are, so a faint star

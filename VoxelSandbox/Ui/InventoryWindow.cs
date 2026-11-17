@@ -130,7 +130,7 @@ public sealed class InventoryWindow
         {
             // The flame burns down from its top as the fuel burns out, and the arrow fills from its
             // left as the smelting goes on.
-            var burnt = furnace.BurnTotal > 0 ? furnace.Burning / furnace.BurnTotal : 0;
+            var burned = furnace.BurnTotal > 0 ? furnace.Burning / furnace.BurnTotal : 0;
             var lit = PackGui.Get("sprites/container/furnace/lit_progress");
             var burn = PackGui.Get("sprites/container/furnace/burn_progress");
             if (packed && lit is { } flameSprite && burn is { } arrowSprite)
@@ -138,13 +138,13 @@ public sealed class InventoryWindow
                 // A pack's furnace holds the empty flame and arrow, over which its sprites are
                 // drawn at their places in the window as far as the fuel and the smelting have
                 // gone, the flame a pixel high at least while it burns.
-                var high = furnace.Burning > 0 ? (int)MathF.Ceiling(burnt * 13) + 1 : 0;
+                var high = furnace.Burning > 0 ? (int)MathF.Ceiling(burned * 13) + 1 : 0;
                 PackGui.DrawPart(flameSprite, 14, 14, 0, 14 - high, 14, high, left + 56 * s, top + (50 - high) * s, s);
                 PackGui.DrawPart(arrowSprite, 24, 16, 0, 0, (int)MathF.Ceiling(furnace.Cooked / Smelting.Seconds * 24), 16, left + 79 * s, top + 34 * s, s);
                 return;
             }
             Gui.Sprite(GuiArt.Flame, left + 57 * s, top + 37 * s);
-            var flame = (int)MathF.Ceiling(burnt * GuiArt.FlameFull.Height);
+            var flame = (int)MathF.Ceiling(burned * GuiArt.FlameFull.Height);
             Gui.SpritePart(GuiArt.FlameFull, left + 57 * s, top + 37 * s, GuiArt.FlameFull.Width, flame, GuiArt.FlameFull.Height - flame);
             Gui.Sprite(GuiArt.Arrow, left + 79 * s, top + 35 * s);
             Gui.SpritePart(GuiArt.ArrowFull, left + 79 * s, top + 35 * s, (int)(furnace.Cooked / Smelting.Seconds * GuiArt.ArrowFull.Width), GuiArt.ArrowFull.Height);

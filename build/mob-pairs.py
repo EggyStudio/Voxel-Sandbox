@@ -242,8 +242,8 @@ def corners(layer, kind, walking):
         if part["name"] in ("hat", "hat_rim"):
             return
         ax, ay, az = part["turn"]
-        # A zombie holds its arms out a tenth of a right angle under level when not attacking, as
-        # AnimationUtils.animateZombieArms does with π over 2.25.
+        # A zombie holds its arms out when not attacking, turned π over 2.25 from hanging, a tenth
+        # of a right angle under level.
         if kind == "zombie" and part["name"] in ("right_arm", "left_arm"):
             ax = -math.pi / 2.25
         dx, dy, dz = turns.get(part["name"], (0, 0, 0))

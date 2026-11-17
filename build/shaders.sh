@@ -13,8 +13,7 @@
 # mob.slang import the engine's model pass, so they are compiled from one folder with the engine's
 # shaders. An entry is keyed by a shader's source, its defines and the files it imports, and not by
 # the folder, so the program finds it when it loads resources/shaders/terrain.slang. A run of the
-# game fills only the builds its device and its frames load, as 120 frames on lavapipe compiled one
-# of the terrain's five.
+# game fills only the builds its device and its frames load.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 # The engine walks up for slangc only in a checkout of the engine, so the checkout's own is named.

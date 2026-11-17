@@ -102,7 +102,7 @@ public sealed class DefaultPacks
         return System.IO.File.Exists(path) && new FileInfo(path).Length == pack.Size && Accepts(System.IO.File.ReadAllBytes(path), pack.Sha512);
     }
 
-    /// <summary>Begins fetching the packs that are missing into the list's folder on a task of its own, through a handler of the tests' where one is given.</summary>
+    /// <summary>Begins fetching the packs that are missing into the list's folder on a task of its own, through the handler given in place of the network's where one is.</summary>
     public void Start(PackList list, HttpMessageHandler? handler = null)
     {
         if (State == FetchState.Fetching || _packs.Count == 0) return;
@@ -134,7 +134,7 @@ public sealed class DefaultPacks
     /// <summary>Stops a fetch under way, leaving the packs already in.</summary>
     public void Stop() => _stop?.Cancel();
 
-    /// <summary>Waits for a fetch under way to end, as a test does.</summary>
+    /// <summary>Waits for a fetch under way to end.</summary>
     public void Wait() => _fetch?.Wait();
 
     private async Task<string?> Fetch(PackList list, HttpMessageHandler? handler, CancellationToken stop)

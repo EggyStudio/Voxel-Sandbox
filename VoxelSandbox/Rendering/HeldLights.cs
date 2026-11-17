@@ -13,9 +13,9 @@ namespace VoxelSandbox;
 /// <remarks>
 /// <para>
 /// A held light stands at the player's own place, the body's middle a third of a block under the
-/// eye, where standing at the hand, a third of a block ahead and to the right, it swung with each
-/// turn of the view and went inside a wall the player faced. It keeps off the eye's own point,
-/// since the engine shades a point light standing at the camera with black specks on lavapipe.
+/// eye, so it keeps its place as the view turns and stays out of a wall the player faces. It keeps
+/// off the eye's own point, since the engine shades a point light standing at the camera with black
+/// specks on lavapipe.
 /// </para>
 /// <para>
 /// Each light is a plain point light with no shadow map, which costs no drawing of the land around

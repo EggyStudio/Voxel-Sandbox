@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Checks the engine out at the commit the build workflow names into .engine beside the game, as the
 # runner does, and builds its e3d command line there, so that with ENGINE_CHECKOUT naming .engine the
-# game's ./e3d and build/play.sh drive through a client of the pinned engine that no build of a live
+# game's ./e3d and build/play.sh run through a client of the pinned engine that no build of a live
 # engine tree touches. The engine's ./e3d builds its client only where the program is missing, so a
 # client built here is never built again under a run. Run it again after each pin, which moves the
 # checkout to the pin's commit and builds the client again.

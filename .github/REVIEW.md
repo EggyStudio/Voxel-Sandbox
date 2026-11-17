@@ -375,42 +375,18 @@ change.
     `scripts/run.py:2`. One commit a repository, after item 218, with STYLE's own search run over
     the tree and its count in the Reply.
 
+220. **A column left out does not hold the loading screen, and the texture the close still finds.**
+    Item 218's Reply names two things. A column within two of the player whose tries ended still
+    holds the loading screen, which waits for 25 columns; asked, a column left out counts as
+    answered for the screen, the world opening with the gap and the error line said, with a test.
+    The play's close finds one texture still held, neither the packs' screen's nor the view's within
+    a wall; asked, which it is, read by the engine's count by name, and let go with the game. After
+    item 219.
+
 ## Verdicts
 
-Verdicts 14 and 15 are open, the play's seed step on run 44078576705 and the play not opening on run
-44089619689. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
-
-14. **The play's seed step read the world before the new one came.** Build run 44078576705 of
-    `ac5602d`, item 214, ended red at 13:58 on 2026-11-17 in its play job alone, the three test jobs
-    green. Every step up to the menu's button and the death screen passed, at 3,330 s. The seed's
-    field step then failed within seconds, where the green run before it spent 246 s there, with the
-    world read as the overworld of seed 1 where 12345 was typed and pasted. The game's log ends with
-    one frame making a pipeline of bits.slang in 3,328 ms on the runner's CPU device. The step
-    presses Enter, waits three frames and reads voxel.state, and since item 214 the first frames of
-    a new world are drawn behind the loading screen, so on a slow device three frames after Enter
-    the state may still tell the world before. Local plays on the GPU pass. Asked, a read of which
-    it is, the step reading too soon or the typed seed lost; where it reads too soon, the step waits
-    for the state to tell a world opened after Enter, bounded in time, and every other step that
-    reads the state within a few frames of a world's opening is read for the same; where the seed is
-    lost, the mend in the game with a test. The four commits held behind it go up with the mend in
-    one push.
-
-15. **The play did not open on the engine's 6.2.102.** Build run 44089619689 of `2f23c46` ended red
-    at 14:17 on 2026-11-17 in its play job alone, the three test jobs green. The game exited with
-    code 1 at the open, 4.3 s in. Its session log says slangc was not found, so shaders load from
-    their caches only, 64 stages read from the caches and none compiled, and then that terrain.slang
-    is not in the shader cache. The job's step before had found slangc 2026.18.2 at
-    build/tools/slang of the game's checkout, restored from the cache. The first local play of the
-    pin stopped the same way and passed once ENGINE_SLANGC named a slangc, and the workflow sets no
-    such name. Asked, a read of why the engine at 6.2.102 does not find the slangc the game's
-    checkout holds, where the play before the pin compiled or read terrain.slang, the walk from the
-    program's folder, the folder's shape or the name looked for among the candidates; the mend where
-    it belongs, in the game's workflow and play script where the game must name it, and told to the
-    review as the engine's where the engine's walk changed; and the pack workflow read for the same,
-    with the word of item 216's Reply that a packed game never meets a missing cache proved by a
-    pack run's game opening with no slangc. Verdict 14's mend is not yet read on a CPU device, the
-    play not having reached its steps.
-
+No verdict is open. Verdicts 14 and 15 are settled at 15:34 on 2026-11-17, the play green in run
+44093860347. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
 ## Decisions
 
 Decisions 1 The old game is replaced in place, its history kept; 2 The license stays MIT; 3 `e3d`
@@ -1045,3 +1021,52 @@ fault at a close 0.69 s after the new world, and its captures within 8 levels of
 6.2.102, `sky2.png` differing in 0.16% of its pixels past 8 levels, the most 168, along the clouds'
 edges. Its close finds one texture still loaded, as at item 217, so it is neither the packs'
 screen's nor the view within a wall's, and which it is is not read.
+
+Item 219's sweep, with no change of behavior. Every line the item names is mended in place:
+
+- The dates, runs' facts and earlier states leave the comments of `LandOriginTests.cs`,
+  `ChunkRenderer.cs`'s lamps' colors, `play.sh`'s Control, `HeldLights.cs`, `shaders.sh`,
+  `TerrainAtlas.cs`, `Ores.cs`'s diamonds and `build.yml`'s play job, which keeps its limit's
+  reason, a hosted runner's 77 to 84 minutes.
+- `mob-pairs.py`'s zombie, `Ores.cs`'s blobs, `DefaultPacks.cs`'s wait and `VoxelGame.cs`'s packs'
+  list say what stands without another thing or a test.
+- The README's sentences on the mobs' restock, a saved place that is no number, the joining packs,
+  ice and the moon say what stands, and its lines on an older version's options go.
+- `cavefields.slang` packs the permutations four to a uint, and the eight British spellings are
+  American, `VoxelRay.cs`'s `traveled` among them.
+
+STYLE's own search over the tree, read hit by hit, found besides them and mended in the same commit:
+
+- Earlier states in `Sky.cs`'s light steps, `TreeFelling.cs`, `Lighting.cs`'s canopy and `play.sh`'s
+  stars.
+- Comments that explain by another thing in `pictures.sh`'s F4, `VoxelGame.cs`'s transient run and
+  settings, `Mobs.cs`'s workers, `WorldSave.cs`'s chests and `Recipes.cs`, with `voxel.craft`'s
+  description.
+- "Drive" for a run of the play in `E3D.md`, the README and `engine.sh`, and the README's play job
+  dated on a hosted runner, which says its minutes as `build.yml` does.
+- A cleft in `HeadlessGameTests.cs`, a colon joint in `WorldSave.cs`, `burnt` in
+  `InventoryWindow.cs`, and "cancelled" in `COMMITS.md`.
+
+The search's eleven commands give 3, 12, 0, 8, 35, 10, 1, 0, 19, 4 and 312 hits, 404 in all, against
+412 before, and each left is a fair use, STYLE's own examples and `COMMITS.md`'s check, arithmetic
+in a string, a script naming the pack it turns on, the archive's records, and words in their literal
+sense about the running game, a mob held still or a column once loaded.
+
+In the modules, one commit a repository, carrying the review's files:
+
+- The seven ignore files' note on the pictures folder names no one.
+- The guides spell canceled, in Tools' README and `run.py` too.
+- Tools' `devlog.py` takes `--fixes <file>`, a JSON file of the caption rewrites, the pattern a
+  repository adds to the check by its name, and the day an undated sent picture is put on, kept
+  outside the repositories. With none given it rewrites nothing, adds no pattern and stops at a sent
+  picture with no date, naming it, and its README says the argument's form. With the file of the
+  day's values the script writes `DEVLOG.md` and its lines byte for byte as before on copies of
+  Voxel-Sandbox, Sky, RadianceCascades and Vegetation, and on a sent list holding an undated
+  picture.
+
+The strict build is clean, 570 tests pass outside the GPU's lock with the long soak skipped, and the
+headless game's 71 pass three times in a row. The play, under the lock taken exclusive with no quiet
+wait, passes in 210 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault at a close 0.58 s after the new world, and its captures within 8 levels of the warm play's on
+6.2.102, `sky2.png` differing in 0.14% of its pixels past 8 levels, the most 168, along the clouds'
+edges.

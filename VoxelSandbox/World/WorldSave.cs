@@ -235,7 +235,7 @@ public sealed class WorldSave
 
     /// <summary>
     /// The key of each block by its number in the regions of version 1, which list none of their
-    /// own, for a save to write into the world's info: those the info listed as it was read, where
+    /// own, for a save to write into the world's info, those the info listed as it was read where
     /// they number the blocks otherwise than this build, and this build's otherwise.
     /// </summary>
     public string[] BlockKeys => _renumber is null ? [.. Blocks.All.Select(b => b.Key)] : _keys!;
@@ -964,8 +964,8 @@ public sealed class WorldSave
     /// column.
     /// </summary>
     /// <remarks>
-    /// A region's chests are kept in a file of their own beside its blocks and its mobs, as the
-    /// mobs are, so the chests held stay as many however far the player goes. A folder's
+    /// A region's chests are kept in a file of their own beside its blocks and its mobs, so the
+    /// chests held stay as many however far the player goes. A folder's
     /// <c>chests.json</c>, which holds every chest of the world in one file, is read once into the
     /// regions, each slot read as the inventory reads one, and kept beside as read once they are
     /// written.

@@ -148,7 +148,7 @@ runs six hours on a hang. By review.
 
 **N 7.1 Commits are made on `main`, and the reviewing session pushes them once the previous build
 run of the repository has ended.** The pushes are the reviewing session's by the decision of
-2026-10-19, so a coder never pushes and no run is cancelled midway by a push. By review.
+2026-10-19, so a coder never pushes and no run is canceled midway by a push. By review.
 
 **N 7.2 A commit is one finished batch, and its message has the form COMMITS.md gives.** By review.
 
@@ -185,14 +185,14 @@ the commit, and its watch wakes once an hour, the runs' ends reported by waits. 
 reviewer reading each report's and each record's length.
 
 **N 7.8 A session runs a program offscreen or headless, and opens a window only to read what a
-window alone shows.** Decided on 2026-10-30. A test, a reading, a capture and a drive run offscreen
+window alone shows.** Decided on 2026-10-30. A test, a reading, a capture and a play run offscreen
 or headless as they do; a window is opened on the development machine for the window's own
 questions, the swapchain and its format, the modes and sizes, a screenshot read against an offscreen
 capture, and closed when read. By review.
 
 **N 7.9 The machine has one GPU, and a session takes its lock for what it runs there.** A program
 run on the GPU is started through `flock` on `/run/user/1000/gpu.lock`, shared (`flock -s`) for a
-suite, a capture, a recording or a drive and exclusive (`flock -x`) for a timing or a traced
+suite, a capture, a recording or a play and exclusive (`flock -x`) for a timing or a traced
 reference, so a timing waits for the others' programs to end and none starts under it. The lock is
 held until the program has ended, so a launcher that returns while its program keeps running, as
 `e3d open` does, is wrapped together with the script that stops the program. A build under the lock
