@@ -14,8 +14,10 @@ namespace VoxelSandbox;
 /// frames rather than taken in one.
 /// </para>
 /// <para>
-/// What is waiting is not saved, so water half flowed when the world is left stands as it was when
-/// the world is opened again, until a block beside it changes.
+/// What is waiting is not saved, and a column's flowing water is asked again as it arrives, so
+/// water half flowed when its column was let go or the world was left goes on as it arrives again.
+/// Water beside a column not loaded, whose feeder may stand there, keeps its level until the column
+/// arrives.
 /// </para>
 /// </remarks>
 public sealed class Fluids(VoxelWorld world)
@@ -40,35 +42,43 @@ public sealed class Fluids(VoxelWorld world)
     }
 
     /// <summary>
-    /// Asks the flowing water along the edges between a column that has arrived and the loaded
-    /// columns beside it to look again where it faces air across the edge, on either side, so water
-    /// that stopped at the edge of a column not loaded flows on into it. A source is left alone, so a
-    /// sea or a lake the land made beside a cave across the edge stays as it was made. A packed
-    /// section is read only where it holds flowing water or flowing water faces it, so the land's
-    /// deep sections stay packed.
+    /// Asks every flowing cell of a column that has arrived to look again, since what waited in it
+    /// was let go as it unloaded, so a flood or a stream drying there goes on from where it stood,
+    /// and the flowing water across its edges in the loaded columns beside, whose feeder may lie in
+    /// it. A source is left alone, so a sea or a lake the land made beside a cave across the edge
+    /// stays as it was made. A packed section is read only where it holds flowing water, so the
+    /// land's deep sections stay packed.
     /// </summary>
     public void Join(ChunkColumn column)
     {
+        for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y += Section.Size)
+        {
+            var section = column.At(y);
+            if (section.Open || (section.Packed ? !section.Flows : !section.Blocks.AsSpan().ContainsAnyInRange((ushort)BlockId.Water1, (ushort)BlockId.FallingWater)))
+                continue;
+            for (int i = 0; i < Section.Volume; i++)
+            {
+                int lx = i & Section.Mask, ly = y + (i >> 8), lz = (i >> 4) & Section.Mask;
+                if (Flowing(column.Get(lx, ly, lz))) Ask(column.X * Section.Size + lx, ly, column.Z * Section.Size + lz);
+            }
+        }
         ReadOnlySpan<(int Dx, int Dz)> sides = [(1, 0), (-1, 0), (0, 1), (0, -1)];
         foreach (var (dx, dz) in sides)
         {
             if (!world.TryGetColumn(column.X + dx, column.Z + dz, out var other)) continue;
             for (int y = ChunkColumn.Bottom; y < ChunkColumn.Ceiling; y++)
             {
-                var (near, far) = (column.At(y), other.At(y));
-                bool nearFlows = !near.Open && (!near.Packed || near.Flows), farFlows = !far.Open && (!far.Packed || far.Flows);
-                if (!nearFlows && !farFlows)
+                var far = other.At(y);
+                if (far.Open || far.Packed && !far.Flows)
                 {
                     y += Section.Mask;
                     continue;
                 }
                 for (int t = 0; t < Section.Size; t++)
                 {
-                    // The cell on this column's edge and the one across it in the neighbor.
-                    int ax = dx == 0 ? t : dx > 0 ? Section.Mask : 0, az = dz == 0 ? t : dz > 0 ? Section.Mask : 0;
+                    // The cell across this column's edge in the neighbor.
                     int bx = dx == 0 ? t : dx > 0 ? 0 : Section.Mask, bz = dz == 0 ? t : dz > 0 ? 0 : Section.Mask;
-                    if (nearFlows && Flowing(column.Get(ax, y, az)) && other.Get(bx, y, bz) == BlockId.Air) Ask(column.X * Section.Size + ax, y, column.Z * Section.Size + az);
-                    else if (farFlows && Flowing(other.Get(bx, y, bz)) && column.Get(ax, y, az) == BlockId.Air) Ask(other.X * Section.Size + bx, y, other.Z * Section.Size + bz);
+                    if (Flowing(other.Get(bx, y, bz))) Ask(other.X * Section.Size + bx, y, other.Z * Section.Size + bz);
                 }
             }
         }
@@ -111,6 +121,9 @@ public sealed class Fluids(VoxelWorld world)
             var fed = Fed(x, y, z);
             if (fed != block)
             {
+                // Water beside a column not loaded, whose feeder may stand there, keeps its level,
+                // and is asked again as the column arrives.
+                if (BesideAbsent(x, z)) return;
                 world.SetBlock(x, y, z, fed);
                 return;
             }
@@ -136,6 +149,11 @@ public sealed class Fluids(VoxelWorld world)
                 world.SetBlock(nx, y, nz, Blocks.FlowingWater(next));
         }
     }
+
+    // Whether a column beside a cell is not loaded.
+    private bool BesideAbsent(int x, int z) =>
+        !world.HasColumn(VoxelWorld.ColumnOf(x + 1), VoxelWorld.ColumnOf(z)) || !world.HasColumn(VoxelWorld.ColumnOf(x - 1), VoxelWorld.ColumnOf(z))
+        || !world.HasColumn(VoxelWorld.ColumnOf(x), VoxelWorld.ColumnOf(z + 1)) || !world.HasColumn(VoxelWorld.ColumnOf(x), VoxelWorld.ColumnOf(z - 1));
 
     // What a cell that is not a source should be by what feeds it.
     private BlockId Fed(int x, int y, int z)

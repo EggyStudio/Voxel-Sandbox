@@ -95,6 +95,46 @@ public class FluidTests
     }
 
     [Fact]
+    public void A_Flood_Half_Spread_As_Its_Column_Unloads_Goes_On_As_The_Column_Arrives_Again()
+    {
+        // A source spreading two blocks along the floor, its column let go with what waits in it,
+        // the rest of the world going on, and the column back.
+        var world = Laid.World(c => Laid.Fill(c, 0, 10, BlockId.Stone), 1);
+        world.SetBlock(8, 11, 8, BlockId.Water);
+        world.Fluids.Update(0.6f);
+        Assert.Equal(BlockId.Air, world.GetBlock(15, 11, 8));
+        Assert.True(world.TryGetColumn(0, 0, out var column));
+        world.Remove(0, 0);
+        world.Fluids.Update(1);
+        world.Add(column);
+
+        world.Fluids.Update(5);
+
+        Assert.Equal(Blocks.FlowingWater(7), world.GetBlock(15, 11, 8));
+    }
+
+    [Fact]
+    public void Water_Fed_Across_The_Edge_Of_A_Column_Not_Loaded_Keeps_Its_Level_Until_It_Arrives()
+    {
+        // A source on the west edge of the column at x 1, its water flowing west into the column at
+        // the origin, then the source's column let go and the water beside the edge asked again.
+        var world = Laid.World(c => Laid.Fill(c, 0, 10, BlockId.Stone), 1);
+        world.SetBlock(16, 11, 8, BlockId.Water);
+        world.Fluids.Update(5);
+        Assert.Equal(Blocks.FlowingWater(1), world.GetBlock(15, 11, 8));
+        Assert.True(world.TryGetColumn(1, 0, out var column));
+        world.Remove(1, 0);
+        world.Fluids.Around(15, 11, 8);
+        world.Fluids.Update(5);
+
+        Assert.Equal(Blocks.FlowingWater(1), world.GetBlock(15, 11, 8));
+        Assert.Equal(Blocks.FlowingWater(2), world.GetBlock(14, 11, 8));
+        world.Add(column);
+        world.Fluids.Update(5);
+        Assert.Equal(Blocks.FlowingWater(1), world.GetBlock(15, 11, 8));
+    }
+
+    [Fact]
     public void A_Column_Arriving_With_Flowing_Water_On_Its_Edge_Lets_It_Flow_On_And_Its_Source_Stay()
     {
         // The column at x 1 comes with a source and a level of water flowing from it at its west

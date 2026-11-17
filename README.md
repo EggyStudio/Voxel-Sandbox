@@ -382,8 +382,9 @@ Water flows as Minecraft's does, a block every quarter second. It falls into the
 where it stands on ground or on a source it spreads sideways, a level further from its source for
 each block, up to seven, each level standing lower in its cell, and it dries back when its source is
 taken away. Two sources with a gap between them over ground fill it with a third. A lake the world
-generates stands still until a block beside it changes, and water half flowed when a world is left
-stands as it was until then.
+generates stands still until a block beside it changes, water half flowed when its land was left or
+the world closed goes on as the land loads again, and water beside land not loaded keeps its level
+until that land loads.
 
 ## Torches, lanterns and end rods
 
