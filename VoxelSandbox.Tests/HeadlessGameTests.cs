@@ -1368,6 +1368,35 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_New_World_Is_Drawn_Behind_The_Loading_Screen_For_Its_Count_Of_Frames_With_The_Player_Landed()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.NextWorld = ("flat", 2, null);
+        headless.Step(1);
+        Assert.True(game.Loading);
+
+        // Each frame of the loading screen, whether the world is drawn behind it, and in those the
+        // player's place and the mirrored view's plane, until the world shows.
+        var (behind, mirrored, clock) = (0, 0, System.Diagnostics.Stopwatch.StartNew());
+        while (game.Loading && clock.Elapsed.TotalSeconds < 30)
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+            if (!game.DrawnBehind) continue;
+            behind++;
+            if (game.Mirror.Height is not null) mirrored++;
+            Assert.Equal(new LandPlace(0.5, game.World.Top(0, 0) + 1, 0.5), LandOrigin.LandOf(game.Player.Body.Position));
+        }
+
+        Assert.False(game.Loading);
+        Assert.Equal(VoxelGame.BehindFrames, behind);
+        Assert.True(mirrored > 0, "the mirrored view was not made ahead behind the loading screen");
+        headless.Step(1);
+        Assert.False(game.DrawnBehind);
+    }
+
+    [Fact]
     public void The_Water_Mirror_Is_Made_Ahead_Under_The_Eye_For_Its_Count_Of_Frames_As_A_World_Opens()
     {
         using var headless = new HeadlessGame(still: true);

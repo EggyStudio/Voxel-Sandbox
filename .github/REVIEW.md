@@ -57,7 +57,7 @@ buffer growing and no mend made, pushed at 05:00, the form kept. After it `c6b17
 next column's circle asked for as the player steps into a column and the sections the flood made
 ahead sees released eight a frame, frames past 25 ms 57 to 50 over five runs and those halfway
 across a column 32 to 5, pushed at 06:56 on 2026-11-17, its build run 44027625560 green at 07:57, the form
-kept. After it `eedf87c`, item 211, the columns past the player's load circle joining one a frame, the frames past 25 ms a few frames after a step 16 to 8 over five runs with the totals within the spread, the play keeping the log of its validated run, the objects left at a close not seen again in ten plays and their cause left unknown, pushed at 09:21, its build run 44046064709 green at 10:22, the form kept. After it `e676371`, item 212, the groups the columns a step unloads leave made again two a frame after the step, the step's frames uploading nothing and the frames past 25 ms 45 to 32 over five runs, pushed at 10:22, its build run 44055040176 started, the form kept. Before them `069a7d9`, the comments that likened a thing to another game's saying their rule
+kept. After it `eedf87c`, item 211, the columns past the player's load circle joining one a frame, the frames past 25 ms a few frames after a step 16 to 8 over five runs with the totals within the spread, the play keeping the log of its validated run, the objects left at a close not seen again in ten plays and their cause left unknown, pushed at 09:21, its build run 44046064709 green at 10:22, the form kept. After it `e676371`, item 212, the groups the columns a step unloads leave made again two a frame after the step, the step's frames uploading nothing and the frames past 25 ms 45 to 32 over five runs, pushed at 10:22, its build run 44055040176 green at 11:40, the form kept. After it `fc4a632`, item 213, the water mirror set for thirty frames as a world's load ends so its first frame comes before any walk, the mirror's first frames past 39 ms five to none over five runs, the corner buffer's growth named as the engine's, pushed at 11:40, its build run 44066985438 started, the form kept. Before them `069a7d9`, the comments that likened a thing to another game's saying their rule
 in the game's own terms, comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build
 run 43750307975 green by 21:02, the form kept. Before it `c250bcd`, the second commit of item 185,
 the save command saying a failed save, an unsaved world called so, a quality or a mode that names no
@@ -815,4 +815,70 @@ The strict build is clean, 558 tests pass outside the GPU's lock with the long s
 headless game's 61 pass three times in a row. The play, under the lock taken exclusive with no quiet
 wait, passes in 207 s, its `captures/closed.log` naming the layer enabled and nothing left at a
 close 0.65 s after the new world, and its `sky2.png` differs from the pin's in 0.40% of its pixels
+past 8 levels, the most 168, along the clouds' edges.
+
+Item 214's read of a world's first shown frames, three sessions under the lock taken exclusive with
+no quiet wait, each a new world opened into an empty data folder and the same world loaded by a
+second process, a probe reading the engine's profile of each of the first twelve frames after the
+loading screen goes, with laps inside the game's `Begin` and its interface:
+
+- The first shown frame works 784 to 957 ms in a new world and 815 in a loaded one. The engine's
+  render takes 654 to 823 of it, `cpu.hdr_scene` 234 to 318, `cpu.global_illumination` 218 to 236,
+  `cpu.window_depth` 87, `cpu.scene_field` 61 to 103 and `prepare.LightingUboPrepare` 24 to 28. In
+  it the engine makes the scene's field again at 5 cascades in 30 ms and the probes of global
+  illumination again at 5 in 64 ms, both made at 4 in the loading screen's frames, which draw no
+  view of the world, and makes the first 18 pipelines from the driver's cache with their descriptor
+  pools. These went to the engine as its item 295.
+- The game's part of it is the interface, 217 to 338 ms, where the HUD's first draw paints the
+  items' icon atlas pixel by pixel (`Icons.Atlas`).
+- In a new world of a first launch the next frame takes in the default packs the game fetched
+  meanwhile, 177 ms, and the HUD paints the atlas again for 200 ms. That frame follows the fetch's
+  timing and is left as it is.
+- The mirror made ahead draws its first frame in the third, `cpu.mirror` 14 to 24 ms, and the frames
+  to the twelfth run 50 to 200 ms with the scene's field and global illumination taking in the land
+  streaming in to the render distance, which is no first making.
+
+The mend has the world drawn behind the loading screen once it stands, for 8 frames before the
+screen goes (`BehindFrames`, `VoxelGame.cs:659`). In the first of them a new world's player lands on
+its spawn and the mirror is made ahead (`:714`), the world and the HUD are drawn whole each frame
+(`:1601`), and the screen is drawn last over the window (`:1705` and `:1726`). The held loading
+screen of `voxel.loading` stays the plain one.
+
+Ten opens in one slot from 11:52 to 11:56, five each way alternating, the head the same probe
+without the mend, tuned's powersave-bazzite and the GPU at 0 to 25% before each, each a new world
+from a data folder holding the default packs fetched once and the same world loaded by a second
+process. The work of the first shown frame and the longest of the first ten, in ms over five runs:
+
+| | The head | The mend |
+|---|---|---|
+| New world, first shown | 589 to 756, median 698 | 56 to 75, median 69 |
+| New world, longest of ten | 589 to 756, median 698 | 78 to 113, median 91 |
+| Loaded world, first shown | 557 to 777, median 676 | 64 to 80, median 77 |
+| Loaded world, longest of ten | 557 to 777, median 676 | 80 to 94, median 83 |
+
+With the mend the longest of the ten is the game's play stepping the land in, `GameFrame.Play` 16 to
+55 ms, beside the field's 11 to 30 and global illumination's 5 to 28.
+
+The eight frames behind the screen take 1.27 to 1.77 s of the wall clock. The first of them is the
+frame of first making, 0.84 to 1.18 s, which the head shows as its first frame, and the seven after
+take 0.39 to 0.62 s, the time the mend adds before the world shows. The first shown frame then takes
+65 to 97 ms of the wall clock against 0.90 to 1.12 s on the head. From the flow's first record of an
+open to its tenth shown frame both ways take about as long, 2.42 to 2.87 s with the mend against
+2.33 to 2.77 on the head.
+
+The icon atlas is painted in the first frame behind the screen, the HUD's lap 209 to 247 ms there
+and under 1 ms in every shown frame, still pixel by pixel in that one frame, so painting it while
+the world loads stands as the next item.
+
+`A_New_World_Is_Drawn_Behind_The_Loading_Screen_For_Its_Count_Of_Frames_With_The_Player_Landed`
+opens the flat world of seed 2 and counts the loading screen's frames that draw the world behind it,
+exactly `BehindFrames`, the player standing landed on the spawn in each and the mirrored view's
+plane set in them, and none once the world shows. It passes three runs in three. On a copy of the
+head, with the count and a `DrawnBehind` that is always false added as seams, it fails three runs in
+three, no frame drawn behind the screen. The mirror's test of item 213 passes unchanged.
+
+The strict build is clean, 559 tests pass outside the GPU's lock with the long soak skipped, and the
+headless game's 62 pass three times in a row. The play, under the lock taken exclusive with no quiet
+wait, passes in 208 s, its `captures/closed.log` naming the layer enabled and nothing left at a
+close 0.62 s after the new world, and its `sky2.png` differs from the pin's in 0.35% of its pixels
 past 8 levels, the most 168, along the clouds' edges.

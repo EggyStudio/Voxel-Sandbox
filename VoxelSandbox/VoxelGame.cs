@@ -631,7 +631,8 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>
     /// Whether the world opened is still loading behind its screen, until the player's column and its
-    /// neighbors are generated and meshed, the player held and the world's time still meanwhile.
+    /// neighbors are generated and meshed and the world is drawn behind the screen for
+    /// <see cref="BehindFrames"/> frames, the player held and the world's time still meanwhile.
     /// </summary>
     public bool Loading
     {
@@ -639,11 +640,30 @@ public sealed class VoxelGame : IDisposable
         private set
         {
             _loading = value;
+            if (value) _behind = 0;
             SetState(value ? WorldState.Loading : WorldState.Playing);
         }
     }
 
     private bool _loading;
+
+    /// <summary>
+    /// How many frames the world is drawn behind the loading screen once it stands, before the
+    /// screen goes.
+    /// </summary>
+    /// <remarks>
+    /// The world's first drawn frames make what the frames after draw with, the engine's pipelines,
+    /// its ray scene, its field at the cascades the world's view takes, the items' icons and the
+    /// mirrored view, so they are drawn behind the screen and the first frame shown finds it made.
+    /// </remarks>
+    public const int BehindFrames = 8;
+
+    // How many frames the world has been drawn behind the loading screen, from none as a world
+    // loads.
+    private int _behind;
+
+    /// <summary>Whether this frame draws the world behind the loading screen.</summary>
+    internal bool DrawnBehind => _loading && _behind > 0;
 
     /// <summary>Keeps the loading screen up over a world that has loaded, so a check reads its pixels, until it is let go.</summary>
     public bool HoldLoading { get; set; }
@@ -681,16 +701,23 @@ public sealed class VoxelGame : IDisposable
     }
 
     // A loading frame, the columns asked for only within three of the player's, so the nearest are
-    // generated and meshed first, and the world shown once the player's column and its neighbors stand.
+    // generated and meshed first, and the world drawn behind the screen once the player's column
+    // and its neighbors stand and shown after.
     private void Stand()
     {
         Streamer.Update(Player.Body.Position, 1);
         Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
         if (HoldLoading || LoadingShare() < 1) return;
+        // Once the world stands the player lands and the world is drawn behind the screen from
+        // where the player stands, the mirrored view made ahead in those frames, before the screen
+        // goes.
+        if (_behind++ == 0)
+        {
+            if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
+            Mirror.MakeAhead();
+        }
+        if (_behind <= BehindFrames) return;
         Loading = false;
-        // The mirrored view made in the world's first frames, before any walk meets water.
-        Mirror.MakeAhead();
-        if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
         (_landing, _respawned) = (false, false);
     }
 
@@ -1570,8 +1597,8 @@ public sealed class VoxelGame : IDisposable
         Mirror.Update(World, Player.Camera, Player.EyeInWater);
         BeginDrawing();
         // The frame's first stage may have opened a world, so the loading screen is chosen once the
-        // frame has begun.
-        if (Loading)
+        // frame has begun, and over a world that stands the world is drawn behind it.
+        if (Loading && !DrawnBehind)
         {
             DrawLoading();
             EndDrawing();
@@ -1675,6 +1702,7 @@ public sealed class VoxelGame : IDisposable
             if (_menuSeen != Menu.None) KeepOptions();
             _menuSeen = Menus.Open;
         }
+        if (DrawnBehind) DrawLoading(over: true);
         Lap("draw.interface");
         EndDrawing();
         Lap("draw.end");
@@ -1695,9 +1723,11 @@ public sealed class VoxelGame : IDisposable
 
     // The screen a world loads behind, its name over a bar of how far its loading has come, and the
     // default packs' fetch under it with a bar of its own while it runs.
-    private void DrawLoading()
+    private void DrawLoading(bool over = false)
     {
-        ClearBackground(LoadingBackground);
+        // Over the world drawn behind it the screen covers the window, where alone it clears it.
+        if (over) DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), LoadingBackground);
+        else ClearBackground(LoadingBackground);
         int width = GetScreenWidth(), middle = GetScreenHeight() / 2, line = Gui.LineHeight;
         var title = $"Loading {WorldName}";
         Gui.Text(title, (width - Gui.TextWidth(title)) / 2, middle - 3 * line, Color.White);
