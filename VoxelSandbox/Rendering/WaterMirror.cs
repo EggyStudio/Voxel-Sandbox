@@ -24,10 +24,32 @@ public sealed class WaterMirror
     /// <summary>The height of the plane set this frame, or null for none.</summary>
     public float? Height { get; private set; }
 
+    /// <summary>
+    /// How many frames after <see cref="MakeAhead"/> the plane is set where no water is in view, at
+    /// the sea's top or under the eye.
+    /// </summary>
+    /// <remarks>
+    /// The engine makes the mirrored view's picture and asks for its pipelines in the first frame a
+    /// plane is set, so it is made as a world opens.
+    /// </remarks>
+    public const int AheadFrames = 30;
+
+    private int _ahead;
+
+    /// <summary>
+    /// Has the plane set for the next <see cref="AheadFrames"/> frames, as a world opens.
+    /// </summary>
+    public void MakeAhead() => _ahead = AheadFrames;
+
     /// <summary>Sets the plane at the water in view through a camera, or none.</summary>
     public void Update(VoxelWorld world, Camera3D camera, bool underWater)
     {
         Height = Enabled && !underWater ? Find(world, camera) : null;
+        // A plane made ahead lies where the sea's water would mirror in it, or under the eye where
+        // the eye is below the sea, which the engine draws the mirrored view for only from above.
+        if (Height is null && Enabled && !underWater && _ahead > 0)
+            Height = MathF.Min(Overworld.SeaLevel + Blocks.WaterHeight(BlockId.Water, false), camera.Position.Y - Section.Size);
+        _ahead = Math.Max(0, _ahead - 1);
         SetReflectionPlane(Height ?? 0, Height is null ? Vector3.Zero : Vector3.UnitY);
     }
 

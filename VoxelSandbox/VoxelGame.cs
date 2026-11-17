@@ -688,6 +688,8 @@ public sealed class VoxelGame : IDisposable
         Renderer.Update(World, Player.Eye, RenderDistance, MeshBudget());
         if (HoldLoading || LoadingShare() < 1) return;
         Loading = false;
+        // The mirrored view made in the world's first frames, before any walk meets water.
+        Mirror.MakeAhead();
         if (_landing && Player.Teleports == _loadTeleports) Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, World.Top(0, 0) + 1, 0.5)));
         (_landing, _respawned) = (false, false);
     }

@@ -1368,6 +1368,49 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void The_Water_Mirror_Is_Made_Ahead_Under_The_Eye_For_Its_Count_Of_Frames_As_A_World_Opens()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        headless.Step(WaterMirror.AheadFrames);
+
+        // The flat world holds no water, so a plane stands only where it is made ahead, each frame
+        // from the one the respawn's loading screen goes in, the opening's own frames passed.
+        game.Respawn();
+        var (set, clock) = (0, System.Diagnostics.Stopwatch.StartNew());
+        while (game.Loading && clock.Elapsed.TotalSeconds < 30)
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+            Count();
+        }
+        for (int frame = 0; frame < WaterMirror.AheadFrames * 2; frame++)
+        {
+            headless.Step(1);
+            Count();
+        }
+        Assert.False(game.Loading);
+        Assert.Equal(WaterMirror.AheadFrames, set);
+
+        // With the setting off none is made.
+        (game.Mirror.Enabled, set) = (false, 0);
+        game.Mirror.MakeAhead();
+        for (int frame = 0; frame < WaterMirror.AheadFrames * 2; frame++)
+        {
+            headless.Step(1);
+            Count();
+        }
+        Assert.Equal(0, set);
+
+        void Count()
+        {
+            if (game.Mirror.Height is not { } height) return;
+            set++;
+            Assert.True(height < game.Player.Camera.Position.Y, $"the plane at {height} stands over the eye");
+        }
+    }
+
+    [Fact]
     public void The_Groups_The_Columns_Unloaded_At_A_Step_Leave_Are_Made_Again_The_Count_A_Frame_After_It()
     {
         using var headless = new HeadlessGame(still: true);

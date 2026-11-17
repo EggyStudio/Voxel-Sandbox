@@ -57,7 +57,7 @@ buffer growing and no mend made, pushed at 05:00, the form kept. After it `c6b17
 next column's circle asked for as the player steps into a column and the sections the flood made
 ahead sees released eight a frame, frames past 25 ms 57 to 50 over five runs and those halfway
 across a column 32 to 5, pushed at 06:56 on 2026-11-17, its build run 44027625560 green at 07:57, the form
-kept. After it `eedf87c`, item 211, the columns past the player's load circle joining one a frame, the frames past 25 ms a few frames after a step 16 to 8 over five runs with the totals within the spread, the play keeping the log of its validated run, the objects left at a close not seen again in ten plays and their cause left unknown, pushed at 09:21, its build run 44046064709 started, the form kept. Before them `069a7d9`, the comments that likened a thing to another game's saying their rule
+kept. After it `eedf87c`, item 211, the columns past the player's load circle joining one a frame, the frames past 25 ms a few frames after a step 16 to 8 over five runs with the totals within the spread, the play keeping the log of its validated run, the objects left at a close not seen again in ten plays and their cause left unknown, pushed at 09:21, its build run 44046064709 green at 10:22, the form kept. After it `e676371`, item 212, the groups the columns a step unloads leave made again two a frame after the step, the step's frames uploading nothing and the frames past 25 ms 45 to 32 over five runs, pushed at 10:22, its build run 44055040176 started, the form kept. Before them `069a7d9`, the comments that likened a thing to another game's saying their rule
 in the game's own terms, comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build
 run 43750307975 green by 21:02, the form kept. Before it `c250bcd`, the second commit of item 185,
 the save command saying a failed save, an unsaved world called so, a quality or a mode that names no
@@ -305,6 +305,27 @@ change.
     7.9, the frames at the step and the frames past 30 ms the measure. The halfway frames that are
     the field's own work, 14 to 25 ms in `scene_field`, are the engine's and are told to it by the
     reviewer, with nothing asked of the game.
+
+213. **The frames named out as mirror and growth.** Item 212's runs leave 12 frames past 30 ms, 8 of
+    them the ones the judging names out as the mirror's and the growth's, more than every other
+    place together. Asked, a read of each kind by its parts from the vitals, what grows, by how much
+    and at which call, and what the mirror's frame does, then the growth taken before the walk where
+    its size can be known from the render distance, at the world's load or a frame at a time while
+    nothing else is asked, and the mirror's work spread or made ahead where the read shows it can
+    be, with a test of no growth in a frame of a walk at a settled distance. Judged as item 212 was,
+    five exclusive runs each way within one slot of N 7.9, the frames past 30 ms with none named out
+    the measure. Where the growth is a buffer of the engine's, the read's numbers go to the engine
+    as an ask and the game mends nothing.
+
+214. **A world's opening frames.** Item 213's read gives the first shown frame of a world at 199 ms
+    and the frames after it at 66 and 105 ms, the longest frames a player meets. Asked, a read of
+    the first ten shown frames of a new world and of a loaded one by their parts from the vitals,
+    what each makes for the first time, then that work taken behind the loading screen where it
+    needs nothing shown, or spread over the frames while the screen still stands, with a test of the
+    first shown frame's count of first-made things and the play's opening read before and after.
+    Judged by five exclusive opens each way within one slot of N 7.9, the longest of the first ten
+    shown frames the measure. What is the engine's first use of a pipeline or a picture goes to the
+    engine as numbers and the game mends nothing there.
 
 ## Verdicts
 
@@ -724,3 +745,74 @@ naming the layer enabled and nothing left at a close 0.62 s after the new world,
 differs from the pin's in 0.26% of its pixels past 8 levels, the most 168, along the clouds' edges.
 The play's game holds up to 1,669 MiB of the card's memory, past the 1.5 GiB of N 7.9, and this play
 took the lock shared, so the plays from here on take it exclusive.
+
+Item 213's read of the frames named out, from the ten runs of items 211 and 212 and two read
+sessions under the lock taken exclusive with no quiet wait:
+
+- The growth is the engine's ray scene making its buffer of corners larger. `GpuRayScene.AddCorners`
+  (`GpuRayScene.cs:199-225` at 6.2.86) grows it to the corners needed rounded up to a power of two
+  and doubled, 16 bytes each with their texture coordinates of 8 bytes beside them, and copies the
+  old into it through `EndSingleTimeCommands`. Five of the ten flights begin at 256 MiB with 16.15
+  to 16.23 million corners and grow to 1,024 MiB in the frame the corners pass 16,777,216, from
+  16.65 to 16.78 million and 3,595 to 3,626 meshes before it, frames 315 to 420, 43.4 to 56.5 ms
+  with `cpu.global_illumination` at 32.5 to 44.9 ms. The other five begin at 512 MiB, grown during
+  the load, and do not grow in flight, each flight ending at 17.96 to 18.44 million. The buffer at
+  the start is set by where the load's last growth fell, and no corner is given back in 6.2.86. The
+  game holds no handle on the buffer, so the numbers went to the engine's item 292 and the game
+  mends nothing there.
+- The mirror's frame is the first a plane is set in. `MirrorRenderer` makes its picture at half the
+  window's size and records every batch of the window's through the mirrored view, asking for each
+  pipeline its render pass has not made, which costs `cpu.mirror` 32 to 44 ms in the frame of a
+  flight's first water.
+
+The mend has `WaterMirror.MakeAhead` set the plane for the next 30 frames where no water is in view,
+at the sea's top or 16 blocks under the eye, called as a world's load ends (`VoxelGame.cs:692`,
+`WaterMirror.cs:41` and `:50`). Read with the world opened behind a held loading screen and then
+shown, the mirror draws in its first frames at `cpu.mirror` 1.2 and 9.2 ms, few meshes standing at
+the spawn, in opening frames of 66 and 105 ms, the first shown frame taking 199 ms without it. The
+other frames of the thirty were not read apart, a mirrored frame of the flight costing 0.4 to 0.5 ms
+of the processor and 0.9 to 1.0 of the GPU. The flight's first water then costs 0.45 to 0.52 ms,
+after the teleport to its start, so the making is done once and not again for each mesh new to the
+view.
+
+Five runs of the mend in one slot from 10:43 to 10:47 against item 212's five runs of its own mend,
+the same flight and probe, tuned's powersave-bazzite and the GPU at 0% before each, totals over five
+with the spread:
+
+| Frames past | The head | The mend |
+|---|---|---|
+| 22 ms | 79 (10 to 20) | 70 (11 to 20) |
+| 25 ms | 32 (5 to 8) | 33 (4 to 10) |
+| 30 ms | 12 (1 to 4) | 10 (1 to 4) |
+| 40 ms | 7 (0 to 2) | 4 (0 to 1) |
+| 30 ms, the growth left out | 9 | 5 |
+| 99th part, ms | 21.7 to 24.2 | 22.3 to 25.1 |
+
+The medians are 10.32 to 10.53 ms on the head and 10.46 to 10.54 with the mend. No frame of the
+mend's runs makes the mirror's first, where each of the head's has one at 39.2 to 46.0 ms, and the
+mirrored frames sampled take 0.35 to 1.1 ms. The frames past 30 ms are:
+
+- The ray scene's growth, 3 on the head and 5 with the mend, every run of the mend beginning at 256
+  MiB where three of the head's did. The buffer grows fourfold each time, so its sizes run 64, 256
+  and 1,024 MiB or 128, 512 and 2,048, as its first room falls, which the engine's item 292 holds.
+- The mirror's first frame, 5 on the head and none with the mend.
+- At a step, 1 on the head and 2 with the mend, both in the mend's first run at 31.7 and 32.8 ms.
+- From 4 to 5 frames after a step, 2 each way, at 30.5 to 34.4 ms.
+- 53 or 54 frames before a step, 1 each way, at 30.5 and 31.7 ms.
+
+The corner sections of item 207 are meshed 1,316 to 1,383 ms before they come within the drawn
+reach, against 1,330 to 1,374 on the head, no send's gathering fails either way, no step's frame
+makes a group again, and the columns loaded are 698 to 729 against 700 to 729.
+
+`The_Water_Mirror_Is_Made_Ahead_Under_The_Eye_For_Its_Count_Of_Frames_As_A_World_Opens` respawns the
+player in the flat world, which holds no water, with the frames the opening made ahead passed, and
+counts the frames from the respawn's loading screen on that set a plane: exactly `AheadFrames`, each
+under the eye, and none with the setting off. It passes three runs in three. On a copy of the head,
+with the count and an empty `MakeAhead` added as seams, it fails three runs in three, no frame
+setting a plane.
+
+The strict build is clean, 558 tests pass outside the GPU's lock with the long soak skipped, and the
+headless game's 61 pass three times in a row. The play, under the lock taken exclusive with no quiet
+wait, passes in 207 s, its `captures/closed.log` naming the layer enabled and nothing left at a
+close 0.65 s after the new world, and its `sky2.png` differs from the pin's in 0.40% of its pixels
+past 8 levels, the most 168, along the clouds' edges.
