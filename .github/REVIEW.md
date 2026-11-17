@@ -274,7 +274,10 @@ screenshot said saved once its file stands whole, pushed at 21:17, the form kept
 44167788522 started. Run 44167788522 of `e079315` ended red at 22:19 on Linux and macOS, Verdict 16.
 Pushed at 22:48 on 2026-11-17, the form kept in each, `f3c7c20`, `c69fcb5` and `5149e43`, item 224,
 `d69360f`, item 225, and `4fb13f8`, the verdict's mend, a run that draws nothing compiling no shader
-and the test giving the child's last lines; build run 44183588584 started.
+and the test giving the child's last lines; build run 44183588584 started. `00fccc5` and `f922e86`,
+item 226, and `ba8bf7e`, Verdict 17's mend, the game taking its data folder by an argument and
+saying in its log where each save went, pushed at 00:19 on 2026-11-18, the form kept, their build
+run 44198295058 started.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -325,21 +328,6 @@ change.
     against several commits over days, for a decision, Decision 12 being the owner's. The item as it
     stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
     about 16:40, part two stays parked.
-
-222. **A pack that reads wrong does not end the game.** Item 221's read found two faults outside the
-    saves. A pack whose `.mcmeta` holds JSON of other types than expected, an array at its root or a
-    number given as text, throws from the readers the HUD calls as it first draws, so the game ends
-    on its first HUD frame at every start. A default pack that cannot be read throws as the packs
-    screen opens. Asked, each reader takes such a file as absent and says it in the log once, and
-    the packs screen shows the pack as unreadable, each with a test that fails first. After item
-    221.
-
-223. **Four of item 221's lows.** Asked, each with a test that fails first. A request to end the
-    process, as a session's close or a kill by name sends, saves the world as the window's close
-    does. A second run opened on a data folder a run holds says so and does not write there. A
-    column whose bytes inflate short of a column's size is read as unreadable, not as a column. A
-    screenshot is said saved once its file stands, and said failed where it does not. The other lows
-    stay listed. After item 222.
 
 224. **The world at the edge of what is loaded.** No item has read what the world's rules do where a
     loaded column meets one that is not. Asked, a read by read-only subagents first of every rule
@@ -744,66 +732,6 @@ compiling terrain.slang in frame 225, its `captures/closed.log` naming nothing l
 s after the new world, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png`
 differing in 0.02% of its pixels past 8 levels.
 
-Item 222's mends, each with a test that passes three runs in three and fails on a copy of the head:
-
-- A pack's metadata of other kinds than it takes, an array at its root or a number given as text,
-  threw from the readers of a texture. Its picture's and its animation's readers take such metadata
-  as none, mark the file as one the pack lacks so it is read no more, and say it in the log once
-  (`ResourcePacks.Metadata` and `MetadataUnread`), and the interface's sprite whose scaling holds a
-  type given as a number is drawn stretched, said once as it loads (`PackGui.Get`).
-  `A_Game_Whose_Interface_Pack_Holds_Metadata_Of_Other_Kinds_Draws_Its_Sprites_Without_It` opens a
-  game on a pack whose hotbar's metadata is an array and whose button's scaling type is a number,
-  which on the head ends at the first frame of the HUD, and
-  `A_Blocks_Metadata_Of_Other_Kinds_Than_It_Takes_Is_Read_As_None_And_Said_Once` reads a block's
-  animation whose frame time is text and one whose frames' height is, which on the head throw.
-- A default pack in the folder whose file cannot be read threw as the packs' screen opened. It
-  counts as missing, so the screen offers to fetch it, its row says it cannot be read
-  (`DefaultPacks.Unreadable`), and the log says it once.
-  `A_Default_Pack_That_Cannot_Be_Read_Counts_As_Missing_And_Is_Said_Once`, a pack's file refused to
-  the account, then given back. On the head the first look throws.
-
-The strict build is clean, 584 tests pass outside the GPU's lock with the long soak skipped, and the
-headless game's 79 pass three times in a row. The play, under the lock taken exclusive with no quiet
-wait, passes in 186 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
-fault and no texture left, and its captures within 9 levels of the warm play's on 6.2.102,
-`sky2.png` differing in 0.02% of its pixels past 8 levels. A strict build of the first draft failed
-on a `cref` the animation's new overload made ambiguous, and its tests had read an older build. The
-overload is named `Frames`, and the tests were run again on the clean build.
-
-Item 223's mends, each with a test that passes three runs in three and fails on a copy of the head
-given the seams it names:
-
-- A request to end the process, the signal a session's close, a kill by name or Control and C sends,
-  ends the frames as the window's close does (`Program.cs`), so the closing save runs.
-  `A_Request_To_End_The_Process_Saves_The_World_As_The_Windows_Close_Does` runs the game as a
-  program of its own with no window, on a data folder of the test's own, sends it the signal once
-  its world stands, and finds it ended with code 0 and the world's info written. On the head it ends
-  with code 143 and nothing saved.
-- A run takes a lock file in its data folder for as long as it runs (`running.lock`, which the
-  system lets go as the process ends however it ends), and a run that cannot take it, as a second
-  run opened on the folder, keeps nothing there, saying so on the HUD.
-  `A_Run_Opened_On_A_Data_Folder_Another_Run_Holds_Says_So_And_Writes_Nothing_There`, the lock held
-  by the test, a block set, the world saved and the options kept, and neither the world's info nor
-  the options file written. On the head both are.
-- A column's blocks that inflate short of a column, or of the eight sections a column of a world
-  that stood from 0 to 128 holds, or with a part of a section left over, are read as unreadable
-  (`WorldSave.Decode`), so the column is generated again and its region's file copied aside.
-  `A_Columns_Blocks_That_Inflate_Short_Of_A_Column_Are_Read_As_Unreadable`, ten sections, eight and
-  a part, and one short of a whole column and a part, with a whole column and the eight of an old
-  one read. On the head each is read as a column.
-- A screenshot is said saved once its file stands whole, ending with the chunk a PNG ends with,
-  since the engine writes it in its place after the frame, and said not written where it does not
-  stand within five seconds (`VoxelGame.ShotSeconds`), the engine's log saying why.
-  `A_Screenshot_Is_Said_Saved_Once_Its_File_Stands_Whole_And_Said_Not_Written_Where_It_Does_Not`
-  writes the picture as the engine writes it, cut short and then whole, and lets a second go
-  unwritten. On the head the first is said saved at once.
-
-The strict build is clean, 588 tests pass outside the GPU's lock with the long soak skipped, the
-program's own test among them, and the headless game's 81 pass three times in a row. The play, under
-the lock taken exclusive with no quiet wait, passes in 184 s, the seed's step naming its world in 4
-s, its `captures/closed.log` naming no fault and no texture left, and its captures within 8 levels
-of the warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels past 8 levels.
-
 Item 224's read, by three readers in parallel over the rules that change blocks, the light, mobs and
 stacks, and the blocks that tick with the streamer's own order of joining and letting go. Much
 stands guarded at the edge. A mob thinks and moves only with the columns about it loaded and is kept
@@ -1029,3 +957,73 @@ the lock taken exclusive with no quiet wait, passes in 185 s, the seed's step na
 5 s, its `captures/closed.log` naming no fault and no texture left, and its captures within 8 levels
 of the warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels past 8 levels. The build
 run of this commit says on macOS the folder its child saved in.
+
+Item 227's read, by three readers given the window's moves, the crafting, furnaces and chests, and
+the wear, picking up, death and the commands. Three paths lost items or wore the wrong one, and are
+mended in the commit carrying this Reply, each with a test that passes three runs in three, fails on
+a copy of the head, and holds a count of every item in the inventory, the window and on the ground,
+kind by kind, equal before and after.
+
+- A save with the window E opens folded its grids and the stack on the mouse into a copy of the
+  inventory and dropped what did not fit (`VoxelGame.SaveWorld`), and the game's close never shut
+  the window (`VoxelGame.Dispose`). A player with a full inventory and stacks in the grid or on the
+  mouse who closed the game's window, or whose session ended it, lost them, and a timed save or
+  `voxel.save` with the window open wrote the world without them. The close shuts the window
+  before its save, so what does not fit is thrown and kept as stacks. A save with the window open
+  keeps what does not fit as stacks at the player's feet in the save alone, the game keeping them
+  in the window, so a later close throws them once.
+  `Stacks_The_Window_Holds_Past_A_Full_Inventory_Are_Kept_Once_By_A_Save_With_It_Open_One_With_It_Shut_And_A_Quit`
+  saves with the window open, plays on, shuts it, saves again and quits with it open, and each save
+  read back and the live game hold the same count, four planks and then six, none twice. On the
+  head the save with the window open holds no planks.
+- Q and Control with Q over a slot of the window moved the stack into `InventoryWindow.Dropped`
+  in the frame's drawing, and only the next frame's play threw it. A quit in that frame lost it, a
+  save in it missed it, and a world switch in it saved the world left without it and threw it into
+  the next. The dropped stacks are thrown as the window shuts and before a save gathers the world,
+  as well as in play (`VoxelGame.ThrowDropped`).
+  `A_Stack_Dropped_From_The_Window_Is_Thrown_In_Its_World_Before_A_Switch_Or_A_Quit_Saves_It`
+  drops sticks the frame before a switch and coal the frame of the quit, and each world read back
+  holds its own. On the head the world left holds no sticks.
+- A felling wore whatever stood in its axe's hotbar slot as its logs dropped, one slot kept for
+  every tree (`VoxelGame._fellingAxe`). A pickaxe swapped into that slot took the wear and could
+  break, an axe thrown went without it, and a second tree felled with another axe sent the first
+  tree's wear to the second axe. Each felling keeps its hand, the slot and the kind of its axe
+  (`TreeFelling.WornBy`, `VoxelGame._fellingAxes`), and a felling whose axe has left its slot,
+  swapped, thrown or broken, ends as one whose axe's uses ran out (`TreeFelling.Disarm`).
+  `A_Felling_Wears_Its_Own_Axe_And_Ends_Where_The_Axe_Leaves_Its_Slot` swaps the axe for a pickaxe
+  with two uses left the frame after the cut, and the pickaxe keeps its two, the axe its one use
+  for the cut, and the logs standing and dropped count eight. On the head the pickaxe breaks.
+
+  As a swap ends a felling, the player sees the cut log drop as any does and the trunk above it
+  stand where it stood, hanging over the cut. The leaves within reach of the logs left stand, and
+  those loose of every log decay over the next seconds as a crown's do. The logs left are whole
+  blocks, and the lowest, standing on no log, fells the rest anew when an axe breaks it.
+
+The lows, left as they stand:
+
+- A shift-click on what a grid makes crafts on whatever the grid matches after each craft, so it can
+  go on to a second recipe, counts kept (`InventoryWindow`, the loop on `grid.Recipe`).
+- A felling begun in survival wears its axe after a switch to creative within its seconds.
+- `voxel.select` and `voxel.furnace` write over a slot's stack, and `voxel.give` says the count
+  that did not fit and drops none of it, a count of 0 or less giving one (`GameCommands`).
+- A click in the creative window writes over a hotbar slot carrying a stack from survival.
+- Right Control with Q at the hotbar throws one item where the left throws the stack.
+- Escape and E in one frame shut the window and open it again.
+- Q and the number keys do nothing over what a grid makes and over a furnace's output.
+- A loot chest broken in a world that saves nothing, its region left past the 256 MB of changes
+  kept unsaved, has its loot rolled again as the region returns.
+- A death and a pick-up in one frame may carry the stack picked up through the death, by the order
+  the behaviors run in, read from the code and not run.
+
+The rest was read and found to hold: every other click, drag, gather, swap and sort, crafting's
+room and the cap on the mouse, the furnace's fuel, its output's cap and its spill as it breaks, the
+chests, picking up into a full inventory, throwing, placing, eating, and death's spill and the
+respawn, which no save keeps twice.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 609
+passing, the new tests with `FallingTests` passing three times in a row, the headless game's 93
+passing three times in a row, and the play under the lock taken exclusive with no quiet wait passing
+in 186 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no fault and no
+texture left, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing
+in 0.04% of its pixels past 8 levels. `TreeFelling.Worn` gave way to the uses by hand, which
+`FallingTests` reads summed.

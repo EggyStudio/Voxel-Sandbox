@@ -3608,6 +3608,21 @@ before a batch.
     chests' earlier file is read stays out of this item. The lows go to the Reply as a list. After
     item 220.
 
+222. **A pack that reads wrong does not end the game.** Item 221's read found two faults outside the
+    saves. A pack whose `.mcmeta` holds JSON of other types than expected, an array at its root or a
+    number given as text, throws from the readers the HUD calls as it first draws, so the game ends
+    on its first HUD frame at every start. A default pack that cannot be read throws as the packs
+    screen opens. Asked, each reader takes such a file as absent and says it in the log once, and
+    the packs screen shows the pack as unreadable, each with a test that fails first. After item
+    221.
+
+223. **Four of item 221's lows.** Asked, each with a test that fails first. A request to end the
+    process, as a session's close or a kill by name sends, saves the world as the window's close
+    does. A second run opened on a data folder a run holds says so and does not write there. A
+    column whose bytes inflate short of a column's size is read as unreadable, not as a column. A
+    screenshot is said saved once its file stands, and said failed where it does not. The other lows
+    stay listed. After item 222.
+
 ## Verdicts settled
 
 1. **The build's play job is lost to its 40 minute limit on the walk over the eight biomes.** On the
@@ -9191,6 +9206,66 @@ numbered otherwise, on a helper of the new tests that put a region west of the o
 at it, mended before the commit. The test of a save that cannot be written is changed to the rule
 these commits make, the world kept at a switch, and a file refused to the account is set aside as
 its test has it.
+
+Item 222's mends, each with a test that passes three runs in three and fails on a copy of the head:
+
+- A pack's metadata of other kinds than it takes, an array at its root or a number given as text,
+  threw from the readers of a texture. Its picture's and its animation's readers take such metadata
+  as none, mark the file as one the pack lacks so it is read no more, and say it in the log once
+  (`ResourcePacks.Metadata` and `MetadataUnread`), and the interface's sprite whose scaling holds a
+  type given as a number is drawn stretched, said once as it loads (`PackGui.Get`).
+  `A_Game_Whose_Interface_Pack_Holds_Metadata_Of_Other_Kinds_Draws_Its_Sprites_Without_It` opens a
+  game on a pack whose hotbar's metadata is an array and whose button's scaling type is a number,
+  which on the head ends at the first frame of the HUD, and
+  `A_Blocks_Metadata_Of_Other_Kinds_Than_It_Takes_Is_Read_As_None_And_Said_Once` reads a block's
+  animation whose frame time is text and one whose frames' height is, which on the head throw.
+- A default pack in the folder whose file cannot be read threw as the packs' screen opened. It
+  counts as missing, so the screen offers to fetch it, its row says it cannot be read
+  (`DefaultPacks.Unreadable`), and the log says it once.
+  `A_Default_Pack_That_Cannot_Be_Read_Counts_As_Missing_And_Is_Said_Once`, a pack's file refused to
+  the account, then given back. On the head the first look throws.
+
+The strict build is clean, 584 tests pass outside the GPU's lock with the long soak skipped, and the
+headless game's 79 pass three times in a row. The play, under the lock taken exclusive with no quiet
+wait, passes in 186 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault and no texture left, and its captures within 9 levels of the warm play's on 6.2.102,
+`sky2.png` differing in 0.02% of its pixels past 8 levels. A strict build of the first draft failed
+on a `cref` the animation's new overload made ambiguous, and its tests had read an older build. The
+overload is named `Frames`, and the tests were run again on the clean build.
+
+Item 223's mends, each with a test that passes three runs in three and fails on a copy of the head
+given the seams it names:
+
+- A request to end the process, the signal a session's close, a kill by name or Control and C sends,
+  ends the frames as the window's close does (`Program.cs`), so the closing save runs.
+  `A_Request_To_End_The_Process_Saves_The_World_As_The_Windows_Close_Does` runs the game as a
+  program of its own with no window, on a data folder of the test's own, sends it the signal once
+  its world stands, and finds it ended with code 0 and the world's info written. On the head it ends
+  with code 143 and nothing saved.
+- A run takes a lock file in its data folder for as long as it runs (`running.lock`, which the
+  system lets go as the process ends however it ends), and a run that cannot take it, as a second
+  run opened on the folder, keeps nothing there, saying so on the HUD.
+  `A_Run_Opened_On_A_Data_Folder_Another_Run_Holds_Says_So_And_Writes_Nothing_There`, the lock held
+  by the test, a block set, the world saved and the options kept, and neither the world's info nor
+  the options file written. On the head both are.
+- A column's blocks that inflate short of a column, or of the eight sections a column of a world
+  that stood from 0 to 128 holds, or with a part of a section left over, are read as unreadable
+  (`WorldSave.Decode`), so the column is generated again and its region's file copied aside.
+  `A_Columns_Blocks_That_Inflate_Short_Of_A_Column_Are_Read_As_Unreadable`, ten sections, eight and
+  a part, and one short of a whole column and a part, with a whole column and the eight of an old
+  one read. On the head each is read as a column.
+- A screenshot is said saved once its file stands whole, ending with the chunk a PNG ends with,
+  since the engine writes it in its place after the frame, and said not written where it does not
+  stand within five seconds (`VoxelGame.ShotSeconds`), the engine's log saying why.
+  `A_Screenshot_Is_Said_Saved_Once_Its_File_Stands_Whole_And_Said_Not_Written_Where_It_Does_Not`
+  writes the picture as the engine writes it, cut short and then whole, and lets a second go
+  unwritten. On the head the first is said saved at once.
+
+The strict build is clean, 588 tests pass outside the GPU's lock with the long soak skipped, the
+program's own test among them, and the headless game's 81 pass three times in a row. The play, under
+the lock taken exclusive with no quiet wait, passes in 184 s, the seed's step naming its world in 4
+s, its `captures/closed.log` naming no fault and no texture left, and its captures within 8 levels
+of the warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels past 8 levels.
 
 ## Items closed, parked or shortened
 

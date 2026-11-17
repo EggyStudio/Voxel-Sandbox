@@ -1047,7 +1047,7 @@ public sealed class HeadlessGameTests
     }
 
     // Copies a save's folder as a run ended at that moment would leave it.
-    private static void CopyFolder(string from, string to)
+    internal static void CopyFolder(string from, string to)
     {
         foreach (var path in Directory.GetFiles(from, "*", SearchOption.AllDirectories))
         {

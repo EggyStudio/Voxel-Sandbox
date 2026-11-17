@@ -94,6 +94,151 @@ public sealed class ScreenTests : IDisposable
         while ((headless.Game.Loading || headless.Game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30);
     }
 
+    // Every item the player holds, in the inventory and the window, and the world holds lying on
+    // the ground, counted by its kind.
+    private static SortedDictionary<string, int> Counted(VoxelGame game)
+    {
+        var counted = new SortedDictionary<string, int>();
+        foreach (var (item, count) in game.Inventory.Slots.OfType<ItemStack>().Concat(game.InventoryWindow.Holding).Select(stack => (stack.Item, stack.Count))
+            .Concat(game.Drops.All.Select(lying => (lying.Drop.Item, lying.Drop.Count))))
+            counted[item.Key] = counted.GetValueOrDefault(item.Key) + count;
+        return counted;
+    }
+
+    // A count with more of a kind.
+    private static SortedDictionary<string, int> With(SortedDictionary<string, int> counted, Item item, int count) =>
+        new(counted) { [item.Key] = counted.GetValueOrDefault(item.Key) + count };
+
+    [Fact]
+    public void Stacks_The_Window_Holds_Past_A_Full_Inventory_Are_Kept_Once_By_A_Save_With_It_Open_One_With_It_Shut_And_A_Quit()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var (world, open, shut) = (Path.Combine(root, "world"), Path.Combine(root, "open"), Path.Combine(root, "shut"));
+        var (planks, stone) = (Items.Of(BlockId.OakPlanks), Items.Of(BlockId.Stone));
+        SortedDictionary<string, int> four = [], six = [];
+        try
+        {
+            using (var headless = new HeadlessGame(save: world, still: true))
+            {
+                var game = headless.Game;
+                var pressed = new HashSet<Key>();
+                game.Pressed = pressed.Contains;
+                void Press(Key key)
+                {
+                    pressed.Add(key);
+                    headless.Step(1);
+                    pressed.Clear();
+                }
+                // Every slot full of stone, the window open with four planks in its grid that the
+                // inventory has no room for, and the world saved, the save copied as a run ended
+                // then would leave it.
+                game.Mode = GameMode.Survival;
+                for (int i = 0; i < game.Inventory.Slots.Length; i++) game.Inventory.Slots[i] = new ItemStack(stone, 64);
+                Press(Key.E);
+                Assert.True(game.InventoryOpen);
+                game.InventoryWindow.Small.Slots[0] = new ItemStack(planks, 4);
+                four = Counted(game);
+                Assert.Equal(4, four[planks.Key]);
+                game.SaveWorld();
+                HeadlessGameTests.CopyFolder(world, open);
+                headless.Step(5);
+                Assert.Equal(four, Counted(game));
+
+                // The window shut, the planks thrown, and the world saved again.
+                Press(Key.E);
+                Assert.False(game.InventoryOpen);
+                game.SaveWorld();
+                HeadlessGameTests.CopyFolder(world, shut);
+                Assert.Equal(four, Counted(game));
+
+                // The window open again with two planks more in its grid as the game quits.
+                Press(Key.E);
+                game.InventoryWindow.Small.Slots[1] = new ItemStack(planks, 2);
+                six = Counted(game);
+            }
+
+            foreach (var (folder, counted) in new[] { (open, four), (shut, four), (world, six) })
+            {
+                using var again = new HeadlessGame(save: folder, still: true);
+                Assert.Equal(counted, Counted(again.Game));
+            }
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Stack_Dropped_From_The_Window_Is_Thrown_In_Its_World_Before_A_Switch_Or_A_Quit_Saves_It()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var (world, other) = (Path.Combine(root, "world"), Path.Combine(root, "other"));
+        SortedDictionary<string, int> left = [], quit = [];
+        try
+        {
+            using (var headless = new HeadlessGame(save: world, still: true))
+            {
+                // Sticks dropped with Q in the frame before the world is switched, and coal in the
+                // frame the game quits once the other world stands.
+                var game = headless.Game;
+                left = With(Counted(game), Items.Stick, 7);
+                game.InventoryWindow.Dropped.Add(new ItemStack(Items.Stick, 7));
+                game.SwitchWorld("flat", 2, other);
+                Assert.False(Counted(game).ContainsKey(Items.Stick.Key));
+                Stand(headless);
+                quit = With(Counted(game), Items.Coal, 3);
+                game.InventoryWindow.Dropped.Add(new ItemStack(Items.Coal, 3));
+            }
+
+            using (var first = new HeadlessGame(save: world, still: true)) Assert.Equal(left, Counted(first.Game));
+            using var second = new HeadlessGame(save: other, still: true);
+            Assert.Equal(quit, Counted(second.Game));
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Felling_Wears_Its_Own_Axe_And_Ends_Where_The_Axe_Leaves_Its_Slot()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        Serve(game);
+        game.Mode = GameMode.Survival;
+        // A trunk of eight logs before the player under a crown, an axe in the first slot and a
+        // pickaxe with two uses left in the second.
+        for (int y = 4; y <= 11; y++) game.World.SetBlock(0, y, -2, BlockId.OakLog);
+        for (int dz = -3; dz <= -1; dz++)
+            for (int dx = -1; dx <= 1; dx++)
+                game.World.SetBlock(dx, 12, dz, BlockId.OakLeaves);
+        var (axe, pickaxe) = (Items.Find("stone_axe")!, Items.Find("wooden_pickaxe")!);
+        game.Inventory.Slots[0] = new ItemStack(axe, 1);
+        game.Inventory.Slots[1] = new ItemStack(pickaxe, 1, pickaxe.Durability - 2);
+        game.Hotbar.Selected = 0;
+        // The items with the trunk's logs, standing or dropped, counted as logs.
+        var log = Items.Of(BlockId.OakLog);
+        SortedDictionary<string, int> Logged() => With(Counted(game), log, Enumerable.Range(4, 8).Count(y => game.World.GetBlock(0, y, -2) == BlockId.OakLog));
+        var before = Logged();
+        Run("voxel.look 0 -30");
+        headless.Step(2);
+        Run("voxel.break");
+        Assert.True(game.Felling.Busy);
+        var cut = game.Inventory.Slots[0];
+
+        // The axe swapped for the worn pickaxe at once, as a number key over the slot swaps them.
+        (game.Inventory.Slots[0], game.Inventory.Slots[1]) = (game.Inventory.Slots[1], game.Inventory.Slots[0]);
+        headless.Step(90);
+
+        Assert.False(game.Felling.Busy);
+        Assert.Equal(new ItemStack(pickaxe, 1, pickaxe.Durability - 2), game.Inventory.Slots[0]);
+        Assert.Equal(cut, game.Inventory.Slots[1]);
+        Assert.Equal(BlockId.OakLog, game.World.GetBlock(0, 5, -2));
+        Assert.Equal(before, Logged());
+    }
+
     [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {

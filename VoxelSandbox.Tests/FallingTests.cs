@@ -86,7 +86,7 @@ public sealed class FallingTests
         felling.Fell(world, 4, 4, 4, uses: 100);
         var (items, falling) = Felled(felling, world);
         Assert.Equal((3, 1), (items, falling));
-        Assert.Equal(3, felling.Worn);
+        Assert.Equal(3, felling.WornBy.Values.Sum());
 
         // With one use left the first log dropped as an item takes it, and the logs over it stand,
         // with the leaves about them.
@@ -97,7 +97,7 @@ public sealed class FallingTests
         felling.Fell(world, 4, 4, 4, uses: 1);
         (items, _) = Felled(felling, world);
         Assert.Equal(1, items);
-        Assert.Equal(1, felling.Worn);
+        Assert.Equal(1, felling.WornBy.Values.Sum());
         Assert.False(felling.Busy);
         Assert.Equal(BlockId.OakLog, world.GetBlock(4, 8, 4));
         Assert.Equal(BlockId.OakLeaves, world.GetBlock(5, 8, 4));

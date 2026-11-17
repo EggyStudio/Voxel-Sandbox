@@ -30,9 +30,10 @@ public sealed class TreeFelling(int seed = 1)
 
     // A tree being felled, the uses left of the axe that fells it, null where none are counted, the
     // box its crown is read in, and once the axe has run out the leaves loose of the logs left.
-    private sealed class Tree(int? uses, (int X0, int Y0, int Z0, int X1, int Y1, int Z1) box)
+    private sealed class Tree(int? uses, (int X0, int Y0, int Z0, int X1, int Y1, int Z1) box, int hand)
     {
         public int? Uses = uses;
+        public readonly int Hand = hand;
         public readonly (int X0, int Y0, int Z0, int X1, int Y1, int Z1) Box = box;
         public HashSet<(int X, int Y, int Z)>? Loose;
     }
@@ -53,14 +54,15 @@ public sealed class TreeFelling(int seed = 1)
     /// <summary>Whether a felling is still under way.</summary>
     public bool Busy => _steps.Count > 0;
 
-    /// <summary>The uses the logs dropped as items have taken of the axes felling them, for the game to wear the axe by and clear.</summary>
-    public int Worn { get; set; }
+    /// <summary>The uses the logs dropped as items have taken of the axes felling them, by the hand each tree was felled with, the hotbar slot of its axe, for the game to wear each axe by and clear.</summary>
+    public Dictionary<int, int> WornBy { get; } = [];
 
     /// <summary>
     /// Fells the tree whose trunk stood on the log broken at a place, where the block under it was no
-    /// log, with an axe of so many uses left, or with no uses counted where none is given.
+    /// log, with an axe of so many uses left in a hand, the hotbar slot it is in, or with no uses
+    /// counted where none is given.
     /// </summary>
-    public void Fell(VoxelWorld world, int x, int y, int z, int? uses = null)
+    public void Fell(VoxelWorld world, int x, int y, int z, int? uses = null, int hand = -1)
     {
         if (uses <= 0) return;
         var logs = new List<(int X, int Y, int Z)>();
@@ -88,7 +90,7 @@ public sealed class TreeFelling(int seed = 1)
         int x0 = x, y0 = logs.Count == 0 ? y : logs.Min(l => Math.Min(l.Y, y)), y1 = y, z0 = z, x1 = x, z1 = z;
         foreach (var (lx, ly, lz) in logs)
             (x0, x1, z0, z1, y1) = (Math.Min(x0, lx), Math.Max(x1, lx), Math.Min(z0, lz), Math.Max(z1, lz), Math.Max(y1, ly));
-        var tree = new Tree(uses, (x0 - LeafReach - 1, y0, z0 - LeafReach - 1, x1 + LeafReach + 1, y1 + LeafReach + 1, z1 + LeafReach + 1));
+        var tree = new Tree(uses, (x0 - LeafReach - 1, y0, z0 - LeafReach - 1, x1 + LeafReach + 1, y1 + LeafReach + 1, z1 + LeafReach + 1), hand);
         foreach (var (lx, ly, lz) in logs) _steps.Add((_time + (ly - y0 + 1) * Tick, Step.Log, lx, ly, lz, tree));
         // The crown is read now, the tree's logs counted as gone, and its leaves go from the tick the
         // first log does, after it, since the steps of a tick are taken in the order they were added.
@@ -118,7 +120,21 @@ public sealed class TreeFelling(int seed = 1)
         _spared.Clear();
         Broken.Clear();
         Dropped.Clear();
-        Worn = 0;
+        WornBy.Clear();
+    }
+
+    /// <summary>
+    /// Ends the fellings of the axe of a hand that left it, as its uses running out ends them, the
+    /// logs still to go standing and of the crown only the leaves loose of them decaying.
+    /// </summary>
+    public void Disarm(VoxelWorld world, int hand)
+    {
+        foreach (var tree in _steps.Select(step => step.Tree).Where(tree => tree.Hand == hand && tree.Uses is not 0).Distinct().ToList())
+        {
+            tree.Uses = 0;
+            var (x0, y0, z0, x1, y1, z1) = tree.Box;
+            tree.Loose = [.. Loose(world, x0, y0, z0, x1, y1, z1, [], tree)];
+        }
     }
 
     // Asks again the leaves spared beside a column not loaded once every column within their reach
@@ -132,7 +148,7 @@ public sealed class TreeFelling(int seed = 1)
             _spared.RemoveAt(i);
             var (x0, y0, z0, x1, y1, z1) = tree.Box;
             var loose = Loose(world, x0, y0, z0, x1, y1, z1, [], null).ToHashSet();
-            var asked = new Tree(null, tree.Box);
+            var asked = new Tree(null, tree.Box, tree.Hand);
             foreach (var leaf in leaves)
                 if (loose.Contains(leaf)) _steps.Add((_time, Step.Leaf, leaf.X, leaf.Y, leaf.Z, asked));
         }
@@ -168,7 +184,7 @@ public sealed class TreeFelling(int seed = 1)
                     }
                     Broken.Add((step.X, step.Y, step.Z, block));
                     if (step.Tree.Uses is not { } left) break;
-                    Worn++;
+                    WornBy[step.Tree.Hand] = WornBy.GetValueOrDefault(step.Tree.Hand) + 1;
                     // The axe's last use leaves the logs still to go standing, and of the crown the
                     // leaves loose of them alone decay.
                     if ((step.Tree.Uses = left - 1) == 0)

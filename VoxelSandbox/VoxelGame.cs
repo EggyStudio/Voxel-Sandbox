@@ -960,15 +960,28 @@ public sealed class VoxelGame : IDisposable
             var mobs = Mobs.Columns().ToList();
             var furnaces = WorldSave.FurnaceRecords(Furnaces);
             var chests = Chests.Columns(World).ToList();
+            ThrowDropped();
             Drops.KeepStrays(World);
             var drops = Drops.Columns(World).ToList();
             var underway = Underway.Columns(World).ToList();
             // The stacks the window E opens holds are saved in the inventory as shutting it puts
-            // them, so a save while it is open keeps them.
+            // them, and those it has no room for as stacks at the player's feet as shutting it
+            // throws them, so a save while it is open keeps every one, the game keeping them in the
+            // window.
             var inventory = new Inventory();
             inventory.Load(Inventory.Save());
-            foreach (var stack in InventoryWindow.Holding) inventory.Add(stack.Item, stack.Count, stack.Wear);
             var at = LandOrigin.LandOf(Player.Body.Position);
+            var thrown = new List<WorldSave.DropRecord>();
+            foreach (var stack in InventoryWindow.Holding)
+                if (inventory.Add(stack.Item, stack.Count, stack.Wear) is > 0 and var left)
+                    thrown.Add(new(Inventory.Encode(stack with { Count = left }), at, ItemDrop.Lifetime));
+            if (thrown.Count > 0)
+            {
+                var feet = LandOrigin.ColumnOf(Player.Body.Position);
+                var lying = drops.FindIndex(column => column.Column == feet);
+                if (lying < 0) drops.Add((feet, thrown));
+                else drops[lying] = (feet, [.. drops[lying].Drops, .. thrown]);
+            }
             var info = new WorldInfo(World.Generator.Name, World.Generator.Seed, at.X, at.Y, at.Z,
                 Player.Heading, Player.Pitch * 180 / MathF.PI, Player.Flying, Sky.Hour, Save.BlockKeys,
                 Mode.ToString().ToLowerInvariant(), inventory.Save(), Hotbar.Selected, Vitals.Health, Vitals.Food, Vitals.Saturation, Sky.Day, Weather.Held);
@@ -1116,13 +1129,7 @@ public sealed class VoxelGame : IDisposable
             Eating = 0;
         }
         if (_captured && keys && Mode.Touches() && IsKeyPressed(Key.Q)) Throw(IsKeyDown(Key.LeftControl));
-        // What Q dropped from a slot of the window E opens is thrown ahead, as from the hotbar.
-        foreach (var stack in InventoryWindow.Dropped)
-        {
-            var look = Vector3.Normalize(Player.Look);
-            Drops.Spawn(stack.Item, stack.Count, Player.Eye - new Vector3(0, 0.3f, 0) + look * 0.3f, look * 6 + new Vector3(0, 1, 0), ItemDrops.ThrownDelay, stack.Wear);
-        }
-        InventoryWindow.Dropped.Clear();
+        ThrowDropped();
         LeaveDrops();
         foreach (var ((x, y, z), stack) in Furnaces.Update(World, seconds))
         {
@@ -1320,13 +1327,20 @@ public sealed class VoxelGame : IDisposable
     // taken at once where the world is left or closed.
     private void Felled(float seconds, bool all = false)
     {
+        // A felling whose axe left its slot, swapped for another item, thrown or broken, ends
+        // there, so no other item takes its wear and no axe goes without it.
+        foreach (var (slot, axe) in _fellingAxes.ToList())
+            if (Inventory.Slots[slot]?.Item != axe)
+            {
+                Felling.Disarm(World, slot);
+                _fellingAxes.Remove(slot);
+            }
         if (all) Felling.Finish(World);
         else Felling.Update(World, seconds);
-        if (Felling.Worn > 0)
-        {
-            Wear(Felling.Worn, _fellingAxe);
-            Felling.Worn = 0;
-        }
+        foreach (var (slot, uses) in Felling.WornBy)
+            if (slot >= 0) Wear(uses, slot);
+        Felling.WornBy.Clear();
+        if (!Felling.Busy) _fellingAxes.Clear();
         foreach (var (x, y, z, block) in Felling.Broken)
         {
             Bits.Break(block, x, y, z, count: 8, climate: World.TintsAt(x, z));
@@ -1444,12 +1458,26 @@ public sealed class VoxelGame : IDisposable
     }
 
     // Closes the window E opens, the stack held in it going back into the inventory and what does
-    // not fit thrown.
+    // not fit thrown, with what Q dropped from it.
     private void CloseInventory()
     {
         (InventoryOpen, AtTable, AtFurnace, AtChest, _table) = (false, false, null, null, null);
         foreach (var left in InventoryWindow.Close(Inventory))
             Drops.Spawn(left.Item, left.Count, Player.Eye - new Vector3(0, 0.3f, 0), Vector3.Normalize(Player.Look) * 3, ItemDrops.ThrownDelay, left.Wear);
+        ThrowDropped();
+    }
+
+    // What Q dropped from a slot of the window E opens is thrown ahead, as from the hotbar, in the
+    // frame after, as the window closes or before a save, so none is out of every slot and stack
+    // where the world is saved or left.
+    private void ThrowDropped()
+    {
+        foreach (var stack in InventoryWindow.Dropped)
+        {
+            var look = Vector3.Normalize(Player.Look);
+            Drops.Spawn(stack.Item, stack.Count, Player.Eye - new Vector3(0, 0.3f, 0) + look * 0.3f, look * 6 + new Vector3(0, 1, 0), ItemDrops.ThrownDelay, stack.Wear);
+        }
+        InventoryWindow.Dropped.Clear();
     }
 
     private void Interact(float seconds)
@@ -1612,8 +1640,9 @@ public sealed class VoxelGame : IDisposable
         Inventory.Slots[at] = stack.Wear + uses >= stack.Item.Durability ? null : stack with { Wear = stack.Wear + uses };
     }
 
-    // The slot of the axe the last tree was felled with, which the logs it drops as items wear.
-    private int _fellingAxe;
+    // The axes felling trees by their hotbar slots, which the logs each tree drops as items wear, a
+    // tree whose axe left its slot ending as one whose uses ran out.
+    private readonly Dictionary<int, Item> _fellingAxes = [];
 
     /// <summary>
     /// Breaks the block the crosshair rests on at once, unless it cannot be broken or the mode
@@ -1633,8 +1662,8 @@ public sealed class VoxelGame : IDisposable
         {
             int? uses = null;
             if (Mode == GameMode.Survival && Hotbar.Current is { Item: { Tool: ToolKind.Axe, Durability: > 0 } axe } stack)
-                (uses, _fellingAxe) = (axe.Durability - stack.Wear - 1, Hotbar.Selected);
-            Felling.Fell(World, hit.X, hit.Y, hit.Z, uses);
+                (uses, _fellingAxes[Hotbar.Selected]) = (axe.Durability - stack.Wear - 1, axe);
+            Felling.Fell(World, hit.X, hit.Y, hit.Z, uses, uses is null ? -1 : Hotbar.Selected);
         }
         if (Mode != GameMode.Survival) return true;
         Vitals.Exhaust(0.005f);
@@ -1929,6 +1958,9 @@ public sealed class VoxelGame : IDisposable
         // holding no mob.
         if (_disposed) return;
         _disposed = true;
+        // The window E opens is shut first, what it holds put back into the inventory and what
+        // does not fit thrown, so the last save keeps all of it.
+        CloseInventory();
         SetDownMoving();
         SaveWorld();
         Renderer.Dispose();
