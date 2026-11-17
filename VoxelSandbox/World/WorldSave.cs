@@ -1045,6 +1045,9 @@ public sealed class WorldSave
     /// </remarks>
     public List<ChestRecord>? TakeChests(int x, int z) => _chests.Take(x, z);
 
+    /// <summary>Whether the file of the chests of a column's region is held since it could not be read, so what its chests hold is kept there for a later run.</summary>
+    public bool ChestsHeld(int x, int z) => _held.Contains(ChestRegionPath(RegionOf(x, z)));
+
     /// <summary>Keeps the chests of a column that unloads, none for one whose chests are gone, to be written at the next <see cref="WriteChests"/>.</summary>
     public void KeepChests(int x, int z, List<ChestRecord> chests) => _chests.Keep(x, z, chests);
 

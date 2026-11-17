@@ -229,8 +229,22 @@ public sealed class ItemDrops(EcsWorld ecs)
             gone.Add(id);
         }
         foreach (var id in gone) ecs.Despawn(id);
-        // A saved world's save keeps them, as it keeps the stacks of the loaded columns at a save.
-        if (Save is { } save && _kept.Remove((x, z), out var left)) save.KeepDrops(x, z, [.. left.Select(s => Record(s.Drop, s.At))]);
+        // A saved world's save keeps them with those it keeps of the column, as it keeps the stacks
+        // of the loaded columns at a save.
+        if (Save is { } save && _kept.Remove((x, z), out var left))
+            save.KeepDrops(x, z, [.. save.TakeDrops(x, z) ?? [], .. left.Select(s => Record(s.Drop, s.At))]);
+    }
+
+    /// <summary>
+    /// Keeps the stacks lying over columns not loaded, thrown or dropped there, as the column they
+    /// wait for keeps its own as it unloads, so a save before that column arrives keeps them.
+    /// </summary>
+    public void KeepStrays(VoxelWorld world)
+    {
+        var columns = new HashSet<(int X, int Z)>();
+        foreach (var (_, _, body) in ecs.Query<ItemDrop, Body>())
+            if (LandOrigin.ColumnOf(body.Position) is var (x, z) && !world.HasColumn(x, z)) columns.Add((x, z));
+        foreach (var (x, z) in columns) Leaving(x, z);
     }
 
     /// <summary>The stacks of each loaded column as a save keeps them, a column with none among them, so a save clears what it held of one.</summary>

@@ -143,6 +143,26 @@ public sealed class SaveTests : IDisposable
     }
 
     [Fact]
+    public void A_Chest_The_Land_Placed_In_A_Region_Whose_Chests_File_Is_Held_Is_Given_No_Loot_Again()
+    {
+        new WorldSave(_folder);
+        var file = Path.Combine(_folder, "regions", "c.0.0.bin");
+        File.WriteAllBytes(file, [1]);
+        var column = new ChunkColumn(0, 0);
+        column.Set(1, 5, 1, BlockId.Chest);
+        column.Chests.Add(new ChestPlaced(1, 5, 1, "village", 7));
+
+        // The region's chests file held by another program as the column joins.
+        using (new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            var chests = new Chests(new WorldSave(_folder));
+            chests.Joined(column);
+
+            Assert.False(chests.All.ContainsKey((1, 5, 1)));
+        }
+    }
+
+    [Fact]
     public void A_Furnaces_File_Holding_A_Null_Record_Opens_With_Its_Others()
     {
         var save = new WorldSave(_folder);

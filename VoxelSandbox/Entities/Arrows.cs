@@ -39,6 +39,9 @@ public partial struct Arrow
         foreach (var (id, _) in ecs.Query<Arrow>())
         {
             ref var arrow = ref ecs.GetRef<Arrow>(id);
+            // An arrow flying into a column not loaded, which reads as solid, waits at its border,
+            // neither moving nor aging, and flies on as the column arrives.
+            if (!arrow.Stuck && (!Loaded(step.World, arrow.Position) || !Loaded(step.World, arrow.Position + arrow.Velocity * step.Seconds))) continue;
             arrow.Age += step.Seconds;
             if (arrow.Age > Life) gone.Add(id);
             else if (!arrow.Stuck && Move(ref arrow, step.World, step.Player, step.Seconds, step.Random) is { } hit)
@@ -78,6 +81,12 @@ public partial struct Arrow
                 }
         }
         return null;
+    }
+
+    private static bool Loaded(VoxelWorld world, Vector3 at)
+    {
+        var (x, z) = LandOrigin.ColumnOf(at);
+        return world.HasColumn(x, z);
     }
 
     private static bool Inside(Vector3 min, Vector3 max, Vector3 p) =>

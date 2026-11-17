@@ -70,9 +70,12 @@ public sealed class Chests(WorldSave? save = null)
     {
         foreach (var kept in save?.TakeChests(column.X, column.Z) ?? [])
             _all.TryAdd((kept.X, kept.Y, kept.Z), From(kept));
-        foreach (var placed in column.Chests)
-            if (IsChest(column.Get(placed.X - column.X * Section.Size, placed.Y, placed.Z - column.Z * Section.Size)))
-                _all.TryAdd((placed.X, placed.Y, placed.Z), new Chest { Loot = placed.Loot, Seed = placed.Seed });
+        // A region whose chests file is held keeps what its chests hold for a later run, so the
+        // chests the land placed in it are given no loot again.
+        if (save?.ChestsHeld(column.X, column.Z) != true)
+            foreach (var placed in column.Chests)
+                if (IsChest(column.Get(placed.X - column.X * Section.Size, placed.Y, placed.Z - column.Z * Section.Size)))
+                    _all.TryAdd((placed.X, placed.Y, placed.Z), new Chest { Loot = placed.Loot, Seed = placed.Seed });
         column.Chests.Clear();
     }
 

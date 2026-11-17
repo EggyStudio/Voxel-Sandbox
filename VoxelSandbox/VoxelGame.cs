@@ -950,6 +950,7 @@ public sealed class VoxelGame : IDisposable
             var mobs = Mobs.Columns().ToList();
             var furnaces = WorldSave.FurnaceRecords(Furnaces);
             var chests = Chests.Columns(World).ToList();
+            Drops.KeepStrays(World);
             var drops = Drops.Columns(World).ToList();
             // The stacks the window E opens holds are saved in the inventory as shutting it puts
             // them, so a save while it is open keeps them.

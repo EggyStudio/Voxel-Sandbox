@@ -999,6 +999,54 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Stack_Thrown_Into_A_Column_Not_Loaded_Is_Kept_By_A_Save_Before_The_Column_Arrives()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A stack lying far off where no column is loaded, the world closed, then opened a few
+            // blocks from it, out of the player's reach.
+            var far = new LandPlace(5_000.5, 6, 0.5);
+            using (var first = new HeadlessGame(save: folder, still: true))
+            {
+                first.Game.Drops.Spawn(Items.Stick, 5, LandOrigin.PlaceOf(far), Vector3.Zero);
+                first.Step(2);
+            }
+            using var again = new HeadlessGame(save: folder, at: new LandPlace(5_006.5, 10, 0.5), still: true);
+
+            var stick = Assert.Single(again.Game.Drops.All, d => d.Drop.Item == Items.Stick);
+            Assert.Equal(5, stick.Drop.Count);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void An_Arrow_Flying_Into_A_Column_Not_Loaded_Waits_At_Its_Border_And_Flies_On_As_It_Arrives()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        // The column four east of the spawn's loaded and the fifth not, an arrow loosed east toward
+        // the fifth.
+        Assert.True(game.World.HasColumn(4, 0));
+        Assert.False(game.World.HasColumn(5, 0));
+        game.Arrows.Shoot(LandOrigin.PlaceOf(new LandPlace(60.5, 20, 0.5)), new Vector3(40, 10, 0));
+        headless.Step(60);
+
+        var waiting = Assert.Single(game.Arrows.All);
+        Assert.False(waiting.Stuck);
+        Assert.InRange(LandOrigin.LandOf(waiting.Position).X, 78, 80);
+
+        // The player put east, so the fifth column arrives and the arrow flies on.
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(70.5, 10, 0.5)));
+        Settle(headless);
+        headless.Step(10);
+        Assert.True(LandOrigin.LandOf(Assert.Single(game.Arrows.All).Position).X > 80);
+    }
+
+    [Fact]
     public void A_Recording_Whose_File_Cannot_Be_Written_Ends_And_Says_So()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
