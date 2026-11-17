@@ -42,6 +42,39 @@ public sealed class FallingTests
     }
 
     [Fact]
+    public void A_Fellings_Leaves_Beside_A_Column_Not_Loaded_Stand_Until_It_Joins_And_Are_Asked_Again_Then()
+    {
+        // An oak at the middle of the one column loaded, a row of leaves from its crown east to the
+        // column's edge, and a log over the edge in a column not loaded that holds the row.
+        var world = Laid.World(c => Laid.Fill(c, 0, 3, BlockId.Stone), 0);
+        Oak(world, 8, 8);
+        for (int x = 11; x <= 15; x++) world.SetBlock(x, 8, 10, BlockId.OakLeaves);
+        var felling = new TreeFelling();
+        world.SetBlock(8, 4, 8, BlockId.Air);
+        felling.Fell(world, 8, 4, 8, uses: 100);
+        Felled(felling, world);
+
+        // The leaves within reach of a column not loaded stand, those of the crown's middle go.
+        Assert.Equal(BlockId.OakLeaves, world.GetBlock(10, 8, 10));
+        Assert.Equal(BlockId.OakLeaves, world.GetBlock(10, 7, 10));
+        Assert.Equal(BlockId.Air, world.GetBlock(7, 7, 7));
+
+        // The columns about it joined, the one over the edge with the log, and the leaves asked
+        // again, those the log holds standing and the rest going.
+        foreach (var (cx, cz) in new[] { (1, 0), (0, 1), (1, 1) })
+        {
+            var column = world.Generator.Generate(cx, cz);
+            Lighting.Compute(column);
+            world.Add(column);
+        }
+        world.SetBlock(16, 8, 10, BlockId.OakLog);
+        Felled(felling, world);
+
+        Assert.Equal(BlockId.OakLeaves, world.GetBlock(10, 8, 10));
+        Assert.Equal(BlockId.Air, world.GetBlock(10, 7, 10));
+    }
+
+    [Fact]
     public void Felling_With_An_Axe_Takes_A_Use_For_Each_Log_Dropped_As_An_Item_And_One_Run_Out_Leaves_The_Rest_Standing()
     {
         // The oak's four logs over the cut at its foot, felled with uses to spare, of which the seed's

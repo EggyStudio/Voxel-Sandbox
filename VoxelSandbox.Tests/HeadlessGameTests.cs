@@ -756,6 +756,92 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Felling_Under_Way_As_The_World_Is_Left_Is_Taken_Whole_Before_Its_Save_And_Goes_No_Further()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            var world = Path.Combine(folder, "world");
+            using var headless = new HeadlessGame(save: world, still: true);
+            var game = headless.Game;
+            // An oak felled at its foot and the world switched in the same frame.
+            FallingTests.Oak(game.World, 2, 2);
+            game.World.SetBlock(2, 4, 2, BlockId.Air);
+            game.Felling.Fell(game.World, 2, 4, 2);
+            Assert.True(game.Felling.Busy);
+
+            game.SwitchWorld("flat", 2, Path.Combine(folder, "other"));
+
+            Assert.False(game.Felling.Busy);
+            var save = new WorldSave(world);
+            save.ReadRegion(0, 0);
+            var column = WorldSave.Decode(0, 0, save.Kept(0, 0)!);
+            for (int y = 5; y <= 8; y++) Assert.NotEqual(BlockId.OakLog, column.Get(2, y, 2));
+            Assert.NotEqual(BlockId.OakLeaves, column.Get(2, 9, 2));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Sand_Loosened_As_The_World_Is_Left_Or_A_Jump_Leaves_Its_Column_Is_Set_Down_As_A_Block()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            var (world, other) = (Path.Combine(folder, "world"), Path.Combine(folder, "other"));
+            using var headless = new HeadlessGame(save: world, still: true);
+            var game = headless.Game;
+            // Sand on stone, the stone broken and the world switched in the same frame.
+            game.World.SetBlock(3, 4, 3, BlockId.Stone);
+            game.World.SetBlock(3, 5, 3, BlockId.Sand);
+            headless.Step(1);
+            game.World.SetBlock(3, 4, 3, BlockId.Air);
+            game.SwitchWorld("flat", 2, other);
+
+            var save = new WorldSave(world);
+            save.ReadRegion(0, 0);
+            Assert.Equal(BlockId.Sand, WorldSave.Decode(0, 0, save.Kept(0, 0)!).Get(3, 4, 3));
+
+            // The same in the world switched to, the player jumping far off as the stone breaks,
+            // and back.
+            Settle(headless);
+            game.World.SetBlock(3, 4, 3, BlockId.Stone);
+            game.World.SetBlock(3, 5, 3, BlockId.Sand);
+            headless.Step(1);
+            game.World.SetBlock(3, 4, 3, BlockId.Air);
+            game.Leave(new LandPlace(100_000.5, 10, 0.5));
+            game.Recenter(new LandPlace(100_000.5, 10, 0.5));
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(100_000.5, 10, 0.5)));
+            Settle(headless);
+            game.Leave(new LandPlace(0.5, 10, 0.5));
+            game.Recenter(new LandPlace(0.5, 10, 0.5));
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, 10, 0.5)));
+            Settle(headless);
+
+            Assert.Equal(BlockId.Sand, game.World.GetBlock(3, 4, 3));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    // Steps the game until the columns about the player are in.
+    private static void Settle(HeadlessGame headless)
+    {
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        do
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        while ((headless.Game.Loading || headless.Game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30);
+    }
+
+    [Fact]
     public void A_Recording_Whose_File_Cannot_Be_Written_Ends_And_Says_So()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

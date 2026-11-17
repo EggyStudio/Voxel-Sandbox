@@ -319,18 +319,6 @@ change.
     stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
     about 16:40, part two stays parked.
 
-221. **What a cut leaves of a save.** No item has read the world's files for a write that ends
-    midway. Asked, a read of every path that writes under the data folder, the columns, the player,
-    the mobs, the chests, the options and the worlds' list, by read-only subagents first, for what
-    stands on the disk when the process ends between any two writes, when the disk is full, and when
-    a file read back is short, empty or of another version. Each finding is told with its path and
-    what a player would see, high where a world or a part of it is lost or the game refuses to open,
-    low elsewhere. The high ones are mended in this item, a file written beside its place and moved
-    over it where that fits, a file that fails its read left on the disk under another name and said
-    in the log, each with a test that cuts the write at the named point and fails first. How the
-    chests' earlier file is read stays out of this item. The lows go to the Reply as a list. After
-    item 220.
-
 222. **A pack that reads wrong does not end the game.** Item 221's read found two faults outside the
     saves. A pack whose `.mcmeta` holds JSON of other types than expected, an array at its root or a
     number given as text, throws from the readers the HUD calls as it first draws, so the game ends
@@ -345,6 +333,25 @@ change.
     column whose bytes inflate short of a column's size is read as unreadable, not as a column. A
     screenshot is said saved once its file stands, and said failed where it does not. The other lows
     stay listed. After item 222.
+
+224. **The world at the edge of what is loaded.** No item has read what the world's rules do where a
+    loaded column meets one that is not. Asked, a read by read-only subagents first of every rule
+    that reaches across a column's border, water and lava flowing, sand and gravel falling, trees
+    felled, fire, explosions, pistons if any, light, the mobs' walking and their spawning, dropped
+    items, and the furnaces and chests ticking, for what each does when the column beside is absent,
+    is being made, or is let go midway, and what a save and a load in that state keeps. Each finding
+    is told with its place in the code and what a player would see, high where blocks or things are
+    lost, doubled or left hanging for good, low elsewhere. The high ones are mended in this item,
+    each with a test at a column's border that fails first; the lows go to the Reply as a list.
+    After item 223.
+
+225. **Dropped stacks are kept across a quit.** A stack of items on the ground is never saved, so
+    what a death spills, and any stack in a column that is let go, is gone after the world closes.
+    Asked, the stacks saved by region as the mobs are, each with its place, its item and count and
+    the age it has left, kept when its column is let go and at a save, and brought back when the
+    column joins; a stack keeps its time to vanish across the quit, so nothing lies for good. Tests,
+    a spill saved and read back with its counts whole, a stack in a column let go and joined again
+    present once, and a stack past its age not brought back. After item 224's three commits.
 
 ## Verdicts
 
@@ -680,93 +687,6 @@ the workflow fetches it, under the lock taken exclusive with no quiet wait, pass
 compiling terrain.slang in frame 225, its `captures/closed.log` naming nothing left at a close 0.57
 s after the new world, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png`
 differing in 0.02% of its pixels past 8 levels.
-
-Item 221's read, by three readers in parallel over the columns and regions, the world's other files
-with the worlds' list, and the settings with the packs, for a process ended between two writes, a
-full disk, and a file read back short, empty or of another version. The save's own writes hold. Each
-file of a save is written beside its name with its bytes on the disk, named in a list, then moved,
-and the world's next opening finishes or clears the list, so a cut never leaves a file short or the
-info at odds with the regions. The high findings lay around those writes, and are mended in four
-commits, each with a test that cuts the write or reads the file at the named point, passing three
-runs in three and failing on a copy of the head given the seams it names:
-
-- `56c378b`, the readers.
-  - A length of five bytes that make no number threw a `FormatException` past every reader's filter,
-    so a region was not set aside and its next save wrote over it, and a mobs' or chests' region
-    made every save throw past `SaveWorld`'s filter and the closing one end the program. The region,
-    mobs and chests readers set such a file aside,
-    `Files_Of_The_Save_Whose_Lengths_Are_No_Numbers_Are_Kept_Beside_Those_Written_Again`.
-  - A null record of `furnaces.json` ended the opening at every start, and is no furnace,
-    `A_Furnaces_File_Holding_A_Null_Record_Opens_With_Its_Others`.
-  - A column that cannot be read moved its whole region aside at once, so a run ended before the
-    next save opened the region as fresh land, and a region let go by a timed save while a worker
-    made the column was written with none of its other columns. The region is read first, as a
-    change to it is, and its file copied aside and left standing until a save writes it,
-    `A_Column_That_Cannot_Be_Read_Leaves_Its_Region_Standing_Until_A_Save_Writes_The_Others`.
-  - In a region numbered otherwise, one column that did not inflate ended the read, the columns
-    after it generated and written over. It is left out alone,
-    `A_Column_Of_A_Region_Numbered_Otherwise_That_Cannot_Be_Read_Leaves_The_Columns_After_It_Read`.
-  - A passing fault, a file another program holds or a fault of the disk, moved a whole region aside
-    and its next save wrote fresh land under its name. Such a file is left as it stands and written
-    by no save of the run, the log saying so, while a file refused to the account is set aside as
-    before, `A_Region_Another_Program_Holds_Stands_Unchanged_Through_A_Save_Of_The_Run`, the file
-    byte for byte the same after the run's save.
-- `8a0ec79`, Decision 65. The reader of a world's earlier `chests.json` is taken out with its tests
-  and the README's line, so a chest of a world in that form opens empty and the file stands
-  untouched, `A_Worlds_Earlier_File_Of_Every_Chest_Is_Neither_Read_Nor_Changed`.
-- `c61baa0`, the game's saves.
-  - A switch to another world after a save that failed opened the other and let go of everything
-    since the last save written. The world played stays open and the HUD says so,
-    `A_Switch_To_Another_World_After_A_Save_That_Failed_Keeps_The_World_Played_Until_It_Is_Saved`,
-    and the test of a save that cannot be written keeps the world at its switch.
-  - Save and Quit after a save that failed quit. The game stays open and says so
-    (`VoxelGame.SaveToQuit`), `Save_And_Quit_After_A_Save_That_Failed_Keeps_The_Game_Open`. The
-    window's own close cannot be refused, and tries the save once more as it closes.
-  - A world whose info cannot be read is named in the log as the worlds' list leaves it out, and
-    opened by its name it says on the HUD that its player begins anew, the file kept aside,
-    `A_World_Whose_Info_Cannot_Be_Read_Is_Named_As_It_Is_Left_Out_Of_The_List_And_Opens_Saying_So`.
-- The commit carrying this Reply, the settings. `resourcepacks.txt` was written in its place, so a
-  full disk or a run ended as it wrote left the packs chosen empty or cut. It and `options.txt` are
-  written beside their names with their bytes on the disk and moved over them (`WholeFile`),
-  `A_Write_Of_The_Packs_Chosen_Ended_As_It_Opens_Its_File_Leaves_The_Packs_Chosen_Before`. The
-  options' bytes reaching the disk before the move guards against a machine stopped after it, which
-  no test cuts.
-
-Read and left, the lows:
-
-- Stacks of the window E opens that do not fit a full inventory are not saved, at a save or a
-  switch.
-- A process stopped by the system, as at a logout, ends with no closing save, so what changed since
-  the last timed save is lost, as at a kill.
-- A world opened in two processes at once has its scratch files cleared by the other's opening, and
-  its saves lose what they wrote.
-- A partial `.new` of the file whose write failed is left on a full disk until the next save or
-  opening, and a fetch's `.part` until the next fetch.
-- A world opened in an older build drops what that build does not know, block keys, items, a mob's
-  or a world's kind, and its next save writes so, listed until a release.
-- An options file of garbage or cut sets every setting it does not name to its default with no word
-  on the HUD, and is written over at the first screen left. One of a newer version loses the keys
-  this build does not know.
-- A short inflate of a column is taken as the column with its upper sections air.
-- A failed move as an opening finishes its list is told as a folder that could not be made.
-- The list a save of a widely explored world writes as it retires `mobs.bin` may pass the 4,096
-  names its reader takes.
-- A screenshot is said saved before the engine writes it, and a failed one is said in the log alone.
-- Settings changed by a command or on a screen still open as the window closes are not written.
-
-The two faults of the packs outside a save, a pack's metadata of the wrong types and an unreadable
-default pack, are item 222.
-
-Each commit's checks: the strict build clean, the suite outside the GPU's lock with the long soak
-skipped, 577, 577, 580 and 581 passing, the headless game's 73, 73, 76 and 76 passing three times in
-a row, and the play under the lock taken exclusive with no quiet wait passing in 206, 204, 205 and
-187 s, its `captures/closed.log` naming no fault and no texture left, and its captures within 11
-levels of the warm play's on 6.2.102, `sky2.png` differing in at most 0.21% of its pixels past 8
-levels, along the clouds' edges. The suite's first run of `56c378b` failed the test of a world
-numbered otherwise, on a helper of the new tests that put a region west of the origin in the region
-at it, mended before the commit. The test of a save that cannot be written is changed to the rule
-these commits make, the world kept at a switch, and a file refused to the account is set aside as
-its test has it.
 
 Item 222's mends, each with a test that passes three runs in three and fails on a copy of the head:
 

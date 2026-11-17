@@ -54,6 +54,47 @@ public sealed class ScreenTests : IDisposable
     }
 
     [Fact]
+    public void A_Chests_Window_Open_As_The_Player_Leaves_For_Far_Land_Keeps_The_Chest_It_Shows()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: folder, still: true);
+            var game = headless.Game;
+            Serve(game);
+            game.World.SetBlock(0, 4, -2, BlockId.Chest);
+            game.Chests.At(0, 4, -2).Slots[0] = new ItemStack(Items.Coal, 8);
+            Run("voxel.look 0 -30");
+            headless.Step(2);
+            Assert.Equal("the chest at 0, 4, -2 is opened", Run("voxel.place"));
+
+            // Far off with the window open, the chest's column let go, and back.
+            Run("voxel.tp 100000 10 0.5");
+            Stand(headless);
+            Run("voxel.tp 0.5 10 0.5");
+            Stand(headless);
+
+            Assert.Equal(new ItemStack(Items.Coal, 8), game.Chests.All[(0, 4, -2)].Slots[0]);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    // Steps the game until the columns about the player are in.
+    private static void Stand(HeadlessGame headless)
+    {
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        do
+        {
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        while ((headless.Game.Loading || headless.Game.Streamer.Pending > 0) && clock.Elapsed.TotalSeconds < 30);
+    }
+
+    [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {
         using var headless = new HeadlessGame();

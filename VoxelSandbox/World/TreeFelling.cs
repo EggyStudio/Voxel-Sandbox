@@ -38,6 +38,9 @@ public sealed class TreeFelling(int seed = 1)
     }
 
     private readonly List<(float At, Step Step, int X, int Y, int Z, Tree Tree)> _steps = [];
+    // The leaves a felling left standing since a column within their reach of a log was not
+    // loaded, each group with its tree, asked again once those columns are.
+    private readonly List<(Tree Tree, List<(int X, int Y, int Z)> Leaves)> _spared = [];
     private readonly Random _random = new(seed);
     private float _time;
 
@@ -90,7 +93,7 @@ public sealed class TreeFelling(int seed = 1)
         // The crown is read now, the tree's logs counted as gone, and its leaves go from the tick the
         // first log does, after it, since the steps of a tick are taken in the order they were added.
         var (bx0, by0, bz0, bx1, by1, bz1) = tree.Box;
-        var crown = Loose(world, bx0, by0, bz0, bx1, by1, bz1, [.. logs]);
+        var crown = Loose(world, bx0, by0, bz0, bx1, by1, bz1, [.. logs], tree);
         _random.Shuffle(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(crown));
         var start = _time + (logs.Count == 0 ? 0 : Tick);
         for (int i = 0; i < crown.Count; i++)
@@ -101,10 +104,57 @@ public sealed class TreeFelling(int seed = 1)
     public void Update(VoxelWorld world, float seconds)
     {
         _time += seconds;
+        AskSpared(world);
+        Take(world, all: false);
+    }
+
+    /// <summary>Takes every log and leaf still to go at once, as the world is left or closed.</summary>
+    public void Finish(VoxelWorld world) => Take(world, all: true);
+
+    /// <summary>Lets go of every felling, as another world opens.</summary>
+    public void Clear()
+    {
+        _steps.Clear();
+        _spared.Clear();
+        Broken.Clear();
+        Dropped.Clear();
+        Worn = 0;
+    }
+
+    // Asks again the leaves spared beside a column not loaded once every column within their reach
+    // is, those loose of every log decaying as a felled tree's crown does.
+    private void AskSpared(VoxelWorld world)
+    {
+        for (int i = _spared.Count - 1; i >= 0; i--)
+        {
+            var (tree, leaves) = _spared[i];
+            if (leaves.Exists(leaf => NearAbsent(world, leaf.X, leaf.Z))) continue;
+            _spared.RemoveAt(i);
+            var (x0, y0, z0, x1, y1, z1) = tree.Box;
+            var loose = Loose(world, x0, y0, z0, x1, y1, z1, [], null).ToHashSet();
+            var asked = new Tree(null, tree.Box);
+            foreach (var leaf in leaves)
+                if (loose.Contains(leaf)) _steps.Add((_time, Step.Leaf, leaf.X, leaf.Y, leaf.Z, asked));
+        }
+    }
+
+    // Whether a column within a leaf's reach of a log is not loaded, where a log holding the leaf
+    // may stand.
+    private static bool NearAbsent(VoxelWorld world, int x, int z)
+    {
+        for (int cz = VoxelWorld.ColumnOf(z - LeafReach); cz <= VoxelWorld.ColumnOf(z + LeafReach); cz++)
+            for (int cx = VoxelWorld.ColumnOf(x - LeafReach); cx <= VoxelWorld.ColumnOf(x + LeafReach); cx++)
+                if (!world.HasColumn(cx, cz)) return true;
+        return false;
+    }
+
+    // Takes the logs and leaves whose time has come, or all of them.
+    private void Take(VoxelWorld world, bool all)
+    {
         for (int i = 0; i < _steps.Count; i++)
         {
             var step = _steps[i];
-            if (step.At > _time) continue;
+            if (!all && step.At > _time) continue;
             _steps.RemoveAt(i--);
             var block = world.GetBlock(step.X, step.Y, step.Z);
             switch (step.Step)
@@ -124,7 +174,7 @@ public sealed class TreeFelling(int seed = 1)
                     if ((step.Tree.Uses = left - 1) == 0)
                     {
                         var (x0, y0, z0, x1, y1, z1) = step.Tree.Box;
-                        step.Tree.Loose = [.. Loose(world, x0, y0, z0, x1, y1, z1, [])];
+                        step.Tree.Loose = [.. Loose(world, x0, y0, z0, x1, y1, z1, [], step.Tree)];
                     }
                     break;
                 case Step.Leaf when Blocks.IsLeaves(block) && step.Tree.Loose?.Contains((step.X, step.Y, step.Z)) != false:
@@ -137,8 +187,9 @@ public sealed class TreeFelling(int seed = 1)
 
     // The leaves within a box with no log six leaves or fewer away through leaves, read from every
     // log in the box and a band around it outward but those felled, as the source keeps each leaf's
-    // distance to a log.
-    private static List<(int X, int Y, int Z)> Loose(VoxelWorld world, int x0, int y0, int z0, int x1, int y1, int z1, HashSet<(int X, int Y, int Z)> felled)
+    // distance to a log. A leaf within reach of a column not loaded, where a log holding it may
+    // stand, is spared for its tree where one is given, and asked again once the column is loaded.
+    private List<(int X, int Y, int Z)> Loose(VoxelWorld world, int x0, int y0, int z0, int x1, int y1, int z1, HashSet<(int X, int Y, int Z)> felled, Tree? tree)
     {
         var near = new HashSet<(int, int, int)>();
         var front = new Queue<((int X, int Y, int Z) At, int Steps)>();
@@ -157,11 +208,13 @@ public sealed class TreeFelling(int seed = 1)
                 if (Blocks.IsLeaves(world.GetBlock(x + dx, y + dy, z + dz)) && near.Add(next)) front.Enqueue((next, steps + 1));
             }
         }
-        var loose = new List<(int, int, int)>();
+        var (loose, spared) = (new List<(int X, int Y, int Z)>(), new List<(int X, int Y, int Z)>());
         for (int y = y0; y <= y1; y++)
             for (int z = z0; z <= z1; z++)
                 for (int x = x0; x <= x1; x++)
-                    if (Blocks.IsLeaves(world.GetBlock(x, y, z)) && !near.Contains((x, y, z))) loose.Add((x, y, z));
+                    if (Blocks.IsLeaves(world.GetBlock(x, y, z)) && !near.Contains((x, y, z)))
+                        (tree is not null && NearAbsent(world, x, z) ? spared : loose).Add((x, y, z));
+        if (spared.Count > 0) _spared.Add((tree!, spared));
         return loose;
     }
 }

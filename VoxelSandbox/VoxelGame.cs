@@ -663,6 +663,7 @@ public sealed class VoxelGame : IDisposable
         Mobs.SetSpawning(World, spawning);
         Drops.Clear();
         Falling.Clear();
+        Felling.Clear();
         Fires.Clear();
         Sounds.Stop();
         Tnt.Clear();
@@ -877,6 +878,7 @@ public sealed class VoxelGame : IDisposable
     {
         // The columns left are kept by the save, so a timed save under way ends first.
         SettleSave();
+        TakeLoose(all: true);
         Streamer.Leave(to, RenderDistance);
         var ecs = GetApp().World.Resource<EcsWorld>();
         var gone = new List<int>();
@@ -907,10 +909,12 @@ public sealed class VoxelGame : IDisposable
         else SaveWorld();
     }
 
-    // The blocks falling and the TNT lit are set down as blocks before the last save of a world
-    // closed or left, which keeps neither, a timed save leaving them falling and burning.
+    // A felling's steps still to go are taken, and the blocks loosened, falling and the TNT lit are
+    // set down as blocks before the last save of a world closed or left, which keeps none of them,
+    // a timed save leaving them falling and burning.
     private void SetDownMoving()
     {
+        TakeLoose(all: true);
         Falling.SetDown(World);
         Tnt.SetDown(World);
     }
@@ -1119,24 +1123,7 @@ public sealed class VoxelGame : IDisposable
         // stand as the engine's frame let them fall drop as items.
         Falling.Take(World);
         foreach (var (x, y, z, block) in GetApp().World.DrainEvents<FallingBroke>()) Drops.Pop(Items.Of(block), 1, x, y, z);
-        // A felled tree's logs and leaves throw a few bits each, many breaking at once, and drop what
-        // the source drops in survival, and a share of its logs falls as blocks.
-        Felling.Update(World, seconds);
-        if (Felling.Worn > 0)
-        {
-            Wear(Felling.Worn, _fellingAxe);
-            Felling.Worn = 0;
-        }
-        foreach (var (x, y, z, block) in Felling.Broken)
-        {
-            Bits.Break(block, x, y, z, count: 8, climate: World.TintsAt(x, z));
-            if (Mode.Lives())
-                foreach (var (item, count) in Loot.Of(block, _random))
-                    Drops.Pop(item, count, x, y, z);
-        }
-        Felling.Broken.Clear();
-        foreach (var (x, y, z, block) in Felling.Dropped) Falling.Drop(block, x, y, z);
-        Felling.Dropped.Clear();
+        Felled(seconds);
         // The fires the world set start to burn, and the TNT the fires burned as the engine's frame
         // burned them is lit.
         Fires.Take(World, Step.Random);
@@ -1159,6 +1146,7 @@ public sealed class VoxelGame : IDisposable
         Sky.Update(seconds);
         World.Fluids.Update(seconds);
         Clouds.Update(seconds);
+        TakeLoose();
         var clock = System.Diagnostics.Stopwatch.StartNew();
         Streamer.Update(Player.Body.Position, RenderDistance);
         var streamed = clock.Elapsed.TotalMilliseconds;
@@ -1308,6 +1296,40 @@ public sealed class VoxelGame : IDisposable
             if (harm > 0) mob.Hit(at, harm);
         }
         Blasts.Add(at, power);
+    }
+
+    // A felled tree's logs and leaves throw a few bits each, many breaking at once, and drop what
+    // the source drops in survival, and a share of its logs falls as blocks, those still to go
+    // taken at once where the world is left or closed.
+    private void Felled(float seconds, bool all = false)
+    {
+        if (all) Felling.Finish(World);
+        else Felling.Update(World, seconds);
+        if (Felling.Worn > 0)
+        {
+            Wear(Felling.Worn, _fellingAxe);
+            Felling.Worn = 0;
+        }
+        foreach (var (x, y, z, block) in Felling.Broken)
+        {
+            Bits.Break(block, x, y, z, count: 8, climate: World.TintsAt(x, z));
+            if (Mode.Lives())
+                foreach (var (item, count) in Loot.Of(block, _random))
+                    Drops.Pop(item, count, x, y, z);
+        }
+        Felling.Broken.Clear();
+        foreach (var (x, y, z, block) in Felling.Dropped) Falling.Drop(block, x, y, z);
+        Felling.Dropped.Clear();
+    }
+
+    // What the world loosened, felled or let fall since the frame's own fall and drops is taken
+    // here, the felling's steps still to go among it where the world is left or closed, so the
+    // columns that unload or the save that follows keep its blocks and its stacks.
+    private void TakeLoose(bool all = false)
+    {
+        if (all) Felled(0, all: true);
+        Falling.Take(World);
+        LeaveDrops();
     }
 
     // What the mobs that died and, in survival, the blocks that fell with the block they held to leave
@@ -1789,6 +1811,9 @@ public sealed class VoxelGame : IDisposable
         Switcher.Draw();
         Windows.Draw();
         if (Mode.Lives() && Vitals.Dead) DrawDeath();
+        // A chest's or a furnace's window whose block's column is let go, as by a jump, shuts, so
+        // no empty one is begun in a column not loaded in place of the one the save keeps.
+        if (InventoryOpen && (AtChest ?? AtFurnace) is var (wx, _, wz) && !World.HasColumn(VoxelWorld.ColumnOf(wx), VoxelWorld.ColumnOf(wz))) CloseInventory();
         if (InventoryOpen && !(AtFurnace is var (fx, fy, fz) ? InventoryWindow.DrawFurnace(Inventory, Furnaces.At(fx, fy, fz))
             : AtChest is var (cx, cy, cz) ? InventoryWindow.DrawChest(Inventory, Chests.At(cx, cy, cz))
             : AtTable ? InventoryWindow.DrawInventory(Inventory, InventoryWindow.Table)
