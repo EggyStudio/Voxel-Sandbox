@@ -1225,6 +1225,9 @@ echo "a dead player's cursor hidden $clicked after a click beside the death scre
 [ "$clicked" = False ] && [ "$shut" = False ] || fail "a dead player's cursor is taken over the death screen, hidden $clicked after a click beside its window and $shut after the menu"
 ./e3d eval 'VoxelSandbox.GameCommands.Game!.Respawn()' --quiet --timeout 600 --session "$pid" > /dev/null 2> "$said" || fail "./e3d eval Respawn ended with $?, $(head -n 1 "$said")"
 cmd voxel.mode creative
+# The respawn opens the spawn behind its loading screen, whose frames take no key, so the run waits
+# for it to stand before the next check presses any.
+stood
 
 check "the seed's field"
 # Escape opens the game's menu, World and New World open the screen of a new world at the window's
@@ -1233,6 +1236,7 @@ check "the seed's field"
 # the world of, which switches the world, so it comes last. Control is held by a command in the
 # background and V pressed once input.state reads Control down, since each e3d call takes a few
 # frames to start.
+before=$(ask voxel.state | grep -o "world [a-z]* of seed [0-9-]*") || true
 cmd input.key Escape 1
 cmd input.click 640 402
 cmd frames.wait 2
@@ -1251,8 +1255,13 @@ for i in $(seq 1 50); do ask input.state | grep -q '^keys: .*LeftControl' && bre
 cmd input.key V 1
 wait "$held" || fail "./e3d command input.key LeftControl ended with an error"
 cmd input.key Enter 1
-cmd frames.wait 3
-seeded=$(ask voxel.state | grep -o "world [a-z]* of seed [0-9-]*") || true
+# The world Enter begins switches in a frame after it, which a slow device takes a while to reach,
+# so the state is read until it names a world other than the one before, twenty times at most.
+for i in $(seq 1 20); do
+  cmd frames.wait 3
+  seeded=$(ask voxel.state | grep -o "world [a-z]* of seed [0-9-]*") || true
+  [ "$seeded" != "$before" ] && break
+done
 echo "the seed's field began the $seeded"
 [ "$seeded" = "world overworld of seed 12345" ] || fail "the seed typed and pasted began the $seeded, where the overworld of seed 12345 was typed"
 
@@ -1278,7 +1287,14 @@ keep() { XDG_DATA_HOME="$data" ./e3d "$@"; }
 keep open "$program" --offscreen --flat --world shot --timeout 600 --json > captures/opened-kept.json || fail "the run that keeps its files did not open"
 kept=$(perl -MJSON::PP -0777 -ne 'my $answer = eval { decode_json($_) } or exit; print $answer->{data}{pid} // ""' captures/opened-kept.json)
 [ -n "$kept" ] || fail "e3d opened the run that keeps its files and did not say its process"
-keep command frames.wait 30 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command frames.wait ended with $?, $(head -n 1 "$said")"
+# Its world stands before F2 is pressed, which the frames of its loading screen do not take.
+for i in $(seq 1 600); do
+  state=$(keep command voxel.state --timeout 600 --session "$kept" 2> "$said") || fail "./e3d command voxel.state ended with $?, $(head -n 1 "$said")"
+  [[ "$state" == "feet at "* ]] && break
+  [[ "$state" == "loading "* ]] || fail "the run that keeps its files did not stand, voxel.state said $state"
+  keep command frames.wait 10 --quiet --timeout 600 --session "$kept" 2> "$said" || fail "./e3d command frames.wait ended with $?, $(head -n 1 "$said")"
+done
+[[ "$state" == "feet at "* ]] || fail "the run that keeps its files did not stand within 6000 frames, $state"
 answer=$(keep command voxel.options render --timeout 600 --session "$kept" 2> "$said") || fail "./e3d command voxel.options ended with $?, $(head -n 1 "$said")"
 grep -q '^Render Distance: 5 chunks, ' <<< "$answer" || fail "the options file's render distance of 5 was not read at the start, $(grep '^Render Distance' <<< "$answer")"
 grep -q '^Corner Shade: 50%, ' <<< "$answer" || fail "the options file's corner shade it cannot read did not leave the default, $(grep '^Corner Shade' <<< "$answer")"

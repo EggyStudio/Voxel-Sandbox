@@ -336,7 +336,23 @@ change.
 
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdict 14 is open, the play's seed step on run 44078576705. Verdicts 1 to 13 are settled, said
+under each in REVIEW-ARCHIVE.md.
+
+14. **The play's seed step read the world before the new one came.** Build run 44078576705 of
+    `ac5602d`, item 214, ended red at 13:58 on 2026-11-17 in its play job alone, the three test jobs
+    green. Every step up to the menu's button and the death screen passed, at 3,330 s. The seed's
+    field step then failed within seconds, where the green run before it spent 246 s there, with the
+    world read as the overworld of seed 1 where 12345 was typed and pasted. The game's log ends with
+    one frame making a pipeline of bits.slang in 3,328 ms on the runner's CPU device. The step
+    presses Enter, waits three frames and reads voxel.state, and since item 214 the first frames of
+    a new world are drawn behind the loading screen, so on a slow device three frames after Enter
+    the state may still tell the world before. Local plays on the GPU pass. Asked, a read of which
+    it is, the step reading too soon or the typed seed lost; where it reads too soon, the step waits
+    for the state to tell a world opened after Enter, bounded in time, and every other step that
+    reads the state within a few frames of a world's opening is read for the same; where the seed is
+    lost, the mend in the game with a test. The four commits held behind it go up with the mend in
+    one push.
 
 ## Decisions
 
@@ -783,3 +799,33 @@ game with no compiler. Only a play built outside the checkout met it on the pin 
 terrain shader importing the engine's model pass, whose source changed, and no `build/tools` above
 its folder. The README says under Running it that such a build takes the compiler `ENGINE_SLANGC`
 names.
+
+Verdict 14's read, from the run's job log and its game log in the play artifact. The step read the
+state in time, and its keys were lost before it, to the step before. The death screen's step ends by
+calling `Respawn`, which opens the spawn behind its loading screen, sets creative and goes on at
+once. In the game's log the respawn's load begins at 3,279.97 s of the game's clock, the mode turns
+creative at 3,280.76 and the world stands at 3,302.89, 22.9 s later on the runner's CPU device, its
+eight frames behind the screen among them. The seed's step pressed Escape at once, and a frame of
+loading runs `Stand` alone (`VoxelGame.Begin`) and reads no key, so the menu never opened. The log
+holds no `Menu: None -> Pause` after the respawn, where the steps before hold one for each Escape.
+The world stayed the overworld of seed 1, and no seed was typed into any field. In the green run of
+`fc4a632` before item 214 the respawn's load took 1.0 s, from 4,152.57 to 4,153.59, and Escape
+opened the menu at 4,163.90.
+
+The mend is the play's alone, each wait bounded:
+
+- After the respawn the run waits for the world to stand (`stood`, 600 reads at most) before the
+  seed's step presses a key.
+- The seed's step reads the world's name before Escape and, after Enter, reads the state until it
+  names another world, twenty times at most, where it read once three frames after.
+- The run that keeps its files waits for its world to stand before F2, which only a frame of play
+  takes, where it waited 30 frames.
+
+The play's two other openings, the first and the overworld's, wait by `stood`.
+
+The play's script alone changes, so no build or suite was run for it. The play, under the lock taken
+exclusive with no quiet wait on the GPU, passes in 187 s, its seed's step naming the overworld of
+seed 12345 in 5 s, its `captures/closed.log` naming nothing left at a close 0.53 s after the new
+world, and its captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.10%
+of its pixels past 8 levels, the most 116. A play on the GPU passed before the mend too, its respawn
+standing in a few frames.
