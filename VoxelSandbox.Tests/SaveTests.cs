@@ -404,18 +404,31 @@ public sealed class SaveTests : IDisposable
     }
 
     [Fact]
-    public void A_Furnace_Or_A_Chest_Listed_With_No_Slots_Stands_Empty()
+    public void A_Furnace_Listed_With_No_Slots_Stands_Empty()
     {
         new WorldSave(_folder);
         File.WriteAllText(Path.Combine(_folder, "furnaces.json"), """[{"X":1,"Y":2,"Z":3,"Slots":null,"Burning":0,"BurnTotal":0,"Cooked":0}]""");
-        File.WriteAllText(Path.Combine(_folder, "chests.json"), """[{"X":4,"Y":5,"Z":6,"Slots":null,"Loot":null,"Seed":0}]""");
+
+        var save = new WorldSave(_folder);
+
+        Assert.All(save.ReadFurnaces().All[(1, 2, 3)].Slots, slot => Assert.Null(slot));
+    }
+
+    [Fact]
+    public void A_Worlds_Earlier_File_Of_Every_Chest_Is_Neither_Read_Nor_Changed()
+    {
+        new WorldSave(_folder);
+        var path = Path.Combine(_folder, "chests.json");
+        File.WriteAllText(path, """[{"X":4,"Y":5,"Z":6,"Slots":["stick 2"],"Loot":null,"Seed":0}]""");
+        var bytes = File.ReadAllBytes(path);
 
         var save = new WorldSave(_folder);
         var chests = new Chests(save);
         chests.Joined(new ChunkColumn(0, 0));
+        save.WriteChests([((0, 0), [])]);
 
-        Assert.All(save.ReadFurnaces().All[(1, 2, 3)].Slots, slot => Assert.Null(slot));
-        Assert.All(chests.All[(4, 5, 6)].Slots, slot => Assert.Null(slot));
+        Assert.False(chests.All.ContainsKey((4, 5, 6)));
+        Assert.Equal(bytes, File.ReadAllBytes(path));
     }
 
     [Fact]
@@ -434,14 +447,12 @@ public sealed class SaveTests : IDisposable
     public void A_Slot_That_Is_None_Reads_Empty_Beside_The_Stacks_Of_The_Rest()
     {
         new WorldSave(_folder);
-        File.WriteAllText(Path.Combine(_folder, "chests.json"), """[{"X":7,"Y":8,"Z":9,"Slots":[null,"stick 2"],"Loot":null,"Seed":0}]""");
+        File.WriteAllText(Path.Combine(_folder, "furnaces.json"), """[{"X":7,"Y":8,"Z":9,"Slots":[null,"stick 2"],"Burning":0,"BurnTotal":0,"Cooked":0}]""");
 
-        var chests = new Chests(new WorldSave(_folder));
-        chests.Joined(new ChunkColumn(0, 0));
-        var chest = chests.All[(7, 8, 9)];
+        var furnace = new WorldSave(_folder).ReadFurnaces().All[(7, 8, 9)];
 
-        Assert.Null(chest.Slots[0]);
-        Assert.Equal(new ItemStack(Items.Stick, 2), chest.Slots[1]);
+        Assert.Null(furnace.Slots[0]);
+        Assert.Equal(new ItemStack(Items.Stick, 2), furnace.Slots[1]);
     }
 
     [Fact]
@@ -897,7 +908,6 @@ public sealed class SaveTests : IDisposable
 
     [Theory]
     [InlineData("world.json", 20)]
-    [InlineData("chests.json", 80)]
     [InlineData("furnaces.json", 80)]
     public void A_Saves_File_Far_Past_What_The_Game_Writes_Is_Kept_Beside(string name, int megabytes)
     {
@@ -915,9 +925,6 @@ public sealed class SaveTests : IDisposable
         {
             case "world.json":
                 Assert.Null(read.ReadInfo());
-                break;
-            case "chests.json":
-                Assert.Null(read.TakeChests(0, 0));
                 break;
             default:
                 Assert.Empty(read.ReadFurnaces().All);

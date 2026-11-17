@@ -576,9 +576,8 @@ items the game has, rolled the first time it is opened or broken from a seed of 
 world's chest holds the same loot each time. A chest is a block of its own, made of eight planks,
 its faces cut from a pack's picture of the source's chest model, and its window is the source's of
 three rows, which a shift-click moves a stack into. `voxel.chest <x> <y> <z>` says what one holds,
-and a save keeps every chest in the world's `chests.json`, those not yet opened with their loot to
-roll. Rails, made of six iron ingots and a stick, and cobwebs, which give their string, are blocks
-too.
+and a save keeps every chest with its region, those not yet opened with their loot to roll. Rails,
+made of six iron ingots and a stick, and cobwebs, which give their string, are blocks too.
 
 The sea's floor holds ruins and wrecks, and the land temples, huts and outposts, each spread as the
 source spreads it, at a chunk's corner among the first so many chunks of its square, and each with
