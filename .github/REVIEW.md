@@ -357,10 +357,45 @@ change.
     a spill saved and read back with its counts whole, a stack in a column let go and joined again
     present once, and a stack past its age not brought back. After item 224's three commits.
 
+226. **The lows of items 224 and 225 that lose or double things.** Asked, each with a test that
+    fails first. A stack thrown into a column that is not loaded is saved with the column it waits
+    for, so a close before the join keeps it. A falling block and a lit charge in the air at a timed
+    save are saved where they are and go on after a load, none lost and none doubled. A chest whose
+    file is held at its first opening is not given its loot a second time when the file reads again.
+    An arrow in flight toward a column that is not loaded waits at the border and flies on when it
+    joins, or is let go with its item dropped, the choice told in the Reply. A fire keeps its age
+    across a load. The other lows stay as the Reply's list. After item 225.
+
+227. **Items neither made from nothing nor lost in the player's hands.** No item has read the paths
+    an item takes through the player. Asked, a read by read-only subagents first of the inventory's
+    moves, the split and the merge of stacks, the cursor's stack as a window closes, crafting and
+    its returned grid, the furnace's fuel, input and output with its window open and shut, a tool's
+    wear to its break, picking up into a full inventory, throwing, death's spill and the respawn,
+    and the commands that give and take, for any path where a count rises or falls without cause,
+    among them two actions in one frame, a window closed by the game midway, a save between the two
+    halves of a move, and a stack at its most. Each finding is told with its place in the code and
+    the steps a player takes to reach it, high where items are made or lost, low elsewhere. The high
+    ones are mended in this item, each with a test that fails first and a count of every item in the
+    world and the player's hands held equal before and after; the lows go to the Reply as a list.
+    After item 226.
+
 ## Verdicts
 
-No verdict is open. Verdicts 14 and 15 are settled at 15:34 on 2026-11-17, the play green in run
-44093860347. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdict 16 is open, the build run 44167788522 of `e079315` red on Linux and macOS in the end
+request's test. Verdicts 1 to 15 are settled, said under each in REVIEW-ARCHIVE.md.
+
+16. **The build run of `e079315` is red on Linux and macOS in one test.** Run 44167788522 ended red
+    at 22:19 on 2026-11-17, jobs 134338385147 and 134338384947, 587 passed and 1 failed of 589,
+    Windows green with the test skipped there.
+    `ProcessTests.A_Request_To_End_The_Process_Saves_The_World_As_The_Windows_Close_Does` failed at
+    `ProcessTests.cs` line 38, the child game never printing its change to Playing within two
+    minutes, on both runners alike, where it passed three times on the coder's machine. The test
+    drops the child's standard output and error, so the run does not say whether the child ended
+    early, stood waiting on something the runner lacks, or printed the line elsewhere. Asked, the
+    cause read first on a software device with no display and an empty home, as the runner has, and
+    told in the Reply; the test keeping the child's output and error and giving their last lines and
+    the exit code in its failure message; and the mend, with the test green on both runners. The
+    four commits after it wait locally and go up with the mend.
 
 ## Decisions
 
@@ -869,3 +904,32 @@ headless game's 88 pass three times in a row. The play, under the lock taken exc
 wait, passes in 185 s, the seed's step naming its world in 5 s, its `captures/closed.log` naming no
 fault and no texture left, and its captures within 9 levels of the warm play's on 6.2.102,
 `sky2.png` differing in 0.03% of its pixels past 8 levels.
+
+Verdict 16's read. Run on this machine as the runner runs it, with no display, an empty home, no
+runtime folder, lavapipe the only Vulkan driver, a cache of its own and no `ENGINE_SLANGC`, the
+child game ended within a second with code 1, before its world opened: `LoadShader: 'terrain.slang'
+did not compile. 'terrain.slang' (vertexMain) is not in the shader cache and slangc was not found`,
+and the program stopped on it, `The game cannot open, since .../resources/shaders/terrain.slang did
+not compile`. The program checks at its start that each of its shaders compiles (`OwnFiles.Fault`),
+and the build workflow's test job fetches no slangc, so on the runner it could compile none. On this
+machine the test passed since the shader cache held the program's shaders. The test then waited out
+its two minutes for a line the ended child would never print. On macOS the child would besides have
+kept its data under the runner's own home, which the system takes for the application data folder in
+place of `XDG_DATA_HOME`.
+
+The mend:
+
+- A run with no renderer, headless and not offscreen, draws nothing, so the program compiles none of
+  its shaders there (`OwnFiles.Fault`), checking only that its files stand. An offscreen run, as the
+  play's, renders and checks them.
+- The test keeps the child's last forty lines of output and error, stops waiting the moment the
+  child ends, and gives those lines and the exit code in each failure's message.
+- The child's home is the test's folder as well as its data folder, and the test reads the data
+  folder where the system keeps an account's, under `Library/Application Support` on macOS.
+
+Run as the runner runs it, the test passes three runs in three, in 3 s each, where on the head it
+ended within a second with the lines above. The strict build is clean, 600 tests pass outside the
+GPU's lock with the long soak skipped, and the headless game's 88 pass three times in a row. The
+play, under the lock taken exclusive with no quiet wait, passes in 183 s, its `captures/closed.log`
+naming no fault and no texture left, and its captures within 8 levels of the warm play's on 6.2.102,
+`sky2.png` differing in 0.04% of its pixels past 8 levels.

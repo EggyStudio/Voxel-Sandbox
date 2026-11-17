@@ -1,3 +1,4 @@
+using Engine;
 using static Engine.E3D;
 
 namespace VoxelSandbox;
@@ -28,10 +29,15 @@ public static class OwnFiles
     /// Why the game cannot open, naming the first of its files missing beside the program or not
     /// compiling, or null where every one is there and each shader compiles.
     /// </summary>
+    /// <remarks>
+    /// A run with no renderer, headless and not offscreen, draws nothing, so its shaders are not
+    /// compiled there, and it opens where no compiler and no cache of them is at hand.
+    /// </remarks>
     public static string? Fault()
     {
         if (Paths.FirstOrDefault(path => !File.Exists(path)) is { } missing)
             return $"The game cannot open, since {missing} is missing.";
+        if (GetApp().World.Resource<Config>() is { Headless: true, Offscreen: false }) return null;
         foreach (var (name, compute) in Shaders)
         {
             var path = ShaderPath(name);

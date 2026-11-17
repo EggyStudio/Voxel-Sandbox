@@ -15,32 +15,46 @@ public sealed class ProcessTests : IDisposable
     {
         // A signal is sent to a process on Linux and macOS alone.
         if (OperatingSystem.IsWindows()) return;
-        // The data folder's list of packs written empty, so the game fetches no pack.
-        var data = Path.Combine(_folder, "VoxelSandbox");
+        // The home and the data folder the test's own, the data folder where the system keeps an
+        // account's, and its list of packs written empty, so the game fetches no pack.
+        var data = OperatingSystem.IsMacOS() ? Path.Combine(_folder, "Library", "Application Support", "VoxelSandbox") : Path.Combine(_folder, "VoxelSandbox");
         Directory.CreateDirectory(data);
         File.WriteAllText(Path.Combine(data, "resourcepacks.txt"), "");
         var start = new ProcessStartInfo("dotnet") { RedirectStandardOutput = true, RedirectStandardError = true };
         foreach (var argument in new[] { typeof(VoxelGame).Assembly.Location, "--flat", "--world", "ended" }) start.ArgumentList.Add(argument);
         start.Environment["E3D_HEADLESS"] = "1";
         start.Environment["XDG_DATA_HOME"] = _folder;
+        start.Environment["HOME"] = _folder;
         using var stood = new ManualResetEventSlim();
         using var game = new Process { StartInfo = start };
+        // The game's last lines, of its output and its errors, kept for a failure to give.
+        var said = new System.Collections.Concurrent.ConcurrentQueue<string>();
+        void Said(string? line)
+        {
+            if (line is null) return;
+            said.Enqueue(line);
+            while (said.Count > 40) said.TryDequeue(out _);
+        }
         game.OutputDataReceived += (_, line) =>
         {
+            Said(line.Data);
             if (line.Data?.Contains("WorldState: Loading -> Playing") == true) stood.Set();
         };
-        game.ErrorDataReceived += (_, _) => { };
+        game.ErrorDataReceived += (_, line) => Said(line.Data);
+        string Told() => $"{(game.HasExited ? $"it ended with code {game.ExitCode}" : "it runs on")}, its last lines\n{string.Join("\n", said)}";
         game.Start();
         game.BeginOutputReadLine();
         game.BeginErrorReadLine();
         try
         {
-            Assert.True(stood.Wait(TimeSpan.FromMinutes(2)), "the world did not stand within two minutes");
+            var clock = Stopwatch.StartNew();
+            while (!stood.Wait(100) && !game.HasExited && clock.Elapsed < TimeSpan.FromMinutes(2)) { }
+            Assert.True(stood.IsSet, $"the world did not stand, {Told()}");
             using (var kill = Process.Start("kill", ["-TERM", game.Id.ToString()])) kill.WaitForExit();
 
-            Assert.True(game.WaitForExit(TimeSpan.FromMinutes(1)), "the game did not end within a minute of the request");
-            Assert.Equal(0, game.ExitCode);
-            Assert.True(File.Exists(Path.Combine(data, "saves", "ended", "world.json")));
+            Assert.True(game.WaitForExit(TimeSpan.FromMinutes(1)), $"the game did not end within a minute of the request, {Told()}");
+            Assert.True(game.ExitCode == 0, $"the game ended with code {game.ExitCode}, {Told()}");
+            Assert.True(File.Exists(Path.Combine(data, "saves", "ended", "world.json")), $"no world's info was written, {Told()}");
         }
         finally
         {
