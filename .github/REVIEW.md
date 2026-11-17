@@ -28,24 +28,34 @@ size and read within bounds, with `2213951` and `88519d6`, twelve pictures of th
 kept. After them `a54bc10` and `e18b681`, item 197, the default packs' fetch read as it ended and a
 saved world's chests kept by region with a soak in the suite, pushed at 06:13, their build run
 43808852138 green at 07:15, the form kept. After them `6530931`, the soak test's world opened in its
-own folder, pushed at 07:15, its build run 43815530795 green at 08:45, the form kept. After it `bf62c5f`, item
-198, a save written whole behind a list, `03d30d2`, the tests' saves in a folder of their own, and
-`dd8b0d4`, the meshing after a pause held to a quarter second's frame, pushed at 08:45, their build
-run 43826021283 green at 09:54. After them `76034ec`, a herd's animals each on a cell of their own,
-and `1f95f63`, a test of a world's columns the same in any order, pushed at 09:54, their build run
-43835105810 green at 11:05. After them `bc66d0a`, a column's ores walked from the veins of the nine
-columns about it, pushed at 11:05, its build run 43845676614 green at 12:33. After it `bb83898`, `6058496`, `8e2206d`
-and `586e734`, item 200, a column's making with its shape held, its light set by sections and its
-caves' density read between levels, pushed at 12:33 on 2026-11-16, their build run 43858790579
-green at 13:34, the form kept. After them `24d5b8e`, item 201's Reply, pushed at 17:38 on
-2026-11-16, and `7e46c3e`, item 202, the made columns taken into the world two a frame, the nearest
-first, pushed at 18:39 on 2026-11-16, its build run 43920753329 green by 19:57, the form kept. After it
-`1d79ca8`, item 203, the timed save gathered in its frame and written on a worker, pushed at 20:04
-on 2026-11-16, its build run 43935536624 green at 21:07, the form kept. After it `da25069`, item 204's Reply, no hole seen and no mend, pushed at 21:07, the form kept. After it `8bbcf9f`, item 205, culled sections the game has meshed standing in the shadow maps and the field alone, pushed at 22:08 on 2026-11-16, its build run 43957090054 green, the form kept. After it `dc6994c`, item 206, the flood of the section the eye moves into made ahead and taken at the step, pushed at 23:13 on 2026-11-16, its build run 43967957167 green at 00:12 on 2026-11-17, the form kept. After it `27546f0`, item 207's Reply, the meshing's wait read by its parts and the mend tried and not taken, pushed at 00:35, the form kept. Before them `069a7d9`,
-the comments that likened a thing to another game's saying their rule in the game's own terms,
-comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build run 43750307975 green by
-21:02, the form kept. Before it `c250bcd`, the second commit of item 185, the save command saying a
-failed save, an unsaved world called so, a quality or a mode that names no value refused, a
+own folder, pushed at 07:15, its build run 43815530795 green at 08:45, the form kept. After it
+`bf62c5f`, item 198, a save written whole behind a list, `03d30d2`, the tests' saves in a folder of
+their own, and `dd8b0d4`, the meshing after a pause held to a quarter second's frame, pushed at
+08:45, their build run 43826021283 green at 09:54. After them `76034ec`, a herd's animals each on a
+cell of their own, and `1f95f63`, a test of a world's columns the same in any order, pushed at
+09:54, their build run 43835105810 green at 11:05. After them `bc66d0a`, a column's ores walked from
+the veins of the nine columns about it, pushed at 11:05, its build run 43845676614 green at 12:33.
+After it `bb83898`, `6058496`, `8e2206d` and `586e734`, item 200, a column's making with its shape
+held, its light set by sections and its caves' density read between levels, pushed at 12:33 on
+2026-11-16, their build run 43858790579 green at 13:34, the form kept. After them `24d5b8e`, item
+201's Reply, pushed at 17:38 on 2026-11-16, and `7e46c3e`, item 202, the made columns taken into the
+world two a frame, the nearest first, pushed at 18:39 on 2026-11-16, its build run 43920753329 green
+by 19:57, the form kept. After it `1d79ca8`, item 203, the timed save gathered in its frame and
+written on a worker, pushed at 20:04 on 2026-11-16, its build run 43935536624 green at 21:07, the
+form kept. After it `da25069`, item 204's Reply, no hole seen and no mend, pushed at 21:07, the form
+kept. After it `8bbcf9f`, item 205, culled sections the game has meshed standing in the shadow maps
+and the field alone, pushed at 22:08 on 2026-11-16, its build run 43957090054 green, the form kept.
+After it `dc6994c`, item 206, the flood of the section the eye moves into made ahead and taken at
+the step, pushed at 23:13 on 2026-11-16, its build run 43967957167 green at 00:12 on 2026-11-17, the
+form kept. After it `27546f0`, item 207's Reply, the meshing's wait read by its parts and the mend
+tried and not taken, pushed at 00:35, the form kept. After it `84abe75`, item 208, the next column's
+circle asked for ahead of the step, a section sent only once the columns about it are loaded and the
+flood ahead's sections meshed before the step, a corner drawn in the step's frame where it took 75
+to 82 ms, pushed at 03:29 on 2026-11-17, its build run 44003417473 green at 04:18, the form kept. Before
+them `069a7d9`, the comments that likened a thing to another game's saying their rule in the game's
+own terms, comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build run 43750307975
+green by 21:02, the form kept. Before it `c250bcd`, the second commit of item 185, the save command
+saying a failed save, an unsaved world called so, a quality or a mode that names no value refused, a
 recording held to 36,000 frames and the button keeping its summary, five tests each failing on the
 commit before, pushed at 19:04 on 2026-11-15, its build run 43744639031 green at 20:04, the form
 kept. Before it `9f96eae`, the first commit of item 185, a fill or a room refusing a corner past the
@@ -279,6 +289,16 @@ change.
     against the head's, and the frames past 22, 25, 30 and 40 ms held no worse than item 207's
     counts by the same flight, with a test that a corner section is drawn in the step's frame or the
     one after.
+
+209. **The join frames ahead of a step.** Item 208's five runs keep six frames past 40 ms in which
+    meshes join, 57 to 64 frames before a step, where the head had four after one. Asked, the read
+    first, such a frame by its parts from the vitals (how many meshes are taken in, the uploads, the
+    flood, what else falls in the same frame) over five exclusive runs, then the mend the read
+    points at, the taking in bounded by the frame's time left or spread over the frames before the
+    step, since the flood ahead gives some sixty frames of room. Judged as item 208 was, five runs
+    each way by totals and spread, frames past 22, 25, 30 and 40 ms and the 99th part, with the
+    corners still drawn by the frame after the step and no send failing. The mirror's first frame
+    stays the engine's, its item 290, and is left out of the count by naming its frames.
 
 ## Verdicts
 
@@ -615,3 +635,54 @@ outside the GPU's lock with the long soak skipped, and the play passes in 198 s.
 differs from the pin's in 0.18% of its pixels past 8 levels, the most 116, along the edges of the
 clouds in its upper left, which stand a fraction of a pixel apart, a capture of the night sky with
 no section in it.
+
+Item 209's read of the frames past 40 ms ahead of a step, five runs under the exclusive lock of the
+game at `84abe75` with a probe that records each frame's uploads and reads the engine's ray scene
+at each frame's end by reflection, tuned's powersave-bazzite and the GPU at 0% before each.
+
+Four of item 208's six are the frame where the 6.2.86 package's ray scene makes the buffer of its
+corners again at four times the size, `cpu.global_illumination` at 32.5 to 43.1 ms with 2 to 5
+meshes taken in. The head's four frames past 40 ms in item 208, at frames 322 to 330, are by their
+parts the same frame, where item 208's Reply named them frames where columns join. In the read the
+buffer grows from 256 to 1,024 MiB in three runs of five, at frames 394 to 406 as its corners pass
+16,777,216, at 34.4 to 35.0 ms. In the other two the load before the flight left it at 512 MiB, and
+it does not grow. Over a flight the scene holds 3,520 to 3,851 meshes and 16.2 to 18.0 million
+corners for the 667 to 700 copies a frame places, the package keeping every mesh the game hands it.
+The copy into the larger buffer waits for the frames in flight, so it is the engine's, and the entry
+in its ASKS.md holds these counts. The other two of the six are a frame of the game's meshing at
+17.8 ms with the field at 12.2 and the collector's pause at 6.8, and a frame of 7 meshes taken in
+with the field at 14.5 and a pause of 6.2. No frame of their kind passes 40 ms in the read's five
+runs.
+
+Totals over five runs, the growth's frames and the mirror's first frames named and left out in the
+last row:
+
+| Frames past | Item 208's head | Item 208's three parts | The read |
+|---|---|---|---|
+| 22 ms | 94 | 85 | 77 |
+| 25 ms | 51 | 48 | 57 |
+| 30 ms | 19 | 22 | 21 |
+| 40 ms | 4 | 11 | 8 |
+| 40 ms, those named left out | 0 | 2 | 0 |
+
+The read's medians are 10.36 to 10.47 ms and its 99th parts 24.6 to 26.7 ms, with the probe's
+reflection in every frame.
+
+What stays the game's are the frames past 25 ms in two places:
+
+- At the eye's step, 16 in the read, where the 25 to 38 meshes of the sections the step first
+  draws are built into the ray scene in that frame, `cpu.global_illumination` at 11.4 to 17.0 ms
+  and the frames at 25.2 to 32.0 ms. Where 1 to 5 come in a frame it takes 3.7 ms at the median.
+- About 60 frames before the step, 32 in the read and 25 in item 208's three parts against 3 on
+  the head. The next column's circle is asked for half a column from its face, the point halfway
+  between steps where the field does its own work, which in the head's 3 took 21 to 27 ms alone.
+  Its columns join two a frame over about 15 frames, the game uploading up to 16 group parts a frame
+  of up to 22,000 triangles, 0 to 5 of them first drawn, and `cpu.scene_field` takes 11.1 to
+  26.2 ms in the 15 sampled. Within 8 frames after a step the head holds 34 frames past 25 ms and
+  the read 16.
+
+No mend is made. The second place would be the game's to mend by asking for the next circle soon
+after the step, or by spreading its joins over the 60 frames before the step, so they do not fall
+in the field's halfway frames, and the first by drawing the sections the flood made ahead sees
+into the shadow maps over the frames before the step, so their structures are built a few at a
+time. Either is read as item 208 was if it is asked for.
