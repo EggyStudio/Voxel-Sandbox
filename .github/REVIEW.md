@@ -325,6 +325,15 @@ change.
     the engine's part the larger, it is named for the engine's items 292 and 295 and left there.
     After the pin of 6.2.102.
 
+217. **The opening's workers read for races.** Items 214 and 215 moved the first drawn frame behind
+    the loading screen and the icons' painting onto a worker, beside the workers that mesh and
+    generate. Asked, a read of every value a worker and the frame both touch while a world opens and
+    while one closes, the icons' atlas, the packs read again during a paint, a world closed or a
+    second one opened before the paint ends, a reload of the packs with the screen up, each named
+    with what guards it; a test for each that has none, opening and closing a world twenty times in
+    turn with the packs read again between, with no fault and no icon of the world before; mends
+    where the read finds a gap. Readers by subagents are welcome. After item 216.
+
 ## Verdicts
 
 No verdict is open. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
@@ -745,3 +754,32 @@ headless game's 62 pass three times in a row. The play, under the lock taken exc
 wait, passes in 185 s, its `captures/closed.log` naming the layer enabled and nothing left at a
 close 0.53 s after the new world, and its captures within 12 levels of the first play's on 6.2.102,
 `sky2.png` differing in 0.04% of its pixels past 8 levels, the most 60.
+
+Item 216's read of a loaded world's first shown frames, from the ten opens of item 215 with the
+mend, each open's frames split by the flow's laps into its load, its frames behind the screen and
+its shown frames, with no new open:
+
+- A save of a world left as it was made holds no column, so the loaded world's columns are generated
+  as the new world's are, and no saved column, chest, mob or first pass of the light sets it apart.
+  It differs in where the player stands while the world loads, on its saved ground, where a new
+  world's player waits over the spawn at the ceiling.
+- Its first frame behind the screen takes 656 to 971 ms against 623 to 807 for a new world, the
+  engine's render 514 to 819 against 476 to 640, as the frame takes in 20 to 28 meshes against 7 or
+  8, the sections by the ground meshed while the screen stood. The game's laps in that frame are
+  alike, the HUD's 19 to 24 ms, the sky's 37 to 49 and the sections' 35 to 45.
+- Its ten shown frames take 539 to 789 ms against 567 to 624, and do the same work, 14 to 16 columns
+  joined, 28 to 32 meshes taken in, 240 sends, 59 to 61 uploads and 72 draws. A frame takes about 9
+  ms more, spread over the engine's render, 4.3, the streaming, 2.8, the fields, 2.0, and the
+  placement, 1.1, no part standing apart, and two loaded opens of five as short as the new world's.
+
+The larger part is the engine's intake of more first meshes in the first frame behind the screen,
+which no player sees, passed to the engine for its items 292 and 295, and no part of the game's
+stands to be moved. The item is closed as read.
+
+A player of a packed game never meets a missing cache of the terrain shader. The pack workflow
+fetches `slangc` and compiles every build of every shader into `build/shader-cache`, keyed by the
+source, its defines and its imports, which `build/publish.sh` puts beside the program, and runs the
+game with no compiler. Only a play built outside the checkout met it on the pin of 6.2.102, its
+terrain shader importing the engine's model pass, whose source changed, and no `build/tools` above
+its folder. The README says under Running it that such a build takes the compiler `ENGINE_SLANGC`
+names.

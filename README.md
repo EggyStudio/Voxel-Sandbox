@@ -28,7 +28,9 @@ packs.
 
 The game needs the .NET 10 SDK, a Vulkan device and `slangc`, which `build/fetch-slang.sh` fetches
 into `build/tools` once per checkout (`build/fetch-slang.ps1` on Windows), since its terrain shader
-is compiled when the game loads it.
+is compiled when the game loads it. A build put outside the checkout, as a scripted play's in a
+folder of its own, finds no `build/tools` above it and takes the `slangc` that `ENGINE_SLANGC`
+names.
 
 ```bash
 build/fetch-slang.sh
