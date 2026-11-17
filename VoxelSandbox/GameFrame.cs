@@ -50,6 +50,16 @@ public partial struct GameFrame
         if (ctx.World.TryGetResource<VoxelGame>(out var game)) game.TakeVitals();
     }
 
+    /// <summary>
+    /// The vitals' reckoning started again as the player comes to live, so the way it went and the
+    /// fall it began while the vitals were not taken are no move of its first frame.
+    /// </summary>
+    [OnEnter(Living.Yes)]
+    public static void Arrive(BehaviorContext ctx)
+    {
+        if (ctx.World.TryGetResource<VoxelGame>(out var game)) game.Vitals.Arrived();
+    }
+
     /// <summary>The HUD shown whole once the player no longer lives, as in creative.</summary>
     [OnExit(Living.Yes)]
     public static void ShowHud(BehaviorContext ctx)

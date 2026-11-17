@@ -396,9 +396,6 @@ public sealed class VoxelGame : IDisposable
         set
         {
             if (value != _mode) PreviousMode = _mode;
-            // The vitals' reckoning starts again as the player comes to live, so the way it went and
-            // the fall it began while the vitals were not taken are no move of its first frame.
-            if (value.Lives() && !_mode.Lives()) Vitals.Arrived();
             _mode = value;
             SetState(value);
             Player.MayFly = value == GameMode.Creative;
