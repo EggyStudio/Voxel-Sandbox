@@ -42,8 +42,11 @@ public sealed class PackList(string root)
     public void Write(IEnumerable<string> entries)
     {
         Directory.CreateDirectory(root);
-        System.IO.File.WriteAllLines(File, entries);
+        WholeFile.Write(File, string.Concat(entries.Select(entry => entry + Environment.NewLine)), Writing);
     }
+
+    /// <summary>Told the path each write of the list goes to first, for a test to end the write there.</summary>
+    internal Action<string>? Writing { get; set; }
 
     /// <summary>The path a line names, a pack in the folder by its name or one elsewhere by its whole path.</summary>
     public string PathOf(string entry) => Path.IsPathRooted(entry) ? entry : Path.Combine(Folder, entry);

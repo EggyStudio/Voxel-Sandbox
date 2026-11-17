@@ -67,9 +67,7 @@ public sealed class OptionsFile(string root)
         var text = Text(screens);
         if (text == _held || _keep) return false;
         Directory.CreateDirectory(root);
-        // Written beside and moved over the file, so a run stopped as it writes leaves the last whole one.
-        System.IO.File.WriteAllText(File + ".new", text);
-        System.IO.File.Move(File + ".new", File, overwrite: true);
+        WholeFile.Write(File, text);
         _held = text;
         return true;
     }

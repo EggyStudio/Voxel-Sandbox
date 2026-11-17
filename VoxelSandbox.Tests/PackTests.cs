@@ -355,6 +355,24 @@ public sealed class PackTests : IDisposable
     }
 
     [Fact]
+    public void A_Write_Of_The_Packs_Chosen_Ended_As_It_Opens_Its_File_Leaves_The_Packs_Chosen_Before()
+    {
+        var list = new PackList(Path.Combine(_folder, "game"));
+        list.Write(["first.zip", "second.zip"]);
+        // The file the write goes to emptied as it is opened, as a full disk or a run ended there
+        // leaves it, and the write ended.
+        list.Writing = path =>
+        {
+            File.WriteAllText(path, "");
+            throw new IOException("a test's full disk");
+        };
+
+        Assert.Throws<IOException>(() => list.Write(["third.zip"]));
+
+        Assert.Equal(["first.zip", "second.zip"], list.Read());
+    }
+
+    [Fact]
     public void A_Fetchs_End_Is_Read_With_The_Problem_And_The_Count_It_Ended_With()
     {
         // A reader on the test's thread that waits on the state alone, as the frame does, and reads
