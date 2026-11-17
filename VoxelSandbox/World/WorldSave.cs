@@ -143,6 +143,7 @@ public sealed class WorldSave
         Directory.CreateDirectory(Path.Combine(folder, "regions"));
         _mobs = new(this, ReadMobRegion, WriteMobRegion, MobRegionPath, OneFile, ReadOneFile);
         _chests = new(this, ReadChestRegion, WriteChestRegion, ChestRegionPath);
+        _drops = new(this, ReadDropRegion, WriteDropRegion, DropRegionPath);
         if (Finish()) ClearScratch();
     }
 
@@ -1136,6 +1137,106 @@ public sealed class WorldSave
                 }
             }
         });
+
+    /// <summary>
+    /// A stack of items lying in the world as a save keeps it, the stack as
+    /// <see cref="Inventory.Encode"/> gives it, its place in the land, and the seconds it has left
+    /// before it goes.
+    /// </summary>
+    public sealed record DropRecord(string Stack, LandPlace At, float Left);
+
+    private readonly Regional<DropRecord> _drops;
+
+    /// <summary>
+    /// The stacks a column kept as it unloaded, or as the world was last saved while it was loaded,
+    /// taken out of the save to lie in the world, or none where the save keeps none of the column.
+    /// </summary>
+    /// <remarks>
+    /// A region's stacks are kept in a file of their own beside its blocks, its mobs and its
+    /// chests, so a stack spilled far off lies there across a quit, and still goes in its time.
+    /// </remarks>
+    public List<DropRecord>? TakeDrops(int x, int z) => _drops.Take(x, z);
+
+    /// <summary>Keeps the stacks of a column that unloads, none for one whose stacks are gone, to be written at the next <see cref="WriteDrops"/>.</summary>
+    public void KeepDrops(int x, int z, List<DropRecord> drops) => _drops.Keep(x, z, drops);
+
+    /// <summary>
+    /// Writes the stacks of the loaded columns as they lie, with those kept by the columns unloaded
+    /// since, into their regions' files, and lets go of each region no loaded column lies in.
+    /// </summary>
+    public void WriteDrops(IEnumerable<((int X, int Z) Column, IReadOnlyList<DropRecord> Drops)> loaded) => _drops.Write(loaded);
+
+    private string DropRegionPath((int X, int Z) region) => Path.Combine(Folder, "regions", $"s.{region.X}.{region.Z}.bin");
+
+    // The version of the regions' stacks files and the stacks a column of one may hold, past which
+    // the file is read as one the game did not write.
+    private const int DropsVersion = 1, MostDropsInColumn = 4096;
+    private static readonly byte[] DropsMagic = "E3DS"u8.ToArray();
+
+    private Dictionary<(int X, int Z), List<DropRecord>> ReadDropRegion((int X, int Z) region)
+    {
+        var columns = new Dictionary<(int X, int Z), List<DropRecord>>();
+        var path = DropRegionPath(region);
+        if (!File.Exists(path)) return columns;
+        try
+        {
+            using var reader = new BinaryReader(new ZLibStream(File.OpenRead(path), CompressionMode.Decompress));
+            if (!reader.ReadBytes(4).AsSpan().SequenceEqual(DropsMagic) || reader.ReadInt32() != DropsVersion)
+                throw new InvalidDataException("it is not a stacks file of a version this game reads");
+            var count = reader.ReadInt32();
+            if (count is < 0 or > RegionSize * RegionSize) throw new InvalidDataException("it counts more columns than a region holds");
+            for (int c = 0; c < count; c++)
+            {
+                int lx = reader.ReadByte(), lz = reader.ReadByte();
+                if (lx >= RegionSize || lz >= RegionSize) throw new InvalidDataException("a column of it lies outside it");
+                var drops = columns[(region.X * RegionSize + lx, region.Z * RegionSize + lz)] = [];
+                var held = reader.ReadInt32();
+                if (held is < 0 or > MostDropsInColumn) throw new InvalidDataException("a column of it holds more stacks than a column of the game's");
+                for (int i = 0; i < held; i++)
+                {
+                    var stack = ReadChestText(reader);
+                    var at = new LandPlace(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+                    var left = reader.ReadSingle();
+                    // A stack whose place or time is no number is left out, so none spreads it.
+                    if (at.Finite && float.IsFinite(left)) drops.Add(new DropRecord(stack, at, left));
+                }
+            }
+        }
+        catch (Exception ex) when (SetsAside(ex) || Holds(ex))
+        {
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the region's stacks are not laid down and {(SetsAside(ex) ? SetAside(path) : Hold(path))}. {ex.Message}");
+            columns.Clear();
+        }
+        return columns;
+    }
+
+    // Writes a region's stacks, and no file for a region that holds none and had none.
+    private void WriteDropRegion((int X, int Z) region, Dictionary<(int X, int Z), List<DropRecord>> columns)
+    {
+        var held = columns.Where(column => column.Value.Count > 0).ToList();
+        if (held.Count == 0 && !File.Exists(DropRegionPath(region))) return;
+        Replace(DropRegionPath(region), file =>
+        {
+            using var writer = new BinaryWriter(new ZLibStream(file, CompressionLevel.Fastest, leaveOpen: true));
+            writer.Write(DropsMagic);
+            writer.Write(DropsVersion);
+            writer.Write(held.Count);
+            foreach (var ((x, z), drops) in held)
+            {
+                writer.Write((byte)(x - region.X * RegionSize));
+                writer.Write((byte)(z - region.Z * RegionSize));
+                writer.Write(drops.Count);
+                foreach (var drop in drops)
+                {
+                    writer.Write(drop.Stack);
+                    writer.Write(drop.At.X);
+                    writer.Write(drop.At.Y);
+                    writer.Write(drop.At.Z);
+                    writer.Write(drop.Left);
+                }
+            }
+        });
+    }
 
     // A column's blocks, every section's in turn, compressed. Its light is left out, since it is
     // worked out again when the column loads.

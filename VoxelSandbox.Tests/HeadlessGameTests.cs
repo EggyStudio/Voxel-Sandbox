@@ -909,6 +909,96 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void Stacks_Lying_As_The_World_Closes_Lie_There_As_It_Opens_Again_With_Their_Counts_Whole()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // A spill of three stacks, a worn pickaxe among them, lying a second before the world
+            // closes.
+            var pickaxe = Items.Find("wooden_pickaxe")!;
+            using (var first = new HeadlessGame(save: folder, still: true))
+            {
+                var game = first.Game;
+                game.Drops.Spawn(Items.Stick, 5, LandOrigin.PlaceOf(new LandPlace(2.5, 6, 2.5)), Vector3.Zero);
+                game.Drops.Spawn(Items.Coal, 64, LandOrigin.PlaceOf(new LandPlace(4.5, 6, 2.5)), Vector3.Zero);
+                game.Drops.Spawn(pickaxe, 1, LandOrigin.PlaceOf(new LandPlace(6.5, 6, 2.5)), Vector3.Zero, wear: 3);
+                first.Step(30);
+            }
+
+            using var again = new HeadlessGame(save: folder, still: true);
+            var lying = again.Game.Drops.All.Select(d => (d.Drop.Item.Key, d.Drop.Count, d.Drop.Wear)).Order().ToList();
+            Assert.Equal([("coal", 64, 0), ("stick", 5, 0), ("wooden_pickaxe", 1, 3)], lying);
+            Assert.All(again.Game.Drops.All, d => Assert.InRange(d.Drop.Age, 0.5f, 30));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Stack_In_A_Column_Let_Go_And_Saved_Away_Lies_There_Once_As_The_Player_Comes_Back_After_A_Quit()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            var (away, home) = (new LandPlace(100_000.5, 10, 0.5), new LandPlace(0.5, 10, 0.5));
+            void Jump(HeadlessGame headless, LandPlace to)
+            {
+                headless.Game.Leave(to);
+                headless.Game.Recenter(to);
+                headless.Game.Player.Teleport(LandOrigin.PlaceOf(to));
+                Settle(headless);
+            }
+            // A stack beside the spawn, its column let go by a jump far off, the world saved and
+            // closed there, then opened again and the player back.
+            using (var first = new HeadlessGame(save: folder, still: true))
+            {
+                first.Game.Drops.Spawn(Items.Stick, 5, LandOrigin.PlaceOf(new LandPlace(2.5, 6, 2.5)), Vector3.Zero);
+                first.Step(5);
+                Jump(first, away);
+                first.Game.SaveWorld();
+            }
+            using var again = new HeadlessGame(save: folder, at: away, still: true);
+            Jump(again, home);
+            again.Game.SaveWorld();
+            Settle(again);
+
+            var stick = Assert.Single(again.Game.Drops.All, d => d.Drop.Item == Items.Stick);
+            Assert.Equal(5, stick.Drop.Count);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Saved_Stack_Whose_Time_Ran_Out_Is_Not_Laid_Down_And_One_With_Time_Left_Keeps_Its_Age()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            // Two stacks a save keeps beside the spawn, one with no time left and one with thirty
+            // seconds.
+            var save = new WorldSave(folder);
+            save.KeepDrops(0, 0, [new("stick 2", new LandPlace(2.5, 6, 2.5), 0), new("coal 3", new LandPlace(4.5, 6, 2.5), 30)]);
+            save.WriteDrops([]);
+
+            using var headless = new HeadlessGame(save: folder, still: true);
+
+            var coal = Assert.Single(headless.Game.Drops.All);
+            Assert.Equal((Items.Coal, 3), (coal.Drop.Item, coal.Drop.Count));
+            Assert.InRange(coal.Drop.Age, ItemDrop.Lifetime - 30, ItemDrop.Lifetime - 20);
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
     public void A_Recording_Whose_File_Cannot_Be_Written_Ends_And_Says_So()
     {
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));

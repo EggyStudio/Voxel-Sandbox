@@ -18,11 +18,12 @@ namespace VoxelSandbox;
 /// <para>
 /// A stack can be picked up half a second after it is dropped, two seconds after the player throws
 /// it, so a stack thrown is not taken back at once, and two stacks of one item within half a block
-/// of each other join. A stack whose column unloads is kept out of the ECS by that column, its place
-/// in the land's own doubles, and set down where it lay as the column loads again, its five minutes
-/// held, so the things a player spilled in a death far from the spawn lie there after the respawn,
-/// as a stack left a teleport's length away does. One dropped into a column not loaded waits there
-/// likewise. No stack is saved with the world.
+/// of each other join. A stack whose column unloads is kept out of the ECS by that column, its
+/// place in the land's own doubles, and set down where it lay as the column loads again, its five
+/// minutes held, so the things a player spilled in a death far from the spawn lie there after the
+/// respawn, as a stack left a teleport's length away does. One dropped into a column not loaded
+/// waits there likewise. A saved world keeps each stack with its column's region, as it keeps the
+/// mobs, with the seconds it has left, so a stack lies across a quit and still goes in its time.
 /// </para>
 /// </remarks>
 [Behavior]
@@ -44,7 +45,10 @@ public partial struct ItemDrop
     /// <summary>Seconds since it was dropped.</summary>
     public float Age;
 
-    private const float Lifetime = 300, Gravity = 16, Join = 0.5f;
+    /// <summary>Seconds a stack lies before it goes.</summary>
+    public const float Lifetime = 300;
+
+    private const float Gravity = 16, Join = 0.5f;
 
     /// <summary>Moves and ages by the step's seconds every stack whose column is loaded.</summary>
     [OnPreUpdate]
@@ -187,8 +191,11 @@ public sealed class ItemDrops(EcsWorld ecs)
     /// <summary>How many stacks lie in the loaded columns.</summary>
     public int Count => ecs.Count<ItemDrop>();
 
-    /// <summary>How many stacks the unloaded columns keep.</summary>
+    /// <summary>How many stacks the unloaded columns keep where the world keeps no save.</summary>
     public int Kept => _kept.Values.Sum(stacks => stacks.Count);
+
+    /// <summary>The save of the world the stacks lie in, which keeps those of the columns that unload, or null for a world that keeps none.</summary>
+    public WorldSave? Save { get; set; }
 
     /// <summary>Drops a stack at a place with a velocity, which can be picked up after a delay.</summary>
     public Entity Spawn(Item item, int count, Vector3 at, Vector3 velocity, float delay = Delay, int wear = 0)
@@ -222,18 +229,41 @@ public sealed class ItemDrops(EcsWorld ecs)
             gone.Add(id);
         }
         foreach (var id in gone) ecs.Despawn(id);
+        // A saved world's save keeps them, as it keeps the stacks of the loaded columns at a save.
+        if (Save is { } save && _kept.Remove((x, z), out var left)) save.KeepDrops(x, z, [.. left.Select(s => Record(s.Drop, s.At))]);
     }
+
+    /// <summary>The stacks of each loaded column as a save keeps them, a column with none among them, so a save clears what it held of one.</summary>
+    public IEnumerable<((int X, int Z) Column, IReadOnlyList<WorldSave.DropRecord> Drops)> Columns(VoxelWorld world)
+    {
+        var lying = new Dictionary<(int X, int Z), List<WorldSave.DropRecord>>();
+        foreach (var column in world.Columns) lying[(column.X, column.Z)] = [];
+        foreach (var (_, drop, body) in ecs.Query<ItemDrop, Body>())
+            if (drop.Count > 0 && lying.TryGetValue(LandOrigin.ColumnOf(body.Position), out var stacks)) stacks.Add(Record(drop, LandOrigin.LandOf(body.Position)));
+        foreach (var (column, stacks) in lying) yield return (column, stacks);
+    }
+
+    // A stack as a save keeps it, its time left what it has not lain of its lifetime.
+    private static WorldSave.DropRecord Record(ItemDrop drop, LandPlace at) =>
+        new(Inventory.Encode(new ItemStack(drop.Item, drop.Count, drop.Wear)), at, ItemDrop.Lifetime - drop.Age);
 
     /// <summary>Sets down the stacks a column kept as it loads, each where it lay, as old and as it moved.</summary>
     public void Joined(int x, int z)
     {
-        if (!_kept.Remove((x, z), out var kept)) return;
-        foreach (var (drop, at, velocity) in kept)
-        {
-            var id = ecs.Spawn();
-            ecs.Add(id, drop);
-            ecs.Add(id, new Body(0.125f, 0.25f) { Position = LandOrigin.PlaceOf(at), Velocity = velocity });
-        }
+        if (_kept.Remove((x, z), out var kept))
+            foreach (var (drop, at, velocity) in kept) Lay(drop, at, velocity);
+        // A saved stack is laid as old as it was, one whose time ran out or whose item this build
+        // does not know left out.
+        foreach (var record in Save?.TakeDrops(x, z) ?? [])
+            if (record.Left > 0 && Inventory.Decode(record.Stack) is { } stack)
+                Lay(new ItemDrop { ItemId = stack.Item.Id, Count = stack.Count, Wear = stack.Wear, Age = ItemDrop.Lifetime - record.Left }, record.At, Vector3.Zero);
+    }
+
+    private void Lay(ItemDrop drop, LandPlace at, Vector3 velocity)
+    {
+        var id = ecs.Spawn();
+        ecs.Add(id, drop);
+        ecs.Add(id, new Body(0.125f, 0.25f) { Position = LandOrigin.PlaceOf(at), Velocity = velocity });
     }
 
     /// <summary>Despawns every stack and lets go of those the unloaded columns keep, as a world closes.</summary>

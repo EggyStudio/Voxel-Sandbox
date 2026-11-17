@@ -839,3 +839,33 @@ and the play under the lock taken exclusive with no quiet wait passing in 185, 1
 `captures/closed.log` naming no fault and no texture left, and its captures within 12 levels of the
 warm play's on 6.2.102, `sky2.png` differing in at most 0.07% of its pixels past 8 levels, along the
 clouds' edges.
+
+Item 225's mend. A saved world keeps the stacks on the ground by region, as it keeps the mobs and
+the chests, in a file of their own beside the region's blocks (`s.x.z.bin`, `WorldSave.TakeDrops`,
+`KeepDrops` and `WriteDrops`), each with its stack as the inventory writes a slot, its place in the
+land's doubles, and the seconds it has left. A column that unloads gives its stacks to the save, a
+save writes the stacks of every loaded column, a column with none among them so the save holds none
+of it after, and a column that joins lays its stacks down as old as they were, one whose time ran
+out or whose item this build does not know left out. A region's file is read wrong or held as the
+other regional files are. A world that keeps no save keeps them in memory as before. The README and
+the stacks' remarks say so. Each test passes three runs in three and fails on a copy of the head
+given the save's three calls and the stacks' lifetime as seams:
+
+- `Stacks_Lying_As_The_World_Closes_Lie_There_As_It_Opens_Again_With_Their_Counts_Whole`, a stick of
+  5, coal of 64 and a pickaxe worn 3 lying a second before the world closes, all three lying again
+  with their counts and wear as it opens. On the head none.
+- `A_Stack_In_A_Column_Let_Go_And_Saved_Away_Lies_There_Once_As_The_Player_Comes_Back_After_A_Quit`,
+  a stack's column let go by a jump, the world saved and closed far off, opened again and the player
+  back, the stack lying once with its count after a save at home. On the head none.
+- `A_Saved_Stack_Whose_Time_Ran_Out_Is_Not_Laid_Down_And_One_With_Time_Left_Keeps_Its_Age`, a stack
+  with no time left and one with thirty seconds kept by the save, the second alone laid down, its
+  age its lifetime less what it had left. On the head none.
+
+A stack thrown into a column not loaded waits in the engine's world unsaved, so a close before that
+column joins leaves it out, as a low.
+
+The strict build is clean, 600 tests pass outside the GPU's lock with the long soak skipped, and the
+headless game's 88 pass three times in a row. The play, under the lock taken exclusive with no quiet
+wait, passes in 185 s, the seed's step naming its world in 5 s, its `captures/closed.log` naming no
+fault and no texture left, and its captures within 9 levels of the warm play's on 6.2.102,
+`sky2.png` differing in 0.03% of its pixels past 8 levels.

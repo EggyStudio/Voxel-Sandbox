@@ -804,18 +804,18 @@ each kind together in filled stacks, as the sorting mods do. With the window shu
 the chosen slot's items and Control with Q its stack. A stack on the ground is a small cube of its
 block wearing its faces' pictures as the packs give them, or their colors where no pack does, or an
 item's icon a pixel deep, a cube for each of its pixels shown, the pack's picture of it or the
-game's own, and
-falls, slides to a stop and turns slowly, and is picked up once the player comes within a block of
-it, half a second after it fell or two after it was thrown, joining stacks of its item in the
-inventory first. Two stacks of an item lying together join, and a stack is gone after five minutes.
-The stacks lying in a column go with it when it unloads and come back where they lay when it loads,
-their five minutes held, so what a player spilled in a death far from the spawn lies there after the
-respawn. The stacks on the ground are not saved with the world. Each is an entity of the engine's ECS, its
-stack and its body its components, and behaviors of its own in the engine's frame make it fall and
-age, put it into the inventory and join it with its kind and take it away, each a concern of its
-own. A mob drops its loot as it dies, in either
-mode. A pig drops porkchops, a cow leather and beef, a sheep a block of wool of its coat's color and
-mutton, and a chicken feathers and its meat.
+game's own, and falls, slides to a stop and turns slowly, and is picked up once the player comes
+within a block of it, half a second after it fell or two after it was thrown, joining stacks of its
+item in the inventory first. Two stacks of an item lying together join, and a stack is gone after
+five minutes. The stacks lying in a column go with it when it unloads and come back where they lay
+when it loads, their five minutes held, so what a player spilled in a death far from the spawn lies
+there after the respawn. A saved world keeps the stacks on the ground with their region, each with
+the time it has left, so a spill lies across a quit and still goes in its five minutes. Each is an
+entity of the engine's ECS, its stack and its body its components, and behaviors of its own in the
+engine's frame make it fall and age, put it into the inventory and join it with its kind and take it
+away, each a concern of its own. A mob drops its loot as it dies, in either mode. A pig drops
+porkchops, a cow leather and beef, a sheep a block of wool of its coat's color and mutton, and a
+chicken feathers and its meat.
 
 Each item shows by an icon 16 pixels square, drawn once into an atlas. A block's icon is the block
 as a small cube seen from above and from two sides, cast pixel by pixel against its own boxes, so a

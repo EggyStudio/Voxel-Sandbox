@@ -662,6 +662,7 @@ public sealed class VoxelGame : IDisposable
         Mobs = new Mobs(GetApp().World.Resource<EcsWorld>(), save: Save);
         Mobs.SetSpawning(World, spawning);
         Drops.Clear();
+        Drops.Save = Save;
         Falling.Clear();
         Felling.Clear();
         Fires.Clear();
@@ -949,6 +950,7 @@ public sealed class VoxelGame : IDisposable
             var mobs = Mobs.Columns().ToList();
             var furnaces = WorldSave.FurnaceRecords(Furnaces);
             var chests = Chests.Columns(World).ToList();
+            var drops = Drops.Columns(World).ToList();
             // The stacks the window E opens holds are saved in the inventory as shutting it puts
             // them, so a save while it is open keeps them.
             var inventory = new Inventory();
@@ -966,6 +968,7 @@ public sealed class VoxelGame : IDisposable
                 save.WriteMobs(mobs);
                 save.WriteFurnaces(furnaces);
                 save.WriteChests(chests);
+                save.WriteDrops(drops);
                 save.WriteInfo(info);
             }
             if (aside)
