@@ -549,7 +549,23 @@ public sealed class VoxelGame : IDisposable
         CloseInventory();
         SetDownMoving();
         SaveWorld();
+        // A world whose save failed stays open rather than being left, so what it holds is written
+        // by a later save.
+        if (SaveFault is not null)
+        {
+            Say($"The world could not be saved, so it stays open, {SaveFault}");
+            return;
+        }
         Open(kind, seed, name);
+    }
+
+    /// <summary>Saves the world for the game to end, true where it is saved, and otherwise says that the game stays open.</summary>
+    public bool SaveToQuit()
+    {
+        SaveWorld();
+        if (SaveFault is null) return true;
+        Say($"The world could not be saved, so the game stays open, {SaveFault}");
+        return false;
     }
 
     private void Open(string kind, int seed, string? name)
@@ -565,6 +581,7 @@ public sealed class VoxelGame : IDisposable
         Save = save;
         WorldName = Save?.Name ?? $"{kind}-{seed}";
         var info = Save?.ReadInfo();
+        if (Save?.InfoFault is { } kept) FileFault("The world's info could not be read, so its player begins anew", kept);
         // Every float place of the world is kept against an origin near where the player stands.
         LandOrigin.Near(info?.X ?? 0, info?.Z ?? 0);
         var generator = (info is null ? null : Generators.Create(info.Kind, info.Seed)) ?? Generators.Create(kind, seed) ?? new Overworld(seed);
@@ -916,8 +933,9 @@ public sealed class VoxelGame : IDisposable
     }
 
     // A save that cannot be written, as to a full disk or a folder that cannot be written, leaves
-    // the game going, a world switched to and the quit among it, and what it did not write is kept
-    // to be written by a later save. The log says each, the HUD the first.
+    // the game going and the world played open, a switch to another world or a quit from the menu
+    // refused, and what it did not write is kept to be written by a later save. The log says each,
+    // the HUD the first.
     private void Unsaved(Exception ex)
     {
         TraceLog(LogLevel.Warning, $"The world {WorldName} could not be saved, and it is tried again in {MathF.Min(_saveWait * 2, MostSaveSeconds):0} s. {ex.Message}");

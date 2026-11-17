@@ -662,7 +662,9 @@ public sealed class WorldSave
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
             {
-                // A world whose info cannot be read is left out, as opening it would begin it anew.
+                // A world whose info cannot be read is left out, as opening it would begin it anew,
+                // and the log names it.
+                TraceLog(LogLevel.Warning, $"The world {Path.GetFileName(folder)} is left out of the worlds listed, since {path} could not be read. {ex.Message}");
             }
         }
         return [.. found.OrderByDescending(w => w.Played).Select(w => (w.Name, w.Kind, w.Seed))];
@@ -685,10 +687,14 @@ public sealed class WorldSave
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
         {
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world begins as a new one of its name and {SetAside(path)}. {ex.Message}");
+            InfoFault = SetAside(path);
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the world begins as a new one of its name and {InfoFault}. {ex.Message}");
             return null;
         }
     }
+
+    /// <summary>What became of the world's info where <see cref="ReadInfo"/> could not read it, for the player to be told, or null.</summary>
+    public string? InfoFault { get; private set; }
 
     // A world's info with each value the game cannot hold taken as a new world's, so a file changed by
     // hand opens with the rest of what it keeps. A kind named by none is one this build makes none

@@ -129,11 +129,7 @@ public sealed class Menus
                 Open = Menu.World;
             }
             if (Gui.Button("Save the World", Row(3))) game.SaveAsked();
-            if (Gui.Button("Save and Quit", Row(4)))
-            {
-                game.SaveWorld();
-                QuitAsked = true;
-            }
+            if (Gui.Button("Save and Quit", Row(4))) QuitAsked = game.SaveToQuit();
             return;
         }
         if (Open == Menu.World)

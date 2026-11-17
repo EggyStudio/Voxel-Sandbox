@@ -440,7 +440,7 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
-    public void A_Save_That_Cannot_Be_Written_Lets_The_Game_Close_And_Switch_And_Waits_Longer()
+    public void A_Save_That_Cannot_Be_Written_Lets_The_Game_Close_Keeps_The_World_At_A_Switch_And_Waits_Longer()
     {
         var (folder, other) = (Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")), Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N")));
         try
@@ -471,8 +471,9 @@ public sealed class HeadlessGameTests
 
             game.SwitchWorld("flat", 2, other);
 
-            Assert.Equal(other, game.Save?.Folder);
-            Assert.Equal(30, game.SaveWait);
+            Assert.Equal(folder, game.Save?.Folder);
+            Assert.StartsWith("The world could not be saved, so it stays open", game.Said?.Text);
+            Assert.Equal(240, game.SaveWait);
         }
         finally
         {
@@ -601,6 +602,87 @@ public sealed class HeadlessGameTests
         }
         finally
         {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Switch_To_Another_World_After_A_Save_That_Failed_Keeps_The_World_Played_Until_It_Is_Saved()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            var world = Path.Combine(folder, "world");
+            using var headless = new HeadlessGame(save: world, still: true);
+            var game = headless.Game;
+            game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
+            // Every write of the save refused, as a full disk refuses it.
+            game.Save!.Writing = _ => throw new IOException("a test's full disk");
+
+            game.SwitchWorld("flat", 2, Path.Combine(folder, "other"));
+
+            Assert.Equal(world, game.Save?.Folder);
+            Assert.StartsWith("The world could not be saved, so it stays open", game.Said?.Text);
+            Assert.Equal(BlockId.Glowstone, game.World.GetBlock(2, 70, 2));
+            // The disk freed and the world saved, the block among what it keeps.
+            game.Save!.Writing = null;
+            game.SaveWorld();
+            Assert.Null(game.SaveFault);
+            var save = new WorldSave(world);
+            save.ReadRegion(0, 0);
+            Assert.Equal(BlockId.Glowstone, WorldSave.Decode(0, 0, save.Kept(0, 0)!).Get(2, 70, 2));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Save_And_Quit_After_A_Save_That_Failed_Keeps_The_Game_Open()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var headless = new HeadlessGame(save: Path.Combine(folder, "world"), still: true);
+            var game = headless.Game;
+            game.Save!.Writing = _ => throw new IOException("a test's full disk");
+
+            Assert.False(game.SaveToQuit());
+            Assert.StartsWith("The world could not be saved, so the game stays open", game.Said?.Text);
+            game.Save!.Writing = null;
+            Assert.True(game.SaveToQuit());
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_World_Whose_Info_Cannot_Be_Read_Is_Named_As_It_Is_Left_Out_Of_The_List_And_Opens_Saying_So()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var world = Path.Combine(folder, "world");
+        Directory.CreateDirectory(world);
+        File.WriteAllText(Path.Combine(world, "world.json"), "no info");
+        var said = new List<string>();
+        SetTraceLogCallback((_, line) =>
+        {
+            if (line.Contains("is left out of the worlds listed")) lock (said) said.Add(line);
+        });
+        try
+        {
+            Assert.Empty(WorldSave.Saved(folder));
+            Assert.Contains("The world world is left out of the worlds listed", Assert.Single(said));
+
+            using var headless = new HeadlessGame(save: world, still: true);
+            Assert.Contains("The world's info could not be read, so its player begins anew", headless.Game.FileFaults);
+            Assert.True(File.Exists(Path.Combine(world, "world.json.unread")));
+        }
+        finally
+        {
+            SetTraceLogCallback(null);
             if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
         }
     }
