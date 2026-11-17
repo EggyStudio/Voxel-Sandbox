@@ -325,6 +325,17 @@ change.
     opens each way within one slot of N 7.9, the HUD's lap in the first behind frame and the wall
     time from the flow's first record to the tenth shown frame the measures.
 
+216. **A loaded world's first shown frames after the screen goes.** Item 215's ten opens leave a
+    loaded world's time from the flow's first record to the tenth shown frame at 2,428 to 3,047 ms,
+    median 2,927, where a new world's is 2,204 to 2,636, median 2,330, three of five loaded runs
+    spending the time in the shown frames after the screen goes. Asked, a read by the flight's laps
+    of what those frames do in a loaded world that a new one's do not, the saved columns' meshes,
+    the chests and mobs read by region or the lighting's first pass among the candidates, each named
+    with its milliseconds; the largest moved behind the screen or onto a worker where the read shows
+    it can go, with a test, and the ten opens taken again in one slot of N 7.9. Where the read finds
+    the engine's part the larger, it is named for the engine's items 292 and 295 and left there.
+    After the pin of 6.2.102.
+
 ## Verdicts
 
 No verdict is open. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
@@ -785,3 +796,21 @@ headless game's 62 pass three times in a row. The play, under the lock taken exc
 wait, passes in 207 s, its `captures/closed.log` naming the layer enabled and nothing left at a
 close 0.65 s after the new world, and its `sky2.png` differs from the pin's in 0.28% of its pixels
 past 8 levels, the most 168, along the clouds' edges.
+
+The engine's 6.2.102 pinned, the package's reference and the workflows' checkout of the engine at
+its tag's commit `029f60de`. The game builds on it with no change of its own, the strict build
+clean, 560 tests pass outside the GPU's lock with the long soak skipped and the headless game's 62
+pass three times in a row. The play's first run on it stopped as the game opened, its terrain shader
+in no cache of 6.2.102's and no `slangc` within reach of the play's build folder, which
+`build/fetch-slang.sh` gives the build workflow. With `ENGINE_SLANGC` naming the engine tree's
+`slangc`, the same 2026.18.2, the play passes in 286 s, compiling the shaders and filling the
+driver's cache for the first time, its `captures/closed.log` naming the layer enabled and nothing
+left at a close 0.61 s after the new world, and its captures within 12 levels of 6.2.86's,
+`sky2.png` differing in 0.08% of its pixels past 8 levels, the most 70.
+
+The guard of `Vitals.Arrived` in the mode's setter can go. The package carries 81656c12, an ancestor
+of `029f60de`, which enters a computed state at the transition point that brings it in. A copy with
+the setter's call taken out and an `[OnEnter(Living.Yes)]` system calling `Vitals.Arrived` in its
+place passes both tests of `VitalsFrameTests` three runs in three on 6.2.102, and fails both three
+runs in three on 6.2.86, as item 190's first form did. The move is left out of this commit, which
+pins the package alone.
