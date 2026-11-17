@@ -1249,6 +1249,116 @@ public sealed class HeadlessGameTests
     private const int Frames = 1;
 
     [Fact]
+    public void The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        game.RenderDistance = 4;
+        // No section cast toward the light, so the ridge waits on the floods alone, the flood ahead
+        // finishing in the frame it begins.
+        game.Light.ShadowDistance = 1;
+        var renderer = game.Renderer;
+        renderer.FloodBudgetMs = double.PositiveInfinity;
+        // A step east asks for column 1's circle too, every column of which joins before the ridge
+        // is raised, so no join marks the ridge's sections again on the way.
+        Go(4.5);
+        Go(4.7);
+        Stand();
+        // A ridge of stone in the air over columns 5 and 6, a block in each of its sections, past
+        // the flood's reach from column 0 and within or beside it from column 1, so its sections
+        // are held back as unseen until the flood made ahead of the step into column 1 sees them.
+        var ridge = new List<SectionKey>();
+        for (int cx = 5; cx <= 6; cx++)
+            for (int cz = -3; cz <= 3; cz++)
+                for (int sy = 1; sy <= 8; sy++)
+                {
+                    game.World.SetBlock(cx * Section.Size + 8, sy * Section.Size + 8, cz * Section.Size + 8, BlockId.Stone);
+                    ridge.Add(new SectionKey(cx, sy, cz));
+                }
+        Stand();
+        // East to a block short of where the flood ahead of the step begins, half a column from the
+        // face, and still again, so the floods from the eye have reached what they reach.
+        for (var tenth = 49; tenth <= 70; tenth += 2) Go(tenth / 10.0);
+        Stand();
+        var held = ridge.Count(key => !Taken(key));
+
+        // On toward column 1's face at a fifth of a block a frame, each frame's meshes finished
+        // before the next, up to the step.
+        var (most, taken) = (0, 0);
+        for (var tenth = 72; tenth < 160; tenth += 2)
+        {
+            var before = ridge.Count(Taken);
+            Go(tenth / 10.0);
+            Settle();
+            most = Math.Max(most, ridge.Count(Taken) - before);
+        }
+        taken = ridge.Count(Taken) - (ridge.Count - held);
+
+        Assert.True(taken > ChunkRenderer.ReleasedAFrame, $"{taken} of the {held} held taken in before the step");
+        Assert.True(most <= ChunkRenderer.ReleasedAFrame, $"{most} taken in a frame");
+
+        bool Taken(SectionKey key) => renderer.Standing(key).Any();
+        void Go(double x)
+        {
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
+            headless.Step(1);
+        }
+        void Settle()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (renderer.Meshed < renderer.Meshing && clock.Elapsed.TotalSeconds < 10) Thread.Sleep(1);
+        }
+        void Stand()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Streamer.Pending > 0 || game.World.Loaded.Count > 0 || game.World.Reshaded.Count > 0 || renderer.Meshing > 0) && clock.Elapsed.TotalSeconds < 30);
+        }
+    }
+
+    [Fact]
+    public void The_Circle_Of_The_Next_Column_Is_Asked_For_As_The_Player_Steps_Into_A_Column()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        game.RenderDistance = 4;
+        Go(14.5);
+        Stand();
+        // Column 8 lies within the load circle of column 2 and outside those of columns 0 and 1.
+        var (x, far) = (15.5, (X: 8, Z: 0));
+        Assert.False(game.World.HasColumn(far.X, far.Z), "the far column is loaded before the step");
+
+        // East over column 1's face at a hundredth of a block a frame, until the far column joins
+        // or the player is a quarter column into column 1.
+        while (!game.World.HasColumn(far.X, far.Z) && x < 16 + Section.Size / 4) Go(x += 0.01);
+
+        Assert.True(game.World.HasColumn(far.X, far.Z), $"the far column has not joined by {x:0.00}");
+
+        void Go(double at)
+        {
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(at, 10, 8.5)));
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        void Stand()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Streamer.Pending > 0 || game.World.Loaded.Count > 0) && clock.Elapsed.TotalSeconds < 30);
+        }
+    }
+
+    [Fact]
     public void The_Flood_Made_Ahead_Is_Finished_In_The_Frame_The_Eye_Steps_Into_Its_Section()
     {
         using var headless = new HeadlessGame(still: true);

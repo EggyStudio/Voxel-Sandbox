@@ -219,8 +219,11 @@ the shared lock starts only while that folder holds no file whose process lives.
 shared lock that runs longer than ten minutes is split into parts of a few minutes, each asking the
 folder again before it starts, but a compile of one crate or project, which no part divides and
 which asks the folder once, since a run of 35 minutes held a timing back on 2026-11-17 though it
-began before the timing's wait. A session whose wait grows long tells the reviewing session in a
-line, which gives the order, an engine's illumination read first. By review.
+began before the timing's wait. A series of timings takes its turns too, one session's waiting file
+standing no longer than fifteen minutes in thirty while a shared job of another session waits, since
+a series of two hours kept two sessions' suites from starting on 2026-11-17. A session whose wait
+grows long tells the reviewing session in a line, which gives the order, an engine's illumination
+read first. By review.
 
 **N 7.10 A session leaves the machine its memory.** The machine's memory ran out three times, the
 last on 2026-11-10, when one line of Python read a session's transcript of 4 GB whole and grew to 27

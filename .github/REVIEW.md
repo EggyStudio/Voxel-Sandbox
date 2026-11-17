@@ -51,46 +51,48 @@ form kept. After it `27546f0`, item 207's Reply, the meshing's wait read by its 
 tried and not taken, pushed at 00:35, the form kept. After it `84abe75`, item 208, the next column's
 circle asked for ahead of the step, a section sent only once the columns about it are loaded and the
 flood ahead's sections meshed before the step, a corner drawn in the step's frame where it took 75
-to 82 ms, pushed at 03:29 on 2026-11-17, its build run 44003417473 green at 04:18, the form kept. Before
-them `069a7d9`, the comments that likened a thing to another game's saying their rule in the game's
-own terms, comments alone across 45 files, pushed at 20:04 on 2026-11-15, its build run 43750307975
-green by 21:02, the form kept. Before it `c250bcd`, the second commit of item 185, the save command
-saying a failed save, an unsaved world called so, a quality or a mode that names no value refused, a
-recording held to 36,000 frames and the button keeping its summary, five tests each failing on the
-commit before, pushed at 19:04 on 2026-11-15, its build run 43744639031 green at 20:04, the form
-kept. Before it `9f96eae`, the first commit of item 185, a fill or a room refusing a corner past the
-land's edge with its sides counted in long and the biome search stepping 32 blocks apart past 512,
-the whole search 0.59 s against 6.85, pushed at 18:04 on 2026-11-15, its build run 43739070767 green
-at 19:04, the form kept, one comment naming another game to be reworded in the second commit. Before
-it `40bcc10`, the packs list keeping no default of its own, pushed at 17:02 on 2026-11-15, its build
-run 43733183016 green by 18:02, the form kept. Before it `aebc6f3`, the game taking the folder its
-settings and packs' list are kept in and the start's reads and the packs screen's listing tested
-where they fail, with `cc25bcb`, item 184's third and last commit, the screenshot, the switch and
-the recording going on at a file error, with `2e6c699`, its second, the start going on where a file
-cannot be read, the three pushed at 15:33 on 2026-11-15, their build run 43725048754 green at 17:02,
-and `c51b643`, its first, the settings, the worlds' list and the packs read and written through one
-way that tells the player once, pushed at 14:29, its build run 43719245849 green at 15:33, the form
-kept and the messages free of numbers. Before them `7785818`, item 182, every console command that
-takes a number refusing NaN and the infinities with one line, with `c3c402f`, item 183, a save that
-cannot be written leaving the game going with the player told once and the timed save waiting twice
-as long each time, the two pushed at 13:41 on 2026-11-15, their build run 43715162302 green at
-14:29, the form kept and the messages free of numbers. Before them `fc97f0f`, item 181's last
-commit, the scripts' low Reads 23 to 33, with `64dff21`, the furnace's values and the animations'
-steps in doubles (Reads 11 and 16, Reads 14 and 15 left with reasons), and `c180b45`, the flames and
-lava at their light and the pool's sky level (Reads 12 and 13), the three pushed at 12:13 on
-2026-11-15, their build run 43707903533 green at 13:41, the form kept and the messages free of
-numbers. Before them `8fe9094`, item 181's fifth commit, the play's false passes and fails (Reads 17
-to 22 and 34), pushed at 10:56 on 2026-11-15, its build run 43701659233 green at 12:13, the form
-kept and the message free of numbers. Before it `10f81cb`, item 181's fourth commit, a region's
-column whose length is past what the file has left read as its early end before an array is made,
-with `91af9b2`, its third, a kept column whose blocks do not inflate generated again with its
-region's file moved aside, the voxel ray meeting no block along a way that is no number and the look
-and flicker commands refusing one, each test failing first, 433 tests and the play in 183 s, both
-pushed at 09:55 on 2026-11-15 once the run before them had ended, their build run 43696744589 green
-at 10:56; they keep the form and carry the review's files. Before them `f761d7d`, item 181's second
-commit, the world's info taking each value the game cannot hold as a new world's, a body's cells and
-moves bounded, the save writing a float that is no number by its name and the shadows' march taking
-no way that is none, each test failing first, 428 tests and the play in 177 s, pushed at 08:37 on
+to 82 ms, pushed at 03:29 on 2026-11-17, its build run 44003417473 green at 04:18, the form kept.
+After it `2d54ec2`, item 209's Reply, four of the six join frames read as the ray scene's corner
+buffer growing and no mend made, pushed at 05:00, the form kept. Before them `069a7d9`, the comments
+that likened a thing to another game's saying their rule in the game's own terms, comments alone
+across 45 files, pushed at 20:04 on 2026-11-15, its build run 43750307975 green by 21:02, the form
+kept. Before it `c250bcd`, the second commit of item 185, the save command saying a failed save, an
+unsaved world called so, a quality or a mode that names no value refused, a recording held to 36,000
+frames and the button keeping its summary, five tests each failing on the commit before, pushed at
+19:04 on 2026-11-15, its build run 43744639031 green at 20:04, the form kept. Before it `9f96eae`,
+the first commit of item 185, a fill or a room refusing a corner past the land's edge with its sides
+counted in long and the biome search stepping 32 blocks apart past 512, the whole search 0.59 s
+against 6.85, pushed at 18:04 on 2026-11-15, its build run 43739070767 green at 19:04, the form
+kept, one comment naming another game to be reworded in the second commit. Before it `40bcc10`, the
+packs list keeping no default of its own, pushed at 17:02 on 2026-11-15, its build run 43733183016
+green by 18:02, the form kept. Before it `aebc6f3`, the game taking the folder its settings and
+packs' list are kept in and the start's reads and the packs screen's listing tested where they fail,
+with `cc25bcb`, item 184's third and last commit, the screenshot, the switch and the recording going
+on at a file error, with `2e6c699`, its second, the start going on where a file cannot be read, the
+three pushed at 15:33 on 2026-11-15, their build run 43725048754 green at 17:02, and `c51b643`, its
+first, the settings, the worlds' list and the packs read and written through one way that tells the
+player once, pushed at 14:29, its build run 43719245849 green at 15:33, the form kept and the
+messages free of numbers. Before them `7785818`, item 182, every console command that takes a number
+refusing NaN and the infinities with one line, with `c3c402f`, item 183, a save that cannot be
+written leaving the game going with the player told once and the timed save waiting twice as long
+each time, the two pushed at 13:41 on 2026-11-15, their build run 43715162302 green at 14:29, the
+form kept and the messages free of numbers. Before them `fc97f0f`, item 181's last commit, the
+scripts' low Reads 23 to 33, with `64dff21`, the furnace's values and the animations' steps in
+doubles (Reads 11 and 16, Reads 14 and 15 left with reasons), and `c180b45`, the flames and lava at
+their light and the pool's sky level (Reads 12 and 13), the three pushed at 12:13 on 2026-11-15,
+their build run 43707903533 green at 13:41, the form kept and the messages free of numbers. Before
+them `8fe9094`, item 181's fifth commit, the play's false passes and fails (Reads 17 to 22 and 34),
+pushed at 10:56 on 2026-11-15, its build run 43701659233 green at 12:13, the form kept and the
+message free of numbers. Before it `10f81cb`, item 181's fourth commit, a region's column whose
+length is past what the file has left read as its early end before an array is made, with `91af9b2`,
+its third, a kept column whose blocks do not inflate generated again with its region's file moved
+aside, the voxel ray meeting no block along a way that is no number and the look and flicker
+commands refusing one, each test failing first, 433 tests and the play in 183 s, both pushed at
+09:55 on 2026-11-15 once the run before them had ended, their build run 43696744589 green at 10:56;
+they keep the form and carry the review's files. Before them `f761d7d`, item 181's second commit,
+the world's info taking each value the game cannot hold as a new world's, a body's cells and moves
+bounded, the save writing a float that is no number by its name and the shadows' march taking no way
+that is none, each test failing first, 428 tests and the play in 177 s, pushed at 08:37 on
 2026-11-15 once the run before it had ended, its build run 43690794766 green at 09:55; it keeps the
 form and carries the review's files. Before it `a3c9897`, item 181's first commit, the mobs file's
 list of kinds held to what a byte tells apart and its file moved aside, a furnace or a chest listed
@@ -299,6 +301,17 @@ change.
     each way by totals and spread, frames past 22, 25, 30 and 40 ms and the 99th part, with the
     corners still drawn by the frame after the step and no send failing. The mirror's first frame
     stays the engine's, its item 290, and is left out of the count by naming its frames.
+
+210. **The circle ahead's joins out of the field's halfway frames.** Item 209's read leaves 32
+    frames past 25 ms over five runs about 60 frames before a step, where the circle ahead is asked
+    for at the same half column at which the field does its own halfway work, and its columns join
+    two a frame with up to 16 uploads beside it. Asked, the circle ahead asked for soon after the
+    step before, or its joins spread over the room up to the next step and kept out of the field's
+    halfway frames, whichever the read of the streamer favors, as a mend with a test of the corners
+    still drawn by the frame after the step and no send failing. Judged as item 208 was, five
+    exclusive runs each way by totals and spread, the ray scene's growth frame and the mirror's
+    first named and left out. The sections the flood ahead sees put into the shadow maps a few a
+    frame waits for the engine's items 288 and 292, which change what a new mesh costs there.
 
 ## Verdicts
 
@@ -686,3 +699,70 @@ after the step, or by spreading its joins over the 60 frames before the step, so
 in the field's halfway frames, and the first by drawing the sections the flood made ahead sees
 into the shadow maps over the frames before the step, so their structures are built a few at a
 time. Either is read as item 208 was if it is asked for.
+
+Item 210's mend, the next column's circle asked for at the step and the sections the flood made
+ahead sees released eight a frame, in two parts:
+
+- The streamer asks for the circle of the next column along the player's motion as the player steps
+  into a column rather than half a column from its face (`ChunkStreamer.cs:221`). Its 29 columns of
+  a flight's step are asked for in the step's frame, made 2 to 7 frames after it and joined two a
+  frame 3 to 18 frames after it.
+- The read of the first round of runs showed what the circle's joins had hidden. With its columns
+  joined before the flood made ahead finishes, that flood released 42 to 54 sections held back as
+  unseen at once, 6 to 14 columns ahead, and the frame after took them all in with 69 to 87 group
+  uploads, at 28 to 40 ms. The finished flood ahead lists those sections and releases them eight a
+  frame (`ChunkRenderer.cs:564` and `:1437`), some seven frames for the fifty or so, well before the
+  step.
+
+Five runs of the mend in the 06:05 slot against item 209's five runs of the same game, flight and
+probe as the head, tuned's powersave-bazzite and the GPU at 0% or 1% before each, totals over five
+with the spread:
+
+| Frames past | The head | The mend |
+|---|---|---|
+| 22 ms | 77 (14 to 17) | 77 (13 to 18) |
+| 25 ms | 57 (10 to 13) | 50 (9 to 11) |
+| 30 ms | 21 (3 to 6) | 19 (3 to 5) |
+| 40 ms | 8 (1 to 2) | 8 (1 to 2) |
+| 40 ms, the growth and the mirror left out | 0 | 0 |
+| 99th part, ms | 24.6 to 26.7 | 23.6 to 25.9 |
+
+The frames past 40 ms are each run's mirror first frame and, in three runs each way, the growth of
+the ray scene's corners, at frames 394 to 406 on the head and 320 to 422 with the mend. The medians
+are 10.36 to 10.47 ms on the head and 10.37 to 10.57 with the mend. By where they fall, the frames
+past 25 ms are:
+
+- About 60 frames before a step, 32 on the head and 5 with the mend. The 5 join nothing and take in
+  0 to 3 meshes, `cpu.scene_field` alone at 19.9 to 23.3 ms, the field's own work halfway between
+  steps, the engine's item 288.
+- From 3 to 40 frames after a step, none on the head and 16 with the mend, all 4 to 6 frames after
+  it, the circle's first joins, two columns, 3 to 6 meshes taken in and 7 to 17 group uploads, at
+  25.3 to 36.2 ms. In the 6 sampled `cpu.global_illumination` takes 3.9 to 13.9 ms, the field 3.9
+  to 9.9, the collector 2.5 to 5.2 and the game's update 3.1 to 10.4.
+- At a step, 16 on the head and 19 with the mend.
+
+The corner sections of item 207 are meshed 1,343 to 1,393 ms before they come within the drawn
+reach, against 599 to 643 on the head, and no send's gathering fails either way. The columns
+loaded, sampled three times a flight, are 698 to 729 against 700 to 729, the circle ahead loaded
+for the whole of each column the player crosses.
+
+`The_Circle_Of_The_Next_Column_Is_Asked_For_As_The_Player_Steps_Into_A_Column` steps east into
+column 1 in the flat world at the render distance of 4 and checks that column 8, in column 2's load
+circle and neither column 0's nor 1's, joins before the player is a quarter column in. It fails on a
+copy of the head, where it has not joined by then.
+`The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame` raises a
+ridge of stone in the air over columns 5 and 6, a block in each of 8 sections a column, which the
+flood from column 0 leaves out and the flood made ahead of the step into column 1 sees. It walks the
+eye toward column 1's face with each frame's meshes finished before the next, and checks that more
+than eight of the ridge's sections are taken in before the step and no frame takes in more than
+eight. On the tree the most a frame takes in is 3 to 7. On a copy of the head, with the count and
+the workers' finished meshes added as seams, it fails three runs in three, the release taking in 8 a
+frame four times and then 10 or 11. The corner test of item 208 passes unchanged.
+
+The strict build is clean, also after the new comments were wrapped to 100 columns, 555 tests pass
+outside the GPU's lock with the long soak skipped, and the headless game's 58 pass three times in a
+row. The first play failed its check of the validation layer, `vkDestroyDevice()` finding 20 objects
+not destroyed as the app closed 0.7 s after the play's new world began, a check the plays of the
+commits before passed. The play run again passes in 214 s with nothing left, its `sky2.png`
+differing from the pin's in 0.14% of its pixels past 8 levels, the most 116, along the clouds. The
+leak is not mended here and is read again at the next play.

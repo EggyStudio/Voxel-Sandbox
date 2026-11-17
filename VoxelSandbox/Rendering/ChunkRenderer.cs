@@ -557,6 +557,11 @@ public sealed class ChunkRenderer : IDisposable
     // blocks, half a section, which a flight crosses in some forty frames and the flood takes three
     // of.
     private const float AheadBlocks = Section.Size / 2;
+    // The sections held back as unseen that the finished flood ahead sees, released to be meshed
+    // ReleasedAFrame a frame, so the fifty or so a flight's step brings are meshed and taken in
+    // over some seven frames, well before the step.
+    private readonly List<SectionKey> _releasing = [];
+    internal const int ReleasedAFrame = 8;
 
     /// <summary>
     /// The time a frame gives a flood begun as the eye steps into the next section, or made ahead
@@ -911,6 +916,9 @@ public sealed class ChunkRenderer : IDisposable
 
     /// <summary>How many sections the workers are meshing or have meshed and the next update takes in.</summary>
     public int Meshing => _asking;
+
+    // How many of those the workers have meshed.
+    internal int Meshed => _built.Count;
 
     // Meshes a section here at once.
     private bool Remesh(VoxelWorld world, SectionKey key)
@@ -1416,12 +1424,22 @@ public sealed class ChunkRenderer : IDisposable
         var past = (toFace + 0.01f) * MathF.Sign(axis == 0 ? motion.X : axis == 1 ? motion.Y : motion.Z);
         var ahead = eye + (axis == 0 ? new Vector3(past, 0, 0) : axis == 1 ? new Vector3(0, past, 0) : new Vector3(0, 0, past));
         // The sections the finished flood sees are meshed from the next update, those held back as
-        // unseen among them, and stand in the shadow maps and the field until the step draws them.
-        if (!_ahead.Flood(world, ahead, renderDistance, Atlas, FloodBudgetMs, spread: true)) return;
-        _aheadReady = true;
-        foreach (var key in _unseen)
-            if (_ahead.Sees(key)) world.Loaded.Add(key);
-        _unseen.ExceptWith(world.Loaded);
+        // unseen among them ReleasedAFrame a frame, and stand in the shadow maps and the field
+        // until the step draws them.
+        if (_ahead.Flood(world, ahead, renderDistance, Atlas, FloodBudgetMs, spread: true))
+        {
+            _aheadReady = true;
+            _releasing.Clear();
+            foreach (var key in _unseen)
+                if (_ahead.Sees(key)) _releasing.Add(key);
+        }
+        if (!_aheadReady) return;
+        for (var released = 0; released < ReleasedAFrame && _releasing.Count > 0; _releasing.RemoveAt(_releasing.Count - 1))
+            if (_unseen.Remove(_releasing[^1]))
+            {
+                world.Loaded.Add(_releasing[^1]);
+                released++;
+            }
     }
 
     // Marks the sections the flood left out that a ray toward the light meets from a corner of a

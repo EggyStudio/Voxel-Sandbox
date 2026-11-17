@@ -36,10 +36,6 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     internal int Workers { get; init; } = Math.Clamp(Environment.ProcessorCount - 2, 1, 8);
     private (int X, int Z, (int X, int Z)? Ahead, int Distance)? _planned;
     private Vector3 _lastPlayer;
-    // How near the face of the next column along the player's motion that column's circle is asked
-    // for, in blocks, half a column, so the columns at the corners of the drawn reach a step brings
-    // have joined by the step.
-    private const float AheadBlocks = Section.Size / 2;
     private int _running;
     // The columns still to pack for the eye's section and render distance last packed for.
     private readonly Queue<(int X, int Z)> _packing = new();
@@ -218,8 +214,10 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         return (column, unread, unknown);
     }
 
-    // The column the player moves into next, once it lies within AheadBlocks of that column's face
-    // along the motion since the last update, or none.
+    // The column the player moves into next along the motion since the last update, or none. Its
+    // circle is asked for as the player steps into a column, so its columns join in the frames
+    // after the step, the corners of the drawn reach the next step brings among them, and out of
+    // the frames halfway across the column in which the scene's field does its own work.
     private (int X, int Z)? Ahead(Vector3 player, int cx, int cz)
     {
         var motion = player - _lastPlayer;
@@ -232,7 +230,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             // The place within the column, the land's origin lying on whole columns.
             var inside = at - MathF.Floor(at / Section.Size) * Section.Size;
             var face = moved > 0 ? Section.Size - inside : inside;
-            if (face > AheadBlocks || face / MathF.Abs(moved) >= soonest) continue;
+            if (face / MathF.Abs(moved) >= soonest) continue;
             soonest = face / MathF.Abs(moved);
             var sign = MathF.Sign(moved);
             next = (cx + step.Item1 * (int)sign, cz + step.Item2 * (int)sign);
