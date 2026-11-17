@@ -1322,6 +1322,52 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void The_Columns_Past_The_Players_Load_Circle_Join_One_A_Frame()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        game.RenderDistance = 4;
+        Go(4.5);
+        Stand();
+        // The load circle reaches the render distance and two more.
+        var reach = (game.RenderDistance + 2) * (game.RenderDistance + 2) + game.RenderDistance + 2;
+
+        // East at a fifth of a block a frame over the faces of columns 1 and 2, each step asking
+        // for the next column's circle.
+        var (most, past) = (0, 0);
+        for (var tenth = 47; tenth <= 400; tenth += 2)
+        {
+            var before = Loaded();
+            Go(tenth / 10.0);
+            var cx = (int)Math.Floor(tenth / 10.0 / Section.Size);
+            var joined = Loaded().Except(before).Count(c => (c.X - cx) * (c.X - cx) + c.Z * c.Z > reach);
+            (most, past) = (Math.Max(most, joined), past + joined);
+        }
+
+        Assert.True(past > ChunkStreamer.AheadAFrame, $"{past} columns past the load circle joined");
+        Assert.True(most <= ChunkStreamer.AheadAFrame, $"{most} columns past the load circle joined in a frame");
+
+        HashSet<(int X, int Z)> Loaded() => [.. game.World.Columns.Select(c => (c.X, c.Z))];
+        void Go(double x)
+        {
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
+            headless.Step(1);
+            Thread.Sleep(2);
+        }
+        void Stand()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Streamer.Pending > 0 || game.World.Loaded.Count > 0) && clock.Elapsed.TotalSeconds < 30);
+        }
+    }
+
+    [Fact]
     public void The_Circle_Of_The_Next_Column_Is_Asked_For_As_The_Player_Steps_Into_A_Column()
     {
         using var headless = new HeadlessGame(still: true);

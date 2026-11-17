@@ -32,6 +32,17 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     /// <summary>How many columns the workers made an update takes into the world at most.</summary>
     public const int JoinedAFrame = 2;
 
+    /// <summary>
+    /// How many of those an update takes in at most from past the player's own load circle, which
+    /// only the next column's circle asks for.
+    /// </summary>
+    /// <remarks>
+    /// The next column's circle is asked for as the player steps into a column, and its nearest
+    /// columns join a few frames after the step, each marking sections within reach to mesh again,
+    /// so they join one a frame, and the meshes and uploads each brings fall a frame apart.
+    /// </remarks>
+    public const int AheadAFrame = 1;
+
     /// <summary>How many columns are generated at once.</summary>
     internal int Workers { get; init; } = Math.Clamp(Environment.ProcessorCount - 2, 1, 8);
     private (int X, int Z, (int X, int Z)? Ahead, int Distance)? _planned;
@@ -83,8 +94,8 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         // taken in, unloaded or asked for, which joining, unloading and reading a kept one would.
         if (save is { Busy: true }) return;
         var (cx, cz) = LandOrigin.ColumnOf(player);
-        TakeMade(cx, cz);
         var load = renderDistance + 2;
+        TakeMade(cx, cz, load);
         var (eye, kept) = (Reach.Of(player), renderDistance + Reach.Kept);
         if (_packedFor != (eye, kept))
         {
@@ -143,22 +154,27 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         _wanted.RemoveAll(c => world.HasColumn(c.X, c.Z) || _pending.Contains(c));
     }
 
-    // Takes in the made columns nearest the player's column first, JoinedAFrame at most. A column
-    // made at once while its worker made it, as the one a save lands the player in, is the one the
-    // world keeps, with what changed in it since and its fires named once.
-    private void TakeMade(int cx, int cz)
+    // Takes in the made columns nearest the player's column first, JoinedAFrame at most, and of
+    // those past the player's load circle AheadAFrame at most. A column made at once while its
+    // worker made it, as the one a save lands the player in, is the one the world keeps, with what
+    // changed in it since and its fires named once.
+    private void TakeMade(int cx, int cz, int load)
     {
+        var (reach, ahead) = ((long)load * load + load, 0);
         for (int joined = 0; joined < JoinedAFrame && _made.Count > 0;)
         {
             var nearest = 0;
             for (int i = 1; i < _made.Count; i++)
                 if (Distance(_made[i]) < Distance(_made[nearest])) nearest = i;
+            var past = Distance(_made[nearest]) > reach;
+            if (past && ahead == AheadAFrame) break;
             var (x, z, column, unread, unknown) = _made[nearest];
             _made.RemoveAt(nearest);
             _pending.Remove((x, z));
             if (world.HasColumn(x, z)) continue;
             Take(x, z, (column, unread, unknown));
             joined++;
+            if (past) ahead++;
         }
         // Squared in longs, as Unload squares them.
         long Distance((int X, int Z, ChunkColumn, bool, int) made) =>

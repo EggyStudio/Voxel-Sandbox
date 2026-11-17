@@ -24,8 +24,8 @@
 #
 # The game is the Debug build that `dotnet build VoxelSandbox.slnx` makes. ./e3d runs out of the
 # engine checkout ENGINE_CHECKOUT names, or the folder above this one, and keeps the session's log
-# in that checkout's build/sessions, named after the run. The captures and what e3d answered go to
-# captures.
+# in that checkout's build/sessions, named after the run. The captures, what e3d answered and the
+# log of the run under the validation layer, which the second run writes over, go to captures.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p captures
@@ -127,8 +127,10 @@ feet() { printf '%s\n' "$1" | sed -nE 's/^feet at (-?[0-9.]+), (-?[0-9.]+), (-?[
 # theirs, since on Windows the game is started holding every handle e3d holds, and $(...) would wait
 # on that pipe until the game ends. The log it names is read with perl, which every system the
 # script may run on has. The open waits as long as a command does, since a game still starting
-# when the open gives up is no session the stop can name.
-if ! ENGINE_VULKAN_VALIDATION=1 ./e3d open "$program" --offscreen --transient --flat --timeout 600 --json > "$opened"; then
+# when the open gives up is no session the stop can name. The layer lists every object the close
+# leaves, past the ten it names by its own limit, so a leak that comes once in many runs is named
+# whole in the run it comes in.
+if ! ENGINE_VULKAN_VALIDATION=1 VK_LAYER_DUPLICATE_MESSAGE_LIMIT=1000 ./e3d open "$program" --offscreen --transient --flat --timeout 600 --json > "$opened"; then
   answer=$(perl -MJSON::PP -0777 -ne '
     my $answer = eval { decode_json($_) } or do { s/\s+/ /g; print length ? "an answer that is not JSON, $_" : "nothing"; exit };
     my $error = $answer->{errors}[0] || {};
@@ -1258,6 +1260,9 @@ echo "the seed's field began the $seeded"
 # The game stopped, its process's number is let go, so the trap stops no process given it since.
 pid=""
 [ -f "$log" ] || fail "the log e3d named, $log, is not there"
+# The run that keeps its files opens under the same name and writes over the log, so the log of the
+# run the layer watched, with the objects its close leaves, is kept among the captures.
+cp "$log" captures/closed.log
 grep -q "Validation layers: ENABLED" "$log" || fail "the game drew without the validation layer"
 if grep -F 'Validation Error' "$log"; then fail "the validation layer reported an error"; fi
 
