@@ -280,15 +280,23 @@ public sealed class ResourcePacks : IDisposable
     {
         var path = $"textures/{name}.png";
         if (FirstPicture(path) is not (int pack, byte[] png) || Decoded(png) is not { } image) return null;
-        var meta = Meta(Read(pack, path + ".mcmeta"));
-        if (meta is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return (image, meta);
-        // A strip of frames one above another, each as tall as it is wide unless the metadata says
-        // otherwise, of which the first is kept.
-        int width = Number(animation, "width") ?? image.Width, height = Number(animation, "height") ?? width;
-        if (width > image.Width || height > image.Height) return (image, meta);
-        var frame = new byte[width * height * 4];
-        for (int y = 0; y < height; y++) Array.Copy(image.Data, y * image.Width * 4, frame, y * width * 4, width * 4);
-        return (new Image(frame, width, height), meta);
+        var meta = Metadata(pack, path);
+        try
+        {
+            if (meta is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return (image, meta);
+            // A strip of frames one above another, each as tall as it is wide unless the metadata
+            // says otherwise, of which the first is kept.
+            int width = Number(animation, "width") ?? image.Width, height = Number(animation, "height") ?? width;
+            if (width > image.Width || height > image.Height) return (image, meta);
+            var frame = new byte[width * height * 4];
+            for (int y = 0; y < height; y++) Array.Copy(image.Data, y * image.Width * 4, frame, y * width * 4, width * 4);
+            return (new Image(frame, width, height), meta);
+        }
+        catch (InvalidOperationException ex)
+        {
+            MetadataUnread(pack, path, ex);
+            return (image, null);
+        }
     }
 
     /// <summary>
@@ -302,7 +310,21 @@ public sealed class ResourcePacks : IDisposable
     {
         var path = $"textures/{name}.png";
         if (FirstPicture(path) is not (int pack, byte[] png)) return null;
-        if (Meta(Read(pack, path + ".mcmeta")) is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return null;
+        try
+        {
+            return Frames(Metadata(pack, path), png);
+        }
+        catch (InvalidOperationException ex)
+        {
+            MetadataUnread(pack, path, ex);
+            return null;
+        }
+    }
+
+    // A texture's frames by its metadata's animation, or null where it has no two frames to play.
+    private (Image[] Frames, int[] Ticks)? Frames(JsonElement? meta, byte[] png)
+    {
+        if (meta is not { } root || !root.TryGetProperty("animation", out var animation) || animation.ValueKind != JsonValueKind.Object) return null;
         if (Decoded(png) is not { } image) return null;
         int width = Number(animation, "width") ?? image.Width, height = Number(animation, "height") ?? width;
         if (width > image.Width || height > image.Height) return null;
@@ -333,6 +355,19 @@ public sealed class ResourcePacks : IDisposable
             return cut[index] = new Image(pixels, width, height);
         }
         return ([.. order.Select(f => Frame(f.Index))], [.. order.Select(f => f.Ticks)]);
+    }
+
+    // The root of the metadata a pack holds beside a texture, none where it holds none or where it
+    // was found to hold values of other kinds than metadata takes.
+    private JsonElement? Metadata(int pack, string path) => _failed.Contains((pack, path + ".mcmeta")) ? null : Meta(Read(pack, path + ".mcmeta"));
+
+    // Metadata holding values of other kinds than it takes, as an array at its root or a number
+    // given as text, is one the pack lacks, so its texture is read as having none, and the log says
+    // it once.
+    private void MetadataUnread(int pack, string path, InvalidOperationException ex)
+    {
+        Failed(pack, path + ".mcmeta", $"it holds values of other kinds than metadata takes, {ex.Message.TrimEnd('.')}");
+        TraceLog(LogLevel.Warning, $"A file of the pack {_packs[pack].Name} could not be read, {path}.mcmeta, so its texture is read as having none. {ex.Message}");
     }
 
     private static int? Number(JsonElement element, string name) =>

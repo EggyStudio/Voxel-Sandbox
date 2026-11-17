@@ -1,5 +1,8 @@
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text.Json;
+using Engine;
+using static Engine.E3D;
 
 namespace VoxelSandbox;
 
@@ -96,10 +99,27 @@ public sealed class DefaultPacks
     /// <summary>Whether a pack is not in the folder with the right bytes.</summary>
     public bool Missing(PackList list) => _packs.Any(p => !Present(list, p));
 
-    private static bool Present(PackList list, DefaultPack pack)
+    /// <summary>The files of the packs found in the folder that could not be read when last looked for, which count as missing.</summary>
+    public IReadOnlyCollection<string> Unreadable => [.. _unreadable.Keys];
+
+    private readonly ConcurrentDictionary<string, bool> _unreadable = new();
+
+    // Whether a pack is in the folder with the right bytes, one whose file cannot be read counted
+    // as missing, so the packs' screen offers to fetch it, and said in the log once.
+    private bool Present(PackList list, DefaultPack pack)
     {
         var path = list.PathOf(pack.File);
-        return System.IO.File.Exists(path) && new FileInfo(path).Length == pack.Size && Accepts(System.IO.File.ReadAllBytes(path), pack.Sha512);
+        try
+        {
+            var present = System.IO.File.Exists(path) && new FileInfo(path).Length == pack.Size && Accepts(System.IO.File.ReadAllBytes(path), pack.Sha512);
+            _unreadable.TryRemove(pack.File, out _);
+            return present;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            if (_unreadable.TryAdd(pack.File, true)) TraceLog(LogLevel.Warning, $"The default pack {path} could not be read, so it counts as missing. {ex.Message}");
+            return false;
+        }
     }
 
     /// <summary>Begins fetching the packs that are missing into the list's folder on a task of its own, through the handler given in place of the network's where one is.</summary>

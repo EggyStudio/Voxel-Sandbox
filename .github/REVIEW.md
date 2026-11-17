@@ -262,7 +262,10 @@ the form kept, their build run 44122150471 started; items 221 and 222 written. T
 offscreen with no slangc, saving a world and opening it again. At the tick of 18:33 on 2026-11-17,
 run 44122150471 of `13d459e` green; items 218 to 220 archived; `56c378b`, `8a0ec79` and `c61baa0`,
 three commits of item 221 with Decision 65's among them, read with the form kept and waiting for the
-coder's word on its checks.
+coder's word on its checks. At 18:46 the three with `e833a74`, the settings written beside their
+files and moved over them, pushed together as item 221, the form kept, the coder's suites of 577 to
+581 tests and four plays passing, their build run 44140582610 started; item 223 written from four of
+its lows.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -333,6 +336,13 @@ change.
     screen opens. Asked, each reader takes such a file as absent and says it in the log once, and
     the packs screen shows the pack as unreadable, each with a test that fails first. After item
     221.
+
+223. **Four of item 221's lows.** Asked, each with a test that fails first. A request to end the
+    process, as a session's close or a kill by name sends, saves the world as the window's close
+    does. A second run opened on a data folder a run holds says so and does not write there. A
+    column whose bytes inflate short of a column's size is read as unreadable, not as a column. A
+    screenshot is said saved once its file stands, and said failed where it does not. The other lows
+    stay listed. After item 222.
 
 ## Verdicts
 
@@ -755,3 +765,29 @@ numbered otherwise, on a helper of the new tests that put a region west of the o
 at it, mended before the commit. The test of a save that cannot be written is changed to the rule
 these commits make, the world kept at a switch, and a file refused to the account is set aside as
 its test has it.
+
+Item 222's mends, each with a test that passes three runs in three and fails on a copy of the head:
+
+- A pack's metadata of other kinds than it takes, an array at its root or a number given as text,
+  threw from the readers of a texture. Its picture's and its animation's readers take such metadata
+  as none, mark the file as one the pack lacks so it is read no more, and say it in the log once
+  (`ResourcePacks.Metadata` and `MetadataUnread`), and the interface's sprite whose scaling holds a
+  type given as a number is drawn stretched, said once as it loads (`PackGui.Get`).
+  `A_Game_Whose_Interface_Pack_Holds_Metadata_Of_Other_Kinds_Draws_Its_Sprites_Without_It` opens a
+  game on a pack whose hotbar's metadata is an array and whose button's scaling type is a number,
+  which on the head ends at the first frame of the HUD, and
+  `A_Blocks_Metadata_Of_Other_Kinds_Than_It_Takes_Is_Read_As_None_And_Said_Once` reads a block's
+  animation whose frame time is text and one whose frames' height is, which on the head throw.
+- A default pack in the folder whose file cannot be read threw as the packs' screen opened. It
+  counts as missing, so the screen offers to fetch it, its row says it cannot be read
+  (`DefaultPacks.Unreadable`), and the log says it once.
+  `A_Default_Pack_That_Cannot_Be_Read_Counts_As_Missing_And_Is_Said_Once`, a pack's file refused to
+  the account, then given back. On the head the first look throws.
+
+The strict build is clean, 584 tests pass outside the GPU's lock with the long soak skipped, and the
+headless game's 79 pass three times in a row. The play, under the lock taken exclusive with no quiet
+wait, passes in 186 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault and no texture left, and its captures within 9 levels of the warm play's on 6.2.102,
+`sky2.png` differing in 0.02% of its pixels past 8 levels. A strict build of the first draft failed
+on a `cref` the animation's new overload made ambiguous, and its tests had read an older build. The
+overload is named `Frames`, and the tests were run again on the clean build.

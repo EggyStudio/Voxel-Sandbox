@@ -61,6 +61,8 @@ public sealed class Menus
     private IReadOnlyList<string>? _seen;
     private FetchState? _fetchSeen;
     private bool _missing;
+    // The default packs' files found in the folder that could not be read, marked on their rows.
+    private IReadOnlyCollection<string> _unreadable = [];
 
     private OptionScreens? _screens;
     // The sky's color the color's screen sets.
@@ -301,6 +303,7 @@ public sealed class Menus
         {
             _fetchSeen = defaults.State;
             _missing = defaults.State != FetchState.Fetching && defaults.Packs.Count > 0 && defaults.Missing(game.PackList);
+            _unreadable = defaults.Unreadable;
             _available = game.Guarded("The packs' folder could not be read", game.PackList.Available, []);
         }
         var top = GetScreenHeight() / 8;
@@ -315,7 +318,8 @@ public sealed class Menus
         {
             var entry = rows[row + _packScroll];
             var place = _chosen.IndexOf(entry);
-            var label = Fitted(place >= 0 ? $"{place + 1}. {PackList.Shown(entry)}" : PackList.Shown(entry), width - 36 * s);
+            var shown = PackList.Shown(entry) + (_unreadable.Contains(entry) ? ", cannot be read" : "");
+            var label = Fitted(place >= 0 ? $"{place + 1}. {shown}" : shown, width - 36 * s);
             if (Gui.Button(label, Row(row, 0, width - 24 * s)))
             {
                 if (place >= 0) _chosen.RemoveAt(place);

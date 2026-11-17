@@ -2319,6 +2319,115 @@ public sealed class HeadlessGameTests
         }
     }
 
+    // A pack folder of textures of one size each with the metadata given beside those that have
+    // one.
+    private static void WritePack(string folder, params (string Texture, int Width, int Height, string? Meta)[] textures)
+    {
+        foreach (var (texture, width, height, meta) in textures)
+        {
+            var path = Path.Combine(folder, "assets", "minecraft", "textures", texture + ".png");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            File.WriteAllBytes(path, ExportImageToMemory(new Image(new byte[width * height * 4], width, height), ".png"));
+            if (meta is not null) File.WriteAllText(path + ".mcmeta", meta);
+        }
+    }
+
+    [Fact]
+    public void A_Game_Whose_Interface_Pack_Holds_Metadata_Of_Other_Kinds_Draws_Its_Sprites_Without_It()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var said = new List<string>();
+        SetTraceLogCallback((_, line) =>
+        {
+            if (line.Contains("hotbar.png.mcmeta") || line.Contains("button.png.mcmeta")) lock (said) said.Add(line);
+        });
+        try
+        {
+            // The hotbar's metadata an array at its root, and the button's a scaling whose type is
+            // a number.
+            WritePack(folder, ("gui/sprites/hud/hotbar", 182, 22, "[]"),
+                ("gui/sprites/widget/button", 200, 20, """{ "gui": { "scaling": { "type": 5 } } }"""));
+            using var headless = new HeadlessGame(packs: [folder]);
+            headless.Step(3);
+
+            Assert.NotNull(PackGui.Get("sprites/hud/hotbar"));
+            Assert.Equal((0, 0), (PackGui.Get("sprites/widget/button")!.Value.Width, PackGui.Get("sprites/widget/button")!.Value.Height));
+            Assert.Equal(2, said.Count);
+        }
+        finally
+        {
+            SetTraceLogCallback(null);
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Blocks_Metadata_Of_Other_Kinds_Than_It_Takes_Is_Read_As_None_And_Said_Once()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var said = new List<string>();
+        SetTraceLogCallback((_, line) =>
+        {
+            if (line.Contains(".png.mcmeta, so its texture is read as having none")) lock (said) said.Add(line);
+        });
+        try
+        {
+            // A strip of two frames whose frame time is given as text, and one whose frames' height
+            // is.
+            WritePack(folder, ("block/stone", 16, 32, """{ "animation": { "frametime": "2" } }"""),
+                ("block/dirt", 16, 32, """{ "animation": { "height": "16" } }"""));
+            using var packs = new ResourcePacks([folder]);
+
+            Assert.Null(packs.Animation("block/stone"));
+            Assert.Null(packs.Animation("block/stone"));
+            Assert.Equal((16, 32), (packs.Texture("block/dirt")!.Value.Width, packs.Texture("block/dirt")!.Value.Height));
+            Assert.Null(packs.Picture("block/dirt")!.Value.Meta);
+            Assert.Equal(2, said.Count);
+        }
+        finally
+        {
+            SetTraceLogCallback(null);
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Default_Pack_That_Cannot_Be_Read_Counts_As_Missing_And_Is_Said_Once()
+    {
+        // A file's mode the account cannot read is set on Linux and macOS alone.
+        if (OperatingSystem.IsWindows()) return;
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var list = new PackList(folder);
+        byte[] bytes = [1, 2, 3];
+        var defaults = new DefaultPacks([new DefaultPack("pack.zip", "pack", "project", "version", "https://cdn.example/pack.zip", bytes.Length,
+            Convert.ToHexStringLower(System.Security.Cryptography.SHA512.HashData(bytes)))]);
+        Directory.CreateDirectory(list.Folder);
+        var path = list.PathOf("pack.zip");
+        File.WriteAllBytes(path, bytes);
+        var said = new List<string>();
+        SetTraceLogCallback((_, line) =>
+        {
+            if (line.Contains("could not be read, so it counts as missing")) lock (said) said.Add(line);
+        });
+        File.SetUnixFileMode(path, UnixFileMode.None);
+        try
+        {
+            Assert.True(defaults.Missing(list));
+            Assert.True(defaults.Missing(list));
+            Assert.Equal(["pack.zip"], defaults.Unreadable);
+            Assert.Single(said);
+            File.SetUnixFileMode(path, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            Assert.False(defaults.Missing(list));
+            Assert.Empty(defaults.Unreadable);
+        }
+        finally
+        {
+            SetTraceLogCallback(null);
+            File.SetUnixFileMode(path, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
     [Fact]
     public void Reading_A_Pack_Of_A_Font_Again_Holds_As_Many_Textures()
     {

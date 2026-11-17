@@ -83,7 +83,18 @@ public static class PackGui
             var (image, meta) = found;
             var texture = LoadTextureFromImage(image);
             SetTextureFilter(texture, TextureFilter.Point);
-            var (width, height, left, top, right, bottom) = Scaling(meta);
+            var (width, height, left, top, right, bottom) = (0, 0, 0, 0, 0, 0);
+            try
+            {
+                (width, height, left, top, right, bottom) = Scaling(meta);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // A scaling of other kinds than it takes, as a type given as a number, is none, so
+                // the sprite is drawn stretched, which the log says once as the sprite is loaded
+                // once.
+                TraceLog(LogLevel.Warning, $"The scaling of textures/gui/{path}.png.mcmeta holds values of other kinds than it takes, so the sprite is drawn stretched. {ex.Message}");
+            }
             picture = new Picture(texture, width, height, left, top, right, bottom);
         }
         return _loaded[path] = picture;
