@@ -103,6 +103,14 @@ public sealed class PrimedTnt(EcsWorld ecs)
         });
     }
 
+    /// <summary>Sets a lit TNT at a place as it moved with so much of its fuse left, as one a save kept burning.</summary>
+    public void Spawn(Vector3 at, Vector3 velocity, float left)
+    {
+        var id = ecs.Spawn();
+        ecs.Add(id, new LitTnt { Left = left });
+        ecs.Add(id, new Body(0.49f, 0.98f) { Position = at, Velocity = velocity });
+    }
+
     /// <summary>Lights the TNT of a cell that another blast reached, its fuse 10 to 29 ticks.</summary>
     public void Chain(int x, int y, int z) => Light(x, y, z, (10 + _random.Next(20)) * Tick);
 

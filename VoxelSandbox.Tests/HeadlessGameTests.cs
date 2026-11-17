@@ -1046,6 +1046,116 @@ public sealed class HeadlessGameTests
         Assert.True(LandOrigin.LandOf(Assert.Single(game.Arrows.All).Position).X > 80);
     }
 
+    // Copies a save's folder as a run ended at that moment would leave it.
+    private static void CopyFolder(string from, string to)
+    {
+        foreach (var path in Directory.GetFiles(from, "*", SearchOption.AllDirectories))
+        {
+            var target = Path.Combine(to, Path.GetRelativePath(from, path));
+            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+            File.Copy(path, target);
+        }
+    }
+
+    [Fact]
+    public void A_Block_Falling_At_A_Save_Is_Kept_Where_It_Falls_And_Lands_Once_Whether_The_Game_Goes_On_Or_Ends_There()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var (folder, ended) = (Path.Combine(root, "world"), Path.Combine(root, "ended"));
+        static int Sand(VoxelGame game) => Enumerable.Range(ChunkColumn.Bottom, ChunkColumn.Ceiling - ChunkColumn.Bottom).Count(y => game.World.GetBlock(2, y, 2) == BlockId.Sand);
+        static void Landed(HeadlessGame headless)
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (headless.Game.Falling.Count > 0 && clock.Elapsed.TotalSeconds < 10) headless.Step(1);
+        }
+        try
+        {
+            using (var headless = new HeadlessGame(save: folder, still: true))
+            {
+                // Sand let fall from high over the spawn, saved as it falls, and the save copied as
+                // a run ended then would leave it.
+                var game = headless.Game;
+                game.Falling.Drop(BlockId.Sand, 2, 100, 2);
+                headless.Step(2);
+                Assert.Equal(1, game.Falling.Count);
+                game.SaveWorld();
+                CopyFolder(folder, ended);
+
+                // The game going on, the sand lands and a save keeps it as a block alone.
+                Landed(headless);
+                game.SaveWorld();
+                Assert.Equal(1, Sand(game));
+            }
+            using (var again = new HeadlessGame(save: folder, still: true))
+            {
+                Assert.Equal(0, again.Game.Falling.Count);
+                Assert.Equal(1, Sand(again.Game));
+            }
+            using var after = new HeadlessGame(save: ended, still: true);
+            Landed(after);
+            Assert.Equal(1, Sand(after.Game));
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Lit_TNT_At_A_Save_Is_Kept_With_Its_Fuse_And_Burns_On_After_A_Load()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var (folder, ended) = (Path.Combine(root, "world"), Path.Combine(root, "ended"));
+        try
+        {
+            using (var headless = new HeadlessGame(save: folder, still: true))
+            {
+                // A TNT lit high over the spawn with a minute's fuse, saved as it burns, and the
+                // save copied as a run ended then would leave it.
+                headless.Game.Tnt.Light(2, 100, 2, fuse: 60);
+                headless.Step(2);
+                headless.Game.SaveWorld();
+                CopyFolder(folder, ended);
+            }
+
+            using var after = new HeadlessGame(save: ended, still: true);
+            var lit = Assert.Single(after.Game.Tnt.All);
+            Assert.InRange(lit.Lit.Left, 50, 60);
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Fire_Keeps_Its_Age_Across_A_Load()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using (var headless = new HeadlessGame(save: folder, still: true))
+            {
+                // A fire on magma, which never puts it out, at the ninth of its ages as the world
+                // closes.
+                var game = headless.Game;
+                game.World.SetBlock(2, 4, 2, BlockId.Magma);
+                Assert.True(game.Fires.Light(game.World, 2, 5, 2, new Random(1)));
+                headless.Step(1);
+                foreach (var (id, _) in headless.Ecs.Query<Fire>()) headless.Ecs.GetRef<Fire>(id).Age = 9;
+            }
+
+            using var again = new HeadlessGame(save: folder, still: true);
+            var fire = Assert.Single(again.Game.Fires.All);
+            Assert.Equal((2, 5, 2), fire.At);
+            Assert.True(fire.Age >= 9, $"the fire's age is {fire.Age}");
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
     [Fact]
     public void A_Recording_Whose_File_Cannot_Be_Written_Ends_And_Says_So()
     {

@@ -936,3 +936,48 @@ GPU's lock with the long soak skipped, and the headless game's 88 pass three tim
 play, under the lock taken exclusive with no quiet wait, passes in 183 s, its `captures/closed.log`
 naming no fault and no texture left, and its captures within 8 levels of the warm play's on 6.2.102,
 `sky2.png` differing in 0.04% of its pixels past 8 levels.
+
+Item 226's mends, in two commits, each with a test that passes three runs in three and fails on a
+copy of the head:
+
+- `00fccc5`.
+  - A stack lying over a column not loaded, thrown or dropped there, was in no column's keeping, so
+    a close before that column arrived lost it. A save keeps such stacks with the column they lie
+    over, joined to those the save keeps of it (`ItemDrops.KeepStrays`),
+    `A_Stack_Thrown_Into_A_Column_Not_Loaded_Is_Kept_By_A_Save_Before_The_Column_Arrives`. On the
+    head none lies there after the close.
+  - A chest the land placed in a region whose chests file was held got its loot again, the held file
+    keeping what the chest held for a later run. The chests the land placed in such a region are
+    given no loot (`WorldSave.ChestsHeld`), a chest opened there standing empty for the run,
+    `A_Chest_The_Land_Placed_In_A_Region_Whose_Chests_File_Is_Held_Is_Given_No_Loot_Again`.
+  - An arrow flying into a column not loaded, which reads as solid, stuck at its border and hung
+    there once it arrived. The choice is that it waits. An arrow whose place or next step lies in a
+    column not loaded neither moves nor ages, and flies on as the column arrives. The arrows are the
+    skeletons', which no one picks up, so none has an item to drop,
+    `An_Arrow_Flying_Into_A_Column_Not_Loaded_Waits_At_Its_Border_And_Flies_On_As_It_Arrives`. On
+    the head it sticks.
+- The commit carrying this Reply. A save keeps the things under way by region beside the blocks, in
+  a file of their own (`u.x.z.bin`), the blocks falling with their place, motion and time fallen,
+  the TNT lit with its place, motion and fuse left, and each fire's age (`Underway`). A save writes
+  those of every loaded column, a column holding none among them, so a block that lands after a save
+  is kept by the next as a block alone. A column that unloads gives its lit TNT and its fires' ages
+  to the save, its falling blocks set down in it first, and a column that joins lays them down
+  again, the fires taking their ages as the world kindles them. A close sets the falling blocks and
+  the TNT down as blocks before its save.
+  - `A_Block_Falling_At_A_Save_Is_Kept_Where_It_Falls_And_Lands_Once_Whether_The_Game_Goes_On_Or_Ends_There`,
+    sand saved high in its fall and the save copied as a run ended then would leave it. The game
+    going on lands it and keeps one sand block, and the copy opened lands it once. On the head the
+    copy holds no sand.
+  - `A_Lit_TNT_At_A_Save_Is_Kept_With_Its_Fuse_And_Burns_On_After_A_Load`, a TNT lit with a minute's
+    fuse saved as it burns, the copy opened burning with 50 to 60 seconds left. On the head none
+    burns.
+  - `A_Fire_Keeps_Its_Age_Across_A_Load`, a fire on magma at its ninth age as the world closes, at
+    the ninth or past as it opens. On the head at none.
+
+Each commit's checks: the strict build clean, the suite outside the GPU's lock with the long soak
+skipped, 603 and 606 passing, the headless game's 90 and 93 passing three times in a row, and the
+play under the lock taken exclusive with no quiet wait passing in 185 and 186 s, its
+`captures/closed.log` naming no fault and no texture left, and its captures within 8 levels of the
+warm play's on 6.2.102, `sky2.png` differing in at most 0.04% of its pixels past 8 levels. The first
+commit's test of a stack thrown far off first opened the game on the stack's own place, so the
+player picked it up, and opens it a few blocks off.

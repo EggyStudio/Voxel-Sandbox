@@ -337,6 +337,11 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The TNT lit and burning down its fuse.</summary>
     public PrimedTnt Tnt { get; } = new(GetApp().World.Resource<EcsWorld>());
 
+    /// <summary>The blocks falling, the TNT lit and the fires' ages, as the save keeps them by region.</summary>
+    public Underway Underway => _underway ??= new(GetApp().World.Resource<EcsWorld>(), Falling, Tnt, Fires);
+
+    private Underway? _underway;
+
     /// <summary>The smoke and the flash of light of the blasts.</summary>
     public BlastEffects Blasts { get; } = new(GetApp().World.Resource<EcsWorld>());
 
@@ -693,7 +698,9 @@ public sealed class VoxelGame : IDisposable
         else Vitals.Set(info.Health, info.Food, info.Saturation);
         // The old streamer's workers finish into its own queue, which nothing reads again.
         CaveFields.Use((World.Generator as Overworld)?.Caves);
-        Streamer = new ChunkStreamer(World, Renderer, Mobs, Drops, Chests, Save, CaveFields, Falling);
+        Underway.Clear();
+        Underway.Save = Save;
+        Streamer = new ChunkStreamer(World, Renderer, Mobs, Drops, Chests, Save, CaveFields, Falling, Underway);
         Clouds.Follow(generator.Seed);
         (_sinceSave, _saveWait, SaveFault) = (0, SaveSeconds, null);
         Loading = true;
@@ -860,8 +867,9 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>
     /// Unloads what a jump to a place of the land leaves out of reach, before the origin moves near
-    /// it, the columns kept by the save with the blocks falling over them set down, their mobs and
-    /// stacks kept by their places in the land, and the arrows, lit TNT and flashes among them let go.
+    /// it, the columns kept by the save with the blocks falling over them set down, their mobs,
+    /// stacks and lit TNT kept by their places in the land, and the arrows and flashes among them
+    /// let go.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -871,8 +879,7 @@ public sealed class VoxelGame : IDisposable
     /// </para>
     /// <para>
     /// Those let go are no player's. The arrows are the skeletons', which no one picks up, and go
-    /// within a minute. A lit TNT's block is gone from the land as it is lit, and its blast in land
-    /// not loaded breaks nothing. A flash shows for half a second.
+    /// within a minute. A flash shows for half a second.
     /// </para>
     /// </remarks>
     public void Leave(LandPlace to)
@@ -952,6 +959,7 @@ public sealed class VoxelGame : IDisposable
             var chests = Chests.Columns(World).ToList();
             Drops.KeepStrays(World);
             var drops = Drops.Columns(World).ToList();
+            var underway = Underway.Columns(World).ToList();
             // The stacks the window E opens holds are saved in the inventory as shutting it puts
             // them, so a save while it is open keeps them.
             var inventory = new Inventory();
@@ -970,6 +978,7 @@ public sealed class VoxelGame : IDisposable
                 save.WriteFurnaces(furnaces);
                 save.WriteChests(chests);
                 save.WriteDrops(drops);
+                save.WriteUnderway(underway);
                 save.WriteInfo(info);
             }
             if (aside)

@@ -90,6 +90,14 @@ public sealed class FallingBlocks(EcsWorld ecs)
         world.Loosened.Clear();
     }
 
+    /// <summary>Lets a block fall from a place as it moved and as long as it had fallen, as one a save kept falling.</summary>
+    public void Spawn(BlockId block, Vector3 at, Vector3 velocity, float age)
+    {
+        var id = ecs.Spawn();
+        ecs.Add(id, new FallingBlock { Block = block, Age = age });
+        ecs.Add(id, new Body(0.49f, 0.98f) { Position = at, Velocity = velocity });
+    }
+
     /// <summary>Lets a block fall from its cell, as a felled tree's log does.</summary>
     public void Drop(BlockId block, int x, int y, int z)
     {

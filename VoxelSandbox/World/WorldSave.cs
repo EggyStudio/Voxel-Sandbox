@@ -144,6 +144,7 @@ public sealed class WorldSave
         _mobs = new(this, ReadMobRegion, WriteMobRegion, MobRegionPath, OneFile, ReadOneFile);
         _chests = new(this, ReadChestRegion, WriteChestRegion, ChestRegionPath);
         _drops = new(this, ReadDropRegion, WriteDropRegion, DropRegionPath);
+        _underway = new(this, ReadUnderwayRegion, WriteUnderwayRegion, UnderwayRegionPath);
         if (Finish()) ClearScratch();
     }
 
@@ -1236,6 +1237,103 @@ public sealed class WorldSave
                     writer.Write(drop.At.Y);
                     writer.Write(drop.At.Z);
                     writer.Write(drop.Left);
+                }
+            }
+        });
+    }
+
+    /// <summary>
+    /// A thing under way as a save keeps it, its kind as <see cref="Underway"/> names them, a
+    /// falling block's key, its place in the land, how it moves, and its time, a falling block's
+    /// seconds fallen, a lit TNT's fuse left or a fire's age.
+    /// </summary>
+    public sealed record UnderwayRecord(byte Kind, string Block, LandPlace At, System.Numerics.Vector3 Velocity, float Time);
+
+    private readonly Regional<UnderwayRecord> _underway;
+
+    /// <summary>What a column kept under way as it unloaded, or as the world was last saved while it was loaded, taken out of the save, or none.</summary>
+    public List<UnderwayRecord>? TakeUnderway(int x, int z) => _underway.Take(x, z);
+
+    /// <summary>Keeps what a column that unloads holds under way, to be written at the next <see cref="WriteUnderway"/>.</summary>
+    public void KeepUnderway(int x, int z, List<UnderwayRecord> records) => _underway.Keep(x, z, records);
+
+    /// <summary>Writes what the loaded columns hold under way, with what the columns unloaded since keep, into their regions' files.</summary>
+    public void WriteUnderway(IEnumerable<((int X, int Z) Column, IReadOnlyList<UnderwayRecord> Records)> loaded) => _underway.Write(loaded);
+
+    private string UnderwayRegionPath((int X, int Z) region) => Path.Combine(Folder, "regions", $"u.{region.X}.{region.Z}.bin");
+
+    // The version of the regions' files of things under way and how many a column of one may hold,
+    // past which the file is read as one the game did not write.
+    private const int UnderwayVersion = 1, MostUnderwayInColumn = 65536;
+    private static readonly byte[] UnderwayMagic = "E3DU"u8.ToArray();
+
+    private Dictionary<(int X, int Z), List<UnderwayRecord>> ReadUnderwayRegion((int X, int Z) region)
+    {
+        var columns = new Dictionary<(int X, int Z), List<UnderwayRecord>>();
+        var path = UnderwayRegionPath(region);
+        if (!File.Exists(path)) return columns;
+        try
+        {
+            using var reader = new BinaryReader(new ZLibStream(File.OpenRead(path), CompressionMode.Decompress));
+            if (!reader.ReadBytes(4).AsSpan().SequenceEqual(UnderwayMagic) || reader.ReadInt32() != UnderwayVersion)
+                throw new InvalidDataException("it is not a file of things under way of a version this game reads");
+            var count = reader.ReadInt32();
+            if (count is < 0 or > RegionSize * RegionSize) throw new InvalidDataException("it counts more columns than a region holds");
+            for (int c = 0; c < count; c++)
+            {
+                int lx = reader.ReadByte(), lz = reader.ReadByte();
+                if (lx >= RegionSize || lz >= RegionSize) throw new InvalidDataException("a column of it lies outside it");
+                var records = columns[(region.X * RegionSize + lx, region.Z * RegionSize + lz)] = [];
+                var held = reader.ReadInt32();
+                if (held is < 0 or > MostUnderwayInColumn) throw new InvalidDataException("a column of it holds more things under way than a column of the game's");
+                for (int i = 0; i < held; i++)
+                {
+                    var kind = reader.ReadByte();
+                    var block = ReadChestText(reader);
+                    var at = new LandPlace(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+                    var velocity = new System.Numerics.Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                    var time = reader.ReadSingle();
+                    // One whose place, motion or time is no number is left out, so none spreads it.
+                    if (at.Finite && float.IsFinite(velocity.X + velocity.Y + velocity.Z) && float.IsFinite(time))
+                        records.Add(new UnderwayRecord(kind, block, at, velocity, time));
+                }
+            }
+        }
+        catch (Exception ex) when (SetsAside(ex) || Holds(ex))
+        {
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the region's falling blocks, lit TNT and fires' ages are not kept and {(SetsAside(ex) ? SetAside(path) : Hold(path))}. {ex.Message}");
+            columns.Clear();
+        }
+        return columns;
+    }
+
+    // Writes what a region holds under way, and no file for a region that holds none and had none.
+    private void WriteUnderwayRegion((int X, int Z) region, Dictionary<(int X, int Z), List<UnderwayRecord>> columns)
+    {
+        var held = columns.Where(column => column.Value.Count > 0).ToList();
+        if (held.Count == 0 && !File.Exists(UnderwayRegionPath(region))) return;
+        Replace(UnderwayRegionPath(region), file =>
+        {
+            using var writer = new BinaryWriter(new ZLibStream(file, CompressionLevel.Fastest, leaveOpen: true));
+            writer.Write(UnderwayMagic);
+            writer.Write(UnderwayVersion);
+            writer.Write(held.Count);
+            foreach (var ((x, z), records) in held)
+            {
+                writer.Write((byte)(x - region.X * RegionSize));
+                writer.Write((byte)(z - region.Z * RegionSize));
+                writer.Write(records.Count);
+                foreach (var record in records)
+                {
+                    writer.Write(record.Kind);
+                    writer.Write(record.Block);
+                    writer.Write(record.At.X);
+                    writer.Write(record.At.Y);
+                    writer.Write(record.At.Z);
+                    writer.Write(record.Velocity.X);
+                    writer.Write(record.Velocity.Y);
+                    writer.Write(record.Velocity.Z);
+                    writer.Write(record.Time);
                 }
             }
         });

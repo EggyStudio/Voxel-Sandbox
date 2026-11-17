@@ -113,14 +113,18 @@ public sealed class Fires(EcsWorld ecs)
             // Each cell named draws its delay, its new fire's or one let go, so the chances drawn after
             // it are the same whichever of the cells burned already.
             var wait = Delay(random);
-            if (!burning.Contains(at)) ecs.Add(ecs.Spawn(), new Fire { X = at.X, Y = at.Y, Z = at.Z, Wait = wait });
+            if (!burning.Contains(at)) ecs.Add(ecs.Spawn(), new Fire { X = at.X, Y = at.Y, Z = at.Z, Age = Aged.Remove(at, out var age) ? age : 0, Wait = wait });
         }
         world.Kindled.Clear();
     }
 
+    /// <summary>The ages a save kept of the fires of a column that joined, by their cells, which the fires the world kindles there take.</summary>
+    public Dictionary<(int X, int Y, int Z), int> Aged { get; } = [];
+
     /// <summary>Lets go of every fire, as a world closes.</summary>
     public void Clear()
     {
+        Aged.Clear();
         var all = new List<int>();
         foreach (var (id, _) in ecs.Query<Fire>()) all.Add(id);
         foreach (var id in all) ecs.Despawn(id);

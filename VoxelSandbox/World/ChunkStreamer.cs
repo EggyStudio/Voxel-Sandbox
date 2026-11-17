@@ -22,7 +22,7 @@ namespace VoxelSandbox;
 /// of the caves' readings go to the workers together and finish together, and the work their
 /// joining brings, in the game and in the engine, is spread over frames this way.
 /// </remarks>
-public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null, FallingBlocks? falling = null)
+public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null, FallingBlocks? falling = null, Underway? underway = null)
 {
     private readonly ConcurrentQueue<(int X, int Z, ChunkColumn? Column, bool Unread, int Unknown, int Left)> _done = new();
     // How many times the player was put elsewhere, which a worker's column carries, so one made for
@@ -219,6 +219,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         mobs.Joined(column);
         drops.Joined(column.X, column.Z);
         chests.Joined(column);
+        underway?.Joined(column.X, column.Z);
     }
 
     // The compressed blocks the save keeps for a column, read on the main thread, or null.
@@ -363,6 +364,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         {
             // A block falling over the column is set down in it first, so the column keeps it.
             falling?.SetDown(world, x, z);
+            underway?.Leaving(x, z);
             if (world.TryGetColumn(x, z, out var column) && column.Changed)
             {
                 if (save is not null) save.Keep(column);
