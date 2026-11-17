@@ -255,7 +255,11 @@ waiting on run 44093860347 of `d7e72fe`, its play still under way; items 218 and
 tick of 16:34 on 2026-11-17, `ffb417c`, items 217 and 218, pushed at 15:36 with run 44104977993 and
 the pack run 44105017388 without publish under way; Verdicts 14 and 15 settled on run 44093860347;
 `023e542`, item 219, checked and waiting; the seven modules' commits of the sweep pushed at 16:13;
-items 214 to 217 archived, item 220 written.
+items 214 to 217 archived, item 220 written. Run 44104977993 of `ffb417c` ended green at 17:07 on
+2026-11-17 with the play; `023e542`, item 219, and `13d459e`, item 220, pushed together at 17:07,
+the form kept, their build run 44122150471 started; items 221 and 222 written. The pack run
+44105017388 of `ffb417c` without publish ended green at 17:10, the Linux zip's program drawing
+offscreen with no slangc, saving a world and opening it again.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -347,10 +351,31 @@ change.
     a wall; asked, which it is, read by the engine's count by name, and let go with the game. After
     item 219.
 
+221. **What a cut leaves of a save.** No item has read the world's files for a write that ends
+    midway. Asked, a read of every path that writes under the data folder, the columns, the player,
+    the mobs, the chests, the options and the worlds' list, by read-only subagents first, for what
+    stands on the disk when the process ends between any two writes, when the disk is full, and when
+    a file read back is short, empty or of another version. Each finding is told with its path and
+    what a player would see, high where a world or a part of it is lost or the game refuses to open,
+    low elsewhere. The high ones are mended in this item, a file written beside its place and moved
+    over it where that fits, a file that fails its read left on the disk under another name and said
+    in the log, each with a test that cuts the write at the named point and fails first. How the
+    chests' earlier file is read stays out of this item. The lows go to the Reply as a list. After
+    item 220.
+
+222. **A pack that reads wrong does not end the game.** Item 221's read found two faults outside the
+    saves. A pack whose `.mcmeta` holds JSON of other types than expected, an array at its root or a
+    number given as text, throws from the readers the HUD calls as it first draws, so the game ends
+    on its first HUD frame at every start. A default pack that cannot be read throws as the packs
+    screen opens. Asked, each reader takes such a file as absent and says it in the log once, and
+    the packs screen shows the pack as unreadable, each with a test that fails first. After item
+    221.
+
 ## Verdicts
 
 No verdict is open. Verdicts 14 and 15 are settled at 15:34 on 2026-11-17, the play green in run
 44093860347. Verdicts 1 to 13 are settled, said under each in REVIEW-ARCHIVE.md.
+
 ## Decisions
 
 Decisions 1 The old game is replaced in place, its history kept; 2 The license stays MIT; 3 `e3d`
@@ -453,6 +478,12 @@ REVIEW-ARCHIVE.md.
     and the review asks for a recording and the settings file when a fault is named without one. The
     engine's Decision 107 says the same; put up for approval as its Decision 95's precedent allows.
     Item 166. Approved on 2026-11-11, asked by the review with N 7.9, N 7.10 and N 7.11.
+
+65. **A world's earlier chests file is not read.** Decided at 17:29 on 2026-11-17, asked by the
+    review as a selection, the game does not read a folder's `chests.json` into the regions' chest
+    files, as nothing is in use until a release and no earlier form is carried forward (Decision of
+    2026-10-23). The reader that takes it once and its tests go, and a chest of a world saved in
+    that form opens empty. Item 221 carries it.
 
 ## Replies
 

@@ -192,6 +192,7 @@ public sealed class WorldSave
             var renumber = version == 1 ? _renumber : Renumbering(ReadKeys(reader));
             var count = reader.ReadInt32();
             if (count is < 0 or > RegionSize * RegionSize) throw new InvalidDataException("it counts more columns than a region holds");
+            var unread = 0;
             for (int i = 0; i < count; i++)
             {
                 int lx = reader.ReadInt16(), lz = reader.ReadInt16(), length = reader.ReadInt32();
@@ -201,15 +202,65 @@ public sealed class WorldSave
                 // of it is made.
                 if (length > reader.BaseStream.Length - reader.BaseStream.Position) throw new EndOfStreamException("a column of it ends early");
                 var bytes = reader.ReadBytes(length);
-                _kept[(region.X * RegionSize + lx, region.Z * RegionSize + lz)] = renumber is null ? bytes : Renumbered(bytes, renumber);
+                var at = (region.X * RegionSize + lx, region.Z * RegionSize + lz);
+                if (renumber is null) _kept[at] = bytes;
+                // A column whose blocks do not inflate is generated again alone, and the columns
+                // after it are read.
+                else if (Renumbered(bytes, renumber) is { } renumbered) _kept[at] = renumbered;
+                else unread++;
+            }
+            if (unread > 0)
+            {
+                TraceLog(LogLevel.Warning, $"{unread} columns of the region {path} could not be read, so they are generated again and {CopyAside(path)}.");
+                _changedRegions.Add(region);
             }
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or EndOfStreamException)
+        catch (Exception ex) when (SetsAside(ex))
         {
             // The region's columns are made again by the generator rather than the world not loading,
             // and those read before the fault are written again at the next save.
             TraceLog(LogLevel.Warning, $"The region {path} could not be read, so its columns are generated again and {SetAside(path)}. {ex.Message}");
             _changedRegions.Add(region);
+        }
+        catch (Exception ex) when (Holds(ex))
+        {
+            TraceLog(LogLevel.Warning, $"The region {path} could not be read, so its columns are generated for this run and {Hold(path)}. {ex.Message}");
+        }
+    }
+
+    // Whether a read failed on a file read wrong, ended early, holding what no save writes or
+    // refused to the account, which is set aside so the save writes the file again.
+    private static bool SetsAside(Exception ex) => ex is EndOfStreamException or InvalidDataException or FormatException or UnauthorizedAccessException;
+
+    // Whether a read failed on a fault of the disk or on a file another program holds, which may
+    // pass, so the file is left as it stands rather than taken for one read wrong, and a passing
+    // fault never puts what the generator makes in place of what was saved.
+    private static bool Holds(Exception ex) => ex is IOException and not EndOfStreamException;
+
+    // Leaves a file that could not be read as it stands, written by no save of this run, and gives
+    // what became of it for the log, one gone since it was found held by none.
+    private string Hold(string path)
+    {
+        if (!File.Exists(path)) return "the file is gone";
+        _held.Add(path);
+        return "the file, which no save of this run writes, is left as it stands";
+    }
+
+    // Copies a file that could not be read in part aside, under its name and .unread or .unread and
+    // a number, the file standing until a save writes it whole, and gives what became of it for the
+    // log.
+    private static string CopyAside(string path)
+    {
+        var aside = path + ".unread";
+        for (int n = 2; File.Exists(aside); n++) aside = $"{path}.unread{n}";
+        try
+        {
+            File.Copy(path, aside);
+            return $"a copy of the file is kept as {Path.GetFileName(aside)}";
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return $"no copy of the file could be kept, {ex.Message}";
         }
     }
 
@@ -267,21 +318,30 @@ public sealed class WorldSave
         return keys;
     }
 
-    // A kept column's compressed blocks given this build's numbers from those of another.
-    private static byte[] Renumbered(byte[] bytes, ushort[] renumber)
+    // A kept column's compressed blocks given this build's numbers from those of another, or null
+    // for blocks that do not inflate.
+    private static byte[]? Renumbered(byte[] bytes, ushort[] renumber)
     {
         using var output = new MemoryStream();
-        using (var input = new ZLibStream(new MemoryStream(bytes), CompressionMode.Decompress))
-        using (var zip = new ZLibStream(output, CompressionLevel.Fastest))
+        try
         {
-            var raw = new byte[Section.Volume * sizeof(ushort)];
-            // A column holds so many sections, so no more is read however far its bytes inflate.
-            for (int s = 0; s < ChunkColumn.SectionCount && input.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length; s++)
+            using (var input = new ZLibStream(new MemoryStream(bytes), CompressionMode.Decompress))
+            using (var zip = new ZLibStream(output, CompressionLevel.Fastest))
             {
-                var blocks = System.Runtime.InteropServices.MemoryMarshal.Cast<byte, ushort>(raw.AsSpan());
-                for (int i = 0; i < blocks.Length; i++) blocks[i] = blocks[i] < renumber.Length ? renumber[blocks[i]] : (ushort)0;
-                zip.Write(raw);
+                var raw = new byte[Section.Volume * sizeof(ushort)];
+                // A column holds so many sections, so no more is read however far its bytes
+                // inflate.
+                for (int s = 0; s < ChunkColumn.SectionCount && input.ReadAtLeast(raw, raw.Length, throwOnEndOfStream: false) == raw.Length; s++)
+                {
+                    var blocks = System.Runtime.InteropServices.MemoryMarshal.Cast<byte, ushort>(raw.AsSpan());
+                    for (int i = 0; i < blocks.Length; i++) blocks[i] = blocks[i] < renumber.Length ? renumber[blocks[i]] : (ushort)0;
+                    zip.Write(raw);
+                }
             }
+        }
+        catch (InvalidDataException)
+        {
+            return null;
         }
         return output.ToArray();
     }
@@ -509,16 +569,21 @@ public sealed class WorldSave
     }
 
     /// <summary>
-    /// Leaves out a kept column whose blocks could not be read, so it is generated again, and moves
-    /// its region's file aside, the region's other columns written again at the next
-    /// <see cref="Flush"/>.
+    /// Leaves out a kept column whose blocks could not be read, so it is generated again, and keeps
+    /// a copy of its region's file aside, the file standing until the next <see cref="Flush"/>
+    /// writes the region's other columns.
     /// </summary>
+    /// <remarks>
+    /// The region is read first, as a change to it is, so one let go since the column was asked for
+    /// is written again with its other columns.
+    /// </remarks>
     public void Unreadable(int x, int z)
     {
+        ReadRegion(x, z);
         _kept.TryRemove((x, z), out _);
         var region = RegionOf(x, z);
         var path = RegionPath(region);
-        var aside = File.Exists(path) ? $" and {SetAside(path)}" : "";
+        var aside = File.Exists(path) ? $" and {CopyAside(path)}" : "";
         TraceLog(LogLevel.Warning, $"The column {x}, {z} of the region {path} could not be read, so it is generated again{aside}.");
         _changedRegions.Add(region);
     }
@@ -789,11 +854,11 @@ public sealed class WorldSave
             }
             if (lost > 0) TraceLog(LogLevel.Warning, $"{path} kept {lost} mobs of a kind this game does not know or whose place was no number, which are left out.");
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or EndOfStreamException)
+        catch (Exception ex) when (SetsAside(ex) || Holds(ex))
         {
             // The region's columns place their mobs again by their generator rather than the world
             // not loading.
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the region's mobs are placed again and {SetAside(path)}. {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the region's mobs are placed again and {(SetsAside(ex) ? SetAside(path) : Hold(path))}. {ex.Message}");
             columns.Clear();
         }
         return columns;
@@ -901,7 +966,7 @@ public sealed class WorldSave
             if (strays.Count + lost > 0)
                 TraceLog(LogLevel.Warning, $"{OneFile} kept {strays.Count + lost} mobs whose place was no number, {strays.Count} set down at their homes and {lost} left out.");
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or EndOfStreamException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or FormatException)
         {
             // The columns' mobs are placed again by their generator rather than the world not loading.
             TraceLog(LogLevel.Warning, $"{OneFile} could not be read, so the columns' mobs are placed again and {SetAside(OneFile)}. {ex.Message}");
@@ -925,7 +990,8 @@ public sealed class WorldSave
         static float Held(float value) => float.IsFinite(value) && value > 0 ? value : 0;
         try
         {
-            foreach (var r in JsonSerializer.Deserialize(ReadText(path, MostRecordsBytes), SaveJson.Default.FurnaceRecordArray) ?? [])
+            // A record that is null, as a file changed by hand may hold, is no furnace.
+            foreach (var r in (JsonSerializer.Deserialize(ReadText(path, MostRecordsBytes), SaveJson.Default.FurnaceRecordArray) ?? []).OfType<FurnaceRecord>())
             {
                 var (burning, cooked) = (Held(r.Burning), Held(r.Cooked));
                 var furnace = new Furnace { Burning = burning, BurnTotal = MathF.Max(Held(r.BurnTotal), burning), Cooked = cooked };
@@ -1022,11 +1088,11 @@ public sealed class WorldSave
                 }
             }
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or EndOfStreamException)
+        catch (Exception ex) when (SetsAside(ex) || Holds(ex))
         {
             // The region's columns take the chests their generation gives them again rather than
             // the world not loading.
-            TraceLog(LogLevel.Warning, $"{path} could not be read, so the region's chests begin as its columns give them and {SetAside(path)}. {ex.Message}");
+            TraceLog(LogLevel.Warning, $"{path} could not be read, so the region's chests begin as its columns give them and {(SetsAside(ex) ? SetAside(path) : Hold(path))}. {ex.Message}");
             columns.Clear();
         }
         return columns;

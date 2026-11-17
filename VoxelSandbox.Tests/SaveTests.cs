@@ -20,24 +20,174 @@ public sealed class SaveTests : IDisposable
     /// Writes a region of version 1, the columns' blocks by the numbers they hold and no list of
     /// keys, so it is read by the keys the world's info lists.
     /// </summary>
-    internal static void WriteVersion1Region(string folder, int regionX, int regionZ, params ChunkColumn[] columns)
+    internal static void WriteVersion1Region(string folder, int regionX, int regionZ, params ChunkColumn[] columns) =>
+        WriteRegion(folder, regionX, regionZ, 1, null, [.. columns.Select(c => (c.X, c.Z, Compressed(c)))]);
+
+    // A column's blocks compressed as a region keeps them.
+    private static byte[] Compressed(ChunkColumn column)
+    {
+        var output = new MemoryStream();
+        using (var zip = new ZLibStream(output, CompressionLevel.Fastest))
+            foreach (var section in column.Sections)
+                zip.Write(System.Runtime.InteropServices.MemoryMarshal.AsBytes(section.Blocks.AsSpan()));
+        return output.ToArray();
+    }
+
+    // Writes a region of a version, with the keys a region of version 2 lists, each column's bytes as
+    // given.
+    private static void WriteRegion(string folder, int regionX, int regionZ, int version, string[]? keys, params (int X, int Z, byte[] Bytes)[] columns)
     {
         using var writer = new BinaryWriter(File.Create(Path.Combine(folder, "regions", $"r.{regionX}.{regionZ}.bin")));
         writer.Write("E3DR"u8);
-        writer.Write(1);
-        writer.Write(columns.Length);
-        foreach (var column in columns)
+        writer.Write(version);
+        if (keys is not null)
         {
-            var output = new MemoryStream();
-            using (var zip = new ZLibStream(output, CompressionLevel.Fastest))
-                foreach (var section in column.Sections)
-                    zip.Write(System.Runtime.InteropServices.MemoryMarshal.AsBytes(section.Blocks.AsSpan()));
-            var bytes = output.ToArray();
-            writer.Write((short)(column.X - regionX * WorldSave.RegionSize));
-            writer.Write((short)(column.Z - regionZ * WorldSave.RegionSize));
+            writer.Write(keys.Length);
+            foreach (var key in keys) writer.Write(key);
+        }
+        writer.Write(columns.Length);
+        foreach (var (x, z, bytes) in columns)
+        {
+            writer.Write((short)(x - regionX * WorldSave.RegionSize));
+            writer.Write((short)(z - regionZ * WorldSave.RegionSize));
             writer.Write(bytes.Length);
             writer.Write(bytes);
         }
+    }
+
+    // Bytes compressed as a mobs' or a chests' region holds them.
+    private static byte[] Zipped(byte[] bytes)
+    {
+        var output = new MemoryStream();
+        using (var zip = new ZLibStream(output, CompressionLevel.Fastest)) zip.Write(bytes);
+        return output.ToArray();
+    }
+
+    [Fact]
+    public void Files_Of_The_Save_Whose_Lengths_Are_No_Numbers_Are_Kept_Beside_Those_Written_Again()
+    {
+        var save = new WorldSave(_folder);
+        // A region whose list of blocks gives a key's length by five bytes that make no number, and
+        // a mobs' and a chests' region that give a kind's name and a slot's text so.
+        byte[] noNumber = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
+        var region = Path.Combine(_folder, "regions", "r.0.0.bin");
+        byte[] regionBytes = [.. "E3DR"u8, 2, 0, 0, 0, 1, 0, 0, 0, .. noNumber];
+        File.WriteAllBytes(region, regionBytes);
+        var mobs = Path.Combine(_folder, "regions", "m.0.0.bin");
+        File.WriteAllBytes(mobs, Zipped([.. "E3DM"u8, 3, 0, 0, 0, 1, 0, 0, 0, .. noNumber]));
+        var chests = Path.Combine(_folder, "regions", "c.0.0.bin");
+        File.WriteAllBytes(chests, Zipped([.. "E3DC"u8, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 70, 0, 0, 1, .. noNumber]));
+
+        save.ReadRegion(0, 0);
+        Assert.Null(save.TakeMobs(0, 0));
+        Assert.Null(save.TakeChests(0, 0));
+        var column = new ChunkColumn(0, 0);
+        column.Set(1, 2, 3, BlockId.Glowstone);
+        column.Changed = true;
+        save.Keep(column);
+        save.Flush();
+
+        Assert.Equal(regionBytes, File.ReadAllBytes(region + ".unread"));
+        Assert.True(File.Exists(mobs + ".unread"));
+        Assert.True(File.Exists(chests + ".unread"));
+    }
+
+    [Fact]
+    public void A_Furnaces_File_Holding_A_Null_Record_Opens_With_Its_Others()
+    {
+        var save = new WorldSave(_folder);
+        File.WriteAllText(Path.Combine(_folder, "furnaces.json"), """[null,{"X":1,"Y":2,"Z":3,"Slots":[],"Burning":4,"BurnTotal":8,"Cooked":0}]""");
+
+        var furnaces = save.ReadFurnaces();
+
+        Assert.Equal(4f, furnaces.All[(1, 2, 3)].Burning);
+    }
+
+    [Fact]
+    public void A_Column_That_Cannot_Be_Read_Leaves_Its_Region_Standing_Until_A_Save_Writes_The_Others()
+    {
+        new WorldSave(_folder);
+        var built = new ChunkColumn(0, 0);
+        built.Set(1, 2, 3, BlockId.Glowstone);
+        WriteRegion(_folder, 0, 0, 1, null, (0, 0, Compressed(built)), (1, 0, [1, 2, 3]));
+        var path = Path.Combine(_folder, "regions", "r.0.0.bin");
+        var bytes = File.ReadAllBytes(path);
+
+        // The column found unreadable as a worker makes it, and the game ended before a save.
+        var save = new WorldSave(_folder);
+        save.ReadRegion(1, 0);
+        save.Unreadable(1, 0);
+        Assert.Equal(bytes, File.ReadAllBytes(path));
+        Assert.Equal(bytes, File.ReadAllBytes(path + ".unread"));
+        var opened = new WorldSave(_folder);
+        opened.ReadRegion(0, 0);
+        Assert.Equal(BlockId.Glowstone, WorldSave.Decode(0, 0, opened.Kept(0, 0)!).Get(1, 2, 3));
+
+        // Found unreadable once its region was let go, as a timed save lets it go while a worker
+        // makes the column, then saved.
+        opened.LetGo([]);
+        opened.Unreadable(1, 0);
+        opened.Flush();
+        var last = new WorldSave(_folder);
+        last.ReadRegion(0, 0);
+        Assert.Equal(BlockId.Glowstone, WorldSave.Decode(0, 0, last.Kept(0, 0)!).Get(1, 2, 3));
+        Assert.Null(last.Kept(1, 0));
+    }
+
+    [Fact]
+    public void A_Column_Of_A_Region_Numbered_Otherwise_That_Cannot_Be_Read_Leaves_The_Columns_After_It_Read()
+    {
+        // A region of version 2 that numbered stone 1 and grass 3, its middle column's bytes no
+        // compressed blocks.
+        var keys = Blocks.All.Select(b => b.Key).ToArray();
+        (keys[1], keys[3]) = (keys[3], keys[1]);
+        var (first, last) = (new ChunkColumn(0, 0), new ChunkColumn(2, 0));
+        first.Set(0, 0, 0, (BlockId)1);
+        last.Set(0, 0, 0, (BlockId)1);
+        new WorldSave(_folder);
+        WriteRegion(_folder, 0, 0, 2, keys, (0, 0, Compressed(first)), (1, 0, [1, 2, 3]), (2, 0, Compressed(last)));
+        var path = Path.Combine(_folder, "regions", "r.0.0.bin");
+        var bytes = File.ReadAllBytes(path);
+
+        var save = new WorldSave(_folder);
+        save.ReadRegion(0, 0);
+
+        Assert.Equal(BlockId.Stone, WorldSave.Decode(0, 0, save.Kept(0, 0)!).Get(0, 0, 0));
+        Assert.Null(save.Kept(1, 0));
+        Assert.Equal(BlockId.Stone, WorldSave.Decode(2, 0, save.Kept(2, 0)!).Get(0, 0, 0));
+        Assert.Equal(bytes, File.ReadAllBytes(path));
+        Assert.Equal(bytes, File.ReadAllBytes(path + ".unread"));
+    }
+
+    [Fact]
+    public void A_Region_Another_Program_Holds_Stands_Unchanged_Through_A_Save_Of_The_Run()
+    {
+        new WorldSave(_folder);
+        var built = new ChunkColumn(0, 0);
+        built.Set(1, 2, 3, BlockId.Glowstone);
+        WriteRegion(_folder, 0, 0, 1, null, (0, 0, Compressed(built)));
+        var path = Path.Combine(_folder, "regions", "r.0.0.bin");
+        var bytes = File.ReadAllBytes(path);
+
+        // The file held by another program as the save opens it, as a passing fault of the disk
+        // refuses it too, and a column of the region changed and saved.
+        using (new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            var save = new WorldSave(_folder);
+            save.ReadRegion(0, 0);
+            Assert.Null(save.Kept(0, 0));
+            var other = new ChunkColumn(1, 0);
+            other.Set(4, 5, 6, BlockId.Stone);
+            other.Changed = true;
+            save.Keep(other);
+            save.Flush();
+        }
+
+        Assert.Equal(bytes, File.ReadAllBytes(path));
+        Assert.False(File.Exists(path + ".unread"));
+        var opened = new WorldSave(_folder);
+        opened.ReadRegion(0, 0);
+        Assert.Equal(BlockId.Glowstone, WorldSave.Decode(0, 0, opened.Kept(0, 0)!).Get(1, 2, 3));
     }
 
     [Fact]
