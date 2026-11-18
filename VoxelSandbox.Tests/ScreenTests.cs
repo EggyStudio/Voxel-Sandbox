@@ -747,8 +747,8 @@ public sealed class ScreenTests : IDisposable
         var game = headless.Game;
         Serve(game);
         Run("voxel.spawning false");
-        // A pig dropped from twenty blocks over the ground, hit once from the side as it falls.
-        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(6.5, 24, -5.5), 0, MobKinds.Pig.Health, null));
+        // A pig dropped from eight blocks over the ground, hit once from the side as it falls.
+        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(6.5, 12, -5.5), 0, MobKinds.Pig.Health, null));
         headless.Step(10);
         Assert.True(pig.Body.Velocity.Y < 0 && !pig.Body.OnGround, "the pig is not falling");
         var falling = pig.Body.Velocity.Y;
@@ -760,6 +760,33 @@ public sealed class ScreenTests : IDisposable
         Assert.True(pig.Body.OnGround, "the pig has not landed");
         Assert.True(pig.Hit(pig.Body.Position - Vector3.UnitX, 1));
         Assert.True(pig.Body.Velocity.Y > 0, "the pig hit on the ground is not knocked up");
+    }
+
+    [Fact]
+    public void A_Mob_Dropped_From_A_Height_Is_Harmed_As_It_Lands_And_Leaves_Its_Drops_Once()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        Serve(game);
+        Run("voxel.spawning false");
+        var (wool, mutton) = (Items.Of(BlockId.WhiteWool), Items.RawMutton);
+        var before = Counted(game);
+        // A white sheep dropped from twenty blocks over the ground, a pig from six and a pig from
+        // twenty into a pool three deep.
+        Run("voxel.fill 14 1 -7 16 3 -5 water");
+        var sheep = game.Mobs.Add(new MobRecord(MobKinds.Sheep, 0, new LandPlace(6.5, 24, -5.5), 0, MobKinds.Sheep.Health, null));
+        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(-5.5, 10, -5.5), 0, MobKinds.Pig.Health, null));
+        var swimmer = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(15.5, 24, -5.5), 0, MobKinds.Pig.Health, null));
+        headless.Step(150);
+
+        // The sheep's fall of twenty blocks kills it and it leaves its wool and mutton once, the
+        // pig's of six takes three points, and the pool takes the fall of the third.
+        Assert.DoesNotContain(sheep, game.Mobs.All);
+        var after = Counted(game);
+        Assert.Equal(before.GetValueOrDefault(wool.Key) + 1, after.GetValueOrDefault(wool.Key));
+        Assert.InRange(after.GetValueOrDefault(mutton.Key) - before.GetValueOrDefault(mutton.Key), 1, 2);
+        Assert.Equal(MobKinds.Pig.Health - 3, pig.Health);
+        Assert.Equal(MobKinds.Pig.Health, swimmer.Health);
     }
 
     [Fact]

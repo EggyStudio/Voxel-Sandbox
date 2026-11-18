@@ -141,6 +141,8 @@ public sealed partial class Mob
     private float _wait, _panic, _stuck, _walked, _watching;
     private Vector3 _lastPlace;
     private bool _goingHome, _swimming;
+    // How far it has fallen since last on the ground or in water.
+    private float _fallen;
     private Step? _openedDoor;
 
     public Mob(int id, MobRecord record, int seed, EcsWorld? ecs = null)
@@ -241,6 +243,31 @@ public sealed partial class Mob
             (_path, _wait, _goingHome) = (null, 0, false);
         }
         return true;
+    }
+
+    // A fall of more than three blocks takes a point for each block past three as it lands, as the
+    // player's does, a fifth of that onto a hay bale and none into water, and a mob that falls
+    // slowly takes none.
+    private void Fall(VoxelWorld world, float moved, bool swimming)
+    {
+        var (fx, fy, fz) = LandOrigin.BlockOf(Body.Position);
+        if (swimming || Kind.FallsSlowly || Blocks.IsFluid(world.GetBlock(fx, fy, fz)))
+        {
+            _fallen = 0;
+            return;
+        }
+        if (!Body.OnGround)
+        {
+            if (moved < 0) _fallen -= moved;
+            return;
+        }
+        if (_fallen > 3)
+        {
+            var under = world.GetBlock(fx, (int)MathF.Floor(Body.Position.Y - 0.01f), fz);
+            var damage = (int)(MathF.Ceiling(_fallen - 3) * (under == BlockId.HayBale ? 0.2f : 1));
+            if (damage >= 1) Harm(damage);
+        }
+        _fallen = 0;
     }
 
     /// <summary>Takes some health with neither a knock nor a run, as burning does, reddening for a moment.</summary>
@@ -460,6 +487,7 @@ public sealed partial class Mob
         var before = Body.Position;
         Body.Move(world, Body.Velocity * seconds, keepToEdges: false);
         var moved = Body.Position - before;
+        Fall(world, moved.Y, swimming);
         var along = MathF.Sqrt(moved.X * moved.X + moved.Z * moved.Z);
         ref var pose = ref Pose;
         // A hunter faces its prey as it moves, a skeleton backing away from the player among them.
