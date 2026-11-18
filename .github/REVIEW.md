@@ -1005,3 +1005,30 @@ game's 95 passing three times in a row, and the play under the lock taken exclus
 wait passing in 185 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
 fault and no texture left, and its captures within 9 levels of the warm play's on 6.2.102,
 `sky2.png` differing in 0.02% of its pixels past 8 levels.
+
+The rest of item 229's list, played in a headless game as a player meets each rule on a farm and in
+a winter. None of the six made or lost an item, and one rule was missing.
+
+- Young wheat in a room of stone shut on every side, at light 0 from the sky and from every lamp,
+  ripened as in the sun. It grows only where light of at least 9 reaches its cell, the sky's or a
+  block's (`Crops.LightToGrow`), so one in the dark waits as it is and grows on once lit, and one
+  under the open sky grows by night too. `Young_Wheat_Grows_Only_Where_Light_Reaches_It` grows one
+  400 seconds in the dark room and finds it young, then sets a glowstone beside it, grows it 400
+  more and finds it ripe. On the head it ripens in the dark.
+- With no water, young wheat grows at its pace, the game asking no farmland or water of it.
+- The game has no bone meal. A bone used on young wheat places nothing and is kept.
+- The game has no trampling. A player landing on farmland from six blocks up leaves it and the
+  young wheat on it standing.
+- A snow layer placed on a layer is refused and nothing is taken, since a layer holds nothing over
+  it.
+- Sand landing on a placed layer drops as one item and leaves the layer, since a layer gives no way
+  to a falling block.
+- Placed snow beside a glowstone, at block light 14, stands through 200 frames. The game melts snow
+  by the weather alone, and placed snow by nothing.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 630
+passing, the new test passing three times in a row, the headless game's 95 passing three times in a
+row, and the play under the lock taken exclusive with no quiet wait passing in 186 s, the seed's
+step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels
+past 8 levels.

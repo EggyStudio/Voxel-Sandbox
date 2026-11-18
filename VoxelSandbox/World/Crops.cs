@@ -12,8 +12,9 @@ public struct Crop
 }
 
 /// <summary>
-/// The young wheat the seeds planted, each growing while its column is loaded and the world's time
-/// runs, which ripens into wheat once it has grown for <see cref="RipeSeconds"/>.
+/// The young wheat the seeds planted, each growing while its column is loaded, the world's time
+/// runs and light of at least <see cref="LightToGrow"/> reaches its cell, the sky's or a block's,
+/// which ripens into wheat once it has grown for <see cref="RipeSeconds"/>.
 /// </summary>
 /// <remarks>
 /// The world names each young wheat set, by an edit or as a column holding some arrived, and a save
@@ -24,6 +25,9 @@ public sealed class Crops(EcsWorld ecs)
 {
     /// <summary>The seconds a young wheat grows before it ripens.</summary>
     public const float RipeSeconds = 300;
+
+    /// <summary>The light a young wheat's cell needs to grow, the sky's or a block's, so one in the dark waits as it is.</summary>
+    public const int LightToGrow = 9;
 
     /// <summary>Starts a young wheat growing in a cell from an age, unless one grows there.</summary>
     public void Spawn(int x, int y, int z, float age)
@@ -64,6 +68,7 @@ public sealed class Crops(EcsWorld ecs)
         {
             if (!world.HasColumn(VoxelWorld.ColumnOf(crop.X), VoxelWorld.ColumnOf(crop.Z))) continue;
             if (world.GetBlock(crop.X, crop.Y, crop.Z) != BlockId.YoungWheat) gone.Add(id);
+            else if (world.GetLight(crop.X, crop.Y, crop.Z) is var (sky, block) && Math.Max(sky, block) < LightToGrow) continue;
             else if (crop.Age + seconds < RipeSeconds) ecs.GetRef<Crop>(id).Age += seconds;
             else
             {

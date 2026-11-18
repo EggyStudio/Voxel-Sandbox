@@ -698,6 +698,28 @@ public sealed class ScreenTests : IDisposable
     }
 
     [Fact]
+    public void Young_Wheat_Grows_Only_Where_Light_Reaches_It()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        Serve(game);
+        // Young wheat on stone in a room of stone shut on every side, out of the sky's light and
+        // every lamp's.
+        Run("voxel.room 10 3 -10 14 8 -6 stone");
+        game.World.SetBlock(12, 5, -8, BlockId.Stone);
+        game.World.SetBlock(12, 6, -8, BlockId.YoungWheat);
+        headless.Step(3);
+        Run("voxel.grow 400");
+        Assert.Equal("young_wheat", Blocks.Get(game.World.GetBlock(12, 6, -8)).Key);
+
+        // A glowstone set beside it lights it, and it grows and ripens.
+        game.World.SetBlock(11, 6, -8, BlockId.Glowstone);
+        headless.Step(3);
+        Run("voxel.grow 400");
+        Assert.Equal(BlockId.Wheat, game.World.GetBlock(12, 6, -8));
+    }
+
+    [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {
         using var headless = new HeadlessGame();

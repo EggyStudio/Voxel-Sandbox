@@ -9,8 +9,9 @@ notes written beside them as Markdown files named the same way. A line under Don
 ## 2026-11-18
 
 ![](.github/devlog/2026-11-18-item-229-young-wheat.webp)
-Young wheat the seeds plant beside ripe wheat in the flat world at noon, with Bare Bones on and with
-the game's own surfaces, the young short and green and the ripe tall and golden.
+Young wheat the seeds plant beside ripe wheat in the flat world at noon, each patch labeled, with
+Bare Bones on and with the game's own surfaces, the young in short green blades and the ripe in tall
+golden stalks.
 
 ## 2026-11-16
 
