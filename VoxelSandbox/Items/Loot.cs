@@ -136,6 +136,10 @@ public static class Loot
     public static bool Harvests(BlockId block, Item? held) =>
         ToolFor(block) is not (ToolKind.Pickaxe, true) || held?.Tool == ToolKind.Pickaxe && held.Tier >= TierFor(block);
 
+    /// <summary>The weakest pickaxe that harvests a block asking for one, or null for a block any hand harvests.</summary>
+    public static Item? Harvester(BlockId block) =>
+        ToolFor(block) is (ToolKind.Pickaxe, true) ? Items.All.Where(item => item.Tool == ToolKind.Pickaxe && item.Tier >= TierFor(block)).MinBy(item => item.Tier) : null;
+
     /// <summary>The tier of pickaxe a block's ore asks, 2 for iron, copper and lapis ore, 3 for gold, redstone, diamond and emerald ore and 1 for the rest.</summary>
     public static int TierFor(BlockId block) => Ores.Plain(block) switch
     {

@@ -960,9 +960,10 @@ public sealed class VoxelGame : IDisposable
             var mobs = Mobs.Columns().ToList();
             var furnaces = WorldSave.FurnaceRecords(Furnaces);
             var chests = Chests.Columns(World).ToList();
-            // The loot of the mobs that died this frame is left before the stacks are gathered, so
-            // the save that holds no such mob holds its loot.
-            LeaveDrops();
+            // What the world loosened, broke and burned since the frame's play is taken before the
+            // stacks and the things under way are gathered, the loot of the mobs that died among
+            // it, so the save that holds no such block or mob holds what became of it.
+            TakeLoose();
             ThrowDropped();
             Drops.KeepStrays(World);
             var drops = Drops.Columns(World).ToList();
@@ -1140,6 +1141,9 @@ public sealed class VoxelGame : IDisposable
             Drops.Spawn(stack.Item, stack.Count, LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f), new Vector3(0, 2, 0), wear: stack.Wear);
         }
         if (_table is var (tx, ty, tz) && World.GetBlock(tx, ty, tz) != BlockId.CraftingTable) CloseInventory();
+        // A furnace or a chest gone with nothing in it shuts its window too.
+        if (AtFurnace is var (fx, fy, fz) && !VoxelSandbox.Furnaces.IsFurnace(World.GetBlock(fx, fy, fz))) CloseInventory();
+        if (AtChest is var (cx, cy, cz) && !VoxelSandbox.Chests.IsChest(World.GetBlock(cx, cy, cz))) CloseInventory();
         foreach (var ((x, y, z), stack) in Chests.Update(World))
         {
             if (AtChest == (x, y, z)) CloseInventory();
@@ -1149,12 +1153,11 @@ public sealed class VoxelGame : IDisposable
         // The blocks the world loosened start to fall, and those that landed where they could not
         // stand as the engine's frame let them fall drop as items.
         Falling.Take(World);
-        foreach (var (x, y, z, block) in GetApp().World.DrainEvents<FallingBroke>()) Drops.Pop(Items.Of(block), 1, x, y, z);
         Felled(seconds);
         // The fires the world set start to burn, and the TNT the fires burned as the engine's frame
         // burned them is lit.
         Fires.Take(World, Step.Random);
-        foreach (var caught in GetApp().World.DrainEvents<TntCaught>()) Tnt.Light(caught.X, caught.Y, caught.Z);
+        TakeSent();
         Blasts.Update(seconds);
         // The TNT whose fuses ran out as the engine's frame burned them goes off.
         foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(LandOrigin.PlaceOf(blast.At), PrimedTnt.Power, "was blown up by TNT");
@@ -1371,7 +1374,17 @@ public sealed class VoxelGame : IDisposable
             EndDying();
         }
         Falling.Take(World);
+        TakeSent();
         LeaveDrops();
+    }
+
+    // The blocks that fell where they could not stand drop as items, and the TNT the fires burned
+    // is lit, as the engine's frame sent them, the frame's play taking them or what leaves, closes
+    // or saves the world before the next.
+    private void TakeSent()
+    {
+        foreach (var (x, y, z, block) in GetApp().World.DrainEvents<FallingBroke>()) Drops.Pop(Items.Of(block), 1, x, y, z);
+        foreach (var caught in GetApp().World.DrainEvents<TntCaught>()) Tnt.Light(caught.X, caught.Y, caught.Z);
     }
 
     /// <summary>Ends at once the mobs still falling over, their loot left where they lie, before the world is left or closed or its mobs are taken away, none of which keeps a dying mob.</summary>
@@ -1388,9 +1401,10 @@ public sealed class VoxelGame : IDisposable
         foreach (var died in GetApp().World.DrainEvents<MobDied>())
             foreach (var (item, count) in Loot.Of(died.Mob, _random))
                 Drops.Spawn(item, count, LandOrigin.PlaceOf(died.At) + new Vector3(0, 0.25f, 0), new Vector3(0, 3, 0));
+        // A block that fell with its support drops as its breaking with the tool it asks would.
         if (Mode.Lives())
             foreach (var (x, y, z, block) in World.Fallen)
-                foreach (var (item, count) in Loot.Of(block, _random))
+                foreach (var (item, count) in Loot.Of(block, _random, Loot.Harvester(block)))
                     Drops.Pop(item, count, x, y, z);
         World.Fallen.Clear();
     }

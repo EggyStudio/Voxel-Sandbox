@@ -475,6 +475,132 @@ public sealed class ScreenTests : IDisposable
         }
     }
 
+    // An item's count in the player's hands and lying on the ground with its blocks standing about
+    // the place the player begins at, by the item they drop as.
+    private static int Whole(VoxelGame game, Item item)
+    {
+        var blocks = 0;
+        for (int x = -8; x <= 8; x++)
+            for (int y = -4; y <= 24; y++)
+                for (int z = -12; z <= 6; z++)
+                    if (game.World.GetBlock(x, y, z) is not BlockId.Air and var block && Blocks.Get(block).Item == item.Block) blocks++;
+        return blocks + Counted(game).GetValueOrDefault(item.Key);
+    }
+
+    [Fact]
+    public void A_Lantern_Falling_With_Its_Support_Drops_As_Its_Own()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Survival;
+        // A lantern standing on stone and one hanging under it.
+        game.World.SetBlock(2, 4, -3, BlockId.Stone);
+        game.World.SetBlock(2, 5, -3, BlockId.Lantern);
+        game.World.SetBlock(4, 7, -3, BlockId.Stone);
+        game.World.SetBlock(4, 6, -3, BlockId.HangingLantern);
+        var lantern = Items.Of(BlockId.Lantern);
+        var before = Whole(game, lantern);
+
+        // The blocks they hold to taken away, as a blast or a fire takes them.
+        game.World.SetBlock(2, 4, -3, BlockId.Air);
+        game.World.SetBlock(4, 7, -3, BlockId.Air);
+        headless.Step(2);
+
+        Assert.Equal(BlockId.Air, game.World.GetBlock(2, 5, -3));
+        Assert.Equal(before, Whole(game, lantern));
+    }
+
+    [Theory]
+    [InlineData("quit")]
+    [InlineData("switch")]
+    [InlineData("save")]
+    public void Sand_Broken_And_Tnt_Caught_In_The_Last_Frame_Are_Kept_By_The_Save(string end)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var (world, copy) = (Path.Combine(root, "world"), Path.Combine(root, "copy"));
+        var (sand, tnt) = (Items.Of(BlockId.Sand), Items.Of(BlockId.Tnt));
+        int sands, tnts;
+        try
+        {
+            using (var headless = new HeadlessGame(save: world, still: true))
+            {
+                // A TNT that a fire burned and sand that landed where it could not stand, as the
+                // engine's frame sends them for the next frame's play, as the game ends, switches
+                // or saves.
+                var game = headless.Game;
+                game.World.SetBlock(3, 4, -3, BlockId.Tnt);
+                (sands, tnts) = (Whole(game, sand) + 1, Whole(game, tnt));
+                game.World.SetBlock(3, 4, -3, BlockId.Air);
+                E3D.GetApp().World.SendEvent(new FallingBroke(2, 4, -3, BlockId.Sand));
+                E3D.GetApp().World.SendEvent(new TntCaught(3, 4, -3));
+                if (end == "switch") game.SwitchWorld("flat", 2, Path.Combine(root, "other"));
+                else if (end == "save")
+                {
+                    game.SaveWorld();
+                    HeadlessGameTests.CopyFolder(world, copy);
+                }
+            }
+
+            if (end == "save")
+            {
+                // The copy read as files, so the TNT kept burning does not go off as it opens.
+                var read = new WorldSave(copy);
+                var column = LandOrigin.ColumnOf(LandOrigin.PlaceOf(3, 4, -3));
+                Assert.Equal(sands, read.TakeDrops(column.X, column.Z)?.Select(record => Inventory.Decode(record.Stack)).Where(stack => stack?.Item == sand).Sum(stack => stack!.Value.Count));
+                Assert.Equal(tnts, read.TakeUnderway(column.X, column.Z)?.Count(record => record.Kind == Underway.LitKind));
+            }
+            else
+            {
+                using var again = new HeadlessGame(save: world, still: true);
+                Assert.Equal((sands, tnts), (Whole(again.Game, sand), Whole(again.Game, tnt)));
+            }
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Sand_At_The_Height_Of_Naught_Over_A_Cave_Falls()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        // The flat world's bedrock at the height of naught over air, floored with stone three
+        // below.
+        game.World.SetBlock(5, -3, -3, BlockId.Stone);
+        var sand = Items.Of(BlockId.Sand);
+        var before = Whole(game, sand);
+
+        game.World.SetBlock(5, 0, -3, BlockId.Sand);
+        headless.Step(60);
+
+        Assert.Equal(BlockId.Air, game.World.GetBlock(5, 0, -3));
+        Assert.Equal(BlockId.Sand, game.World.GetBlock(5, -2, -3));
+        Assert.Equal(before + 1, Whole(game, sand));
+    }
+
+    [Theory]
+    [InlineData(BlockId.Furnace)]
+    [InlineData(BlockId.Chest)]
+    public void An_Empty_Containers_Window_Shuts_As_A_Blast_Takes_It(BlockId container)
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        Serve(game);
+        game.World.SetBlock(0, 4, -2, container);
+        Run("voxel.look 0 -30");
+        headless.Step(2);
+
+        Run("voxel.place");
+        Assert.True(game.InventoryOpen);
+        game.World.SetBlock(0, 4, -2, BlockId.Air);
+        headless.Step(2);
+
+        Assert.False(game.InventoryOpen);
+        Assert.Null(container == BlockId.Furnace ? game.AtFurnace : game.AtChest);
+    }
+
     [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {

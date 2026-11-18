@@ -227,7 +227,8 @@ public sealed class Fires(EcsWorld ecs)
 
     // The source's odds, how readily each catches and burns, planks and what is made of them 5 and
     // 20, logs 5 and 5, leaves and wool 30 and 60, hay 60 and 20, TNT 15 and 100, and the flowers
-    // and grasses 60 and 100, its saplings and mushrooms not burning.
+    // and grasses 60 and 100, its saplings and mushrooms not burning, nor a rail or a cobweb, which
+    // share the plants' cut shapes.
     private static (int Catches, int Burns)[] Odds()
     {
         var odds = new (int, int)[Blocks.All.Count];
@@ -242,7 +243,8 @@ public sealed class Fires(EcsWorld ecs)
         Set(BlockGroups.Wool, 30, 60);
         Set([BlockId.HayBale], 60, 20);
         Set([BlockId.Tnt], 15, 100);
-        Set(BlockGroups.Plants.Where(p => !Blocks.Get(p).Key.EndsWith("_sapling", StringComparison.Ordinal) && p is not (BlockId.BrownMushroom or BlockId.RedMushroom)), 60, 100);
+        Set(BlockGroups.Plants.Where(p => !Blocks.Get(p).Key.EndsWith("_sapling", StringComparison.Ordinal) && p is not (BlockId.BrownMushroom or BlockId.RedMushroom)
+            && Blocks.Get(p).Item is not (BlockId.Rail or BlockId.Cobweb)), 60, 100);
         return odds;
     }
 }

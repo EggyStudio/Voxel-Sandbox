@@ -38,4 +38,12 @@ public sealed class FireTests
         Assert.False(Fires.Burns(BlockId.OakSapling));
         Assert.True(Fires.Burns(BlockId.Poppy));
     }
+
+    [Fact]
+    public void A_Rail_And_A_Cobweb_Do_Not_Burn_Where_The_Plants_Of_Their_Shapes_Do()
+    {
+        Assert.All(Blocks.All.Where(block => block.Item is BlockId.Rail or BlockId.Cobweb), block => Assert.False(Fires.Burns(block.Id), block.Key));
+        Assert.True(Fires.Burns(BlockId.CaveVines));
+        Assert.True(Fires.Burns(BlockId.MossCarpet));
+    }
 }

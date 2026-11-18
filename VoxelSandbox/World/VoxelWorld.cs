@@ -187,7 +187,7 @@ public sealed class VoxelWorld
     private void Loosen(int x, int y, int z)
     {
         var block = GetBlock(x, y, z);
-        if (y == 0 || !BlockGroups.Gravity.Contains(block) || !BlockGroups.GivesWay(GetBlock(x, y - 1, z))) return;
+        if (y <= ChunkColumn.Bottom || !BlockGroups.Gravity.Contains(block) || !BlockGroups.GivesWay(GetBlock(x, y - 1, z))) return;
         Loosened.Add((x, y, z, block));
         SetBlock(x, y, z, BlockId.Air);
     }

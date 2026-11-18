@@ -279,7 +279,9 @@ item 226, and `ba8bf7e`, Verdict 17's mend, the game taking its data folder by a
 saying in its log where each save went, pushed at 00:19 on 2026-11-18, the form kept, their build
 run 44198295058 started. Run 44198295058 ended green on every job at 01:22 on 2026-11-18 and
 Verdicts 16 and 17 are settled. `c46af98`, item 227, and `23dd79a`, the lows of item 228, pushed at
-01:22, the form kept, their build run 44207248826 started.
+01:22, the form kept, their build run 44207248826 started. Build run 44207248826 of `23dd79a` ended
+green at 02:51 on 2026-11-18. `02194cb`, item 228's mob and save mends, pushed at 02:51, the form
+kept, its build run 44218987161 started.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -331,28 +333,6 @@ change.
     stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
     about 16:40, part two stays parked.
 
-226. **The lows of items 224 and 225 that lose or double things.** Asked, each with a test that
-    fails first. A stack thrown into a column that is not loaded is saved with the column it waits
-    for, so a close before the join keeps it. A falling block and a lit charge in the air at a timed
-    save are saved where they are and go on after a load, none lost and none doubled. A chest whose
-    file is held at its first opening is not given its loot a second time when the file reads again.
-    An arrow in flight toward a column that is not loaded waits at the border and flies on when it
-    joins, or is let go with its item dropped, the choice told in the Reply. A fire keeps its age
-    across a load. The other lows stay as the Reply's list. After item 225.
-
-227. **Items neither made from nothing nor lost in the player's hands.** No item has read the paths
-    an item takes through the player. Asked, a read by read-only subagents first of the inventory's
-    moves, the split and the merge of stacks, the cursor's stack as a window closes, crafting and
-    its returned grid, the furnace's fuel, input and output with its window open and shut, a tool's
-    wear to its break, picking up into a full inventory, throwing, death's spill and the respawn,
-    and the commands that give and take, for any path where a count rises or falls without cause,
-    among them two actions in one frame, a window closed by the game midway, a save between the two
-    halves of a move, and a stack at its most. Each finding is told with its place in the code and
-    the steps a player takes to reach it, high where items are made or lost, low elsewhere. The high
-    ones are mended in this item, each with a test that fails first and a count of every item in the
-    world and the player's hands held equal before and after; the lows go to the Reply as a list.
-    After item 226.
-
 228. **The lows of item 227 that lose or double an item.** Asked, each with a test that fails first
     and holds the count of every item kind. From the nine lows the Reply to item 227 lists, each one
     by which a player can lose a stack or gain one is mended, in one commit or two by kind. The lows
@@ -360,6 +340,14 @@ change.
     stays, or mended where the mend is a line. After it, the same read is made of what mobs carry
     and drop, their loot at a death beside an unloaded column or in the frame of a save among them,
     and its triage sent before any mend.
+
+229. **Blocks neither made from nothing nor lost where they are broken and placed.** No item has
+    read the paths between a block in the world and an item. Asked, a read of each of them, a break
+    by hand, by a tool, by a blast, by fire and by a fluid, a placing that is refused or lands on a
+    thing in the way, a falling block that lands where it cannot stay, and a chest or a furnace
+    broken with stacks inside or burning, each in the frame of a save, a switch and a quit as well.
+    The triage is sent before any mend, highs with their steps and lows as a list, and each mend
+    carries a test that fails first and holds the count of every block and item kind.
 
 ## Verdicts
 
@@ -724,51 +712,6 @@ play, under the lock taken exclusive with no quiet wait, passes in 183 s, its `c
 naming no fault and no texture left, and its captures within 8 levels of the warm play's on 6.2.102,
 `sky2.png` differing in 0.04% of its pixels past 8 levels.
 
-Item 226's mends, in two commits, each with a test that passes three runs in three and fails on a
-copy of the head:
-
-- `00fccc5`.
-  - A stack lying over a column not loaded, thrown or dropped there, was in no column's keeping, so
-    a close before that column arrived lost it. A save keeps such stacks with the column they lie
-    over, joined to those the save keeps of it (`ItemDrops.KeepStrays`),
-    `A_Stack_Thrown_Into_A_Column_Not_Loaded_Is_Kept_By_A_Save_Before_The_Column_Arrives`. On the
-    head none lies there after the close.
-  - A chest the land placed in a region whose chests file was held got its loot again, the held file
-    keeping what the chest held for a later run. The chests the land placed in such a region are
-    given no loot (`WorldSave.ChestsHeld`), a chest opened there standing empty for the run,
-    `A_Chest_The_Land_Placed_In_A_Region_Whose_Chests_File_Is_Held_Is_Given_No_Loot_Again`.
-  - An arrow flying into a column not loaded, which reads as solid, stuck at its border and hung
-    there once it arrived. The choice is that it waits. An arrow whose place or next step lies in a
-    column not loaded neither moves nor ages, and flies on as the column arrives. The arrows are the
-    skeletons', which no one picks up, so none has an item to drop,
-    `An_Arrow_Flying_Into_A_Column_Not_Loaded_Waits_At_Its_Border_And_Flies_On_As_It_Arrives`. On
-    the head it sticks.
-- The commit carrying this Reply. A save keeps the things under way by region beside the blocks, in
-  a file of their own (`u.x.z.bin`), the blocks falling with their place, motion and time fallen,
-  the TNT lit with its place, motion and fuse left, and each fire's age (`Underway`). A save writes
-  those of every loaded column, a column holding none among them, so a block that lands after a save
-  is kept by the next as a block alone. A column that unloads gives its lit TNT and its fires' ages
-  to the save, its falling blocks set down in it first, and a column that joins lays them down
-  again, the fires taking their ages as the world kindles them. A close sets the falling blocks and
-  the TNT down as blocks before its save.
-  - `A_Block_Falling_At_A_Save_Is_Kept_Where_It_Falls_And_Lands_Once_Whether_The_Game_Goes_On_Or_Ends_There`,
-    sand saved high in its fall and the save copied as a run ended then would leave it. The game
-    going on lands it and keeps one sand block, and the copy opened lands it once. On the head the
-    copy holds no sand.
-  - `A_Lit_TNT_At_A_Save_Is_Kept_With_Its_Fuse_And_Burns_On_After_A_Load`, a TNT lit with a minute's
-    fuse saved as it burns, the copy opened burning with 50 to 60 seconds left. On the head none
-    burns.
-  - `A_Fire_Keeps_Its_Age_Across_A_Load`, a fire on magma at its ninth age as the world closes, at
-    the ninth or past as it opens. On the head at none.
-
-Each commit's checks: the strict build clean, the suite outside the GPU's lock with the long soak
-skipped, 603 and 606 passing, the headless game's 90 and 93 passing three times in a row, and the
-play under the lock taken exclusive with no quiet wait passing in 185 and 186 s, its
-`captures/closed.log` naming no fault and no texture left, and its captures within 8 levels of the
-warm play's on 6.2.102, `sky2.png` differing in at most 0.04% of its pixels past 8 levels. The first
-commit's test of a stack thrown far off first opened the game on the stack's own place, so the
-player picked it up, and opens it a few blocks off.
-
 Verdict 17's read. The game keeps its saves and settings under the folder .NET names for an
 account's local application data (`WorldSave.Root`). On Linux .NET takes that folder from
 `XDG_DATA_HOME`, or from `HOME` under `.local/share`. On macOS .NET 10 asks the system for it, its
@@ -802,76 +745,6 @@ the lock taken exclusive with no quiet wait, passes in 185 s, the seed's step na
 5 s, its `captures/closed.log` naming no fault and no texture left, and its captures within 8 levels
 of the warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels past 8 levels. The build
 run of this commit says on macOS the folder its child saved in.
-
-Item 227's read, by three readers given the window's moves, the crafting, furnaces and chests, and
-the wear, picking up, death and the commands. Three paths lost items or wore the wrong one, and are
-mended in the commit carrying this Reply, each with a test that passes three runs in three, fails on
-a copy of the head, and holds a count of every item in the inventory, the window and on the ground,
-kind by kind, equal before and after.
-
-- A save with the window E opens folded its grids and the stack on the mouse into a copy of the
-  inventory and dropped what did not fit (`VoxelGame.SaveWorld`), and the game's close never shut
-  the window (`VoxelGame.Dispose`). A player with a full inventory and stacks in the grid or on the
-  mouse who closed the game's window, or whose session ended it, lost them, and a timed save or
-  `voxel.save` with the window open wrote the world without them. The close shuts the window
-  before its save, so what does not fit is thrown and kept as stacks. A save with the window open
-  keeps what does not fit as stacks at the player's feet in the save alone, the game keeping them
-  in the window, so a later close throws them once.
-  `Stacks_The_Window_Holds_Past_A_Full_Inventory_Are_Kept_Once_By_A_Save_With_It_Open_One_With_It_Shut_And_A_Quit`
-  saves with the window open, plays on, shuts it, saves again and quits with it open, and each save
-  read back and the live game hold the same count, four planks and then six, none twice. On the
-  head the save with the window open holds no planks.
-- Q and Control with Q over a slot of the window moved the stack into `InventoryWindow.Dropped`
-  in the frame's drawing, and only the next frame's play threw it. A quit in that frame lost it, a
-  save in it missed it, and a world switch in it saved the world left without it and threw it into
-  the next. The dropped stacks are thrown as the window shuts and before a save gathers the world,
-  as well as in play (`VoxelGame.ThrowDropped`).
-  `A_Stack_Dropped_From_The_Window_Is_Thrown_In_Its_World_Before_A_Switch_Or_A_Quit_Saves_It`
-  drops sticks the frame before a switch and coal the frame of the quit, and each world read back
-  holds its own. On the head the world left holds no sticks.
-- A felling wore whatever stood in its axe's hotbar slot as its logs dropped, one slot kept for
-  every tree (`VoxelGame._fellingAxe`). A pickaxe swapped into that slot took the wear and could
-  break, an axe thrown went without it, and a second tree felled with another axe sent the first
-  tree's wear to the second axe. Each felling keeps its hand, the slot and the kind of its axe
-  (`TreeFelling.WornBy`, `VoxelGame._fellingAxes`), and a felling whose axe has left its slot,
-  swapped, thrown or broken, ends as one whose axe's uses ran out (`TreeFelling.Disarm`).
-  `A_Felling_Wears_Its_Own_Axe_And_Ends_Where_The_Axe_Leaves_Its_Slot` swaps the axe for a pickaxe
-  with two uses left the frame after the cut, and the pickaxe keeps its two, the axe its one use
-  for the cut, and the logs standing and dropped count eight. On the head the pickaxe breaks.
-
-  As a swap ends a felling, the player sees the cut log drop as any does and the trunk above it
-  stand where it stood, hanging over the cut. The leaves within reach of the logs left stand, and
-  those loose of every log decay over the next seconds as a crown's do. The logs left are whole
-  blocks, and the lowest, standing on no log, fells the rest anew when an axe breaks it.
-
-The lows, left as they stand:
-
-- A shift-click on what a grid makes crafts on whatever the grid matches after each craft, so it can
-  go on to a second recipe, counts kept (`InventoryWindow`, the loop on `grid.Recipe`).
-- A felling begun in survival wears its axe after a switch to creative within its seconds.
-- `voxel.select` and `voxel.furnace` write over a slot's stack, and `voxel.give` says the count
-  that did not fit and drops none of it, a count of 0 or less giving one (`GameCommands`).
-- A click in the creative window writes over a hotbar slot carrying a stack from survival.
-- Right Control with Q at the hotbar throws one item where the left throws the stack.
-- Escape and E in one frame shut the window and open it again.
-- Q and the number keys do nothing over what a grid makes and over a furnace's output.
-- A loot chest broken in a world that saves nothing, its region left past the 256 MB of changes
-  kept unsaved, has its loot rolled again as the region returns.
-- A death and a pick-up in one frame may carry the stack picked up through the death, by the order
-  the behaviors run in, read from the code and not run.
-
-The rest was read and found to hold: every other click, drag, gather, swap and sort, crafting's
-room and the cap on the mouse, the furnace's fuel, its output's cap and its spill as it breaks, the
-chests, picking up into a full inventory, throwing, placing, eating, and death's spill and the
-respawn, which no save keeps twice.
-
-The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 609
-passing, the new tests with `FallingTests` passing three times in a row, the headless game's 93
-passing three times in a row, and the play under the lock taken exclusive with no quiet wait passing
-in 186 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no fault and no
-texture left, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing
-in 0.04% of its pixels past 8 levels. `TreeFelling.Worn` gave way to the uses by hand, which
-`FallingTests` reads summed.
 
 Item 228's first part, the nine lows of item 227, in the commit carrying this Reply. Two let a
 player lose or gain a stack and are mended, each with a test that passes three runs in three, fails
@@ -969,4 +842,51 @@ passing, the new tests passing three times in a row, the headless game's 93 pass
 a row, and the play under the lock taken exclusive with no quiet wait passing in 183 s, the seed's
 step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
 captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels
+past 8 levels.
+
+Item 229's first commit, of the two highs that are no rule and the three lows mended in a line, each
+with a test that passes three runs in three and fails on a copy of the head.
+
+- A block that fell with its support, as a torch or a lantern does, dropped by the hand, so a
+  lantern, which asks a pickaxe, dropped nothing as the block under or over it was broken, felled,
+  blown up or burned. A block falling with its support drops as its breaking with the weakest tool
+  it asks would (`Loot.Harvester`, `VoxelGame.LeaveDrops`),
+  `A_Lantern_Falling_With_Its_Support_Drops_As_Its_Own`, a lantern standing and one hanging, the
+  lanterns standing and lying counted alike before and after. On the head both are lost.
+- Sand that landed where it could not stand and TNT a fire burned were sent by the engine's frame
+  for the next frame's play, which a quit, a world switch or a save before it never took, so the
+  sand and the TNT were lost there. What leaves, closes or saves the world takes them as the play
+  does, the sand dropped and the TNT lit, set down at a close and kept burning by a save, and a
+  save takes the blocks loosened since the play too (`VoxelGame.TakeSent`, `TakeLoose`),
+  `Sand_Broken_And_Tnt_Caught_In_The_Last_Frame_Are_Kept_By_The_Save` over a quit, a switch and a
+  save, the save's copy read as files so the TNT does not go off as it opens. On the head neither
+  is kept by any of the three. This takes the timed save's blocks in flight and the TNT caught as a
+  jump unloads its column.
+- Sand or gravel at the height of naught over air never fell, the world's bottom taken for 0 where
+  it lies at -64 (`VoxelWorld.Loosen`), `Sand_At_The_Height_Of_Naught_Over_A_Cave_Falls`. On the
+  head it hangs.
+- A furnace's or a chest's window stayed open on the container a blast took with nothing in it,
+  and shuts as a crafting table's does,
+  `An_Empty_Containers_Window_Shuts_As_A_Blast_Takes_It`. On the head it stays open.
+- Fire burned rails and cobwebs, which share the plants' cut shapes, and burns neither,
+  `A_Rail_And_A_Cobweb_Do_Not_Burn_Where_The_Plants_Of_Their_Shapes_Do`. Cave vines and moss
+  carpet burn on, as the source's do, so of the four the triage named two were the slip.
+
+The lows, left as they stand:
+
+- Two slabs make their whole block and one block breaks back, so two stone slabs give cobblestone.
+- A falling block is let go after a minute or 16 below the bottom, and one set down in a column
+  solid to the top is set nowhere, neither met in play.
+- A door at the top of the world loses its upper half, the count kept.
+- A blast rolls loot as a stone pickaxe, so a blasted gold, redstone, diamond or emerald ore drops
+  nothing, as a blast breaks most of what it breaks into nothing.
+- A chest broken and placed again in one frame keeps the old one's stacks, the count kept.
+- `voxel.set`, `voxel.fill` and `voxel.room` write over blocks without their loot, as commands, a
+  container's stacks still spilling.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 625
+passing, the new tests passing three times in a row, the headless game's 93 passing three times in
+a row, and the play under the lock taken exclusive with no quiet wait passing in 183 s, the seed's
+step naming its world in 5 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels
 past 8 levels.
