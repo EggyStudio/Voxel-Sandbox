@@ -1354,7 +1354,11 @@ public sealed class VoxelGame : IDisposable
             _teleports = Player.Teleports;
             Vitals.Arrived();
         }
-        Vitals.Update(World, Player.Body, Player.Eye, Player.Swimming, Player.Flying, Player.Sprinting, seconds);
+        // Rain falls on the player whose head the sky's whole light reaches in a biome where it
+        // rains, as it falls on the undead.
+        var (hx, hy, hz) = LandOrigin.BlockOf(Player.Eye);
+        var rainedOn = _overcast >= 0.5f && World.GetLight(hx, hy, hz).Sky == Lighting.Max && World.BiomeAt(hx, hz)?.Precipitation == global::VoxelSandbox.Precipitation.Rain;
+        Vitals.Update(World, Player.Body, Player.Eye, Player.Swimming, Player.Flying, Player.Sprinting, seconds, rainedOn);
         // A death is met once, however it came, in this frame or by a command before it.
         if (!Vitals.Dead || _spilled)
         {

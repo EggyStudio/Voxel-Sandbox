@@ -92,3 +92,4 @@
 2026-11-18-sky-lower-half-neutral.webp | A sheep and the held bucket at noon with global illumination off and Bare Bones on, the head's bucket and clouds' undersides orange from the sky's lower half beside the mended game's gray, the sky drawn alike.
 2026-11-18-fire-in-rain.webp | A pile of oak planks lit at noon in the flat world with Bare Bones on, in the rain as it is lit and forty seconds after with no fire left, beside the same pile in clear weather forty seconds after, fifteen fires burning.
 2026-11-18-tnt-blast-drops.webp | A TNT's blast in a block of dirt in survival at noon with Bare Bones on, before, then the head's crater with 35 dirt lying beside the mended crater with 122, every block it broke.
+2026-11-18-burning-on.webp | The player's and a pig's health a second in a fire and twelve out of it, the head's holding once out beside the mended falling a point a second for eight seconds.

@@ -36,7 +36,16 @@ public sealed class Vitals
     /// </summary>
     internal const float Unharmed = 0.5f;
 
-    private float _regen, _starve, _drown, _prick;
+    private float _regen, _starve, _drown, _prick, _burned;
+
+    // How long a body that touched fire or lava burns on for, in seconds.
+    internal const float BurnsAfterFire = 8, BurnsAfterLava = 15;
+
+    /// <summary>
+    /// How many seconds more the player burns, which a fire or lava touched sets and water or rain
+    /// puts out.
+    /// </summary>
+    public float Burning { get; private set; }
     private Vector3 _last;
     private bool _started, _wasOnGround;
 
@@ -74,8 +83,8 @@ public sealed class Vitals
     {
         (Health, Food) = (Math.Clamp(health, 0, Most), Math.Clamp(food, 0, Most));
         Saturation = Math.Clamp(saturation, 0, Food);
-        (Exhaustion, Air, Fallen, Hurt, Cause, _started) = (0, Breath, 0, 0, null, false);
-        (_regen, _starve, _drown, _prick) = (0, 0, 0, 0);
+        (Exhaustion, Air, Fallen, Hurt, Cause, _started, Burning) = (0, Breath, 0, 0, null, false, 0);
+        (_regen, _starve, _drown, _prick, _burned) = (0, 0, 0, 0, 0);
     }
 
     /// <summary>
@@ -92,10 +101,10 @@ public sealed class Vitals
 
     /// <summary>
     /// Advances the vitals by a frame of so many seconds for a body that has moved, with the damage
-    /// of a fall as it lands, breath under water, the exhaustion of moving, and healing or
-    /// starving.
+    /// of a fall as it lands, breath under water, the exhaustion of moving, burning on after a
+    /// fire, which rain falling on the player puts out, and healing or starving.
     /// </summary>
-    public void Update(VoxelWorld world, Body body, Vector3 eye, bool swimming, bool flying, bool sprinting, float seconds)
+    public void Update(VoxelWorld world, Body body, Vector3 eye, bool swimming, bool flying, bool sprinting, float seconds, bool rainedOn = false)
     {
         if (Dead) return;
         Hurt = MathF.Max(0, Hurt - seconds);
@@ -111,6 +120,7 @@ public sealed class Vitals
 
         Breathe(world, eye, seconds);
         Prick(world, body, eye, seconds);
+        BurnOn(world, body, seconds, rainedOn);
         Hunger(seconds);
     }
 
@@ -172,6 +182,44 @@ public sealed class Vitals
         if (_prick < Unharmed) return;
         _prick = 0;
         Damage(harm, cause);
+    }
+
+    // A body that touched fire burns on for 8 seconds after and one that touched lava for 15, a
+    // point every second once out of them, which their own harm takes the place of while in them,
+    // till water or rain on it puts it out.
+    private void BurnOn(VoxelWorld world, Body body, float seconds, bool rainedOn)
+    {
+        var lava = Touches(world, body, BlockId.Lava, -0.001f);
+        var fire = Touches(world, body, BlockId.Fire, -0.001f);
+        Burning = MathF.Max(Burning, lava ? BurnsAfterLava : fire ? BurnsAfterFire : 0);
+        if (Burning <= 0) return;
+        if (rainedOn || Wet(world, body))
+        {
+            (Burning, _burned) = (0, 0);
+            return;
+        }
+        Burning = MathF.Max(0, Burning - seconds);
+        if (lava || fire)
+        {
+            _burned = 0;
+            return;
+        }
+        _burned += seconds;
+        if (_burned < 1) return;
+        _burned = 0;
+        Damage(1, "burned to death");
+    }
+
+    /// <summary>Whether water lies within a body's box.</summary>
+    internal static bool Wet(VoxelWorld world, Body body)
+    {
+        var (lowX, lowY, lowZ) = LandOrigin.BlockOf(body.Min + new Vector3(0.001f));
+        var (highX, highY, highZ) = LandOrigin.BlockOf(body.Max - new Vector3(0.001f));
+        for (int y = lowY; y <= highY; y++)
+            for (int z = lowZ; z <= highZ; z++)
+                for (int x = lowX; x <= highX; x++)
+                    if (Blocks.IsWater(world.GetBlock(x, y, z))) return true;
+        return false;
     }
 
     /// <summary>

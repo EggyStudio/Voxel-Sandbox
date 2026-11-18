@@ -160,7 +160,7 @@ public sealed partial class Mob
     private bool _goingHome, _swimming;
     // How far it has fallen since last on the ground or in water, and the seconds it has been in
     // lava since its last harm there.
-    private float _fallen, _scalded;
+    private float _fallen, _scalded, _burning, _burned;
     private Step? _openedDoor;
 
     public Mob(int id, MobRecord record, int seed, EcsWorld? ecs = null)
@@ -341,7 +341,35 @@ public sealed partial class Mob
             (wish, jump) = Kind.Hostile && Hunts(world, target) is { } prey ? Hunt(world, prey, seconds, events) : Think(world, playerEye, hour, seconds);
         }
         Move(world, wish, jump, seconds);
+        if (Dying < 0) BurnOn(world, seconds, raining);
         ShutDoorBehind(world);
+    }
+
+    // Burns on after a fire or lava it touched as the player does, a point every second once out
+    // of them, till water or the rain falling on it puts it out.
+    private void BurnOn(VoxelWorld world, float seconds, bool raining)
+    {
+        var lava = Vitals.Touches(world, Body, BlockId.Lava, -0.001f);
+        var fire = Vitals.Touches(world, Body, BlockId.Fire, -0.001f);
+        _burning = MathF.Max(_burning, lava ? Vitals.BurnsAfterLava : fire ? Vitals.BurnsAfterFire : 0);
+        if (_burning <= 0) return;
+        var (x, y, z) = LandOrigin.BlockOf(Body.Position + new Vector3(0, Kind.Height - 0.1f, 0));
+        var rainedOn = raining && world.GetLight(x, y, z).Sky == Lighting.Max && world.BiomeAt(x, z)?.Precipitation == Precipitation.Rain;
+        if (rainedOn || _swimming || Vitals.Wet(world, Body))
+        {
+            (_burning, _burned) = (0, 0);
+            return;
+        }
+        _burning = MathF.Max(0, _burning - seconds);
+        if (lava || fire)
+        {
+            _burned = 0;
+            return;
+        }
+        _burned += seconds;
+        if (_burned < 1) return;
+        _burned = 0;
+        Harm(1);
     }
 
     // Chooses what to do and gives the velocity it wishes for along the ground and whether to jump.

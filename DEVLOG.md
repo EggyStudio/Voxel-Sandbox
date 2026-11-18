@@ -32,6 +32,10 @@ A pile of oak planks lit at noon in the flat world with Bare Bones on, in the ra
 forty seconds after with no fire left, beside the same pile in clear weather forty seconds after,
 fifteen fires burning.
 
+![](.github/devlog/2026-11-18-tnt-blast-drops.webp)
+A TNT's blast in a block of dirt in survival at noon with Bare Bones on, before, then the head's
+crater with 35 dirt lying beside the mended crater with 122, every block it broke.
+
 ## 2026-11-16
 
 ![](.github/devlog/2026-11-16-item-191-water-at-the-edge.webp)

@@ -1096,7 +1096,8 @@ burns on. A house of planks burns down, and a hand, a block placed in its cell o
 fire out. In the rain a fire open to the sky, or beside a cell that is, goes out at each tick a
 fifth of the time and more the older it is, but over magma, as Minecraft's does. A fire harms the
 player and a mob in it by 1 every half second, where lava harms by 4, and burns a stack lying in it
-as lava does.
+as lava does, and one that leaves a fire burns on for eight seconds, or fifteen after lava, a point
+a second, till water or rain falling on it puts it out.
 
 Its flames are Minecraft's walls of the pack's animated `fire_0`, four leaning across the cell and
 four at its sides on the ground, or toward each block beside and over it that burns where it hangs

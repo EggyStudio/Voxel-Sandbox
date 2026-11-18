@@ -844,6 +844,58 @@ public sealed class ScreenTests : IDisposable
     }
 
     [Fact]
+    public void A_Body_That_Leaves_A_Fire_Burns_On_For_Eight_Seconds_A_Point_A_Second_Till_Water_Puts_It_Out()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        Serve(game);
+        Run("voxel.spawning false");
+        game.Weather.Held = false;
+        game.Mode = GameMode.Survival;
+        // Food under 18, so the player heals none while the burning is counted.
+        game.Vitals.Set(20, 17, 0);
+        // A fire on the ground in each of two shafts of stone a block wide, a pig in one and the
+        // player in the other, and a pool of water two deep.
+        foreach (var x in new[] { -12, -20 })
+        {
+            Run($"voxel.fill {x - 1} 4 -13 {x + 1} 5 -11 stone");
+            game.World.SetBlock(x, 4, -12, BlockId.Air);
+            game.World.SetBlock(x, 5, -12, BlockId.Air);
+            Assert.True(game.Fires.Light(game.World, x, 4, -12, new Random(1)));
+        }
+        Run("voxel.fill 18 2 18 20 3 20 water");
+        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(-11.5, 4, -11.5), 0, MobKinds.Pig.Health, null));
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(-19.5, 4, -11.5)));
+        headless.Step(30);
+
+        // Out on the open grass, out of the rain, each burns on.
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, 4, 30.5)));
+        game.Vitals.Arrived();
+        pig.Body.Position = LandOrigin.PlaceOf(new LandPlace(8.5, 4, 30.5));
+        var (player, beast) = (game.Vitals.Health, pig.Health);
+        headless.Step(30 * 4);
+        Assert.True(pig.Health <= beast - 3, $"the pig keeps {pig.Health} of {beast} out of the fire");
+        Assert.True(game.Vitals.Health <= player - 3, $"the player keeps {game.Vitals.Health} of {player} out of the fire");
+        headless.Step(30 * 6);
+        var burned = player - game.Vitals.Health;
+        Assert.InRange(burned, 6, 8);
+        headless.Step(30 * 3);
+        Assert.Equal(player - burned, game.Vitals.Health);
+
+        // Back into the fire, then into the water, which puts the burning out.
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(-19.5, 4, -11.5)));
+        game.Vitals.Arrived();
+        headless.Step(30);
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(19.5, 2.2, 19.5)));
+        game.Vitals.Arrived();
+        headless.Step(5);
+        var wet = game.Vitals.Health;
+        headless.Step(30 * 4);
+        Assert.Equal(0f, game.Vitals.Burning);
+        Assert.Equal(wet, game.Vitals.Health);
+    }
+
+    [Fact]
     public void A_TNTs_Blast_Drops_Every_Block_It_Breaks_And_Destroys_The_Stacks_Near_It_Where_A_Creepers_Drops_One_In_Three()
     {
         using var headless = new HeadlessGame(still: true);

@@ -1205,3 +1205,64 @@ The Tools module's read of the shell scripts, answered in the commit carrying th
   runs it, so its `mapfile` stays, with a comment saying where the play runs. By N 4.12 its 19
   comment lines past 100 columns are rewrapped, its commands the same and `bash -n` reading it
   whole. Only comments changed, so the play was not run for it.
+
+The body that leaves a fire burning on, the open line of the blasts' Reply, built in the commit
+carrying this Reply, the source's rule as recalled and not read here.
+
+- A body that touches fire burns on for 8 seconds after it and one that touches lava for 15, a
+  point every second once out of them, while in them their own harm taking its place, till water
+  in its box or rain falling on it puts it out (`Vitals.BurnOn`, `Mob.BurnOn`). Rain falls on the
+  player or a mob whose head the sky's whole light reaches in a biome where it rains, as on the
+  undead. The player's death by it is "burned to death". `Vitals.Burning` says the seconds left,
+  set to none as a life begins, and the burning is not kept by a save.
+- `A_Body_That_Leaves_A_Fire_Burns_On_For_Eight_Seconds_A_Point_A_Second_Till_Water_Puts_It_Out`
+  stands the player and a pig each a second in a fire in a shaft of stone and moves them onto the
+  open grass, the player's food under 18 so it heals none. In four seconds each has lost three
+  points or more, the player six to eight in all over ten, and none after, and the player back in
+  the fire and then in water loses none more. On a copy of the head given the burning's reading
+  alone, none at all, the pig keeps all 8 of its health out of the fire.
+- The undead burning by day keep their own point a second, apart from this, so one that leaves a
+  fire into the sun takes both.
+
+`.github/devlog/2026-11-18-burning-on.webp` is the player's and a pig's health a second in a fire
+and twelve out of it, the head's holding once out beside the mended falling a point a second, the
+player's from 19 to 11 and the pig's to its death at 9 seconds.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 645
+passing, the new test passing three times in a row and failing on the head's copy, the headless
+game's 98 passing three times in a row, and the play under the lock taken exclusive with no quiet
+wait passing in 159 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault and no texture left, and its captures within 11 levels of the warm play's on 6.2.102 but
+`sky2.png`, 0.42% of its pixels past 8 levels at the clouds' edges, as with `f6f2f14`.
+
+A reading, no code, of what the game would need from the Levels module to load a level beside the
+voxel world, from its README's binding section and its TrenchBroom folder, read and not changed.
+
+What the module gives fits the game as it stands:
+
+- Meters with Y up and right-handed axes, a block being a meter, so a level of 32 units to the
+  meter, the module's own default, lies on the block grid with its brushes on whole meters. The
+  game would place it about a place in the land kept against `LandOrigin`, which is the binding's.
+- Entities by class through the FGD's six, a player's start, three lights, a tree by its species and
+  seed, which the game's trees could grow, and the game's own classes, its mobs, chests and
+  villagers, in a file of its own beside `Levels.fgd`, as the TrenchBroom folder's README has it.
+- Pictures through `ILevelFiles` and `ILevelMaterials`, which the game would answer from its packs,
+  a material named for a block's key read as that block's picture at its pack's size.
+- Lights in physical units, which the game would turn into its lamps' light levels of 0 to 15, a
+  light's range in meters standing for the blocks its level falls over.
+
+What it lacks, or the game does:
+
+- A package. The game takes the engine from nuget.org alone, and the module reaches it only when
+  the engine's package carries `3DEngine.Levels` (Decision 66), or in a package of its own.
+- A test of whether a point lies inside a brush, or the cells of a size a brush fills. The game's
+  bodies, its mobs' paths, the crosshair's ray, its light and its save all stand on block cells,
+  so a level's solids would be laid into the world as blocks, and the module gives a brush's faces,
+  polygons, hulls, triangles and a ray's hit but no filling. The game could test a point against a
+  convex brush's planes itself, so this is a convenience the module could own for both engines.
+- A brush's block where its faces name several materials. Laid into cells a brush takes one block,
+  and the module has no rule for which, so the game would take a keyvalue of the brush's entity or
+  its most used material. A convention in the module would keep the two engines' levels alike.
+- The game's own lack, not the module's: its bodies collide with block cells alone and none with a
+  mesh, a hull or a shape of triangles, so a level drawn as meshes and not laid into blocks would be
+  walked through.
