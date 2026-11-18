@@ -1471,7 +1471,7 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
-    public void A_Section_Left_For_Want_Of_A_Column_Leaves_No_Hole_Short_Of_The_Step_And_Past_It_Only_Where_Its_Column_Lies_Past_The_Streamers_Reach()
+    public void A_Section_The_Flood_Sees_Waits_Unmeshed_Only_Where_A_Column_About_It_Lies_Past_The_Streamers_Reach()
     {
         using var headless = new HeadlessGame(still: true);
         var game = headless.Game;
@@ -1498,16 +1498,16 @@ public sealed class HeadlessGameTests
         for (var tenth = 49; tenth <= 158; tenth += 2) Go(tenth / 10.0);
         Stand();
 
-        // Standing still short of the step, the eye's flood sees none of them unmeshed.
-        Assert.All(ridge.Where(renderer.Sees), key => Assert.True(Taken(key), $"{key} is seen and not meshed"));
+        // Standing still short of the step and past it, what the eye's flood sees is meshed but
+        // where a column about it lies past the streamer's circle of the render distance and two,
+        // which the flood's reach takes in at its corners, and those it sees there stay unmeshed,
+        // holes at the far corners of the view. Which columns about the ridge the one slow worker
+        // has made short of the step turns on the machine's timing, past the step on none.
+        Assert.All(ridge.Where(renderer.Sees), key => Assert.True(Taken(key) != !Around(key), $"{key} is seen, meshed {Taken(key)}, its columns about it {Around(key)}"));
         Assert.Contains(ridge, key => !renderer.Sees(key) && !Taken(key));
-        // Past the step and still, what the flood sees is meshed but where a column about it lies
-        // past the streamer's circle of the render distance and two, which the flood's reach takes
-        // in at its corners, and those it sees there stay unmeshed, holes at the far corners of the
-        // view.
         Go(16.5);
         Stand();
-        Assert.All(ridge.Where(renderer.Sees), key => Assert.True(Taken(key) != !Around(key), $"{key} is seen, meshed {Taken(key)}, its columns about it {Around(key)}"));
+        Assert.All(ridge.Where(renderer.Sees), key => Assert.True(Taken(key) != !Around(key), $"{key} is seen past the step, meshed {Taken(key)}, its columns about it {Around(key)}"));
         Assert.Contains(ridge, key => renderer.Sees(key) && !Around(key));
 
         bool Taken(SectionKey key) => renderer.Standing(key).Any();
@@ -1779,7 +1779,7 @@ public sealed class HeadlessGameTests
             }
             Paint(200, 30, 30);
             game.ChoosePacks([folder]);
-            headless.Step(30);
+            Meshed();
             var red = game.Renderer.SolidColors(key).ToArray();
             Assert.NotEmpty(red);
 
@@ -1787,9 +1787,23 @@ public sealed class HeadlessGameTests
             // keeping its number.
             Paint(30, 200, 30);
             game.ReloadPacks();
-            headless.Step(30);
+            Meshed();
 
             Assert.NotEqual(red, game.Renderer.SolidColors(key).ToArray());
+
+            // The sections shaded again with the pack's tiles sent and their meshes taken in, which
+            // a slow machine's frames take more of than a fast one's.
+            void Meshed()
+            {
+                var clock = System.Diagnostics.Stopwatch.StartNew();
+                do
+                {
+                    headless.Step(1);
+                    Thread.Sleep(2);
+                }
+                while ((game.World.Reshaded.Count > 0 || game.World.Loaded.Count > 0 || game.Renderer.Meshing > 0) && clock.Elapsed.TotalSeconds < 30);
+                headless.Step(2);
+            }
         }
         finally
         {

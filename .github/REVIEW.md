@@ -125,8 +125,9 @@ change.
 
 ## Verdicts
 
-Verdicts 22 and 23 are open, two cases of the test of the sections taken a frame red on macOS alone
-in runs 44304184093 and 44363217026. Verdicts 1 to 21 are settled, each in `REVIEW-ARCHIVE.md`.
+Verdicts 22 to 24 are open, the test of the sections taken a frame red on macOS in runs 44304184093
+and 44363217026, and its mend's run 44392384624 red on Windows and macOS in two other tests.
+Verdicts 1 to 21 are settled, each in `REVIEW-ARCHIVE.md`.
 
 22. **The build run of `f1a0266` is red on macOS alone in the fourth case of the release's test.**
     Run 44304184093, read at 14:01 on 2026-11-18 with its play still going, job 134801344837, Linux
@@ -154,6 +155,21 @@ in runs 44304184093 and 44363217026. Verdicts 1 to 21 are settled, each in `REVI
     made here on few cores, the frame and the caller that took a held section in before the step
     named by a trace, the cause told in the Reply, and one mend for both that fails on any machine
     without it. Both settle together after five runs green on every runner.
+
+24. **The build run of `b182de7` is red on Windows and on macOS, each in one test.** Run
+    44392384624, read at 22:20 on 2026-11-18, Linux and the play green, 645 passed and 1 failed on
+    each of the two. On Windows the test the mend added,
+    `HeadlessGameTests.A_Section_Left_For_Want_Of_A_Col umn_Leaves_No_Hole_Short_Of_The_Step_And_Pas
+    t_It_Only_Where_Its_Column_Lies_Past_The_Streamers_Reac h`, failed with 8 of 40 sections seen
+    and not meshed, the first `(5, 1, 2)`, so the statement the test makes of the holes does not
+    hold on every machine and stands on timing as the test it mends did. On macOS
+    `HeadlessGameTests.A_Pack_Of_The_Same_Tiles_In_Other_Colors_Gives_The_Light_Field_Its _Colors`
+    failed with the two fields' colors equal, a test the mend does not name. The release's test of
+    Verdicts 22 and 23 passed on the three. Asked, the Windows case made here with one slow worker
+    and the cause named by a trace, the new test holding what is true on any machine or waiting on
+    what it reads, and the macOS test read for whether the settable workers or the delay seam reach
+    it, with one mend that fails without it. Settled with 22 and 23 after five runs green on every
+    runner.
 
 ## Decisions
 
@@ -958,3 +974,24 @@ Still to do for it: the recipes, its tests and captures, then sleeping and the r
 in `WorldInfo`. Open: the corner holes' item above. A fresh session reads `AGENTS.md`,
 `.github/STYLE.md`, `.github/COMMITS.md`, `.github/NORM.md`, this file's head, Now list and these
 Replies, and the memory index, and reports in at most ten lines per finished item.
+
+Verdict 24, two tests red on Windows and macOS after `b182de7`, mended in the commit carrying this
+Reply.
+
+- Windows: the holes test's first stand held that every ridge section the eye's flood sees short of
+  the step is meshed. A seen section in column 5 needs column 6, 3, which lies past column 0's
+  circle and joins only if the one slow worker makes it in the frames the eye walks east, which it
+  made here and not on the runner. Made here with the worker slowed to 100 ms, 16 of 40 seen
+  unmeshed, 3 runs in 3. Both stands of the test, renamed
+  `A_Section_The_Flood_Sees_Waits_Unmeshed_Only_Where_A_Column_About_It_Lies_Past_The_Streamers_Reach`,
+  hold what is true on any machine: a seen section waits unmeshed where a column about it is missing
+  and nowhere else. It passes 3 runs in 3 at 100 ms.
+- macOS: `A_Pack_Of_The_Same_Tiles_In_Other_Colors_Gives_The_Light_Field_Its_Colors` stepped 30
+  frames after choosing and after reloading the pack and read the sections' colors, not waiting on
+  the meshers shading them again, which a slow machine's frames do not finish. It failed by its own
+  timing, from `201701a` on. Neither `Workers`, whose default is unchanged, nor `MakeDelayMs`,
+  unset but by the release's two tests, reaches it. It waits on what it reads, the shaded sections
+  sent and their meshes taken in. Not made here, 5 runs in 5 passing on one core.
+
+The checks: the strict build clean, the suite 646 passing, the headless game's 99 passing three
+times in a row. The play was not run, the commit changing two tests alone.
