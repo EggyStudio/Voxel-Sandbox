@@ -117,7 +117,20 @@ change.
 
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 20 are settled, each in `REVIEW-ARCHIVE.md`.
+Verdict 21 is open, the test of the sections taken a frame red on macOS alone in run 44270121025.
+Verdicts 1 to 20 are settled, each in `REVIEW-ARCHIVE.md`.
+
+21. **The build run of `080b7e6` is red on macOS alone in the test of the release once more.** Run
+    44270121025, read at 10:24 on 2026-11-18 with its play still going, job 134684329735, Linux and
+    Windows green, 631 passed and 1 failed. The case with the frames' meshing cut short and the
+    ridge not marked again of `HeadlessGameTests.The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In
+    _No_More_Than_The_Release_A_Frame` failed at `HeadlessGameTests.cs` line 1879 with 10 taken in a
+    frame. The same case passed on the three runners in runs 44248652206 and 44260565966, so the
+    hold of `0088178` does not cover every way a section the flood ahead alone sees reaches the
+    meshers, or the test counts across two frames' sends where a frame is cut. Asked, the 10 made
+    here on few cores with the frames cut, a trace naming the two sections past the eight and the
+    path each took, the cause told in the Reply, and a mend whose test fails on any machine without
+    it.
 
 ## Decisions
 
@@ -800,3 +813,33 @@ passing, the new test passing three times in a row with the tests of the mobs, t
 passing in 185 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no fault
 and no texture left, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png`
 differing in 0.07% of its pixels past 8 levels.
+
+Verdict 21's read. The 10 were not made on two cores or on one in twenty runs, nor with each mesh
+slowed by up to five milliseconds in ten. They were made four times in twenty-five on two cores
+with each cut frame letting one section through, as a clock whose first reading is nothing does,
+and each column's making slowed by twenty milliseconds. A trace of each section sent and why
+named them. Every time, in the frame at 8.8 blocks east, ten or eleven sections of column 5 at
+rows -2 and 2 came in together, each sent as seen by the flood from the eye's own section in column
+0, none released. They lie in the ring one section past a flood's distance, which a flood reaches,
+so the flood from the eye sees them, and a section it sees is meshed at once and not released, by
+design. On a quick
+machine their columns are in before the ridge is raised, so they are meshed before the walk and
+held by no count. Where a column beside them comes late, they are marked as it joins, in the frames
+the release lets the others out in, and the test counted them among the released. The hold of
+`0088178` and the release hold for every section the flood ahead alone sees, and the test counted
+past them.
+
+The mend is the test's. It counts the sections of the ridge the flood from the eye does not see,
+those the release lets out, read before the ridge is raised, and a fourth case raises the sections
+it sees at 8.8 blocks east, as the late columns mark them. The old count takes in 40 in that frame
+on this machine, and the new count passes the four cases three runs in three on sixteen cores, two
+and one, and twenty runs of twenty in the slowed setting that made the 10. With the release's hold
+and its count of those waiting taken out it fails, so the count still reads what the release
+promises.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 634
+passing, the headless game's 96 passing three times in a row, and the play under the lock taken
+exclusive with no quiet wait passing in 184 s, after the desktop's load of 11:25 to 11:29 had ended,
+the seed's step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture
+left, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.03%
+of its pixels past 8 levels.

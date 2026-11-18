@@ -1817,10 +1817,11 @@ public sealed class HeadlessGameTests
     private const int Frames = 1;
 
     [Theory]
-    [InlineData(false, false)]
-    [InlineData(true, false)]
-    [InlineData(false, true)]
-    public void The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame(bool cutShort, bool markedAgain)
+    [InlineData(false, false, false)]
+    [InlineData(true, false, false)]
+    [InlineData(false, true, false)]
+    [InlineData(true, false, true)]
+    public void The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame(bool cutShort, bool markedAgain, bool seenLate)
     {
         using var headless = new HeadlessGame(still: true);
         var game = headless.Game;
@@ -1839,20 +1840,24 @@ public sealed class HeadlessGameTests
         // A ridge of stone in the air over columns 5 and 6, a block in each of its sections, past
         // the flood's reach from column 0 and within or beside it from column 1, so its sections
         // are held back as unseen until the flood made ahead of the step into column 1 sees them.
+        // Those in the ring one section past its distance the flood from the eye reaches and sees,
+        // and they are meshed at once as any it sees, not released, so the count is of the others.
         var ridge = new List<SectionKey>();
         for (int cx = 5; cx <= 6; cx++)
             for (int cz = -3; cz <= 3; cz++)
                 for (int sy = 1; sy <= 8; sy++)
-                {
-                    game.World.SetBlock(cx * Section.Size + 8, sy * Section.Size + 8, cz * Section.Size + 8, BlockId.Stone);
                     ridge.Add(new SectionKey(cx, sy, cz));
-                }
+        var seen = ridge.Where(renderer.Sees).ToHashSet();
+        var counted = ridge.Where(key => !seen.Contains(key)).ToList();
+        // Where asked, those it sees are raised late, as columns joining late on a slow machine
+        // mark them to be meshed in the frames the others are released in.
+        foreach (var key in ridge.Where(key => !seenLate || !seen.Contains(key))) Raise(key);
         Stand();
         // East to a block short of where the flood ahead of the step begins, half a column from the
         // face, and still again, so the floods from the eye have reached what they reach.
         for (var tenth = 49; tenth <= 70; tenth += 2) Go(tenth / 10.0);
         Stand();
-        var held = ridge.Count(key => !Taken(key));
+        var held = counted.Count(key => !Taken(key));
 
         // On toward column 1's face at a fifth of a block a frame, each frame's meshes finished
         // before the next, up to the step.
@@ -1861,17 +1866,18 @@ public sealed class HeadlessGameTests
         // out of their time, so the sections released in them wait for the fourth.
         for (var tenth = 72; tenth < 160; tenth += 2)
         {
-            var before = ridge.Count(Taken);
+            var before = counted.Count(Taken);
             renderer.MeshMs = cutShort ? (tenth % 8 != 6 ? 0 : null) : markedAgain ? double.PositiveInfinity : null;
             // The ridge's sections marked again where asked over the frames the flood ahead is made
             // in, as columns joining late mark their neighbors' sections, each frame's meshing
             // given all the time it asks.
             if (markedAgain && tenth is >= 84 and <= 90) game.World.Loaded.UnionWith(ridge);
+            if (seenLate && tenth == 88) foreach (var key in seen) Raise(key);
             Go(tenth / 10.0);
             Settle();
-            most = Math.Max(most, ridge.Count(Taken) - before);
+            most = Math.Max(most, counted.Count(Taken) - before);
         }
-        taken = ridge.Count(Taken) - (ridge.Count - held);
+        taken = counted.Count(Taken) - (counted.Count - held);
 
         // Frames given their time take in more than a frame's release before the step, and frames
         // cut short no more than a release in any one.
@@ -1879,6 +1885,7 @@ public sealed class HeadlessGameTests
         Assert.True(most <= ChunkRenderer.ReleasedAFrame, $"{most} taken in a frame");
 
         bool Taken(SectionKey key) => renderer.Standing(key).Any();
+        void Raise(SectionKey key) => game.World.SetBlock(key.X * Section.Size + 8, key.Y * Section.Size + 8, key.Z * Section.Size + 8, BlockId.Stone);
         void Go(double x)
         {
             game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
