@@ -12,15 +12,15 @@ namespace VoxelSandbox;
 /// <remarks>
 /// Columns are loaded two further than the render distance, since a section on the edge of what is
 /// drawn is meshed only once the eight columns around it are there, its corners shaded by their
-/// blocks and light, and unloaded three further, so walking back and forth over a boundary does
-/// not load and unload the same columns each time. A column the player changed is read from the
-/// save rather than generated, and kept by the save as it unloads. The mobs standing in a column
-/// and the stacks lying in it come and go with it. A column's deep sections out of the eye's reach are packed by the worker
-/// that makes it, and the loaded columns' again, a few a frame, each time the eye enters another
-/// section, as <see cref="Reach"/> has it. The columns the workers make are taken in
-/// <see cref="JoinedAFrame"/> a frame, the nearest the player first, since the columns of a batch
-/// of the caves' readings go to the workers together and finish together, and the work their
-/// joining brings, in the game and in the engine, is spread over frames this way.
+/// blocks and light, and unloaded three further, so walking back and forth over a boundary does not
+/// load and unload the same columns each time. A column the player changed is read from the save
+/// rather than generated, and kept by the save as it unloads. The mobs standing in a column and the
+/// stacks lying in it come and go with it. A column's deep sections out of the eye's reach are
+/// packed by the worker that makes it, and the loaded columns' again, a few a frame, each time the
+/// eye enters another section, as <see cref="Reach"/> has it. The columns the workers make are
+/// taken in <see cref="JoinedAFrame"/> a frame, the nearest the player first, since the columns of
+/// a batch of the caves' readings go to the workers together and finish together, and the work
+/// their joining brings, in the game and in the engine, is spread over frames this way.
 /// </remarks>
 public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs mobs, ItemDrops drops, Chests chests, WorldSave? save, CaveFields? fields = null, FallingBlocks? falling = null, Underway? underway = null)
 {
@@ -34,7 +34,10 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     private readonly OrderedDictionary<(int X, int Z), byte[]> _unsaved = [];
     private long _unsavedBytes;
 
-    /// <summary>The bytes of a world that keeps no save its changed columns let go are held to, those let go longest ago given up past them.</summary>
+    /// <summary>
+    /// The bytes of a world that keeps no save its changed columns let go are held to, those let go
+    /// longest ago given up past them.
+    /// </summary>
     internal long MostUnsavedBytes { get; set; } = 256L << 20;
     private readonly HashSet<(int X, int Z)> _pending = [];
     private readonly List<(int X, int Z)> _wanted = [];
@@ -56,10 +59,21 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     /// </remarks>
     public const int AheadAFrame = 1;
 
-    /// <summary>How many columns are generated at once.</summary>
-    internal int Workers { get; init; } = Math.Clamp(Environment.ProcessorCount - 2, 1, 8);
+    /// <summary>
+    /// How many columns are generated at once, two fewer than the machine's processors from 1 to 8,
+    /// which a test sets to stand for a machine of another count.
+    /// </summary>
+    internal int Workers { get; set; } = Math.Clamp(Environment.ProcessorCount - 2, 1, 8);
 
-    /// <summary>How many times a column whose making fails is asked for before it is left out.</summary>
+    /// <summary>
+    /// How long a worker waits before making each column, none unless a test sets it to stand for a
+    /// slow machine.
+    /// </summary>
+    internal int? MakeDelayMs { get; set; }
+
+    /// <summary>
+    /// How many times a column whose making fails is asked for before it is left out.
+    /// </summary>
     public const int Tries = 3;
 
     // How many times each column's making failed in this world.
@@ -77,17 +91,24 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     /// a worker or for their caves' readings from the GPU and those made and not yet taken in.
     /// </summary>
     /// <remarks>
-    /// Where the GPU reads the caves' noises, a column waits for its readings with no worker on it, so
-    /// a count of the workers' columns alone reads none while a new place's columns wait on a slow
-    /// device, as on lavapipe.
+    /// Where the GPU reads the caves' noises, a column waits for its readings with no worker on it,
+    /// so a count of the workers' columns alone reads none while a new place's columns wait on a
+    /// slow device, as on lavapipe.
     /// </remarks>
     public int Pending => _pending.Count + _wanted.Count;
 
-    /// <summary>How many columns the workers are making, which a test waits out between frames.</summary>
-    /// <remarks>A worker's place is given back as the next update takes its column in, so those it finished wait among the running until then.</remarks>
+    /// <summary>
+    /// How many columns the workers are making, which a test waits out between frames.
+    /// </summary>
+    /// <remarks>
+    /// A worker's place is given back as the next update takes its column in, so those it finished
+    /// wait among the running until then.
+    /// </remarks>
     internal int Making => Volatile.Read(ref _running) - _done.Count;
 
-    /// <summary>Whether a column's tries ended with no column made, so it is left out of the world.</summary>
+    /// <summary>
+    /// Whether a column's tries ended with no column made, so it is left out of the world.
+    /// </summary>
     public bool LeftOut(int x, int z) => _failed.GetValueOrDefault((x, z)) >= Tries;
 
     /// <summary>
@@ -95,7 +116,10 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     /// </summary>
     public int Made => _done.Count + _made.Count;
 
-    /// <summary>Generates the columns around a point on this thread, so the player has ground under them before the first frame.</summary>
+    /// <summary>
+    /// Generates the columns around a point on this thread, so the player has ground under them
+    /// before the first frame.
+    /// </summary>
     public void LoadNow(Vector3 at, int radius)
     {
         var (cx, cz) = LandOrigin.ColumnOf(at);
@@ -104,7 +128,10 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
                 if (!world.HasColumn(x, z)) Take(x, z, Make(world.Generator, Kept(x, z), x, z, Reach.Of(at), radius + Reach.Kept));
     }
 
-    /// <summary>Takes in the columns the workers finished, asks for those now in reach, and unloads those out of it.</summary>
+    /// <summary>
+    /// Takes in the columns the workers finished, asks for those come into reach, and unloads those
+    /// out of it.
+    /// </summary>
     public void Update(Vector3 player, int renderDistance)
     {
         // A worker is free once its column is made, and the column stays pending until it is taken
@@ -141,8 +168,8 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
             Unload(cx, cz, load + 1);
         }
 
-        // A column to generate waits for its caves' readings where the GPU reads them, a few batches
-        // asked ahead of the workers.
+        // A column to generate waits for its caves' readings where the GPU reads them, a few
+        // batches asked ahead of the workers.
         fields?.Update((x, z) => _wanted.Contains((x, z)));
         // The GPU is asked ahead of the workers, the nearest columns first, so a worker that comes
         // free finds a column's readings back.
@@ -168,6 +195,7 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
                 (ChunkColumn? Column, bool Unread, int Unknown) made = (null, false, 0);
                 try
                 {
+                    if (MakeDelayMs is { } delay) Thread.Sleep(delay);
                     made = Make(generator, saved, x, z, eye, kept, readings);
                 }
                 catch (Exception ex)
@@ -234,8 +262,8 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         return save.Kept(x, z);
     }
 
-    // A column from its kept blocks or its generator, with its own light worked out, which leaves the
-    // main thread only the light across its edges, its open air sharing its arrays and its deep
+    // A column from its kept blocks or its generator, with its own light worked out, which leaves
+    // the main thread only the light across its edges, its open air sharing its arrays and its deep
     // sections out of the eye's reach packed. A kept column whose blocks do not inflate is made by
     // its generator, as one never kept is, and said to be unread.
     private static (ChunkColumn Column, bool Unread, int Unknown) Make(IWorldGenerator generator, byte[]? kept, int x, int z, SectionKey eye, int distance, ArraySegment<int>? readings = null)
@@ -311,10 +339,11 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     }
 
     /// <summary>
-    /// Unloads the columns out of reach of a place of the land's own the player is put at, before the
-    /// origin moves near it, so the columns the player changed are kept and the mobs' and the stacks'
-    /// places taken while they are near the origin. The next update plans the columns about the player
-    /// again, so a jump back to the column the last plan was made for loads its columns again.
+    /// Unloads the columns out of reach of a place of the land's own the player is put at, before
+    /// the origin moves near it, so the columns the player changed are kept and the mobs' and the
+    /// stacks' places taken while they are near the origin. The next update plans the columns about
+    /// the player again, so a jump back to the column the last plan was made for loads its columns
+    /// again.
     /// </summary>
     public void Leave(LandPlace to, int renderDistance)
     {
@@ -359,8 +388,8 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
         _leaving.Clear();
         foreach (var column in world.Columns)
         {
-            // Squared in longs, since a column 46,341 or more from the player's, as after a teleport
-            // of some 741,000 blocks, squares past an int.
+            // Squared in longs, since a column 46,341 or more from the player's, as after a
+            // teleport of some 741,000 blocks, squares past an int.
             long dx = column.X - cx, dz = column.Z - cz;
             if (dx * dx + dz * dz > reach) _leaving.Add((column.X, column.Z));
         }

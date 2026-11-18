@@ -120,7 +120,8 @@ public sealed class HeadlessGameTests
             game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, pig, 0, MobKinds.Pig.Health, null));
 
             game.Dispose();
-            // As the app disposes the game again as the window closes, after its ECS let the mobs go.
+            // As the app disposes the game again as the window closes, after its ECS let the mobs
+            // go.
             game.Mobs.Clear(null);
             game.Dispose();
 
@@ -178,8 +179,8 @@ public sealed class HeadlessGameTests
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
         try
         {
-            // A glowstone 70 high in the player's column and in the one east of it, the region's two
-            // columns, the first it lists given a zlib head no stream begins with.
+            // A glowstone 70 high in the player's column and in the one east of it, the region's
+            // two columns, the first it lists given a zlib head no stream begins with.
             using (var first = new HeadlessGame(save: folder))
             {
                 first.Game.World.SetBlock(2, 70, 2, BlockId.Glowstone);
@@ -215,8 +216,8 @@ public sealed class HeadlessGameTests
         try
         {
             // A world saved by a build that numbered stone as this one numbers grass, and grass as
-            // stone, with a stone 70 high in the column east of the player's, in the player's region,
-            // and in the column west of it, in the region beside.
+            // stone, with a stone 70 high in the column east of the player's, in the player's
+            // region, and in the column west of it, in the region beside.
             using (new HeadlessGame(save: folder)) { }
             var keys = Blocks.All.Select(b => b.Key).ToArray();
             (keys[(int)BlockId.Grass], keys[(int)BlockId.Stone]) = (keys[(int)BlockId.Stone], keys[(int)BlockId.Grass]);
@@ -488,7 +489,8 @@ public sealed class HeadlessGameTests
         var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
         try
         {
-            // A folder in the place of the copy the options file is written to before it takes its name.
+            // A folder in the place of the copy the options file is written to before it takes its
+            // name.
             Directory.CreateDirectory(Path.Combine(folder, "options.txt.new"));
             using var headless = new HeadlessGame();
             var game = headless.Game;
@@ -1309,8 +1311,8 @@ public sealed class HeadlessGameTests
             headless.Step(2);
             var (pigAt, dropAt) = (LandOrigin.LandOf(pig.Body.Position), LandOrigin.LandOf(drop.Position));
 
-            // A place 2,000 blocks past the reach east moves the origin to the step nearest it, every
-            // place kept.
+            // A place 2,000 blocks past the reach east moves the origin to the step nearest it,
+            // every place kept.
             Assert.True(game.Recenter(new LandPlace(feet.X + LandOrigin.Reach + 2000, feet.Y, feet.Z)));
             Assert.Equal(((int)Math.Round((feet.X + LandOrigin.Reach + 2000) / LandOrigin.Step) * LandOrigin.Step, 0), (LandOrigin.X, LandOrigin.Z));
             Assert.Equal(feet, LandOrigin.LandOf(game.Player.Body.Position));
@@ -1336,8 +1338,8 @@ public sealed class HeadlessGameTests
         var game = headless.Game;
         try
         {
-            // Put 7.5 blocks short of the reach east, as voxel.tp puts the player, and stood once the
-            // land there is in.
+            // Put 7.5 blocks short of the reach east, as voxel.tp puts the player, and stood once
+            // the land there is in.
             var start = new LandPlace(LandOrigin.Reach - 7.5, LandOrigin.LandOf(game.Player.Body.Position).Y, 0.5);
             game.Leave(start);
             game.Recenter(start);
@@ -1354,8 +1356,8 @@ public sealed class HeadlessGameTests
             Assert.Equal(0, LandOrigin.X);
             var (exhaustion, saturation) = (game.Vitals.Exhaustion, game.Vitals.Saturation);
 
-            // Sixteen blocks east a tenth of a block a frame, across the reach, where the origin moves,
-            // and back west over it, where the origin stays, the player within its reach.
+            // Sixteen blocks east a tenth of a block a frame, across the reach, where the origin
+            // moves, and back west over it, where the origin stays, the player within its reach.
             var walked = new List<double>();
             void Walk(float step)
             {
@@ -1420,8 +1422,8 @@ public sealed class HeadlessGameTests
             var file = new OptionsFile(folder);
             Directory.CreateDirectory(folder);
             var screens = game.Menus.Screens(game).All();
-            // A file of no version holds every setting, Soft Shadows at the 0 such a file holds as its
-            // default, so that line is read as a default and the default of 1.5 stands.
+            // A file of no version holds every setting, Soft Shadows at the 0 such a file holds as
+            // its default, so that line is read as a default and the default of 1.5 stands.
             File.WriteAllText(file.File, "render.Soft_Shadows:0\nrender.Far_Cascade:Off\nrender.Shadow_Distance:64\nrender.Render_Distance:6\n");
             Assert.Equal(1, file.Read(screens));
             Assert.Equal((1.5f, true, 128f, 6), (game.Light.ShadowSoftness, game.Light.FarCascade, game.Light.ShadowDistance, game.RenderDistance));
@@ -1465,6 +1467,72 @@ public sealed class HeadlessGameTests
         finally
         {
             if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Section_Left_For_Want_Of_A_Column_Leaves_No_Hole_Short_Of_The_Step_And_Past_It_Only_Where_Its_Column_Lies_Past_The_Streamers_Reach()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        game.RenderDistance = 4;
+        game.Light.ShadowDistance = 1;
+        var renderer = game.Renderer;
+        renderer.Casts = false;
+        renderer.FloodBudgetMs = double.PositiveInfinity;
+        // One column made at a time and slowly, so the step east leaves column 1's circle half made
+        // once the eye stands still, and a ridge over columns 5 and 6 whose sections the release
+        // lets out are left for want of a column about them.
+        (game.Streamer.Workers, game.Streamer.MakeDelayMs) = (1, 20);
+        Go(4.5);
+        Go(4.7);
+        Stand();
+        var ridge = new List<SectionKey>();
+        for (int cx = 5; cx <= 6; cx++)
+            for (int cz = -3; cz <= 3; cz++)
+                for (int sy = 1; sy <= 8; sy++)
+                    ridge.Add(new SectionKey(cx, sy, cz));
+        foreach (var key in ridge) Raise(key);
+        Stand();
+        for (var tenth = 49; tenth <= 158; tenth += 2) Go(tenth / 10.0);
+        Stand();
+
+        // Standing still short of the step, the eye's flood sees none of them unmeshed.
+        Assert.All(ridge.Where(renderer.Sees), key => Assert.True(Taken(key), $"{key} is seen and not meshed"));
+        Assert.Contains(ridge, key => !renderer.Sees(key) && !Taken(key));
+        // Past the step and still, what the flood sees is meshed but where a column about it lies
+        // past the streamer's circle of the render distance and two, which the flood's reach takes
+        // in at its corners, and those it sees there stay unmeshed, holes at the far corners of the
+        // view.
+        Go(16.5);
+        Stand();
+        Assert.All(ridge.Where(renderer.Sees), key => Assert.True(Taken(key) != !Around(key), $"{key} is seen, meshed {Taken(key)}, its columns about it {Around(key)}"));
+        Assert.Contains(ridge, key => renderer.Sees(key) && !Around(key));
+
+        bool Taken(SectionKey key) => renderer.Standing(key).Any();
+        bool Around(SectionKey key)
+        {
+            for (int dz = -1; dz <= 1; dz++)
+                for (int dx = -1; dx <= 1; dx++)
+                    if (!game.World.HasColumn(key.X + dx, key.Z + dz)) return false;
+            return true;
+        }
+        void Raise(SectionKey key) => game.World.SetBlock(key.X * Section.Size + 8, key.Y * Section.Size + 8, key.Z * Section.Size + 8, BlockId.Stone);
+        void Go(double x)
+        {
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
+            headless.Step(1);
+        }
+        void Stand()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Streamer.Pending > 0 || game.World.Loaded.Count > 0 || renderer.Meshing > 0) && clock.Elapsed.TotalSeconds < 30);
         }
     }
 
@@ -1660,8 +1728,8 @@ public sealed class HeadlessGameTests
     public void A_Pack_Fonts_Engine_Font_Measures_Each_Glyph_As_Wide_As_Its_Advance()
     {
         // A's lit to its fifth column on a sheet of sixteen pixels a glyph, so the engine's font
-        // measures text at eight pixels as the sheet draws it, at twice that size twice as wide. The
-        // font's atlas is a texture, so a game stands for the window.
+        // measures text at eight pixels as the sheet draws it, at twice that size twice as wide.
+        // The font's atlas is a texture, so a game stands for the window.
         using var headless = new HeadlessGame();
         var sheet = GenImageColor(256, 256, Color.Blank);
         int left = 'A' % 16 * 16, top = 'A' / 16 * 16;
@@ -1682,7 +1750,8 @@ public sealed class HeadlessGameTests
         var game = headless.Game;
         headless.Step(10);
 
-        // The columns of the ring past the streamed ones are marked as their neighbors arrive, and never load.
+        // The columns of the ring past the streamed ones are marked as their neighbors arrive, and
+        // never load.
         Assert.NotEmpty(game.Renderer.Parked);
         Assert.All(game.Renderer.Parked, key => Assert.True(game.World.HasColumn(key.X, key.Z), $"{key} is parked with its column not loaded"));
     }
@@ -1737,8 +1806,8 @@ public sealed class HeadlessGameTests
             using (var headless = new HeadlessGame(save: folder))
             {
                 var game = headless.Game;
-                // A sand let fall from twelve, its cell taken out as a fall takes it, one over a torch,
-                // which it would break on, and a TNT lit on the ground.
+                // A sand let fall from twelve, its cell taken out as a fall takes it, one over a
+                // torch, which it would break on, and a TNT lit on the ground.
                 game.World.SetBlock(4, 4, 2, BlockId.Torch);
                 game.Falling.Drop(BlockId.Sand, 2, 12, 2);
                 game.Falling.Drop(BlockId.Sand, 4, 12, 2);
@@ -1820,7 +1889,8 @@ public sealed class HeadlessGameTests
         using var headless = new HeadlessGame();
         var game = headless.Game;
         // A streamer of the game's world far from the game's own, which asks its workers for the
-        // columns around a place, while the one under it is made at once, as a save lands the player.
+        // columns around a place, while the one under it is made at once, as a save lands the
+        // player.
         var streamer = new ChunkStreamer(game.World, game.Renderer, game.Mobs, game.Drops, game.Chests, null);
         var at = LandOrigin.PlaceOf(new LandPlace(16_000.5, 40, 0.5));
         var (x, z) = LandOrigin.ColumnOf(at);
@@ -1976,8 +2046,10 @@ public sealed class HeadlessGameTests
         var renderer = game.Renderer;
         renderer.Casts = false;
         renderer.FloodBudgetMs = double.PositiveInfinity;
-        // A step east asks for column 1's circle too, every column of which joins before the ridge
-        // is raised, so no join marks the ridge's sections again on the way.
+        // One column made at a time and slowly, as the streamer has a machine of three cores make
+        // them on a slow runner.
+        (game.Streamer.Workers, game.Streamer.MakeDelayMs) = (1, 20);
+        // A step east, which asks for column 1's circle while the eye moves.
         Go(4.5);
         Go(4.7);
         Stand();
@@ -1998,6 +2070,21 @@ public sealed class HeadlessGameTests
         foreach (var key in ridge.Where(key => !seenLate || !seen.Contains(key))) Raise(key);
         Stand();
         Assert.False(ridge.Any(renderer.CastsTowardLight), "the ridge casts toward the light as it is raised");
+        // The streamer asks for the circle ahead only while the eye moves, so a slow machine's step
+        // leaves most of column 1's circle unmade once the eye stands still, and the ridge's
+        // sections that need its columns about them could not be meshed before the step. So the eye
+        // goes on east by a hair a frame until every column asked for has joined, each join marking
+        // the ridge's sections about it, held back as unseen.
+        for (var (x, clock) = (4.701, System.Diagnostics.Stopwatch.StartNew()); x == 4.701 || game.Streamer.Pending > 0 && clock.Elapsed.TotalSeconds < 30; x += 0.001)
+        {
+            Go(x);
+            Thread.Sleep(2);
+        }
+        Stand();
+        // Counted, those of the ridge the flood from the eye does not see with every column about
+        // them joined, which can be meshed before the step.
+        counted = [.. counted.Where(key => !renderer.Sees(key) && Around(key))];
+        Assert.True(counted.Count > ChunkRenderer.ReleasedAFrame, $"{counted.Count} of the ridge held with their columns about them");
         // East to a block short of where the flood ahead of the step begins, half a column from the
         // face, and still again, so the floods from the eye have reached what they reach.
         for (var tenth = 49; tenth <= 70; tenth += 2) Go(tenth / 10.0);
@@ -2031,6 +2118,13 @@ public sealed class HeadlessGameTests
         Assert.True(most <= ChunkRenderer.ReleasedAFrame, $"{most} taken in a frame");
 
         bool Taken(SectionKey key) => renderer.Standing(key).Any();
+        bool Around(SectionKey key)
+        {
+            for (int dz = -1; dz <= 1; dz++)
+                for (int dx = -1; dx <= 1; dx++)
+                    if (!game.World.HasColumn(key.X + dx, key.Z + dz)) return false;
+            return true;
+        }
         void Raise(SectionKey key) => game.World.SetBlock(key.X * Section.Size + 8, key.Y * Section.Size + 8, key.Z * Section.Size + 8, BlockId.Stone);
         void Go(double x)
         {

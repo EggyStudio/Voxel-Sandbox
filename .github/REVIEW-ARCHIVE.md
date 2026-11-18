@@ -9729,6 +9729,387 @@ step naming its world in 4 s, its `captures/closed.log` naming no fault and no t
 captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels
 past 8 levels.
 
+Item 195's bounds carry over to the chests' files. A file counting more than its region's 1,024
+columns, placing a column outside 0 to 31 or a chest outside its column, holding more than 4,096
+chests in a column, where a column's floor holds 256 a layer and generation places a few, a chest
+of more than its 27 slots, or a slot's or a loot's text past 256 bytes, is kept beside as a file
+that cannot be read, its columns taking the chests their generation gives them.
+- `A_Short_Session_Holds_Level` flies forty steps of four columns over the overworld and back,
+  saving every ten, reading a pack of a font and a texture again every twenty and turning the
+  render distance and the Corner Shade every thirty, then stays 600 frames, in some 28 s. At each
+  save every chest held lies in a loaded column, the mobs hold the loaded columns alone and the
+  save four regions at most of each, and after the stay the textures, the open files and the heap
+  hold within their marks. It fails on the head at its first save, which holds 9 of its 11 chests
+  in columns not loaded.
+- `A_Long_Session_Holds_Level`, five hundred steps each way and a stay of 3,000 frames, runs where
+  `VOXEL_SOAK=1` asks for it and is skipped otherwise, with that reason.
+- `A_Regions_Chests_Past_A_Bound_Are_Kept_Beside`, of four bounds, and
+  `A_Region_Of_Every_Column_The_Game_Keeps_Holds_Its_Chests_Whole`, every column of a region with a
+  row of full chests and one with 4,096, read whole, test the files' bounds, the file kept beside
+  holding every byte of the one written. The tests of `chests.json` read it into the regions.
+
+The strict build is clean, 530 tests pass outside the GPU's lock with the long soak skipped, the
+suite 23 s longer, and the play passes in 192 s, its captures as the last commit's play's. Its
+comments' lines past 100 columns were wrapped after, and the strict build is clean on that.
+
+Verdict 14's read, from the run's job log and its game log in the play artifact. The step read the
+state in time, and its keys were lost before it, to the step before. The death screen's step ends by
+calling `Respawn`, which opens the spawn behind its loading screen, sets creative and goes on at
+once. In the game's log the respawn's load begins at 3,279.97 s of the game's clock, the mode turns
+creative at 3,280.76 and the world stands at 3,302.89, 22.9 s later on the runner's CPU device, its
+eight frames behind the screen among them. The seed's step pressed Escape at once, and a frame of
+loading runs `Stand` alone (`VoxelGame.Begin`) and reads no key, so the menu never opened. The log
+holds no `Menu: None -> Pause` after the respawn, where the steps before hold one for each Escape.
+The world stayed the overworld of seed 1, and no seed was typed into any field. In the green run of
+`fc4a632` before item 214 the respawn's load took 1.0 s, from 4,152.57 to 4,153.59, and Escape
+opened the menu at 4,163.90.
+
+The mend is the play's alone, each wait bounded:
+
+- After the respawn the run waits for the world to stand (`stood`, 600 reads at most) before the
+  seed's step presses a key.
+- The seed's step reads the world's name before Escape and, after Enter, reads the state until it
+  names another world, twenty times at most, where it read once three frames after.
+- The run that keeps its files waits for its world to stand before F2, which only a frame of play
+  takes, where it waited 30 frames.
+
+The play's two other openings, the first and the overworld's, wait by `stood`.
+
+The play's script alone changes, so no build or suite was run for it. The play, under the lock taken
+exclusive with no quiet wait on the GPU, passes in 187 s, its seed's step naming the overworld of
+seed 12345 in 5 s, its `captures/closed.log` naming nothing left at a close 0.53 s after the new
+world, and its captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.10%
+of its pixels past 8 levels, the most 116. A play on the GPU passed before the mend too, its respawn
+standing in a few frames.
+
+Verdict 15's read. The engine's walk for slangc changed between 6.2.86 and 6.2.102, in its commit
+`b634f33d`, "the shader compiler is taken from the nearest checkout of the engine alone and only
+where the user owns it". At 6.2.86 `SlangCompiler.Locate` walked up from the program's folder and
+from the working directory and took `build/tools/slang/bin/slangc` in any folder it passed, so the
+play's game in `VoxelSandbox/bin/Debug/net10.0` found the one `build/fetch-slang.sh` puts in the
+game's checkout, and compiled the terrain shader there on a runner whose cache was empty. The green
+run of `fc4a632` on 6.2.86 logs no "slangc was not found" where the red one logs it. At 6.2.102 the
+walk (`SlangCompiler.FromCheckout`) stops at the nearest folder that holds `3DEngine.slnx` and takes
+its `build/tools` alone, so a game's checkout, which holds `VoxelSandbox.slnx`, gives none, and a
+game on the package finds slangc only by `ENGINE_SLANGC`. That is the engine's change, made on
+purpose so no program runs a compiler from a folder others may write, and the game names its own:
+
+- The build workflow's play job and the pack workflow's shaders job name `ENGINE_SLANGC` as the
+  checkout's slangc once `build/fetch-slang.sh` has fetched it.
+- `build/play.sh` and `build/shaders.sh` name the checkout's slangc where none is named, so a local
+  run needs no setting.
+- `build/fetch-slang.sh` and `build/fetch-slang.ps1` end by saying the line that names it, and their
+  notes and the README's Running it say the engine looks in a checkout of the engine alone.
+
+The pack workflow's `build/shaders.sh` runs `./e3d shaders` out of `.engine`, whose `build/tools`
+holds no slangc, so it would have failed the same way on 6.2.102. A packed game carries the shaders
+it compiled and needs no compiler, which a pack run after the build proves.
+
+The scripts, the workflows and the README alone change, so no build or suite was run for them. A
+play with an empty cache and no `ENGINE_SLANGC` set, `slangc` fetched into the game's checkout as
+the workflow fetches it, under the lock taken exclusive with no quiet wait, passes in 287 s,
+compiling terrain.slang in frame 225, its `captures/closed.log` naming nothing left at a close 0.57
+s after the new world, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png`
+differing in 0.02% of its pixels past 8 levels.
+
+Verdict 16's read. Run on this machine as the runner runs it, with no display, an empty home, no
+runtime folder, lavapipe the only Vulkan driver, a cache of its own and no `ENGINE_SLANGC`, the
+child game ended within a second with code 1, before its world opened: `LoadShader: 'terrain.slang'
+did not compile. 'terrain.slang' (vertexMain) is not in the shader cache and slangc was not found`,
+and the program stopped on it, `The game cannot open, since .../resources/shaders/terrain.slang did
+not compile`. The program checks at its start that each of its shaders compiles (`OwnFiles.Fault`),
+and the build workflow's test job fetches no slangc, so on the runner it could compile none. On this
+machine the test passed since the shader cache held the program's shaders. The test then waited out
+its two minutes for a line the ended child would never print. On macOS the child would besides have
+kept its data under the runner's own home, which the system takes for the application data folder in
+place of `XDG_DATA_HOME`.
+
+The mend:
+
+- A run with no renderer, headless and not offscreen, draws nothing, so the program compiles none of
+  its shaders there (`OwnFiles.Fault`), checking only that its files stand. An offscreen run, as the
+  play's, renders and checks them.
+- The test keeps the child's last forty lines of output and error, stops waiting the moment the
+  child ends, and gives those lines and the exit code in each failure's message.
+- The child's home is the test's folder as well as its data folder, and the test reads the data
+  folder where the system keeps an account's, under `Library/Application Support` on macOS.
+
+Run as the runner runs it, the test passes three runs in three, in 3 s each, where on the head it
+ended within a second with the lines above. The strict build is clean, 600 tests pass outside the
+GPU's lock with the long soak skipped, and the headless game's 88 pass three times in a row. The
+play, under the lock taken exclusive with no quiet wait, passes in 183 s, its `captures/closed.log`
+naming no fault and no texture left, and its captures within 8 levels of the warm play's on 6.2.102,
+`sky2.png` differing in 0.04% of its pixels past 8 levels.
+
+Verdict 17's read. The game keeps its saves and settings under the folder .NET names for an
+account's local application data (`WorldSave.Root`). On Linux .NET takes that folder from
+`XDG_DATA_HOME`, or from `HOME` under `.local/share`. On macOS .NET 10 asks the system for it, its
+native library calling `NSFileManager`'s `URLsForDirectory:inDomains:` (`SystemNative_SearchPath`),
+and its library for macOS reads no `XDG_DATA_HOME` at all. The system takes an account's home from
+the account's record, not from `HOME`. So on the runner the child game saved `ended` under the
+runner account's own `Library/Application Support`, and the test, which Verdict 16's mend had set
+the child's home for, looked under its own folder and found none. The read is of the runtime pack
+for macOS on this machine, 10.0.12, its library and its native one, the runner taking the newest
+10.0, with no macOS to run on. The log lines below say the folder on the runner.
+
+The mend:
+
+- The program takes `--data <folder>`, the folder its saves, its settings and its screenshots are
+  kept in, in place of the account's, and the test gives the child a folder of its own there, so
+  its data lies in the test's folder on every system and no run of the suite writes into the saves
+  of the account it runs under.
+- The game says in its log, as it begins, the folders it keeps its worlds and its settings in, and
+  at each save the world's name and the folder it was saved in.
+- The test reads the folder the child's log says it saved in, holds it to the folder given, and
+  reads the child's output to its end before.
+- The README and `.github/E3D.md` name the flag among the game's.
+
+Run on this machine as the runner runs it, with no display, a home of its own and no
+`XDG_DATA_HOME`, the test passes three runs in three, in 3 s each, the home left with no
+`VoxelSandbox` folder. On a copy of the head it fails with the save said in no folder, the head's
+game having saved `ended` under that home's `.local/share`, the folder that on macOS is the
+account's own by the read above. The strict build is clean, 606 tests pass outside the GPU's lock
+with the long soak skipped, and the headless game's 93 pass three times in a row. The play, under
+the lock taken exclusive with no quiet wait, passes in 185 s, the seed's step naming its world in
+5 s, its `captures/closed.log` naming no fault and no texture left, and its captures within 8 levels
+of the warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels past 8 levels. The build
+run of this commit says on macOS the folder its child saved in.
+
+Verdict 18's read. `02194cb` touches no path of the test. The test moves the player by
+`Player.Teleport` a fifth of a block at a time and saves nothing, so neither the ending of dying
+mobs that a jump far off or a close runs nor the taking before a save's gathering runs in it, and
+the commit leaves the renderer's release alone. The count depends on how far the main thread
+gets in each frame's meshing. The flood ahead releases at most `ReleasedAFrame`, 8, of the held
+sections a frame into the world's list to mesh, and the renderer's update sends that list's
+sections to the meshers, gathering each on the main thread, until the frame's meshing time is
+spent, 4 ms at the test's frames. Where a frame's time runs out before all 8 are sent, the rest wait
+in the list beside the next frame's 8, and a frame that sends both takes in up to 16 in the frame
+after. On this machine every frame sends all it is given. On the runner, by this reading and not
+seen, a frame ran out of its time, and the 13 came in together in the frame after it.
+
+The mend is in the code. The released sections that still wait to be sent count against the next
+frame's release (`ChunkRenderer._released`), so no frame sends more of them than 8, however long the
+frames' meshing takes. A seam caps a frame's meshing time (`ChunkRenderer.MostMeshMs`), and the test
+runs twice, as it was and with three frames' meshing in four cut to nothing, so the sections
+released in the cut frames wait for the fourth. The cut run holds the bound alone, since frames
+given no time take few in before the step. On the head the cut run takes in 9 and 10 in a frame,
+and on the mend it passes three runs in three.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 626
+passing, the headless game's 94 passing three times in a row, and the play under the lock taken
+exclusive with no quiet wait passing in 185 s, the seed's step naming its world in 4 s, its
+`captures/closed.log` naming no fault and no texture left, and its captures within 9 levels of the
+warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels past 8 levels.
+
+Verdict 19's read. Made here on two and three cores (`taskset`, `DOTNET_PROCESSOR_COUNT` 2 and 3),
+both cases of the test failing at 9 to 12 in a frame, and passing on one. A trace of each frame
+told the cause. Each step east asks the streamer for columns new to the circle about the player, 4
+to 11 at the loop's start, and on few cores they join during the measured frames. A column joining
+marks its neighbors' sections, the ridge's among them, and those the flood ahead alone sees went to
+the meshers at once, past the release, which counted only the sections it let out. On sixteen cores
+the columns join before the flood ahead is made, so the sections they mark were held as unseen and
+released 8 a frame. By this reading the 16 on the runners are such joins in the cut case.
+
+The mend. A section the flood ahead alone sees, however it was marked, is held among those the
+release lets out unless the release let it out (`ChunkRenderer.Update`), so the code sends no more
+than 8 of them a frame whatever marks them, the count the test reads. The seam sets a frame's
+meshing time in place of the game's where set (`ChunkRenderer.MeshMs`), and the test runs three
+ways, as it was, with three frames' meshing in four cut to nothing, and with the ridge's sections
+marked again over the frames the flood ahead is made in, as columns joining late mark them, each
+frame given all the time it asks. On the head the third takes in 29 in a frame. On the mend the
+three pass three runs in three on sixteen cores and twice each on one, two and three.
+
+The checks, of this commit with `a3ce8d8` under it: the strict build clean, `a3ce8d8` alone built
+strict too, the suite outside the GPU's lock with the long soak skipped, 629 passing, the headless
+game's 95 passing three times in a row, and the play under the lock taken exclusive with no quiet
+wait passing in 185 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault and no texture left, and its captures within 9 levels of the warm play's on 6.2.102,
+`sky2.png` differing in 0.02% of its pixels past 8 levels.
+
+The rest of item 229's list, played in a headless game as a player meets each rule on a farm and in
+a winter. None of the six made or lost an item, and one rule was missing.
+
+- Young wheat in a room of stone shut on every side, at light 0 from the sky and from every lamp,
+  ripened as in the sun. It grows only where light of at least 9 reaches its cell, the sky's or a
+  block's (`Crops.LightToGrow`), so one in the dark waits as it is and grows on once lit, and one
+  under the open sky grows by night too. `Young_Wheat_Grows_Only_Where_Light_Reaches_It` grows one
+  400 seconds in the dark room and finds it young, then sets a glowstone beside it, grows it 400
+  more and finds it ripe. On the head it ripens in the dark.
+- With no water, young wheat grows at its pace, the game asking no farmland or water of it.
+- The game has no bone meal. A bone used on young wheat places nothing and is kept.
+- The game has no trampling. A player landing on farmland from six blocks up leaves it and the
+  young wheat on it standing.
+- A snow layer placed on a layer is refused and nothing is taken, since a layer holds nothing over
+  it.
+- Sand landing on a placed layer drops as one item and leaves the layer, since a layer gives no way
+  to a falling block.
+- Placed snow beside a glowstone, at block light 14, stands through 200 frames. The game melts snow
+  by the weather alone, and placed snow by nothing.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 630
+passing, the new test passing three times in a row, the headless game's 95 passing three times in a
+row, and the play under the lock taken exclusive with no quiet wait passing in 186 s, the seed's
+step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels
+past 8 levels.
+
+Verdict 20's read. A trace of each frame after the packs are read again showed what held the screen
+alone on this machine. The first update after the reading sends every marked section about the
+player, 720 of them, and a section sent counted as standing, so the loading's share was whole in
+that frame. The screen showed alone for the next few frames only because the items' icons, painted
+again on a worker, were not done, one to five frames here. Where the painting is done before that
+first frame, as on a machine whose worker is quick beside its frame, the world stood at once and no
+frame showed the screen alone, which by this reading is the runner's failure. The count followed how
+far the painting got against the frame.
+
+The mend. A section sent to the meshers counts as standing only once its mesh is taken in, which is
+in an update after the one that sent it (`ChunkRenderer.Sent`, `VoxelGame.LoadingShare`), so a world
+marked again never stands in the frame it is marked, however quick the frame's meshing or the
+icons' painting. The test gives the frame after the reading all the meshing time it asks and waits
+for the icons before it, the worst of both. On the head it shows the screen alone in no frame, and
+on the mend it passes three runs in three on sixteen cores, two and one.
+
+The tests that read the game between steps with a sleep or a clock, read for the same fault, a
+count that follows the machine's pace (the frames' time is fixed at a thirtieth of a second, and the
+pace is how much a frame's 4 ms of meshing, its 2 ms of flooding and the workers get done):
+
+- Could fail so, most likely first:
+  `A_Corner_Of_The_Drawn_Reach_A_Step_Brings_Is_Drawn_Soon_After_It_With_No_Send_Failing`, which
+  asks the corner drawn by the frame after the step, and needs the step's frame to reach it within
+  its 4 ms, its eight columns in, its mesher done before the next update and the flood ahead
+  finished, any of which a slow machine can put a frame later.
+- Could fail so, less likely:
+  `The_Columns_Past_The_Players_Load_Circle_Join_One_A_Frame` (two columns past the circle made
+  before the step, one worker on two cores),
+  `The_Circle_Of_The_Next_Column_Is_Asked_For_As_The_Player_Steps_Into_A_Column` (five columns made
+  in some 400 frames), and
+  `The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame` (its
+  settling wait's ten seconds can run out silently).
+- Counts held by the code and not by pace:
+  `The_Groups_The_Columns_Unloaded_At_A_Step_Leave_Are_Made_Again_The_Count_A_Frame_After_It`,
+  `A_New_World_Is_Drawn_Behind_The_Loading_Screen_For_Its_Count_Of_Frames_With_The_Player_Landed`
+  and `The_Water_Mirror_Is_Made_Ahead_Under_The_Eye_For_Its_Count_Of_Frames_As_A_World_Opens`.
+- Limits of real time a slow machine could pass:
+  `A_Pack_Whose_Every_Texture_Is_A_Picture_At_The_Bound_Builds_Within_A_Bound` (30 s for some 2 GB
+  of pictures decoded),
+  `A_Worlds_List_Of_Blocks_Far_Past_The_Numbers_Is_Read_In_Time_And_Held_To_Them` (a second for
+  300,000 keys, its class run beside the headless games), and the two timed saves'
+  sixty seconds for 600 frames.
+- The other thirty or so wait for the work to end within half a minute to two and read only what
+  stands then, failing only where it never ends.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 630
+passing, the headless game's 95 passing three times in a row, and the play under the lock taken
+exclusive with no quiet wait passing in 186 s, the seed's step naming its world in 4 s, its
+`captures/closed.log` naming no fault and no texture left, and its captures within 8 levels of the
+warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels past 8 levels.
+
+The four tests read as following the machine's pace in Verdict 20's Reply are held to the code, in
+the commit carrying this Reply. A test waits out what each frame gave the workers before the next,
+the columns being made and the sections being meshed, failing where they have not ended it in half a
+minute (`HeadlessGameTests.Settled`, over `ChunkStreamer.Making`, the workers still making a
+column).
+
+- `A_Corner_Of_The_Drawn_Reach_A_Step_Brings_Is_Drawn_Soon_After_It_With_No_Send_Failing` gives
+  each frame all the meshing and flooding time it asks and settles each. With sections sent before
+  the columns about them stand it fails on four sends failing in its walk, and with no circle asked
+  ahead of the step it draws the corner two frames after it.
+- `The_Columns_Past_The_Players_Load_Circle_Join_One_A_Frame` settles each frame. With two columns
+  past the circle taken in a frame it fails on two.
+- `The_Circle_Of_The_Next_Column_Is_Asked_For_As_The_Player_Steps_Into_A_Column` settles each
+  frame. With no circle asked ahead the far column has not joined by 20 blocks.
+- `The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame` fails
+  aloud where its meshers have not ended a frame's sections in ten seconds. With the release's hold
+  and its count of those waiting taken out it fails on 29 and 10 in a frame.
+
+The four pass three runs in three on sixteen cores, and once each on two and one.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 630
+passing, the headless game's 95 passing three times in a row, and the play under the lock taken
+exclusive with no quiet wait passing in 185 s, the seed's step naming its world in 5 s, its
+`captures/closed.log` naming no fault and no texture left, and its captures within 9 levels of the
+warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels past 8 levels.
+
+A night in the survival world, played in a headless game as a player meets each of the mobs' rules,
+in the commit carrying this Reply. No item was made or lost, and two rules broke.
+
+- A zombie under the open sky at noon burned in the rain as under a clear sky. The undead do not
+  burn by day where rain falls on them, the weather more than half turned over land whose climate
+  brings rain (`GameStep.Raining`, `Mob.Burn`), and snow does not put them out.
+  `An_Undead_Mob_Burns_By_Day_Under_A_Clear_Sky_And_Not_In_The_Rain` keeps a zombie whole five
+  seconds in the rain at noon and finds it burning once the sky clears. On the head it loses five
+  health in the rain.
+- A mob hit as it fell was knocked up at the speed of one hit on the ground, so a blow to a mob
+  falling from a height stopped its fall. A hit knocks a mob up off the ground alone, and one in
+  the air falls on as it was falling (`Mob.Hit`).
+  `A_Mob_Hit_In_The_Air_Falls_On_And_One_Hit_On_The_Ground_Is_Knocked_Up` drops a pig from twenty
+  blocks up, hits it in the tenth frame of its fall and finds it falling as fast, then hits it
+  landed and finds it knocked up. On the head the hit in the air sends it up.
+
+Found holding: hostile mobs spawn only where no block's light reaches and the sky's, less the
+night's darkening, is no brighter than a roll, on an opaque block and out of water. A zombie under a
+roof or in water at noon keeps its health. A zombie in water floats at its top. A zombie killed
+drops its loot once and is taken away. A zombie in a room of stone with a shut door, the player
+outside at night, stays in the room, the door shut, as doors open to the mobs that open them alone.
+
+Two rules of the source the game does not have, said here and not built: a player's blow struck
+falling does no more than one struck standing, as no hit is a critical one, and a mob takes no harm
+from a fall.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 632
+passing, the new tests passing three times in a row, the headless game's 95 passing three times in a
+row, and the play under the lock taken exclusive with no quiet wait passing in 184 s, the seed's
+step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels
+past 8 levels.
+
+The fall of a mob, which the Reply above said the game did not have, built in the commit carrying
+this Reply. A mob's fall of more than three blocks takes a point for each block past three as it
+lands, as the player's does, a fifth of that onto a hay bale and none into water, and a mob that
+falls slowly takes none (`Mob.Fall`), so one knocked or dropped from a height may die of it and
+leave its drops. `A_Mob_Dropped_From_A_Height_Is_Harmed_As_It_Lands_And_Leaves_Its_Drops_Once`
+drops a white sheep twenty blocks, a pig six and a pig twenty into a pool three deep, and the
+sheep dies of it and leaves one wool and one or two mutton, the first pig loses three points and
+the second none. On the head the sheep stands whole. The test of a hit in the air drops its pig
+from eight blocks, since a fall of twenty kills it.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 633
+passing, the new test passing three times in a row with the tests of the mobs, the headless game's
+95 passing three times in a row, and the play under the lock taken exclusive with no quiet wait
+passing in 185 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no fault
+and no texture left, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png`
+differing in 0.07% of its pixels past 8 levels.
+
+Verdict 21's read. The 10 were not made on two cores or on one in twenty runs, nor with each mesh
+slowed by up to five milliseconds in ten. They were made four times in twenty-five on two cores
+with each cut frame letting one section through, as a clock whose first reading is nothing does,
+and each column's making slowed by twenty milliseconds. A trace of each section sent and why
+named them. Every time, in the frame at 8.8 blocks east, ten or eleven sections of column 5 at
+rows -2 and 2 came in together, each sent as seen by the flood from the eye's own section in column
+0, none released. They lie in the ring one section past a flood's distance, which a flood reaches,
+so the flood from the eye sees them, and a section it sees is meshed at once and not released, by
+design. On a quick
+machine their columns are in before the ridge is raised, so they are meshed before the walk and
+held by no count. Where a column beside them comes late, they are marked as it joins, in the frames
+the release lets the others out in, and the test counted them among the released. The hold of
+`0088178` and the release hold for every section the flood ahead alone sees, and the test counted
+past them.
+
+The mend is the test's. It counts the sections of the ridge the flood from the eye does not see,
+those the release lets out, read before the ridge is raised, and a fourth case raises the sections
+it sees at 8.8 blocks east, as the late columns mark them. The old count takes in 40 in that frame
+on this machine, and the new count passes the four cases three runs in three on sixteen cores, two
+and one, and twenty runs of twenty in the slowed setting that made the 10. With the release's hold
+and its count of those waiting taken out it fails, so the count still reads what the release
+promises.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 634
+passing, the headless game's 96 passing three times in a row, and the play under the lock taken
+exclusive with no quiet wait passing in 184 s, after the desktop's load of 11:25 to 11:29 had ended,
+the seed's step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture
+left, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.03%
+of its pixels past 8 levels.
+
 ## Items closed, parked or shortened
 
 Items closed without a mend, recorded or parked, and the standing items' texts as they stood before

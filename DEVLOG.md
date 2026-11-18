@@ -36,6 +36,10 @@ fifteen fires burning.
 A TNT's blast in a block of dirt in survival at noon with Bare Bones on, before, then the head's
 crater with 35 dirt lying beside the mended crater with 122, every block it broke.
 
+![](.github/devlog/2026-11-18-burning-on.webp)
+The player's and a pig's health a second in a fire and twelve out of it, the head's holding once out
+beside the mended falling a point a second for eight seconds.
+
 ## 2026-11-16
 
 ![](.github/devlog/2026-11-16-item-191-water-at-the-edge.webp)
