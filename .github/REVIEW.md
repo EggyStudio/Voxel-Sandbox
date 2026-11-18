@@ -353,9 +353,7 @@ change.
 
 ## Verdicts
 
-Verdicts 18 and 19 are open, a test of the sections taken a frame red on macOS alone in run
-44218987161 and its mend's own case red on macOS and Windows in run 44232861901. Verdicts 1 to 17
-are settled, said under each in REVIEW-ARCHIVE.md.
+Verdicts 18 to 20 are open, a test of the sections taken a frame red on macOS alone in run
 
 18. **The build run of `02194cb` is red on macOS alone in a test of the sections taken a frame.**
     Run 44218987161 ended red at 03:57 on 2026-11-18, job 134515852405, Linux, Windows and the play
@@ -379,6 +377,19 @@ are settled, said under each in REVIEW-ARCHIVE.md.
     first, by the cut in a place or an order the three passes here did not meet, a slower mesher or
     a frame with no time among them, then the cause told in the Reply and the mend with the bound
     read from one count the code and the test share. Verdict 18 settles with it.
+
+20. **The build run of `0088178` is red on macOS alone in another test.** Run 44248652206, read at
+    07:27 on 2026-11-18 with its play still going, job 134613659808, Linux and Windows green, 628
+    passed and 1 failed. The test of the sections taken a frame passed in its three cases on the
+    three runners, so the mend of Verdicts 18 and 19 holds there, and both settle with the first run
+    green on all. The failure is `HeadlessGameTests.The_Frames_Behind_The_Loading_Screen_Are_Counted
+    _Again_Where_The_Packs_Are_Read_Again_Among_Them` at `HeadlessGameTests.cs` line 2351, "the
+    world was drawn behind the screen while it did not stand". The loop after `ReloadPacks` counted
+    no frame with the screen alone, so either the world stood again before the loop's first read or
+    the frames behind were drawn from the first step. The test reads the game between steps with a
+    sleep, so what it counts follows the machine's pace. Asked, the failure made here first on few
+    cores or a slowed step, the cause told in the Reply, and the test or the code mended so that the
+    count does not follow the pace.
 
 ## Decisions
 
@@ -1032,3 +1043,54 @@ row, and the play under the lock taken exclusive with no quiet wait passing in 1
 step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
 captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels
 past 8 levels.
+
+Verdict 20's read. A trace of each frame after the packs are read again showed what held the screen
+alone on this machine. The first update after the reading sends every marked section about the
+player, 720 of them, and a section sent counted as standing, so the loading's share was whole in
+that frame. The screen showed alone for the next few frames only because the items' icons, painted
+again on a worker, were not done, one to five frames here. Where the painting is done before that
+first frame, as on a machine whose worker is quick beside its frame, the world stood at once and no
+frame showed the screen alone, which by this reading is the runner's failure. The count followed how
+far the painting got against the frame.
+
+The mend. A section sent to the meshers counts as standing only once its mesh is taken in, which is
+in an update after the one that sent it (`ChunkRenderer.Sent`, `VoxelGame.LoadingShare`), so a world
+marked again never stands in the frame it is marked, however quick the frame's meshing or the
+icons' painting. The test gives the frame after the reading all the meshing time it asks and waits
+for the icons before it, the worst of both. On the head it shows the screen alone in no frame, and
+on the mend it passes three runs in three on sixteen cores, two and one.
+
+The tests that read the game between steps with a sleep or a clock, read for the same fault, a
+count that follows the machine's pace (the frames' time is fixed at a thirtieth of a second, and the
+pace is how much a frame's 4 ms of meshing, its 2 ms of flooding and the workers get done):
+
+- Could fail so, most likely first:
+  `A_Corner_Of_The_Drawn_Reach_A_Step_Brings_Is_Drawn_Soon_After_It_With_No_Send_Failing`, which
+  asks the corner drawn by the frame after the step, and needs the step's frame to reach it within
+  its 4 ms, its eight columns in, its mesher done before the next update and the flood ahead
+  finished, any of which a slow machine can put a frame later.
+- Could fail so, less likely:
+  `The_Columns_Past_The_Players_Load_Circle_Join_One_A_Frame` (two columns past the circle made
+  before the step, one worker on two cores),
+  `The_Circle_Of_The_Next_Column_Is_Asked_For_As_The_Player_Steps_Into_A_Column` (five columns made
+  in some 400 frames), and
+  `The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame` (its
+  settling wait's ten seconds can run out silently).
+- Counts held by the code and not by pace:
+  `The_Groups_The_Columns_Unloaded_At_A_Step_Leave_Are_Made_Again_The_Count_A_Frame_After_It`,
+  `A_New_World_Is_Drawn_Behind_The_Loading_Screen_For_Its_Count_Of_Frames_With_The_Player_Landed`
+  and `The_Water_Mirror_Is_Made_Ahead_Under_The_Eye_For_Its_Count_Of_Frames_As_A_World_Opens`.
+- Limits of real time a slow machine could pass:
+  `A_Pack_Whose_Every_Texture_Is_A_Picture_At_The_Bound_Builds_Within_A_Bound` (30 s for some 2 GB
+  of pictures decoded),
+  `A_Worlds_List_Of_Blocks_Far_Past_The_Numbers_Is_Read_In_Time_And_Held_To_Them` (a second for
+  300,000 keys, its class run beside the headless games), and the two timed saves'
+  sixty seconds for 600 frames.
+- The other thirty or so wait for the work to end within half a minute to two and read only what
+  stands then, failing only where it never ends.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 630
+passing, the headless game's 95 passing three times in a row, and the play under the lock taken
+exclusive with no quiet wait passing in 186 s, the seed's step naming its world in 4 s, its
+`captures/closed.log` naming no fault and no texture left, and its captures within 8 levels of the
+warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels past 8 levels.

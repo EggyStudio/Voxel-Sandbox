@@ -2336,7 +2336,12 @@ public sealed class HeadlessGameTests
 
         // The packs read again mark every section to shade again, so the world stops standing and
         // its loading screen shows alone until it does, then the frames behind it from the first.
+        // The frame after is given all the meshing time it asks and comes once the icons painted
+        // again on a worker are done, as on a machine whose worker is quick beside its frame, so
+        // every marked section is sent in it and nothing else holds the screen alone.
+        game.Renderer.MeshMs = double.PositiveInfinity;
         game.ReloadPacks();
+        while (!Icons.Painted && clock.Elapsed.TotalSeconds < 60) Thread.Sleep(1);
         var (plain, behind) = (0, 0);
         while (game.Loading && clock.Elapsed.TotalSeconds < 60)
         {

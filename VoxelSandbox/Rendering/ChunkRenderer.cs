@@ -870,6 +870,7 @@ public sealed class ChunkRenderer : IDisposable
         while (_built.TryDequeue(out var done))
         {
             _asking--;
+            if (--_sent[done.Key] == 0) _sent.Remove(done.Key);
             _lent.Push(done.Mesher);
             if (!done.Made || !_asked.TryGetValue(done.Key, out var asked) || asked != done.Asked) continue;
             // Faces made with an atlas before the one set would show the tiles of packs let go, so
@@ -967,6 +968,12 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>How many sections the workers are meshing or have meshed and the next update takes in.</summary>
     public int Meshing => _asking;
 
+    // The sections sent to the meshers and not taken in yet, by how many of their meshings are out.
+    private readonly Dictionary<SectionKey, int> _sent = [];
+
+    /// <summary>Whether a section is with the meshers, sent and its mesh not taken in yet.</summary>
+    public bool Sent(SectionKey key) => _sent.ContainsKey(key);
+
     // How many of those the workers have meshed.
     internal int Meshed => _built.Count;
 
@@ -1008,6 +1015,7 @@ public sealed class ChunkRenderer : IDisposable
             return;
         }
         _asking++;
+        _sent[key] = _sent.GetValueOrDefault(key) + 1;
         Task.Run(async () =>
         {
             await _building.WaitAsync();

@@ -784,11 +784,14 @@ public sealed class VoxelGame : IDisposable
     /// <summary>
     /// How far the world's loading has come, from 0 to 1, half for the columns within two of the
     /// player's generated, or left out where their tries ended, and half for the sections of the
-    /// player's column and its neighbors meshed.
+    /// player's column and its neighbors meshed and taken in.
     /// </summary>
     /// <remarks>
     /// A section is meshed with the columns around it, so one is counted as standing only once all the
     /// columns within two are in, the last of which marks it to be meshed again if it was passed by.
+    /// One sent to the meshers stands once its mesh is taken in, in an update after the one that sent
+    /// it, so the world marked again does not stand in the frame it is marked, however much of the
+    /// frame's meshing time the marking leaves.
     /// </remarks>
     public float LoadingShare()
     {
@@ -803,7 +806,7 @@ public sealed class VoxelGame : IDisposable
                     for (int y = ChunkColumn.BottomSection; y < ChunkColumn.CeilingSection; y++)
                     {
                         var key = new SectionKey(x, y, z);
-                        if (!World.Loaded.Contains(key) && !World.Reshaded.Contains(key) && !World.Edited.Contains(key)) standing++;
+                        if (!World.Loaded.Contains(key) && !World.Reshaded.Contains(key) && !World.Edited.Contains(key) && !Renderer.Sent(key)) standing++;
                     }
         return (made / 25f + standing / (9f * ChunkColumn.SectionCount)) / 2;
     }
