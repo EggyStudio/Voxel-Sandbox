@@ -591,8 +591,8 @@ public sealed class ChunkRenderer : IDisposable
     // them than ReleasedAFrame however long the frames' meshing takes.
     private readonly HashSet<SectionKey> _released = [];
 
-    /// <summary>The most time a frame's meshing takes, whatever the game gives it, so a test can make a frame's meshing run short.</summary>
-    internal double MostMeshMs { get; set; } = double.PositiveInfinity;
+    /// <summary>The time a frame's meshing takes in place of what the game gives it where set, so a test can make a frame's meshing run short or as long as it asks.</summary>
+    internal double? MeshMs { get; set; }
 
     /// <summary>
     /// The time a frame gives a flood begun as the eye steps into the next section, or made ahead
@@ -866,7 +866,7 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     public void Update(VoxelWorld world, Vector3 eye, int renderDistance, double budgetMs)
     {
-        budgetMs = Math.Min(budgetMs, MostMeshMs);
+        budgetMs = MeshMs ?? budgetMs;
         while (_built.TryDequeue(out var done))
         {
             _asking--;
@@ -917,7 +917,11 @@ public sealed class ChunkRenderer : IDisposable
             // go, each at once, while one to mesh waits marked for a mesher to come back once every
             // one is lent.
             var far = !InReach(world, key, at, renderDistance);
-            var unseen = !far && Cull && !_visibility.Sees(key) && !_casters.Contains(key) && !(_aheadReady && _ahead.Sees(key));
+            // One the flood ahead alone sees waits among those it releases, however it was marked,
+            // as a column joining late marks its neighbors' sections, unless it is one released.
+            var hidden = !far && Cull && !_visibility.Sees(key) && !_casters.Contains(key);
+            var held = hidden && _aheadReady && _ahead.Sees(key) && !_released.Contains(key);
+            var unseen = hidden && !(_aheadReady && _ahead.Sees(key)) || held;
             var empty = !far && !unseen && (!world.TryGetColumn(key.X, key.Z, out var column) || column.Numbered(key.Y) is not { Filled: > 0 });
             if (!far && !unseen && !empty && _lent.Count == 0) continue;
             // A section whose neighbor column has not arrived is dropped rather than kept, since the
@@ -928,7 +932,11 @@ public sealed class ChunkRenderer : IDisposable
             {
                 if (world.HasColumn(key.X, key.Z)) _parked.Add(key);
             }
-            else if (unseen) _unseen.Add(key);
+            else if (unseen)
+            {
+                _unseen.Add(key);
+                if (held) _releasing.Add(key);
+            }
             else if (empty) Forget(key);
             // One whose gathering needs a column around it not yet loaded is dropped too, its
             // column's join marking it again, rather than sent to fail.

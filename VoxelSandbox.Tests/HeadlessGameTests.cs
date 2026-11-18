@@ -1800,9 +1800,10 @@ public sealed class HeadlessGameTests
     private const int Frames = 1;
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame(bool cutShort)
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public void The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame(bool cutShort, bool markedAgain)
     {
         using var headless = new HeadlessGame(still: true);
         var game = headless.Game;
@@ -1844,7 +1845,11 @@ public sealed class HeadlessGameTests
         for (var tenth = 72; tenth < 160; tenth += 2)
         {
             var before = ridge.Count(Taken);
-            renderer.MostMeshMs = cutShort && tenth % 8 != 6 ? 0 : double.PositiveInfinity;
+            renderer.MeshMs = cutShort ? (tenth % 8 != 6 ? 0 : null) : markedAgain ? double.PositiveInfinity : null;
+            // The ridge's sections marked again where asked over the frames the flood ahead is made
+            // in, as columns joining late mark their neighbors' sections, each frame's meshing
+            // given all the time it asks.
+            if (markedAgain && tenth is >= 84 and <= 90) game.World.Loaded.UnionWith(ridge);
             Go(tenth / 10.0);
             Settle();
             most = Math.Max(most, ridge.Count(Taken) - before);

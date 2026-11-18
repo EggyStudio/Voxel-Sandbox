@@ -980,3 +980,28 @@ a row, and the play under the lock taken exclusive with no quiet wait passing in
 step naming its world in 5 s, its `captures/closed.log` naming no fault and no texture left, and its
 captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.05% of its pixels
 past 8 levels.
+
+Verdict 19's read. Made here on two and three cores (`taskset`, `DOTNET_PROCESSOR_COUNT` 2 and 3),
+both cases of the test failing at 9 to 12 in a frame, and passing on one. A trace of each frame
+told the cause. Each step east asks the streamer for columns new to the circle about the player, 4
+to 11 at the loop's start, and on few cores they join during the measured frames. A column joining
+marks its neighbors' sections, the ridge's among them, and those the flood ahead alone sees went to
+the meshers at once, past the release, which counted only the sections it let out. On sixteen cores
+the columns join before the flood ahead is made, so the sections they mark were held as unseen and
+released 8 a frame. By this reading the 16 on the runners are such joins in the cut case.
+
+The mend. A section the flood ahead alone sees, however it was marked, is held among those the
+release lets out unless the release let it out (`ChunkRenderer.Update`), so the code sends no more
+than 8 of them a frame whatever marks them, the count the test reads. The seam sets a frame's
+meshing time in place of the game's where set (`ChunkRenderer.MeshMs`), and the test runs three
+ways, as it was, with three frames' meshing in four cut to nothing, and with the ridge's sections
+marked again over the frames the flood ahead is made in, as columns joining late mark them, each
+frame given all the time it asks. On the head the third takes in 29 in a frame. On the mend the
+three pass three runs in three on sixteen cores and twice each on one, two and three.
+
+The checks, of this commit with `a3ce8d8` under it: the strict build clean, `a3ce8d8` alone built
+strict too, the suite outside the GPU's lock with the long soak skipped, 629 passing, the headless
+game's 95 passing three times in a row, and the play under the lock taken exclusive with no quiet
+wait passing in 185 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault and no texture left, and its captures within 9 levels of the warm play's on 6.2.102,
+`sky2.png` differing in 0.02% of its pixels past 8 levels.
