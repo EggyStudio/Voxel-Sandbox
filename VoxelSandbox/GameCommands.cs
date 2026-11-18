@@ -587,6 +587,15 @@ public static class GameCommands
         return $"{game.Mobs.Clear(found)} mobs taken away";
     }
 
+    [Command("voxel.grow", "Grows the young wheat of the loaded columns by so many seconds, as that much of the world's time does, and says how many ripened: voxel.grow <seconds>")]
+    internal static string Grow(float seconds)
+    {
+        if (Game is not { } game) return "no world is loaded";
+        if (!float.IsFinite(seconds) || seconds < 0) return $"{seconds} seconds grow nothing, and the least is 0";
+        var ripened = game.Crops.Update(game.World, seconds);
+        return $"{ripened} young wheat ripened, {game.Crops.Count} growing";
+    }
+
     [Command("voxel.spawning", "Keeps every mob out of the world from the next frame on, and out of a world opened after, for captures two runs take alike, or lets them come again: voxel.spawning <on>")]
     internal static string Spawning(bool on)
     {

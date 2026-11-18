@@ -183,11 +183,12 @@ takes them away and keeps every one out from the next frame on, in a world opene
 runs' captures take no animal wandering into one, until `voxel.spawning on` brings them back.
 `voxel.restock` places again the animals and villagers the land first placed in each loaded column
 holding no mob, each where it still has room to stand, as for a save that lost them. `voxel.fires`
-counts the fires and lists the nearest with their ages. `voxel.mode` plays in creative, survival,
-adventure or spectator mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items
-in the inventory, `voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills
-and reads a furnace, `voxel.chest` reads a chest, `voxel.inventory` lists what it holds,
-`voxel.items` lists every item, `voxel.throw` throws as Q does, and `voxel.drop` lays one of an item
+counts the fires and lists the nearest with their ages, and `voxel.grow` grows the young wheat the
+seeds planted by so many seconds. `voxel.mode` plays in creative, survival, adventure or spectator
+mode, `voxel.select` puts an item in the chosen slot, `voxel.give` puts items in the inventory,
+`voxel.craft` makes an item from what the inventory holds, `voxel.furnace` fills and reads a
+furnace, `voxel.chest` reads a chest, `voxel.inventory` lists what it holds, `voxel.items` lists
+every item, `voxel.throw` throws as Q does, and `voxel.drop` lays one of an item
 on the ground at a place. `voxel.weather` says, holds or frees the weather, `voxel.view` sets where
 the camera stands, `voxel.sounds` says how loud the place's sounds play and the steps played,
 `voxel.packs` says or sets the resource packs on, and `voxel.reload` reads them again.

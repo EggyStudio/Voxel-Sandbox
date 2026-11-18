@@ -84,8 +84,10 @@ public static class PlantArt
         masks[Surfaces.CaveVines] = Paint(Strands);
         masks[Surfaces.CaveVinesLit] = Paint((x, y) => Strands(x, y) || (x - 7.5f) * (x - 7.5f) + (y - 5.5f) * (y - 5.5f) <= 3 || (x - 8.5f) * (x - 8.5f) + (y - 11.5f) * (y - 11.5f) <= 3);
 
-        // Wheat in stalks, every other column, with ears at their tops.
+        // Wheat in stalks, every other column, with ears at their tops, and young wheat in shorter
+        // blades of heights a hash of their column gives, in the lower rows its lower walls show.
         masks[Surfaces.Wheat] = Paint((x, y) => x % 3 != 2 && y >= 2 + Hash(x, 5) % 3);
+        masks[Surfaces.YoungWheat] = Paint((x, y) => x % 3 != 1 && y >= 9 + Hash(x, 7) % 4);
 
         // A lantern's iron, whole but in columns 11 to 13 of rows 1 to 11, where the source's model
         // lays its handle's and chain's crossed walls, which hold an arch over the cap or a chain's

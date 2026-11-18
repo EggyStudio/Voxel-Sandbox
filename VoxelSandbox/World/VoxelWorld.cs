@@ -39,6 +39,9 @@ public sealed class VoxelWorld
     /// <summary>Fires set in the world, by an edit or in a column as it arrives, where, for the game to keep burning and clear.</summary>
     public List<(int X, int Y, int Z)> Kindled { get; } = [];
 
+    /// <summary>The cells young wheat was set in, by an edit or as a column holding some arrived, for the crops to grow.</summary>
+    public List<(int X, int Y, int Z)> Sown { get; } = [];
+
     /// <summary>Sections a column's arrival left to mesh, which are meshed a few at a time, nearest first.</summary>
     public HashSet<SectionKey> Loaded { get; } = [];
 
@@ -68,6 +71,7 @@ public sealed class VoxelWorld
         // has done before its deep sections were packed.
         column.Settle();
         Kindled.AddRange(column.Burning);
+        Sown.AddRange(column.Sown);
         _light.Join(column);
         Fluids.Join(column);
     }
@@ -152,6 +156,7 @@ public sealed class VoxelWorld
 
         Fluids.Around(x, y, z);
         if (block == BlockId.Fire) Kindled.Add((x, y, z));
+        else if (block == BlockId.YoungWheat) Sown.Add((x, y, z));
 
         // Tall grass's other half goes with it, as a door's does.
         if (was == BlockId.TallGrass && GetBlock(x, y + 1, z) == BlockId.TallGrassTop) SetBlock(x, y + 1, z, BlockId.Air);

@@ -463,13 +463,13 @@ public sealed class BlockShape
     /// <summary>A carpet of petals a sixteenth high over the ground, as the cherry grove's pink petals lie, cut out where its texture is clear.</summary>
     public static BlockShape Carpet(int surface) => new(Facing.Up, [Px(0, 0, 0, 16, 1, 16, surface)], cutout: true);
 
-    /// <summary>Ripe wheat, four thin stalks' walls crossed, which falls when its farmland is broken.</summary>
-    public static BlockShape Wheat(int stalks) => new(Facing.Up,
+    /// <summary>Wheat, four thin stalks' walls crossed, so many sixteenths high, 14 ripe, which falls when its farmland is broken.</summary>
+    public static BlockShape Wheat(int stalks, int height = 14) => new(Facing.Up,
     [
-        Wall(0, 0, 4, 16, 14, 4, stalks),
-        Wall(0, 0, 12, 16, 14, 12, stalks),
-        Wall(4, 0, 0, 4, 14, 16, stalks),
-        Wall(12, 0, 0, 12, 14, 16, stalks),
+        Wall(0, 0, 4, 16, height, 4, stalks),
+        Wall(0, 0, 12, 16, height, 12, stalks),
+        Wall(4, 0, 0, 4, height, 16, stalks),
+        Wall(12, 0, 0, 12, height, 16, stalks),
     ], cutout: true);
 
     /// <summary>

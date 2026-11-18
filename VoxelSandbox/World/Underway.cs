@@ -5,8 +5,8 @@ namespace VoxelSandbox;
 
 /// <summary>
 /// The things under way in the world that a save keeps by region beside the blocks, the blocks
-/// falling, the TNT lit and each fire's age, so a save while a block falls or a fuse burns keeps it
-/// where it is, and a fire burns on from its age.
+/// falling, the TNT lit, each fire's age and each young wheat's, so a save while a block falls or a
+/// fuse burns keeps it where it is, a fire burns on from its age and a crop grows on from its.
 /// </summary>
 /// <remarks>
 /// A save writes those of every loaded column, a column holding none among them, so a block that
@@ -15,10 +15,10 @@ namespace VoxelSandbox;
 /// joins lays them down again, the fires taking their ages as the world kindles them. A world that
 /// keeps no save keeps them in memory for the run.
 /// </remarks>
-public sealed class Underway(EcsWorld ecs, FallingBlocks falling, PrimedTnt tnt, Fires fires)
+public sealed class Underway(EcsWorld ecs, FallingBlocks falling, PrimedTnt tnt, Fires fires, Crops crops)
 {
-    /// <summary>What a record holds, a falling block, a lit TNT or a fire's age.</summary>
-    public const byte FallingKind = 0, LitKind = 1, FireKind = 2;
+    /// <summary>What a record holds, a falling block, a lit TNT, a fire's age or a young wheat's.</summary>
+    public const byte FallingKind = 0, LitKind = 1, FireKind = 2, CropKind = 3;
 
     private static readonly Dictionary<string, BlockId> ByKey = Blocks.All.ToDictionary(block => block.Key, block => block.Id);
 
@@ -77,6 +77,9 @@ public sealed class Underway(EcsWorld ecs, FallingBlocks falling, PrimedTnt tnt,
                 case FireKind:
                     fires.Aged[((int)Math.Floor(record.At.X), (int)Math.Floor(record.At.Y), (int)Math.Floor(record.At.Z))] = (int)record.Time;
                     break;
+                case CropKind:
+                    crops.Spawn((int)Math.Floor(record.At.X), (int)Math.Floor(record.At.Y), (int)Math.Floor(record.At.Z), record.Time);
+                    break;
             }
         }
     }
@@ -95,6 +98,8 @@ public sealed class Underway(EcsWorld ecs, FallingBlocks falling, PrimedTnt tnt,
             all.Add((LandOrigin.ColumnOf(body.Position), new(LitKind, "", LandOrigin.LandOf(body.Position), body.Velocity, lit.Left), id));
         foreach (var (id, fire) in ecs.Query<Fire>())
             all.Add(((VoxelWorld.ColumnOf(fire.X), VoxelWorld.ColumnOf(fire.Z)), new(FireKind, "", new LandPlace(fire.X, fire.Y, fire.Z), Vector3.Zero, fire.Age), id));
+        foreach (var (id, crop) in ecs.Query<Crop>())
+            all.Add(((VoxelWorld.ColumnOf(crop.X), VoxelWorld.ColumnOf(crop.Z)), new(CropKind, "", new LandPlace(crop.X, crop.Y, crop.Z), Vector3.Zero, crop.Age), id));
         return all;
     }
 }

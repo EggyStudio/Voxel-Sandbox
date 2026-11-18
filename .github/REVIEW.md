@@ -281,7 +281,9 @@ run 44198295058 started. Run 44198295058 ended green on every job at 01:22 on 20
 Verdicts 16 and 17 are settled. `c46af98`, item 227, and `23dd79a`, the lows of item 228, pushed at
 01:22, the form kept, their build run 44207248826 started. Build run 44207248826 of `23dd79a` ended
 green at 02:51 on 2026-11-18. `02194cb`, item 228's mob and save mends, pushed at 02:51, the form
-kept, its build run 44218987161 started.
+kept, its build run 44218987161 started. `4e793f9`, item 229's first commit, and `dfa88e0`, Verdict
+18's mend, the sections released and still waiting counted against the next release, pushed at 04:47
+on 2026-11-18, the form kept, their build run 44232861901 started.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -351,8 +353,9 @@ change.
 
 ## Verdicts
 
-Verdict 18 is open, a test of the sections taken a frame red on macOS alone in run 44218987161.
-Verdicts 1 to 17 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdicts 18 and 19 are open, a test of the sections taken a frame red on macOS alone in run
+44218987161 and its mend's own case red on macOS and Windows in run 44232861901. Verdicts 1 to 17
+are settled, said under each in REVIEW-ARCHIVE.md.
 
 18. **The build run of `02194cb` is red on macOS alone in a test of the sections taken a frame.**
     Run 44218987161 ended red at 03:57 on 2026-11-18, job 134515852405, Linux, Windows and the play
@@ -364,6 +367,18 @@ Verdicts 1 to 17 are settled, said under each in REVIEW-ARCHIVE.md.
     the bound is held only by chance, and the mend, a bound the code holds on any machine or a test
     that reads what the release promises. A second try of the job is no answer. The commit after it
     waits locally and goes up with the mend.
+
+19. **The build run of `dfa88e0` is red on macOS and Windows in the mend's own case.** Run
+    44232861901, read at 05:27 on 2026-11-18 with its play still going, jobs 134561862572 and
+    134561862924, Linux green, 625 passed and 1 failed on each. The case with the frames' meshing
+    cut short of `HeadlessGameTests.The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than
+    _The_Release_A_Frame` failed at `HeadlessGameTests.cs` line 1857 with 16 taken in a frame on
+    both, twice the release, and the case as it was passed. So the count of sections released and
+    still waiting does not hold the bound where a frame's meshing is cut, or the test counts a
+    section as taken at another moment than the code counts it as sent. Asked, the 16 made here
+    first, by the cut in a place or an order the three passes here did not meet, a slower mesher or
+    a frame with no time among them, then the cause told in the Reply and the mend with the bound
+    read from one count the code and the test share. Verdict 18 settles with it.
 
 ## Decisions
 
@@ -928,3 +943,40 @@ passing, the headless game's 94 passing three times in a row, and the play under
 exclusive with no quiet wait passing in 185 s, the seed's step naming its world in 4 s, its
 `captures/closed.log` naming no fault and no texture left, and its captures within 9 levels of the
 warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels past 8 levels.
+
+Item 229's second commit, the two highs whose rule this file set, each with a test that passes
+three runs in three and fails on a copy of the head.
+
+- Seeds planted ripe wheat, which broke into wheat and more seeds than planted it, so a seed made
+  wheat and seeds without end. Seeds plant young wheat, a block of its own, short and green, which
+  gives back its one seed and ripens into wheat once it has grown five minutes on a loaded column
+  while the world's time runs (`Crops`). The world names each young wheat set, as it names a fire,
+  and a save keeps each one's age with the things under way, as a fourth kind of record
+  (`Underway.CropKind`), so a crop grows on from its age after a load and one whose age no save
+  kept begins anew. The wheat the land places is ripe and grows no more. `voxel.grow` grows the
+  young wheat of the loaded columns by so many seconds.
+  `Seeds_Plant_Young_Wheat_That_Gives_Its_Seed_Back_And_Ripens_On_From_Its_Age_After_A_Load`
+  plants and breaks three times with every item counted alike before and after, grows one ten
+  seconds short of ripe and saves, and the copy opened ripens it in twenty more and its wheat gives
+  one wheat and one to three seeds. On the head the cycle makes wheat.
+- Snow a player placed melted in clear weather with the snow the weather laid, and dropped nothing.
+  Snow a player places is a block of its own, alike to look at, which the melting leaves, and
+  either breaks into a snow layer.
+  `Snow_A_Player_Places_Stands_Through_The_Melt_That_Takes_The_Weathers` places snow under a clear
+  sky beside laid snow, runs the melt over both columns, and the placed stands and the laid is gone.
+  On the head both are gone.
+
+The young wheat drawn beside the ripe, with Bare Bones on and with the game's own surfaces, is
+`.github/devlog/2026-11-18-item-229-young-wheat.webp`. The pack's young wheat is its third stage of
+eight, whose plant fills the lower nine sixteenths of its picture, drawn on stalks nine high, and
+the game's own surface for it the average of that picture, cut in short blades of its own
+(`PlantArt`), set after the rest of the surfaces. Set among them, beside the ripe wheat's, it gave
+every surface after it another number and moved the play's captures up to 19 levels in the items'
+pictures, which its place at the end leaves as they were.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 628
+passing, the new tests passing three times in a row, the headless game's 94 passing three times in
+a row, and the play under the lock taken exclusive with no quiet wait passing in 184 s, the seed's
+step naming its world in 5 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.05% of its pixels
+past 8 levels.

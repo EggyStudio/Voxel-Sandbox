@@ -17,13 +17,19 @@ public static class Loot
     /// lapis ore four to nine lapis and redstone ore four or five redstone, a giant mushroom's cap up to
     /// two of its mushroom, leaves their sapling one
     /// time in twenty and an oak's or a dark oak's an apple one in two hundred, the grasses a seed of
-    /// wheat one time in eight, a dead bush up to two sticks, glass and ice nothing, wheat its wheat
-    /// and a few seeds, cave vines their glow berries where they bear them, any other block the item that places it, and a block that asks for a pickaxe
+    /// wheat one time in eight, a dead bush up to two sticks, glass and ice nothing, young wheat its
+    /// seed, wheat its wheat and a few seeds, cave vines their glow berries where they bear them, any other block the item that places it, and a block that asks for a pickaxe
     /// broken without one nothing.
     /// </summary>
     public static IEnumerable<(Item Item, int Count)> Of(BlockId block, Random random, Item? held = null)
     {
         if (!Harvests(block, held)) yield break;
+        // Young wheat gives back the seed that planted it.
+        if (block == BlockId.YoungWheat)
+        {
+            yield return (Items.Of(BlockId.Wheat), 1);
+            yield break;
+        }
         var item = Blocks.Get(block).Item;
         if (BlockGroups.Leaves.TryGetValue(item, out var sapling))
         {
@@ -197,7 +203,7 @@ public static class Loot
         // Fire, which places as no item, breaks at once and stops no blast, as the source's does.
         BlockId.Air => 0,
         var deep when Ores.InStone.ContainsKey(deep) => 4.5f,
-        BlockId.Torch or BlockId.SoulTorch or BlockId.EndRod or BlockId.Wheat or BlockId.Tnt => 0,
+        BlockId.Torch or BlockId.SoulTorch or BlockId.EndRod or BlockId.Wheat or BlockId.YoungWheat or BlockId.Tnt => 0,
         BlockId.Rail => 0.7f,
         BlockId.Cobweb => 4,
         var plant when BlockGroups.Plants.Contains(plant) => 0,

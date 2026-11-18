@@ -334,6 +334,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The fires burning.</summary>
     public Fires Fires { get; } = new(GetApp().World.Resource<EcsWorld>());
 
+    /// <summary>The young wheat growing in the loaded columns.</summary>
+    public Crops Crops { get; } = new(GetApp().World.Resource<EcsWorld>());
+
     /// <summary>The trees being felled, their logs breaking and their leaves decaying.</summary>
     public TreeFelling Felling { get; } = new();
 
@@ -341,7 +344,7 @@ public sealed class VoxelGame : IDisposable
     public PrimedTnt Tnt { get; } = new(GetApp().World.Resource<EcsWorld>());
 
     /// <summary>The blocks falling, the TNT lit and the fires' ages, as the save keeps them by region.</summary>
-    public Underway Underway => _underway ??= new(GetApp().World.Resource<EcsWorld>(), Falling, Tnt, Fires);
+    public Underway Underway => _underway ??= new(GetApp().World.Resource<EcsWorld>(), Falling, Tnt, Fires, Crops);
 
     private Underway? _underway;
 
@@ -674,6 +677,7 @@ public sealed class VoxelGame : IDisposable
         Falling.Clear();
         Felling.Clear();
         Fires.Clear();
+        Crops.Clear();
         Sounds.Stop();
         Tnt.Clear();
         Arrows.Clear();
@@ -1158,6 +1162,8 @@ public sealed class VoxelGame : IDisposable
         // burned them is lit.
         Fires.Take(World, Step.Random);
         TakeSent();
+        // The young wheat grows by the frame's seconds, and ripens once it has grown long enough.
+        Crops.Update(World, seconds);
         Blasts.Update(seconds);
         // The TNT whose fuses ran out as the engine's frame burned them goes off.
         foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(LandOrigin.PlaceOf(blast.At), PrimedTnt.Power, "was blown up by TNT");

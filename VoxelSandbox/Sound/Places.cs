@@ -20,7 +20,7 @@ public static class Places
         var (x, y, z) = LandOrigin.BlockOf(feet);
         var at = world.GetBlock(x, y, z);
         if (Blocks.IsWater(at)) return StepSound.Water;
-        if (at == BlockId.SnowLayer) return StepSound.Snow;
+        if (at is BlockId.SnowLayer or BlockId.PlacedSnowLayer) return StepSound.Snow;
         return StepOf(world.GetBlock(x, (int)MathF.Floor(feet.Y - 0.2f), z));
     }
 
@@ -28,7 +28,7 @@ public static class Places
     public static StepSound StepOf(BlockId block)
     {
         if (Blocks.IsWater(block)) return StepSound.Water;
-        if (block is BlockId.Snow or BlockId.SnowLayer || BlockGroups.Wool.Contains(block)) return StepSound.Snow;
+        if (block is BlockId.Snow or BlockId.SnowLayer or BlockId.PlacedSnowLayer || BlockGroups.Wool.Contains(block)) return StepSound.Snow;
         if (block is BlockId.Sand or BlockId.RedSand) return StepSound.Sand;
         if (block == BlockId.Gravel) return StepSound.Gravel;
         if (block is BlockId.Grass or BlockId.Dirt or BlockId.MossBlock || Blocks.IsLeaves(block) || BlockGroups.Plants.Contains(block)

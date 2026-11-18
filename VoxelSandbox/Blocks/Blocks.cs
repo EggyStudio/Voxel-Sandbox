@@ -260,6 +260,8 @@ public enum BlockId : ushort
     MossyCobblestone,
     MossyStoneBricks,
     CrackedStoneBricks,
+    YoungWheat,
+    PlacedSnowLayer,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -621,6 +623,10 @@ public static class Blocks
             Same(BlockId.MossyCobblestone, "mossy_cobblestone", "Mossy Cobblestone", Surfaces.MossyCobblestone),
             Same(BlockId.MossyStoneBricks, "mossy_stone_bricks", "Mossy Stone Bricks", Surfaces.MossyStoneBricks),
             Same(BlockId.CrackedStoneBricks, "cracked_stone_bricks", "Cracked Stone Bricks", Surfaces.CrackedStoneBricks),
+            // The wheat the seeds plant, green and short, which ripens on a loaded column, and the
+            // snow a player places, alike to the snow the weather lays and left by its melting.
+            Shaped(BlockId.YoungWheat, "young_wheat", "Young Wheat", BlockShape.Wheat(Surfaces.YoungWheat, 9), 0, BlockId.Wheat),
+            Shaped(BlockId.PlacedSnowLayer, "placed_snow_layer", "Snow", BlockShape.SnowLayer(Surfaces.Snow), 0, BlockId.SnowLayer),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");
@@ -647,10 +653,12 @@ public static class Blocks
     private static BlockId[,,] Variants()
     {
         var variants = new BlockId[_all.Length, 6, 2];
-        // Cave vines with glow berries are the vines grown rather than a way of placing them, so the
-        // berries place the vines without.
+        // Cave vines with glow berries and ripe wheat are the plants grown rather than a way of
+        // placing them, so the berries place the vines without and the seeds young wheat, and the
+        // snow the weather lays is none a player places, who places snow of its own.
         foreach (var block in _all)
-            if (block.Shape is { Open: false } shape && block.Id != BlockId.CaveVinesLit) variants[(int)block.Item, (int)shape.Facing, shape.Upper ? 1 : 0] = block.Id;
+            if (block.Shape is { Open: false } shape && block.Id is not (BlockId.CaveVinesLit or BlockId.Wheat or BlockId.SnowLayer))
+                variants[(int)block.Item, (int)shape.Facing, shape.Upper ? 1 : 0] = block.Id;
         return variants;
     }
 
@@ -846,7 +854,7 @@ public static class BlockGroups
     };
 
     /// <summary>The plants of the ground, the saplings, the flowers, the grasses and the mushrooms, which break at once.</summary>
-    public static readonly HashSet<BlockId> Plants = [.. Blocks.All.Where(b => b.Shape is { Cutout: true } && b.Id != BlockId.Wheat).Select(b => b.Id)];
+    public static readonly HashSet<BlockId> Plants = [.. Blocks.All.Where(b => b.Shape is { Cutout: true } && b.Id is not (BlockId.Wheat or BlockId.YoungWheat)).Select(b => b.Id)];
 
     public static readonly HashSet<BlockId> Wool = [.. Blocks.All.Where(b => b.Key.EndsWith("_wool", StringComparison.Ordinal)).Select(b => b.Id)];
 

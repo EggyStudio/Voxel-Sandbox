@@ -50,5 +50,5 @@ public sealed class SnowCover
 
     /// <summary>Whether snow settles on a block, a whole block's top or leaves, and not water, ice or a layer of snow.</summary>
     public static bool Takes(BlockId block) =>
-        block != BlockId.SnowLayer && !Blocks.IsWater(block) && block != BlockId.Ice && (Blocks.IsSturdy(block) || BlockGroups.Leaves.ContainsKey(block));
+        block is not (BlockId.SnowLayer or BlockId.PlacedSnowLayer) && !Blocks.IsWater(block) && block != BlockId.Ice && (Blocks.IsSturdy(block) || BlockGroups.Leaves.ContainsKey(block));
 }

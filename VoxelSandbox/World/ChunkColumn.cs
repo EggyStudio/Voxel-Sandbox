@@ -96,11 +96,14 @@ public sealed class ChunkColumn
     /// <summary>The fires it held as it was settled, each where it burns in the world, for the world to keep burning.</summary>
     public List<(int X, int Y, int Z)> Burning { get; } = [];
 
+    /// <summary>The young wheat it held as it was settled, each where it grows in the world, for the world to keep growing.</summary>
+    public List<(int X, int Y, int Z)> Sown { get; } = [];
+
     /// <summary>Whether <see cref="Settle"/> has run.</summary>
     public bool Settled { get; private set; }
 
     /// <summary>
-    /// Finds its <see cref="Floor"/> and the fires it holds, and has its sections of air open to the
+    /// Finds its <see cref="Floor"/> and the fires and young wheat it holds, and has its sections of air open to the
     /// sky share their arrays, once it is made and lit and before any is packed, once only.
     /// </summary>
     public void Settle()
@@ -116,11 +119,12 @@ public sealed class ChunkColumn
         {
             if (Sections[s].Share()) continue;
             var blocks = Sections[s].Blocks;
-            for (int i = Array.IndexOf(blocks, (ushort)BlockId.Fire); i >= 0; i = Array.IndexOf(blocks, (ushort)BlockId.Fire, i + 1))
-            {
-                int x = i & Section.Mask, z = i >> Section.Shift & Section.Mask, y = i >> 2 * Section.Shift;
-                Burning.Add((X * Section.Size + x, Bottom + s * Section.Size + y, Z * Section.Size + z));
-            }
+            foreach (var (found, into) in (ReadOnlySpan<(BlockId, List<(int X, int Y, int Z)>)>)[(BlockId.Fire, Burning), (BlockId.YoungWheat, Sown)])
+                for (int i = Array.IndexOf(blocks, (ushort)found); i >= 0; i = Array.IndexOf(blocks, (ushort)found, i + 1))
+                {
+                    int x = i & Section.Mask, z = i >> Section.Shift & Section.Mask, y = i >> 2 * Section.Shift;
+                    into.Add((X * Section.Size + x, Bottom + s * Section.Size + y, Z * Section.Size + z));
+                }
         }
     }
 

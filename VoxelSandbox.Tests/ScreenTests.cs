@@ -601,6 +601,102 @@ public sealed class ScreenTests : IDisposable
         Assert.Null(container == BlockId.Furnace ? game.AtFurnace : game.AtChest);
     }
 
+    // The block a player standing at the start and looking a little down places against, the
+    // ground's top a few blocks ahead.
+    private static (int X, int Y, int Z) Planted(VoxelGame game) =>
+        game.Target is { } hit ? (hit.X, hit.Y + 1, hit.Z) : throw new InvalidOperationException("the crosshair rests on no block");
+
+    [Fact]
+    public void Seeds_Plant_Young_Wheat_That_Gives_Its_Seed_Back_And_Ripens_On_From_Its_Age_After_A_Load()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var (world, copy) = (Path.Combine(root, "world"), Path.Combine(root, "copy"));
+        var (seeds, wheat) = (Items.Of(BlockId.Wheat), Items.Wheat);
+        SortedDictionary<string, int> before = [];
+        (int X, int Y, int Z) at;
+        try
+        {
+            using (var headless = new HeadlessGame(save: world, still: true))
+            {
+                var game = headless.Game;
+                Serve(game);
+                game.Mode = GameMode.Survival;
+                game.Inventory.Slots[0] = new ItemStack(seeds, 5);
+                game.Hotbar.Selected = 0;
+                Run("voxel.look 0 -30");
+                headless.Step(2);
+                at = Planted(game);
+                before = Counted(game);
+
+                // Planted and broken at once three times, which makes no wheat and no seed.
+                for (int i = 0; i < 3; i++)
+                {
+                    Run("voxel.place");
+                    headless.Step(1);
+                    Run("voxel.break");
+                    headless.Step(1);
+                }
+                Assert.Equal(before, Counted(game));
+
+                // Planted again as young wheat and grown ten seconds short of ripe, then the world
+                // saved.
+                Run("voxel.place");
+                Assert.Equal("young_wheat", Blocks.Get(game.World.GetBlock(at.X, at.Y, at.Z)).Key);
+                headless.Step(1);
+                before = Counted(game);
+                Run("voxel.grow 290");
+                Assert.Equal("young_wheat", Blocks.Get(game.World.GetBlock(at.X, at.Y, at.Z)).Key);
+                game.SaveWorld();
+                HeadlessGameTests.CopyFolder(world, copy);
+            }
+
+            // The copy opened grows on from its age and ripens, and its wheat gives wheat and
+            // seeds.
+            using var again = new HeadlessGame(save: copy, still: true);
+            var game2 = again.Game;
+            Serve(game2);
+            Run("voxel.grow 20");
+            Assert.Equal(BlockId.Wheat, game2.World.GetBlock(at.X, at.Y, at.Z));
+            Run("voxel.look 0 -30");
+            again.Step(2);
+            Run("voxel.break");
+            var after = Counted(game2);
+            Assert.Equal(before.GetValueOrDefault(wheat.Key) + 1, after.GetValueOrDefault(wheat.Key));
+            Assert.InRange(after.GetValueOrDefault(seeds.Key) - before.GetValueOrDefault(seeds.Key), 1, 3);
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Snow_A_Player_Places_Stands_Through_The_Melt_That_Takes_The_Weathers()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        Serve(game);
+        game.Mode = GameMode.Survival;
+        var snow = Items.Of(BlockId.SnowLayer);
+        game.Inventory.Slots[0] = new ItemStack(snow, 1);
+        game.Hotbar.Selected = 0;
+        Run("voxel.look 0 -30");
+        headless.Step(2);
+        var placed = Planted(game);
+        // Snow the weather laid a column aside, and the player's placed under a clear sky.
+        var laid = (X: placed.X + 16, placed.Y, placed.Z);
+        game.World.SetBlock(laid.X, laid.Y, laid.Z, BlockId.SnowLayer);
+        var before = Whole(game, snow);
+        Run("voxel.place");
+        Assert.Equal(before, Whole(game, snow));
+
+        SnowCover.Try(game.World, placed.X, placed.Z, snowing: false);
+        SnowCover.Try(game.World, laid.X, laid.Z, snowing: false);
+
+        Assert.Equal(snow.Block, Blocks.Get(game.World.GetBlock(placed.X, placed.Y, placed.Z)).Item);
+        Assert.Equal(BlockId.Air, game.World.GetBlock(laid.X, laid.Y, laid.Z));
+    }
+
     [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {

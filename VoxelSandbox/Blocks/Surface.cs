@@ -316,6 +316,9 @@ public static class Surfaces
     public static readonly int MossyCobblestone = Add("mossy cobblestone", new Color(105, 118, 90), 0.9f);
     public static readonly int MossyStoneBricks = Add("mossy stone bricks", new Color(115, 121, 105), 0.9f);
     public static readonly int CrackedStoneBricks = Add("cracked stone bricks", new Color(118, 117, 118), 0.9f);
+    // The wheat the seeds plant, green and short, the average of the default packs' picture of it,
+    // after the rest so no surface before it takes another number.
+    public static readonly int YoungWheat = Add("young_wheat", new Color(45, 144, 20));
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

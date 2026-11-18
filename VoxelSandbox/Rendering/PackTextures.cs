@@ -80,6 +80,7 @@ public static class PackTextures
         [Surfaces.Hay] = new("block/hay_block_side"),
         [Surfaces.HayTop] = new("block/hay_block_top"),
         [Surfaces.Wheat] = new("block/wheat_stage7"),
+        [Surfaces.YoungWheat] = new("block/wheat_stage3"),
         [Surfaces.TorchStick] = new("block/torch"),
         [Surfaces.Flame] = new("block/torch"),
         [Surfaces.SoulTorchStick] = new("block/soul_torch"),
