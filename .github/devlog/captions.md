@@ -90,3 +90,4 @@
 2026-11-18-item-229-water-over-lava.webp | Water poured over a pool of lava in a rim of stone in the flat world at noon with Bare Bones on, before and after, the lava the water reaches made obsidian under it.
 2026-11-18-item-229-bucket.webp | A bucket taking up a source of water from a pit in the flat world at noon with Bare Bones on, then set on a pit of lava beside it, which it makes obsidian, the bucket held empty, full and empty again.
 2026-11-18-sky-lower-half-neutral.webp | A sheep and the held bucket at noon with global illumination off and Bare Bones on, the head's bucket and clouds' undersides orange from the sky's lower half beside the mended game's gray, the sky drawn alike.
+2026-11-18-fire-in-rain.webp | A pile of oak planks lit at noon in the flat world with Bare Bones on, in the rain as it is lit and forty seconds after with no fire left, beside the same pile in clear weather forty seconds after, fifteen fires burning.

@@ -130,6 +130,12 @@ was decided, and the norm's own numbers are named freely. A commit's sentence na
 an audit or which commit of several it is, since the release notes are made of the messages. By
 review, and by STYLE.md's search, read rather than counted.
 
+**N 4.12 A comment line holds to 100 columns.** A comment is read in a diff and beside its code, and
+one running past the width is cut there or scrolled. A summary, a parameter or a remark too long for
+one line opens onto lines of its own, and a script's docstring holds to the same width. A line
+holding an address or a command alone is free of it. Existing lines are rewrapped as their files are
+touched. By the Tools module's sweep, which counts them.
+
 ## 6 Build and package
 
 **N 6.1 A build has no warnings, and a warning fails the workflow.** A warning left standing hides
@@ -264,6 +270,7 @@ clears a folder it did not make. By review.
 | N 4.9 | by review |
 | N 4.10 | by review |
 | N 4.11 | by review, and STYLE.md's search |
+| N 4.12 | to check, the Tools module's sweep |
 | N 6.1 | to check at the first push |
 | N 6.2 | to check at the first push |
 | N 6.6 | to check at the first commit |

@@ -252,6 +252,12 @@ REVIEW-ARCHIVE.md.
     2026-10-23). The reader that takes it once and its tests go, and a chest of a world saved in
     that form opens empty. Item 221 carries it.
 
+66. **The modules are agnostic to any engine and their assemblies are 3DEngine.<Module> (2026-11-18
+    17:29).** Each module's namespace stays its own name. The engines keep taking the modules as git
+    submodules, carried inside their packages; a module's own package is for a reader who takes it
+    alone and is published on the owner's word. N 4.12 holds a comment line to 100 columns, existing
+    lines rewrapped as their files are touched.
+
 ## Replies
 
 What else of the game the engine's origin of 264 changes the meaning of, read at `f201940` against
@@ -1093,3 +1099,55 @@ fault and no texture left, and its captures within 12 levels of the warm play's 
 `sky2.png`, which differs in 0.42% of its pixels past 8 levels at the edges of the clouds alone.
 The play holds no cloud for that capture, so the clouds stand where the play's time has carried
 them, and this play ran 120 s against 184 to 186 for the day's others.
+
+The play of fire and TNT, played in a headless game in survival as a player meets each rule, and
+the rules of fire it found missing, built in the commit carrying this Reply. Those of the blasts
+come in the next.
+
+- Flint and steel lights TNT in a block of dirt and wears by one. The blast broke 102 dirt and
+  dropped 22, near the one in four its power of 4 gives, broke the chest by it, whose 50 cobblestone
+  lay spilled whole, and left the three stacks of coal lying three blocks from it whole.
+- Five TNT in a row two apart, the first lit, went off one after another in under seven seconds.
+- A hut of oak planks burned from 73 to 2 and 5 in two plays, a torch on its wall falling once as
+  its plank went and the planks dropping nothing, as the source's burned blocks drop nothing.
+- A fire on stone burned on past 20 s in one play and was out by 20 s in the other, as its age
+  passing 3 at a third of its ticks has it go out about then.
+- A TNT lit at a save went off in the copy opened.
+- Missing, and built here:
+  - The rain put out no fire. A pile of 25 planks lit in the rain burned to nothing in 30 s.
+  - A fire harmed neither the player, 20 health kept over 5 s, nor a pig kept in it by stone, 10
+    kept, and five coal lying in a fire lay whole.
+
+The rules, as the source's are recalled and not read here:
+
+- In the rain, a fire whose cell or one beside it is open to the sky in a biome where it rains goes
+  out at its tick at a chance of a fifth and 3 in 100 more for each of its age, but over magma
+  (`Fires.Burn`, `Fires.RainsBy`). The chance is drawn only where rain falls on it, so a fire out of
+  the rain draws the chances it drew before. A cell is open where nothing stands over it, the fire's
+  own over the fire and one beside it over and in it.
+  `Rain_Puts_Out_A_Fire_Open_To_The_Sky_Where_It_Rains_But_Not_Under_A_Roof_Over_Magma_Or_In_The_Desert`
+  ticks five fires each at its lowest chances, and the one open to the sky in the rain goes out
+  while the one under a roof over it and its sides, the one over magma, the one in a desert's
+  columns and the one the rain misses burn on. On a copy of the head given the rain's argument
+  alone the first burns on.
+- A fire harms the player in it by 1 every half second, the cause "went up in flames", and a mob by
+  the same, through lava's calls (`Vitals.Prick`, `Mob.Scald`), and a stack lying in it burns away
+  as one in lava does (`ItemDrops.Fall`). The source sets a body that leaves a fire burning for some
+  seconds more, which is not built.
+  `A_Fire_Harms_The_Player_And_A_Mob_In_It_And_Burns_A_Stack_Lying_In_It` lights a fire in each
+  of three shafts of stone a block wide, a pig in one, five coal in another and the player in the
+  third, and after a second the player and the pig have lost health and the coal is gone. On the
+  head the player keeps 20 health.
+
+`.github/devlog/2026-11-18-fire-in-rain.webp` is a pile of oak planks lit at noon in the rain, the
+rain forty seconds after with no fire left, and the same pile in clear weather forty seconds after
+with fifteen fires burning. By N 4.12 the comment lines past 100 columns in the seven files this
+commit touches, 125 of them, are rewrapped, a summary of one line opening onto lines of its own, the
+code and the words of each comment the same, `ChunkRenderer.CastsTowardLight`'s summary among them.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 643
+passing, the new tests passing three times in a row and failing on the head's copy, the headless
+game's 98 passing three times in a row, and the play under the lock taken exclusive with no quiet
+wait passing in 123 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault and no texture left, and its captures within 11 levels of the warm play's on 6.2.102 but
+`sky2.png`, 0.43% of its pixels past 8 levels at the clouds' edges, as with `f6f2f14`.

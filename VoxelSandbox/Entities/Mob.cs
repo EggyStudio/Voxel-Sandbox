@@ -16,21 +16,27 @@ public readonly record struct MobRecord(MobKind Kind, byte Variant, LandPlace Po
 /// </summary>
 /// <remarks>
 /// A hit while the mob is still red does nothing, as in Minecraft, and a mob is taken away once it
-/// has lain dying for a second. Its behavior ages each mob's life by <see cref="Pass"/>, which a test
-/// of a mob alone calls as the frame would.
+/// has lain dying for a second. Its behavior ages each mob's life by <see cref="Pass"/>, which a
+/// test of a mob alone calls as the frame would.
 /// </remarks>
 [Behavior]
 public partial struct MobLife
 {
-    /// <summary>Seconds a hit reddens a mob for, and how long it has lain dying when it is taken away.</summary>
+    /// <summary>
+    /// Seconds a hit reddens a mob for, and how long it has lain dying when it is taken away.
+    /// </summary>
     public const float Unhurt = 0.5f, DeathTime = 1;
 
     public int Health;
 
-    /// <summary>Seconds left of the red a hit leaves on it, during which another hit does nothing.</summary>
+    /// <summary>
+    /// Seconds left of the red a hit leaves on it, during which another hit does nothing.
+    /// </summary>
     public float Hurt;
 
-    /// <summary>Seconds since it died, as it falls over, or less than zero while it lives.</summary>
+    /// <summary>
+    /// Seconds since it died, as it falls over, or less than zero while it lives.
+    /// </summary>
     public float Dying;
 
     /// <summary>Whether it has fallen over for long enough to be taken away.</summary>
@@ -50,7 +56,10 @@ public partial struct MobLife
         if (Dying >= 0) Dying += seconds;
     }
 
-    /// <summary>Takes a hit's damage and reddens, falling over where the health is gone, unless still red or dying.</summary>
+    /// <summary>
+    /// Takes a hit's damage and reddens, falling over where the health is gone, unless still red or
+    /// dying.
+    /// </summary>
     /// <returns>Whether it took the hit.</returns>
     public bool Hit(int damage)
     {
@@ -90,16 +99,24 @@ public struct MobPose
     /// <summary>The head's tilt, positive looking up.</summary>
     public float HeadPitch;
 
-    /// <summary>How far its legs swing, from 0 standing to 1 at five blocks a second, and where in their swing they are, as <see cref="Gait.Step"/> moves them.</summary>
+    /// <summary>
+    /// How far its legs swing, from 0 standing to 1 at five blocks a second, and where in their
+    /// swing they are, as <see cref="Gait.Step"/> moves them.
+    /// </summary>
     public float Stride, StridePhase;
 
-    /// <summary>How far its wings are spread, from 0 to 1, as a chicken's flap while it falls.</summary>
+    /// <summary>
+    /// How far its wings are spread, from 0 to 1, as a chicken's flap while it falls.
+    /// </summary>
     public float Flap;
 
     /// <summary>Seconds it has moved for, which a wing's flap beats by.</summary>
     public float Swing;
 
-    /// <summary>How far it has walked on the ground or through water's top, in blocks, and whether a step of it fell in its last move, each <see cref="Places.StepLength"/>.</summary>
+    /// <summary>
+    /// How far it has walked on the ground or through water's top, in blocks, and whether a step of
+    /// it fell in its last move, each <see cref="Places.StepLength"/>.
+    /// </summary>
     public float Walked;
 
     public bool Stepped;
@@ -143,7 +160,7 @@ public sealed partial class Mob
     private bool _goingHome, _swimming;
     // How far it has fallen since last on the ground or in water, and the seconds it has been in
     // lava since its last harm there.
-    private float _fallen, _lava;
+    private float _fallen, _scalded;
     private Step? _openedDoor;
 
     public Mob(int id, MobRecord record, int seed, EcsWorld? ecs = null)
@@ -165,7 +182,9 @@ public sealed partial class Mob
         _lastPlace = Body.Position;
     }
 
-    /// <summary>A number of its own while the world is open, which <c>voxel.mobs</c> lists it by.</summary>
+    /// <summary>
+    /// A number of its own while the world is open, which <c>voxel.mobs</c> lists it by.
+    /// </summary>
     public int Id { get; }
 
     public MobKind Kind { get; }
@@ -189,10 +208,16 @@ public sealed partial class Mob
 
     public int Health => Life.Health;
 
-    /// <summary>Where it goes at night and wanders near by day, kept against the <see cref="LandOrigin"/>, or null for a mob that wanders anywhere.</summary>
+    /// <summary>
+    /// Where it goes at night and wanders near by day, kept against the <see cref="LandOrigin"/>,
+    /// or null for a mob that wanders anywhere.
+    /// </summary>
     public Vector3? Home { get; private set; }
 
-    /// <summary>Moves its home and the place it last stood by the whole step the <see cref="LandOrigin"/> moves by, its body moving with every body's.</summary>
+    /// <summary>
+    /// Moves its home and the place it last stood by the whole step the <see cref="LandOrigin"/>
+    /// moves by, its body moving with every body's.
+    /// </summary>
     public void Shift(Vector3 by)
     {
         if (Home is { } home) Home = home + by;
@@ -271,29 +296,36 @@ public sealed partial class Mob
         _fallen = 0;
     }
 
-    // Lava in its box harms it by 4 every half second, as it does the player.
+    // Lava in its box harms it by 4 every half second and a fire by 1, as they do the player.
     private void Scald(VoxelWorld world, float seconds)
     {
-        if (!Vitals.Touches(world, Body, BlockId.Lava, -0.001f))
+        var harm = Vitals.Touches(world, Body, BlockId.Lava, -0.001f) ? 4 : Vitals.Touches(world, Body, BlockId.Fire, -0.001f) ? 1 : 0;
+        if (harm == 0)
         {
-            _lava = 0;
+            _scalded = 0;
             return;
         }
-        _lava += seconds;
-        if (_lava < Vitals.Unharmed) return;
-        _lava = 0;
-        Harm(4);
+        _scalded += seconds;
+        if (_scalded < Vitals.Unharmed) return;
+        _scalded = 0;
+        Harm(harm);
     }
 
-    /// <summary>Takes some health with neither a knock nor a run, as burning does, reddening for a moment.</summary>
+    /// <summary>
+    /// Takes some health with neither a knock nor a run, as burning does, reddening for a moment.
+    /// </summary>
     public void Harm(int damage) => Life.Harm(damage);
 
-    /// <summary>Thinks and moves for a frame of so many seconds, with the player's eye and the hour of the day, hunting no one.</summary>
+    /// <summary>
+    /// Thinks and moves for a frame of so many seconds, with the player's eye and the hour of the
+    /// day, hunting no one.
+    /// </summary>
     public void Update(VoxelWorld world, Vector3 playerEye, float hour, float seconds, bool raining = false) => Update(world, null, playerEye, hour, seconds, [], raining);
 
     /// <summary>
-    /// Thinks and moves for a frame of so many seconds, a hostile mob hunting the target where one is
-    /// given and adding what it does to the player, its strikes, its shots and its blast, to <paramref name="events"/>.
+    /// Thinks and moves for a frame of so many seconds, a hostile mob hunting the target where one
+    /// is given and adding what it does to the player, its strikes, its shots and its blast, to
+    /// <paramref name="events"/>.
     /// </summary>
     public void Update(VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events, bool raining = false)
     {
@@ -361,8 +393,8 @@ public sealed partial class Mob
             var angle = (float)_random.NextDouble() * MathF.Tau;
             var distance = least + (float)_random.NextDouble() * (most - least);
             int x = LandOrigin.BlockX(around.X + MathF.Cos(angle) * distance), z = LandOrigin.BlockZ(around.Z + MathF.Sin(angle) * distance);
-            // The ground there, from a little above down, so the way climbs or drops a few blocks at
-            // most, and not water, which a mob crosses where it must and does not wander into.
+            // The ground there, from a little above down, so the way climbs or drops a few blocks
+            // at most, and not water, which a mob crosses where it must and does not wander into.
             for (int y = (int)MathF.Floor(around.Y) + 3; y >= (int)MathF.Floor(around.Y) - 4; y--)
                 if (Pathfinder.Stands(world, Kind, new Step(x, y, z)))
                 {
@@ -424,9 +456,9 @@ public sealed partial class Mob
             return (Vector3.Zero, false);
         }
 
-        // Straight under or over the next cell's middle, as a mob placed at a cell's middle climbing
-        // out of a well stands, the way across is none rather than the not-a-number a zero length
-        // gives, which would stay in its velocity and its place for good.
+        // Straight under or over the next cell's middle, as a mob placed at a cell's middle
+        // climbing out of a well stands, the way across is none rather than the not-a-number a zero
+        // length gives, which would stay in its velocity and its place for good.
         var way = flat.LengthSquared() > 1e-8f ? Vector3.Normalize(flat) : Vector3.Zero;
         // A jump from the ground or from water onto a cell higher than a step, as out of a well.
         var jump = (Body.OnGround || _swimming) && cell.Y > Body.Position.Y + 0.55f && flat.LengthSquared() < 2.25f;
@@ -468,7 +500,8 @@ public sealed partial class Mob
         if (_watching > 0 && _panic <= 0 && toPlayer.LengthSquared() < Watch * Watch * 1.5f)
         {
             var yaw = MathF.Atan2(-toPlayer.X, -toPlayer.Z);
-            // The head turns no further than 75 degrees from the body, which turns after it beyond that.
+            // The head turns no further than 75 degrees from the body, which turns after it beyond
+            // that.
             var off = Math.Clamp(Angle(yaw - pose.Yaw), -1.3f, 1.3f);
             pose.HeadYaw = Turn(pose.HeadYaw, pose.Yaw + off, 8 * seconds);
             var flat = MathF.Sqrt(toPlayer.X * toPlayer.X + toPlayer.Z * toPlayer.Z);

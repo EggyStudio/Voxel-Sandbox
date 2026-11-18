@@ -814,6 +814,36 @@ public sealed class ScreenTests : IDisposable
     }
 
     [Fact]
+    public void A_Fire_Harms_The_Player_And_A_Mob_In_It_And_Burns_A_Stack_Lying_In_It()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        Serve(game);
+        Run("voxel.spawning false");
+        game.Weather.Held = false;
+        game.Mode = GameMode.Survival;
+        // A fire on the ground in each of three shafts of stone a block wide, a pig in one, five
+        // coal in another and the player in the third.
+        foreach (var x in new[] { -12, -16, -20 })
+        {
+            Run($"voxel.fill {x - 1} 4 -13 {x + 1} 5 -11 stone");
+            game.World.SetBlock(x, 4, -12, BlockId.Air);
+            game.World.SetBlock(x, 5, -12, BlockId.Air);
+            Assert.True(game.Fires.Light(game.World, x, 4, -12, new Random(1)));
+        }
+        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(-11.5, 4, -11.5), 0, MobKinds.Pig.Health, null));
+        game.Drops.Spawn(Items.Coal, 5, LandOrigin.PlaceOf(new LandPlace(-15.5, 4.1, -11.5)), Vector3.Zero);
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(-19.5, 4, -11.5)));
+        var health = game.Vitals.Health;
+        headless.Step(30);
+
+        Assert.Equal(BlockId.Fire, game.World.GetBlock(-20, 4, -12));
+        Assert.True(game.Vitals.Health <= health - 1, $"the player keeps {game.Vitals.Health} health in a fire");
+        Assert.True(pig.Health <= MobKinds.Pig.Health - 1, $"the pig keeps {pig.Health} health in a fire");
+        Assert.DoesNotContain(game.Drops.All, lying => lying.Drop.Item == Items.Coal && lying.Drop.Count > 0);
+    }
+
+    [Fact]
     public void Flowing_Water_Washes_Away_A_Torch_And_Crops_Each_Leaving_Its_Drop_Once()
     {
         using var headless = new HeadlessGame(still: true);

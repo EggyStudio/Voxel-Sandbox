@@ -5,12 +5,15 @@ namespace VoxelSandbox;
 /// <summary>A TNT a fire burned, where it stood, an event the game lights.</summary>
 public readonly record struct TntCaught(int X, int Y, int Z);
 
-/// <summary>A fire burning in a cell, an entity of the engine's ECS, its age and the seconds to its next tick, found by its cell.</summary>
+/// <summary>
+/// A fire burning in a cell, an entity of the engine's ECS, its age and the seconds to its next
+/// tick, found by its cell.
+/// </summary>
 /// <remarks>
 /// Its behavior burns the fires in the engine's frame, reading the voxel world, the seconds and the
-/// chances from the game's <see cref="GameStep"/> on the main thread, which alone may read and change
-/// the world, and sends each TNT a fire burned as a <see cref="TntCaught"/>, which the game lights.
-/// <see cref="Fires"/> has the source's numbers.
+/// chances from the game's <see cref="GameStep"/> on the main thread, which alone may read and
+/// change the world, and sends each TNT a fire burned as a <see cref="TntCaught"/>, which the game
+/// lights. <see cref="Fires"/> has the source's numbers.
 /// </remarks>
 [Behavior]
 public partial struct Fire : IKeyed<(int X, int Y, int Z)>
@@ -26,7 +29,10 @@ public partial struct Fire : IKeyed<(int X, int Y, int Z)>
     /// <summary>Seconds to its next tick.</summary>
     public float Wait;
 
-    /// <summary>Goes on by the step's seconds, each fire whose tick comes burning as the source's does, and sends each TNT it burned.</summary>
+    /// <summary>
+    /// Goes on by the step's seconds, each fire whose tick comes burning as the source's does, and
+    /// sends each TNT it burned.
+    /// </summary>
     [OnUpdate]
     public static void Spread(BehaviorContext ctx)
     {
@@ -38,7 +44,7 @@ public partial struct Fire : IKeyed<(int X, int Y, int Z)>
             if (fire.Wait <= step.Seconds) due.Add(id);
             else fire.Wait -= step.Seconds;
         }
-        foreach (var id in due) Fires.Burn(ecs, step.World, id, step.Random, primed);
+        foreach (var id in due) Fires.Burn(ecs, step.World, id, step.Random, primed, step.Raining);
         foreach (var (x, y, z) in primed) ctx.World.SendEvent(new TntCaught(x, y, z));
     }
 }
@@ -52,13 +58,15 @@ public partial struct Fire : IKeyed<(int X, int Y, int Z)>
 /// <para>
 /// The numbers are Minecraft's. A fire ticks every 30 to 39 ticks, at a twentieth of a second each,
 /// and at each its age, from 0 to 15, grows by one a third of the time. One with nothing that burns
-/// beside it goes out where no whole block holds it or once its age passes 3, and one of age 15 over
-/// a block that does not burn goes out a quarter of the time. Each block beside it burns at a
+/// beside it goes out where no whole block holds it or once its age passes 3, and one of age 15
+/// over a block that does not burn goes out a quarter of the time. Each block beside it burns at a
 /// chance of its burning odds in 300, or 250 for the one over and the one under it, becoming fire
 /// with a chance of 5 in its age and 10 and otherwise going, and TNT it burns is lit. Each cell of
-/// air from one under it to four over it and one to each side catches at a chance of its odds,
-/// the best of its neighbors' catching odds and 40 and 14 for the difficulty of normal over its age
-/// and 30, in 100, or 100 more for each cell past the first over it.
+/// air from one under it to four over it and one to each side catches at a chance of its odds, the
+/// best of its neighbors' catching odds and 40 and 14 for the difficulty of normal over its age and
+/// 30, in 100, or 100 more for each cell past the first over it. While it rains, a fire open to the
+/// sky in a biome where it rains, or beside a cell that is, goes out at its tick a fifth of the
+/// time and 3 in 100 more for each of its age, but over magma.
 /// </para>
 /// <para>
 /// A fire over magma burns on, as the source's does over its endless burning blocks. Fire placed by
@@ -85,13 +93,21 @@ public sealed class Fires(EcsWorld ecs)
         }
     }
 
-    /// <summary>Whether a block burns, as the source's planks, logs, leaves, wool, hay, TNT and plants of the ground do.</summary>
+    /// <summary>
+    /// Whether a block burns, as the source's planks, logs, leaves, wool, hay, TNT and plants of
+    /// the ground do.
+    /// </summary>
     public static bool Burns(BlockId block) => _odds[(int)block].Burns > 0;
 
-    /// <summary>Whether a fire can stand in a cell, over a whole block or beside one that burns.</summary>
+    /// <summary>
+    /// Whether a fire can stand in a cell, over a whole block or beside one that burns.
+    /// </summary>
     public static bool CanStand(VoxelWorld world, int x, int y, int z) => Blocks.IsSturdy(world.GetBlock(x, y - 1, z)) || BesideFuel(world, x, y, z);
 
-    /// <summary>Lights a fire in a cell of air where it can stand, as flint and steel does, its first tick drawn from a Random.</summary>
+    /// <summary>
+    /// Lights a fire in a cell of air where it can stand, as flint and steel does, its first tick
+    /// drawn from a Random.
+    /// </summary>
     /// <returns>Whether it was lit.</returns>
     public bool Light(VoxelWorld world, int x, int y, int z, Random random)
     {
@@ -99,7 +115,10 @@ public sealed class Fires(EcsWorld ecs)
         return Set(ecs, world, x, y, z, 0, random);
     }
 
-    /// <summary>Takes the fires the world set, by an edit or as a column holding some arrived, to keep them burning.</summary>
+    /// <summary>
+    /// Takes the fires the world set, by an edit or as a column holding some arrived, to keep them
+    /// burning.
+    /// </summary>
     /// <remarks>
     /// The world names every fire set, those the fires spread themselves among them, so a cell that
     /// already has its fire is passed over, found by the world's index of the fires by their cells.
@@ -110,15 +129,18 @@ public sealed class Fires(EcsWorld ecs)
         var burning = ecs.Index<Fire, (int X, int Y, int Z)>();
         foreach (var at in world.Kindled)
         {
-            // Each cell named draws its delay, its new fire's or one let go, so the chances drawn after
-            // it are the same whichever of the cells burned already.
+            // Each cell named draws its delay, its new fire's or one let go, so the chances drawn
+            // after it are the same whichever of the cells burned already.
             var wait = Delay(random);
             if (!burning.Contains(at)) ecs.Add(ecs.Spawn(), new Fire { X = at.X, Y = at.Y, Z = at.Z, Age = Aged.Remove(at, out var age) ? age : 0, Wait = wait });
         }
         world.Kindled.Clear();
     }
 
-    /// <summary>The ages a save kept of the fires of a column that joined, by their cells, which the fires the world kindles there take.</summary>
+    /// <summary>
+    /// The ages a save kept of the fires of a column that joined, by their cells, which the fires
+    /// the world kindles there take.
+    /// </summary>
     public Dictionary<(int X, int Y, int Z), int> Aged { get; } = [];
 
     /// <summary>Lets go of every fire, as a world closes.</summary>
@@ -130,8 +152,8 @@ public sealed class Fires(EcsWorld ecs)
         foreach (var id in all) ecs.Despawn(id);
     }
 
-    /// <summary>Burns the fire of an entity at its tick.</summary>
-    internal static void Burn(EcsWorld ecs, VoxelWorld world, int id, Random random, List<(int X, int Y, int Z)> primed)
+    /// <summary>Burns the fire of an entity at its tick, where it may be raining.</summary>
+    internal static void Burn(EcsWorld ecs, VoxelWorld world, int id, Random random, List<(int X, int Y, int Z)> primed, bool raining)
     {
         var (x, y, z, age) = (ecs.GetRef<Fire>(id).X, ecs.GetRef<Fire>(id).Y, ecs.GetRef<Fire>(id).Z, ecs.GetRef<Fire>(id).Age);
         // A fire put out by a hand, a blast or water is let go at its tick.
@@ -146,6 +168,13 @@ public sealed class Fires(EcsWorld ecs)
             return;
         }
         var below = world.GetBlock(x, y - 1, z);
+        // Rain is drawn for only where it falls on the fire or beside it, so a fire out of the rain
+        // takes the chances it took before.
+        if (raining && below != BlockId.Magma && RainsBy(world, x, y, z) && random.NextSingle() < 0.2f + age * 0.03f)
+        {
+            Out(ecs, world, id);
+            return;
+        }
         ref var fire = ref ecs.GetRef<Fire>(id);
         (fire.Age, fire.Wait) = (Math.Min(15, age + random.Next(3) / 2), Delay(random));
         if (below != BlockId.Magma)
@@ -215,6 +244,19 @@ public sealed class Fires(EcsWorld ecs)
         foreach (var (dx, dy, dz) in Sides) best = Math.Max(best, _odds[(int)world.GetBlock(x + dx, y + dy, z + dz)].Catches);
         return best;
     }
+
+    // Whether rain falls on a fire's cell or on one beside it, open to the sky in a biome where it
+    // rains, the fire's own cell being open where nothing stands over the fire and one beside it
+    // where nothing stands in it or over it.
+    private static bool RainsBy(VoxelWorld world, int x, int y, int z)
+    {
+        foreach (var (dx, dz) in Across)
+            if (world.Top(x + dx, z + dz) < (dx == 0 && dz == 0 ? y + 1 : y) && world.BiomeAt(x + dx, z + dz)?.Precipitation == Precipitation.Rain)
+                return true;
+        return false;
+    }
+
+    private static readonly (int X, int Z)[] Across = [(0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)];
 
     private static bool BesideFuel(VoxelWorld world, int x, int y, int z)
     {

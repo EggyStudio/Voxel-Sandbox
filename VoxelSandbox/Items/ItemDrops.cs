@@ -11,9 +11,9 @@ namespace VoxelSandbox;
 /// <para>
 /// Its behaviors run in the engine's frame, each a concern of its own in the stage that orders it:
 /// the stacks fall and age first, the player picks up those within reach next, and stacks of one
-/// item lying together join and the empty and the old vanish last. They read the voxel world and the
-/// player from the game's <see cref="GameStep"/> and the inventory as a resource, and run on the main
-/// thread, which alone may read the world.
+/// item lying together join and the empty and the old vanish last. They read the voxel world and
+/// the player from the game's <see cref="GameStep"/> and the inventory as a resource, and run on
+/// the main thread, which alone may read the world.
 /// </para>
 /// <para>
 /// A stack can be picked up half a second after it is dropped, two seconds after the player throws
@@ -29,7 +29,9 @@ namespace VoxelSandbox;
 [Behavior]
 public partial struct ItemDrop
 {
-    /// <summary>The item's id, which the struct keeps in place of the item, a class every copy would share.</summary>
+    /// <summary>
+    /// The item's id, which the struct keeps in place of the item, a class every copy would share.
+    /// </summary>
     public int ItemId;
 
     public readonly Item Item => Items.All[ItemId];
@@ -50,7 +52,10 @@ public partial struct ItemDrop
 
     private const float Gravity = 16, Join = 0.5f;
 
-    /// <summary>Moves and ages by the step's seconds every stack whose column is loaded, burning away those in lava.</summary>
+    /// <summary>
+    /// Moves and ages by the step's seconds every stack whose column is loaded, burning away those
+    /// in lava.
+    /// </summary>
     [OnPreUpdate]
     public static void Fall(BehaviorContext ctx)
     {
@@ -61,8 +66,8 @@ public partial struct ItemDrop
             if (!step.World.HasColumn(cx, cz)) continue;
             ctx.Ecs.GetRef<ItemDrop>(id).Age += step.Seconds;
             Move(step.World, body, step.Seconds);
-            // A stack in lava burns away.
-            if (Vitals.Touches(step.World, body, BlockId.Lava, -0.001f)) ctx.Ecs.GetRef<ItemDrop>(id).Count = 0;
+            // A stack in lava or in a fire burns away.
+            if (Vitals.Touches(step.World, body, BlockId.Lava, -0.001f) || Vitals.Touches(step.World, body, BlockId.Fire, -0.001f)) ctx.Ecs.GetRef<ItemDrop>(id).Count = 0;
         }
     }
 
@@ -168,12 +173,14 @@ public partial struct ItemDrop
 /// <summary>
 /// The stacks of items lying in the loaded columns, dropped by a block broken in survival, by a mob
 /// as it dies and by the player, picked up when the player comes near, and gone after five minutes,
-/// each an entity of an ECS world with an <see cref="ItemDrop"/> and a <see cref="Body"/>, and those
-/// the unloaded columns keep.
+/// each an entity of an ECS world with an <see cref="ItemDrop"/> and a <see cref="Body"/>, and
+/// those the unloaded columns keep.
 /// </summary>
 public sealed class ItemDrops(EcsWorld ecs)
 {
-    /// <summary>Seconds before a stack a block or a mob dropped can be picked up, and one the player threw.</summary>
+    /// <summary>
+    /// Seconds before a stack a block or a mob dropped can be picked up, and one the player threw.
+    /// </summary>
     public const float Delay = 0.5f, ThrownDelay = 2;
 
     private readonly Random _random = new();
@@ -196,10 +203,15 @@ public sealed class ItemDrops(EcsWorld ecs)
     /// <summary>How many stacks the unloaded columns keep where the world keeps no save.</summary>
     public int Kept => _kept.Values.Sum(stacks => stacks.Count);
 
-    /// <summary>The save of the world the stacks lie in, which keeps those of the columns that unload, or null for a world that keeps none.</summary>
+    /// <summary>
+    /// The save of the world the stacks lie in, which keeps those of the columns that unload, or
+    /// null for a world that keeps none.
+    /// </summary>
     public WorldSave? Save { get; set; }
 
-    /// <summary>Drops a stack at a place with a velocity, which can be picked up after a delay.</summary>
+    /// <summary>
+    /// Drops a stack at a place with a velocity, which can be picked up after a delay.
+    /// </summary>
     public Entity Spawn(Item item, int count, Vector3 at, Vector3 velocity, float delay = Delay, int wear = 0)
     {
         var id = ecs.Spawn();
@@ -208,7 +220,10 @@ public sealed class ItemDrops(EcsWorld ecs)
         return ecs.Handle(id);
     }
 
-    /// <summary>Drops a stack from a block's middle, hopping a little in a direction of its own, as a broken block's does.</summary>
+    /// <summary>
+    /// Drops a stack from a block's middle, hopping a little in a direction of its own, as a broken
+    /// block's does.
+    /// </summary>
     public void Pop(Item item, int count, int x, int y, int z)
     {
         var angle = (float)_random.NextDouble() * MathF.Tau;
@@ -216,7 +231,10 @@ public sealed class ItemDrops(EcsWorld ecs)
         Spawn(item, count, LandOrigin.PlaceOf(x, y, z) + new Vector3(0.5f, 0.375f, 0.5f), velocity);
     }
 
-    /// <summary>Keeps the stacks lying in a column as it unloads, each by its place in the land, out of the ECS until the column loads again.</summary>
+    /// <summary>
+    /// Keeps the stacks lying in a column as it unloads, each by its place in the land, out of the
+    /// ECS until the column loads again.
+    /// </summary>
     public void Leaving(int x, int z)
     {
         var gone = new List<int>();
@@ -249,7 +267,10 @@ public sealed class ItemDrops(EcsWorld ecs)
         foreach (var (x, z) in columns) Leaving(x, z);
     }
 
-    /// <summary>The stacks of each loaded column as a save keeps them, a column with none among them, so a save clears what it held of one.</summary>
+    /// <summary>
+    /// The stacks of each loaded column as a save keeps them, a column with none among them, so a
+    /// save clears what it held of one.
+    /// </summary>
     public IEnumerable<((int X, int Z) Column, IReadOnlyList<WorldSave.DropRecord> Drops)> Columns(VoxelWorld world)
     {
         var lying = new Dictionary<(int X, int Z), List<WorldSave.DropRecord>>();
@@ -263,7 +284,9 @@ public sealed class ItemDrops(EcsWorld ecs)
     private static WorldSave.DropRecord Record(ItemDrop drop, LandPlace at) =>
         new(Inventory.Encode(new ItemStack(drop.Item, drop.Count, drop.Wear)), at, ItemDrop.Lifetime - drop.Age);
 
-    /// <summary>Sets down the stacks a column kept as it loads, each where it lay, as old and as it moved.</summary>
+    /// <summary>
+    /// Sets down the stacks a column kept as it loads, each where it lay, as old and as it moved.
+    /// </summary>
     public void Joined(int x, int z)
     {
         if (_kept.Remove((x, z), out var kept))
@@ -282,7 +305,9 @@ public sealed class ItemDrops(EcsWorld ecs)
         ecs.Add(id, new Body(0.125f, 0.25f) { Position = LandOrigin.PlaceOf(at), Velocity = velocity });
     }
 
-    /// <summary>Despawns every stack and lets go of those the unloaded columns keep, as a world closes.</summary>
+    /// <summary>
+    /// Despawns every stack and lets go of those the unloaded columns keep, as a world closes.
+    /// </summary>
     public void Clear()
     {
         var all = new List<int>();

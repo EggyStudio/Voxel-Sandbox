@@ -13,14 +13,14 @@ namespace VoxelSandbox;
 /// <remarks>
 /// <para>
 /// A section is one mesh in one white material, each vertex its position and eight packed bytes the
-/// terrain shader unpacks into its normal, its tiles in the atlas of the resource packs and its color
-/// (SectionMesher.Pack), twenty bytes a vertex on the GPU. The colors also go with the upload for the scene's distance
-/// field, which reads them as the model pass reads the packed bytes, so indirect light takes each
-/// block's color from the mesh it shares with its neighbors. A section meshed again with the same
-/// faces keeps its mesh and takes new packed bytes and new colors in place, which keep its
-/// positions, the field knowing a mesh by those, so a change of light leaves the section settled in
-/// the field, which paints the section's cells in their new colors in the frame after, as the
-/// ray-traced scene does its corners.
+/// terrain shader unpacks into its normal, its tiles in the atlas of the resource packs and its
+/// color (SectionMesher.Pack), twenty bytes a vertex on the GPU. The colors also go with the upload
+/// for the scene's distance field, which reads them as the model pass reads the packed bytes, so
+/// indirect light takes each block's color from the mesh it shares with its neighbors. A section
+/// meshed again with the same faces keeps its mesh and takes new packed bytes and new colors in
+/// place, which keep its positions, the field knowing a mesh by those, so a change of light leaves
+/// the section settled in the field, which paints the section's cells in their new colors in the
+/// frame after, as the ray-traced scene does its corners.
 /// </para>
 /// <para>
 /// A material's emission is one for its whole draw, so an emissive block is a cube drawn on its
@@ -57,8 +57,8 @@ public sealed class ChunkRenderer : IDisposable
 
         public int Triangles => Indices.Length / 3;
 
-        // Takes a meshing's faces, uploading them as the part's own mesh unless its group draws them,
-        // and says whether they changed, the light alone or the faces too.
+        // Takes a meshing's faces, uploading them as the part's own mesh unless its group draws
+        // them, and says whether they changed, the light alone or the faces too.
         public Change Take(SectionMesher.Faces faces, bool centered = false, bool upload = true)
         {
             var positions = CollectionsMarshal.AsSpan(faces.Positions);
@@ -90,8 +90,8 @@ public sealed class ChunkRenderer : IDisposable
             }
             Forget();
             // The store keeps the arrays it is given until the frame uploads them, so each mesh has
-            // arrays of its own that nothing changes afterward. The colors go with the upload for the
-            // scene's light field, which reads its colors from them.
+            // arrays of its own that nothing changes afterward. The colors go with the upload for
+            // the scene's light field, which reads its colors from them.
             (Positions, Indices, Packed, Colors) = (positions.ToArray(), indices.ToArray(), packed.ToArray(), faces.Colors.ToArray());
             Mesh = upload && Positions.Length > 0 ? UploadMesh(Positions, Indices, MeshStream.From(MeshStreamFormat.UInt2, Packed.AsSpan()), Colors.ToArray()) : default;
             return Change.Faces;
@@ -191,12 +191,13 @@ public sealed class ChunkRenderer : IDisposable
     // casting the shadow of what the texture keeps, which the shader's shadowMain cuts as its
     // fragment stage cuts the face, while global illumination holds none of them, so the scene's
     // distance field holds no grass. Glass a pack cuts out is a fourth, casting no shadow, so a
-    // window lets the sun through as glass the pack leaves whole does. The faces a pack cuts out that
-    // cast a shadow of the whole face, a door's window and a pack's leaves clear between them, are a
-    // fifth. A section's lava is a sixth, drawn with lava's emission, which the field takes from the
-    // mesh, so a lake lights its cave with one draw where a lamp's cube for each block would be
-    // thousands; the field reads a mesh made again without its light for a few frames, which a lake
-    // seldom is. All six are drawn through the game's terrain shader, the engine's light with a haze.
+    // window lets the sun through as glass the pack leaves whole does. The faces a pack cuts out
+    // that cast a shadow of the whole face, a door's window and a pack's leaves clear between them,
+    // are a fifth. A section's lava is a sixth, drawn with lava's emission, which the field takes
+    // from the mesh, so a lake lights its cave with one draw where a lamp's cube for each block
+    // would be thousands; the field reads a mesh made again without its light for a few frames,
+    // which a lake seldom is. All six are drawn through the game's terrain shader, the engine's
+    // light with a haze.
     private readonly ModelMaterial _terrain, _clear, _water, _cutoutGlass, _solidCutout, _haze;
     // The plants' and the leaves' materials, each letting a share of global illumination's light
     // through, made again as the atlas changes, and lava's.
@@ -223,9 +224,9 @@ public sealed class ChunkRenderer : IDisposable
     // The atlas's animations as the terrain shader takes them, the step each shows set each frame.
     private readonly Vector4[] _animationTable = new Vector4[TerrainAtlas.MostAnimations];
     private Texture2D _atlasTexture;
-    // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with its
-    // own texture where a pack has one, which the scene's distance field reads its average of, and
-    // the maps of the emission of those that show parts of their textures.
+    // The textures of the emissive blocks' cubes a pack gives one, by surface, a cube drawn with
+    // its own texture where a pack has one, which the scene's distance field reads its average of,
+    // and the maps of the emission of those that show parts of their textures.
     private Texture2D[] _lampTextures = [], _lampEmission = [];
 
     private readonly Dictionary<SectionKey, SectionMeshes> _sections = [];
@@ -234,16 +235,16 @@ public sealed class ChunkRenderer : IDisposable
     // worker, so the main thread takes in finished faces while the world streams in. As many are
     // made at once as half the processor's cores, so the main thread keeps a core, and a section
     // copied waits for one, so a slow frame, as on a device that draws on the processor, meshes as
-    // many as the workers make meanwhile rather than one round a frame. The sections the workers made
-    // come back with the meshing asked of each, and the meshing last asked of a section is kept, so a
-    // section edited or asked again while a worker meshes it takes only its newest faces. An edit is
-    // meshed here at once, so a block set shows in its own frame.
+    // many as the workers make meanwhile rather than one round a frame. The sections the workers
+    // made come back with the meshing asked of each, and the meshing last asked of a section is
+    // kept, so a section edited or asked again while a worker meshes it takes only its newest
+    // faces. An edit is meshed here at once, so a block set shows in its own frame.
     private readonly Stack<SectionMesher> _lent = new(Enumerable.Range(0, 64).Select(_ => new SectionMesher()));
     private readonly SemaphoreSlim _building = new(Math.Clamp(Environment.ProcessorCount / 2, 1, 16));
     private readonly System.Collections.Concurrent.ConcurrentQueue<(SectionKey Key, int Asked, SectionMesher Mesher, bool Made)> _built = new();
     private readonly Dictionary<SectionKey, int> _asked = [];
-    // Each meshing asked is numbered from one count, so faces a worker made before a section was let
-    // go never pass for those asked of it after.
+    // Each meshing asked is numbered from one count, so faces a worker made before a section was
+    // let go never pass for those asked of it after.
     private int _asks, _asking;
     private ModelMesh _cube;
     // Each emissive surface's cube, the one above for a surface showing its whole texture on each
@@ -261,8 +262,8 @@ public sealed class ChunkRenderer : IDisposable
     // is meshed only where a cave opens to it, about 4,400 sections held in a flight over seed 1's
     // cherry grove against some 400 meshed a second.
     private readonly HashSet<SectionKey> _unseen = [];
-    // The sections the flood leaves out that stand between a drawn one and the light, drawn into the
-    // shadow maps alone, and the light's direction and shadow distance they were found for.
+    // The sections the flood leaves out that stand between a drawn one and the light, drawn into
+    // the shadow maps alone, and the light's direction and shadow distance they were found for.
     private readonly HashSet<SectionKey> _casters = [];
     private readonly HashSet<(int X, int Y, int Z)> _corners = [];
     private (Vector3 TowardLight, float Distance)? _castFor;
@@ -300,8 +301,9 @@ public sealed class ChunkRenderer : IDisposable
         MakeLampCubes();
         Atlas = TerrainAtlas.None;
         _terrain = new ModelMaterial(Color.White) { AlphaMode = MaterialAlphaMode.Opaque, Roughness = 0.9f, Shader = _shader };
-        // Glass, ice and water are rough, so they reflect neither the land the scene's distance field
-        // traces nor the sky, which in the field's coarse cells clashes with the blocks' pixels.
+        // Glass, ice and water are rough, so they reflect neither the land the scene's distance
+        // field traces nor the sky, which in the field's coarse cells clashes with the blocks'
+        // pixels.
         _clear = new ModelMaterial(new Color(255, 255, 255, 254)) { AlphaMode = MaterialAlphaMode.Blend, Roughness = 1, CastsShadows = false, Shader = _shader };
         // Water is see-through as glass is, its material's alpha of 253 telling the terrain shader
         // its faces carry the water's depth, which it darkens and clears the water by.
@@ -318,16 +320,19 @@ public sealed class ChunkRenderer : IDisposable
         Fog(Color.White, float.MaxValue, float.MaxValue);
     }
 
-    /// <summary>The tick the animated textures and lamps are held at, a twentieth of a second each, or null for the time's own.</summary>
+    /// <summary>
+    /// The tick the animated textures and lamps are held at, a twentieth of a second each, or null
+    /// for the time's own.
+    /// </summary>
     /// <remarks>
     /// A frame takes its tick from the time it is drawn at, so frames drawn at a steady pace whose
-    /// length is a whole number of tenths of a second all show the same of two frames a tick each, as
-    /// lavapipe's can, and a held tick shows each frame of an animation however the frames fall.
+    /// length is a whole number of tenths of a second all show the same of two frames a tick each,
+    /// as lavapipe's can, and a held tick shows each frame of an animation however the frames fall.
     /// </remarks>
     public double? HeldTicks { get; set; }
 
-    // The atlas's animations as the terrain shader takes them, each with the step it shows at a time
-    // in game ticks as TerrainAtlas.Step gives it.
+    // The atlas's animations as the terrain shader takes them, each with the step it shows at a
+    // time in game ticks as TerrainAtlas.Step gives it.
     private static Vector4[] AnimationSteps(TerrainAtlas atlas, Vector4[] table, double ticks)
     {
         for (int i = 0; i < atlas.Animations.Count; i++)
@@ -338,16 +343,19 @@ public sealed class ChunkRenderer : IDisposable
         return table;
     }
 
-    /// <summary>Whether the haze dome is drawn, which it is while a haze fades the land's edge short of it.</summary>
+    /// <summary>
+    /// Whether the haze dome is drawn, which it is while a haze fades the land's edge short of it.
+    /// </summary>
     public bool Hazed => _fogEnd < HazeDome.Radius;
 
     /// <summary>
     /// Sets the haze the sections fade into, its color and the distances in blocks it starts at and
     /// covers by, and the atmosphere's haze nearer than that, its most and how fast it grows, none
     /// where the most is 0. Where the sky is behind, each point fades into the sky drawn behind it
-    /// under the haze dome's band, and the color is the dome's, otherwise each fades into the color.
-    /// A point takes the haze by the sky's light reaching it or the eye, whichever is higher, so a
-    /// cave seen from in it takes none, the sky's light level at the eye given, or the open sky's.
+    /// under the haze dome's band, and the color is the dome's, otherwise each fades into the
+    /// color. A point takes the haze by the sky's light reaching it or the eye, whichever is
+    /// higher, so a cave seen from in it takes none, the sky's light level at the eye given, or the
+    /// open sky's.
     /// </summary>
     public void Fog(Color color, float start, float end, float atmosphere = 0, float growth = 0, bool sky = false, bool byHeight = false, float eyeSky = Lighting.Max)
     {
@@ -422,7 +430,10 @@ public sealed class ChunkRenderer : IDisposable
         return (leaves, 1 - (Mean(PlantSurfaces.Where(atlas.Cuts)) ?? 1), cut.Count > 0);
     }
 
-    /// <summary>The share of global illumination's light passing a unit of a leaf block's depth, and of a plant's.</summary>
+    /// <summary>
+    /// The share of global illumination's light passing a unit of a leaf block's depth, and of a
+    /// plant's.
+    /// </summary>
     public (float Leaves, float Plants) LightThrough => (_foliage.LightThrough, _cutout.LightThrough);
 
     // The emissive blocks' textures and the maps of their emission from the atlas, and their
@@ -491,7 +502,9 @@ public sealed class ChunkRenderer : IDisposable
         }
     }
 
-    /// <summary>How much brighter than its face the rim along each whole block's edges is drawn, 0 for none.</summary>
+    /// <summary>
+    /// How much brighter than its face the rim along each whole block's edges is drawn, 0 for none.
+    /// </summary>
     public float Rim
     {
         get => _rim;
@@ -502,7 +515,10 @@ public sealed class ChunkRenderer : IDisposable
         }
     }
 
-    /// <summary>Whether every open face takes the sun's light as one facing the sun does, for a flat look with its shadows kept.</summary>
+    /// <summary>
+    /// Whether every open face takes the sun's light as one facing the sun does, for a flat look
+    /// with its shadows kept.
+    /// </summary>
     public bool Unshaded
     {
         get => _unshaded;
@@ -538,8 +554,8 @@ public sealed class ChunkRenderer : IDisposable
     private void SetLooks() => SetShaderValue(_shader, _looks, new Vector4(_rim, _unshaded ? 1 : 0, 1 - _skyFloor, 0));
 
     /// <summary>
-    /// The light an emissive surface gives at a glow of 1 in linear light, its surface's emission, or
-    /// white as bright where <see cref="ColoredLamps"/> is off.
+    /// The light an emissive surface gives at a glow of 1 in linear light, its surface's emission,
+    /// or white as bright where <see cref="ColoredLamps"/> is off.
     /// </summary>
     public Vector3 LightOf(int surface)
     {
@@ -553,7 +569,10 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>How bright a light in linear light is to the eye, by Rec. 709's weights.</summary>
     public static float Brightness(Vector3 light) => 0.2126f * light.X + 0.7152f * light.Y + 0.0722f * light.Z;
 
-    /// <summary>A light in linear light as the color of its hue at its brightest and how many times that it is, so no part of it clips in a color's bytes.</summary>
+    /// <summary>
+    /// A light in linear light as the color of its hue at its brightest and how many times that it
+    /// is, so no part of it clips in a color's bytes.
+    /// </summary>
     public static (Color Hue, float Most) Split(Vector3 light)
     {
         var most = MathF.Max(light.X, MathF.Max(light.Y, light.Z));
@@ -595,7 +614,10 @@ public sealed class ChunkRenderer : IDisposable
     // are meshed over a few frames, apart from those released, rather than in one.
     internal const int CastersAFrame = 4;
 
-    /// <summary>The time a frame's meshing takes in place of what the game gives it where set, so a test can make a frame's meshing run short or as long as it asks.</summary>
+    /// <summary>
+    /// The time a frame's meshing takes in place of what the game gives it where set, so a test can
+    /// make a frame's meshing run short or as long as it asks.
+    /// </summary>
     internal double? MeshMs { get; set; }
 
     /// <summary>
@@ -611,15 +633,24 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     internal Action<Vector3, IReadOnlySet<SectionKey>>? TookAhead { get; set; }
 
-    /// <summary>A step each meshing worker takes with its section before it makes the faces, which a test sets to hold it.</summary>
+    /// <summary>
+    /// A step each meshing worker takes with its section before it makes the faces, which a test
+    /// sets to hold it.
+    /// </summary>
     internal Action<SectionKey>? Building { get; set; }
 
-    /// <summary>Called with each section as its faces are taken and the atlas they were made with, for a test to read.</summary>
+    /// <summary>
+    /// Called with each section as its faces are taken and the atlas they were made with, for a
+    /// test to read.
+    /// </summary>
     internal Action<SectionKey, TerrainAtlas>? Taking { get; set; }
 
     private bool _castsDue;
 
-    /// <summary>The most a frame's flood, casters' search and placement of the sections took, in ms, since it was last set to 0.</summary>
+    /// <summary>
+    /// The most a frame's flood, casters' search and placement of the sections took, in ms, since
+    /// it was last set to 0.
+    /// </summary>
     public double PeakMs { get; set; }
 
     /// <summary>
@@ -628,19 +659,19 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     /// <remarks>
     /// <para>
-    /// A section left undrawn also leaves the scene's distance field, which builds its cascades again
-    /// as sections come into sight and go out of it. The land the flood leaves out lies behind walls
-    /// the drawn sections hold, the walls of a cave or a closed room, so the eye sees the same light
-    /// either way, a glowstone's in a cave and the dark of a cave in a hill at noon.
+    /// A section left undrawn also leaves the scene's distance field, which builds its cascades
+    /// again as sections come into sight and go out of it. The land the flood leaves out lies
+    /// behind walls the drawn sections hold, the walls of a cave or a closed room, so the eye sees
+    /// the same light either way, a glowstone's in a cave and the dark of a cave in a hill at noon.
     /// </para>
     /// <para>
     /// The sun's shadow is another matter, since the rock over a cave stands between the light and
     /// what the eye sees there. So the sections the flood leaves out that lie toward the light from
     /// a drawn section within the shadow distance are drawn into the shadow maps alone, through the
-    /// engine's shadow-only draw, their opaque faces casting and seen nowhere. They are found by rays
-    /// toward the light from each corner of every drawn section within the shadow distance, through
-    /// the sections to the world's top, again when a flood changes what is drawn, the light turns or
-    /// the shadow distance changes, and are meshed as the drawn ones are.
+    /// engine's shadow-only draw, their opaque faces casting and seen nowhere. They are found by
+    /// rays toward the light from each corner of every drawn section within the shadow distance,
+    /// through the sections to the world's top, again when a flood changes what is drawn, the light
+    /// turns or the shadow distance changes, and are meshed as the drawn ones are.
     /// </para>
     /// </remarks>
     public bool Cull { get; set; } = true;
@@ -653,7 +684,10 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>Whether the last flood reached a section.</summary>
     internal bool Sees(SectionKey key) => _visibility.Sees(key);
 
-    /// <summary>Whether a section the flood left out stands toward the light from a drawn one, meshed apart from the release, <see cref="CastersAFrame"/> a frame.</summary>
+    /// <summary>
+    /// Whether a section the flood left out stands toward the light from a drawn one, meshed apart
+    /// from the release, <see cref="CastersAFrame"/> a frame.
+    /// </summary>
     internal bool CastsTowardLight(SectionKey key) => _casters.Contains(key);
 
     /// <summary>
@@ -678,20 +712,30 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     public bool Casts { get; set; } = true;
 
-    /// <summary>Sections the last <see cref="Draw"/> drew into the shadow maps alone, of those it left out, and the draws it made of them.</summary>
+    /// <summary>
+    /// Sections the last <see cref="Draw"/> drew into the shadow maps alone, of those it left out,
+    /// and the draws it made of them.
+    /// </summary>
     public (int Sections, int Draws) Casting { get; private set; }
 
-    /// <summary>Deep sections the last <see cref="Draw"/> drew, those under their column's floor, and their triangles.</summary>
+    /// <summary>
+    /// Deep sections the last <see cref="Draw"/> drew, those under their column's floor, and their
+    /// triangles.
+    /// </summary>
     public (int Sections, int Triangles) Deep { get; private set; }
 
-    /// <summary>Draw calls the last <see cref="Draw"/> made, each instanced draw of lamps counted once.</summary>
+    /// <summary>
+    /// Draw calls the last <see cref="Draw"/> made, each instanced draw of lamps counted once.
+    /// </summary>
     public int Draws { get; private set; }
 
     public int Triangles { get; private set; }
 
     public int Lamps { get; private set; }
 
-    /// <summary>The lamps the last placement draws, each by its surface's cube and where the cube stands.</summary>
+    /// <summary>
+    /// The lamps the last placement draws, each by its surface's cube and where the cube stands.
+    /// </summary>
     public IEnumerable<(ModelMesh Cube, Matrix4x4 At)> LampsPlaced
     {
         get
@@ -704,27 +748,41 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>Sections holding faces or lamps.</summary>
     public int Sections => _sections.Count;
 
-    /// <summary>The colors of a section's solid faces as the scene's light field reads them, or none for a section with no faces.</summary>
+    /// <summary>
+    /// The colors of a section's solid faces as the scene's light field reads them, or none for a
+    /// section with no faces.
+    /// </summary>
     public IReadOnlyList<Color> SolidColors(SectionKey key) => _sections.TryGetValue(key, out var entry) ? entry.Solid.Colors : [];
 
-    /// <summary>The sections out of the eye's reach, each of a column loaded, meshed once the eye comes near.</summary>
+    /// <summary>
+    /// The sections out of the eye's reach, each of a column loaded, meshed once the eye comes
+    /// near.
+    /// </summary>
     public IReadOnlyCollection<SectionKey> Parked => _parked;
 
-    /// <summary>Whether faces are darkened by light levels, which takes effect as sections are shaded again.</summary>
+    /// <summary>
+    /// Whether faces are darkened by light levels, which takes effect as sections are shaded again.
+    /// </summary>
     public bool LightLevels
     {
         get => _mesher.LightLevels;
         set => _mesher.LightLevels = value;
     }
 
-    /// <summary>Whether corners are darkened where blocks meet, which takes effect as sections are shaded again.</summary>
+    /// <summary>
+    /// Whether corners are darkened where blocks meet, which takes effect as sections are shaded
+    /// again.
+    /// </summary>
     public bool CornerShade
     {
         get => _mesher.CornerShade;
         set => _mesher.CornerShade = value;
     }
 
-    /// <summary>How far corners darken where blocks meet, from 0 to Minecraft's levels at 1, which takes effect as sections are shaded again.</summary>
+    /// <summary>
+    /// How far corners darken where blocks meet, from 0 to Minecraft's levels at 1, which takes
+    /// effect as sections are shaded again.
+    /// </summary>
     public float CornerStrength
     {
         get => _mesher.CornerStrength;
@@ -751,23 +809,25 @@ public sealed class ChunkRenderer : IDisposable
     }
 
     // The parts of its texture each emissive surface's cube shows, as the source's model gives a
-    // lantern's glass and a torch's flame theirs, or null for a cube showing its whole texture on each
-    // face. A surface's cubes are one instanced draw of one mesh, so its lit pieces share their parts.
+    // lantern's glass and a torch's flame theirs, or null for a cube showing its whole texture on
+    // each face. A surface's cubes are one instanced draw of one mesh, so its lit pieces share
+    // their parts.
     private static readonly Parts?[] LampParts = [.. Surfaces.All.Select(s =>
         Blocks.All.SelectMany(b => b.Shape?.Pieces ?? []).FirstOrDefault(p => p.Glows && p.Surface == s.Id).Parts)];
 
     // Each emissive surface's whole lamp whose faces show more than one surface, its top's, its
-    // sides' and its bottom's, as a lit furnace's do, or null for one showing the one on every face.
+    // sides' and its bottom's, as a lit furnace's do, or null for one showing the one on every
+    // face.
     private static readonly (int Top, int Side, int Bottom)?[] LampFaces = [.. Surfaces.All.Select(s =>
         Blocks.All.FirstOrDefault(b => b.Shape is null && b.Emits && b.Lit == s.Id && !(b.Top == b.Side && b.Side == b.Bottom)) is { } lamp
             ? ((int, int, int)?)(lamp.Top, lamp.Side, lamp.Bottom) : null)];
 
     /// <summary>
     /// A lamp's faces' pictures side by side, its top's, its sides' and its bottom's, each a pack's
-    /// texture or a tile of the surface's own color, or with <paramref name="glow"/> the map of their
-    /// emission, an emissive surface's picture's bright pixels as <see cref="EmissionMap"/> lights them
-    /// against <paramref name="light"/> or its own color's whole, and nothing of the rest, so a lit
-    /// furnace's top shows the furnace's and its front alone glows.
+    /// texture or a tile of the surface's own color, or with <paramref name="glow"/> the map of
+    /// their emission, an emissive surface's picture's bright pixels as <see cref="EmissionMap"/>
+    /// lights them against <paramref name="light"/> or its own color's whole, and nothing of the
+    /// rest, so a lit furnace's top shows the furnace's and its front alone glows.
     /// </summary>
     public static Image Strip(TerrainAtlas atlas, (int Top, int Side, int Bottom) faces, Surface lit, bool glow, Vector3? light = null)
     {
@@ -810,7 +870,8 @@ public sealed class ChunkRenderer : IDisposable
         if (_cube.IsValid) UnloadMesh(_cube);
     }
 
-    // A cube a unit across about its middle, each face showing its part of a texture of a size in pixels.
+    // A cube a unit across about its middle, each face showing its part of a texture of a size in
+    // pixels.
     private static ModelMesh LampCube(Parts parts, Vector2 size)
     {
         var (vertices, indices) = (new ModelVertex[24], new uint[36]);
@@ -827,28 +888,36 @@ public sealed class ChunkRenderer : IDisposable
         return UploadMesh(vertices, indices);
     }
 
-    /// <summary>How many times their own color a fire's flames show, whatever light reaches them.</summary>
+    /// <summary>
+    /// How many times their own color a fire's flames show, whatever light reaches them.
+    /// </summary>
     public const float FlamesShown = 1;
 
-    /// <summary>How many times its own color a pack's lava shows, whatever light reaches it, where without a pack it shows its surface's emission over its light.</summary>
+    /// <summary>
+    /// How many times its own color a pack's lava shows, whatever light reaches it, where without a
+    /// pack it shows its surface's emission over its light.
+    /// </summary>
     public const float LavaShown = 1;
 
-    /// <summary>How many times its own color a lit piece's bright pixels show, a lantern's glass or a torch's flame.</summary>
+    /// <summary>
+    /// How many times its own color a lit piece's bright pixels show, a lantern's glass or a
+    /// torch's flame.
+    /// </summary>
     public const float LampShown = 4;
 
     /// <summary>
     /// The map of the emission of a lit piece that shows parts of its texture, so its bright pixels
     /// emit <see cref="LampShown"/> times their own color and its dark ones, a lantern's iron and a
-    /// torch's stick, show as they are lit, where the material's emission over every pixel would draw
-    /// the iron as bright as the flame. The scene's distance field takes the material's emission
-    /// whole, so the light the lamp casts is the same.
+    /// torch's stick, show as they are lit, where the material's emission over every pixel would
+    /// draw the iron as bright as the flame. The scene's distance field takes the material's
+    /// emission whole, so the light the lamp casts is the same.
     /// </summary>
     /// <remarks>
     /// A pixel emits by the eighth power of its brightest channel, so iron at 0.4 keeps under a
-    /// thousandth of the emission and a flame's yellow most of it. The map multiplies the material's
-    /// emission, so each channel is divided by the material's, its light, the surface's emission
-    /// unless <paramref name="light"/> is given, times the surface's <see cref="Surface.Glow"/>, and
-    /// encoded as sRGB, as the engine decodes an emissive map.
+    /// thousandth of the emission and a flame's yellow most of it. The map multiplies the
+    /// material's emission, so each channel is divided by the material's, its light, the surface's
+    /// emission unless <paramref name="light"/> is given, times the surface's
+    /// <see cref="Surface.Glow"/>, and encoded as sRGB, as the engine decodes an emissive map.
     /// </remarks>
     public static Image EmissionMap(Image picture, Surface surface, Vector3? light = null)
     {
@@ -866,10 +935,11 @@ public sealed class ChunkRenderer : IDisposable
     }
 
     /// <summary>
-    /// Meshes every section an edit changed, then those whose shading changed and those that loaded,
-    /// nearest the eye first, until <paramref name="budgetMs"/> of the frame is spent. A section out
-    /// of the eye's reach, as <see cref="Reach"/> has it at <paramref name="renderDistance"/>, is set
-    /// aside and meshed once the eye comes near, and a deep one's meshes are let go a section past it.
+    /// Meshes every section an edit changed, then those whose shading changed and those that
+    /// loaded, nearest the eye first, until <paramref name="budgetMs"/> of the frame is spent. A
+    /// section out of the eye's reach, as <see cref="Reach"/> has it at
+    /// <paramref name="renderDistance"/>, is set aside and meshed once the eye comes near, and a
+    /// deep one's meshes are let go a section past it.
     /// </summary>
     public void Update(VoxelWorld world, Vector3 eye, int renderDistance, double budgetMs)
     {
@@ -921,9 +991,9 @@ public sealed class ChunkRenderer : IDisposable
         foreach (var key in _queue)
         {
             if (watch.Elapsed.TotalMilliseconds > budgetMs) break;
-            // A section out of reach is parked, one the flood leaves out held back and one of air let
-            // go, each at once, while one to mesh waits marked for a mesher to come back once every
-            // one is lent.
+            // A section out of reach is parked, one the flood leaves out held back and one of air
+            // let go, each at once, while one to mesh waits marked for a mesher to come back once
+            // every one is lent.
             var far = !InReach(world, key, at, renderDistance);
             // One the flood ahead alone sees waits among those it releases, however it was marked,
             // as a column joining late marks its neighbors' sections, unless it is one released.
@@ -934,9 +1004,9 @@ public sealed class ChunkRenderer : IDisposable
             if (!far && !unseen && !empty && _lent.Count == 0) continue;
             var caster = !far && Cull && !_visibility.Sees(key) && _casters.Contains(key);
             if (caster && !empty && casters >= CastersAFrame) continue;
-            // A section whose neighbor column has not arrived is dropped rather than kept, since the
-            // neighbor's arrival marks it again, and one of a column not loaded is dropped rather
-            // than parked, since the column's arrival marks it.
+            // A section whose neighbor column has not arrived is dropped rather than kept, since
+            // the neighbor's arrival marks it again, and one of a column not loaded is dropped
+            // rather than parked, since the column's arrival marks it.
             if (!world.Reshaded.Remove(key) & !world.Loaded.Remove(key)) continue;
             if (far)
             {
@@ -975,13 +1045,17 @@ public sealed class ChunkRenderer : IDisposable
     private static bool InReach(VoxelWorld world, SectionKey key, SectionKey eye, int distance) =>
         world.TryGetColumn(key.X, key.Z, out var column) && Reach.Within(key, column.FloorSection, eye, distance);
 
-    /// <summary>How many sections the workers are meshing or have meshed and the next update takes in.</summary>
+    /// <summary>
+    /// How many sections the workers are meshing or have meshed and the next update takes in.
+    /// </summary>
     public int Meshing => _asking;
 
     // The sections sent to the meshers and not taken in yet, by how many of their meshings are out.
     private readonly Dictionary<SectionKey, int> _sent = [];
 
-    /// <summary>Whether a section is with the meshers, sent and its mesh not taken in yet.</summary>
+    /// <summary>
+    /// Whether a section is with the meshers, sent and its mesh not taken in yet.
+    /// </summary>
     public bool Sent(SectionKey key) => _sent.ContainsKey(key);
 
     // How many of those the workers have meshed.
@@ -1002,8 +1076,8 @@ public sealed class ChunkRenderer : IDisposable
     }
 
     // Takes a section's copy here and has a worker make its faces, which a later update takes in. A
-    // section whose neighbor column has not arrived is dropped, since the neighbor's arrival marks it
-    // again.
+    // section whose neighbor column has not arrived is dropped, since the neighbor's arrival marks
+    // it again.
     private void Send(VoxelWorld world, SectionKey key)
     {
         if (!world.HasColumn(key.X, key.Z))
@@ -1014,8 +1088,8 @@ public sealed class ChunkRenderer : IDisposable
         var mesher = _lent.Pop();
         (mesher.Atlas, mesher.LightLevels, mesher.CornerShade, mesher.CornerStrength) = (_mesher.Atlas, _mesher.LightLevels, _mesher.CornerShade, _mesher.CornerStrength);
         var asked = _asked[key] = ++_asks;
-        // A section of air has no faces to make, so it is let go here rather than wait a frame for a
-        // worker, as most sections over the land are.
+        // A section of air has no faces to make, so it is let go here rather than wait a frame for
+        // a worker, as most sections over the land are.
         var gathered = mesher.Gather(world, key);
         if (!gathered) Ungathered++;
         if (!gathered || mesher.Empty)
@@ -1091,8 +1165,8 @@ public sealed class ChunkRenderer : IDisposable
         foreach (var (index, block, faces) in mesher.Emitters)
         {
             var cell = Matrix4x4.CreateTranslation(LandOrigin.PlaceOf(key) + new Vector3(index & Section.Mask, index >> 8, (index >> 4) & Section.Mask));
-            // A lamp filling its cell with no face showing, closed in on every side, is left out, so
-            // no light is placed where its light reaches nothing.
+            // A lamp filling its cell with no face showing, closed in on every side, is left out,
+            // so no light is placed where its light reaches nothing.
             foreach (var (local, surface) in Blocks.Get(block).Glows)
                 if (faces != 0 || local != WholeCell) entry.Emitters.Add((surface, local * cell));
         }
@@ -1108,8 +1182,8 @@ public sealed class ChunkRenderer : IDisposable
     };
 
     /// <summary>
-    /// Places every section's and group's entity and every lamp again as the <see cref="LandOrigin"/>
-    /// moves by a whole step, so the land drawn stands where it stood.
+    /// Places every section's and group's entity and every lamp again as the
+    /// <see cref="LandOrigin"/> moves by a whole step, so the land drawn stands where it stood.
     /// </summary>
     /// <remarks>
     /// The meshes, the groups' faces and the lamps' cubes stay as they are, each drawn at its place
@@ -1373,13 +1447,14 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     public void Draw(VoxelWorld world, Vector3 eye, int renderDistance, Vector3 towardLight, float shadowDistance)
     {
-        // The game ticks the animated textures step by, a twentieth of a second each, as Minecraft steps them.
+        // The game ticks the animated textures step by, a twentieth of a second each, as Minecraft
+        // steps them.
         var ticks = HeldTicks ?? GetTime() * 20;
         SetShaderValueV<Vector4>(_shader, _animations, AnimationSteps(Atlas, _animationTable, ticks));
         int cx = LandOrigin.BlockX(eye.X) >> Section.Shift, cz = LandOrigin.BlockZ(eye.Z) >> Section.Shift;
         var laps = System.Diagnostics.Stopwatch.StartNew();
-        // The sections held back as unseen that a new flood reaches or that now cast toward the light,
-        // or all of them once culling is off, are meshed from the next update.
+        // The sections held back as unseen that a new flood reaches or that now cast toward the
+        // light, or all of them once culling is off, are meshed from the next update.
         var flooded = false;
         if (Cull && !_visibility.Flooding && !_visibility.Holds(world, eye, renderDistance, Atlas) && _ahead.Holds(world, eye, renderDistance, Atlas))
         {
@@ -1435,9 +1510,10 @@ public sealed class ChunkRenderer : IDisposable
         SetProfileValue("draw.sections.deep", Deep.Sections);
     }
 
-    // Shows the sections within reach the eye can see, draws the opaque faces of those left out that
-    // stand toward the light into the shadow maps alone, hides the rest, and gathers the lamps of
-    // every section within reach, once the flood, the casters, the reach or a section's parts change.
+    // Shows the sections within reach the eye can see, draws the opaque faces of those left out
+    // that stand toward the light into the shadow maps alone, hides the rest, and gathers the lamps
+    // of every section within reach, once the flood, the casters, the reach or a section's parts
+    // change.
     private void Place(VoxelWorld world, int cx, int cz, int renderDistance)
     {
         _placedFor = (cx, cz, renderDistance, Cull);
@@ -1453,9 +1529,9 @@ public sealed class ChunkRenderer : IDisposable
             var within = dx * dx + dz * dz <= reach;
             var seen = within && (!Cull || _visibility.Sees(key));
             var castsAlone = within && !seen && Casts;
-            // The glass and the water, which the flood's casters leave out, are drawn only where the
-            // section is seen. A group draws its parts where one of its sections holding them is
-            // seen, and its parts that cast a shadow, all but the lava, into the shadow maps and
+            // The glass and the water, which the flood's casters leave out, are drawn only where
+            // the section is seen. A group draws its parts where one of its sections holding them
+            // is seen, and its parts that cast a shadow, all but the lava, into the shadow maps and
             // the scene's field alone where none is seen, so a section the flood leaves out shadows
             // and fills the field as a drawn one does, and the light of what is drawn does not hang
             // on what the eye cannot see.
@@ -1557,8 +1633,8 @@ public sealed class ChunkRenderer : IDisposable
     }
 
     // Marks the sections the flood left out that a ray toward the light meets from a corner of a
-    // drawn section within the shadow distance, as far across as the loaded land reaches, none while
-    // the light lies under the horizon or the flood leaves nothing out.
+    // drawn section within the shadow distance, as far across as the loaded land reaches, none
+    // while the light lies under the horizon or the flood leaves nothing out.
     private void FindCasters(Vector3 eye, Vector3 towardLight, float shadowDistance, float across)
     {
         if (!Casts) towardLight = Vector3.Zero;

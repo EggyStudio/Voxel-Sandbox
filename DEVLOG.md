@@ -27,6 +27,11 @@ A sheep and the held bucket at noon with global illumination off and Bare Bones 
 bucket and clouds' undersides orange from the sky's lower half beside the mended game's gray, the
 sky drawn alike.
 
+![](.github/devlog/2026-11-18-fire-in-rain.webp)
+A pile of oak planks lit at noon in the flat world with Bare Bones on, in the rain as it is lit and
+forty seconds after with no fire left, beside the same pile in clear weather forty seconds after,
+fifteen fires burning.
+
 ## 2026-11-16
 
 ![](.github/devlog/2026-11-16-item-191-water-at-the-edge.webp)

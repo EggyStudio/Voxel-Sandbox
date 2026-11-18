@@ -11,8 +11,8 @@ namespace VoxelSandbox;
 /// Walking, sprinting, swimming, jumping, breaking blocks, hitting and healing tire the player, and
 /// each four points of exhaustion take a point of saturation, or of food where none is left. With
 /// 18 food or more the player heals a point every four seconds, at the cost of six exhaustion, and
-/// with none left loses a point every four seconds down to one, as on Minecraft's normal difficulty.
-/// Sprinting asks for more than six food.
+/// with none left loses a point every four seconds down to one, as on Minecraft's normal
+/// difficulty. Sprinting asks for more than six food.
 /// </para>
 /// <para>
 /// A fall of more than three blocks takes a point for each block past three, a fifth of that onto
@@ -30,7 +30,10 @@ public sealed class Vitals
 
     private const float Spell = 4;
 
-    /// <summary>The seconds after a harm in which no other harms, and between the harms of lava, a wall or a cactus.</summary>
+    /// <summary>
+    /// The seconds after a harm in which no other harms, and between the harms of lava, a wall or a
+    /// cactus.
+    /// </summary>
     internal const float Unharmed = 0.5f;
 
     private float _regen, _starve, _drown, _prick;
@@ -51,12 +54,16 @@ public sealed class Vitals
     /// <summary>How far the player has fallen since last on the ground or in water.</summary>
     public float Fallen { get; private set; }
 
-    /// <summary>Seconds left of the red a hit leaves on the view, in which no other hit harms.</summary>
+    /// <summary>
+    /// Seconds left of the red a hit leaves on the view, in which no other hit harms.
+    /// </summary>
     public float Hurt { get; private set; }
 
     public bool Dead => Health <= 0;
 
-    /// <summary>What took the last of the player's health, said of the player as "you", or null while alive.</summary>
+    /// <summary>
+    /// What took the last of the player's health, said of the player as "you", or null while alive.
+    /// </summary>
     public string? Cause { get; private set; }
 
     /// <summary>Whether the player has the food to sprint.</summary>
@@ -71,10 +78,16 @@ public sealed class Vitals
         (_regen, _starve, _drown, _prick) = (0, 0, 0, 0);
     }
 
-    /// <summary>Starts the vitals' reckoning of motion again from where the body stands, as after a teleport, so it is neither a fall nor a walk.</summary>
+    /// <summary>
+    /// Starts the vitals' reckoning of motion again from where the body stands, as after a
+    /// teleport, so it is neither a fall nor a walk.
+    /// </summary>
     public void Arrived() => (_started, Fallen) = (false, 0);
 
-    /// <summary>Moves the place the body was last read at by the whole step the <see cref="LandOrigin"/> moves by, so the move is no fall.</summary>
+    /// <summary>
+    /// Moves the place the body was last read at by the whole step the <see cref="LandOrigin"/>
+    /// moves by, so the move is no fall.
+    /// </summary>
     public void Shift(Vector3 by) => _last += by;
 
     /// <summary>
@@ -141,12 +154,13 @@ public sealed class Vitals
         Damage(2, "drowned");
     }
 
-    // Lava in the body's box, a solid block where the eye is, or a cactus beside the box harms
-    // every half second, lava by 4 as the source's does and the others by 1.
+    // Lava or a fire in the body's box, a solid block where the eye is, or a cactus beside the box
+    // harms every half second, lava by 4 as the source's does and the others by 1.
     private void Prick(VoxelWorld world, Body body, Vector3 eye, float seconds)
     {
         var (ex, ey, ez) = LandOrigin.BlockOf(eye);
         var (cause, harm) = Touches(world, body, BlockId.Lava, -0.001f) ? ("tried to swim in lava", 4)
+            : Touches(world, body, BlockId.Fire, -0.001f) ? ("went up in flames", 1)
             : Blocks.IsOpaque(world.GetBlock(ex, ey, ez)) ? ("suffocated in a wall", 1)
             : Touches(world, body, BlockId.Cactus, 0.05f) ? ("were pricked to death", 1) : ((string?)null, 0);
         if (cause is null)
@@ -160,7 +174,9 @@ public sealed class Vitals
         Damage(harm, cause);
     }
 
-    /// <summary>Whether a block lies within a body's box grown by a margin, or shrunk where it is under 0.</summary>
+    /// <summary>
+    /// Whether a block lies within a body's box grown by a margin, or shrunk where it is under 0.
+    /// </summary>
     internal static bool Touches(VoxelWorld world, Body body, BlockId block, float margin)
     {
         var (lowX, lowY, lowZ) = LandOrigin.BlockOf(body.Min - new Vector3(margin));
@@ -195,10 +211,15 @@ public sealed class Vitals
         }
     }
 
-    /// <summary>Tires the player by an amount of exhaustion, four of which take a point of saturation or of food.</summary>
+    /// <summary>
+    /// Tires the player by an amount of exhaustion, four of which take a point of saturation or of
+    /// food.
+    /// </summary>
     public void Exhaust(float amount) => Exhaustion += amount;
 
-    /// <summary>Takes some health for a cause, unless a hit less than half a second ago left the player red.</summary>
+    /// <summary>
+    /// Takes some health for a cause, unless a hit less than half a second ago left the player red.
+    /// </summary>
     /// <returns>Whether it harmed.</returns>
     public bool Damage(int amount, string cause)
     {
@@ -210,7 +231,10 @@ public sealed class Vitals
         return true;
     }
 
-    /// <summary>Eats a food, adding its points up to 20 and its saturation up to the food's points, unless the player is full or it is not food.</summary>
+    /// <summary>
+    /// Eats a food, adding its points up to 20 and its saturation up to the food's points, unless
+    /// the player is full or it is not food.
+    /// </summary>
     public bool Eat(Item food)
     {
         if (food.Food <= 0 || Food >= Most || Dead) return false;
