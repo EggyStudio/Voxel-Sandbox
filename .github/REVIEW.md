@@ -1192,3 +1192,16 @@ game's 98 passing three times in a row, and the play under the lock taken exclus
 wait passing in 120 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
 fault and no texture left, and its captures within 11 levels of the warm play's on 6.2.102 but
 `sky2.png`, 0.39% of its pixels past 8 levels at the clouds' edges, as with `f6f2f14`.
+
+The Tools module's read of the shell scripts, answered in the commit carrying this Reply.
+
+- `build/fetch-slang.sh` runs in the build workflow's play job and the pack workflow on Ubuntu, and
+  for anyone building the game on macOS or Linux, once per checkout as the README has it. Its line
+  71 is the fallback the read asks for, `sha256sum` where the system has it and `shasum -a 256`
+  where it does not, and it holds no other form macOS's tools or its bash 3.2 lack, so nothing in it
+  changes.
+- `build/play.sh` runs in the build workflow's play job on ubuntu-24.04 alone, on lavapipe under the
+  validation layer, and on a Linux desktop through `build/play-local.sh`. No macOS job and no player
+  runs it, so its `mapfile` stays, with a comment saying where the play runs. By N 4.12 its 19
+  comment lines past 100 columns are rewrapped, its commands the same and `bash -n` reading it
+  whole. Only comments changed, so the play was not run for it.

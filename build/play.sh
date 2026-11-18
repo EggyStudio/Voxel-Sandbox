@@ -79,7 +79,8 @@ stop_by_process() {
   kill -9 "$1" 2> /dev/null || true
 }
 # A game of the run that no stop reached, as one whose open ran out before it answered, is ended by
-# the link it was opened by, which no other program's command line names, and the link is taken away.
+# the link it was opened by, which no other program's command line names, and the link is taken
+# away.
 trap 'if [ -n "$pid" ]; then ./e3d stop --session "$pid" --quiet; else ./e3d stop --quiet; fi > /dev/null 2>&1 || true
   [ -n "$kept" ] && ./e3d stop --session "$kept" --quiet > /dev/null 2>&1 || true
   stop_by_process "$pid"; stop_by_process "$kept"
@@ -169,8 +170,8 @@ echo "$probes"
 check "the interface's keys"
 # The engine's F1 hides the HUD and shows it again, the hotbar's gray slots along the window's foot
 # over the grass's yellow and green, and its F3 shows the debug overlay with the game's sections in
-# the window's top left corner and hides it again, its dark backing over the sky's blue, each read as
-# the mean blue of the pixels where it is drawn.
+# the window's top left corner and hides it again, its dark backing over the sky's blue, each read
+# as the mean blue of the pixels where it is drawn.
 blue() { ask voxel.color "$@" | sed -nE 's/.* blue ([0-9.]+) .*/\1/p'; }
 ask voxel.pixel 1 1 1 > /dev/null
 cmd frames.wait 2
@@ -227,10 +228,10 @@ awk -v d="$distance" 'BEGIN { exit !(d > 0.5) }' || fail "the player did not wal
 check "the lantern's pool"
 # A lantern's light on the floor of white concrete in a closed room at night falls smoothly across
 # the block before its glass, the sun's shadow alone taken on the grid of eight steps a block. Read
-# along a line through the middles of a column of steps, no change between neighboring points is over
-# a tenth of the whole, where light taken at each step's middle falls in a few changes of up to 0.14
-# of it with none between, and the light falls by at least 40 levels, so a dark frame does not pass.
-# The HUD is hidden, since the outline of the block looked at lies across the line.
+# along a line through the middles of a column of steps, no change between neighboring points is
+# over a tenth of the whole, where light taken at each step's middle falls in a few changes of up to
+# 0.14 of it with none between, and the light falls by at least 40 levels, so a dark frame does not
+# pass. The HUD is hidden, since the outline of the block looked at lies across the line.
 cmd voxel.hud off
 cmd voxel.room 50 4 -24 58 9 -12 white_concrete
 cmd voxel.set 54 5 -20 lantern
@@ -280,9 +281,9 @@ read -r lr _ <<< "$(printf '%s\n' "$lit" | sed -nE 's/^red ([0-9]+), .*/\1/p')"
 
 check "the stars at dawn"
 # At dawn the stars brighten the sky and darken none of it. Read low in the east over a band of the
-# window with the clouds hidden, no more than 20 pixels stand darker than all four of their neighbors
-# three pixels away by 8 levels, where stars blended over the sky would stand as hundreds of dark
-# spots, and at least 100 stand lighter, the stars still shown.
+# window with the clouds hidden, no more than 20 pixels stand darker than all four of their
+# neighbors three pixels away by 8 levels, where stars blended over the sky would stand as hundreds
+# of dark spots, and at least 100 stand lighter, the stars still shown.
 cmd voxel.clouds off
 cmd voxel.tp 0.5 10 0.5
 cmd voxel.time 5.8
@@ -453,9 +454,9 @@ printf '%s\n' "$channels" | awk 'NF == 3 { lo = $1; hi = $1; for (i = 2; i <= 3;
 check "the creeper's front"
 # A creeper's front at noon, turned from the sun, shows no bands of its own shadow. Read down the
 # sunlit part of its body's plain green from a block and a half, no two neighboring points are more
-# than 2 levels apart, where the floor of its light looked up with the sun's shadow on the face itself
-# laid bands that read up to 10 levels apart. The creeper is first found where the line is laid, so
-# the plain ground behind an empty place does not pass.
+# than 2 levels apart, where the floor of its light looked up with the sun's shadow on the face
+# itself laid bands that read up to 10 levels apart. The creeper is first found where the line is
+# laid, so the plain ground behind an empty place does not pass.
 cmd voxel.kill all
 cmd voxel.tp 6.5 4 12.5
 cmd voxel.look 0 0
@@ -476,9 +477,9 @@ awk -v l="$largest" 'BEGIN { exit !(l <= 2) }' || fail "the creeper's front show
 
 check "the zombie's face"
 # A zombie's face at noon, seen from its own height, is as bright above the eye's height as below
-# it. Read down a column of the face clear of its features, no two neighboring points are more than 2
-# levels apart, where the light of a face turned up, which floors the face's, taken as the eye saw it
-# lit the face above the eye's height as one turned down, 15 levels darker.
+# it. Read down a column of the face clear of its features, no two neighboring points are more than
+# 2 levels apart, where the light of a face turned up, which floors the face's, taken as the eye saw
+# it lit the face above the eye's height as one turned down, 15 levels darker.
 cmd voxel.kill all
 cmd voxel.tp 6.5 4 12.5
 cmd voxel.look 0 0
@@ -521,8 +522,9 @@ lg=$(printf '%s\n' "$low" | sed -nE 's/^red [0-9]+, green ([0-9]+), .*/\1/p')
 check "the grass wall"
 # A wall of grass blocks at noon, seen from the player's height, is as bright above the eye's height
 # as below it. The same texel of each block's side, in its dirt under the grass's fringe, is read
-# from the block the eye's line crosses to three over it, and no two neighbors are more than 2 levels
-# of luminance apart, where a face lit as one turned from the eye would step at the eye's line.
+# from the block the eye's line crosses to three over it, and no two neighbors are more than 2
+# levels of luminance apart, where a face lit as one turned from the eye would step at the eye's
+# line.
 cmd voxel.fill -6 4 -40 6 11 -40 grass
 cmd voxel.tp 0.5 4 -32.5
 cmd voxel.look 0 0
@@ -564,10 +566,11 @@ done
 check "the pool's reflection"
 # A pool beside a wall of red concrete at noon mirrors the wall through the engine's planar
 # reflection, the plane at the water's top, read on the water where the wall's mirror image lies,
-# its red at least 8 levels over its green, and with Water Reflections off it reflects nothing of the
-# wall, its red at least 8 under its green. Its bed is white concrete, so the red of the dirt a block
-# of water shows does not read as the wall's. Each read waits for the pipelines its first sight
-# asks for, which an empty cache makes for many seconds, so the frame read draws the water whole.
+# its red at least 8 levels over its green, and with Water Reflections off it reflects nothing of
+# the wall, its red at least 8 under its green. Its bed is white concrete, so the red of the dirt a
+# block of water shows does not read as the wall's. Each read waits for the pipelines its first
+# sight asks for, which an empty cache makes for many seconds, so the frame read draws the water
+# whole.
 cmd voxel.fill 60 2 30 66 2 36 white_concrete
 cmd voxel.fill 60 3 30 66 3 36 water
 cmd voxel.fill 60 4 29 66 8 29 red_concrete
@@ -748,8 +751,8 @@ read -r dr dg db <<< "$(channels "$dropped")"
 [ -n "$db" ] && [ "$db" -gt $((2 * dr)) ] && [ "$db" -gt $((2 * dg)) ] || fail "the dropped furnace's top does not wear the furnace's top's blue, $dropped"
 # A pool of water a block across shows the written water's frames in turn, white under the water's
 # tint at an even tick and black at an odd one, read with the animated textures held at each tick,
-# since a frame takes its tick from the time it is drawn at, and frames drawn at a steady pace a whole
-# number of tenths of a second long, as lavapipe's can be, all fall on the same of the two.
+# since a frame takes its tick from the time it is drawn at, and frames drawn at a steady pace a
+# whole number of tenths of a second long, as lavapipe's can be, all fall on the same of the two.
 cmd voxel.set 26 3 2 water
 cmd voxel.tp 26.5 5 4.5
 cmd voxel.look 0 -50
@@ -821,9 +824,9 @@ awk -v p="$pr $pg $pb" -v s="$sr $sg $sb" 'BEGIN { split(p, a); split(s, b); for
   || fail "the far pillar high against the sky is not the sky's color beside it, $pillar against $beside"
 
 check "the block's bits"
-# The bits a broken block throws at the end of a tunnel two high and one wide in a hill at noon, left
-# to fall a moment and held, each read where it lies, the one against the tunnel's wall within 6
-# levels of the rest, since each is lit at its middle, so one clipped into the wall takes no light
+# The bits a broken block throws at the end of a tunnel two high and one wide in a hill at noon,
+# left to fall a moment and held, each read where it lies, the one against the tunnel's wall within
+# 6 levels of the rest, since each is lit at its middle, so one clipped into the wall takes no light
 # from inside it.
 cmd voxel.time 12
 cmd voxel.kill all
@@ -930,8 +933,8 @@ count=$(printf '%s\n' "$gaps" | sed -nE 's/^([0-9]+) gaps .*/\1/p')
 check "the item's name"
 # The chosen item's name over the hotbar shows as the choice changes and is gone once it has stood a
 # second and a half and faded over half a second, as the source's fades, read over a strip of the
-# sky above the hotbar where it lies, its red raised by the white letters while it shows, by 8 levels
-# for dirt's, and the sky's own after.
+# sky above the hotbar where it lies, its red raised by the white letters while it shows, by 8
+# levels for dirt's, and the sky's own after.
 cmd voxel.select dirt
 cmd frames.wait 2
 shown=$(ask voxel.color 520 580 240 32)
@@ -944,12 +947,13 @@ awk -v s="${sr:-0}" -v g="${gr:-0}" 'BEGIN { exit !(s - g > 4) }' \
   || fail "the chosen item's name does not show and then fade, its strip $shown and after the hold $gone"
 
 check "the jungle's floor"
-# The grass under a canopy of jungle leaves two deep at noon, at the sky level of 13 the leaves leave
-# it, read from straight above against the grass in the shade of a wall on open ground, at sky level
-# 15, the two within three of the source's levels of each other, either at least 0.72 of the other's
-# light, since the engine's light passes the leaves and the terrain's floor of the sky's light at 0.65
-# of its strength tops it up, where the leaves held solid with no floor left half the shade's light,
-# 20 against 42. The torch held before is put away, since its light would fall on both.
+# The grass under a canopy of jungle leaves two deep at noon, at the sky level of 13 the leaves
+# leave it, read from straight above against the grass in the shade of a wall on open ground, at sky
+# level 15, the two within three of the source's levels of each other, either at least 0.72 of the
+# other's light, since the engine's light passes the leaves and the terrain's floor of the sky's
+# light at 0.65 of its strength tops it up, where the leaves held solid with no floor left half the
+# shade's light, 20 against 42. The torch held before is put away, since its light would fall on
+# both.
 cmd voxel.time 12
 cmd voxel.kill all
 cmd voxel.select stone
@@ -1037,8 +1041,9 @@ meshed
 cmd frames.wait 10
 capture biomes/meadow.png
 # The meadow again under Bare Bones where the machine has fetched it, the game's own looks of the
-# grass's top, its blossoms, clover and pebbles, laid over the pack's grass, a machine without it, as
-# the build workflow's, passing it by. A transient run's list of packs is its own and saved nowhere.
+# grass's top, its blossoms, clover and pebbles, laid over the pack's grass, a machine without it,
+# as the build workflow's, passing it by. A transient run's list of packs is its own and saved
+# nowhere.
 fetched="${XDG_DATA_HOME:-$HOME/.local/share}/VoxelSandbox/resourcepacks"
 if [ -f "$fetched/Bare Bones 1.21.zip" ]; then
   cmd voxel.packs "$fetched/Bare Bones 1.21.zip"
@@ -1144,15 +1149,18 @@ awk -v e="$entities" 'BEGIN { exit !(e > 0) }' || fail "the engine draws no sect
 
 check "the options"
 # Each setting of the options' own screen and of the Video, Render, Post Processing, Sky and
-# Visuals, Particles and Music and Sounds screens is set to the middle of its reach, or to its low end where it stands there, or to
-# its next choice, read back as set, through the engine's own state where the setting reads it
-# there, and set back as it was, to its step's nearest where it stood between two, as the hour can.
-# A setting is named in voxel.options by its words joined by underscores. The sky's colors'
-# channels, which change only the game's own numbers, are walked by the tests, and the window's mode
-# and vsync are left out, which the engine says of a window alone and an offscreen run has none.
+# Visuals, Particles and Music and Sounds screens is set to the middle of its reach, or to its low
+# end where it stands there, or to its next choice, read back as set, through the engine's own state
+# where the setting reads it there, and set back as it was, to its step's nearest where it stood
+# between two, as the hour can. A setting is named in voxel.options by its words joined by
+# underscores. The sky's colors' channels, which change only the game's own numbers, are walked by
+# the tests, and the window's mode and vsync are left out, which the engine says of a window alone
+# and an offscreen run has none.
 same() { awk -v a="$1" -v b="$2" 'BEGIN { d = a - b; exit !(d < 0.001 && d > -0.001) }'; }
 walked=0
 for screen in general video render post sky particles sounds; do
+  # mapfile is bash 4's, which the play has where it runs, the build workflow's Ubuntu runner and a
+  # Linux desktop's lavapipe, and never macOS's bash 3.2.
   mapfile -t lines < <(ask voxel.options "$screen")
   for line in "${lines[@]}"; do
     name=${line%%: *}
@@ -1189,10 +1197,10 @@ echo "the options screens' $walked settings each set and set back"
 
 check "the menu's button and the death screen"
 # Back to Game shuts the menu on its button's press, and the press, held some frames as a click is
-# held, takes nothing in the world behind the menu, so the stone the player looks at in creative mode
-# stands, set in the air over the overworld's land. A dead player's cursor stays free over the death
-# screen, through a click beside its window and through the menu opened and shut, so the screen's
-# button is in reach.
+# held, takes nothing in the world behind the menu, so the stone the player looks at in creative
+# mode stands, set in the air over the overworld's land. A dead player's cursor stays free over the
+# death screen, through a click beside its window and through the menu opened and shut, so the
+# screen's button is in reach.
 aimed() { ask voxel.state | grep -oE 'looking at [a-z_]+ at -?[0-9]+, -?[0-9]+, -?[0-9]+' || true; }
 hidden() { ./e3d eval 'IsCursorHidden()' --timeout 600 --session "$pid" 2> "$said" || fail "./e3d eval IsCursorHidden ended with $?, $(head -n 1 "$said")"; }
 cmd voxel.mode creative
@@ -1234,8 +1242,8 @@ stood
 
 check "the seed's field"
 # Escape opens the game's menu, World and New World open the screen of a new world at the window's
-# 1280 by 720, the interface at three times its pixels, and its seed's field holds the keyboard as it
-# opens. 123 typed and 45 pasted from the clipboard with Control and V make the seed Enter begins
+# 1280 by 720, the interface at three times its pixels, and its seed's field holds the keyboard as
+# it opens. 123 typed and 45 pasted from the clipboard with Control and V make the seed Enter begins
 # the world of, which switches the world, so it comes last. Control is held by a command in the
 # background and V pressed once input.state reads Control down, since each e3d call takes a few
 # frames to start.
