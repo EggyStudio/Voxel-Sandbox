@@ -780,8 +780,9 @@ public sealed class ChunkRenderer : IDisposable
     }
 
     /// <summary>
-    /// How far corners darken where blocks meet, from 0 to Minecraft's levels at 1, which takes
-    /// effect as sections are shaded again.
+    /// How far corners darken where blocks meet, from 0 to 1, at which a corner beside three blocks
+    /// keeps 0.45 of its light, beside two 0.62 and beside one 0.8, which takes effect as sections
+    /// are shaded again.
     /// </summary>
     public float CornerStrength
     {
@@ -1447,8 +1448,7 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     public void Draw(VoxelWorld world, Vector3 eye, int renderDistance, Vector3 towardLight, float shadowDistance)
     {
-        // The game ticks the animated textures step by, a twentieth of a second each, as Minecraft
-        // steps them.
+        // The game ticks the animated textures step by, a twentieth of a second each.
         var ticks = HeldTicks ?? GetTime() * 20;
         SetShaderValueV<Vector4>(_shader, _animations, AnimationSteps(Atlas, _animationTable, ticks));
         int cx = LandOrigin.BlockX(eye.X) >> Section.Shift, cz = LandOrigin.BlockZ(eye.Z) >> Section.Shift;

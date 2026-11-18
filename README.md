@@ -1066,12 +1066,14 @@ gunpowder and four sand in a cross, is lit by flint and steel used on it, which 
 ingot and flint, gravel giving flint one time in ten, and wears out after 64 uses. Lit, the TNT pops
 up from its cell, falls, flashes white every five ticks and swells over its last ten, and after four
 seconds explodes at Minecraft's power of 4, a hollow of about a hundred dirt where a creeper's takes
-fifty, and a blast that reaches TNT lights it on a fuse of half a second to a second and a half, so
-a row of it goes off one after another, each lit TNT an entity of the engine's ECS that a behavior
-of its own burns in the engine's frame. Each blast throws Minecraft's cloud, six puffs a tick for
-eight ticks within four blocks of it, drawn unlit with the pack's sixteen pictures of an explosion,
-and a flash of light for a tenth of a second, which global illumination carries onto the land
-around.
+fifty, dropping every block it breaks, and a blast that reaches TNT lights it on a fuse of half a
+second to a second and a half, so a row of it goes off one after another, each lit TNT an entity of
+the engine's ECS that a behavior of its own burns in the engine's frame. A blast destroys the stacks
+lying near it that it harms by 5 or more, those within about seven blocks of a TNT's that it sees,
+before the blocks it breaks drop theirs and the chests it breaks spill theirs. Each blast throws
+Minecraft's cloud, six puffs a tick for eight ticks within four blocks of it, drawn unlit with the
+pack's sixteen pictures of an explosion, and a flash of light for a tenth of a second, which global
+illumination carries onto the land around.
 
 They drop Minecraft's loot as they die. A zombie drops rotten flesh, which feeds four points, a
 skeleton bones and arrows, a spider string and now and then an eye, and a creeper gunpowder, unless

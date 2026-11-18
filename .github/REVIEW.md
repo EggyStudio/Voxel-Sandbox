@@ -1151,3 +1151,44 @@ game's 98 passing three times in a row, and the play under the lock taken exclus
 wait passing in 123 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
 fault and no texture left, and its captures within 11 levels of the warm play's on 6.2.102 but
 `sky2.png`, 0.43% of its pixels past 8 levels at the clouds' edges, as with `f6f2f14`.
+
+The blasts of item 229's play of fire and TNT, built in the commit carrying this Reply as decided
+from above, the source's rules as recalled and not read here.
+
+- A TNT's blast drops every block it breaks, and another's, a creeper's, one in its power, unchanged
+  (`VoxelGame.Explode`, its `decays` false for TNT). The blocks are broken first, the stacks it
+  harms destroyed, and then the blocks drop theirs, drawing the creeper's chances in the order they
+  were drawn before.
+- A blast destroys a stack lying near it that it harms by a stack's health of 5 or more
+  (`ItemDrops.Blast`), by the harm it does a body by its distance and how much of the stack's box it
+  sees, so a TNT's takes those within about seven blocks it sees. The stacks the blocks it broke
+  drop, and those a chest it broke spills in the next frame, lie whole, the chest's spill as it was.
+  The harm to the stacks is read with the broken blocks gone, as the harm to the player and the mobs
+  is, where the source reads it before they go, so a stack behind a wall the blast breaks takes it
+  whole here.
+- `A_TNTs_Blast_Drops_Every_Block_It_Breaks_And_Destroys_The_Stacks_Near_It_Where_A_Creepers_Drops_One_In_Three`
+  lights a TNT in the top of a block of dirt, three stacks of coal lying two blocks from it, one
+  twelve blocks off and a chest of 50 cobblestone beside it, and every dirt it broke lies dropped,
+  the near coal is gone, the far coal and the 50 cobblestone lie, and a creeper's blast of 3 in
+  another block of dirt drops more than none and under half of what it broke. On the head the TNT
+  broke 116 and dropped 21.
+
+`.github/devlog/2026-11-18-tnt-blast-drops.webp` is a TNT in a block of dirt before it goes, then
+the head's crater with 35 dirt lying beside the mended crater with 122, in survival at noon with
+Bare Bones on, which draws dirt orange.
+
+Three comment lines the last commit's rewrap touched named the source game, and say the thing in
+its own terms (`Vitals`'s starving, `ChunkRenderer.CornerStrength`'s levels, 0.45, 0.62 and 0.8 of
+the light beside three, two and one blocks, and the animation's step), with two more of `VoxelGame`
+this commit's rewrap touched, the fog and the debug overlay. By N 4.12 the comment lines past 100
+columns of the files this commit touches are rewrapped, `VoxelGame.cs`'s 98 among them.
+
+Open, to be built when asked: a body that leaves a fire burns on for some seconds in the source, and
+here burns only while it is in one.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 644
+passing, the new test passing three times in a row and failing on the head's copy, the headless
+game's 98 passing three times in a row, and the play under the lock taken exclusive with no quiet
+wait passing in 120 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault and no texture left, and its captures within 11 levels of the warm play's on 6.2.102 but
+`sky2.png`, 0.39% of its pixels past 8 levels at the clouds' edges, as with `f6f2f14`.

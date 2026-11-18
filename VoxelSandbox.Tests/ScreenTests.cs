@@ -844,6 +844,63 @@ public sealed class ScreenTests : IDisposable
     }
 
     [Fact]
+    public void A_TNTs_Blast_Drops_Every_Block_It_Breaks_And_Destroys_The_Stacks_Near_It_Where_A_Creepers_Drops_One_In_Three()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        Serve(game);
+        Run("voxel.spawning false");
+        game.Mode = GameMode.Survival;
+        game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(0.5, 4, -40.5)));
+        var dirt = Items.Of(BlockId.Dirt);
+        // A block of dirt with a TNT in its top, nothing standing on it, three stacks of coal lying
+        // two blocks from the TNT and one twelve blocks off, and a chest of cobblestone beside it.
+        Run("voxel.fill 16 1 -6 28 3 6 dirt");
+        Run("voxel.fill 16 4 -6 28 6 6 air");
+        game.World.SetBlock(22, 4, 2, BlockId.Chest);
+        var chest = game.Chests.At(22, 4, 2);
+        for (int i = 0; i < 5; i++) chest.Slots[i] = new ItemStack(Items.Of(BlockId.Cobblestone), 10);
+        foreach (var (x, z) in new[] { (20.5, 0.5), (24.5, 0.5), (22.5, -1.5), (34.5, 0.5) })
+            game.Drops.Spawn(Items.Coal, 4, LandOrigin.PlaceOf(new LandPlace(x, 4.1, z)), Vector3.Zero);
+        headless.Step(10);
+        var before = Count(16, 1, -6, 28, 3, 6);
+        game.World.SetBlock(22, 3, 0, BlockId.Air);
+        game.Tnt.Light(22, 3, 0);
+        headless.Step(150);
+
+        var broken = before - Count(16, 1, -6, 28, 3, 6) - 1;
+        Assert.True(broken > 20, $"the blast broke {broken} dirt");
+        Assert.Equal(broken, Lying(dirt, 22.5, 0.5, 14));
+        Assert.Equal(4, Lying(Items.Coal, 22.5, 0.5, 14));
+        Assert.Equal(4, Lying(Items.Coal, 34.5, 0.5, 1));
+        Assert.Equal(50, Lying(Items.Of(BlockId.Cobblestone), 22.5, 0.5, 14));
+
+        // A creeper's blast of 3 in another block of dirt drops one of its blocks in three.
+        Run("voxel.fill -28 1 -6 -16 3 6 dirt");
+        Run("voxel.fill -28 4 -6 -16 6 6 air");
+        headless.Step(2);
+        var creeperBefore = Count(-28, 1, -6, -16, 3, 6);
+        game.Explode(LandOrigin.PlaceOf(new LandPlace(-21.5, 3.5, 0.5)), 3, "was blown up by a creeper");
+        headless.Step(30);
+        var creeperBroken = creeperBefore - Count(-28, 1, -6, -16, 3, 6);
+        var creeperDropped = Lying(dirt, -21.5, 0.5, 14);
+        Assert.True(creeperDropped > 0 && creeperDropped < creeperBroken / 2, $"a creeper's blast broke {creeperBroken} and dropped {creeperDropped}");
+
+        int Count(int x0, int y0, int z0, int x1, int y1, int z1)
+        {
+            var n = 0;
+            for (int x = x0; x <= x1; x++)
+                for (int y = y0; y <= y1; y++)
+                    for (int z = z0; z <= z1; z++)
+                        if (game.World.GetBlock(x, y, z) == BlockId.Dirt) n++;
+            return n;
+        }
+        int Lying(Item item, double x, double z, float within) => game.Drops.All
+            .Where(lying => lying.Drop.Item == item && Vector2.Distance(new Vector2((float)(LandOrigin.LandOf(lying.Body.Position).X - x), (float)(LandOrigin.LandOf(lying.Body.Position).Z - z)), Vector2.Zero) < within)
+            .Sum(lying => lying.Drop.Count);
+    }
+
+    [Fact]
     public void Flowing_Water_Washes_Away_A_Torch_And_Crops_Each_Leaving_Its_Drop_Once()
     {
         using var headless = new HeadlessGame(still: true);

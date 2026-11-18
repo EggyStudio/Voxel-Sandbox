@@ -11,8 +11,8 @@ namespace VoxelSandbox;
 /// Walking, sprinting, swimming, jumping, breaking blocks, hitting and healing tire the player, and
 /// each four points of exhaustion take a point of saturation, or of food where none is left. With
 /// 18 food or more the player heals a point every four seconds, at the cost of six exhaustion, and
-/// with none left loses a point every four seconds down to one, as on Minecraft's normal
-/// difficulty. Sprinting asks for more than six food.
+/// with none left loses a point every four seconds down to one. Sprinting asks for more than six
+/// food.
 /// </para>
 /// <para>
 /// A fall of more than three blocks takes a point for each block past three, a fifth of that onto

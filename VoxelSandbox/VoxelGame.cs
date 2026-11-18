@@ -5,7 +5,10 @@ using static Engine.E3D;
 
 namespace VoxelSandbox;
 
-/// <summary>The game's state and its frame, which hold the world, its mobs, the player, the sky, and what is drawn over them.</summary>
+/// <summary>
+/// The game's state and its frame, which hold the world, its mobs, the player, the sky, and what is
+/// drawn over them.
+/// </summary>
 public sealed class VoxelGame : IDisposable
 {
     private const float Reach = 5;
@@ -25,8 +28,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The milliseconds a frame gives meshing after a frame of so many seconds.</summary>
     internal static double MeshBudget(float frame) => Math.Max(MeshBudgetMs, Math.Min(frame, MostMeshFrame) * 100);
 
-    // The changed columns and the player are saved this often, beside a save on leaving a world, and
-    // while a save cannot be written, as to a full disk, at twice the wait each time to this most.
+    // The changed columns and the player are saved this often, beside a save on leaving a world,
+    // and while a save cannot be written, as to a full disk, at twice the wait each time to this
+    // most.
     private const float SaveSeconds = 30, MostSaveSeconds = 480;
 
     private readonly bool _transient;
@@ -132,26 +136,36 @@ public sealed class VoxelGame : IDisposable
         }
     }
 
-    /// <summary>Writes the settings of the options' screens to the options file where any has changed, unless the run keeps no settings.</summary>
+    /// <summary>
+    /// Writes the settings of the options' screens to the options file where any has changed,
+    /// unless the run keeps no settings.
+    /// </summary>
     public void KeepOptions()
     {
         if (_options is { } file) Guarded("The settings could not be kept", () => file.Write(Menus.Screens(this).All()), false);
     }
 
-    /// <summary>The options file the settings are kept in, as a test gives one, where the run keeps none of its own.</summary>
+    /// <summary>
+    /// The options file the settings are kept in, as a test gives one, where the run keeps none of
+    /// its own.
+    /// </summary>
     public OptionsFile? SettingsFile { set => _options = value; }
 
     // The lines said of the files the game could not read or write, each said once on the HUD until
     // that file is read or written again.
     private readonly HashSet<string> _fileFaults = [];
 
-    /// <summary>What the game said of the files it could not read or write, each until it reads or writes that file again.</summary>
+    /// <summary>
+    /// What the game said of the files it could not read or write, each until it reads or writes
+    /// that file again.
+    /// </summary>
     public IReadOnlyCollection<string> FileFaults => _fileFaults;
 
     /// <summary>
-    /// Reads or writes a file the game keeps, giving <paramref name="fallback"/> where it fails as a
-    /// full disk or a folder the account cannot read or write does, the log told each time and the
-    /// player once on the HUD by <paramref name="failed"/> and the reason, so no frame ends at a file.
+    /// Reads or writes a file the game keeps, giving <paramref name="fallback"/> where it fails as
+    /// a full disk or a folder the account cannot read or write does, the log told each time and
+    /// the player once on the HUD by <paramref name="failed"/> and the reason, so no frame ends at
+    /// a file.
     /// </summary>
     internal T Guarded<T>(string failed, Func<T> read, T fallback)
     {
@@ -176,8 +190,8 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>
-    /// The packs' list and the folder it and the settings file are kept in, the data folder beside the
-    /// saves unless the game was given another.
+    /// The packs' list and the folder it and the settings file are kept in, the data folder beside
+    /// the saves unless the game was given another.
     /// </summary>
     public PackList PackList { get; }
 
@@ -186,23 +200,33 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The player's resource packs the game is drawn with, or none.</summary>
     public ResourcePacks Packs { get; private set; } = ResourcePacks.None;
 
-    /// <summary>The packs on, the first over the rest, each a line of the setting or a path given to the game.</summary>
+    /// <summary>
+    /// The packs on, the first over the rest, each a line of the setting or a path given to the
+    /// game.
+    /// </summary>
     public IReadOnlyList<string> PackEntries { get; private set; } = [];
 
     /// <summary>The packs the game is drawn with by default and their fetch.</summary>
     public DefaultPacks Defaults { get; } = DefaultPacks.Load();
 
-    // Whether the default packs are turned on over the rest once the fetch under way brings them in.
+    // Whether the default packs are turned on over the rest once the fetch under way brings them
+    // in.
     private bool _awaitingDefaults;
 
-    /// <summary>Fetches the default packs that are missing from the game's folder, and turns them on over the rest once all are in.</summary>
+    /// <summary>
+    /// Fetches the default packs that are missing from the game's folder, and turns them on over
+    /// the rest once all are in.
+    /// </summary>
     public void FetchDefaults()
     {
         _awaitingDefaults = true;
         Defaults.Start(PackList);
     }
 
-    /// <summary>Stops fetching the default packs, saving the packs on as they are, so the next start does not fetch them again.</summary>
+    /// <summary>
+    /// Stops fetching the default packs, saving the packs on as they are, so the next start does
+    /// not fetch them again.
+    /// </summary>
     public void StopDefaults()
     {
         Defaults.Stop();
@@ -221,7 +245,10 @@ public sealed class VoxelGame : IDisposable
         ChoosePacks([.. names, .. PackEntries.Where(e => !names.Contains(e))]);
     }
 
-    /// <summary>Draws the game with these packs from now on and saves them as the setting, but in a run that keeps no settings.</summary>
+    /// <summary>
+    /// Draws the game with these packs from then on and saves them as the setting, but in a run
+    /// that keeps no settings.
+    /// </summary>
     public void ChoosePacks(IReadOnlyList<string> entries)
     {
         PackEntries = entries;
@@ -235,10 +262,10 @@ public sealed class VoxelGame : IDisposable
     /// </summary>
     /// <remarks>
     /// Each piece drawn with the packs takes them in turn and loads its textures as it does, so a
-    /// fault of the packs' content partway leaves some pieces on the new packs. Each piece then takes
-    /// the packs before again, the game's own art at the start, and the new packs are closed, so the
-    /// game draws on with one set and the packs are named once on the HUD. Where the packs before
-    /// fault too, the pieces take none, which reads nothing of a pack.
+    /// fault of the packs' content partway leaves some pieces on the new packs. Each piece then
+    /// takes the packs before again, the game's own art at the start, and the new packs are closed,
+    /// so the game draws on with one set and the packs are named once on the HUD. Where the packs
+    /// before fault too, the pieces take none, which reads nothing of a pack.
     /// </remarks>
     public void ReloadPacks()
     {
@@ -275,10 +302,16 @@ public sealed class VoxelGame : IDisposable
         if (World is { } world) world.ReshadeAll();
     }
 
-    /// <summary>A step the reload takes before each piece takes the packs, by the piece's name, which a test sets to throw at one.</summary>
+    /// <summary>
+    /// A step the reload takes before each piece takes the packs, by the piece's name, which a test
+    /// sets to throw at one.
+    /// </summary>
     public Action<string>? PackStep { get; set; }
 
-    /// <summary>A step that takes each world's generator before the world is made with it, which a test sets to make a column fail.</summary>
+    /// <summary>
+    /// A step that takes each world's generator before the world is made with it, which a test sets
+    /// to make a column fail.
+    /// </summary>
     internal Func<IWorldGenerator, IWorldGenerator>? Generating { get; set; }
 
     // Every piece drawn with the packs set to them.
@@ -317,7 +350,9 @@ public sealed class VoxelGame : IDisposable
         }
     }
 
-    /// <summary>The animals and villagers of the loaded columns, and those the unloaded ones keep.</summary>
+    /// <summary>
+    /// The animals and villagers of the loaded columns, and those the unloaded ones keep.
+    /// </summary>
     public Mobs Mobs { get; private set; } = null!;
 
     public MobRenderer MobRenderer { get; } = new();
@@ -325,10 +360,14 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The stacks of items lying in the world.</summary>
     public ItemDrops Drops { get; } = new(GetApp().World.Resource<EcsWorld>());
 
-    /// <summary>What the game's behaviors in the engine's frame read of the game, set each frame.</summary>
+    /// <summary>
+    /// What the game's behaviors in the engine's frame read of the game, set each frame.
+    /// </summary>
     public GameStep Step { get; } = new();
 
-    /// <summary>The sand and gravel falling where nothing held them up, and a felled tree's logs.</summary>
+    /// <summary>
+    /// The sand and gravel falling where nothing held them up, and a felled tree's logs.
+    /// </summary>
     public FallingBlocks Falling { get; } = new(GetApp().World.Resource<EcsWorld>());
 
     /// <summary>The fires burning.</summary>
@@ -343,7 +382,9 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The TNT lit and burning down its fuse.</summary>
     public PrimedTnt Tnt { get; } = new(GetApp().World.Resource<EcsWorld>());
 
-    /// <summary>The blocks falling, the TNT lit and the fires' ages, as the save keeps them by region.</summary>
+    /// <summary>
+    /// The blocks falling, the TNT lit and the fires' ages, as the save keeps them by region.
+    /// </summary>
     public Underway Underway => _underway ??= new(GetApp().World.Resource<EcsWorld>(), Falling, Tnt, Fires, Crops);
 
     private Underway? _underway;
@@ -384,7 +425,10 @@ public sealed class VoxelGame : IDisposable
     /// <summary>The player's health, food and breath, which change in survival alone.</summary>
     public Vitals Vitals { get; } = new();
 
-    /// <summary>How far through eating the held food the player is, from 0 to 1, while the right button is held.</summary>
+    /// <summary>
+    /// How far through eating the held food the player is, from 0 to 1, while the right button is
+    /// held.
+    /// </summary>
     public float Eating { get; private set; }
 
     public ChunkStreamer Streamer { get; private set; } = null!;
@@ -410,11 +454,13 @@ public sealed class VoxelGame : IDisposable
 
     public GameSounds Sounds { get; } = new();
 
-    /// <summary>The snow the weather lays on the tops while it snows and melts once it clears.</summary>
+    /// <summary>
+    /// The snow the weather lays on the tops while it snows and melts once it clears.
+    /// </summary>
     public SnowCover Snow { get; } = new();
 
-    // How far the weather has turned as the sky and the rain show it, eased toward the weather's own
-    // share so a held change comes over a few seconds rather than at once.
+    // How far the weather has turned as the sky and the rain show it, eased toward the weather's
+    // own share so a held change comes over a few seconds rather than at once.
     private float _overcast;
 
     public LightSettings Light { get; } = new();
@@ -424,8 +470,8 @@ public sealed class VoxelGame : IDisposable
     public InventoryWindow InventoryWindow { get; } = new();
 
     /// <summary>
-    /// How the player plays, which in survival and adventure stops flight and makes blocks take time
-    /// to break and drop items, and in spectator flies the player through the blocks.
+    /// How the player plays, which in survival and adventure stops flight and makes blocks take
+    /// time to break and drop items, and in spectator flies the player through the blocks.
     /// </summary>
     public GameMode Mode
     {
@@ -444,32 +490,47 @@ public sealed class VoxelGame : IDisposable
         }
     }
 
-    /// <summary>The mode played before the one now, which the mode switcher opens on, or null before the first change.</summary>
+    /// <summary>
+    /// The mode played before the current one, which the mode switcher opens on, or null before the
+    /// first change.
+    /// </summary>
     public GameMode? PreviousMode { get; private set; }
 
     /// <summary>The switcher F3 held with F4 opens.</summary>
     public ModeSwitcher Switcher { get; } = new();
 
-    /// <summary>How much of the hearts, the food and the breath the HUD shows, each fading once full and unchanged.</summary>
+    /// <summary>
+    /// How much of the hearts, the food and the breath the HUD shows, each fading once full and
+    /// unchanged.
+    /// </summary>
     public VitalsFade Fade { get; } = new();
 
-    /// <summary>The menu Escape opens and its options, which hold the world still while open.</summary>
+    /// <summary>
+    /// The menu Escape opens and its options, which hold the world still while open.
+    /// </summary>
     public Menus Menus { get; } = new();
 
     private readonly Breaking _breaking = new();
 
-    /// <summary>The block being broken in survival, and how far from 0 to 1, as of this frame.</summary>
+    /// <summary>
+    /// The block being broken in survival, and how far from 0 to 1, as of this frame.
+    /// </summary>
     public (int X, int Y, int Z)? BreakingAt => _breaking.At;
 
     public float BreakProgress => _breaking.Progress;
 
-    /// <summary>The window's mode, its resolution, the frame limit and vsync, made as the window opened, so its first size stands for Current.</summary>
+    /// <summary>
+    /// The window's mode, its resolution, the frame limit and vsync, made as the window opened, so
+    /// its first size stands for Current.
+    /// </summary>
     public VideoSettings Video { get; }
 
     /// <summary>The engine's windows the Debug screen of the options turns on.</summary>
     public DebugWindows Windows { get; } = new();
 
-    /// <summary>The plane the water in view mirrors the shore and the sky in, set each frame.</summary>
+    /// <summary>
+    /// The plane the water in view mirrors the shore and the sky in, set each frame.
+    /// </summary>
     public WaterMirror Mirror { get; } = new();
 
     /// <summary>How many columns around the player are drawn, and two more loaded.</summary>
@@ -496,10 +557,15 @@ public sealed class VoxelGame : IDisposable
 
     private int _renderDistance = 12;
 
-    /// <summary>The block the crosshair rests on, as of this frame, or null where a mob stands before it.</summary>
+    /// <summary>
+    /// The block the crosshair rests on, as of this frame, or null where a mob stands before it.
+    /// </summary>
     public BlockHit? Target { get; private set; }
 
-    /// <summary>The mob the crosshair rests on within <see cref="Mobs.Reach"/>, as of this frame, nearer than any block.</summary>
+    /// <summary>
+    /// The mob the crosshair rests on within <see cref="Mobs.Reach"/>, as of this frame, nearer
+    /// than any block.
+    /// </summary>
     public Mob? TargetMob { get; private set; }
 
     public bool HudHidden { get; set; }
@@ -512,15 +578,21 @@ public sealed class VoxelGame : IDisposable
     private (string Text, float Age)? _said;
     private bool _saidFresh;
 
-    /// <summary>The line the HUD says, as where the last screenshot went or that the world could not be saved, and how long it has shown.</summary>
+    /// <summary>
+    /// The line the HUD says, as where the last screenshot went or that the world could not be
+    /// saved, and how long it has shown.
+    /// </summary>
     public (string Text, float Age)? Said => _said;
 
-    /// <summary>How long the game waits between its timed saves, longer while a save cannot be written.</summary>
+    /// <summary>
+    /// How long the game waits between its timed saves, longer while a save cannot be written.
+    /// </summary>
     public float SaveWait => _saveWait;
 
     /// <summary>
-    /// Why the last save could not be written, or null where it was written or none has failed since
-    /// the world opened, so the player is told once while it stands and <c>voxel.save</c> says it.
+    /// Why the last save could not be written, or null where it was written or none has failed
+    /// since the world opened, so the player is told once while it stands and <c>voxel.save</c>
+    /// says it.
     /// </summary>
     public string? SaveFault { get; private set; }
 
@@ -529,7 +601,10 @@ public sealed class VoxelGame : IDisposable
 
     // F2 writes the frame as a screenshot, but in a transient run, which writes nowhere, and says
     // so on the HUD.
-    /// <summary>Takes a screenshot as F2 does, saying on the HUD where it went once it is written, or that none is kept.</summary>
+    /// <summary>
+    /// Takes a screenshot as F2 does, saying on the HUD where it went once it is written, or that
+    /// none is kept.
+    /// </summary>
     public void Screenshot()
     {
         if (_transient)
@@ -538,7 +613,9 @@ public sealed class VoxelGame : IDisposable
             _shots.Add((Path.Combine(Shots.Folder, taken), System.Diagnostics.Stopwatch.GetTimestamp()));
     }
 
-    /// <summary>The seconds a screenshot's file is waited for before it is said not written.</summary>
+    /// <summary>
+    /// The seconds a screenshot's file is waited for before it is said not written.
+    /// </summary>
     public const double ShotSeconds = 5;
 
     // The screenshots asked for and not yet said, each with when it was asked for.
@@ -583,31 +660,49 @@ public sealed class VoxelGame : IDisposable
     // The chunk a PNG ends with, its length of none, its name and its check.
     private static readonly byte[] PngEnd = [0, 0, 0, 0, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82];
 
-    /// <summary>Whether the world fades into the sky's color toward the render distance, as Minecraft's fog hides where the world ends.</summary>
+    /// <summary>
+    /// Whether the world fades into the sky's color toward the render distance, which hides where
+    /// the world ends.
+    /// </summary>
     public bool Fog { get; set; } = true;
 
-    /// <summary>Whether the haze thins with the height above the sea, so a valley holds it and a peak shows clear.</summary>
+    /// <summary>
+    /// Whether the haze thins with the height above the sea, so a valley holds it and a peak shows
+    /// clear.
+    /// </summary>
     public bool HazeByHeight { get; set; } = true;
 
     /// <summary>Whether the haze thickens about sunrise, as the land's mist at dawn.</summary>
     public bool MorningHaze { get; set; } = true;
 
-    /// <summary>Whether the window E opens is open, the inventory in survival and every item in creative, or a crafting table's.</summary>
+    /// <summary>
+    /// Whether the window E opens is open, the inventory in survival and every item in creative, or
+    /// a crafting table's.
+    /// </summary>
     public bool InventoryOpen { get; private set; }
 
-    /// <summary>Whether the window open is a crafting table's, which a right click on one opens.</summary>
+    /// <summary>
+    /// Whether the window open is a crafting table's, which a right click on one opens.
+    /// </summary>
     public bool AtTable { get; private set; }
 
     // The place of the crafting table whose window is open, which shuts as the table goes.
     private (int X, int Y, int Z)? _table;
 
-    /// <summary>The place of the furnace whose window is open, which a right click on one opens, or null.</summary>
+    /// <summary>
+    /// The place of the furnace whose window is open, which a right click on one opens, or null.
+    /// </summary>
     public (int X, int Y, int Z)? AtFurnace { get; private set; }
 
-    /// <summary>The place of the chest whose window is open, which a right click on one opens, or null.</summary>
+    /// <summary>
+    /// The place of the chest whose window is open, which a right click on one opens, or null.
+    /// </summary>
     public (int X, int Y, int Z)? AtChest { get; private set; }
 
-    /// <summary>A recording of the picture's change around a motion, which <c>voxel.flicker</c> starts, read a frame at a time.</summary>
+    /// <summary>
+    /// A recording of the picture's change around a motion, which <c>voxel.flicker</c> starts, read
+    /// a frame at a time.
+    /// </summary>
     public FlickerRun? Flicker { get; set; }
 
     /// <summary>
@@ -619,11 +714,14 @@ public sealed class VoxelGame : IDisposable
     /// <summary>Whether the run saves nothing, so no world is saved or listed.</summary>
     public bool Transient => _transient;
 
-    /// <summary>Saves the world loaded and opens the one saved under a name, or under its kind and seed, or begins it.</summary>
+    /// <summary>
+    /// Saves the world loaded and opens the one saved under a name, or under its kind and seed, or
+    /// begins it.
+    /// </summary>
     public void SwitchWorld(string kind, int seed, string? name = null)
     {
-        // The window E opens is shut first, its stacks put back into the inventory of the world left,
-        // so none comes into the next and no chest or furnace of the last is drawn there.
+        // The window E opens is shut first, its stacks put back into the inventory of the world
+        // left, so none comes into the next and no chest or furnace of the last is drawn there.
         CloseInventory();
         SetDownMoving();
         SaveWorld();
@@ -637,7 +735,10 @@ public sealed class VoxelGame : IDisposable
         Open(kind, seed, name);
     }
 
-    /// <summary>Saves the world for the game to end, true where it is saved, and otherwise says that the game stays open.</summary>
+    /// <summary>
+    /// Saves the world for the game to end, true where it is saved, and otherwise says that the
+    /// game stays open.
+    /// </summary>
     public bool SaveToQuit()
     {
         SaveWorld();
@@ -693,8 +794,9 @@ public sealed class VoxelGame : IDisposable
         Blasts.Clear();
         // The weather turns by the world's own seed, held as its save held it.
         (Weather.Seed, Weather.Held, _overcast) = (World.Generator.Seed, info?.Weather, 0);
-        // The mode and the inventory are the world's own, a new world's in creative with its hotbar of blocks.
-        // A mode the file gives by a number the modes name none of is read as a new world's.
+        // The mode and the inventory are the world's own, a new world's in creative with its hotbar
+        // of blocks. A mode the file gives by a number the modes name none of is read as a new
+        // world's.
         Mode = Enum.TryParse<GameMode>(info?.Mode, ignoreCase: true, out var mode) && Enum.IsDefined(mode) ? mode : GameMode.Creative;
         PreviousMode = null;
         Inventory.Clear();
@@ -727,12 +829,14 @@ public sealed class VoxelGame : IDisposable
         (Player.Heading, Player.Pitch, Player.Flying) = (info.Heading, info.Pitch * MathF.PI / 180, info.Flying);
     }
 
-    /// <summary>The name of the world loaded, its save's folder or, for a transient one, its kind and seed.</summary>
+    /// <summary>
+    /// The name of the world loaded, its save's folder or, for a transient one, its kind and seed.
+    /// </summary>
     public string WorldName { get; private set; } = "";
 
     /// <summary>
-    /// Whether the world opened is still loading behind its screen, until the player's column and its
-    /// neighbors are generated and meshed and the world is drawn behind the screen for
+    /// Whether the world opened is still loading behind its screen, until the player's column and
+    /// its neighbors are generated and meshed and the world is drawn behind the screen for
     /// <see cref="BehindFrames"/> frames, the player held and the world's time still meanwhile.
     /// </summary>
     public bool Loading
@@ -772,7 +876,10 @@ public sealed class VoxelGame : IDisposable
     /// <summary>Whether this frame draws the world behind the loading screen.</summary>
     internal bool DrawnBehind => _loading && _behind > 0;
 
-    /// <summary>Keeps the loading screen up over a world that has loaded, so a check reads its pixels, until it is let go.</summary>
+    /// <summary>
+    /// Keeps the loading screen up over a world that has loaded, so a check reads its pixels, until
+    /// it is let go.
+    /// </summary>
     public bool HoldLoading { get; set; }
 
     // Whether a new world's player is still to be set on the highest block at the origin, and the
@@ -787,11 +894,11 @@ public sealed class VoxelGame : IDisposable
     /// player's column and its neighbors meshed and taken in.
     /// </summary>
     /// <remarks>
-    /// A section is meshed with the columns around it, so one is counted as standing only once all the
-    /// columns within two are in, the last of which marks it to be meshed again if it was passed by.
-    /// One sent to the meshers stands once its mesh is taken in, in an update after the one that sent
-    /// it, so the world marked again does not stand in the frame it is marked, however much of the
-    /// frame's meshing time the marking leaves.
+    /// A section is meshed with the columns around it, so one is counted as standing only once all
+    /// the columns within two are in, the last of which marks it to be meshed again if it was
+    /// passed by. One sent to the meshers stands once its mesh is taken in, in an update after the
+    /// one that sent it, so the world marked again does not stand in the frame it is marked,
+    /// however much of the frame's meshing time the marking leaves.
     /// </remarks>
     public float LoadingShare()
     {
@@ -842,10 +949,10 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>
     /// Moves the <see cref="LandOrigin"/> near a place of the land once that place lies more than
-    /// <see cref="LandOrigin.Reach"/> blocks from it along x or z, and every float place the game keeps by
-    /// the same whole step, every body, the arrows, the blasts and their flashes and clouds, the mobs'
-    /// homes, the steps heard, the bits, the rings on the water and the land drawn, as the player
-    /// walks far or is put far.
+    /// <see cref="LandOrigin.Reach"/> blocks from it along x or z, and every float place the game
+    /// keeps by the same whole step, every body, the arrows, the blasts and their flashes and
+    /// clouds, the mobs' homes, the steps heard, the bits, the rings on the water and the land
+    /// drawn, as the player walks far or is put far.
     /// </summary>
     /// <remarks>
     /// The engine hears of the step first (<see cref="E3D.MoveWorld"/>), in the frame's first stage
@@ -883,9 +990,9 @@ public sealed class VoxelGame : IDisposable
     /// </summary>
     /// <remarks>
     /// <para>
-    /// What is left would otherwise move with the origin by the jump's whole step, to a float place as
-    /// far out as the jump, where a float holds an eighth of a block at a million, and a mob or a
-    /// stack kept from there would come back a part of a block off.
+    /// What is left would otherwise move with the origin by the jump's whole step, to a float place
+    /// as far out as the jump, where a float holds an eighth of a block at a million, and a mob or
+    /// a stack kept from there would come back a part of a block off.
     /// </para>
     /// <para>
     /// Those let go are no player's. The arrows are the skeletons', which no one picks up, and go
@@ -917,10 +1024,15 @@ public sealed class VoxelGame : IDisposable
     /// <summary>How many times the origin has moved since the game began.</summary>
     public int Recentered { get; private set; }
 
-    /// <summary>Why the world keeps no save, transient or played unsaved since its folder could not be made, or null where it keeps one.</summary>
+    /// <summary>
+    /// Why the world keeps no save, transient or played unsaved since its folder could not be made,
+    /// or null where it keeps one.
+    /// </summary>
     public string? NoSave => Save is not null ? null : _transient ? "the world is transient and is not saved" : "the world is played unsaved, since its folder could not be made";
 
-    /// <summary>Saves the world as the menu's Save the World asks, or says on the HUD why it keeps no save.</summary>
+    /// <summary>
+    /// Saves the world as the menu's Save the World asks, or says on the HUD why it keeps no save.
+    /// </summary>
     public void SaveAsked()
     {
         if (NoSave is { } why) Say(char.ToUpperInvariant(why[0]) + why[1..]);
@@ -937,7 +1049,10 @@ public sealed class VoxelGame : IDisposable
         Tnt.SetDown(World);
     }
 
-    /// <summary>Keeps every loaded column the player changed and the player's place, and writes them, unless the world is transient.</summary>
+    /// <summary>
+    /// Keeps every loaded column the player changed and the player's place, and writes them, unless
+    /// the world is transient.
+    /// </summary>
     public void SaveWorld() => SaveWorld(aside: false);
 
     // Saves the world, a timed save on a worker once what it writes is gathered here, so the frame
@@ -1093,13 +1208,14 @@ public sealed class VoxelGame : IDisposable
         _sinceSave += seconds;
         if (_sinceSave > _saveWait) SaveWorld(aside: true);
         var io = ImGui.GetIO();
-        // A field taking typed text takes the keys too, so a seed typed acts no toggle, though Escape,
-        // which no field takes, still goes back from its screen.
+        // A field taking typed text takes the keys too, so a seed typed acts no toggle, though
+        // Escape, which no field takes, still goes back from its screen.
         var keys = _keys = !io.WantTextInput && !IsTextInputActive();
 
         if (keys) Toggles();
         else if (IsTextInputActive() && IsKeyPressed(Key.Escape) && Menus.Open != Menu.None) Menus.Back();
-        // A click takes the cursor back unless it falls on a window of the game's own or of ImGui's.
+        // A click takes the cursor back unless it falls on a window of the game's own or of
+        // ImGui's.
         if (!_captured && IsMouseButtonPressed(MouseButton.Left) && !io.WantCaptureMouse && !InventoryOpen && Menus.Open == Menu.None)
         {
             Capture(true);
@@ -1107,10 +1223,10 @@ public sealed class VoxelGame : IDisposable
         }
         if (_swallowClick && !IsMouseButtonDown(MouseButton.Left)) _swallowClick = false;
 
-        // A screen open, the inventory, a crafting table's, a furnace's or a menu, takes the keyboard
-        // as the source's screens do, so no key of the player's acts behind it, neither walking,
-        // jumping, crouching and sprinting nor the hotbar's number keys, which a window of slots
-        // takes to swap a slot.
+        // A screen open, the inventory, a crafting table's, a furnace's or a menu, takes the
+        // keyboard as the source's screens do, so no key of the player's acts behind it, neither
+        // walking, jumping, crouching and sprinting nor the hotbar's number keys, which a window of
+        // slots takes to swap a slot.
         var screen = InventoryOpen || Menus.Open != Menu.None;
         // The wheel zooms while the zoom's key is held, and steps the hotbar otherwise.
         Hotbar.Update(keys && !screen, _captured && !IsKeyDown(Player.Zoom.Key));
@@ -1169,17 +1285,18 @@ public sealed class VoxelGame : IDisposable
         Crops.Update(World, seconds);
         Blasts.Update(seconds);
         // The TNT whose fuses ran out as the engine's frame burned them goes off.
-        foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(LandOrigin.PlaceOf(blast.At), PrimedTnt.Power, "was blown up by TNT");
+        foreach (var blast in GetApp().World.DrainEvents<TntBlast>()) Explode(LandOrigin.PlaceOf(blast.At), PrimedTnt.Power, "was blown up by TNT", decays: false);
         Lights.Update(Player.Eye - new Vector3(0, HeldLights.UnderEye, 0), Mode != GameMode.Spectator && alive ? Hotbar.Current?.Item : null, Drops.All, Player.Eye, Renderer.LightOf);
 
         _overcast += (Weather.Share(Sky.Day, Sky.Hour) - _overcast) * (1 - MathF.Exp(-0.5f * seconds));
         // Snow settles while the weather has more than half turned, and melts once it has cleared.
         Snow.Update(World, Player.Eye, _overcast >= 0.5f, _overcast <= 0.01f, seconds, _random);
         Sky.Overcast = _overcast;
-        // The splashes fall as far as the weather has turned, and the wakes follow the bodies in the
-        // water, the player's while it is seen.
+        // The splashes fall as far as the weather has turned, and the wakes follow the bodies in
+        // the water, the player's while it is seen.
         Particles.Update(World, Player.Eye, _overcast, seconds, Mobs.All.Select(m => m.Body).Prepend(Player.Body).Skip(Mode == GameMode.Spectator ? 1 : 0));
-        // The steps and the places' sounds, heard from the player's eye, none of a spectator's steps.
+        // The steps and the places' sounds, heard from the player's eye, none of a spectator's
+        // steps.
         Sounds.Update(World, Player.Eye, Player.Yaw, Player.Pitch, Player.Body, Mode != GameMode.Spectator, Player.Swimming, Sky.Hour, _overcast,
             GetApp().World.Resource<EcsWorld>(), Mobs.Still, seconds);
         Sky.Update(seconds);
@@ -1205,7 +1322,10 @@ public sealed class VoxelGame : IDisposable
     private readonly float[] _frames = new float[600];
     private int _framesSeen;
 
-    /// <summary>The median, the 99th part and the slowest of the last 600 frames' times in ms, or of as many as there were.</summary>
+    /// <summary>
+    /// The median, the 99th part and the slowest of the last 600 frames' times in ms, or of as many
+    /// as there were.
+    /// </summary>
     public (float Median, float P99, float Slowest, int Count) FrameTimes()
     {
         var times = _frames.Take(Math.Min(_framesSeen, _frames.Length)).Select(t => t * 1000).Order().ToArray();
@@ -1215,7 +1335,10 @@ public sealed class VoxelGame : IDisposable
     // The sky's light level at the eye as the haze takes it, eased.
     private float _eyeSky = Lighting.Max;
 
-    /// <summary>Takes the player's vitals for the frame and fades the HUD by them, as the game's behavior does while the player lives.</summary>
+    /// <summary>
+    /// Takes the player's vitals for the frame and fades the HUD by them, as the game's behavior
+    /// does while the player lives.
+    /// </summary>
     public void TakeVitals()
     {
         Live(_seconds);
@@ -1252,7 +1375,10 @@ public sealed class VoxelGame : IDisposable
         Capture(false);
     }
 
-    /// <summary>Gives the player a new life at the world's spawn, the highest block at the origin, with full health and food.</summary>
+    /// <summary>
+    /// Gives the player a new life at the world's spawn, the highest block at the origin, with full
+    /// health and food.
+    /// </summary>
     public void Respawn()
     {
         Vitals.Set();
@@ -1302,14 +1428,17 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>
-    /// Sets off an explosion of a power at a place, as a creeper's of 3, which breaks the blocks
-    /// its rays reach, drops a third of them in survival, and harms and throws the player and the
-    /// mobs near it by its impact.
+    /// Sets off an explosion of a power at a place, as a creeper's of 3 or a TNT's of 4, which
+    /// breaks the blocks its rays reach, destroys the stacks lying near it that it harms by a
+    /// stack's health, drops in survival one of the blocks it breaks in its power, or every one
+    /// where <paramref name="decays"/> is false as a TNT's are, and harms and throws the player and
+    /// the mobs near it by its impact.
     /// </summary>
-    public void Explode(Vector3 at, float power, string cause)
+    public void Explode(Vector3 at, float power, string cause, bool decays = true)
     {
         var survival = Mode.Lives();
         var pickaxe = Items.Find("stone_pickaxe");
+        _broken.Clear();
         foreach (var (x, y, z) in Explosion.Breaks(World, at, power, _random))
         {
             var block = World.GetBlock(x, y, z);
@@ -1320,9 +1449,15 @@ public sealed class VoxelGame : IDisposable
                 Tnt.Chain(x, y, z);
                 continue;
             }
-            if (!World.SetBlock(x, y, z, BlockId.Air) || !survival || _random.NextDouble() >= 1 / power) continue;
-            foreach (var (item, count) in Loot.Of(block, _random, pickaxe)) Drops.Pop(item, count, x, y, z);
+            if (World.SetBlock(x, y, z, BlockId.Air)) _broken.Add((x, y, z, block));
         }
+        // The stacks it harms are destroyed before the blocks it broke drop theirs, which lie
+        // whole, as do the stacks a chest it broke spills in the next frame.
+        Drops.Blast(World, at, power);
+        if (survival)
+            foreach (var (x, y, z, block) in _broken)
+                if (!decays || _random.NextDouble() < 1 / power)
+                    foreach (var (item, count) in Loot.Of(block, _random, pickaxe)) Drops.Pop(item, count, x, y, z);
         // The rays to a body are cast only within the blast's reach, past which it harms nothing.
         var middle = Player.Body.Position + new Vector3(0, Player.Body.Height / 2, 0);
         var distance = Vector3.Distance(middle, at);
@@ -1338,6 +1473,10 @@ public sealed class VoxelGame : IDisposable
         }
         Blasts.Add(at, power);
     }
+
+    // The blocks the last explosion broke, with what each was, kept so they drop once its harm to
+    // the stacks near it is done.
+    private readonly List<(int X, int Y, int Z, BlockId Block)> _broken = [];
 
     // A felled tree's logs and leaves throw a few bits each, many breaking at once, and drop what
     // the source drops in survival, and a share of its logs falls as blocks, those still to go
@@ -1396,15 +1535,18 @@ public sealed class VoxelGame : IDisposable
         foreach (var caught in GetApp().World.DrainEvents<TntCaught>()) Tnt.Light(caught.X, caught.Y, caught.Z);
     }
 
-    /// <summary>Ends at once the mobs still falling over, their loot left where they lie, before the world is left or closed or its mobs are taken away, none of which keeps a dying mob.</summary>
+    /// <summary>
+    /// Ends at once the mobs still falling over, their loot left where they lie, before the world
+    /// is left or closed or its mobs are taken away, none of which keeps a dying mob.
+    /// </summary>
     public void EndDying()
     {
         foreach (var died in Mobs.Finish()) GetApp().World.SendEvent(died);
         LeaveDrops();
     }
 
-    // What the mobs that died and, in survival, the blocks that fell with the block they held to leave
-    // on the ground.
+    // What the mobs that died and, in survival, the blocks that fell with the block they held to
+    // leave on the ground.
     private void LeaveDrops()
     {
         foreach (var died in GetApp().World.DrainEvents<MobDied>())
@@ -1418,7 +1560,10 @@ public sealed class VoxelGame : IDisposable
         World.Fallen.Clear();
     }
 
-    /// <summary>Puts a stack into the inventory as one picked up goes, and throws what does not fit ahead of the player, giving back how many were thrown.</summary>
+    /// <summary>
+    /// Puts a stack into the inventory as one picked up goes, and throws what does not fit ahead of
+    /// the player, giving back how many were thrown.
+    /// </summary>
     public int Receive(ItemStack stack)
     {
         var left = Inventory.Add(stack.Item, stack.Count, stack.Wear);
@@ -1426,7 +1571,10 @@ public sealed class VoxelGame : IDisposable
         return left;
     }
 
-    /// <summary>Throws one of the chosen slot's items ahead of the player, or its whole stack, as Q and Control with Q do.</summary>
+    /// <summary>
+    /// Throws one of the chosen slot's items ahead of the player, or its whole stack, as Q and
+    /// Control with Q do.
+    /// </summary>
     public bool Throw(bool all)
     {
         if (Hotbar.Current is not { } stack) return false;
@@ -1448,7 +1596,10 @@ public sealed class VoxelGame : IDisposable
         }
     }
 
-    /// <summary>The keys a test presses for the toggles in place of the engine's, which give a test game none.</summary>
+    /// <summary>
+    /// The keys a test presses for the toggles in place of the engine's, which give a test game
+    /// none.
+    /// </summary>
     public Func<Key, bool>? Pressed { get; set; }
 
     private void Toggles()
@@ -1462,7 +1613,8 @@ public sealed class VoxelGame : IDisposable
                 CloseInventory();
                 Capture(true);
             }
-            // The cursor follows the menu's state, freed as one opens and taken back as the last shuts.
+            // The cursor follows the menu's state, freed as one opens and taken back as the last
+            // shuts.
             else if (Menus.Open != Menu.None) Menus.Back();
             else Menus.Open = Menu.Pause;
         }
@@ -1475,14 +1627,14 @@ public sealed class VoxelGame : IDisposable
             Capture(!InventoryOpen);
         }
         // F3 held with F4 opens the mode switcher and steps it, and letting F3 go plays the mode
-        // chosen. F3 let go with no other key pressed while it was held is the engine's, which shows
-        // or hides its debug overlay, as Minecraft's debug screen opens when F3 is let go alone.
+        // chosen. F3 let go with no other key pressed while it was held is the engine's, which
+        // shows or hides its debug overlay.
         if (IsKeyDown(Key.F3) && Press(Key.F4)) Switcher.Step(Mode, PreviousMode);
         // F3 held with T reads the resource packs again.
         if (IsKeyDown(Key.F3) && Press(Key.T)) ReloadHeld();
         if (IsKeyReleased(Key.F3) && Switcher.Release() is { } chosen) Mode = chosen;
-        // The view's key and the light's act on the world in view, so a screen over it holds them as
-        // it holds the inventory's.
+        // The view's key and the light's act on the world in view, so a screen over it holds them
+        // as it holds the inventory's.
         var screen = InventoryOpen || Menus.Open != Menu.None;
         if (!screen && Press(Key.F5)) Player.View = ThirdPerson.Next(Player.View);
         if (Press(Key.F2)) Screenshot();
@@ -1567,7 +1719,8 @@ public sealed class VoxelGame : IDisposable
     private bool Eat(float seconds)
     {
         var opens = Target is { } hit && World.GetBlock(hit.X, hit.Y, hit.Z) is var block && (block == BlockId.CraftingTable || Furnaces.IsFurnace(block) || Chests.IsChest(block) || Blocks.Get(block).Toggled is not null);
-        // Glow berries aimed at a block's underside hang their vines there rather than being eaten, as the source's do.
+        // Glow berries aimed at a block's underside hang their vines there rather than being eaten,
+        // as the source's do.
         var hangs = Target is { NormalY: < 0 } && Hotbar.Current is { Item.Block: BlockId.CaveVines };
         if (!IsMouseButtonDown(MouseButton.Right) || opens || hangs || Hotbar.Current is not { Item.Food: > 0 } food || Vitals.Food >= Vitals.Most)
         {
@@ -1620,7 +1773,10 @@ public sealed class VoxelGame : IDisposable
     /// slot's block against the face it rests on, using one up in survival, as a right click does,
     /// placing nothing in adventure and doing nothing in spectator.
     /// </summary>
-    /// <returns>The table or furnace opened, the door's half turned, the source taken or set or the block placed, or air where nothing happened.</returns>
+    /// <returns>
+    /// The table or furnace opened, the door's half turned, the source taken or set or the block
+    /// placed, or air where nothing happened.
+    /// </returns>
     public BlockId Use()
     {
         if (!Mode.Touches()) return BlockId.Air;
@@ -1656,8 +1812,8 @@ public sealed class VoxelGame : IDisposable
         // In adventure a door opens or shuts and nothing is placed.
         if (!Mode.Builds())
             return Target is { } shut && World.Toggle(shut.X, shut.Y, shut.Z) ? World.GetBlock(shut.X, shut.Y, shut.Z) : BlockId.Air;
-        // Flint and steel lights a fire in the cell against the face it is used on, where a fire can
-        // stand, a use worn in survival.
+        // Flint and steel lights a fire in the cell against the face it is used on, where a fire
+        // can stand, a use worn in survival.
         if (!toggles && Hotbar.Current?.Item == Items.FlintAndSteel)
         {
             if (Target is not { Inside: false } struck || !Fires.Light(World, struck.Beside.X, struck.Beside.Y, struck.Beside.Z, Step.Random)) return BlockId.Air;
@@ -1746,8 +1902,8 @@ public sealed class VoxelGame : IDisposable
         var block = World.GetBlock(hit.X, hit.Y, hit.Z);
         if (!Blocks.Get(block).Breakable || !World.SetBlock(hit.X, hit.Y, hit.Z, BlockId.Air)) return false;
         Bits.Break(block, hit.X, hit.Y, hit.Z, climate: World.TintsAt(hit.X, hit.Z));
-        // The log a trunk stands on fells its tree, an axe in survival by the uses it has left after
-        // the cut's own.
+        // The log a trunk stands on fells its tree, an axe in survival by the uses it has left
+        // after the cut's own.
         if (BlockGroups.Logs.Contains(block) && !BlockGroups.Logs.Contains(World.GetBlock(hit.X, hit.Y - 1, hit.Z)))
         {
             int? uses = null;
@@ -1763,18 +1919,20 @@ public sealed class VoxelGame : IDisposable
         return true;
     }
 
-    // Whether a block gives way to one placed in its cell, a fire or a plant, but not water or lava,
-    // which a whole block takes the place of and a smaller one does not.
+    // Whether a block gives way to one placed in its cell, a fire or a plant, but not water or
+    // lava, which a whole block takes the place of and a smaller one does not.
     private static bool Replaced(BlockId block) => BlockGroups.GivesWay(block) && !Blocks.IsFluid(block);
 
     /// <summary>
     /// Places a block against the face the crosshair rests on, or in the cell of a fire or a plant
-    /// it rests on, which gives way, unless it would take up some of the player or of a mob. A torch or a lantern is placed the way of it that has a block to hold
-    /// to, stairs climbing the way the player looks, a door two blocks high, and a slab on the open
-    /// half of a slab of its kind joined to it as the whole block. A door met is opened or shut
-    /// instead.
+    /// it rests on, which gives way, unless it would take up some of the player or of a mob. A
+    /// torch or a lantern is placed the way of it that has a block to hold to, stairs climbing the
+    /// way the player looks, a door two blocks high, and a slab on the open half of a slab of its
+    /// kind joined to it as the whole block. A door met is opened or shut instead.
     /// </summary>
-    /// <returns>The block placed, which for a torch on a wall is the wall torch, or air where none was.</returns>
+    /// <returns>
+    /// The block placed, which for a torch on a wall is the wall torch, or air where none was.
+    /// </returns>
     public BlockId Place(BlockId block)
     {
         if (Target is not { Inside: false } hit) return BlockId.Air;
@@ -1799,7 +1957,8 @@ public sealed class VoxelGame : IDisposable
         // A block placed into a fire puts it out and one placed into a plant takes its place, the
         // plant dropping nothing, as the source's fire and grasses give way to one.
         if (Replaced(there)) there = BlockId.Air;
-        // A door stands two blocks high, shut and facing the way the player looks, on a whole block.
+        // A door stands two blocks high, shut and facing the way the player looks, on a whole
+        // block.
         if (Blocks.Get(block).Toggled is not null)
         {
             BlockId lower = Blocks.Variant(block, look), upper = Blocks.Variant(block, look, true);
@@ -1811,10 +1970,12 @@ public sealed class VoxelGame : IDisposable
         }
         var placed = World.Fit(block, x, y, z, hit.NormalX, hit.NormalY, hit.NormalZ, look, height);
         if (placed == BlockId.Air) return BlockId.Air;
-        // A slab placed into the other half of a slab of its kind beside the face met fills the block.
+        // A slab placed into the other half of a slab of its kind beside the face met fills the
+        // block.
         if (Blocks.Get(there) is { Item: var beside, Doubled: { } joined, Shape: { } half } && beside == block && Blocks.Get(placed).Shape?.Upper != half.Upper)
             placed = joined;
-        // A whole block goes into air, water or lava, the fluid giving way to it, and a smaller one into air.
+        // A whole block goes into air, water or lava, the fluid giving way to it, and a smaller one
+        // into air.
         else if (there != BlockId.Air && !Blocks.IsFluid(there) || Blocks.Get(placed).Shape is not null && there != BlockId.Air) return BlockId.Air;
         if (Player.Body.Overlaps(x, y, z, Blocks.Get(placed).Boxes) || Mobs.Overlaps(x, y, z, Blocks.Get(placed).Boxes)) return BlockId.Air;
         // Tall grass stands two blocks high, its upper half in the air over it.
@@ -1872,8 +2033,8 @@ public sealed class VoxelGame : IDisposable
         Lap("draw.sky");
         Renderer.Draw(World, Player.Eye, RenderDistance, Sky.TowardLight, Light.ShadowDistance);
         Lap("draw.sections");
-        // The player's own model where the view stands without, none of a spectator's, posed by what
-        // it does, with what its right hand holds.
+        // The player's own model where the view stands without, none of a spectator's, posed by
+        // what it does, with what its right hand holds.
         var seen = Player.View != View.First && Mode != GameMode.Spectator;
         var held = Mode.Touches() ? Hotbar.Current?.Item : null;
         var stance = new PlayerStance(Player.StridePhase, Player.Stride, MathF.IEEERemainder(Player.Yaw - Player.BodyYaw, MathF.Tau), Player.Pitch, Hand.Swung,
@@ -1884,8 +2045,8 @@ public sealed class VoxelGame : IDisposable
             var (heldMesh, heldMaterial, flat) = DropRenderer.Model(holding);
             var arm = MobKinds.Player.Parts.First(p => p.Swing == Swing.ArmB);
             var whole = PlayerPoses.Whole(stance) * Matrix4x4.CreateScale(MobKinds.Player.Scale) * Matrix4x4.CreateRotationY(Player.BodyYaw) * Matrix4x4.CreateTranslation(Player.Body.Position);
-            // The source's sizes in a hand seen from without, an item's picture 0.55 of a block and a
-            // block's cube 0.375, of the drops' picture of 0.3 and cube of a quarter.
+            // The source's sizes in a hand seen from without, an item's picture 0.55 of a block and
+            // a block's cube 0.375, of the drops' picture of 0.3 and cube of a quarter.
             DrawMesh(heldMesh, heldMaterial, Matrix4x4.CreateScale(flat ? 0.55f / 0.3f : 0.375f / 0.25f) * PlayerPoses.Hand(arm, stance) * whole);
         }
         DropRenderer.Draw(Drops.All, Falling.All.Select(f => (f.Falling.Block, f.Body.Position, 1f)).Concat(Tnt.All.Select(t => (BlockId.Tnt, t.Body.Position, t.Lit.Size))), Player.Eye, GetTime());
@@ -1893,7 +2054,8 @@ public sealed class VoxelGame : IDisposable
         foreach (var (lit, body) in Tnt.All)
             if (lit.Flashing) DrawCube(body.Position + new Vector3(0, 0.5f * lit.Size, 0), 1.01f * lit.Size, 1.01f * lit.Size, 1.01f * lit.Size, new Color(255, 255, 255, 150));
         Bits.Draw(Player.Eye, Player.Look);
-        // The hand is the interface's, which the engine's F1 hides with the HUD, as the source's does.
+        // The hand is the interface's, which the engine's F1 hides with the HUD, as the source's
+        // does.
         if (!HudHidden && Player.View == View.First && Mode != GameMode.Spectator && !(Mode.Lives() && Vitals.Dead))
         {
             if (BeginUi()) Hand.Draw(Player.Eye, Player.Look, Hotbar.Current?.Item, DropRenderer, MobRenderer);
@@ -1982,7 +2144,10 @@ public sealed class VoxelGame : IDisposable
         _laps.Restart();
     }
 
-    /// <summary>The loading screen's background, black, on which its white words and its green bar read plainly.</summary>
+    /// <summary>
+    /// The loading screen's background, black, on which its white words and its green bar read
+    /// plainly.
+    /// </summary>
     public static readonly Color LoadingBackground = new(0, 0, 0);
 
     // The screen a world loads behind, its name over a bar of how far its loading has come, and the
@@ -2027,7 +2192,8 @@ public sealed class VoxelGame : IDisposable
         }
     }
 
-    // The screen of a death, the view dimmed red under what took the player's life and a button for a new one.
+    // The screen of a death, the view dimmed red under what took the player's life and a button for
+    // a new one.
     private void DrawDeath()
     {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), new Color(110, 0, 0, 120));
@@ -2042,9 +2208,9 @@ public sealed class VoxelGame : IDisposable
 
     public void Dispose()
     {
-        // The program disposes the game and the app, which holds it as a resource, disposes it again
-        // as the window closes, at times after the app's ECS has let the mobs go, so the game saves
-        // and lets go only the first time, since a save then would keep the loaded columns as
+        // The program disposes the game and the app, which holds it as a resource, disposes it
+        // again as the window closes, at times after the app's ECS has let the mobs go, so the game
+        // saves and lets go only the first time, since a save then would keep the loaded columns as
         // holding no mob.
         if (_disposed) return;
         _disposed = true;
@@ -2089,7 +2255,10 @@ public sealed class GameStep
 
     public bool PickUp { get; set; }
 
-    /// <summary>Whether the mouse turns the player's view, as while the cursor is held, and the keys move the player, as while no screen has them.</summary>
+    /// <summary>
+    /// Whether the mouse turns the player's view, as while the cursor is held, and the keys move
+    /// the player, as while no screen has them.
+    /// </summary>
     public bool Look { get; set; }
 
     public bool Move { get; set; }
@@ -2102,12 +2271,18 @@ public sealed class GameStep
     /// <summary>Whether the hostile mobs hunt the player, as in survival while it lives.</summary>
     public bool Hunted { get; set; }
 
-    /// <summary>Whether rain falls where the land's climate brings it, the weather more than half turned, which puts out the undead burning by day.</summary>
+    /// <summary>
+    /// Whether rain falls where the land's climate brings it, the weather more than half turned,
+    /// which puts out the undead burning by day.
+    /// </summary>
     public bool Raining { get; set; }
 
     /// <summary>Whether the mobs stand still and think nothing, as for a capture.</summary>
     public bool MobsStill { get; set; }
 
-    /// <summary>The chances the behaviors draw, as of an arrow's extra point of damage and a fire's spreading, which a test seeds.</summary>
+    /// <summary>
+    /// The chances the behaviors draw, as of an arrow's extra point of damage and a fire's
+    /// spreading, which a test seeds.
+    /// </summary>
     public Random Random { get; set; } = new();
 }

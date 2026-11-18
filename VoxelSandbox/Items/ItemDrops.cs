@@ -221,6 +221,23 @@ public sealed class ItemDrops(EcsWorld ecs)
     }
 
     /// <summary>
+    /// Destroys the stacks an explosion of a power at a place harms by a stack's health of 5 or
+    /// more, each burned away as one in lava is.
+    /// </summary>
+    public void Blast(VoxelWorld world, Vector3 at, float power)
+    {
+        foreach (var (id, _, body) in ecs.Query<ItemDrop, Body>())
+        {
+            var distance = Vector3.Distance(body.Position + new Vector3(0, body.Height / 2, 0), at);
+            if (distance >= Explosion.Reach(power)) continue;
+            if (Explosion.Damage(distance, power, Explosion.Exposure(world, at, body.Min, body.Max)) >= Health) ecs.GetRef<ItemDrop>(id).Count = 0;
+        }
+    }
+
+    // A stack's health, which a blast's harm takes from it.
+    private const int Health = 5;
+
+    /// <summary>
     /// Drops a stack from a block's middle, hopping a little in a direction of its own, as a broken
     /// block's does.
     /// </summary>
