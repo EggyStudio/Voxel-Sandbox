@@ -28,7 +28,10 @@ public sealed class Vitals
     /// <summary>Seconds of breath under water.</summary>
     public const float Breath = 15;
 
-    private const float Spell = 4, Unharmed = 0.5f;
+    private const float Spell = 4;
+
+    /// <summary>The seconds after a harm in which no other harms, and between the harms of lava, a wall or a cactus.</summary>
+    internal const float Unharmed = 0.5f;
 
     private float _regen, _starve, _drown, _prick;
     private Vector3 _last;
@@ -157,8 +160,8 @@ public sealed class Vitals
         Damage(harm, cause);
     }
 
-    // Whether a block lies within the body's box grown by a margin, or shrunk where it is under 0.
-    private static bool Touches(VoxelWorld world, Body body, BlockId block, float margin)
+    /// <summary>Whether a block lies within a body's box grown by a margin, or shrunk where it is under 0.</summary>
+    internal static bool Touches(VoxelWorld world, Body body, BlockId block, float margin)
     {
         var (lowX, lowY, lowZ) = LandOrigin.BlockOf(body.Min - new Vector3(margin));
         var (highX, highY, highZ) = LandOrigin.BlockOf(body.Max + new Vector3(margin));

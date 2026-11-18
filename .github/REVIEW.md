@@ -843,3 +843,41 @@ exclusive with no quiet wait passing in 184 s, after the desktop's load of 11:25
 the seed's step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture
 left, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.03%
 of its pixels past 8 levels.
+
+Item 229's day of mining and smelting, played in a headless game in survival, each block broken by
+`voxel.break` with the crosshair found on it. No item was made or lost, and nothing was mended.
+
+- Coal ore drops nothing by hand and its coal to a wooden pickaxe. Iron ore drops nothing to a
+  wooden pickaxe and itself to a stone one. Diamond ore, in stone or deepslate, drops nothing to a
+  stone pickaxe and its diamond to an iron one. Stone drops nothing by hand.
+- A stone pickaxe on its last use breaks stone into its cobblestone and goes.
+- A full chest broken with an axe spills its 1,728 cobblestone and leaves one chest, once.
+- A furnace smelting iron ore with coal, saved after 17 seconds with an ingot made, 7 seconds of the
+  next and 63 of its fuel, opens with all of it.
+- A stick burning out halfway through an iron ore takes the ore's smelting back to the start, as the
+  furnace's own test has it, so coal given after takes the whole ten seconds.
+
+The play of water and lava, the same way, in the commit carrying this Reply. No item was made or
+lost by water, and two of the player's rules were missing for the mobs and the stacks in lava.
+
+- A pig in lava lost nothing, where the player loses 4 every half second. A mob in lava loses 4
+  every half second too (`Mob.Scald`), and a stack lying in lava burns away (`ItemDrops.Fall`).
+  `A_Mob_In_Lava_Is_Harmed_As_The_Player_Is_And_A_Stack_In_Lava_Burns` holds a pig in lava at the
+  foot of a shaft a block wide and finds it four points down or more within a second, and five coal
+  dropped into lava gone. On the head the pig keeps its ten and the coal lies there.
+- Water flowing over the ground broke a rail, which shares the plants' cut shapes, into one rail,
+  once, and stopped at a torch and at young wheat, which it leaves standing.
+- A source taken away dries its flow, all 107 cells, within ten seconds.
+- Water flowing to lava stands beside it, and neither makes stone of the other.
+- Sand falling into a pool three deep sinks to its bottom and takes the place of the water there.
+- Water half flowed at a save, five cells, flows on in the copy opened, to 113.
+
+Not in the game and not built: buckets, water breaking a torch or a crop, and water and lava
+making stone, cobblestone or obsidian where they meet.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 635
+passing, the new test passing three times in a row, the headless game's 96 passing three times in a
+row, and the play under the lock taken exclusive with no quiet wait passing in 184 s, the seed's
+step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.03% of its pixels
+past 8 levels.

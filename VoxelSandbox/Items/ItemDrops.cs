@@ -50,7 +50,7 @@ public partial struct ItemDrop
 
     private const float Gravity = 16, Join = 0.5f;
 
-    /// <summary>Moves and ages by the step's seconds every stack whose column is loaded.</summary>
+    /// <summary>Moves and ages by the step's seconds every stack whose column is loaded, burning away those in lava.</summary>
     [OnPreUpdate]
     public static void Fall(BehaviorContext ctx)
     {
@@ -61,6 +61,8 @@ public partial struct ItemDrop
             if (!step.World.HasColumn(cx, cz)) continue;
             ctx.Ecs.GetRef<ItemDrop>(id).Age += step.Seconds;
             Move(step.World, body, step.Seconds);
+            // A stack in lava burns away.
+            if (Vitals.Touches(step.World, body, BlockId.Lava, -0.001f)) ctx.Ecs.GetRef<ItemDrop>(id).Count = 0;
         }
     }
 

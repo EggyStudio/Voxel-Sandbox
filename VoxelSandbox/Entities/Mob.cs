@@ -141,8 +141,9 @@ public sealed partial class Mob
     private float _wait, _panic, _stuck, _walked, _watching;
     private Vector3 _lastPlace;
     private bool _goingHome, _swimming;
-    // How far it has fallen since last on the ground or in water.
-    private float _fallen;
+    // How far it has fallen since last on the ground or in water, and the seconds it has been in
+    // lava since its last harm there.
+    private float _fallen, _lava;
     private Step? _openedDoor;
 
     public Mob(int id, MobRecord record, int seed, EcsWorld? ecs = null)
@@ -268,6 +269,20 @@ public sealed partial class Mob
             if (damage >= 1) Harm(damage);
         }
         _fallen = 0;
+    }
+
+    // Lava in its box harms it by 4 every half second, as it does the player.
+    private void Scald(VoxelWorld world, float seconds)
+    {
+        if (!Vitals.Touches(world, Body, BlockId.Lava, -0.001f))
+        {
+            _lava = 0;
+            return;
+        }
+        _lava += seconds;
+        if (_lava < Vitals.Unharmed) return;
+        _lava = 0;
+        Harm(4);
     }
 
     /// <summary>Takes some health with neither a knock nor a run, as burning does, reddening for a moment.</summary>
@@ -488,6 +503,7 @@ public sealed partial class Mob
         Body.Move(world, Body.Velocity * seconds, keepToEdges: false);
         var moved = Body.Position - before;
         Fall(world, moved.Y, swimming);
+        Scald(world, seconds);
         var along = MathF.Sqrt(moved.X * moved.X + moved.Z * moved.Z);
         ref var pose = ref Pose;
         // A hunter faces its prey as it moves, a skeleton backing away from the player among them.

@@ -790,6 +790,30 @@ public sealed class ScreenTests : IDisposable
     }
 
     [Fact]
+    public void A_Mob_In_Lava_Is_Harmed_As_The_Player_Is_And_A_Stack_In_Lava_Burns()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        Serve(game);
+        Run("voxel.spawning false");
+        // Lava in the ground at the foot of two shafts of stone a block wide, a pig in one and five
+        // coal in the other.
+        foreach (var x in new[] { -12, -16 })
+        {
+            Run($"voxel.fill {x - 1} 4 -13 {x + 1} 5 -11 stone");
+            game.World.SetBlock(x, 4, -12, BlockId.Air);
+            game.World.SetBlock(x, 5, -12, BlockId.Air);
+            game.World.SetBlock(x, 3, -12, BlockId.Lava);
+        }
+        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(-11.5, 3.2, -11.5), 0, MobKinds.Pig.Health, null));
+        game.Drops.Spawn(Items.Coal, 5, LandOrigin.PlaceOf(new LandPlace(-15.5, 3.6, -11.5)), Vector3.Zero);
+        headless.Step(30);
+
+        Assert.True(pig.Health <= MobKinds.Pig.Health - 4, $"the pig keeps {pig.Health} health in lava");
+        Assert.DoesNotContain(game.Drops.All, lying => lying.Drop.Item == Items.Coal);
+    }
+
+    [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {
         using var headless = new HeadlessGame();
