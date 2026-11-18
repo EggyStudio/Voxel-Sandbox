@@ -370,6 +370,14 @@ change.
     world and the player's hands held equal before and after; the lows go to the Reply as a list.
     After item 226.
 
+228. **The lows of item 227 that lose or double an item.** Asked, each with a test that fails first
+    and holds the count of every item kind. From the nine lows the Reply to item 227 lists, each one
+    by which a player can lose a stack or gain one is mended, in one commit or two by kind. The lows
+    that only show a wrong number or a late picture are said in the Reply with the reason each
+    stays, or mended where the mend is a line. After it, the same read is made of what mobs carry
+    and drop, their loot at a death beside an unloaded column or in the frame of a save among them,
+    and its triage sent before any mend.
+
 ## Verdicts
 
 Verdicts 16 and 17 are open, the end request's test red on Linux and macOS in run 44167788522 and on
@@ -1027,3 +1035,50 @@ in 186 s, the seed's step naming its world in 4 s, its `captures/closed.log` nam
 texture left, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing
 in 0.04% of its pixels past 8 levels. `TreeFelling.Worn` gave way to the uses by hand, which
 `FallingTests` reads summed.
+
+Item 228's first part, the nine lows of item 227, in the commit carrying this Reply. Two let a
+player lose or gain a stack and are mended, each with a test that passes three runs in three, fails
+on a copy of the head and holds the count of every item kind, the furnace's slots among them where
+it stands. Four are mended in a line, and three stay.
+
+- A felling begun in survival wore its axe as its logs went after a switch to creative, where they
+  drop nothing, so the axe could break and be lost. An axe wears in a mode that counts items alone,
+  as the logs drop there alone (`VoxelGame.Felled`),
+  `A_Felling_Begun_In_Survival_Wears_Its_Axe_No_Further_In_Creative`. On the head the axe breaks.
+- `voxel.select` in survival and `voxel.furnace` wrote over the stack in the slot, and `voxel.give`
+  with a count of 0 or less gave one. The stack a command takes the place of goes into the
+  inventory, what does not fit thrown ahead of the player (`VoxelGame.Receive`), `voxel.give` throws
+  what does not fit too, and a count under 1 gives nothing.
+  `The_Commands_That_Put_Items_Keep_The_Stacks_They_Take_The_Place_Of_And_Make_Only_Those_Asked`.
+  On the head the coal under the chosen slot is gone.
+
+Mended in a line:
+
+- A shift-click on what a grid makes crafts what the grid made as the click came, and stops where
+  the grid makes another thing (`InventoryWindow.TakeMade`).
+- Right Control with Q at the hotbar throws the stack, as the left does.
+- Escape and E in one frame shut the window, Escape coming first,
+  `Escape_And_E_In_One_Frame_Shut_The_Window`. On the head the window opens again.
+- Nothing is picked up into the emptied inventory in the frame of a death (`VoxelGame.Live`). The
+  count held either way, the stack staying in the inventory rather than spilling.
+
+Left as they stand:
+
+- A click in the creative window writes over a hotbar slot, a stack carried from survival among
+  them. In creative every item is had from its window at a click, so a slot written over there
+  follows the mode's own rule, as Minecraft's creative window does, and a switch of mode carries
+  the inventory whole either way.
+- Q and the number keys do nothing over what a grid makes and over a furnace's output. No item
+  moves, so no count changes, and dropping what a grid makes with Q, as Minecraft does, is a thing
+  the window has not been given.
+- A loot chest broken in a world that saves nothing has its loot again once its column is among
+  the oldest changed past 256 MB, some 80,000 columns. Every change of a column forgotten so goes
+  back to the land's, blocks placed and mined among them, which is the bound on the memory such a
+  world keeps, and a player meets it only in a world the game could make no folder for, told so.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 612
+passing, the new tests passing three times in a row, the headless game's 93 passing three times in
+a row, and the play under the lock taken exclusive with no quiet wait passing in 184 s, the seed's
+step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels
+past 8 levels.

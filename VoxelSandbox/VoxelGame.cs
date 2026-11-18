@@ -1128,7 +1128,7 @@ public sealed class VoxelGame : IDisposable
             _breaking.Stop();
             Eating = 0;
         }
-        if (_captured && keys && Mode.Touches() && IsKeyPressed(Key.Q)) Throw(IsKeyDown(Key.LeftControl));
+        if (_captured && keys && Mode.Touches() && IsKeyPressed(Key.Q)) Throw(IsKeyDown(Key.LeftControl) || IsKeyDown(Key.RightControl));
         ThrowDropped();
         LeaveDrops();
         foreach (var ((x, y, z), stack) in Furnaces.Update(World, seconds))
@@ -1232,6 +1232,8 @@ public sealed class VoxelGame : IDisposable
                 Drops.Spawn(stack.Item, stack.Count, Player.Body.Position + new Vector3(0, 1, 0), new Vector3(MathF.Cos(angle) * 2, 3, MathF.Sin(angle) * 2), wear: stack.Wear);
             }
         Inventory.Clear();
+        // Nothing is picked up into the emptied inventory later in the frame of the death.
+        Step.PickUp = false;
         Capture(false);
     }
 
@@ -1337,8 +1339,10 @@ public sealed class VoxelGame : IDisposable
             }
         if (all) Felling.Finish(World);
         else Felling.Update(World, seconds);
+        // An axe wears in a mode that counts items, where the logs drop as items, so none is worn
+        // away in creative.
         foreach (var (slot, uses) in Felling.WornBy)
-            if (slot >= 0) Wear(uses, slot);
+            if (slot >= 0 && Mode.Lives()) Wear(uses, slot);
         Felling.WornBy.Clear();
         if (!Felling.Busy) _fellingAxes.Clear();
         foreach (var (x, y, z, block) in Felling.Broken)
@@ -1378,6 +1382,14 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>Throws one of the chosen slot's items ahead of the player, or its whole stack, as Q and Control with Q do.</summary>
+    /// <summary>Puts a stack into the inventory as one picked up goes, and throws what does not fit ahead of the player, giving back how many were thrown.</summary>
+    public int Receive(ItemStack stack)
+    {
+        var left = Inventory.Add(stack.Item, stack.Count, stack.Wear);
+        if (left > 0) Drops.Spawn(stack.Item, left, Player.Eye - new Vector3(0, 0.3f, 0), Vector3.Normalize(Player.Look) * 3, ItemDrops.ThrownDelay, stack.Wear);
+        return left;
+    }
+
     public bool Throw(bool all)
     {
         if (Hotbar.Current is not { } stack) return false;
@@ -1417,8 +1429,9 @@ public sealed class VoxelGame : IDisposable
             else if (Menus.Open != Menu.None) Menus.Back();
             else Menus.Open = Menu.Pause;
         }
-        // A dead player's inventory has spilled, so the death's screen takes E as a menu does.
-        if (Press(Key.E) && Mode.Touches() && Menus.Open == Menu.None && !(Mode.Lives() && Vitals.Dead))
+        // A dead player's inventory has spilled, so the death's screen takes E as a menu does, and
+        // an Escape in the same frame comes before E.
+        else if (Press(Key.E) && Mode.Touches() && Menus.Open == Menu.None && !(Mode.Lives() && Vitals.Dead))
         {
             if (InventoryOpen) CloseInventory();
             else InventoryOpen = true;

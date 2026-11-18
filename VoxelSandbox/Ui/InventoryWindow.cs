@@ -309,14 +309,15 @@ public sealed class InventoryWindow
     }
 
     // A click on what the grid makes takes it up, onto the held stack where it is of the same item
-    // and has room, and with Shift crafts as many as the inventory has room for into it.
+    // and has room, and with Shift crafts as many as the inventory has room for into it, of what
+    // the grid made as the click came.
     private void TakeMade(CraftingGrid grid, Inventory inventory)
     {
         if (grid.Recipe is not { } recipe) return;
         if (Shift())
         {
             var into = SlotMoves.FromContainer(inventory);
-            while (grid.Recipe is { } next && SlotMoves.Room(into, next.Result) >= next.Count && grid.Craft() is { } crafted)
+            while (grid.Recipe is { } next && next == recipe && SlotMoves.Room(into, next.Result) >= next.Count && grid.Craft() is { } crafted)
                 SlotMoves.MoveInto(new SlotAt([crafted], 0), into);
             return;
         }

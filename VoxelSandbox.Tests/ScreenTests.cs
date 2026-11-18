@@ -240,6 +240,95 @@ public sealed class ScreenTests : IDisposable
     }
 
     [Fact]
+    public void A_Felling_Begun_In_Survival_Wears_Its_Axe_No_Further_In_Creative()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        Serve(game);
+        game.Mode = GameMode.Survival;
+        // A trunk of eight logs before the player under a crown and an axe with two uses left, cut
+        // in survival.
+        for (int y = 4; y <= 11; y++) game.World.SetBlock(0, y, -2, BlockId.OakLog);
+        for (int dz = -3; dz <= -1; dz++)
+            for (int dx = -1; dx <= 1; dx++)
+                game.World.SetBlock(dx, 12, dz, BlockId.OakLeaves);
+        var axe = Items.Find("stone_axe")!;
+        game.Inventory.Slots[0] = new ItemStack(axe, 1, axe.Durability - 2);
+        game.Hotbar.Selected = 0;
+        Run("voxel.look 0 -30");
+        headless.Step(2);
+        Run("voxel.break");
+        Assert.True(game.Felling.Busy);
+        var (cut, before) = (game.Inventory.Slots[0], Counted(game));
+
+        // The game switched to creative as the trunk falls, where its logs drop nothing.
+        game.Mode = GameMode.Creative;
+        headless.Step(90);
+
+        Assert.Equal(cut, game.Inventory.Slots[0]);
+        Assert.Equal(before, Counted(game));
+    }
+
+    [Fact]
+    public void The_Commands_That_Put_Items_Keep_The_Stacks_They_Take_The_Place_Of_And_Make_Only_Those_Asked()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        Serve(game);
+        game.Mode = GameMode.Survival;
+        var (stone, dirt, glass, sand) = (Items.Of(BlockId.Stone), Items.Of(BlockId.Dirt), Items.Of(BlockId.Glass), Items.Of(BlockId.Sand));
+        // The counts with the furnace's slots among them.
+        game.World.SetBlock(0, 4, -2, BlockId.Furnace);
+        var furnace = game.Furnaces.At(0, 4, -2);
+        SortedDictionary<string, int> All() => furnace.Slots.OfType<ItemStack>().Aggregate(Counted(game), (counted, stack) => With(counted, stack.Item, stack.Count));
+
+        // A stack chosen in survival over a slot holding five coal.
+        Array.Fill(game.Inventory.Slots, null);
+        game.Inventory.Slots[game.Hotbar.Selected] = new ItemStack(Items.Coal, 5);
+        var before = All();
+        Run($"voxel.select {stone.Key}");
+        Assert.Equal(With(before, stone, stone.MostInStack), All());
+
+        // Nothing given for a count of none.
+        before = All();
+        Run("voxel.give stick 0");
+        Assert.Equal(before, All());
+
+        // Five sticks given to a full inventory.
+        Array.Fill(game.Inventory.Slots, new ItemStack(stone, 64));
+        before = All();
+        Run("voxel.give stick 5");
+        Assert.Equal(With(before, Items.Stick, 5), All());
+
+        // A furnace given dirt to smelt and glass to burn, then sand and glass in their places.
+        Array.Fill(game.Inventory.Slots, null);
+        before = All();
+        Run($"voxel.furnace 0 4 -2 {dirt.Key} 3 {glass.Key} 2");
+        Run($"voxel.furnace 0 4 -2 {sand.Key} 4 {glass.Key} 1");
+        Assert.Equal(With(With(With(With(before, dirt, 3), glass, 2), sand, 4), glass, 1), All());
+    }
+
+    [Fact]
+    public void Escape_And_E_In_One_Frame_Shut_The_Window()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        var pressed = new HashSet<Key>();
+        game.Pressed = pressed.Contains;
+        void Press(params Key[] keys)
+        {
+            pressed.UnionWith(keys);
+            headless.Step(1);
+            pressed.Clear();
+        }
+
+        Press(Key.E);
+        Assert.True(game.InventoryOpen);
+        Press(Key.Escape, Key.E);
+        Assert.False(game.InventoryOpen);
+    }
+
+    [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {
         using var headless = new HeadlessGame();

@@ -333,17 +333,22 @@ public static class GameCommands
         if (Game is not { } game) return "no world is loaded";
         if (Items.Find(item) is not { } found) return $"no item is called {item}, and voxel.items lists them";
         var count = game.Mode == GameMode.Creative ? 1 : found.MostInStack;
+        var was = game.Inventory.Slots[game.Hotbar.Selected];
         game.Inventory.Slots[game.Hotbar.Selected] = new ItemStack(found, count);
+        // The stack the slot held goes into the rest of the inventory in a mode that counts items,
+        // what does not fit thrown, and creative writes over it, as its own window does.
+        if (game.Mode.Lives() && was is { } kept) game.Receive(kept);
         return $"slot {game.Hotbar.Selected + 1} holds {count} {found.Key}";
     }
 
-    [Command("voxel.give", "Puts so many of an item into the inventory, as a stack picked up goes: voxel.give <item> [count]")]
+    [Command("voxel.give", "Puts so many of an item into the inventory, as a stack picked up goes, throwing what does not fit: voxel.give <item> [count]")]
     internal static string Give(string item, int count = 1)
     {
         if (Game is not { } game) return "no world is loaded";
         if (Items.Find(item) is not { } found) return $"no item is called {item}, and voxel.items lists them";
-        var left = game.Inventory.Add(found, Math.Max(1, count));
-        return $"{Math.Max(1, count) - left} {found.Key} put in{(left > 0 ? $", {left} did not fit" : "")}";
+        if (count < 1) return $"a count of {count} gives nothing, and the least is 1";
+        var left = game.Receive(new ItemStack(found, count));
+        return $"{count - left} {found.Key} put in{(left > 0 ? $", {left} thrown out for want of room" : "")}";
     }
 
     // Why a place given is none a body may stand at, where it is no number or its height lies past
@@ -413,12 +418,18 @@ public static class GameCommands
         if (item.Length > 0)
         {
             if (Items.Find(item) is not { } input) return $"no item is called {item}";
-            furnace.Slots[VoxelSandbox.Furnace.Input] = new ItemStack(input, Math.Clamp(count, 1, input.MostInStack));
+            Put(VoxelSandbox.Furnace.Input, new ItemStack(input, Math.Clamp(count, 1, input.MostInStack)));
         }
         if (fuel.Length > 0)
         {
             if (Items.Find(fuel) is not { } burns) return $"no item is called {fuel}";
-            furnace.Slots[VoxelSandbox.Furnace.Fuel] = new ItemStack(burns, Math.Clamp(fuelCount, 1, burns.MostInStack));
+            Put(VoxelSandbox.Furnace.Fuel, new ItemStack(burns, Math.Clamp(fuelCount, 1, burns.MostInStack)));
+        }
+        // A stack put in a slot gives the one it takes the place of to the player.
+        void Put(int slot, ItemStack stack)
+        {
+            if (furnace.Slots[slot] is { } was) game.Receive(was);
+            furnace.Slots[slot] = stack;
         }
         string Slot(ItemStack? s) => s is { } stack ? $"{stack.Count} {stack.Item.Key}" : "nothing";
         return $"smelting {Slot(furnace.Slots[0])}, fuel {Slot(furnace.Slots[1])}, made {Slot(furnace.Slots[2])}; "
