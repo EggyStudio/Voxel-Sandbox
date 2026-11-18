@@ -31,7 +31,7 @@ public partial struct MobMind
         foreach (var (_, mob, body, _, _) in ctx.Ecs.Query<Mob, Body, MobLife, MobPose>().Without<MobHostile>())
         {
             var (cx, cz) = Mobs.ColumnOf(body.Position);
-            if (Mobs.Around(step.World, cx, cz)) mob.Update(step.World, null, step.Eye, step.Hour, step.Seconds, events);
+            if (Mobs.Around(step.World, cx, cz)) mob.Update(step.World, null, step.Eye, step.Hour, step.Seconds, events, step.Raining);
         }
         foreach (var e in events) ctx.World.SendEvent(e);
     }

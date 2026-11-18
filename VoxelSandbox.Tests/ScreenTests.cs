@@ -720,6 +720,49 @@ public sealed class ScreenTests : IDisposable
     }
 
     [Fact]
+    public void An_Undead_Mob_Burns_By_Day_Under_A_Clear_Sky_And_Not_In_The_Rain()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        Serve(game);
+        Run("voxel.spawning false");
+        Run("voxel.time 12");
+        // The rain set falling on the flat world's plains, and a zombie under the open sky at noon.
+        Run("voxel.weather turned");
+        headless.Step(60);
+        var zombie = game.Mobs.Add(new MobRecord(MobKinds.Zombie, 0, new LandPlace(6.5, 4, -5.5), 0, MobKinds.Zombie.Health, null));
+        headless.Step(150);
+        Assert.Equal(MobKinds.Zombie.Health, zombie.Health);
+
+        // The sky cleared, and it burns.
+        Run("voxel.weather clear");
+        headless.Step(150);
+        Assert.True(zombie.Health < MobKinds.Zombie.Health, $"the zombie keeps {zombie.Health} health under the clear sky");
+    }
+
+    [Fact]
+    public void A_Mob_Hit_In_The_Air_Falls_On_And_One_Hit_On_The_Ground_Is_Knocked_Up()
+    {
+        using var headless = new HeadlessGame();
+        var game = headless.Game;
+        Serve(game);
+        Run("voxel.spawning false");
+        // A pig dropped from twenty blocks over the ground, hit once from the side as it falls.
+        var pig = game.Mobs.Add(new MobRecord(MobKinds.Pig, 0, new LandPlace(6.5, 24, -5.5), 0, MobKinds.Pig.Health, null));
+        headless.Step(10);
+        Assert.True(pig.Body.Velocity.Y < 0 && !pig.Body.OnGround, "the pig is not falling");
+        var falling = pig.Body.Velocity.Y;
+        Assert.True(pig.Hit(pig.Body.Position - Vector3.UnitX, 1));
+        Assert.Equal(falling, pig.Body.Velocity.Y);
+
+        // Landed and red no more, hit again.
+        headless.Step(120);
+        Assert.True(pig.Body.OnGround, "the pig has not landed");
+        Assert.True(pig.Hit(pig.Body.Position - Vector3.UnitX, 1));
+        Assert.True(pig.Body.Velocity.Y > 0, "the pig hit on the ground is not knocked up");
+    }
+
+    [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {
         using var headless = new HeadlessGame();

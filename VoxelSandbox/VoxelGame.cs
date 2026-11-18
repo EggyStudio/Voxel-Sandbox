@@ -1119,7 +1119,7 @@ public sealed class VoxelGame : IDisposable
         Player.MaySprint = !Mode.Lives() || Vitals.MaySprint;
         (Step.World, Step.Player, Step.Seconds, Step.PickUp) = (World, Player.Body, seconds, alive && Mode.Touches());
         (Step.Look, Step.Move) = (_captured && alive, keys && !screen && alive);
-        (Step.Eye, Step.Hour, Step.Hunted, Step.MobsStill) = (Player.Eye, Sky.Hour, Mode.Lives() && !Vitals.Dead, Mobs.Still);
+        (Step.Eye, Step.Hour, Step.Hunted, Step.MobsStill, Step.Raining) = (Player.Eye, Sky.Hour, Mode.Lives() && !Vitals.Dead, Mobs.Still, _overcast >= 0.5f);
     }
 
     /// <summary>
@@ -2061,6 +2061,9 @@ public sealed class GameStep
 
     /// <summary>Whether the hostile mobs hunt the player, as in survival while it lives.</summary>
     public bool Hunted { get; set; }
+
+    /// <summary>Whether rain falls where the land's climate brings it, the weather more than half turned, which puts out the undead burning by day.</summary>
+    public bool Raining { get; set; }
 
     /// <summary>Whether the mobs stand still and think nothing, as for a capture.</summary>
     public bool MobsStill { get; set; }

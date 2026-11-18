@@ -1120,3 +1120,36 @@ passing, the headless game's 95 passing three times in a row, and the play under
 exclusive with no quiet wait passing in 185 s, the seed's step naming its world in 5 s, its
 `captures/closed.log` naming no fault and no texture left, and its captures within 9 levels of the
 warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels past 8 levels.
+
+A night in the survival world, played in a headless game as a player meets each of the mobs' rules,
+in the commit carrying this Reply. No item was made or lost, and two rules broke.
+
+- A zombie under the open sky at noon burned in the rain as under a clear sky. The undead do not
+  burn by day where rain falls on them, the weather more than half turned over land whose climate
+  brings rain (`GameStep.Raining`, `Mob.Burn`), and snow does not put them out.
+  `An_Undead_Mob_Burns_By_Day_Under_A_Clear_Sky_And_Not_In_The_Rain` keeps a zombie whole five
+  seconds in the rain at noon and finds it burning once the sky clears. On the head it loses five
+  health in the rain.
+- A mob hit as it fell was knocked up at the speed of one hit on the ground, so a blow to a mob
+  falling from a height stopped its fall. A hit knocks a mob up off the ground alone, and one in
+  the air falls on as it was falling (`Mob.Hit`).
+  `A_Mob_Hit_In_The_Air_Falls_On_And_One_Hit_On_The_Ground_Is_Knocked_Up` drops a pig from twenty
+  blocks up, hits it in the tenth frame of its fall and finds it falling as fast, then hits it
+  landed and finds it knocked up. On the head the hit in the air sends it up.
+
+Found holding: hostile mobs spawn only where no block's light reaches and the sky's, less the
+night's darkening, is no brighter than a roll, on an opaque block and out of water. A zombie under a
+roof or in water at noon keeps its health. A zombie in water floats at its top. A zombie killed
+drops its loot once and is taken away. A zombie in a room of stone with a shut door, the player
+outside at night, stays in the room, the door shut, as doors open to the mobs that open them alone.
+
+Two rules of the source the game does not have, said here and not built: a player's blow struck
+falling does no more than one struck standing, as no hit is a critical one, and a mob takes no harm
+from a fall.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 632
+passing, the new tests passing three times in a row, the headless game's 95 passing three times in a
+row, and the play under the lock taken exclusive with no quiet wait passing in 184 s, the seed's
+step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels
+past 8 levels.

@@ -61,7 +61,7 @@ public partial struct MobHostile
         foreach (var (_, mob, body, _, _, _) in ctx.Ecs.Query<Mob, Body, MobLife, MobPose, MobHostile>())
         {
             var (cx, cz) = Mobs.ColumnOf(body.Position);
-            if (Mobs.Around(step.World, cx, cz)) mob.Update(step.World, target, step.Eye, step.Hour, step.Seconds, events);
+            if (Mobs.Around(step.World, cx, cz)) mob.Update(step.World, target, step.Eye, step.Hour, step.Seconds, events, step.Raining);
         }
         foreach (var e in events) ctx.World.SendEvent(e);
     }
@@ -240,13 +240,15 @@ public sealed partial class Mob
         pose.HeadPitch += (Math.Clamp(MathF.Atan2(to.Y, flat), -0.8f, 0.8f) - pose.HeadPitch) * MathF.Min(1, 8 * seconds);
     }
 
-    // Under the open sky by day, out of water, a point of health a second, as Minecraft's undead burn.
-    private void Burn(VoxelWorld world, float hour, float seconds)
+    // Under the open sky by day, out of water and out of the rain, a point of health a second, as
+    // Minecraft's undead burn.
+    private void Burn(VoxelWorld world, float hour, float seconds, bool raining)
     {
         var head = Body.Position + new Vector3(0, Kind.Height - 0.1f, 0);
         var (x, y, z) = LandOrigin.BlockOf(head);
         ref var hostile = ref Hostile;
-        if (hour < 6.5f || hour > 17.5f || _swimming || world.GetLight(x, y, z).Sky < Lighting.Max)
+        if (hour < 6.5f || hour > 17.5f || _swimming || world.GetLight(x, y, z).Sky < Lighting.Max
+            || raining && world.BiomeAt(x, z)?.Precipitation == Precipitation.Rain)
         {
             hostile.Burn = 0;
             return;

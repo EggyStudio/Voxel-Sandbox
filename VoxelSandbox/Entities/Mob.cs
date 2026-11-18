@@ -230,7 +230,8 @@ public sealed partial class Mob
         var away = Body.Position - from;
         away.Y = 0;
         away = away.LengthSquared() > 1e-6f ? Vector3.Normalize(away) : new Vector3(MathF.Sin(Yaw), 0, MathF.Cos(Yaw));
-        Body.Velocity = new Vector3(away.X * 7, 6, away.Z * 7);
+        // It is knocked up off the ground, and one in the air falls on as it was falling.
+        Body.Velocity = new Vector3(away.X * 7, Body.OnGround ? 6 : Body.Velocity.Y, away.Z * 7);
         if (life.Dying >= 0) return true;
         // A hostile mob hit turns on the player wherever it is, where a passive one runs.
         if (Kind.Hostile) Hostile.Angry = true;
@@ -246,13 +247,13 @@ public sealed partial class Mob
     public void Harm(int damage) => Life.Harm(damage);
 
     /// <summary>Thinks and moves for a frame of so many seconds, with the player's eye and the hour of the day, hunting no one.</summary>
-    public void Update(VoxelWorld world, Vector3 playerEye, float hour, float seconds) => Update(world, null, playerEye, hour, seconds, []);
+    public void Update(VoxelWorld world, Vector3 playerEye, float hour, float seconds, bool raining = false) => Update(world, null, playerEye, hour, seconds, [], raining);
 
     /// <summary>
     /// Thinks and moves for a frame of so many seconds, a hostile mob hunting the target where one is
     /// given and adding what it does to the player, its strikes, its shots and its blast, to <paramref name="events"/>.
     /// </summary>
-    public void Update(VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events)
+    public void Update(VoxelWorld world, MobTarget? target, Vector3 playerEye, float hour, float seconds, List<MobEvent> events, bool raining = false)
     {
         var middle = Body.Position + new Vector3(0, Kind.Height * 0.5f, 0);
         var (mx, my, mz) = LandOrigin.BlockOf(middle);
@@ -262,7 +263,7 @@ public sealed partial class Mob
         // A mob lying dying thinks no more, and its life's behavior counts its time.
         if (Dying < 0)
         {
-            if (Kind.Burns) Burn(world, hour, seconds);
+            if (Kind.Burns) Burn(world, hour, seconds, raining);
             (wish, jump) = Kind.Hostile && Hunts(world, target) is { } prey ? Hunt(world, prey, seconds, events) : Think(world, playerEye, hour, seconds);
         }
         Move(world, wish, jump, seconds);
