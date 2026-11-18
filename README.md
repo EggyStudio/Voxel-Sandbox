@@ -387,7 +387,11 @@ each block, up to seven, each level standing lower in its cell, and it dries bac
 taken away. Two sources with a gap between them over ground fill it with a third. A lake the world
 generates stands still until a block beside it changes, water half flowed when its land was left or
 the world closed goes on as the land loads again, and water beside land not loaded keeps its level
-until that land loads.
+until that land loads. Lava lies still as the world generates it. Water washes away a torch or a
+crop in a cell it flows into, which drops as it does broken, and makes obsidian of the lava
+beside it or under it, which an iron pickaxe breaks. A bucket, made of three iron ingots, takes up a
+source of water or lava whole and sets it in the cell before the face it is used on, flowing water
+giving it nothing, and set on the other of the two it makes obsidian.
 
 ## Torches, lanterns and end rods
 

@@ -55,7 +55,11 @@ snow, and `0088178`, the sections the flood ahead alone sees held for the releas
 on 2026-11-18, build 44248652206 red on macOS alone in the loading screen's test. `cbc3faf`, the
 wheat's light, and `4148c5e`, a sent section standing only once taken in, pushed at 08:39, build
 44260565966 green on every runner at 09:47. `96fce2d`, four tests waiting out each frame's workers,
-and `080b7e6`, the undead out of the rain and a hit in the air, pushed at 09:48.
+and `080b7e6`, the undead out of the rain and a hit in the air, pushed at 09:48. `5a89dd6`, mobs'
+fall damage, and `231d504`, the sections test counting only what the eye's flood does not see,
+pushed at 11:35 on 2026-11-18, build 44286901796 green on every runner, the first of the two green
+runs Verdict 21 waits for. `f7b57ec`, lava harming mobs and burning stacks, and `2b7adfa`, the
+washing and obsidian, pushed at 12:40.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -909,4 +913,44 @@ passing, the new tests passing three times in a row, the headless game's 96 pass
 row, and the play under the lock taken exclusive with no quiet wait passing in 184 s, the seed's
 step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
 captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels
+past 8 levels.
+
+Buckets, built in the commit carrying this Reply as decided from above, each test passing three runs
+in three and failing on a copy of the head given the three items alone.
+
+- A bucket of three iron ingots in a vee, stacking to sixteen, and a water bucket and a lava bucket
+  each alone, the three appended to the items so no other's id moves, drawn from the packs'
+  `item/bucket`, `item/water_bucket` and `item/lava_bucket` and as iron walls with what they carry
+  across the top without a pack.
+- An empty bucket takes up the source of water or lava the eye's ray meets first within reach,
+  passing through flowing water (`VoxelRay.Cast` asked for sources), a stack of them giving one up
+  and the full bucket going into the inventory as a stack picked up does. A full one sets its
+  source in the cell before the face the crosshair rests on, in air or over flowing water, and set
+  on lava a water bucket makes obsidian of it and a lava bucket set on water makes obsidian of that,
+  emptying either way (`VoxelGame.Pour`). Set on a source of its own kind it is kept full, so a
+  source goes each way whole. `voxel.place` says `water is taken up in the bucket` for a source
+  taken.
+- `A_Bucket_Takes_Up_A_Source_Whole_Leaves_None_Behind_And_Sets_It_Back_While_A_Flowing_Cell_Gives_Nothing`
+  aims two buckets in survival at flowing water three cells from its source, and nothing is taken.
+  With that source gone and another set on the ray, one is taken, no water is left in the box about
+  the player once its flow has dried, and the bucket set back on the ground leaves one source and
+  two empty buckets. On the head nothing is taken.
+- `A_Bucket_Of_Lava_Or_Water_Set_On_The_Other_Makes_Obsidian_And_A_Full_Bucket_Is_Kept_By_A_Save`
+  takes up a source of lava, sets it on a source of water and gets obsidian, sets a water bucket on
+  lava and gets obsidian, and a water bucket held at a save is in its slot in the copy opened. On
+  the head the lava is not taken.
+
+The creative mode empties and fills its buckets as survival does. Lava placed beside water is
+quenched by the water's next flow, as `SetBlock` asks the cells about it to look again.
+
+`.github/devlog/2026-11-18-item-229-bucket.webp` is an empty bucket, water in a pit to its left and
+lava in one to its right, then the water taken up and the bucket full, then the bucket set on the
+lava and the lava obsidian, in the flat world at noon with Bare Bones on. The README's paragraph on
+water names the washing, the obsidian and the bucket.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 639
+passing, the new tests passing three times in a row, the headless game's 96 passing three times in a
+row, and the play under the lock taken exclusive with no quiet wait passing in 184 s, the seed's
+step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels
 past 8 levels.

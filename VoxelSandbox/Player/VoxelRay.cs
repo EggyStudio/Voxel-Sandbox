@@ -20,8 +20,8 @@ public readonly record struct BlockHit(int X, int Y, int Z, int NormalX, int Nor
 /// </remarks>
 public static class VoxelRay
 {
-    /// <summary>The first block the crosshair rests on along a ray within <paramref name="reach"/>, passing through air and water, or null.</summary>
-    public static BlockHit? Cast(VoxelWorld world, Vector3 origin, Vector3 direction, float reach)
+    /// <summary>The first block the crosshair rests on along a ray within <paramref name="reach"/>, passing through air and water, or null, or where <paramref name="sources"/> asks, the first source of water or lava, as an empty bucket meets one, passing through flowing water.</summary>
+    public static BlockHit? Cast(VoxelWorld world, Vector3 origin, Vector3 direction, float reach, bool sources = false)
     {
         direction = Vector3.Normalize(direction);
         // A way that is no number, as a heading that is none gives the eye, meets no block.
@@ -37,6 +37,7 @@ public static class VoxelRay
         {
             int landX = x + LandOrigin.X, landZ = z + LandOrigin.Z;
             var block = world.GetBlock(landX, y, landZ);
+            if (sources && block is BlockId.Water or BlockId.Lava) return new BlockHit(landX, y, landZ, nx, ny, nz, traveled);
             if (Blocks.IsTarget(block))
             {
                 if (world.ShapeAt(landX, y, landZ) is not { } shape) return new BlockHit(landX, y, landZ, nx, ny, nz, traveled);

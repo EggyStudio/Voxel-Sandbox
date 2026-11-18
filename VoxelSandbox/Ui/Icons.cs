@@ -97,6 +97,7 @@ public static class Icons
     private const float MostZoom = 2.5f;
 
     private static readonly Color Handle = new(104, 76, 44);
+    private static readonly Color Iron = new(190, 190, 196);
     private static readonly Color BoneWhite = new(226, 222, 206);
 
     /// <summary>Where an item's icon lies in the atlas.</summary>
@@ -338,9 +339,15 @@ public static class Icons
                 "raw_beef" or "steak" => [M(0.22f, 0.6f, 0.78f, 0.42f, 0.36f, c), M(0.3f, 0.62f, 0.7f, 0.48f, 0.05f, new Color(240, 222, 204))],
                 "raw_mutton" or "cooked_mutton" => [M(0.3f, 0.7f, 0.62f, 0.38f, 0.32f, c), M(0.62f, 0.38f, 0.8f, 0.2f, 0.09f, BoneWhite), Dot(0.82f, 0.16f, 0.07f, BoneWhite)],
                 "raw_chicken" or "cooked_chicken" => [Dot(0.42f, 0.6f, 0.26f, c), M(0.56f, 0.46f, 0.78f, 0.24f, 0.09f, BoneWhite), Dot(0.8f, 0.2f, 0.07f, BoneWhite), Dot(0.84f, 0.26f, 0.06f, BoneWhite)],
+                // A bucket's iron walls, and what it carries across its top.
+                "bucket" => [.. Bucket(c)],
+                "water_bucket" or "lava_bucket" => [.. Bucket(Iron), M(0.32f, 0.36f, 0.68f, 0.36f, 0.12f, c)],
                 _ => [Dot(0.5f, 0.5f, 0.32f, c)],
             },
         };
+
+        static Mark[] Bucket(Color iron) =>
+            [M(0.26f, 0.3f, 0.36f, 0.8f, 0.09f, iron), M(0.74f, 0.3f, 0.64f, 0.8f, 0.09f, iron), M(0.36f, 0.8f, 0.64f, 0.8f, 0.09f, iron), M(0.26f, 0.3f, 0.74f, 0.3f, 0.06f, iron)];
     }
 
     // An item drawn from its marks, then given its edge, an outline in a dark shade of the color

@@ -1615,11 +1615,12 @@ public sealed class VoxelGame : IDisposable
     }
 
     /// <summary>
-    /// Opens the crafting table or the furnace the crosshair rests on, opens or shuts the door it rests on, or places
-    /// the chosen slot's block against the face it rests on, using one up in survival, as a right
-    /// click does, placing nothing in adventure and doing nothing in spectator.
+    /// Opens the crafting table or the furnace the crosshair rests on, opens or shuts the door it
+    /// rests on, takes up or sets a source of water or lava with a bucket, or places the chosen
+    /// slot's block against the face it rests on, using one up in survival, as a right click does,
+    /// placing nothing in adventure and doing nothing in spectator.
     /// </summary>
-    /// <returns>The table or furnace opened, the door's half turned or the block placed, or air where nothing happened.</returns>
+    /// <returns>The table or furnace opened, the door's half turned, the source taken or set or the block placed, or air where nothing happened.</returns>
     public BlockId Use()
     {
         if (!Mode.Touches()) return BlockId.Air;
@@ -1663,9 +1664,48 @@ public sealed class VoxelGame : IDisposable
             if (Mode.Lives()) Wear(1);
             return BlockId.Fire;
         }
+        if (!toggles && Hotbar.Current is { } held && Pour(held) is { } poured) return poured;
         var placed = Place(Hotbar.CurrentBlock);
         if (Mode == GameMode.Survival && !toggles && placed != BlockId.Air) Inventory.Take(Hotbar.Selected);
         return placed;
+    }
+
+    // An empty bucket takes up the source of water or lava the eye's ray meets first, passing
+    // through flowing water, and a full one sets its source in the cell against the face the
+    // crosshair rests on, in air or over flowing water, or makes obsidian of the lava a bucket of
+    // water is set on or the water a bucket of lava is set on, as water reaching lava does, so a
+    // source goes each way whole. Null for an item that is no bucket.
+    private BlockId? Pour(ItemStack held)
+    {
+        if (held.Item == Items.Bucket)
+        {
+            if (VoxelRay.Cast(World, Player.Eye, Player.Look, Reach, sources: true) is not { } met) return BlockId.Air;
+            var source = World.GetBlock(met.X, met.Y, met.Z);
+            if (source is not (BlockId.Water or BlockId.Lava) || !World.SetBlock(met.X, met.Y, met.Z, BlockId.Air)) return BlockId.Air;
+            var full = new ItemStack(source == BlockId.Water ? Items.WaterBucket : Items.LavaBucket, 1);
+            if (held.Count == 1) Inventory.Slots[Hotbar.Selected] = full;
+            else
+            {
+                Inventory.Slots[Hotbar.Selected] = held with { Count = held.Count - 1 };
+                Receive(full);
+            }
+            return source;
+        }
+        if (held.Item != Items.WaterBucket && held.Item != Items.LavaBucket) return null;
+        if (Target is not { Inside: false } hit) return BlockId.Air;
+        var (x, y, z) = hit.Beside;
+        var fluid = held.Item == Items.WaterBucket ? BlockId.Water : BlockId.Lava;
+        var there = World.GetBlock(x, y, z);
+        var set = there switch
+        {
+            BlockId.Air => fluid,
+            BlockId.Lava => fluid == BlockId.Water ? BlockId.Obsidian : BlockId.Air,
+            _ when Blocks.IsWater(there) => fluid == BlockId.Lava ? BlockId.Obsidian : there == BlockId.Water ? BlockId.Air : BlockId.Water,
+            _ => BlockId.Air,
+        };
+        if (set == BlockId.Air || !World.SetBlock(x, y, z, set)) return BlockId.Air;
+        Inventory.Slots[Hotbar.Selected] = new ItemStack(Items.Bucket, 1);
+        return set;
     }
 
     /// <summary>

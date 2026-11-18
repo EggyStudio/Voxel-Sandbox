@@ -488,12 +488,14 @@ public static class GameCommands
     internal static string Break() =>
         Game is not { } game ? "no world is loaded" : game.Break() ? "the block is broken" : "no block within reach can be broken";
 
-    [Command("voxel.place", "Places the hotbar's chosen block against the face the crosshair rests on, using one up in survival, or opens a crafting table or opens or shuts a door, as a right click does")]
+    [Command("voxel.place", "Places the hotbar's chosen block against the face the crosshair rests on, using one up in survival, or opens a crafting table or opens or shuts a door, or takes up or sets a source with a bucket, as a right click does")]
     internal static string Place()
     {
         if (Game is not { } game) return "no world is loaded";
         var (atTable, atFurnace, atChest) = (game.AtTable, game.AtFurnace, game.AtChest);
+        var empty = game.Hotbar.Current?.Item == Items.Bucket;
         var used = game.Use();
+        if (empty && used is BlockId.Water or BlockId.Lava) return $"{Blocks.Get(used).Key} is taken up in the bucket";
         if (!atTable && game.AtTable) return "the crafting table is opened";
         if (atFurnace is null && game.AtFurnace is { } at) return $"the furnace at {at.X}, {at.Y}, {at.Z} is opened";
         if (atChest is null && game.AtChest is { } box) return $"the chest at {box.X}, {box.Y}, {box.Z} is opened";

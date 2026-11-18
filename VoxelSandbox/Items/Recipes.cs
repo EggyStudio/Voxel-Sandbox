@@ -76,6 +76,7 @@ public static class Recipes
             // or one over the other covers but for the corners.
             R(Items.FlintAndSteel, 1, ["IF"], ('I', [Items.IronIngot]), ('F', [Items.Flint])),
             R(Items.FlintAndSteel, 1, ["I", "F"], ('I', [Items.IronIngot]), ('F', [Items.Flint])),
+            R(Items.Bucket, 1, ["I I", " I "], ('I', [Items.IronIngot])),
             R(I(BlockId.OakFence), 3, ["PSP", "PSP"], ('P', Planks), ('S', Stick)),
             R(I(BlockId.OakDoor), 3, ["PP", "PP", "PP"], ('P', Planks)),
             R(I(BlockId.HayBale), 1, ["WWW", "WWW", "WWW"], ('W', [Items.Wheat])),

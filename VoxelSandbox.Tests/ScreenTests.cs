@@ -861,6 +861,118 @@ public sealed class ScreenTests : IDisposable
         for (int x = -10; x <= -8; x++) Assert.Equal(BlockId.Obsidian, game.World.GetBlock(x, 3, -26));
     }
 
+    // The sources of a fluid in a box about the place the player begins at, and the cells of it.
+    private static (int Sources, int Cells) Fluid(VoxelGame game, BlockId source)
+    {
+        var (sources, cells) = (0, 0);
+        for (int x = -10; x <= 10; x++)
+            for (int z = -14; z <= 6; z++)
+                for (int y = 2; y <= 8; y++)
+                {
+                    var block = game.World.GetBlock(x, y, z);
+                    if (block == source) sources++;
+                    if (block == source || source == BlockId.Water && Blocks.IsWater(block)) cells++;
+                }
+        return (sources, cells);
+    }
+
+    [Fact]
+    public void A_Bucket_Takes_Up_A_Source_Whole_Leaves_None_Behind_And_Sets_It_Back_While_A_Flowing_Cell_Gives_Nothing()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        Serve(game);
+        game.Mode = GameMode.Survival;
+        var (bucket, full) = (Items.Find("bucket")!, Items.Find("water_bucket")!);
+        game.Inventory.Slots[0] = new ItemStack(bucket, 2);
+        game.Hotbar.Selected = 0;
+        Run("voxel.look 0 -30");
+        headless.Step(2);
+        // A source three blocks past where the crosshair meets the ground, its flow along the ray.
+        game.World.SetBlock(0, 4, -6, BlockId.Water);
+        headless.Step(120);
+        Assert.Equal("nothing can be placed there", Run("voxel.place"));
+        Assert.Equal(new ItemStack(bucket, 2), game.Inventory.Slots[0]);
+        Assert.Equal(0, Counted(game).GetValueOrDefault(full.Key));
+
+        // That source gone and its flow dry, another set on the ray.
+        game.World.SetBlock(0, 4, -6, BlockId.Air);
+        headless.Step(200);
+        game.World.SetBlock(0, 4, -3, BlockId.Water);
+        headless.Step(30);
+        Assert.Equal(1, Fluid(game, BlockId.Water).Sources);
+        Assert.Equal("water is taken up in the bucket", Run("voxel.place"));
+        headless.Step(200);
+        Assert.Equal((0, 0), Fluid(game, BlockId.Water));
+        Assert.Equal(1, Counted(game).GetValueOrDefault(full.Key));
+        Assert.Equal(new ItemStack(bucket, 1), game.Inventory.Slots[0]);
+
+        // The full bucket moved to the hotbar's second slot and set back on the ground.
+        game.Inventory.Slots[Array.FindIndex(game.Inventory.Slots, s => s?.Item == full)] = null;
+        game.Inventory.Slots[1] = new ItemStack(full, 1);
+        game.Hotbar.Selected = 1;
+        Run("voxel.place");
+        headless.Step(30);
+        Assert.Equal(1, Fluid(game, BlockId.Water).Sources);
+        Assert.Equal(0, Counted(game).GetValueOrDefault(full.Key));
+        Assert.Equal(2, Counted(game).GetValueOrDefault(bucket.Key));
+    }
+
+    [Fact]
+    public void A_Bucket_Of_Lava_Or_Water_Set_On_The_Other_Makes_Obsidian_And_A_Full_Bucket_Is_Kept_By_A_Save()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var (world, copy) = (Path.Combine(root, "world"), Path.Combine(root, "copy"));
+        var (bucket, water, lava) = (Items.Find("bucket")!, Items.Find("water_bucket")!, Items.Find("lava_bucket")!);
+        try
+        {
+            using (var headless = new HeadlessGame(save: world, still: true))
+            {
+                var game = headless.Game;
+                Serve(game);
+                game.Mode = GameMode.Survival;
+                game.Inventory.Slots[0] = new ItemStack(bucket, 1);
+                game.Hotbar.Selected = 0;
+                Run("voxel.look 0 -30");
+                headless.Step(2);
+                // A source of lava on the ray taken up whole.
+                game.World.SetBlock(0, 4, -3, BlockId.Lava);
+                headless.Step(2);
+                Assert.Equal("lava is taken up in the bucket", Run("voxel.place"));
+                Assert.Equal(new ItemStack(lava, 1), game.Inventory.Slots[0]);
+                Assert.Equal(0, Fluid(game, BlockId.Lava).Sources);
+
+                // The lava set on a source of water makes obsidian of it.
+                game.World.SetBlock(0, 4, -3, BlockId.Water);
+                headless.Step(2);
+                Run("voxel.place");
+                Assert.Equal(BlockId.Obsidian, game.World.GetBlock(0, 4, -3));
+                Assert.Equal(new ItemStack(bucket, 1), game.Inventory.Slots[0]);
+                headless.Step(200);
+
+                // A bucket of water set on lava makes obsidian of the lava, the water's flow dry.
+                game.World.SetBlock(0, 4, -3, BlockId.Lava);
+                game.Inventory.Slots[0] = new ItemStack(water, 1);
+                headless.Step(2);
+                Run("voxel.place");
+                Assert.Equal(BlockId.Obsidian, game.World.GetBlock(0, 4, -3));
+                Assert.Equal(new ItemStack(bucket, 1), game.Inventory.Slots[0]);
+
+                // A full bucket held as the world is saved.
+                game.Inventory.Slots[1] = new ItemStack(water, 1);
+                game.SaveWorld();
+                HeadlessGameTests.CopyFolder(world, copy);
+            }
+
+            using var again = new HeadlessGame(save: copy, still: true);
+            Assert.Equal(new ItemStack(water, 1), again.Game.Inventory.Slots[1]);
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
     [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {

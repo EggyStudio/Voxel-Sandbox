@@ -76,6 +76,9 @@ public static class Items
     public static readonly Item Gunpowder = Find("gunpowder")!;
     public static readonly Item Flint = Find("flint")!;
     public static readonly Item FlintAndSteel = Find("flint_and_steel")!;
+    public static readonly Item Bucket = Find("bucket")!;
+    public static readonly Item WaterBucket = Find("water_bucket")!;
+    public static readonly Item LavaBucket = Find("lava_bucket")!;
     public static readonly Item String = Find("string")!;
     public static readonly Item SpiderEye = Find("spider_eye")!;
     public static readonly Item IronIngot = Find("iron_ingot")!;
@@ -154,6 +157,11 @@ public static class Items
                 });
         // Flint and steel, which lights TNT, and wears out after the source's 64 uses.
         all.Add(new Item("flint_and_steel", "Flint and Steel", new Color(120, 120, 124), null) { Id = all.Count, MostInStack = 1, Durability = 64 });
+        // A bucket of iron, empty ones stacking to sixteen as the source's, and one carrying a
+        // source of water or of lava each alone.
+        all.Add(new Item("bucket", "Bucket", new Color(190, 190, 196), null) { Id = all.Count, MostInStack = 16 });
+        all.Add(new Item("water_bucket", "Water Bucket", new Color(60, 100, 220), null) { Id = all.Count, MostInStack = 1 });
+        all.Add(new Item("lava_bucket", "Lava Bucket", new Color(236, 110, 24), null) { Id = all.Count, MostInStack = 1 });
         return [.. all];
     }
 

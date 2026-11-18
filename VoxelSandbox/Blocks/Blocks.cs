@@ -600,8 +600,8 @@ public static class Blocks
             Same(BlockId.DeepslateLapisOre, "deepslate_lapis_ore", "Deepslate Lapis Ore", Surfaces.DeepslateLapisOre),
             Same(BlockId.DeepslateDiamondOre, "deepslate_diamond_ore", "Deepslate Diamond Ore", Surfaces.DeepslateDiamondOre),
             Same(BlockId.DeepslateEmeraldOre, "deepslate_emerald_ore", "Deepslate Emerald Ore", Surfaces.DeepslateEmeraldOre),
-            // Lava is no item, as fire is none, since a bucket would carry it, and it cannot be broken or
-            // aimed at, as water cannot.
+            // Lava is no item, as fire is none, since a bucket carries it, and it cannot be broken
+            // or aimed at, as water cannot.
             Same(BlockId.Lava, "lava", "Lava", Surfaces.Lava, breakable: false, light: 15, kind: BlockKind.Water) with { HeldAs = BlockId.Air },
             Same(BlockId.MossBlock, "moss_block", "Moss Block", Surfaces.Moss),
             Plant(BlockId.MossCarpet, "moss_carpet", "Moss Carpet", BlockShape.Carpet(Surfaces.Moss), Surfaces.Moss),
