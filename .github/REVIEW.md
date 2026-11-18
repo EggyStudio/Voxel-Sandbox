@@ -881,3 +881,32 @@ row, and the play under the lock taken exclusive with no quiet wait passing in 1
 step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
 captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.03% of its pixels
 past 8 levels.
+
+Two of the rules of water the play of item 229 found missing, built in the commit carrying this
+Reply, each with a test that passes three runs in three and fails on a copy of the head.
+
+- Flowing water washes away a torch, standing or on a wall, and young or ripe wheat in a cell it
+  flows into, each dropping as a block falling with its support does, once (`Fluids.Wash`).
+  `Flowing_Water_Washes_Away_A_Torch_And_Crops_Each_Leaving_Its_Drop_Once` sets a torch, young
+  wheat and ripe wheat two blocks about a source on the ground, and the water takes each cell and
+  leaves one torch, one wheat and two to four seeds. On the head the water stops at each.
+- Water makes obsidian of the lava beside it or under it as it flows (`Fluids.Flow`), a block of
+  its own, the default packs' obsidian and that picture's average for the game's own surface,
+  broken in its 50 by an iron pickaxe, the source's diamond one being none the game has.
+  `Water_Reaching_Lava_Makes_Obsidian_Of_It` sets a source beside the end of one pool of lava in
+  the ground and pours one over the middle of another, and the lava the water reaches is obsidian,
+  the first pool's far end lava still. On the head it is all lava.
+
+Lava does not flow in the game, lying as its pools are generated, so of the source's three the
+water makes obsidian alone. The cobblestone of flowing lava meeting water and the stone of lava
+flowing down onto it wait for lava that flows. Buckets are not built.
+
+`.github/devlog/2026-11-18-item-229-water-over-lava.webp` is water poured over a pool of lava in a
+rim of stone, before and after, with Bare Bones on.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 637
+passing, the new tests passing three times in a row, the headless game's 96 passing three times in a
+row, and the play under the lock taken exclusive with no quiet wait passing in 184 s, the seed's
+step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 9 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels
+past 8 levels.

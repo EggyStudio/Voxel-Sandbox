@@ -319,6 +319,8 @@ public static class Surfaces
     // The wheat the seeds plant, green and short, the average of the default packs' picture of it,
     // after the rest so no surface before it takes another number.
     public static readonly int YoungWheat = Add("young_wheat", new Color(45, 144, 20));
+    // Obsidian, the average of the default packs' picture of it, after the rest as the young wheat.
+    public static readonly int Obsidian = Add("obsidian", new Color(21, 13, 35));
 
     /// <summary>Every surface, its index its id.</summary>
     public static IReadOnlyList<Surface> All => _all;

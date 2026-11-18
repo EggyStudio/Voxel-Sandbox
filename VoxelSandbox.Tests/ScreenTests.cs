@@ -814,6 +814,54 @@ public sealed class ScreenTests : IDisposable
     }
 
     [Fact]
+    public void Flowing_Water_Washes_Away_A_Torch_And_Crops_Each_Leaving_Its_Drop_Once()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        Serve(game);
+        Run("voxel.spawning false");
+        game.Mode = GameMode.Survival;
+        // A torch, young wheat and ripe wheat on the ground two blocks about a source of water.
+        game.World.SetBlock(6, 4, -8, BlockId.Torch);
+        game.World.SetBlock(4, 4, -6, BlockId.YoungWheat);
+        game.World.SetBlock(2, 4, -8, BlockId.Wheat);
+        var (torch, seeds) = (Items.Of(BlockId.Torch), Items.Of(BlockId.Wheat));
+        var before = Counted(game);
+        game.World.SetBlock(4, 4, -8, BlockId.Water);
+        headless.Step(120);
+
+        // Each is washed away and leaves its drop, the torch its torch, the young wheat its seed
+        // and the ripe its wheat and seeds.
+        foreach (var (x, z) in new[] { (6, -8), (4, -6), (2, -8) }) Assert.True(Blocks.IsWater(game.World.GetBlock(x, 4, z)), $"water has not reached {x}, 4, {z}");
+        var after = Counted(game);
+        Assert.Equal(before.GetValueOrDefault(torch.Key) + 1, after.GetValueOrDefault(torch.Key));
+        Assert.Equal(before.GetValueOrDefault(Items.Wheat.Key) + 1, after.GetValueOrDefault(Items.Wheat.Key));
+        Assert.InRange(after.GetValueOrDefault(seeds.Key) - before.GetValueOrDefault(seeds.Key), 2, 4);
+    }
+
+    [Fact]
+    public void Water_Reaching_Lava_Makes_Obsidian_Of_It()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        // Two pools of lava three long in the ground, a source of water set in the ground beside
+        // the end of one and poured over the middle of the other, beyond the reach of its flow.
+        for (int x = -10; x <= -8; x++)
+        {
+            game.World.SetBlock(x, 3, -12, BlockId.Lava);
+            game.World.SetBlock(x, 3, -26, BlockId.Lava);
+        }
+        game.World.SetBlock(-7, 3, -12, BlockId.Water);
+        game.World.SetBlock(-9, 4, -26, BlockId.Water);
+        headless.Step(120);
+
+        // The lava the water reaches is obsidian, the rest of the first pool lava still.
+        Assert.Equal(BlockId.Obsidian, game.World.GetBlock(-8, 3, -12));
+        Assert.Equal(BlockId.Lava, game.World.GetBlock(-10, 3, -12));
+        for (int x = -10; x <= -8; x++) Assert.Equal(BlockId.Obsidian, game.World.GetBlock(x, 3, -26));
+    }
+
+    [Fact]
     public void A_Crafting_Tables_Window_Shuts_As_The_Table_Goes()
     {
         using var headless = new HeadlessGame();

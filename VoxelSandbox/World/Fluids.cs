@@ -3,7 +3,9 @@ namespace VoxelSandbox;
 /// <summary>
 /// Water that flows down into the air under it as falling water, and where it cannot fall, sideways
 /// one level further from its source for each block, up to seven, drying back as its source goes.
-/// Two sources beside each other over ground make a third between them.
+/// Two sources beside each other over ground make a third between them. It washes away a torch or
+/// a crop it flows into, which drops as a block falling with its support does, and makes obsidian
+/// of the lava beside it or under it.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -115,6 +117,9 @@ public sealed class Fluids(VoxelWorld world)
     {
         var block = world.GetBlock(x, y, z);
         if (!Blocks.IsWater(block)) return;
+        for (int d = 0; d < 6; d++)
+            if (Lighting.Dy[d] <= 0 && world.GetBlock(x + Lighting.Dx[d], y + Lighting.Dy[d], z + Lighting.Dz[d]) == BlockId.Lava)
+                world.SetBlock(x + Lighting.Dx[d], y + Lighting.Dy[d], z + Lighting.Dz[d], BlockId.Obsidian);
 
         if (block != BlockId.Water)
         {
@@ -130,8 +135,9 @@ public sealed class Fluids(VoxelWorld world)
         }
 
         var below = world.GetBlock(x, y - 1, z);
-        if (below == BlockId.Air)
+        if (below == BlockId.Air || Washes(below))
         {
+            Wash(x, y - 1, z, below);
             world.SetBlock(x, y - 1, z, BlockId.FallingWater);
             return;
         }
@@ -145,9 +151,22 @@ public sealed class Fluids(VoxelWorld world)
             if (Lighting.Dy[d] != 0) continue;
             int nx = x + Lighting.Dx[d], nz = z + Lighting.Dz[d];
             var beside = world.GetBlock(nx, y, nz);
-            if (beside == BlockId.Air || beside is >= BlockId.Water1 and <= BlockId.Water7 && Blocks.WaterLevel(beside) > next)
+            if (beside == BlockId.Air || Washes(beside) || beside is >= BlockId.Water1 and <= BlockId.Water7 && Blocks.WaterLevel(beside) > next)
+            {
+                Wash(nx, y, nz, beside);
                 world.SetBlock(nx, y, nz, Blocks.FlowingWater(next));
+            }
         }
+    }
+
+    // Whether water flowing into a cell washes its block away, a torch or a crop.
+    private static bool Washes(BlockId block) =>
+        block is >= BlockId.Torch and <= BlockId.SoulWallTorchEast or BlockId.Wheat or BlockId.YoungWheat;
+
+    // A block water washes away drops as one falling with its support does.
+    private void Wash(int x, int y, int z, BlockId block)
+    {
+        if (Washes(block)) world.Fallen.Add((x, y, z, block));
     }
 
     // Whether a column beside a cell is not loaded.

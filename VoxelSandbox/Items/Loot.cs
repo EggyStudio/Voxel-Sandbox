@@ -150,7 +150,7 @@ public static class Loot
     public static int TierFor(BlockId block) => Ores.Plain(block) switch
     {
         BlockId.IronOre or BlockId.CopperOre or BlockId.LapisOre => 2,
-        BlockId.GoldOre or BlockId.RedstoneOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
+        BlockId.GoldOre or BlockId.RedstoneOre or BlockId.DiamondOre or BlockId.EmeraldOre or BlockId.Obsidian => 3,
         _ => 1,
     };
 
@@ -160,7 +160,7 @@ public static class Loot
         var wood when BlockGroups.Logs.Contains(wood) || BlockGroups.Planks.Contains(wood) => (ToolKind.Axe, false),
         BlockId.BrownMushroomBlock or BlockId.RedMushroomBlock or BlockId.MushroomStem => (ToolKind.Axe, false),
         var clay when BlockGroups.Terracotta.Contains(clay) => (ToolKind.Pickaxe, true),
-        BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => (ToolKind.Pickaxe, true),
+        BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre or BlockId.Obsidian => (ToolKind.Pickaxe, true),
         BlockId.RedSand or BlockId.Clay => (ToolKind.Shovel, false),
         BlockId.Stone or BlockId.Cobblestone or BlockId.CoalOre or BlockId.IronOre or BlockId.Furnace or BlockId.Sandstone or BlockId.StoneBricks or BlockId.Magma
             or BlockId.MossyCobblestone or BlockId.MossyStoneBricks or BlockId.CrackedStoneBricks
@@ -215,6 +215,7 @@ public static class Loot
         BlockId.RedSand => 0.5f,
         BlockId.Clay => 0.6f,
         BlockId.CopperOre or BlockId.GoldOre or BlockId.RedstoneOre or BlockId.LapisOre or BlockId.DiamondOre or BlockId.EmeraldOre => 3,
+        BlockId.Obsidian => 50,
         BlockId.OakLeaves or BlockId.BirchLeaves or BlockId.SpruceLeaves or BlockId.Snow => 0.2f,
         BlockId.Glass or BlockId.Glowstone or BlockId.SeaLantern => 0.3f,
         BlockId.MossBlock => 0.1f,

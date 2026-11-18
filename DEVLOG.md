@@ -13,6 +13,10 @@ Young wheat the seeds plant beside ripe wheat in the flat world at noon, each pa
 Bare Bones on and with the game's own surfaces, the young in short green blades and the ripe in tall
 golden stalks.
 
+![](.github/devlog/2026-11-18-item-229-water-over-lava.webp)
+Water poured over a pool of lava in a rim of stone in the flat world at noon with Bare Bones on,
+before and after, the lava the water reaches made obsidian under it.
+
 ## 2026-11-16
 
 ![](.github/devlog/2026-11-16-item-191-water-at-the-edge.webp)

@@ -262,6 +262,7 @@ public enum BlockId : ushort
     CrackedStoneBricks,
     YoungWheat,
     PlacedSnowLayer,
+    Obsidian,
 }
 
 /// <summary>How a block meets light, the player and the faces beside it.</summary>
@@ -627,6 +628,8 @@ public static class Blocks
             // snow a player places, alike to the snow the weather lays and left by its melting.
             Shaped(BlockId.YoungWheat, "young_wheat", "Young Wheat", BlockShape.Wheat(Surfaces.YoungWheat, 9), 0, BlockId.Wheat),
             Shaped(BlockId.PlacedSnowLayer, "placed_snow_layer", "Snow", BlockShape.SnowLayer(Surfaces.Snow), 0, BlockId.SnowLayer),
+            // What a lava source becomes as water reaches it.
+            Same(BlockId.Obsidian, "obsidian", "Obsidian", Surfaces.Obsidian),
         ];
         for (int i = 0; i < all.Length; i++)
             if ((int)all[i].Id != i) throw new InvalidOperationException($"Block {all[i].Key} is listed at {i} but numbered {(int)all[i].Id}.");
