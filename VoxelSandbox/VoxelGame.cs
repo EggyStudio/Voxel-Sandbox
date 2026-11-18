@@ -870,9 +870,9 @@ public sealed class VoxelGame : IDisposable
 
     /// <summary>
     /// Unloads what a jump to a place of the land leaves out of reach, before the origin moves near
-    /// it, the columns kept by the save with the blocks falling over them set down, their mobs,
-    /// stacks and lit TNT kept by their places in the land, and the arrows and flashes among them
-    /// let go.
+    /// it, the columns kept by the save with the blocks falling over them set down and the mobs
+    /// falling over ended with their loot, their mobs, stacks and lit TNT kept by their places in
+    /// the land, and the arrows and flashes among them let go.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -960,6 +960,9 @@ public sealed class VoxelGame : IDisposable
             var mobs = Mobs.Columns().ToList();
             var furnaces = WorldSave.FurnaceRecords(Furnaces);
             var chests = Chests.Columns(World).ToList();
+            // The loot of the mobs that died this frame is left before the stacks are gathered, so
+            // the save that holds no such mob holds its loot.
+            LeaveDrops();
             ThrowDropped();
             Drops.KeepStrays(World);
             var drops = Drops.Columns(World).ToList();
@@ -1362,8 +1365,19 @@ public sealed class VoxelGame : IDisposable
     // columns that unload or the save that follows keep its blocks and its stacks.
     private void TakeLoose(bool all = false)
     {
-        if (all) Felled(0, all: true);
+        if (all)
+        {
+            Felled(0, all: true);
+            EndDying();
+        }
         Falling.Take(World);
+        LeaveDrops();
+    }
+
+    /// <summary>Ends at once the mobs still falling over, their loot left where they lie, before the world is left or closed or its mobs are taken away, none of which keeps a dying mob.</summary>
+    public void EndDying()
+    {
+        foreach (var died in Mobs.Finish()) GetApp().World.SendEvent(died);
         LeaveDrops();
     }
 
@@ -1381,7 +1395,6 @@ public sealed class VoxelGame : IDisposable
         World.Fallen.Clear();
     }
 
-    /// <summary>Throws one of the chosen slot's items ahead of the player, or its whole stack, as Q and Control with Q do.</summary>
     /// <summary>Puts a stack into the inventory as one picked up goes, and throws what does not fit ahead of the player, giving back how many were thrown.</summary>
     public int Receive(ItemStack stack)
     {
@@ -1390,6 +1403,7 @@ public sealed class VoxelGame : IDisposable
         return left;
     }
 
+    /// <summary>Throws one of the chosen slot's items ahead of the player, or its whole stack, as Q and Control with Q do.</summary>
     public bool Throw(bool all)
     {
         if (Hotbar.Current is not { } stack) return false;

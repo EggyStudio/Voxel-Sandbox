@@ -1,3 +1,4 @@
+using System.Numerics;
 using Engine;
 using Xunit;
 
@@ -326,6 +327,152 @@ public sealed class ScreenTests : IDisposable
         Assert.True(game.InventoryOpen);
         Press(Key.Escape, Key.E);
         Assert.False(game.InventoryOpen);
+    }
+
+    [Theory]
+    [InlineData("quit")]
+    [InlineData("switch")]
+    [InlineData("spawning")]
+    public void A_Mob_Falling_Over_As_Its_World_Is_Closed_Or_Left_Or_Its_Mobs_Taken_Leaves_Its_Loot_Once(string end)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var world = Path.Combine(root, "world");
+        var (wool, mutton, log) = (Items.Of(BlockId.WhiteWool), Items.RawMutton, Items.Of(BlockId.OakLog));
+        // The logs of a trunk before the player, standing, fallen as blocks or lying as items.
+        int Logs(VoxelGame game)
+        {
+            var blocks = 0;
+            for (int x = -8; x <= 8; x++)
+                for (int y = 1; y <= 24; y++)
+                    for (int z = -12; z <= 6; z++)
+                        if (game.World.GetBlock(x, y, z) == BlockId.OakLog) blocks++;
+            return blocks + Counted(game).GetValueOrDefault(log.Key);
+        }
+        SortedDictionary<string, int> before = [];
+        var logs = 0;
+        try
+        {
+            using (var headless = new HeadlessGame(save: world, still: true))
+            {
+                var game = headless.Game;
+                Serve(game);
+                game.Mode = GameMode.Survival;
+                // A white sheep a few blocks off struck down, which the mobs held still keep
+                // falling over.
+                var sheep = game.Mobs.Add(new MobRecord(MobKinds.Sheep, 0, LandOrigin.LandOf(game.Player.Body.Position + new Vector3(4, 0, 0)), 0, MobKinds.Sheep.Health, null));
+                before = Counted(game);
+                Assert.True(sheep.Hit(sheep.Body.Position - Vector3.UnitX, 100));
+                Assert.True(sheep.Dying >= 0);
+                if (end == "quit")
+                {
+                    // A trunk of eight logs before the player under a crown, felled with an axe as
+                    // the game quits.
+                    for (int y = 4; y <= 11; y++) game.World.SetBlock(0, y, -2, BlockId.OakLog);
+                    for (int dz = -3; dz <= -1; dz++)
+                        for (int dx = -1; dx <= 1; dx++)
+                            game.World.SetBlock(dx, 12, dz, BlockId.OakLeaves);
+                    game.Inventory.Slots[0] = new ItemStack(Items.Find("stone_axe")!, 1);
+                    game.Hotbar.Selected = 0;
+                    logs = Logs(game);
+                    Run("voxel.look 0 -30");
+                    headless.Step(2);
+                    Run("voxel.break");
+                    Assert.True(game.Felling.Busy);
+                }
+                else if (end == "switch") game.SwitchWorld("flat", 2, Path.Combine(root, "other"));
+                else Run("voxel.spawning off");
+            }
+
+            using var again = new HeadlessGame(save: world, still: true);
+            var counted = Counted(again.Game);
+            Assert.Equal(before.GetValueOrDefault(wool.Key) + 1, counted.GetValueOrDefault(wool.Key));
+            Assert.InRange(counted.GetValueOrDefault(mutton.Key) - before.GetValueOrDefault(mutton.Key), 1, 2);
+            if (end == "quit") Assert.Equal(logs, Logs(again.Game));
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void A_Save_In_The_Frame_A_Mob_Is_Taken_Away_Keeps_Its_Loot()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        var (world, copy) = (Path.Combine(root, "world"), Path.Combine(root, "copy"));
+        var wool = Items.Of(BlockId.WhiteWool);
+        SortedDictionary<string, int> before = [];
+        try
+        {
+            using (var headless = new HeadlessGame(save: world, still: true))
+            {
+                // A white sheep taken away as its fall ends, its death waiting for the next frame's
+                // play as a save comes, and the save copied as a run ended then would leave it.
+                var game = headless.Game;
+                var sheep = game.Mobs.Add(new MobRecord(MobKinds.Sheep, 0, LandOrigin.LandOf(game.Player.Body.Position + new Vector3(4, 0, 0)), 0, MobKinds.Sheep.Health, null));
+                before = Counted(game);
+                game.Mobs.Clear(MobKinds.Sheep);
+                E3D.GetApp().World.SendEvent(new MobDied(sheep, LandOrigin.LandOf(sheep.Body.Position)));
+                game.SaveWorld();
+                HeadlessGameTests.CopyFolder(world, copy);
+            }
+
+            using var again = new HeadlessGame(save: copy, still: true);
+            Assert.Equal(before.GetValueOrDefault(wool.Key) + 1, Counted(again.Game).GetValueOrDefault(wool.Key));
+        }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Stacks_Through_A_Save_That_Fails_On_A_Region_File_Are_Kept_Once_And_Held_Until_A_Save_Stands()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "VoxelSandbox.Tests", Guid.NewGuid().ToString("N"));
+        (int X, int Z) near, far;
+        try
+        {
+            using (var headless = new HeadlessGame(save: folder, still: true))
+            {
+                var game = headless.Game;
+                Serve(game);
+                // Five sticks lying in a loaded column a few blocks off, and three coal thrown over
+                // a column far off that is not loaded, in a region of its own.
+                var (sticks, coal) = (game.Player.Body.Position + new Vector3(6, 0.5f, 0), LandOrigin.PlaceOf(new LandPlace(2000.5, 80, 0.5)));
+                game.Drops.Spawn(Items.Stick, 5, sticks, Vector3.Zero);
+                game.Drops.Spawn(Items.Coal, 3, coal, Vector3.Zero);
+                (near, far) = (LandOrigin.ColumnOf(sticks), LandOrigin.ColumnOf(coal));
+                Assert.True(game.World.HasColumn(near.X, near.Z));
+                Assert.False(game.World.HasColumn(far.X, far.Z));
+                headless.Step(2);
+
+                // A folder in the place of the far region's stacks file before it takes its name,
+                // so the save fails.
+                var blocked = Path.Combine(folder, "regions", $"s.{far.X >> 5}.{far.Z >> 5}.bin.new");
+                Directory.CreateDirectory(blocked);
+                game.SaveWorld();
+                Assert.NotNull(game.SaveFault);
+                Directory.Delete(blocked);
+
+                // The player gone far off, so the sticks' column unloads, and a save that stands.
+                Run("voxel.tp -3000.5 80 0.5");
+                Stand(headless);
+                Assert.False(game.World.HasColumn(near.X, near.Z));
+                game.SaveWorld();
+                Assert.Null(game.SaveFault);
+            }
+
+            var read = new WorldSave(folder);
+            int Lying(Item item, (int X, int Z) column) =>
+                read.TakeDrops(column.X, column.Z)?.Select(record => Inventory.Decode(record.Stack)).Where(stack => stack?.Item == item).Sum(stack => stack!.Value.Count) ?? 0;
+            Assert.Equal(5, Lying(Items.Stick, near));
+            Assert.Equal(3, Lying(Items.Coal, far));
+        }
+        finally
+        {
+            if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true);
+        }
     }
 
     [Fact]

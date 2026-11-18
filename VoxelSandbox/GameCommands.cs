@@ -591,6 +591,8 @@ public static class GameCommands
     internal static string Spawning(bool on)
     {
         if (Game is not { } game) return "no world is loaded";
+        // The mobs falling over leave their loot before every mob is taken away.
+        if (!on) game.EndDying();
         var count = game.Mobs.SetSpawning(game.World, on);
         return on ? $"mobs come into the world, {count} brought back" : $"no mob comes into the world, {count} taken away";
     }

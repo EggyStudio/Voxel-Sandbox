@@ -500,6 +500,16 @@ public sealed class Mobs
         return MobKinds.Zombie;
     }
 
+    /// <summary>Takes away at once every mob still falling over, each given back as a <see cref="MobDied"/> for the game to leave its loot, as <see cref="MobMind.Vanish"/> takes one away once it has lain long enough.</summary>
+    public List<MobDied> Finish()
+    {
+        var gone = new List<(int Id, MobDied Died)>();
+        foreach (var (id, mob) in _ecs.Query<Mob>())
+            if (mob.Dying >= 0) gone.Add((id, new MobDied(mob, LandOrigin.LandOf(mob.Body.Position))));
+        foreach (var (id, _) in gone) _ecs.Despawn(id);
+        return [.. gone.Select(g => g.Died)];
+    }
+
     /// <summary>Takes away every mob of a kind, or every mob where none is given, from the loaded columns.</summary>
     public int Clear(MobKind? kind) => Despawn(m => kind is null || m.Kind == kind);
 }

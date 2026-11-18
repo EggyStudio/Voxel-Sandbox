@@ -277,7 +277,9 @@ Pushed at 22:48 on 2026-11-17, the form kept in each, `f3c7c20`, `c69fcb5` and `
 and the test giving the child's last lines; build run 44183588584 started. `00fccc5` and `f922e86`,
 item 226, and `ba8bf7e`, Verdict 17's mend, the game taking its data folder by an argument and
 saying in its log where each save went, pushed at 00:19 on 2026-11-18, the form kept, their build
-run 44198295058 started.
+run 44198295058 started. Run 44198295058 ended green on every job at 01:22 on 2026-11-18 and
+Verdicts 16 and 17 are settled. `c46af98`, item 227, and `23dd79a`, the lows of item 228, pushed at
+01:22, the form kept, their build run 44207248826 started.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -329,25 +331,6 @@ change.
     stood is in REVIEW-ARCHIVE.md under Items closed, parked or shortened. Answered on 2026-11-11 at
     about 16:40, part two stays parked.
 
-224. **The world at the edge of what is loaded.** No item has read what the world's rules do where a
-    loaded column meets one that is not. Asked, a read by read-only subagents first of every rule
-    that reaches across a column's border, water and lava flowing, sand and gravel falling, trees
-    felled, fire, explosions, pistons if any, light, the mobs' walking and their spawning, dropped
-    items, and the furnaces and chests ticking, for what each does when the column beside is absent,
-    is being made, or is let go midway, and what a save and a load in that state keeps. Each finding
-    is told with its place in the code and what a player would see, high where blocks or things are
-    lost, doubled or left hanging for good, low elsewhere. The high ones are mended in this item,
-    each with a test at a column's border that fails first; the lows go to the Reply as a list.
-    After item 223.
-
-225. **Dropped stacks are kept across a quit.** A stack of items on the ground is never saved, so
-    what a death spills, and any stack in a column that is let go, is gone after the world closes.
-    Asked, the stacks saved by region as the mobs are, each with its place, its item and count and
-    the age it has left, kept when its column is let go and at a save, and brought back when the
-    column joins; a stack keeps its time to vanish across the quit, so nothing lies for good. Tests,
-    a spill saved and read back with its counts whole, a stack in a column let go and joined again
-    present once, and a stack past its age not brought back. After item 224's three commits.
-
 226. **The lows of items 224 and 225 that lose or double things.** Asked, each with a test that
     fails first. A stack thrown into a column that is not loaded is saved with the column it waits
     for, so a close before the join keeps it. A falling block and a lit charge in the air at a timed
@@ -380,35 +363,7 @@ change.
 
 ## Verdicts
 
-Verdicts 16 and 17 are open, the end request's test red on Linux and macOS in run 44167788522 and on
-macOS alone in run 44183588584 after the first mend. Verdicts 1 to 15 are settled, said under each
-in REVIEW-ARCHIVE.md.
-
-16. **The build run of `e079315` is red on Linux and macOS in one test.** Run 44167788522 ended red
-    at 22:19 on 2026-11-17, jobs 134338385147 and 134338384947, 587 passed and 1 failed of 589,
-    Windows green with the test skipped there.
-    `ProcessTests.A_Request_To_End_The_Process_Saves_The_World_As_The_Windows_Close_Does` failed at
-    `ProcessTests.cs` line 38, the child game never printing its change to Playing within two
-    minutes, on both runners alike, where it passed three times on the coder's machine. The test
-    drops the child's standard output and error, so the run does not say whether the child ended
-    early, stood waiting on something the runner lacks, or printed the line elsewhere. Asked, the
-    cause read first on a software device with no display and an empty home, as the runner has, and
-    told in the Reply; the test keeping the child's output and error and giving their last lines and
-    the exit code in its failure message; and the mend, with the test green on both runners. The
-    four commits after it wait locally and go up with the mend.
-
-17. **The build run of `4fb13f8` is red on macOS alone in the same test.** Run 44183588584 ended red
-    at 23:48 on 2026-11-17, job 134394067224, Linux, Windows and the play green.
-    `ProcessTests.A_Request_To_End_The_Process_Saves_The_World_As_The_Windows_Close_Does` failed at
-    `ProcessTests.cs` line 57 with no world's info written. The child's lines the test gives show
-    the game reaching Playing at 3.1 s, the request taken at 3.5 s, the cleanup run and the process
-    ending with code 0, so the end request holds there and the fault is in where the save is looked
-    for or whether it was written. The lines show no save and name no data folder. Asked, the cause
-    read from the game's own code for where its data folder lies on macOS against where the test
-    looks, a home set by the environment against the account's own among them, and told in the
-    Reply; the game saying its data folder and each save's path in a line of its log, so a run says
-    where it wrote; and the mend, green on macOS. Verdict 16 settles with it. The two commits after
-    it wait locally and go up with the mend.
+No verdict is open. Verdicts 1 to 17 are settled, said under each in REVIEW-ARCHIVE.md.
 
 ## Decisions
 
@@ -740,124 +695,6 @@ compiling terrain.slang in frame 225, its `captures/closed.log` naming nothing l
 s after the new world, and its captures within 8 levels of the warm play's on 6.2.102, `sky2.png`
 differing in 0.02% of its pixels past 8 levels.
 
-Item 224's read, by three readers in parallel over the rules that change blocks, the light, mobs and
-stacks, and the blocks that tick with the streamer's own order of joining and letting go. Much
-stands guarded at the edge. A mob thinks and moves only with the columns about it loaded and is kept
-once by the column its middle stands in, a falling block over a column that unloads is set down in
-it first, no change reaches a column being made, fires resume once on a column's return, furnaces
-wait while their column is away, and the timed save holds the streamer still while it writes. The
-high findings are mended in three commits, each with a test at a column's border that passes three
-runs in three and fails on a copy of the head given the seams it names:
-
-- `f3c7c20`, the game.
-  - A chest's window left open as a jump let its column go began an empty chest there each frame,
-    which on the column's return kept the saved chest's items out and was saved in their place. The
-    window of a chest or a furnace whose column is not loaded shuts,
-    `A_Chests_Window_Open_As_The_Player_Leaves_For_Far_Land_Keeps_The_Chest_It_Shows`.
-  - A felling under way as the world was switched or closed, or the player jumped, left its tree's
-    upper logs and crown standing over the cut, saved so, and its steps ran on in the next world at
-    the same places, breaking its leaves and logs and wearing the axe of its hotbar. The steps still
-    to go are taken at once as the world is left, closed or jumped from, and a world opened lets go
-    of any felling,
-    `A_Felling_Under_Way_As_The_World_Is_Left_Is_Taken_Whole_Before_Its_Save_And_Goes_No_Further`.
-  - Sand or gravel loosened after the frame's own fall and before an unload, a jump or a close was
-    kept as air, and fell next frame into the column let go, landing at once as an item there. What
-    was loosened, felled or let fall is taken before the streamer, a jump or a close lets go of
-    anything, so it is set down as a block,
-    `Sand_Loosened_As_The_World_Is_Left_Or_A_Jump_Leaves_Its_Column_Is_Set_Down_As_A_Block`, the
-    switch and the jump each failing on the head alone.
-  - A felling read a column not loaded as holding no log, so leaves held by a log across the border
-    decayed. Leaves within reach of a column not loaded are spared and asked again each frame once
-    every column about them is loaded, those then loose of every log decaying,
-    `A_Fellings_Leaves_Beside_A_Column_Not_Loaded_Stand_Until_It_Joins_And_Are_Asked_Again_Then`.
-- `c69fcb5`, the streamer and the save.
-  - A world that keeps no save, a transient run, a run on a data folder another holds or one whose
-    folder could not be made, made a changed column again from its generator as it came back, the
-    chests and furnaces kept in memory then spilling. Its changed columns are held for the run in
-    the order they were let go,
-    `A_Column_Changed_In_A_World_That_Keeps_No_Save_Holds_Its_Change_Through_A_Jump_Away_And_Back`.
-    A changed column of the overworld holds 2.4 to 4.3 KB, 3.1 KB on the mean of 24 read, and one of
-    the flat world 227 bytes, so a long transient run grows by about 3 KB for each column it changes
-    and leaves. They are held to 256 MB, some 85,000 such columns, past which those let go longest
-    ago are given up and the log says so once, which the test reads with the bound set to a byte.
-  - A jump left the columns made or being made for the place left to join there afterward, their
-    mobs and stacks put back at float places about an origin moved far off. Those columns are let go
-    at the jump and a worker's column made for a place left is dropped,
-    `Columns_Made_For_A_Place_The_Player_Left_Do_Not_Join_There`.
-  - A region whose file was held for a passing fault let go of what its columns kept, blocks, mobs
-    and chests, at the first save of the run, so walking away and back lost them for the run. A held
-    region stays in memory for the run,
-    `A_Region_Held_For_A_Passing_Fault_Keeps_What_Its_Columns_Hold_For_The_Run`.
-- The commit carrying this Reply, the water. Waiting flow on a column that unloaded was let go, and
-  its return asked only the water facing air across its edges, so a flood or a stream drying in it
-  stood frozen, saved so, and water fed from across the edge of a column not loaded dried back where
-  something asked it. Every flowing cell of a column that arrives is asked again, with the flowing
-  water across its edges, a source left alone, and water beside a column not loaded keeps its level,
-  `A_Flood_Half_Spread_As_Its_Column_Unloads_Goes_On_As_The_Column_Arrives_Again` and
-  `Water_Fed_Across_The_Edge_Of_A_Column_Not_Loaded_Keeps_Its_Level_Until_It_Arrives`. The README
-  and the water's remarks say so.
-
-Read and left, the lows:
-
-- Light from a source across a column that was away when the source went stays until a block beside
-  it changes or the land loads again, light being worked out afresh at each load.
-- `voxel.restock` places a column's herd again where the herd walked into the next column, a command
-  the player runs on purpose.
-- Lit TNT over a column an ordinary walk lets go burns out there and breaks nothing, and a close
-  within its fuse leaves no block.
-- An explosion's rays pass a column not loaded as air and break nothing in it, and fire neither
-  spreads into nor is fed from one.
-- An arrow stuck at a pending column hangs once the column arrives, for its minute.
-- A column pending or left out reads as solid to the player and to stacks, an unseen wall until it
-  arrives.
-- A timed save keeps neither falling blocks nor lit TNT until they land, and a fire's age begins
-  again on its column's return.
-- Water levels across an edge go stale while a column is away until a block beside them changes.
-- A held chests file gives a generated chest its loot again for the run.
-- The mobs of a column's neighbors stand frozen beside a column left out.
-- Leaves spared beside a column not loaded stand for good where the world closes before the column
-  arrives.
-- Logs across the border of a column not loaded are not felled with their tree and stand once it
-  arrives.
-- Stacks of items are not saved, item 225.
-
-Each commit's checks: the strict build clean, the suite outside the GPU's lock with the long soak
-skipped, 592, 595 and 597 passing, the headless game's 83, 85 and 85 passing three times in a row,
-and the play under the lock taken exclusive with no quiet wait passing in 185, 185 and 184 s, its
-`captures/closed.log` naming no fault and no texture left, and its captures within 12 levels of the
-warm play's on 6.2.102, `sky2.png` differing in at most 0.07% of its pixels past 8 levels, along the
-clouds' edges.
-
-Item 225's mend. A saved world keeps the stacks on the ground by region, as it keeps the mobs and
-the chests, in a file of their own beside the region's blocks (`s.x.z.bin`, `WorldSave.TakeDrops`,
-`KeepDrops` and `WriteDrops`), each with its stack as the inventory writes a slot, its place in the
-land's doubles, and the seconds it has left. A column that unloads gives its stacks to the save, a
-save writes the stacks of every loaded column, a column with none among them so the save holds none
-of it after, and a column that joins lays its stacks down as old as they were, one whose time ran
-out or whose item this build does not know left out. A region's file is read wrong or held as the
-other regional files are. A world that keeps no save keeps them in memory as before. The README and
-the stacks' remarks say so. Each test passes three runs in three and fails on a copy of the head
-given the save's three calls and the stacks' lifetime as seams:
-
-- `Stacks_Lying_As_The_World_Closes_Lie_There_As_It_Opens_Again_With_Their_Counts_Whole`, a stick of
-  5, coal of 64 and a pickaxe worn 3 lying a second before the world closes, all three lying again
-  with their counts and wear as it opens. On the head none.
-- `A_Stack_In_A_Column_Let_Go_And_Saved_Away_Lies_There_Once_As_The_Player_Comes_Back_After_A_Quit`,
-  a stack's column let go by a jump, the world saved and closed far off, opened again and the player
-  back, the stack lying once with its count after a save at home. On the head none.
-- `A_Saved_Stack_Whose_Time_Ran_Out_Is_Not_Laid_Down_And_One_With_Time_Left_Keeps_Its_Age`, a stack
-  with no time left and one with thirty seconds kept by the save, the second alone laid down, its
-  age its lifetime less what it had left. On the head none.
-
-A stack thrown into a column not loaded waits in the engine's world unsaved, so a close before that
-column joins leaves it out, as a low.
-
-The strict build is clean, 600 tests pass outside the GPU's lock with the long soak skipped, and the
-headless game's 88 pass three times in a row. The play, under the lock taken exclusive with no quiet
-wait, passes in 185 s, the seed's step naming its world in 5 s, its `captures/closed.log` naming no
-fault and no texture left, and its captures within 9 levels of the warm play's on 6.2.102,
-`sky2.png` differing in 0.03% of its pixels past 8 levels.
-
 Verdict 16's read. Run on this machine as the runner runs it, with no display, an empty home, no
 runtime folder, lavapipe the only Vulkan driver, a cache of its own and no `ENGINE_SLANGC`, the
 child game ended within a second with code 1, before its world opened: `LoadShader: 'terrain.slang'
@@ -1081,4 +918,55 @@ passing, the new tests passing three times in a row, the headless game's 93 pass
 a row, and the play under the lock taken exclusive with no quiet wait passing in 184 s, the seed's
 step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
 captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels
+past 8 levels.
+
+Item 228's second part, the read of what mobs carry and drop, in the commit carrying this Reply.
+Mobs carry and make nothing but their loot, which drops once a fallen mob has lain a second. Two
+paths lost or doubled items and are mended, with the first low, each with a test that passes three
+runs in three and fails on a copy of the head.
+
+- A mob still falling over was taken away with no loot by a quit, a world switch and
+  `voxel.spawning off`, none of which keeps a dying mob, and Escape's menu holds the world still, so
+  a player who struck a pig down and saved and quit from the menu lost its meat. The game ends
+  every mob still falling over at once before the world is left or closed, as a felling's steps
+  still to go are taken, its loot left where it lies (`Mobs.Finish`, `VoxelGame.EndDying`), and
+  `voxel.spawning off` ends them first. A jump far off ends them too, so their loot is kept by its
+  place in the land with the columns left.
+  `A_Mob_Falling_Over_As_Its_World_Is_Closed_Or_Left_Or_Its_Mobs_Taken_Leaves_Its_Loot_Once`
+  strikes a sheep down and ends the world each of the three ways, the quit with a felling under way
+  besides, and the save read back holds one wool and one or two mutton, and the trunk's logs
+  standing, fallen and lying count as before. On the head no wool.
+- A save that failed left each loaded column's stacks and things under way in its region's memory,
+  which only a save that stood let go, so a column that unloaded before the next good save gave its
+  region those beside its own, and stacks, lit TNT and falling blocks doubled. A save lets go of a
+  loaded column's records once their region's file is written or the save fails, the world holding
+  them, and the regions of no loaded column once the save stands, so what a failed save wrote no
+  file for stays held until a write of its region succeeds (`WorldSave.Regional.Write`).
+  `Stacks_Through_A_Save_That_Fails_On_A_Region_File_Are_Kept_Once_And_Held_Until_A_Save_Stands`
+  fails a save by a folder in the place of a far region's stacks file, with sticks lying near and
+  coal over the far column, then sends the player off so the sticks' column unloads and saves
+  again. The files hold five sticks and three coal. On the head ten sticks.
+- A timed save in the frame after a death held neither the mob nor its loot, which the next frame's
+  play left. A save leaves the loot of the mobs taken away before it gathers the stacks
+  (`VoxelGame.SaveWorld`), `A_Save_In_The_Frame_A_Mob_Is_Taken_Away_Keeps_Its_Loot`. On the head
+  the save holds no wool.
+
+The lows, left as they stand:
+
+- `voxel.kill` takes mobs away without loot, those falling over among them, as its words say.
+- `voxel.spawn` and `voxel.restock` make mobs and so their loot, and a mobs file that cannot be read
+  has its columns' mobs placed again by the land, said in the log.
+- A creeper's blast waiting for the next frame's play is lost where that frame switches the world
+  or quits. The creeper is gone with no loot, as one that blew up drops none, and no block breaks,
+  so no item changes. The order is read from the code and not run.
+- Stacks lying over columns not loaded move with the origin at a jump far off, a part of a block at
+  a million out, the count kept.
+
+`VoxelGame.Throw`'s summary, which `23dd79a` left above `VoxelGame.Receive`, is back on `Throw`.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 617
+passing, the new tests passing three times in a row, the headless game's 93 passing three times in
+a row, and the play under the lock taken exclusive with no quiet wait passing in 183 s, the seed's
+step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels
 past 8 levels.

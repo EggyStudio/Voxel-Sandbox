@@ -800,16 +800,25 @@ public sealed class WorldSave
                 _changed.Add(region);
                 standing.Add(region);
             }
-            foreach (var region in _changed) write(region, _regions[region]);
+            // A loaded column's records stand in the world, so they are let go from its region
+            // once its file is written, or once the save fails, which writes them again from the
+            // world, and the column unloading gives its region its own and no others.
+            try
+            {
+                foreach (var region in _changed) write(region, _regions[region]);
+            }
+            finally
+            {
+                foreach (var (column, _) in columns) _regions[RegionOf(column.X, column.Z)].Remove(column);
+            }
             if (oneFile is not null && File.Exists(oneFile) && !save._held.Contains(oneFile)) save.Retire(oneFile);
-            // A loaded column's records stand in the world, so what was written of them is let go
-            // from its region too, which takes them again as the column unloads. A region held
-            // since its file could not be read is written by no save of the run, so it stays here.
+            // The regions of no loaded column are let go once the save stands, their records held
+            // for the next save until then. A region held since its file could not be read is
+            // written by no save of the run, so it stays here.
             save.Afterward(() =>
             {
                 _changed.Clear();
                 foreach (var region in _regions.Keys.Where(r => !standing.Contains(r) && !save._held.Contains(path(r))).ToList()) _regions.Remove(region);
-                foreach (var (column, _) in columns) _regions[RegionOf(column.X, column.Z)].Remove(column);
             });
         }
 
