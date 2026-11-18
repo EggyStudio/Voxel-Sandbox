@@ -1749,6 +1749,19 @@ public sealed class HeadlessGameTests
         }
     }
 
+    // Waits out what a frame gave the workers, the columns being made and the sections being
+    // meshed, so what the next frame takes in is the same on any machine, and fails where they have
+    // not ended it in half a minute.
+    private static void Settled(VoxelGame game)
+    {
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        while (game.Streamer.Making > 0 || game.Renderer.Meshed < game.Renderer.Meshing)
+        {
+            Assert.True(clock.Elapsed.TotalSeconds < 30, "the workers did not end a frame's work in half a minute");
+            Thread.Sleep(1);
+        }
+    }
+
     [Fact]
     public void A_Corner_Of_The_Drawn_Reach_A_Step_Brings_Is_Drawn_Soon_After_It_With_No_Send_Failing()
     {
@@ -1757,6 +1770,10 @@ public sealed class HeadlessGameTests
         game.Mode = GameMode.Spectator;
         game.RenderDistance = 4;
         var renderer = game.Renderer;
+        // Each frame's meshing and flooding given all the time they ask and the workers' work
+        // waited out before the next, so the frame the corner is drawn in follows the code and not
+        // the machine's pace.
+        (renderer.MeshMs, renderer.FloodBudgetMs) = (double.PositiveInfinity, double.PositiveInfinity);
         Go(4.5);
         Stand();
         // Column 5, two rows aside, lies within the drawn reach of column 1, and column 6 three
@@ -1782,7 +1799,7 @@ public sealed class HeadlessGameTests
         {
             game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
             headless.Step(1);
-            Thread.Sleep(2);
+            Settled(game);
         }
         void Stand()
         {
@@ -1871,6 +1888,7 @@ public sealed class HeadlessGameTests
         {
             var clock = System.Diagnostics.Stopwatch.StartNew();
             while (renderer.Meshed < renderer.Meshing && clock.Elapsed.TotalSeconds < 10) Thread.Sleep(1);
+            Assert.True(renderer.Meshed >= renderer.Meshing, "the meshers did not end a frame's sections in ten seconds");
         }
         void Stand()
         {
@@ -1912,11 +1930,13 @@ public sealed class HeadlessGameTests
         Assert.True(most <= ChunkStreamer.AheadAFrame, $"{most} columns past the load circle joined in a frame");
 
         HashSet<(int X, int Z)> Loaded() => [.. game.World.Columns.Select(c => (c.X, c.Z))];
+        // Each frame's columns made before the next, so how many are made by the step follows the
+        // code and not the machine's pace.
         void Go(double x)
         {
             game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
             headless.Step(1);
-            Thread.Sleep(2);
+            Settled(game);
         }
         void Stand()
         {
@@ -2508,11 +2528,13 @@ public sealed class HeadlessGameTests
 
         Assert.True(game.World.HasColumn(far.X, far.Z), $"the far column has not joined by {x:0.00}");
 
+        // Each frame's columns made before the next, so the frame the far column joins in follows
+        // the code and not the machine's pace.
         void Go(double at)
         {
             game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(at, 10, 8.5)));
             headless.Step(1);
-            Thread.Sleep(2);
+            Settled(game);
         }
         void Stand()
         {

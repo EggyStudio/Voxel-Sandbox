@@ -83,6 +83,10 @@ public sealed class ChunkStreamer(VoxelWorld world, ChunkRenderer renderer, Mobs
     /// </remarks>
     public int Pending => _pending.Count + _wanted.Count;
 
+    /// <summary>How many columns the workers are making, which a test waits out between frames.</summary>
+    /// <remarks>A worker's place is given back as the next update takes its column in, so those it finished wait among the running until then.</remarks>
+    internal int Making => Volatile.Read(ref _running) - _done.Count;
+
     /// <summary>Whether a column's tries ended with no column made, so it is left out of the world.</summary>
     public bool LeftOut(int x, int z) => _failed.GetValueOrDefault((x, z)) >= Tries;
 

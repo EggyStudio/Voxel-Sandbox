@@ -1094,3 +1094,29 @@ passing, the headless game's 95 passing three times in a row, and the play under
 exclusive with no quiet wait passing in 186 s, the seed's step naming its world in 4 s, its
 `captures/closed.log` naming no fault and no texture left, and its captures within 8 levels of the
 warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels past 8 levels.
+
+The four tests read as following the machine's pace in Verdict 20's Reply are held to the code, in
+the commit carrying this Reply. A test waits out what each frame gave the workers before the next,
+the columns being made and the sections being meshed, failing where they have not ended it in half a
+minute (`HeadlessGameTests.Settled`, over `ChunkStreamer.Making`, the workers still making a
+column).
+
+- `A_Corner_Of_The_Drawn_Reach_A_Step_Brings_Is_Drawn_Soon_After_It_With_No_Send_Failing` gives
+  each frame all the meshing and flooding time it asks and settles each. With sections sent before
+  the columns about them stand it fails on four sends failing in its walk, and with no circle asked
+  ahead of the step it draws the corner two frames after it.
+- `The_Columns_Past_The_Players_Load_Circle_Join_One_A_Frame` settles each frame. With two columns
+  past the circle taken in a frame it fails on two.
+- `The_Circle_Of_The_Next_Column_Is_Asked_For_As_The_Player_Steps_Into_A_Column` settles each
+  frame. With no circle asked ahead the far column has not joined by 20 blocks.
+- `The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame` fails
+  aloud where its meshers have not ended a frame's sections in ten seconds. With the release's hold
+  and its count of those waiting taken out it fails on 29 and 10 in a frame.
+
+The four pass three runs in three on sixteen cores, and once each on two and one.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 630
+passing, the headless game's 95 passing three times in a row, and the play under the lock taken
+exclusive with no quiet wait passing in 185 s, the seed's step naming its world in 5 s, its
+`captures/closed.log` naming no fault and no texture left, and its captures within 9 levels of the
+warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels past 8 levels.
