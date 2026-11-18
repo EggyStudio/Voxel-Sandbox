@@ -1469,6 +1469,104 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void The_Sections_Toward_The_Light_The_Flood_Leaves_Out_Are_Taken_In_No_More_Than_Their_Share_A_Frame_Nearest_First()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Mode = GameMode.Spectator;
+        game.RenderDistance = 4;
+        var renderer = game.Renderer;
+        renderer.FloodBudgetMs = double.PositiveInfinity;
+        // The search for the sections toward the light off while the blocks are set under a sun low
+        // in the east, so they wait unseen until the search, turned on, finds them in one frame.
+        renderer.Casts = false;
+        game.Sky.Hour = 8;
+        // The eye's section shut in stone on every side, so the eye's flood sees no other, and a
+        // block in each section of a box east of it and over the ground, which the rays toward the
+        // light from the shut section's corners cross.
+        Fill(0, 0, 0, 15, 15, 0);
+        Fill(0, 0, 15, 15, 15, 15);
+        Fill(0, 0, 0, 0, 15, 15);
+        Fill(15, 0, 0, 15, 15, 15);
+        Fill(0, 15, 0, 15, 15, 15);
+        var box = new List<SectionKey>();
+        for (int cx = 2; cx <= 4; cx++)
+            for (int cz = -1; cz <= 1; cz++)
+                for (int sy = 1; sy <= 4; sy++)
+                    box.Add(new SectionKey(cx, sy, cz));
+        foreach (var key in box) Raise(key);
+        Go(4.7);
+        Stand();
+        // An edit is meshed at once, so the land is left and come back to, its columns kept as
+        // changed and arriving again, the shut section's first and the box's once its flood stands,
+        // their sections marked and held back as unseen.
+        Go(2000.5);
+        Stand();
+        game.RenderDistance = 1;
+        Go(4.7);
+        Stand();
+        game.RenderDistance = 4;
+        Stand();
+        var waiting = box.Where(key => !renderer.Sees(key) && !Taken(key)).ToList();
+        renderer.Casts = true;
+        var frames = new List<List<SectionKey>>();
+        for (int frame = 0; frame < 40; frame++)
+        {
+            var before = waiting.Where(Taken).ToHashSet();
+            headless.Step(1);
+            Settle();
+            frames.Add(waiting.Where(key => Taken(key) && !before.Contains(key)).ToList());
+        }
+
+        var casting = waiting.Where(renderer.CastsTowardLight).ToList();
+        Assert.True(casting.Count > 2 * ChunkRenderer.CastersAFrame, $"{casting.Count} of the box cast toward the light");
+        Assert.All(casting, key => Assert.True(Taken(key), $"{key} casts toward the light and is not taken"));
+        var most = frames.Max(taken => taken.Count);
+        Assert.True(most <= ChunkRenderer.CastersAFrame, $"{most} taken in a frame");
+        // The nearest the eye first, no frame's farthest farther than a later frame's nearest.
+        var eye = Reach.Of(game.Player.Eye);
+        int Distance(SectionKey k) => (k.X - eye.X) * (k.X - eye.X) + (k.Y - eye.Y) * (k.Y - eye.Y) + (k.Z - eye.Z) * (k.Z - eye.Z);
+        var later = int.MaxValue;
+        for (int frame = frames.Count - 1; frame >= 0; frame--)
+        {
+            if (frames[frame].Count == 0) continue;
+            Assert.True(frames[frame].Max(Distance) <= later, $"frame {frame} takes one farther than a later frame's nearest");
+            later = Math.Min(later, frames[frame].Min(Distance));
+        }
+
+        bool Taken(SectionKey key) => renderer.Standing(key).Any();
+        void Fill(int x0, int y0, int z0, int x1, int y1, int z1)
+        {
+            for (int x = x0; x <= x1; x++)
+                for (int y = y0; y <= y1; y++)
+                    for (int z = z0; z <= z1; z++)
+                        game.World.SetBlock(x, y, z, BlockId.Stone);
+        }
+        void Raise(SectionKey key) => game.World.SetBlock(key.X * Section.Size + 8, key.Y * Section.Size + 8, key.Z * Section.Size + 8, BlockId.Stone);
+        void Go(double x)
+        {
+            game.Player.Teleport(LandOrigin.PlaceOf(new LandPlace(x, 10, 8.5)));
+            headless.Step(1);
+        }
+        void Stand()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            do
+            {
+                headless.Step(1);
+                Thread.Sleep(2);
+            }
+            while ((game.Streamer.Pending > 0 || game.World.Loaded.Count > 0 || renderer.Meshing > 0) && clock.Elapsed.TotalSeconds < 30);
+        }
+        void Settle()
+        {
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            while (renderer.Meshed < renderer.Meshing && clock.Elapsed.TotalSeconds < 10) Thread.Sleep(1);
+            Assert.True(renderer.Meshed >= renderer.Meshing, "the meshers did not end a frame's sections in ten seconds");
+        }
+    }
+
+    [Fact]
     public void A_Gray_Face_Turned_Up_To_The_Side_Or_Down_Takes_A_White_Light_From_The_Noon_Sky()
     {
         using var headless = new HeadlessGame(still: true);
@@ -1871,9 +1969,9 @@ public sealed class HeadlessGameTests
         game.Mode = GameMode.Spectator;
         game.RenderDistance = 4;
         // No section cast toward the light, so the ridge waits on the floods alone, the flood ahead
-        // finishing in the frame it begins. Casters are meshed at once as the sections the eye's
-        // flood sees are, and which the search finds turns on which sections about the eye are
-        // meshed by then, which a slow machine's timing changes, so the search is turned off.
+        // finishing in the frame it begins. Casters are meshed apart from the release, a few a
+        // frame, and which the search finds turns on which sections about the eye are meshed by
+        // then, which a slow machine's timing changes, so the search is turned off.
         game.Light.ShadowDistance = 1;
         var renderer = game.Renderer;
         renderer.Casts = false;

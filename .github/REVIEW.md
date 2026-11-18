@@ -60,7 +60,10 @@ fall damage, and `231d504`, the sections test counting only what the eye's flood
 pushed at 11:35 on 2026-11-18, build 44286901796 green on every runner, the first of the two green
 runs Verdict 21 waits for. `f7b57ec`, lava harming mobs and burning stacks, and `2b7adfa`, the
 washing and obsidian, pushed at 12:40. Build 44296880420 green on every runner at 13:27. `f1a0266`,
-the buckets, pushed at 13:28.
+the buckets, pushed at 13:28. Build 44304184093 red on macOS alone at 14:57, Verdict 22. `69bc94d`,
+the sky's lower half painted for a white light, and `b18d13f`, the release test with the casters'
+search off, pushed at 14:57, build 44319099009 green on every runner at 16:04, the first of the five
+Verdict 22 waits for.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -1026,3 +1029,67 @@ exclusive with no quiet wait passing in 186 s, the seed's step naming its world 
 warm play's on 6.2.102 as with `69bc94d`, `sky2.png` differing in 0.03% of its pixels past 8 levels.
 
 Casters passing the release in a flight, read next as asked, come in a Reply of their own.
+
+The casters past the release in a flight, read as asked after Verdict 22 and mended in the commit
+carrying this Reply. Each flight is seed 1's overworld in spectator east at 110 from 4400.5, 110,
+600.5 for 1,600 blocks, about a hundred steps, at the default view of 12 and shadow distance of
+128 with the search on, offscreen with the frame unlimited, under the lock taken exclusive, the
+tuned profile powersave-bazzite, from a build logging each frame's sections taken by the way they
+were sent and the frame's time.
+
+- On the head the release held, at most 8 released taken in a frame, and the casters passed it, at
+  most 19 taken in a frame three frames after a step and more than 8 in 30 to 32 frames of a
+  flight. Of the 20 frames after a step the most casters in one was 5 or 6 at the median, 13 or 14
+  at the 90th and 19 at most. A caster taken costs about 0.46 ms of the frame by least squares over
+  the frames after the steps, and those frames with 13 or more read 16.7 ms at the median against
+  9.3 with none.
+- Casters sent through the release itself, nearest the eye first, held the count but slowed the
+  frames, in two pairs of flights back to back 8.9 and 9.4 ms at the median against 8.0 and 8.4,
+  and 33 and 38 at the 99th against 22 and 27.
+  The list filled with casters' empty sections of sky as they came and went, the release had eight
+  waiting in the median frame against none, and its sort and its pass cost 0.07 ms in the median
+  frame and 4 ms at most. It is not kept. Its first form let out the flood ahead's sections in every
+  frame from a flood made earlier while the eye stood still, which its own test found, where the
+  release lets them out only in frames the eye moves toward that flood's face.
+- Kept, a cap of their own, `ChunkRenderer.CastersAFrame`, four. The update sends no more casters
+  than that a frame, the nearest the eye first by its queue's order, and leaves the rest marked for
+  the next frame. An empty one is let go as it was, not counted, and the release is as it was.
+  `The_Sections_Toward_The_Light_The_Flood_Leaves_Out_Are_Taken_In_No_More_Than_Their_Share_A_Frame_Nearest_First`
+  shuts the eye's section in stone, sets a block in each section of a box east of it, leaves the
+  land and comes back so the box arrives unseen, and turns the search on under a sun low in the
+  east.
+  More than eight of the box cast toward the light, all are taken, no more than four in a frame,
+  each frame's no farther than a later one's. It passes three runs in three, and on a copy of the
+  head given the constant alone it fails with 8 taken in a frame.
+
+Eight flights, the head and the cap, the second four in the turned order, the 1-minute load from
+2.5 to 4.5 with the other sessions' work:
+
+| Run | Median ms | 99th ms | Slowest ms | Casters a frame at most | Frames over 4 |
+|---|---|---|---|---|---|
+| head 1 | 8.48 | 26.75 | 86.5 | 18 | 64 |
+| cap 1 | 9.61 | 37.94 | 135.5 | 4 | 0 |
+| head 2 | 9.92 | 44.33 | 159.8 | 18 | 84 |
+| cap 2 | 9.95 | 45.27 | 121.9 | 4 | 0 |
+| cap 3 | 9.47 | 45.69 | 125.9 | 4 | 0 |
+| head 3 | 10.00 | 42.73 | 164.3 | 21 | 82 |
+| head 4 | 10.28 | 49.82 | 143.3 | 23 | 86 |
+| cap 4 | 10.36 | 48.35 | 156.3 | 4 | 0 |
+
+Of the four pairs back to back, head 2 and cap 2 differ by 0.3% at the median and 2.1% at the 99th,
+and head 4 and cap 4 by 0.8% and minus 3.0%, within the bar of 5%. Cap 3 and head 3 differ by
+minus 5.3% at the median and 6.9% at the 99th, past it, and head 1 and cap 1 by 13.3% and 41.8%,
+the machine slowing between them, every run after head 1 reading slower. The same build back to
+back, head 3 and head 4, differs by 2.8% at the median and 16.6% at the 99th. Over the six runs
+after the slowing the cap reads 1.8% over the head at the 99th and 1.4% under it at the median.
+The sections the eye's flood meshes at once at a step, 18 to 23 at most a frame, are the same with
+and without the cap.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 641
+passing, the new test passing three times in a row and failing on the head's copy, the headless
+game's 98 passing three times in a row, and the play under the lock taken exclusive with no quiet
+wait passing in 120 s, the seed's step naming its world in 4 s, its `captures/closed.log` naming no
+fault and no texture left, and its captures within 12 levels of the warm play's on 6.2.102 but
+`sky2.png`, which differs in 0.42% of its pixels past 8 levels at the edges of the clouds alone.
+The play holds no cloud for that capture, so the clouds stand where the play's time has carried
+them, and this play ran 120 s against 184 to 186 for the day's others.

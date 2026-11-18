@@ -590,6 +590,10 @@ public sealed class ChunkRenderer : IDisposable
     // time before them, which count against the next frame's release, so no frame sends more of
     // them than ReleasedAFrame however long the frames' meshing takes.
     private readonly HashSet<SectionKey> _released = [];
+    // The sections toward the light the flood leaves out sent a frame at most, the nearest the eye
+    // first and the rest kept marked for the next, so the casters a flight's step's flood finds
+    // are meshed over a few frames, apart from those released, rather than in one.
+    internal const int CastersAFrame = 4;
 
     /// <summary>The time a frame's meshing takes in place of what the game gives it where set, so a test can make a frame's meshing run short or as long as it asks.</summary>
     internal double? MeshMs { get; set; }
@@ -649,7 +653,7 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>Whether the last flood reached a section.</summary>
     internal bool Sees(SectionKey key) => _visibility.Sees(key);
 
-    /// <summary>Whether a section the flood left out stands toward the light from a drawn one, meshed at once as one the flood reaches is.</summary>
+    /// <summary>Whether a section the flood left out stands toward the light from a drawn one, meshed apart from the release, <see cref="CastersAFrame"/> a frame.</summary>
     internal bool CastsTowardLight(SectionKey key) => _casters.Contains(key);
 
     /// <summary>
@@ -913,7 +917,7 @@ public sealed class ChunkRenderer : IDisposable
         int Distance(SectionKey k) => (k.X - ex) * (k.X - ex) + (k.Y - ey) * (k.Y - ey) + (k.Z - ez) * (k.Z - ez);
 
         var watch = Stopwatch.StartNew();
-        var meshed = 0;
+        var (meshed, casters) = (0, 0);
         foreach (var key in _queue)
         {
             if (watch.Elapsed.TotalMilliseconds > budgetMs) break;
@@ -928,6 +932,8 @@ public sealed class ChunkRenderer : IDisposable
             var unseen = hidden && !(_aheadReady && _ahead.Sees(key)) || held;
             var empty = !far && !unseen && (!world.TryGetColumn(key.X, key.Z, out var column) || column.Numbered(key.Y) is not { Filled: > 0 });
             if (!far && !unseen && !empty && _lent.Count == 0) continue;
+            var caster = !far && Cull && !_visibility.Sees(key) && _casters.Contains(key);
+            if (caster && !empty && casters >= CastersAFrame) continue;
             // A section whose neighbor column has not arrived is dropped rather than kept, since the
             // neighbor's arrival marks it again, and one of a column not loaded is dropped rather
             // than parked, since the column's arrival marks it.
@@ -949,6 +955,7 @@ public sealed class ChunkRenderer : IDisposable
             {
                 Send(world, key);
                 meshed++;
+                if (caster) casters++;
             }
         }
         SetProfileValue("update.meshed", meshed);
