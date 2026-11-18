@@ -351,7 +351,19 @@ change.
 
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 17 are settled, said under each in REVIEW-ARCHIVE.md.
+Verdict 18 is open, a test of the sections taken a frame red on macOS alone in run 44218987161.
+Verdicts 1 to 17 are settled, said under each in REVIEW-ARCHIVE.md.
+
+18. **The build run of `02194cb` is red on macOS alone in a test of the sections taken a frame.**
+    Run 44218987161 ended red at 03:57 on 2026-11-18, job 134515852405, Linux, Windows and the play
+    green, 616 passed and 1 failed. `HeadlessGameTests.The_Sections_The_Flood_Made_Ahead_Sees_Are_Ta
+    ken_In_No_More_Than_The_Release_A_Frame` failed at `HeadlessGameTests.cs` line 1850 with 13
+    taken in a frame. The test passed on that runner in the two runs before it. Asked, the cause
+    told in the Reply, whether the commit's taking of things under way before a save or a close lets
+    more sections through in a frame, or the count depends on how far the runner's threads got and
+    the bound is held only by chance, and the mend, a bound the code holds on any machine or a test
+    that reads what the release promises. A second try of the job is no answer. The commit after it
+    waits locally and goes up with the mend.
 
 ## Decisions
 
@@ -890,3 +902,29 @@ a row, and the play under the lock taken exclusive with no quiet wait passing in
 step naming its world in 5 s, its `captures/closed.log` naming no fault and no texture left, and its
 captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.01% of its pixels
 past 8 levels.
+
+Verdict 18's read. `02194cb` touches no path of the test. The test moves the player by
+`Player.Teleport` a fifth of a block at a time and saves nothing, so neither the ending of dying
+mobs that a jump far off or a close runs nor the taking before a save's gathering runs in it, and
+the commit leaves the renderer's release alone. The count depends on how far the main thread
+gets in each frame's meshing. The flood ahead releases at most `ReleasedAFrame`, 8, of the held
+sections a frame into the world's list to mesh, and the renderer's update sends that list's
+sections to the meshers, gathering each on the main thread, until the frame's meshing time is
+spent, 4 ms at the test's frames. Where a frame's time runs out before all 8 are sent, the rest wait
+in the list beside the next frame's 8, and a frame that sends both takes in up to 16 in the frame
+after. On this machine every frame sends all it is given. On the runner, by this reading and not
+seen, a frame ran out of its time, and the 13 came in together in the frame after it.
+
+The mend is in the code. The released sections that still wait to be sent count against the next
+frame's release (`ChunkRenderer._released`), so no frame sends more of them than 8, however long the
+frames' meshing takes. A seam caps a frame's meshing time (`ChunkRenderer.MostMeshMs`), and the test
+runs twice, as it was and with three frames' meshing in four cut to nothing, so the sections
+released in the cut frames wait for the fourth. The cut run holds the bound alone, since frames
+given no time take few in before the step. On the head the cut run takes in 9 and 10 in a frame,
+and on the mend it passes three runs in three.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 626
+passing, the headless game's 94 passing three times in a row, and the play under the lock taken
+exclusive with no quiet wait passing in 185 s, the seed's step naming its world in 4 s, its
+`captures/closed.log` naming no fault and no texture left, and its captures within 9 levels of the
+warm play's on 6.2.102, `sky2.png` differing in 0.04% of its pixels past 8 levels.

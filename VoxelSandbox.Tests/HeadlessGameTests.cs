@@ -1799,8 +1799,10 @@ public sealed class HeadlessGameTests
     // The frames after the step a corner section is drawn by, the step's own or the one after.
     private const int Frames = 1;
 
-    [Fact]
-    public void The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame(bool cutShort)
     {
         using var headless = new HeadlessGame(still: true);
         var game = headless.Game;
@@ -1837,16 +1839,21 @@ public sealed class HeadlessGameTests
         // On toward column 1's face at a fifth of a block a frame, each frame's meshes finished
         // before the next, up to the step.
         var (most, taken) = (0, 0);
+        // Three frames' meshing in four cut to nothing where asked, as a slow machine's frames run
+        // out of their time, so the sections released in them wait for the fourth.
         for (var tenth = 72; tenth < 160; tenth += 2)
         {
             var before = ridge.Count(Taken);
+            renderer.MostMeshMs = cutShort && tenth % 8 != 6 ? 0 : double.PositiveInfinity;
             Go(tenth / 10.0);
             Settle();
             most = Math.Max(most, ridge.Count(Taken) - before);
         }
         taken = ridge.Count(Taken) - (ridge.Count - held);
 
-        Assert.True(taken > ChunkRenderer.ReleasedAFrame, $"{taken} of the {held} held taken in before the step");
+        // Frames given their time take in more than a frame's release before the step, and frames
+        // cut short no more than a release in any one.
+        if (!cutShort) Assert.True(taken > ChunkRenderer.ReleasedAFrame, $"{taken} of the {held} held taken in before the step");
         Assert.True(most <= ChunkRenderer.ReleasedAFrame, $"{most} taken in a frame");
 
         bool Taken(SectionKey key) => renderer.Standing(key).Any();

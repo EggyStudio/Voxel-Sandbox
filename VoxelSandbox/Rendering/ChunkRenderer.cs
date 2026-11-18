@@ -586,6 +586,13 @@ public sealed class ChunkRenderer : IDisposable
     // over some seven frames, well before the step.
     private readonly List<SectionKey> _releasing = [];
     internal const int ReleasedAFrame = 8;
+    // Those released that still wait to be sent to a mesher, a frame's meshing having spent its
+    // time before them, which count against the next frame's release, so no frame sends more of
+    // them than ReleasedAFrame however long the frames' meshing takes.
+    private readonly HashSet<SectionKey> _released = [];
+
+    /// <summary>The most time a frame's meshing takes, whatever the game gives it, so a test can make a frame's meshing run short.</summary>
+    internal double MostMeshMs { get; set; } = double.PositiveInfinity;
 
     /// <summary>
     /// The time a frame gives a flood begun as the eye steps into the next section, or made ahead
@@ -859,6 +866,7 @@ public sealed class ChunkRenderer : IDisposable
     /// </summary>
     public void Update(VoxelWorld world, Vector3 eye, int renderDistance, double budgetMs)
     {
+        budgetMs = Math.Min(budgetMs, MostMeshMs);
         while (_built.TryDequeue(out var done))
         {
             _asking--;
@@ -1328,6 +1336,7 @@ public sealed class ChunkRenderer : IDisposable
     {
         (_visibility, _ahead, _aheadReady, _castsDue, _placedFor) = (new(), new(), false, false, null);
         _releasing.Clear();
+        _released.Clear();
     }
 
     /// <summary>
@@ -1511,10 +1520,12 @@ public sealed class ChunkRenderer : IDisposable
                 if (_ahead.Sees(key)) _releasing.Add(key);
         }
         if (!_aheadReady) return;
-        for (var released = 0; released < ReleasedAFrame && _releasing.Count > 0; _releasing.RemoveAt(_releasing.Count - 1))
+        _released.RemoveWhere(key => !world.Loaded.Contains(key));
+        for (var released = _released.Count; released < ReleasedAFrame && _releasing.Count > 0; _releasing.RemoveAt(_releasing.Count - 1))
             if (_unseen.Remove(_releasing[^1]))
             {
                 world.Loaded.Add(_releasing[^1]);
+                _released.Add(_releasing[^1]);
                 released++;
             }
     }
