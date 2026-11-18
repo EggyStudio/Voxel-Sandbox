@@ -649,6 +649,9 @@ public sealed class ChunkRenderer : IDisposable
     /// <summary>Whether the last flood reached a section.</summary>
     internal bool Sees(SectionKey key) => _visibility.Sees(key);
 
+    /// <summary>Whether a section the flood left out stands toward the light from a drawn one, meshed at once as one the flood reaches is.</summary>
+    internal bool CastsTowardLight(SectionKey key) => _casters.Contains(key);
+
     /// <summary>
     /// For each part a section holds faces of, whether its group's part stands in the scene and
     /// whether it stands in the shadow maps and the field alone.

@@ -122,7 +122,23 @@ change.
 
 ## Verdicts
 
-No verdict is open. Verdicts 1 to 21 are settled, each in `REVIEW-ARCHIVE.md`.
+Verdict 22 is open, the fourth case of the test of the sections taken a frame red on macOS alone in
+run 44304184093. Verdicts 1 to 21 are settled, each in `REVIEW-ARCHIVE.md`.
+
+22. **The build run of `f1a0266` is red on macOS alone in the fourth case of the release's test.**
+    Run 44304184093, read at 14:01 on 2026-11-18 with its play still going, job 134801344837, Linux
+    and Windows green, 638 passed and 1 failed. The case with the frames' meshing cut short, the
+    ridge not marked again and the eye's flood seeing the ridge late of `HeadlessGameTests.The_Secti
+    ons_The_Flood_Made_Ahead_Sees_Are_Taken_In_No_More_Than_The_Release_A_Frame` failed at
+    `HeadlessGameTests.cs` line 1885 with 9 taken in a frame. The case came with `231d504` and
+    passed on the three runners in runs 44286901796 and 44296880420, and the three older cases
+    passed in this run. Verdict 21 was settled on those two runs, and the count that leaves out what
+    the eye's flood sees is in the failing tree, so a second way stands by which a section reaches
+    the meshers past the eight where the frames are cut and the ridge is seen late, or the case's
+    own count takes a seen section as released in the frame the flood first reaches it. Asked, the 9
+    made here on few cores with the columns slowed, a trace naming the section past the eight and
+    whether the flood saw it that frame, the cause told in the Reply, and a mend that fails on any
+    machine without it. A verdict on this test settles after five runs green on every runner.
 
 ## Decisions
 
@@ -978,3 +994,35 @@ row, and the play under the lock taken exclusive with no quiet wait passing in 1
 step naming its world in 5 s, its `captures/closed.log` naming no fault and no texture left, and its
 captures within 11 levels of the warm play's on 6.2.102 in one channel of a few pixels, no pixel's
 brightness more than 4 levels apart, `sky2.png` differing in 0.02% of its pixels past 8 levels.
+
+Verdict 22, the fourth case of the release's test red on macOS, mended in the test in the commit
+carrying this Reply.
+
+- The section past the eight was a caster. A copy of the case was traced, each ridge section sent,
+  released, edited or marked by the draw, with whether the eye's flood saw it then, over 90 runs on
+  three cores and on two, the columns slowed by 0 to 40 ms before each is made. No
+  counted section was seen by the eye's flood as it was sent or taken in any run, so the count took
+  none the flood first reached as released.
+- In 35 of the 90 runs three counted sections, 5, 6 to 8, 3, were sent as casters toward the light,
+  past the release, since the update meshes a caster at once as one the eye's flood sees. A shadow
+  distance of one block does not keep them out, as the search walks rays from the corners of the
+  meshed sections within that and 16 more of the eye as far as the land goes, and which sections
+  about the eye are meshed when it runs is the machine's timing, so a run found them in one frame
+  or another or after the walk. The nearest to the macOS reading, slowed by 10 ms on three cores,
+  sent five released and the three casters in frame 150 and took the eight in frame 152, and six
+  released with them make the 9. The 9 itself was not made here in those runs.
+- The case says no section casts toward the light, and the search is turned off in it
+  (`renderer.Casts = false`). It asserts after the raise and in each frame of the walk that no ridge
+  section casts toward the light, through `ChunkRenderer.CastsTowardLight`. With the search left on
+  that fails in every run, 20 in 20 on sixteen cores and on three slowed by 10 ms, the ridge casting
+  from the raise, and with it off it holds in 20 in 20. The test with the search left on fails in
+  all four of its cases in 10 runs on sixteen cores and in 10 on three, and with it off passes three
+  runs in three.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 640
+passing, the headless game's 97 passing three times in a row, and the play under the lock taken
+exclusive with no quiet wait passing in 186 s, the seed's step naming its world in 4 s, its
+`captures/closed.log` naming no fault and no texture left, and its captures within 11 levels of the
+warm play's on 6.2.102 as with `69bc94d`, `sky2.png` differing in 0.03% of its pixels past 8 levels.
+
+Casters passing the release in a flight, read next as asked, come in a Reply of their own.

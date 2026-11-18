@@ -22,6 +22,11 @@ A bucket taking up a source of water from a pit in the flat world at noon with B
 set on a pit of lava beside it, which it makes obsidian, the bucket held empty, full and empty
 again.
 
+![](.github/devlog/2026-11-18-sky-lower-half-neutral.webp)
+A sheep and the held bucket at noon with global illumination off and Bare Bones on, the head's
+bucket and clouds' undersides orange from the sky's lower half beside the mended game's gray, the
+sky drawn alike.
+
 ## 2026-11-16
 
 ![](.github/devlog/2026-11-16-item-191-water-at-the-edge.webp)

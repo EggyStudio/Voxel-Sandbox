@@ -1871,9 +1871,12 @@ public sealed class HeadlessGameTests
         game.Mode = GameMode.Spectator;
         game.RenderDistance = 4;
         // No section cast toward the light, so the ridge waits on the floods alone, the flood ahead
-        // finishing in the frame it begins.
+        // finishing in the frame it begins. Casters are meshed at once as the sections the eye's
+        // flood sees are, and which the search finds turns on which sections about the eye are
+        // meshed by then, which a slow machine's timing changes, so the search is turned off.
         game.Light.ShadowDistance = 1;
         var renderer = game.Renderer;
+        renderer.Casts = false;
         renderer.FloodBudgetMs = double.PositiveInfinity;
         // A step east asks for column 1's circle too, every column of which joins before the ridge
         // is raised, so no join marks the ridge's sections again on the way.
@@ -1896,6 +1899,7 @@ public sealed class HeadlessGameTests
         // mark them to be meshed in the frames the others are released in.
         foreach (var key in ridge.Where(key => !seenLate || !seen.Contains(key))) Raise(key);
         Stand();
+        Assert.False(ridge.Any(renderer.CastsTowardLight), "the ridge casts toward the light as it is raised");
         // East to a block short of where the flood ahead of the step begins, half a column from the
         // face, and still again, so the floods from the eye have reached what they reach.
         for (var tenth = 49; tenth <= 70; tenth += 2) Go(tenth / 10.0);
@@ -1918,6 +1922,7 @@ public sealed class HeadlessGameTests
             if (seenLate && tenth == 88) foreach (var key in seen) Raise(key);
             Go(tenth / 10.0);
             Settle();
+            Assert.False(ridge.Any(renderer.CastsTowardLight), $"the ridge casts toward the light at {tenth / 10.0}");
             most = Math.Max(most, counted.Count(Taken) - before);
         }
         taken = counted.Count(Taken) - (counted.Count - held);
