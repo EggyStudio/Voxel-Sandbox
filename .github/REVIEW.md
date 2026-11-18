@@ -946,17 +946,15 @@ within 11 levels of the warm play's on 6.2.102 but `sky2.png`, 0.44% of its pixe
 the clouds' edges, as with `f6f2f14`.
 
 Handoff. Verdicts 22 and 23 are mended in the commit carrying this Reply, to settle after five green
-runs on every runner. Next in order are the three first-hour rules agreed: a bed and sleeping, then
-the hoe and farmland, then saplings that grow. The bed is begun and set aside as a patch,
+runs on every runner, and the game goes idle with it. The three first-hour rules agreed, a bed and
+sleeping, then the hoe and farmland, then saplings that grow, wait for a word. Only the bed was
+begun, never built nor run, and set aside as a patch,
 `~/.cache/3dengine-tools/work/voxel-bed/bed-wip.patch`, applied with `git apply
---include='VoxelSandbox/*'`: the 48 bed blocks appended to `BlockId` after `Obsidian`, made in a
-loop in `Blocks.Build`, `BlockGroups.Beds`, and the bed surfaces at the end of `Surfaces`. Still to
-write for the bed: `BedArt` (the faces cut from `entity/bed/<color>`, the head's top at 6, 6, its
-sides at 0, 6 and 22, 6, its end at 6, 0, the foot's 22 lower, its bottom at 28, 6), its cut in
-`TerrainAtlas` beside `ChestArt`'s, `BlockShape.Bed` (coincident boxes each showing one face, the
-left side's part forward and the right's mirrored, the head end's mirrored, the tops turned a
-quarter clockwise for each way past north), placing in `VoxelGame.Place` as a door's, the other half
-going in `VoxelWorld.SetBlock`, a stack of one, the recipes, and then sleeping and the respawn point
-saved in `WorldInfo`. Open: the corner holes' item above. A fresh session reads `AGENTS.md`,
+--include='VoxelSandbox/*'`: the 48 bed blocks appended to `BlockId` after `Obsidian` and made in a
+loop in `Blocks.Build`, `BlockGroups.Beds`, the bed surfaces at the end of `Surfaces`, `BedArt` with
+its cut in `TerrainAtlas` and its looks in `PackTextures`, `BlockShape.Bed`, placing in
+`VoxelGame.Place`, the other half's going in `VoxelWorld.SetBlock`, its hardness and a stack of one.
+Still to do for it: the recipes, its tests and captures, then sleeping and the respawn point saved
+in `WorldInfo`. Open: the corner holes' item above. A fresh session reads `AGENTS.md`,
 `.github/STYLE.md`, `.github/COMMITS.md`, `.github/NORM.md`, this file's head, Now list and these
-Replies, and the memory index, and reports one line set per finished item.
+Replies, and the memory index, and reports in at most ten lines per finished item.
