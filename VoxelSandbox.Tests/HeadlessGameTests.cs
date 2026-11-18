@@ -1469,6 +1469,49 @@ public sealed class HeadlessGameTests
     }
 
     [Fact]
+    public void A_Gray_Face_Turned_Up_To_The_Side_Or_Down_Takes_A_White_Light_From_The_Noon_Sky()
+    {
+        using var headless = new HeadlessGame(still: true);
+        var game = headless.Game;
+        game.Weather.Held = false;
+        game.Sky.Hour = 12;
+        headless.Step(30);
+        Assert.True(game.Sky.Overcast < 0.02f, $"the sky is overcast by {game.Sky.Overcast}");
+
+        // The light the image the engine was given casts on a face, each pixel by the cosine of its
+        // way from the face's and the sine of its angle from the top, under the engine's tint, as a
+        // face takes it with global illumination off.
+        var (pixels, width, _) = game.Sky.Painted;
+        var height = pixels.Length / 4 / width;
+        var tint = GetEnvironmentLight().Tint;
+        var lift = new Vector3(SkyColors.Decode(tint.R / 255f), SkyColors.Decode(tint.G / 255f), SkyColors.Decode(tint.B / 255f));
+        var faces = new[] { ("up", Vector3.UnitY), ("to the side", Vector3.UnitX), ("half down", Vector3.Normalize(new Vector3(0, -1, 1))), ("down", -Vector3.UnitY) };
+        foreach (var (name, toward) in faces)
+        {
+            var light = Vector3.Zero;
+            for (int py = 0; py < height; py++)
+            {
+                var theta = (py + 0.5f) / height * MathF.PI;
+                for (int px = 0; px < width; px++)
+                {
+                    var longitude = ((px + 0.5f) / width - 0.5f) * 2 * MathF.PI;
+                    var way = new Vector3(MathF.Sin(longitude) * MathF.Sin(theta), MathF.Cos(theta), -MathF.Cos(longitude) * MathF.Sin(theta));
+                    var at = (py * width + px) * 4;
+                    var pixel = new Vector3(SkyColors.Decode(pixels[at] / 255f), SkyColors.Decode(pixels[at + 1] / 255f), SkyColors.Decode(pixels[at + 2] / 255f));
+                    light += pixel * MathF.Max(0, Vector3.Dot(way, toward)) * MathF.Sin(theta);
+                }
+            }
+            light *= lift;
+            // A gray of 216 lit by it at its own brightness, each channel within three levels of
+            // the others.
+            var brightness = 0.2126f * light.X + 0.7152f * light.Y + 0.0722f * light.Z;
+            var gray = SkyColors.Encode(light / brightness * SkyColors.Decode(216 / 255f)) * 255;
+            var spread = MathF.Max(gray.X, MathF.Max(gray.Y, gray.Z)) - MathF.Min(gray.X, MathF.Min(gray.Y, gray.Z));
+            Assert.True(spread <= 3, $"a gray face turned {name} reads {gray.X:0}, {gray.Y:0}, {gray.Z:0}");
+        }
+    }
+
+    [Fact]
     public void The_Debug_Overlay_Holds_The_Games_Sections_Of_The_Player_Generation_Light_Sky_Sections_And_Mobs()
     {
         using var headless = new HeadlessGame();

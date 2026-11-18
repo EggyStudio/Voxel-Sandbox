@@ -86,6 +86,13 @@ public sealed class Sky : IDisposable
     /// <summary>The way toward the light that casts the shadows, the sun by day and the moon by night, as the light last turned.</summary>
     public Vector3 TowardLight { get; private set; } = Vector3.UnitY;
     private readonly byte[] _pixels = new byte[Width * Height * 4];
+    // The image's pixels in linear light as the lower half is painted again, and each row's mean.
+    private readonly Vector3[] _linear = new Vector3[Width * Height];
+    private readonly Vector3[] _rows = new Vector3[Height];
+    private float _scale = 1;
+
+    /// <summary>The image of the sky last given to the engine, four levels a pixel, and how much brighter the engine was asked to take it.</summary>
+    internal (byte[] Pixels, int Width, float Scale) Painted => (_pixels, Width, _scale);
     private readonly Texture2D _sun, _moon;
     private float _litHour = float.NaN, _paintedHour = float.NaN;
     private int _colorsPainted;
@@ -451,8 +458,8 @@ public sealed class Sky : IDisposable
         _paintedHour = Hour;
         var toSun = SunToward(Hour);
         Paint(toSun);
-        SetEnvironmentMap(new Image(_pixels, Width, Height));
-        Neutralize(DayShare(toSun));
+        _scale = Neutralize(DayShare(toSun));
+        SetEnvironmentMap(new Image(_pixels, Width, Height), _scale);
     }
 
     // The sky's light on the land drawn toward a white of the same brightness as far as the day's
@@ -461,26 +468,99 @@ public sealed class Sky : IDisposable
     // drawn keeps its blue, and the night's light its color. The light is the painted sky's on a face
     // turned up, each pixel of the image's upper half by the cosine of its height above the horizon
     // and the sine of its angle from the top, which the image's rows cover.
-    private void Neutralize(float day)
+    //
+    // The engine takes one tint for the whole image, which under a blue sky lifts red and cuts
+    // blue, and a face turned to the side or down, seeing the paler sky near the horizon and the
+    // image's lower half, would take an orange light by it. So the lower half, which the haze dome
+    // hides, is painted again by a factor of each channel that runs from the horizon to the image's
+    // bottom with the depth's cosine, solved so a face turned down and one turned to the side each
+    // take the painted sky's light on it drawn toward a white of its brightness as the face turned
+    // up does. Painted so, a level can pass what the image holds, so the whole image is painted as
+    // much darker as that asks and given to the engine as much brighter, the scale returned, which
+    // draws the sky as it was.
+    private float Neutralize(float day)
     {
-        var (sum, weight) = (Vector3.Zero, 0f);
-        for (int py = 0; py < Height / 2; py++)
+        for (int py = 0; py < Height; py++)
         {
-            var theta = (py + 0.5f) / Height * MathF.PI;
-            var w = MathF.Cos(theta) * MathF.Sin(theta);
+            var sum = Vector3.Zero;
             for (int px = 0; px < Width; px++)
             {
-                var at = (py * Width + px) * 4;
-                sum += new Vector3(Decode(_pixels[at] / 255f), Decode(_pixels[at + 1] / 255f), Decode(_pixels[at + 2] / 255f)) * w;
-                weight += w;
+                var at = py * Width + px;
+                _linear[at] = new Vector3(Decode(_pixels[at * 4] / 255f), Decode(_pixels[at * 4 + 1] / 255f), Decode(_pixels[at * 4 + 2] / 255f));
+                sum += _linear[at];
+            }
+            _rows[py] = sum / Width;
+        }
+
+        // Each row by its weight on a face turned up, one turned down and one turned to the side,
+        // the last as the side's half of the row sees it, and the lower rows by their depth too.
+        Vector3 up = Vector3.Zero, downRaw = Vector3.Zero, sideRaw = Vector3.Zero, upperSide = Vector3.Zero;
+        Vector3 down0 = Vector3.Zero, down1 = Vector3.Zero, side0 = Vector3.Zero, side1 = Vector3.Zero;
+        float downWeight = 0, sideWeight = 0;
+        for (int py = 0; py < Height; py++)
+        {
+            var theta = (py + 0.5f) / Height * MathF.PI;
+            float cos = MathF.Cos(theta), sin = MathF.Sin(theta), toDown = MathF.Max(0, -cos) * sin, toSide = sin * sin;
+            var row = _rows[py];
+            if (py < Height / 2) up += row * cos * sin;
+            downRaw += row * toDown;
+            sideRaw += row * toSide;
+            (downWeight, sideWeight) = (downWeight + toDown, sideWeight + toSide);
+        }
+        var tint = Factor(up, day);
+        var most = MathF.Max(tint.X, MathF.Max(tint.Y, tint.Z));
+        SetEnvironmentLight(most, ColorOf(Encode(tint / most) * 255));
+
+        for (int py = 0; py < Height; py++)
+        {
+            var theta = (py + 0.5f) / Height * MathF.PI;
+            float cos = MathF.Cos(theta), sin = MathF.Sin(theta), toDown = MathF.Max(0, -cos) * sin, toSide = sin * sin;
+            var lit = _rows[py] * tint;
+            if (py < Height / 2) upperSide += lit * toSide;
+            else
+            {
+                (down0, down1) = (down0 + lit * toDown, down1 + lit * -cos * toDown);
+                (side0, side1) = (side0 + lit * toSide, side1 + lit * -cos * toSide);
             }
         }
-        var light = sum / weight;
+        downRaw /= downWeight;
+        sideRaw /= sideWeight;
+        var downWanted = downRaw * Factor(downRaw, day);
+        var sideWanted = sideRaw * Factor(sideRaw, day) - upperSide / sideWeight;
+        (down0, down1, side0, side1) = (down0 / downWeight, down1 / downWeight, side0 / sideWeight, side1 / sideWeight);
+        var det = down0 * side1 - down1 * side0;
+        var atHorizon = (downWanted * side1 - down1 * sideWanted) / det;
+        var deeper = (down0 * sideWanted - side0 * downWanted) / det;
+        if (!float.IsFinite(atHorizon.X + atHorizon.Y + atHorizon.Z + deeper.X + deeper.Y + deeper.Z)) (atHorizon, deeper) = (Vector3.One, Vector3.Zero);
+
+        var scale = 1f;
+        for (int py = 0; py < Height; py++)
+        {
+            var depth = -MathF.Cos((py + 0.5f) / Height * MathF.PI);
+            var lower = Vector3.Max(Vector3.Zero, atHorizon + deeper * depth);
+            for (int px = 0; px < Width; px++)
+            {
+                var at = py * Width + px;
+                if (py >= Height / 2) _linear[at] *= lower;
+                scale = MathF.Max(scale, MathF.Max(_linear[at].X, MathF.Max(_linear[at].Y, _linear[at].Z)));
+            }
+        }
+        for (int at = 0; at < _linear.Length; at++)
+        {
+            var level = Encode(_linear[at] / scale) * 255;
+            _pixels[at * 4] = (byte)MathF.Round(Math.Clamp(level.X, 0, 255));
+            _pixels[at * 4 + 1] = (byte)MathF.Round(Math.Clamp(level.Y, 0, 255));
+            _pixels[at * 4 + 2] = (byte)MathF.Round(Math.Clamp(level.Z, 0, 255));
+        }
+        return scale;
+    }
+
+    // What draws a light toward a white of its own brightness, as far as the day's share given.
+    private static Vector3 Factor(Vector3 light, float day)
+    {
         var brightness = 0.2126f * light.X + 0.7152f * light.Y + 0.0722f * light.Z;
         var white = MathF.Min(light.X, MathF.Min(light.Y, light.Z)) > 1e-4f ? new Vector3(brightness) / light : Vector3.One;
-        var factor = Vector3.Lerp(Vector3.One, white, day);
-        var most = MathF.Max(factor.X, MathF.Max(factor.Y, factor.Z));
-        SetEnvironmentLight(most, ColorOf(Encode(factor / most) * 255));
+        return Vector3.Lerp(Vector3.One, white, day);
     }
 
     private void Paint(Vector3 toSun)

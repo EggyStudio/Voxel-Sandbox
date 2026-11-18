@@ -59,7 +59,8 @@ and `080b7e6`, the undead out of the rain and a hit in the air, pushed at 09:48.
 fall damage, and `231d504`, the sections test counting only what the eye's flood does not see,
 pushed at 11:35 on 2026-11-18, build 44286901796 green on every runner, the first of the two green
 runs Verdict 21 waits for. `f7b57ec`, lava harming mobs and burning stacks, and `2b7adfa`, the
-washing and obsidian, pushed at 12:40.
+washing and obsidian, pushed at 12:40. Build 44296880420 green on every runner at 13:27. `f1a0266`,
+the buckets, pushed at 13:28.
 
 Next 180, the deep audit's findings, its finding 6 first and the suite run with a data folder of its
 own until it lands, while the engine's package with item 264 and the lamps' mend is made. The read
@@ -121,20 +122,7 @@ change.
 
 ## Verdicts
 
-Verdict 21 is open, the test of the sections taken a frame red on macOS alone in run 44270121025.
-Verdicts 1 to 20 are settled, each in `REVIEW-ARCHIVE.md`.
-
-21. **The build run of `080b7e6` is red on macOS alone in the test of the release once more.** Run
-    44270121025, read at 10:24 on 2026-11-18 with its play still going, job 134684329735, Linux and
-    Windows green, 631 passed and 1 failed. The case with the frames' meshing cut short and the
-    ridge not marked again of `HeadlessGameTests.The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In
-    _No_More_Than_The_Release_A_Frame` failed at `HeadlessGameTests.cs` line 1879 with 10 taken in a
-    frame. The same case passed on the three runners in runs 44248652206 and 44260565966, so the
-    hold of `0088178` does not cover every way a section the flood ahead alone sees reaches the
-    meshers, or the test counts across two frames' sends where a frame is cut. Asked, the 10 made
-    here on few cores with the frames cut, a trace naming the two sections past the eight and the
-    path each took, the cause told in the Reply, and a mend whose test fails on any machine without
-    it.
+No verdict is open. Verdicts 1 to 21 are settled, each in `REVIEW-ARCHIVE.md`.
 
 ## Decisions
 
@@ -954,3 +942,39 @@ row, and the play under the lock taken exclusive with no quiet wait passing in 1
 step naming its world in 4 s, its `captures/closed.log` naming no fault and no texture left, and its
 captures within 8 levels of the warm play's on 6.2.102, `sky2.png` differing in 0.02% of its pixels
 past 8 levels.
+The held bucket's colors in the bucket's sheet, read in the commit carrying this Reply. The held
+picture is the hotbar icon's own pixels, gray in Bare Bones, drawn by the engine's model pass, and
+with global illumination at High its face, turned to the side, takes the floor's bounced light,
+olive over the plains' grass, beige over stone and near white over white concrete, as any model
+there does. With global illumination off it read the same warm brown, 183, 142 and 103 from a gray
+of 216, on every floor, which was the sky's.
+
+- The engine takes one tint for the whole sky image (`SetEnvironmentLight`), and `Sky.Neutralize`
+  chose it to draw a face turned up toward white, which under the noon sky lifts red by 2.78 and
+  cuts blue to 0.35. A face turned to the side or down sees the paler sky near the horizon and the
+  image's lower half, and took an orange light by it.
+- The lower half, which the haze dome hides from the horizon down, is painted again by a factor of
+  each channel running from the horizon to the image's bottom with the depth's cosine, solved so a
+  face turned down and one turned to the side each take the painted sky's light on it drawn toward a
+  white of its brightness as the face turned up does. Painted so, a level can pass 255, 2.28 times
+  at noon, so the whole image is painted as much darker and given to `SetEnvironmentMap` as much
+  brighter, which draws the sky as it was, the sky in the sheet within a level. The night's
+  image, whose light keeps its color, is unchanged.
+- Faces turned from the sky take the sky's own brightness, so with global illumination off a face
+  turned to the side takes about an eighth less light than on the head and one turned down about a
+  sixth less, their orange gone.
+- `A_Gray_Face_Turned_Up_To_The_Side_Or_Down_Takes_A_White_Light_From_The_Noon_Sky` lights a gray of
+  216 by the image the engine was given under its tint, at noon in a headless game, and holds a face
+  turned up, to the side, half down and down within three levels between channels. On a copy of the
+  head given the accessor alone the face turned to the side reads 256, 206 and 170.
+
+`.github/devlog/2026-11-18-sky-lower-half-neutral.webp` is a sheep and the held bucket at noon with
+global illumination off, the head's bucket and the clouds' undersides orange beside the mended
+game's gray.
+
+The checks: the strict build clean, the suite outside the GPU's lock with the long soak skipped, 640
+passing, the new test passing three times in a row, the headless game's 97 passing three times in a
+row, and the play under the lock taken exclusive with no quiet wait passing in 185 s, the seed's
+step naming its world in 5 s, its `captures/closed.log` naming no fault and no texture left, and its
+captures within 11 levels of the warm play's on 6.2.102 in one channel of a few pixels, no pixel's
+brightness more than 4 levels apart, `sky2.png` differing in 0.02% of its pixels past 8 levels.

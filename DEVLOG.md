@@ -17,6 +17,11 @@ golden stalks.
 Water poured over a pool of lava in a rim of stone in the flat world at noon with Bare Bones on,
 before and after, the lava the water reaches made obsidian under it.
 
+![](.github/devlog/2026-11-18-item-229-bucket.webp)
+A bucket taking up a source of water from a pit in the flat world at noon with Bare Bones on, then
+set on a pit of lava beside it, which it makes obsidian, the bucket held empty, full and empty
+again.
+
 ## 2026-11-16
 
 ![](.github/devlog/2026-11-16-item-191-water-at-the-edge.webp)

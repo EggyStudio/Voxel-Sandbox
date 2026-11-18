@@ -3979,6 +3979,22 @@ before a batch.
     cores or a slowed step, the cause told in the Reply, and the test or the code mended so that the
     count does not follow the pace.
 
+21. **The build run of `080b7e6` is red on macOS alone in the test of the release once more.** Run
+    44270121025, read at 10:24 on 2026-11-18 with its play still going, job 134684329735, Linux and
+    Windows green, 631 passed and 1 failed. The case with the frames' meshing cut short and the
+    ridge not marked again of `HeadlessGameTests.The_Sections_The_Flood_Made_Ahead_Sees_Are_Taken_In
+    _No_More_Than_The_Release_A_Frame` failed at `HeadlessGameTests.cs` line 1879 with 10 taken in a
+    frame. The same case passed on the three runners in runs 44248652206 and 44260565966, so the
+    hold of `0088178` does not cover every way a section the flood ahead alone sees reaches the
+    meshers, or the test counts across two frames' sends where a frame is cut. Asked, the 10 made
+    here on few cores with the frames cut, a trace naming the two sections past the eight and the
+    path each took, the cause told in the Reply, and a mend whose test fails on any machine without
+    it.
+
+Verdict 21 is settled. The test counted sections the eye's own flood sees, which a late column marks
+and the renderer takes at once; it counts only what that flood does not see since `231d504`, and
+builds 44286901796 and 44296880420 ended green on every runner.
+
 ## Decisions
 
 1. **The old game is replaced in place, its history kept.** Decided on 2026-10-17, the voxel game of
